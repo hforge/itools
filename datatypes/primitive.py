@@ -20,6 +20,7 @@
 import decimal
 import mimetypes
 import re
+from copy import deepcopy
 
 # Import from itools
 from itools.uri import get_reference
@@ -243,33 +244,37 @@ class Tokens(DataType):
 class Enumerate(String):
 
     is_enumerate = True
-
     options = []
 
 
     @classmethod
-    def _get_options(cls):
-        return cls.options
+    def get_options(cls):
+        """Returns a list of dictionaries in the format
+            [{'name': <str>, 'value': <unicode>}, ...]
+        The default implementation returns a copy of the "options" class
+        attribute. Both the list and the dictionaries may be modified
+        afterwards.
+        """
+        return deepcopy(cls.options)
 
 
     @classmethod
-    def is_valid(cls, value):
-        for option in cls._get_options():
-            if value == option['name']:
+    def is_valid(cls, name):
+        """Returns True if the given name is part of this Enumerate's options.
+        """
+        for option in cls.get_options():
+            if name == option['name']:
                 return True
         return False
 
 
     @classmethod
-    def get_options(cls):
-        """Returns a copy of options list of dictionaries."""
-        return [dict(option) for option in cls._get_options()]
-
-
-    @classmethod
     def get_namespace(cls, name):
+        """Extends the options with information about which one is matching the
+        given name.
+        """
         options = cls.get_options()
-        if type(name) is type([]):
+        if isinstance(name, list):
             for option in options:
                 option['selected'] = option['name'] in name
         else:
@@ -280,7 +285,9 @@ class Enumerate(String):
 
     @classmethod
     def get_value(cls, name, default=None):
-        for option in cls._get_options():
+        """Returns the value matching the given name, or the default value.
+        """
+        for option in cls.get_options():
             if option['name'] == name:
                 return option['value']
 

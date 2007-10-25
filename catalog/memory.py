@@ -24,24 +24,7 @@ Implements a catalog in memory.
 
 class Index(dict):
 
-    def _normalise_word(self, word):
-        # XXX temporary until we analyse as the catalog does
-        if word is None:
-            return None
-        elif isinstance(word, bool):
-            word = unicode(int(word))
-        elif not isinstance(word, basestring):
-            word = unicode(word)
-#      # To make icalendarTable search working, we comment this part:
-#        elif isinstance(word, unicode):
-#            word = word.lower()
-
-        return word
-
-
     def search_word(self, word):
-        word = self._normalise_word(word)
-
         if word in self:
             return self[word].copy()
 
@@ -49,9 +32,6 @@ class Index(dict):
 
 
     def search_range(self, left, right):
-        left = self._normalise_word(left)
-        right = self._normalise_word(right)
-
         rows = {}
 
         if not left:

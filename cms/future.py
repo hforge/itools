@@ -103,6 +103,7 @@ class OrderAware(object):
     def order_folders_form(self, context):
         namespace = {}
 
+        here = context.handler
         ordered_folders = []
         unordered_folders = []
         ordered_folders_names, unordered_folders_names = self.get_ordered_folder_names('all')
@@ -115,7 +116,9 @@ class OrderAware(object):
                 ns = {
                     'name': folder.name,
                     'title': folder.get_property('dc:title'),
-                    'workflow_state': ''
+                    'workflow_state': '',
+                    'is_orderaware': isinstance(folder, OrderAware),
+                    'path': '%s/;order_folders_form' % here.get_pathto(folder)
                 }
                 if isinstance(folder, WorkflowAware):
                     statename = folder.get_statename()

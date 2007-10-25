@@ -108,6 +108,9 @@ class TextField(BaseField):
         1 -> 1 [letter or number]
         1 -> 0 [stop word]
         """
+        if value is None:
+            return
+
         position = 0
         state = 0
         lexeme = u''

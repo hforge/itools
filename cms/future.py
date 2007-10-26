@@ -359,7 +359,7 @@ class Dressable(Folder, EpozEditable):
             if isinstance(data, tuple):
                 handler_name, kk = data
                 if handler_name == name:
-                    return key
+                    return unicode(key)
         return None
 
 
@@ -614,7 +614,7 @@ class Dressable(Folder, EpozEditable):
         dress_name = kw.get('dress_name')
         label = self._get_handler_label(dress_name)
         if kw.get('external'):
-            label = '%s (External)' % label
+            label = u'%s (External)' % label
         return label
 
 

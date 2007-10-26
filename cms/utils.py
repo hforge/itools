@@ -118,8 +118,7 @@ def reduce_string(title='', word_treshold=15, phrase_treshold=40):
 def generate_password(length=6):
     tokens = list(string.ascii_letters + string.digits)
     # Remove ambiguity
-    for char in ('1', 'l', '0', 'o'):
-        tokens.remove(char)
+    [tokens.remove(char) for char in ('1', 'l', '0', 'O')]
     password = random.sample(tokens, length)
     return ''.join(password)
 

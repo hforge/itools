@@ -18,8 +18,7 @@
 
 # Import from the Standard Library
 from urllib import quote
-import string
-import random
+from random import sample
 
 # Import from itools
 from itools.web import get_context
@@ -115,12 +114,10 @@ def reduce_string(title='', word_treshold=15, phrase_treshold=40):
 ###########################################################################
 # User and Authentication
 ###########################################################################
+# ASCII letters and digits, except the characters: 0, O, 1, l
+tokens = 'abcdefghijkmnopqrstuvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ23456789'
 def generate_password(length=6):
-    tokens = list(string.ascii_letters + string.digits)
-    # Remove ambiguity
-    [tokens.remove(char) for char in ('1', 'l', '0', 'O')]
-    password = random.sample(tokens, length)
-    return ''.join(password)
+    return ''.join(sample(tokens, length))
 
 
 ###########################################################################

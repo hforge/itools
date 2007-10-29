@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: UTF-8 -*-
+# -*- coding: utf-8 -*-
 # Copyright (C) 2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -19,58 +19,239 @@
 from optparse import OptionParser
 from subprocess import call
 from tempfile import TemporaryFile
+from StringIO import StringIO
+from token import tok_name
+import tokenize
 
 # Import from itools
 import itools
 from itools import git
 
 
-def analyse(filenames):
-    # Cumulative statistics
-    lines = 0
-    too_long = 0
-    trailing_whites = 0
-    tabs = 0
+#Globals variables
+verbose = False
 
-    # Analyse
+def analyse_line(line):
+    """
+    This function analyses a line and produces a dict with these members:
+     - 'lenght': lenght of the line without '\n' or everything else;
+     - 'spaces': number of space characters at the beginning of the line;
+     - 'tokens': number of tokens;
+     - 'import': boolean;
+     - 'command': True if the line has a least one token != COMMENT;
+     - 'bad_end': True if there are spaces or tabs at the end of the line;
+     - 'tabs': boolean;
+     - 'bad_except': boolean;
+     - 'bad_raise': boolean;
+    """
+
+    result={
+        'lenght': len(line.rstrip()),
+        'spaces': 0, 
+        'tokens': 0,
+        'import': False,
+        'command': False,
+        'tabs': False,
+        'bad_end': len(line.rstrip()) != len(line.rstrip('\n\x0b\x0c\r')),
+        'bad_except': False,
+        'bad_raise': False}
+
+
+    try:
+        tokens=tokenize.generate_tokens(StringIO(line).readline)
+        last_name = ''
+     
+        for type,value,begin,end,_ in tokens:
+            #The end ??
+            if begin[0] == 2 or tok_name[type] in [
+                'NL','ENDMARKER', 'NEWLINE', 'ERRORTOKEN']:
+                break
+
+            #Looking for spaces and tabs characters       
+            if tok_name[type] == 'INDENT':
+                for c in value:
+                    if c == ' ':
+                        result['spaces'] += 1
+                    #Tabulation is bad and equal to 8 spaces
+                    elif c == '\t':
+                        result['tabs'] = True
+                        result['spaces'] += 8
+                continue
+
+            result['tokens'] += 1
+
+            #Looking for Comment
+            if tok_name[type] == 'COMMENT':
+                last_name = ''
+                continue
+
+            #This is a command !
+            result['command'] = True
+
+            #except: or except '...' ?
+            if last_name == 'except' and (
+                value == ':' or tok_name[type] == 'STRING'):
+
+                result['bad_except'] = True
+
+            #raise '...' ?
+            if last_name == 'raise' and  tok_name[type] == 'STRING':
+                result['bad_raise'] = True 
+
+            #import ?
+            if value == 'import':
+                result['import'] = True
+            
+            if tok_name[type] == 'NAME':
+                last_name=value
+            else:
+                last_name = ''
+                
+    except tokenize.TokenError:
+        #This is certainly a multi-line, we pass
+        pass
+    return result
+
+def print_file_error(filename, line_number, error_msg):
+    global verbose
+    if verbose:
+        print "%s:%d:%s"%(filename, line_number, error_msg)
+
+def analyse_file(filename):
+    """
+    This function analyses a file and produces a dict with these members:
+     - 'lines': number of lines;
+     and 7 indicators:
+     - 'tokens'
+     - 'bad_indentation'
+     - 'bad_lenght'
+     - 'bad_end'
+     - 'imports'
+     - 'bad_import'
+     - 'bad_except'
+     - 'bad_raise'
+    """
+
+    stats={
+        'lines': 0,
+        'tokens': 0,
+        'bad_indentation': 0,
+        'bad_lenght': 0,
+        'bad_end': 0,
+        'imports': 0,
+        'bad_import': 0,
+        'bad_except': 0,
+        'bad_raise': 0}
+
+    header = True
+    indent = 0
+    for line in open(filename).readlines():
+        stats['lines'] += 1
+        result = analyse_line(line)
+        stats['tokens'] += result['tokens']
+
+        #Yet in the header ?
+        if result['command'] and not result['import']:
+            header = False
+
+        #Indentation ?
+        diff_indent = result['spaces']-indent
+        if ( (diff_indent > 0 and diff_indent != 4) or
+             result['tabs']):
+            stats['bad_indentation'] += 1
+            print_file_error(filename, stats['lines'],
+                             'bad indentation')
+            
+        indent = result['spaces']
+
+        #Lenght ?
+        if result['lenght'] > 79:
+            stats['bad_lenght'] += 1
+            print_file_error(filename, stats['lines'],
+                             'bad lenght')
+            
+        #Bad end ?
+        if result['bad_end']:
+            stats['bad_end'] += 1
+            print_file_error(filename, stats['lines'],
+                             'bad end')
+        
+         #Import and misplaced import
+        if result['import']:
+            stats['imports'] += 1
+            if not header:
+                stats['bad_import'] += 1
+                print_file_error(filename, stats['lines'],
+                                 'bad import')
+
+        #Bad except ?
+        if result['bad_except']:
+            stats['bad_except'] += 1
+            print_file_error(filename, stats['lines'],
+                             'bad except')
+
+        #Bad raise ?
+        if result['bad_raise']:
+            stats['bad_raise'] += 1
+            print_file_error(filename, stats['lines'],
+                             'bad raise')
+
+
+    return stats
+
+
+
+def analyse(filenames):
+    stats={
+        'lines': 0,
+        'tokens': 0,
+        'bad_indentation': 0,
+        'bad_lenght': 0,
+        'bad_end': 0,
+        'imports': 0,
+        'bad_import': 0,
+        'bad_except': 0,
+        'bad_raise': 0}
+
     files = []
     for filename in filenames:
-        f_lines = 0
-        f_too_long = 0
-        f_trailing_whites = 0
-        f_tabs = 0
-        for line in open(filename).readlines():
-            f_lines += 1
-            # Strip trailing newline
-            line = line[:-1]
-            length = len(line)
-            # Maximum line length is 79
-            if length > 79:
-                f_too_long += 1
-            # Trailing whitespaces are a bad thing
-            if len(line.rstrip()) < length:
-                f_trailing_whites += 1
-            # Lines with tabs
-            if '\t' in line:
-                f_tabs += 1
-        # File
-        weight = f_too_long + f_trailing_whites + f_tabs
-        files.append((weight, filename))
-        # Cumulative
-        lines += f_lines
-        too_long += f_too_long
-        trailing_whites += f_trailing_whites
-        tabs += f_tabs
+        f_stats = analyse_file(filename)
+
+        bad_sum = 0.0
+        for key, value in f_stats.iteritems():
+            stats[key] += value
+            if key not in ['lines', 'tokens', 'imports']:
+                bad_sum += value
+                
+        bad_sum = bad_sum/stats['lines']
+        files.append((bad_sum, filename))
 
     # Show quality summary
-    print 'Total number of lines: %d' % lines
+    print 'Total number of lines: %d' % stats['lines']
     print
-    too_long = (too_long*100.0)/lines
-    print ' - longer than 79 characters: %.02f%%' % too_long
-    trailing_whites = (trailing_whites*100.0)/lines
-    print ' - with trailing whitespaces: %.02f%%' % trailing_whites
-    tabs = (tabs*100.0)/lines
-    print ' - with tabulators          : %.02f%%' % tabs
+
+    value = float(stats['tokens'])/stats['lines']
+    print ' - Average numbers of tokens/line           : %.02f' % value   
+    
+    value = (stats['bad_indentation']*100.0)/stats['lines']
+    print ' - with bad indentation                     : %.02f%%' % value
+
+    value = (stats['bad_lenght']*100.0)/stats['lines']
+    print ' - with bad lenght (>79)                    : %.02f%%' % value
+
+    value = (stats['bad_end']*100.0)/stats['lines']
+    print ' - with bad end (with " " or "\\t")          : %.02f%%' % value
+ 
+
+    if stats['imports'] != 0:
+        value = (stats['bad_import']*100.0)/stats['imports']
+    print ' - with bad import/good imports             : %.02f%%' % value
+
+    value = (stats['bad_except']*100.0)/stats['lines']
+    print ' - with bad except (except: or except "..."): %.02f%%' % value
+
+    value = (stats['bad_raise']*100.0)/stats['lines']
+    print ' - with bad raise (raise "...")             : %.02f%%' % value
     print
     # Show list of worse files
     print 'Worse files:'
@@ -102,7 +283,11 @@ if __name__ == '__main__':
         '-f', '--fix', action='store_true', dest='fix',
         help="makes some small improvements to the source code "
              "(MAKE A BACKUP FIRST)")
+    parser.add_option(
+        '-v', '--verbose', action='store_true', dest='verbose',
+        help="to run in verbose mode")
     options, args = parser.parse_args()
+    verbose = bool(options.verbose)
 
     if args:
         filenames = args

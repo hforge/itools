@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zh\n"
 "POT-Creation-Date: 2007-08-28 12:08+CET\n"
-"PO-Revision-Date: 2004-11-25 22:33+0100\n"
-"Last-Translator: Luis Belmar Letelier <luis@itaapy.com>\n"
+"PO-Revision-Date: 2007-10-30 17:58+0100\n"
+"Last-Translator: Zhouli <zhouli@in-girum.net>\n"
 "Language-Team:  <zh@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -25,15 +25,11 @@ msgid "  New Attachment: %s"
 msgstr ""
 
 #: cms/ui/tracker/view_tracker.xml.en:0
-msgid ""
-"\",\")<br/> <input name=\"editor\" type=\"radio\" value=\"excel\"/> For "
-"Excel (Encoding:"
+msgid "\",\")<br/> <input name=\"editor\" type=\"radio\" value=\"excel\"/> For Excel (Encoding:"
 msgstr ""
 
 #: cms/ui/tracker/view_tracker.xml.en:0
-msgid ""
-"\";\") <br/><br/> <input class=\"button_ok\" name=\"export_to_csv\" type="
-"\"submit\" value=\"Exporter\"/>"
+msgid "\";\") <br/><br/> <input class=\"button_ok\" name=\"export_to_csv\" type=\"submit\" value=\"Exporter\"/>"
 msgstr ""
 
 #: cms/tracker.py:608
@@ -170,10 +166,7 @@ msgid "${field/title}"
 msgstr "名称"
 
 #: cms/ui/table/edit_record.xml.en:0
-msgid ""
-"${field/title} <span stl:if=\"field/mandatory\">(mandatory)</span> <span stl:"
-"if=\"field/multiple\">(multiple)</span> <span stl:if=\"field/is_date"
-"\">Format: 'yyyy-mm-dd'</span>"
+msgid "${field/title} <span stl:if=\"field/mandatory\">(mandatory)</span> <span stl:if=\"field/multiple\">(multiple)</span> <span stl:if=\"field/is_date\">Format: 'yyyy-mm-dd'</span>"
 msgstr ""
 
 #: cms/ui/table/edit_record.xml.en:0
@@ -264,9 +257,7 @@ msgid "${message/mtime}"
 msgstr "信息"
 
 #: cms/ui/PO_edit.xml.en:0
-msgid ""
-"${messages_index} / ${messages_total} <a href=\"${messages_first}\">&lt;&lt;"
-"</a>"
+msgid "${messages_index} / ${messages_total} <a href=\"${messages_first}\">&lt;&lt;</a>"
 msgstr ""
 
 #: cms/ui/html/addimage.xml.en:0
@@ -455,8 +446,7 @@ msgid "${title}"
 msgstr "名称"
 
 #: cms/ui/tracker/view_tracker.xml.en:0
-msgid ""
-"${title} <a href=\";search_form?${search_parameters}\">(Edit search)</a>"
+msgid "${title} <a href=\";search_form?${search_parameters}\">(Edit search)</a>"
 msgstr ""
 
 #: cms/ui/root/internal_server_error.xml.en:0
@@ -553,16 +543,11 @@ msgid "(To add an event lasting all day long, leave time fields empty.)"
 msgstr ""
 
 #: cms/ui/aruni/template.xhtml.en:0
-msgid ""
-"(logged in as ${user/info/title})<br/><br/> <a id=\"top_menu_logout\" href="
-"\"/;logout\">Log out</a>"
+msgid "(logged in as ${user/info/title})<br/><br/> <a id=\"top_menu_logout\" href=\"/;logout\">Log out</a>"
 msgstr ""
 
 #: cms/ui/aruni/template.xhtml.en:0
-msgid ""
-"(not logged in)<br/><br/> <a id=\"top_menu_login\" href=\"/;login_form\">Log "
-"in</a> <a id=\"top_menu_register\" stl:if=\"user/joinisopen\" href=\"/;"
-"register_form\">Register</a>"
+msgid "(not logged in)<br/><br/> <a id=\"top_menu_login\" href=\"/;login_form\">Log in</a> <a id=\"top_menu_register\" stl:if=\"user/joinisopen\" href=\"/;register_form\">Register</a>"
 msgstr ""
 
 #: cms/ui/text/new_instance.xml.en:0
@@ -601,9 +586,7 @@ msgid "404 Not Found"
 msgstr ""
 
 #: cms/ui/forum/Forum_view.xml.en:0
-msgid ""
-"<a class=\"forum_thread_title\" href=\"${thread/name}\">${thread/title}</a> "
-"<br/> <em>${thread/description}</em>"
+msgid "<a class=\"forum_thread_title\" href=\"${thread/name}\">${thread/title}</a> <br/> <em>${thread/description}</em>"
 msgstr ""
 
 #: cms/ui/tracker/edit_issue.xml.en:0
@@ -611,27 +594,19 @@ msgid "<a href=\"${comment/file}\">${comment/file}</a>"
 msgstr ""
 
 #: cms/ui/ical/ical_monthly_view.xml.en:0
-msgid ""
-"<a href=\"${event/url}\"> ${event/SUMMARY}</a> <span stl:if=\"event/TIME\" "
-"class=\"time\">${event/TIME}</span>"
+msgid "<a href=\"${event/url}\"> ${event/SUMMARY}</a> <span stl:if=\"event/TIME\" class=\"time\">${event/TIME}</span>"
 msgstr ""
 
 #: cms/ui/ical/ical_monthly_view.xml.en:0
-msgid ""
-"<a href=\"${previous_month}\">«</a> ${current_month} <a href=\"${next_month}"
-"\">»</a>"
+msgid "<a href=\"${previous_month}\">«</a> ${current_month} <a href=\"${next_month}\">»</a>"
 msgstr ""
 
 #: cms/ui/ical/ical_monthly_view.xml.en:0
-msgid ""
-"<a href=\"${previous_week}\">«</a> ${current_week} <a href=\"${next_week}"
-"\">»</a>"
+msgid "<a href=\"${previous_week}\">«</a> ${current_week} <a href=\"${next_week}\">»</a>"
 msgstr ""
 
 #: cms/ui/ical/ical_monthly_view.xml.en:0
-msgid ""
-"<a href=\"${previous_year}\">«</a> ${current_year} <a href=\"${next_year}"
-"\">»</a>"
+msgid "<a href=\"${previous_year}\">«</a> ${current_year} <a href=\"${next_year}\">»</a>"
 msgstr ""
 
 #: cms/ui/tracker/issue_history.xml.en:0
@@ -643,74 +618,47 @@ msgid "<a href=\"${x/url}\">${x/name}</a> /"
 msgstr ""
 
 #: cms/ui/aruni/template.xhtml.en:0
-msgid ""
-"<a href=\"/;about\">About</a> <a href=\"/;credits\">Credits</a> <a href=\"/;"
-"license\">License</a>"
+msgid "<a href=\"/;about\">About</a> <a href=\"/;credits\">Credits</a> <a href=\"/;license\">License</a>"
 msgstr ""
 
 #: cms/ui/text/externaledit.xml.en:0
-msgid ""
-"<a href=\"http://plope.org/software/ExternalEditor/zopeedit-0.9.2-src.tgz"
-"\">Download External Editor for Unix and MacOSX</a>."
+msgid "<a href=\"http://plope.org/software/ExternalEditor/zopeedit-0.9.2-src.tgz\">Download External Editor for Unix and MacOSX</a>."
 msgstr ""
 
 #: cms/ui/text/externaledit.xml.en:0
-msgid ""
-"<a href=\"http://plope.org/software/ExternalEditor/zopeedit-win32-0.9.2.exe"
-"\">Download External Editor for Windows</a>."
+msgid "<a href=\"http://plope.org/software/ExternalEditor/zopeedit-win32-0.9.2.exe\">Download External Editor for Windows</a>."
 msgstr ""
 
 #: cms/ui/folder/browse_image.xml.en:0
-msgid ""
-"<a id=\"gallery_next\" stl:if=\"selected/next\" href=\"${selected/next}\">></"
-"a> <span id=\"gallery_next\" stl:if=\"not selected/next\">></span>"
+msgid "<a id=\"gallery_next\" stl:if=\"selected/next\" href=\"${selected/next}\">></a> <span id=\"gallery_next\" stl:if=\"not selected/next\">></span>"
 msgstr ""
 
 #: cms/ui/folder/browse_image.xml.en:0
-msgid ""
-"<a id=\"gallery_previous\" stl:if=\"selected/previous\" href=\"${selected/"
-"previous}\">&lt;</a>"
+msgid "<a id=\"gallery_previous\" stl:if=\"selected/previous\" href=\"${selected/previous}\">&lt;</a>"
 msgstr ""
 
 #: cms/ui/aruni/template.xhtml.en:0
-msgid ""
-"<a id=\"top_menu_search\" href=\"/;site_search\">Search</a> <a id="
-"\"top_menu_contact\" href=\"/;contact_form\">Contact</a>"
-msgstr ""
+msgid "<a id=\"top_menu_search\" href=\"/;site_search\">Search</a> <a id=\"top_menu_contact\" href=\"/;contact_form\">Contact</a>"
+msgstr "<a id=\"top_menu_search\" href=\"/;site_search\">搜索</a> <a id=\"top_menu_contact\" href=\"/;contact_form\">联系我们</a>"
 
 #: cms/ui/tracker/view_tracker.xml.en:0
-msgid ""
-"<a name=\"link\"></a> <a href=\";view?${search_parameters}&amp;"
-"change_several_bugs=1#link\"> Change Several Issues at Once </a> | <a href="
-"\";view?${search_parameters}&amp;export_to_text=1#link\"> Export to Text </"
-"a> | <a href=\";view?${search_parameters}&amp;export_to_csv=1#link\"> Export "
-"to CSV </a>"
+msgid "<a name=\"link\"></a> <a href=\";view?${search_parameters}&amp;change_several_bugs=1#link\"> Change Several Issues at Once </a> | <a href=\";view?${search_parameters}&amp;export_to_text=1#link\"> Export to Text </a> | <a href=\";view?${search_parameters}&amp;export_to_csv=1#link\"> Export to CSV </a>"
 msgstr ""
 
 #: cms/ui/ical/daily_view.xml.en:0
-msgid ""
-"<a stl:if=\"col/evt_url\" class=\"evt_value\" href=\"${col/evt_url}\">${col/"
-"evt_value}</a> <span stl:if=\"col/SUMMARY\">${col/SUMMARY}</span>"
+msgid "<a stl:if=\"col/evt_url\" class=\"evt_value\" href=\"${col/evt_url}\">${col/evt_value}</a> <span stl:if=\"col/SUMMARY\">${col/SUMMARY}</span>"
 msgstr ""
 
 #: cms/ui/aruni/template.xhtml.en:0
-msgid ""
-"<a stl:if=\"item/url\" title=\"${item/name}\" href=\"${item/url}\">${item/"
-"short_name}</a> <span stl:if=\"not item/url\" title=\"${item/name}\">${item/"
-"short_name}</span> <stl:inline stl:if=\"not repeat/item/end\">/</stl:inline>"
+msgid "<a stl:if=\"item/url\" title=\"${item/name}\" href=\"${item/url}\">${item/short_name}</a> <span stl:if=\"not item/url\" title=\"${item/name}\">${item/short_name}</span> <stl:inline stl:if=\"not repeat/item/end\">/</stl:inline>"
 msgstr ""
 
 #: cms/ui/html/addlink.xml.en:0
-msgid ""
-"<a stl:if=\"object/is_folder\" href=\"${object/url}\"> ${object/name} </a> "
-"<stl:inline stl:if=\"not object/is_folder\">${object/name}</stl:inline>"
+msgid "<a stl:if=\"object/is_folder\" href=\"${object/url}\"> ${object/name} </a> <stl:inline stl:if=\"not object/is_folder\">${object/name}</stl:inline>"
 msgstr ""
 
 #: cms/ui/PO_edit.xml.en:0
-msgid ""
-"<a style=\"font-size: 10px\" href=\"${messages_next}\">></a> <a href="
-"\"${messages_last}\">>></a> <textarea name=\"msgid\" cols=\"65\" rows=\"8\" "
-"readonly=\"\">${msgid}></textarea>"
+msgid "<a style=\"font-size: 10px\" href=\"${messages_next}\">></a> <a href=\"${messages_last}\">>></a> <textarea name=\"msgid\" cols=\"65\" rows=\"8\" readonly=\"\">${msgid}></textarea>"
 msgstr ""
 
 #: cms/ui/PO_edit.xml.en:0
@@ -718,9 +666,7 @@ msgid "<a style=\"font-size: 10px\" href=\"${messages_previous}\">&lt;</a>"
 msgstr ""
 
 #: cms/ui/tracker/add_issue.xml.en:0
-msgid ""
-"<br/> <textarea name=\"comment\" id=\"description\" rows=\"10\" cols=\"68\">"
-"${comment}</textarea>"
+msgid "<br/> <textarea name=\"comment\" id=\"description\" rows=\"10\" cols=\"68\">${comment}</textarea>"
 msgstr ""
 
 #: cms/ui/website/anonymous.xml.en:0
@@ -728,116 +674,67 @@ msgid "<br/> Authentication will be required for any level of access."
 msgstr ""
 
 #: cms/ui/website/anonymous.xml.en:0
-msgid ""
-"<br/> Non authenticated users will be able to access published content, and "
-"to register by themselves."
+msgid "<br/> Non authenticated users will be able to access published content, and to register by themselves."
 msgstr ""
 
 #: cms/ui/website/search.xml.en:0
-msgid ""
-"<img width=\"16\" height=\"16\" src=\"${object/icon}\"/> <a class="
-"\"result_title\" href=\"${object/url}\">${object/title}</a> <br/> <span "
-"class=\"result_url\">${object/abspath}</span> - <span class=\"result_type\">"
-"${object/type}</span> - <span class=\"result_size\">${object/size}</span>"
+msgid "<img width=\"16\" height=\"16\" src=\"${object/icon}\"/> <a class=\"result_title\" href=\"${object/url}\">${object/title}</a> <br/> <span class=\"result_url\">${object/abspath}</span> - <span class=\"result_type\">${object/type}</span> - <span class=\"result_size\">${object/size}</span>"
 msgstr ""
 
 #: cms/ui/wiki/WikiPage_new_instance.xml.en:0
-msgid ""
-"<input id=\"name\" name=\"name\" size=\"40\" type=\"text\" stl:if=\"not name"
-"\"/> <stl:inline stl:if=\"name\"> <input name=\"name\" type=\"hidden\" value="
-"\"${name}\"/> <span id=\"name\">${name}</span> </stl:inline>"
+msgid "<input id=\"name\" name=\"name\" size=\"40\" type=\"text\" stl:if=\"not name\"/> <stl:inline stl:if=\"name\"> <input name=\"name\" type=\"hidden\" value=\"${name}\"/> <span id=\"name\">${name}</span> </stl:inline>"
 msgstr ""
 
 #: cms/ui/website/login.xml.en:0
-msgid ""
-"<input id=\"password\" name=\"password\" type=\"password\"/> <a href=\";"
-"forgotten_password_form\">I forgot my password</a>"
+msgid "<input id=\"password\" name=\"password\" type=\"password\"/> <a href=\";forgotten_password_form\">I forgot my password</a>"
 msgstr ""
 
 #: cms/ui/tracker/view_tracker.xml.en:0
-msgid ""
-"<input name=\"${c/name}\" type=\"hidden\" stl:repeat=\"c criteria\" value="
-"\"${c/value}\"/> <input name=\"editor\" type=\"radio\" value=\"oo\" checked="
-"\"on\"/> For OpenOffice (Encoding:"
+msgid "<input name=\"${c/name}\" type=\"hidden\" stl:repeat=\"c criteria\" value=\"${c/value}\"/> <input name=\"editor\" type=\"radio\" value=\"oo\" checked=\"on\"/> For OpenOffice (Encoding:"
 msgstr ""
 
 #: cms/ui/ical/ical_edit_event_form.xml.en:0
-msgid ""
-"<input name=\"DTEND_day\" id=\"DTEND_day\" size=\"2\" type=\"text\" value="
-"\"${DTEND_day}\"/> / <input name=\"DTEND_month\" id=\"DTEND_month\" size=\"2"
-"\" type=\"text\" value=\"${DTEND_month}\"/> / <input name=\"DTEND_year\" id="
-"\"DTEND_year\" size=\"4\" type=\"text\" value=\"${DTEND_year}\"/> <input id="
-"\"trigger_dtend\" type=\"button\" value=\"...\"/> <input name=\"DTEND_hours"
-"\" id=\"DTEND_hours\" size=\"2\" type=\"text\" value=\"${DTEND_hours}\"/> :"
+msgid "<input name=\"DTEND_day\" id=\"DTEND_day\" size=\"2\" type=\"text\" value=\"${DTEND_day}\"/> / <input name=\"DTEND_month\" id=\"DTEND_month\" size=\"2\" type=\"text\" value=\"${DTEND_month}\"/> / <input name=\"DTEND_year\" id=\"DTEND_year\" size=\"4\" type=\"text\" value=\"${DTEND_year}\"/> <input id=\"trigger_dtend\" type=\"button\" value=\"...\"/> <input name=\"DTEND_hours\" id=\"DTEND_hours\" size=\"2\" type=\"text\" value=\"${DTEND_hours}\"/> :"
 msgstr ""
 
 #: cms/ui/ical/ical_edit_event_form.xml.en:0
-msgid ""
-"<input name=\"DTEND_minutes\" id=\"DTEND_minutes\" size=\"2\" type=\"text\" "
-"value=\"${DTEND_minutes}\"/>"
+msgid "<input name=\"DTEND_minutes\" id=\"DTEND_minutes\" size=\"2\" type=\"text\" value=\"${DTEND_minutes}\"/>"
 msgstr ""
 
 #: cms/ui/ical/daily_view.xml.en:0
-msgid ""
-"<input name=\"date\" id=\"date\" size=\"11\" type=\"text\" value=\"${date}\"/"
-"> <input id=\"trigger_date\" type=\"button\" value=\"...\"/> <input id="
-"\"update\" name=\";daily_view\" type=\"submit\" value=\"OK\" class="
-"\"button_ok\"/>"
+msgid "<input name=\"date\" id=\"date\" size=\"11\" type=\"text\" value=\"${date}\"/> <input id=\"trigger_date\" type=\"button\" value=\"...\"/> <input id=\"update\" name=\";daily_view\" type=\"submit\" value=\"OK\" class=\"button_ok\"/>"
 msgstr ""
 
 #: cms/ui/tracker/search.xml.en:0
-msgid ""
-"<input name=\"mtime\" id=\"mtime\" size=\"3\" type=\"text\" value=\"${mtime}"
-"\"/> days."
+msgid "<input name=\"mtime\" id=\"mtime\" size=\"3\" type=\"text\" value=\"${mtime}\"/> days."
 msgstr ""
 
 #: cms/ui/folder/rename.xml.en:0
-msgid ""
-"<input name=\"names\" type=\"hidden\" value=\"${object/real_name}\"/> to "
-"<input name=\"new_names\" type=\"text\" value=\"${object/name}\"/>"
+msgid "<input name=\"names\" type=\"hidden\" value=\"${object/real_name}\"/> to <input name=\"new_names\" type=\"text\" value=\"${object/name}\"/>"
 msgstr ""
 
 #: cms/ui/website/new_instance.xml.en:0
-msgid ""
-"<input name=\"skin_name\" type=\"radio\" value=\"${skin/name}\"/> ${skin/"
-"title}<br/> <img src=\"${skin/image_uri}\"/>"
+msgid "<input name=\"skin_name\" type=\"radio\" value=\"${skin/name}\"/> ${skin/title}<br/> <img src=\"${skin/image_uri}\"/>"
 msgstr ""
 
 #: cms/ui/ical/ical_edit_event_form.xml.en:0
-msgid ""
-"<input value=\"${DTSTART_day}\" name=\"DTSTART_day\" size=\"2\" id="
-"\"DTSTART_day\" maxlength=\"2\" type=\"text\"/> / <input value="
-"\"${DTSTART_month}\" name=\"DTSTART_month\" size=\"2\" id=\"DTSTART_month\" "
-"maxlength=\"2\" type=\"text\"/> / <input value=\"${DTSTART_year}\" name="
-"\"DTSTART_year\" size=\"4\" id=\"DTSTART_year\" maxlength=\"4\" type=\"text"
-"\"/> <input id=\"trigger_dtstart\" type=\"button\" value=\"...\"/> <input "
-"value=\"${DTSTART_hours}\" name=\"DTSTART_hours\" size=\"2\" id="
-"\"DTSTART_hours\" maxlength=\"2\" type=\"text\"/> :"
+msgid "<input value=\"${DTSTART_day}\" name=\"DTSTART_day\" size=\"2\" id=\"DTSTART_day\" maxlength=\"2\" type=\"text\"/> / <input value=\"${DTSTART_month}\" name=\"DTSTART_month\" size=\"2\" id=\"DTSTART_month\" maxlength=\"2\" type=\"text\"/> / <input value=\"${DTSTART_year}\" name=\"DTSTART_year\" size=\"4\" id=\"DTSTART_year\" maxlength=\"4\" type=\"text\"/> <input id=\"trigger_dtstart\" type=\"button\" value=\"...\"/> <input value=\"${DTSTART_hours}\" name=\"DTSTART_hours\" size=\"2\" id=\"DTSTART_hours\" maxlength=\"2\" type=\"text\"/> :"
 msgstr ""
 
 #: cms/ui/ical/ical_edit_event_form.xml.en:0
-msgid ""
-"<input value=\"${DTSTART_minutes}\" name=\"DTSTART_minutes\" size=\"2\" id="
-"\"DTSTART_minutes\" maxlength=\"2\" type=\"text\"/>"
+msgid "<input value=\"${DTSTART_minutes}\" name=\"DTSTART_minutes\" size=\"2\" id=\"DTSTART_minutes\" maxlength=\"2\" type=\"text\"/>"
 msgstr ""
 
 #: cms/ui/folder/browse_image.xml.en:0
-msgid ""
-"<span id=\"gallery_previous\" stl:if=\"not selected/previous\">&lt;</span>"
+msgid "<span id=\"gallery_previous\" stl:if=\"not selected/previous\">&lt;</span>"
 msgstr ""
 
 #: cms/ui/ical/daily_view.xml.en:0
-msgid ""
-"<span stl:if=\"col/DTSTART\">${col/DTSTART}</span> <span stl:if=\"col/DTEND"
-"\">${col/DTEND}</span>"
+msgid "<span stl:if=\"col/DTSTART\">${col/DTSTART}</span> <span stl:if=\"col/DTEND\">${col/DTEND}</span>"
 msgstr ""
 
 #: cms/ui/ical/ical_monthly_view.xml.en:0
-msgid ""
-"<span stl:if=\"not day/selected\" class=\"bold\">${day/nday}</span> <span "
-"stl:if=\"day/selected\" class=\"cal_day_selected\">${day/nday}</span> <a "
-"class=\"add_event\" href=\"${day/url}\"><img src=\"${add_icon}\" height=\"16"
-"\" width=\"16\"/></a>"
+msgid "<span stl:if=\"not day/selected\" class=\"bold\">${day/nday}</span> <span stl:if=\"day/selected\" class=\"cal_day_selected\">${day/nday}</span> <a class=\"add_event\" href=\"${day/url}\"><img src=\"${add_icon}\" height=\"16\" width=\"16\"/></a>"
 msgstr ""
 
 #: cms/ui/aruni/template.xhtml.en:0
@@ -1039,14 +936,11 @@ msgid "Align Right"
 msgstr ""
 
 #: cms/ui/website/forgotten_password.xml.en:0
-msgid ""
-"An email has been sent to you with the procedure to change your password."
+msgid "An email has been sent to you with the procedure to change your password."
 msgstr ""
 
 #: cms/website.py:288
-msgid ""
-"An email has been sent to you, to finish the registration process follow the "
-"instructions detailed in it."
+msgid "An email has been sent to you, to finish the registration process follow the instructions detailed in it."
 msgstr ""
 
 #: cms/forum.py:220
@@ -1147,9 +1041,8 @@ msgid "Be sure your have the external editor plug-in installed."
 msgstr ""
 
 #: cms/ui/website/contact_form.xml.en:0
-#, fuzzy
 msgid "Body"
-msgstr "文件夹"
+msgstr "正文"
 
 #: cms/ui/epoz/rte.xml.en:0
 #, fuzzy
@@ -1347,7 +1240,7 @@ msgstr ""
 
 #: cms/ui/website/contact_form.xml.en:0
 msgid "Contact"
-msgstr ""
+msgstr "联系我们"
 
 #: cms/ui/website/contact_options.xml.en:0
 msgid "Contact Options"
@@ -1672,9 +1565,7 @@ msgid "Full day"
 msgstr ""
 
 #: cms/ui/tracker/search.xml.en:0
-msgid ""
-"Go to issue #<input name=\"issue_name\" size=\"6\" type=\"text\"/> <input "
-"class=\"button_ok\" type=\"submit\" value=\"OK\"/>"
+msgid "Go to issue #<input name=\"issue_name\" size=\"6\" type=\"text\"/> <input class=\"button_ok\" type=\"submit\" value=\"OK\"/>"
 msgstr ""
 
 #: cms/root.py:444
@@ -1743,9 +1634,7 @@ msgid "History"
 msgstr "记录"
 
 #: cms/ui/root/license.xml.en:0
-msgid ""
-"If not, see <a href=\"http://www.gnu.org/licenses/\">http://www.gnu.org/"
-"licenses/</a>."
+msgid "If not, see <a href=\"http://www.gnu.org/licenses/\">http://www.gnu.org/licenses/</a>."
 msgstr ""
 
 #: cms/ui/root/internal_server_error.xml.en:0
@@ -1757,9 +1646,7 @@ msgid "If you don't, you can download it from a link below."
 msgstr ""
 
 #: cms/ui/root/about.xml.en:0
-msgid ""
-"If you find a bug or wish some new feature, please <a href=\"http://bugs."
-"ikaaro.org\">file a bug report</a>."
+msgid "If you find a bug or wish some new feature, please <a href=\"http://bugs.ikaaro.org\">file a bug report</a>."
 msgstr ""
 
 #: cms/ui/dressable/upload_image.xml.en:0
@@ -2590,9 +2477,8 @@ msgid "RTF Document"
 msgstr "新文件"
 
 #: cms/ui/website/contact_form.xml.en:0
-#, fuzzy
 msgid "Recipient"
-msgstr "查阅"
+msgstr "收件人"
 
 #: cms/table.py:230
 #, fuzzy
@@ -2752,12 +2638,11 @@ msgstr ""
 
 #: cms/ui/website/contact_form.xml.en:0
 msgid "Send"
-msgstr ""
+msgstr "发送"
 
 #: cms/ui/website/contact_form.xml.en:0
-#, fuzzy
 msgid "Sender"
-msgstr "概略"
+msgstr "发件人"
 
 #: cms/ical.py:37
 msgid "September"
@@ -2789,9 +2674,7 @@ msgid "Skin"
 msgstr ""
 
 #: web/context.py:281
-msgid ""
-"Some required fields are missing, or some values are not valid. Please "
-"correct them and continue."
+msgid "Some required fields are missing, or some values are not valid. Please correct them and continue."
 msgstr ""
 
 #: cms/ui/root/about.xml.en:0
@@ -2848,7 +2731,7 @@ msgstr ""
 
 #: cms/ui/website/contact_form.xml.en:0
 msgid "Subject"
-msgstr ""
+msgstr "主题"
 
 #: cms/ui/website/forgotten_password_form.xml.en:0
 msgid "Submit"
@@ -2935,8 +2818,7 @@ msgid "Thank you for using ikaaro."
 msgstr ""
 
 #: cms/ui/website/register.xml.en:0
-msgid ""
-"The <span class=\"field_required\">emphasized</span> fields are required."
+msgid "The <span class=\"field_required\">emphasized</span> fields are required."
 msgstr ""
 
 #: cms/messages.py:20
@@ -3059,9 +2941,7 @@ msgid "There is not a user identified as \"$username\""
 msgstr "此用户名已登记\"%s\", 请输入另一用户名."
 
 #: cms/ui/user/profile.xml.en:0
-msgid ""
-"This is your personal space where you can manage your own documents and "
-"publish them."
+msgid "This is your personal space where you can manage your own documents and publish them."
 msgstr ""
 
 #: cms/file.py:212
@@ -3073,9 +2953,7 @@ msgid "This page is locked by $user"
 msgstr ""
 
 #: cms/ui/root/license.xml.en:0
-msgid ""
-"This program is distributed in the hope that it will be useful, but WITHOUT "
-"ANY WARRANTY;"
+msgid "This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;"
 msgstr ""
 
 #: cms/ui/root/license.xml.en:0
@@ -3170,9 +3048,7 @@ msgid "To manage the users please go <a href=\"/;permissions_form\">here</a>."
 msgstr ""
 
 #: cms/ui/file/externaledit.xml.en:0
-msgid ""
-"To open this document with External Editor, please click the "
-"<strong>External Editor...</strong>"
+msgid "To open this document with External Editor, please click the <strong>External Editor...</strong>"
 msgstr ""
 
 #: cms/ui/root/catalog.xml.en:0
@@ -3273,9 +3149,7 @@ msgid "Upload Image"
 msgstr "上载文件"
 
 #: cms/file.py:262
-msgid ""
-"Upload failed: either the file does not match this document type ($mimetype) "
-"or it contains errors."
+msgid "Upload failed: either the file does not match this document type ($mimetype) or it contains errors."
 msgstr ""
 
 #: cms/file.py:44
@@ -3449,15 +3323,11 @@ msgid "You can do the following actions:"
 msgstr "你是以下组件中的一成员"
 
 #: cms/ui/dressable/upload_image.xml.en:0
-msgid ""
-"You can download the current picture by clicking right on the image and "
-"click Save Image As."
+msgid "You can download the current picture by clicking right on the image and click Save Image As."
 msgstr ""
 
 #: cms/ui/text/externaledit.xml.en:0
-msgid ""
-"You can edit this document using an application from your desktop, like MS "
-"Office or OpenOffice.org."
+msgid "You can edit this document using an application from your desktop, like MS Office or OpenOffice.org."
 msgstr ""
 
 #: cms/website.py:140
@@ -3474,9 +3344,7 @@ msgid "You can upload a new file to replace the current one."
 msgstr " 你可以上载一个文件通过内存系统建立一个新文档."
 
 #: cms/ui/text/externaledit.xml.en:0
-msgid ""
-"You may need to change the character encoding if your application doesn't "
-"support UTF-8 (not recommended)."
+msgid "You may need to change the character encoding if your application doesn't support UTF-8 (not recommended)."
 msgstr ""
 
 #: cms/users.py:357
@@ -3492,9 +3360,7 @@ msgid "You must select one and only one language."
 msgstr "你只能选择一种语言."
 
 #: cms/ui/root/license.xml.en:0
-msgid ""
-"You should have received a copy of the GNU General Public License along with "
-"this program."
+msgid "You should have received a copy of the GNU General Public License along with this program."
 msgstr ""
 
 #: cms/ui/website/logout.xml.en:0
@@ -3510,9 +3376,7 @@ msgid "Zip Archive"
 msgstr ""
 
 #: cms/ui/tracker/edit_issue.xml.en:0
-msgid ""
-"[ <a onclick=\"javascript:reply('${comment/number}');\" href=\"#\"> Reply </"
-"a>]"
+msgid "[ <a onclick=\"javascript:reply('${comment/number}');\" href=\"#\"> Reply </a>]"
 msgstr ""
 
 #: cms/tracker.py:555
@@ -3524,9 +3388,7 @@ msgid "[%s] Confirmation required"
 msgstr ""
 
 #: cms/ui/wiki/WikiPage_new_instance.xml.en:0
-msgid ""
-"administrators can add new languages at the root of the application, tab "
-"\"Settings\", subtab \"Languages\"."
+msgid "administrators can add new languages at the root of the application, tab \"Settings\", subtab \"Languages\"."
 msgstr ""
 
 #: i18n/oracle.py:61
@@ -3608,10 +3470,7 @@ msgid "iKaaro"
 msgstr ""
 
 #: cms/ui/root/about.xml.en:0
-msgid ""
-"iKaaro is a Content Management System, written in the <a href=\"http://www."
-"python.org\">Python</a> programming language, and based on the <a href="
-"\"http://www.ikaaro.org/itools\">itools</a> library."
+msgid "iKaaro is a Content Management System, written in the <a href=\"http://www.python.org\">Python</a> programming language, and based on the <a href=\"http://www.ikaaro.org/itools\">itools</a> library."
 msgstr ""
 
 #: i18n/oracle.py:85
@@ -3702,9 +3561,7 @@ msgid "to"
 msgstr ""
 
 #: cms/ui/PO_edit.xml.en:0
-msgid ""
-"translation<br/> <textarea name=\"msgstr\" cols=\"65\" rows=\"8\">${msgstr}</"
-"textarea>"
+msgid "translation<br/> <textarea name=\"msgstr\" cols=\"65\" rows=\"8\">${msgstr}</textarea>"
 msgstr ""
 
 #: pdf/rml.py:2019
@@ -3732,9 +3589,7 @@ msgid "where"
 msgstr ""
 
 #: cms/ui/root/license.xml.en:0
-msgid ""
-"without even the implied warranty of MERCHANTABILITY or FITNESS FOR A "
-"PARTICULAR PURPOSE."
+msgid "without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE."
 msgstr ""
 
 #: pdf/rml.py:2019
@@ -3746,10 +3601,7 @@ msgid "you"
 msgstr ""
 
 #: cms/ui/root/license.xml.en:0
-msgid ""
-"you can redistribute it and/or modify it under the terms of the GNU General "
-"Public License as published by the Free Software Foundation, either version "
-"3 of the License, or (at your option) any later version."
+msgid "you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version."
 msgstr ""
 
 #: i18n/oracle.py:126
@@ -3793,7 +3645,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "%d obs"
 #~ msgstr "%d 字节"
-
 #~ msgid "-- Choose a language --"
 #~ msgstr "选择语言"
 
@@ -3808,7 +3659,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Add a member"
 #~ msgstr "新用户"
-
 #~ msgid "Add a new translator skill:"
 #~ msgstr "加入一新翻译技术"
 
@@ -3819,32 +3669,24 @@ msgstr ""
 #, fuzzy
 #~ msgid "Anonymous users allowed to join this web site"
 #~ msgstr "无名用户准许进入此网站"
-
 #~ msgid "Browse-Directories"
 #~ msgstr "浏览"
-
 #~ msgid "Catalan"
 #~ msgstr "加泰隆尼语"
-
 #~ msgid "Catalog"
 #~ msgstr "分类"
-
 #~ msgid "Change the catalog associated to this document:"
 #~ msgstr "改变文件目录"
-
 #~ msgid "Change the security settings"
 #~ msgstr "更改安全设置"
 
 #, fuzzy
 #~ msgid "Changes saved."
 #~ msgstr "语言被改变."
-
 #~ msgid "Choose language"
 #~ msgstr "选择语言"
-
 #~ msgid "Choose your interface:"
 #~ msgstr "选择你的界面"
-
 #~ msgid "Choose your language:"
 #~ msgstr "选择你的语言"
 
@@ -3859,7 +3701,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Content-Language: %s\n"
 #~ msgstr "语言"
-
 #~ msgid "Copy to present"
 #~ msgstr "复制到当前"
 
@@ -3890,58 +3731,44 @@ msgstr ""
 #, fuzzy
 #~ msgid "Document Writer"
 #~ msgstr "编辑文档"
-
 #~ msgid "Document edited."
 #~ msgstr "编辑文档"
-
 #~ msgid "Document translations created."
 #~ msgstr "编辑文档"
-
 #~ msgid "Documents are where the data is stored"
 #~ msgstr "文件在数据存储处."
-
 #~ msgid "English"
 #~ msgstr "英语"
-
 #~ msgid "File uploaded."
 #~ msgstr "文件被上载."
-
 #~ msgid "Folders are used to classify documents"
 #~ msgstr "文件夹用于文件分类."
-
 #~ msgid "Folders are used to classify documents."
 #~ msgstr "文件夹用于文件分类."
-
 #~ msgid "Folders let to classify other resources."
 #~ msgstr "文件夹用于文件分类."
 
 #, fuzzy
 #~ msgid "French (fr)"
 #~ msgstr "法语"
-
 #~ msgid "GNU GENERAL PUBLIC LICENSE"
 #~ msgstr "GNU通用公共许可证(GPL)\t"
-
 #~ msgid "General"
 #~ msgstr "概略"
 
 #, fuzzy
 #~ msgid "General settings changed."
 #~ msgstr "总设置被改变"
-
 #~ msgid "German"
 #~ msgstr "德语"
-
 #~ msgid "Group added."
 #~ msgstr "组件加入"
 
 #, fuzzy
 #~ msgid "Guests"
 #~ msgstr "搜索替代文件夹"
-
 #~ msgid "Home"
 #~ msgstr "主页"
-
 #~ msgid "Hungarian"
 #~ msgstr "匈牙利语"
 
@@ -3952,51 +3779,38 @@ msgstr ""
 #, fuzzy
 #~ msgid "Inactive Item"
 #~ msgstr "名称"
-
 #~ msgid "Japanese"
 #~ msgstr "日本语"
-
 #~ msgid "Join"
 #~ msgstr "汇合"
 
 #, fuzzy
 #~ msgid "Join the Community"
 #~ msgstr "加入社区"
-
 #~ msgid "Lets to change the security settings."
 #~ msgstr "更改安全设置"
-
 #~ msgid "Link"
 #~ msgstr "链接"
-
 #~ msgid "Link added"
 #~ msgstr "链接加入"
-
 #~ msgid "Links are ..."
 #~ msgstr "链接加入"
-
 #~ msgid "Log out"
 #~ msgstr "登录"
 
 #, fuzzy
 #~ msgid "Members added."
 #~ msgstr "加入用户"
-
 #~ msgid "Message edited."
 #~ msgstr "信息被修正."
-
 #~ msgid "Message subject"
 #~ msgstr "信息目的"
-
 #~ msgid "Message!"
 #~ msgstr "信息"
-
 #~ msgid "Metadata changed."
 #~ msgstr "用户资料被变更."
-
 #~ msgid "No objects selected"
 #~ msgstr "没有物件被选中"
-
 #~ msgid "No user added"
 #~ msgstr "未有加入用户"
 
@@ -4011,30 +3825,24 @@ msgstr ""
 #, fuzzy
 #~ msgid "Please select the source language of your document."
 #~ msgstr "你必须选择删除成员."
-
 #~ msgid "Portuguese"
 #~ msgstr "葡萄牙语"
 
 #, fuzzy
 #~ msgid "Publishers of the Future"
 #~ msgstr "列出文档"
-
 #~ msgid "Rebuild the Document"
 #~ msgstr "重建文档"
-
 #~ msgid "Record added."
 #~ msgstr "记录被加入."
-
 #~ msgid "Record removed."
 #~ msgstr "记录被删除"
-
 #~ msgid "Rename.."
 #~ msgstr "重命名"
 
 #, fuzzy
 #~ msgid "Reviewers"
 #~ msgstr "查阅"
-
 #~ msgid "Revision copied to present."
 #~ msgstr "校定版被复制此当前."
 
@@ -4069,24 +3877,20 @@ msgstr ""
 #, fuzzy
 #~ msgid "The active item"
 #~ msgstr "名称"
-
 #~ msgid "The list below describes your skills as a translator:"
 #~ msgstr "以下目录详述你作为翻译者的技巧"
 
 #, fuzzy
 #~ msgid "The message"
 #~ msgstr "此处无内容."
-
 #~ msgid "The name contains illegal characters, choose another one."
 #~ msgstr "文件名中含有不符规定的符号,请更名."
-
 #~ msgid "The name must be entered"
 #~ msgstr "必须输入一个文件名"
 
 #, fuzzy
 #~ msgid "The password is mandatory."
 #~ msgstr "密码错误,请再输入."
-
 #~ msgid "The password is wrong, please try again."
 #~ msgstr "密码错误,请再输入."
 
@@ -4097,10 +3901,8 @@ msgstr ""
 #, fuzzy
 #~ msgid "The subview"
 #~ msgstr "名称"
-
 #~ msgid "The title"
 #~ msgstr "名称"
-
 #~ msgid "There is already another resource with this name."
 #~ msgstr "此文件名已被另外资源占有."
 
@@ -4111,21 +3913,16 @@ msgstr ""
 #, fuzzy
 #~ msgid "This folder or query is empty."
 #~ msgstr "空文件夹."
-
 #~ msgid "This group is empty."
 #~ msgstr "此组件无内容."
-
 #~ msgid "This is a tar file, you can untar it by clicking the button below:"
 #~ msgstr "这是个tar文件, 你可以通过击打如下键获得"
-
 #~ msgid "To add a folder enter its name and click the <tt>Add</tt> button."
 #~ msgstr ""
 #~ "文件夹被用于分类存储文档. 为了加入一个新文件夹请输入文件夹名称并击打"
 #~ "<tt>Add</tt>键"
-
 #~ msgid "To fix it (with tidy) click the button below."
 #~ msgstr "这是个tar文件, 你可以通过击打如下键获得"
-
 #~ msgid ""
 #~ "To rebuild the document from the default language and from the "
 #~ "translations stored in the catalog, click the button below (be careful, "
@@ -4137,17 +3934,14 @@ msgstr ""
 #, fuzzy
 #~ msgid "To save the translation above click the button below:"
 #~ msgstr "你可以通过击打如下键浏览全网站"
-
 #~ msgid ""
 #~ "To update the catalog with the messages from this document, click the "
 #~ "button below:"
 #~ msgstr "为了从文档中更新内容目录, 请击打以下键"
-
 #~ msgid ""
 #~ "To upload a new version of the file choose it and click the <tt>Upload</"
 #~ "tt> button:"
 #~ msgstr "请选择一个新的文件版本并点击登录"
-
 #~ msgid "Unpack"
 #~ msgstr "卸下"
 
@@ -4158,66 +3952,51 @@ msgstr ""
 #, fuzzy
 #~ msgid "Upload and view"
 #~ msgstr "上载文件"
-
 #~ msgid "User added"
 #~ msgstr "加入用户"
-
 #~ msgid "User data changed."
 #~ msgstr "用户资料被变更."
 
 #, fuzzy
 #~ msgid "User groups edited."
 #~ msgstr "加入用户"
-
 #~ msgid "User removed."
 #~ msgstr "用户被删除."
-
 #~ msgid "Username"
 #~ msgstr "用户姓名"
-
 #~ msgid "Users added"
 #~ msgstr "加入用户"
-
 #~ msgid "Version edited."
 #~ msgstr "版本被修正."
-
 #~ msgid "XXX Folders are used to classify documents."
 #~ msgstr "xxx文件夹用于文件分类."
-
 #~ msgid "You are a member of the following groups:"
 #~ msgstr "你是以下组件中的一成员"
-
 #~ msgid ""
 #~ "You can upload a file from the filesystem or create a new empty document."
 #~ msgstr ""
 #~ "此处文件数据被储存, 它们类似于内存系统中的档案. 你可以上载一个文件通过内存"
 #~ "系统或建立一个新文档."
-
 #~ msgid "You must select one and only one revision."
 #~ msgstr "你只能选择一个校定版."
-
 #~ msgid "You must select one or two revisions."
 #~ msgstr "必须选择一或二个修正版."
-
 #~ msgid "You must select the members to remove."
 #~ msgstr "你必须选择删除成员."
-
 #~ msgid "format:"
 #~ msgstr "格式"
 
 #, fuzzy
 #~ msgid "» <a stl:attributes=\"href join_url\">Join</a>"
 #~ msgstr "禄 <a stl:attributes=\"href login_url\">Login</a>"
-
 #~ msgid "» <a stl:attributes=\"href login_url\">Login</a>"
 #~ msgstr "禄 <a stl:attributes=\"href login_url\">Login</a>"
-
 #~ msgid "» <a stl:attributes=\"href user/home\">Home</a>"
 #~ msgstr "» <a stl:attributes=\"href user/home\">主页</a>"
 
 #, fuzzy
 #~ msgid "» <a stl:attributes=\"href user/logout\">Log out</a>"
 #~ msgstr "» <a stl:attributes=\"href user/home\">主页</a>"
-
 #~ msgid "» Browse and link an object from the workspace:"
 #~ msgstr "禄 Browse and link an object from the workspace:"
+

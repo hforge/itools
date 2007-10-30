@@ -23,6 +23,7 @@ from datetime import datetime
 from itools.uri import Path
 from itools.catalog import CatalogAware
 from itools.handlers import Handler as BaseHandler
+from itools.i18n import get_language_name, get_languages
 from itools.schemas import get_datatype
 from itools.stl import stl
 from itools.gettext import DomainAware, get_domain
@@ -514,10 +515,20 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
         namespace = {}
         # Language
         site_root = self.get_site_root()
-        languages = site_root.get_property('ikaaro:website_languages')
-        default_language = languages[0]
-        language = context.get_cookie('content_language') or default_language
+        website_languages = site_root.get_property('ikaaro:website_languages')
+        language = context.get_form_value('dc:language') or website_languages[0]
+        languages = []
+        for code in website_languages:
+            language_name = get_language_name(code)
+            languages.append({'code': code,
+                              'name': self.gettext(language_name)})
+        namespace['languages'] = languages
+
+        # current language
+        language_name = get_language_name(language)
+        namespace['language_name'] = self.gettext(language_name)
         namespace['language'] = language
+        namespace['multilingual'] = len(languages) > 1
         # Title
         namespace['title'] = self.get_property('dc:title', language=language)
         # Description

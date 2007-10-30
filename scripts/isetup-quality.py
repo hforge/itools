@@ -22,14 +22,14 @@ from subprocess import call
 from tempfile import TemporaryFile
 from StringIO import StringIO
 from token import tok_name
-import tokenize
+from tokenize import generate_tokens, TokenError
 
 # Import from itools
 import itools
 from itools import git
 
 
-#Globals variables
+# Global variables
 verbosity = 0
 
 
@@ -52,16 +52,16 @@ def analyse_file_pass1(filename):
         'bad_end': 0}
 
     for line in file(filename):
-        #Number of line
+        # Number of line
         stats['lines'] += 1
 
-        #Bad lenght
+        # Bad lenght
         if len(line.rstrip()) > 79:
             stats['bad_lenght'] += 1
             print_file_error(filename, stats['lines'],
                             'bad lenght')
 
-        #Bad end
+        # Bad end
         if len(line.rstrip()) != len(line.rstrip('\n\x0b\x0c\r')):
             stats['bad_end'] += 1
             print_file_error(filename, stats['lines'],
@@ -95,7 +95,7 @@ def analyse_file_pass2(filename):
         'bad_indentation':0,
         'syntax_error': 0}
     try:
-        tokens = tokenize.generate_tokens(file(filename).readline)
+        tokens = generate_tokens(file(filename).readline)
 
         last_name = ''
         current_line = 0
@@ -105,15 +105,15 @@ def analyse_file_pass2(filename):
         command_on_line = False
         import_on_line = False
 
-        for type,value,begin,end,_ in tokens:
-            #Tokens number
+        for type, value, begin, end, _ in tokens:
+            # Tokens number
             stats['tokens'] += 1
 
-            #Find the line number
+            # Find the line number
             if begin[0] > current_line:
                 current_line = begin[0]
 
-            #Find NEWLINE
+            # Find NEWLINE
             if tok_name[type] == 'NEWLINE':
                 #print 'NEWLINE [%d]'%current_line
                 if command_on_line and not import_on_line:
@@ -122,11 +122,11 @@ def analyse_file_pass2(filename):
                 import_on_line = False
 
 
-            #Find command
+            # Find command
             if tok_name[type] not in [
                 'COMMENT', 'STRING', 'NEWLINE', 'NL']:
                 command_on_line = True
-            #Find import and test
+            # Find import and test
             if tok_name[type] == 'NAME' and value == 'import':
                 import_on_line = True
                 if not header:
@@ -134,7 +134,7 @@ def analyse_file_pass2(filename):
                     print_file_error(filename, current_line,
                                     'bad import')
 
-            #Indentation management
+            # Indentation management
             if tok_name[type] == 'INDENT':
                 if '\t' in value or len(value) - current_indentation != 4:
                     stats['bad_indentation'] += 1
@@ -144,12 +144,12 @@ def analyse_file_pass2(filename):
             if tok_name[type] == 'DEDENT':
                 current_indentation = begin[1]
 
-            #import, except and raise number
+            # import, except and raise number
             if (tok_name[type] == 'NAME' and
                 value in ['import', 'except', 'raise']):
                 stats[value+'s'] += 1
 
-            #except: or except '...' ?
+            # except: or except '...' ?
             if last_name == 'except' and (
                 (tok_name[type] == 'STRING') or
                 (tok_name[type] == 'OP' and value == ':')):
@@ -157,19 +157,19 @@ def analyse_file_pass2(filename):
                 print_file_error(filename, current_line,
                                 'bad except')
 
-            #raise '...' ?
+            # raise '...' ?
             if last_name == 'raise' and  tok_name[type] == 'STRING':
                 stats['bad_raise'] += 1
                 print_file_error(filename, current_line,
                                 'bad raise')
 
-            #Last_name
+            # Last_name
             if tok_name[type] == 'NAME':
                 last_name = value
             else:
                 last_name = ''
 
-    except tokenize.TokenError, IndentationError:
+    except TokenError, IndentationError:
         stats['syntax_error'] = 1
         print_file_error(filename, current_line,
                         'syntax error')
@@ -192,7 +192,7 @@ def analyse_file(filename):
 
 
 def analyse(filenames):
-    #Gravity indicators
+    # Gravity indicators
     weight={
         'bad_lenght': 10,
         'bad_end': 1,
@@ -304,7 +304,7 @@ if __name__ == '__main__':
     options, args = parser.parse_args()
     verbosity = options.verbosity
 
-    #Making of filenames
+    # Making of filenames
     if args:
         filenames = args
     elif git.is_available():

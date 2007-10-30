@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Copyright (C) 2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
-# Copyright (C) 2007 David Versmisse <david.versmisse@itaapy.com>
+#                    David Versmisse <david.versmisse@itaapy.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,12 +15,14 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+isetup-quality.py is a small tool to do some measurements on Python files
+"""
 
 # Import from the Standard Library
 from optparse import OptionParser
 from subprocess import call
 from tempfile import TemporaryFile
-from StringIO import StringIO
 from token import tok_name
 from tokenize import generate_tokens, TokenError
 
@@ -28,44 +30,40 @@ from tokenize import generate_tokens, TokenError
 import itools
 from itools import git
 
-
 # Global variables
-verbosity = 0
+worse = -1
 
-
-def print_file_error(filename, line, message):
-    global verbosity
-    if verbosity >= 2:
-        print '%s:%d:%s'%(filename, line, message)
 
 def analyse_file_pass1(filename):
     """
     This function analyses a file and produces a dict with these members:
-     - 'lines': Number of lines;
-     - 'bad_lenght': true if the lenght > 79
-     - 'bad_end': true if there are spaces or tabs at the end of the line;
+     - 'lines': number of lines;
+     - 'bad_length': number of lines longer than 79 characters;
+     - 'bad_end': number of lines with trailing whitespaces;
+     - 'tabs': number of lines with tabulators;
     """
 
     stats = {
         'lines': 0,
-        'bad_lenght': 0,
-        'bad_end': 0}
+        'bad_length': 0,
+        'bad_end': 0,
+        'tabs': 0}
 
     for line in file(filename):
         # Number of line
         stats['lines'] += 1
 
-        # Bad lenght
+        # Bad length
         if len(line.rstrip()) > 79:
-            stats['bad_lenght'] += 1
-            print_file_error(filename, stats['lines'],
-                            'bad lenght')
+            stats['bad_length'] += 1
 
         # Bad end
         if len(line.rstrip()) != len(line.rstrip('\n\x0b\x0c\r')):
             stats['bad_end'] += 1
-            print_file_error(filename, stats['lines'],
-                            'bad end')
+
+        # Tabs ?
+        if '\t' in line:
+            stats['tabs'] += 1
 
     return stats
 
@@ -74,25 +72,18 @@ def analyse_file_pass2(filename):
     """
     This function analyses a file and produces a dict with these members:
      - 'tokens': number of tokens;
-     - 'imports': number of import;
-     - 'bad_import': number of bad import;
-     - 'excepts': number of except;
-     - 'bad_except': number of bad except;
-     - 'raise': number of raise;
-     - 'bad_raise': number of bad raise;
+     - 'string_exception': number of lines with string exceptions;
+     - 'except_all': number of line where all exceptions are catched;
      - 'bad_indentation': number of lines with a bad indentation;
      - 'syntax_error': number of lines with an error;
     """
 
     stats = {
         'tokens': 0,
-        'imports': 0,
+        'string_exception': 0,
+        'except_all': 0,
+        'bad_indentation': 0,
         'bad_import': 0,
-        'excepts': 0,
-        'bad_except': 0,
-        'raises': 0,
-        'bad_raise': 0,
-        'bad_indentation':0,
         'syntax_error': 0}
     try:
         tokens = generate_tokens(file(filename).readline)
@@ -105,7 +96,7 @@ def analyse_file_pass2(filename):
         command_on_line = False
         import_on_line = False
 
-        for type, value, begin, end, _ in tokens:
+        for tok_type, value, begin, _, _ in tokens:
             # Tokens number
             stats['tokens'] += 1
 
@@ -114,7 +105,7 @@ def analyse_file_pass2(filename):
                 current_line = begin[0]
 
             # Find NEWLINE
-            if tok_name[type] == 'NEWLINE':
+            if tok_name[tok_type] == 'NEWLINE':
                 #print 'NEWLINE [%d]'%current_line
                 if command_on_line and not import_on_line:
                     header = False
@@ -123,62 +114,51 @@ def analyse_file_pass2(filename):
 
 
             # Find command
-            if tok_name[type] not in [
+            if tok_name[tok_type] not in [
                 'COMMENT', 'STRING', 'NEWLINE', 'NL']:
                 command_on_line = True
             # Find import and test
-            if tok_name[type] == 'NAME' and value == 'import':
+            if tok_name[tok_type] == 'NAME' and value == 'import':
                 import_on_line = True
                 if not header:
                     stats['bad_import'] += 1
-                    print_file_error(filename, current_line,
-                                    'bad import')
 
             # Indentation management
-            if tok_name[type] == 'INDENT':
+            if tok_name[tok_type] == 'INDENT':
                 if '\t' in value or len(value) - current_indentation != 4:
                     stats['bad_indentation'] += 1
-                    print_file_error(filename, current_line,
-                                    'bad indentation')
                 current_indentation = len(value)
-            if tok_name[type] == 'DEDENT':
+            if tok_name[tok_type] == 'DEDENT':
                 current_indentation = begin[1]
 
-            # import, except and raise number
-            if (tok_name[type] == 'NAME' and
-                value in ['import', 'except', 'raise']):
-                stats[value+'s'] += 1
+            # String exceptions except or raise ?
+            if ((last_name == 'except' or last_name == 'raise') and 
+                tok_name[tok_type] == 'STRING'):
+                stats['string_exception'] += 1
 
-            # except: or except '...' ?
-            if last_name == 'except' and (
-                (tok_name[type] == 'STRING') or
-                (tok_name[type] == 'OP' and value == ':')):
-                stats['bad_except'] += 1
-                print_file_error(filename, current_line,
-                                'bad except')
-
-            # raise '...' ?
-            if last_name == 'raise' and  tok_name[type] == 'STRING':
-                stats['bad_raise'] += 1
-                print_file_error(filename, current_line,
-                                'bad raise')
+            # except: ?
+            if (last_name == 'except' and tok_name[tok_type] == 'OP' and
+                value == ':'):
+                stats['except_all'] += 1
 
             # Last_name
-            if tok_name[type] == 'NAME':
+            if tok_name[tok_type] == 'NAME':
                 last_name = value
             else:
                 last_name = ''
 
-    except TokenError, IndentationError:
+    except (TokenError, IndentationError):
         stats['syntax_error'] = 1
-        print_file_error(filename, current_line,
-                        'syntax error')
 
     return stats
 
 
 def analyse_file(filename):
-    stats={}
+    """
+    This function merges the two dictionnaries for a file
+    """
+    
+    stats = {}
 
     stats1 = analyse_file_pass1(filename)
     for key, value in stats1.iteritems():
@@ -191,92 +171,116 @@ def analyse_file(filename):
     return stats
 
 
-def analyse(filenames):
-    # Gravity indicators
-    weight={
-        'bad_lenght': 10,
-        'bad_end': 1,
-        'bad_import': 50,
-        'bad_except': 40,
-        'bad_raise': 100,
-        'bad_indentation': 10,
-        'syntax_error': 1000}
+def print_list(string_list):
+    if len(string_list) == 0:
+        print ' - no problem'
+    else:
+        for line in string_list:
+            print line
 
-    stats={
+
+def print_worses(db, criteria):
+    sort_key = lambda x: sum([ x[c] for c in criteria ])
+    if worse >= 0:
+        db.sort(key=sort_key, reverse=True)
+
+        if worse != 0:
+            number = worse
+        else:
+            number = None
+
+        first = True
+        for f in db[:number]:
+            if sort_key(f) != 0:
+                if first:
+                    print ' Worse files:'
+                    first = False
+                print '  - %s (%d)' % (f['filename'], sort_key(f))
+
+    
+def analyse(filenames):
+    """
+    Analyse a list of files
+    """
+    stats = {
         'lines': 0,
-        'bad_lenght': 0,
+        'bad_length': 0,
         'bad_end': 0,
+        'tabs': 0,
         'tokens': 0,
-        'imports': 0,
+        'string_exception': 0,
+        'except_all': 0,
+        'bad_indentation':0,
         'bad_import': 0,
-        'excepts': 0,
-        'bad_except': 0,
-        'raises': 0,
-        'bad_raise': 0,
-        'bad_indentation': 0,
         'syntax_error': 0}
 
-    for key in stats.iterkeys():
-        weight.setdefault(key,0)
-
-    files = []
+    files_db = []
     for filename in filenames:
         f_stats = analyse_file(filename)
         if f_stats['lines'] != 0:
-            bad_sum = 0.0
             for key, value in f_stats.iteritems():
                 stats[key] += value
-                bad_sum += weight[key]*value
-
-            bad_sum = bad_sum/f_stats['lines']
-            files.append((bad_sum, filename))
+            f_stats['filename'] = filename
+            files_db.append(f_stats)
 
     # Show quality summary
-    if verbosity == 0:
-        print 'Total number of files with syntax errors: %d' % \
-              stats['syntax_error']
-        print 'Total number of lines: %d and %d tokens' %(stats['lines'],
-                                                          stats['tokens'])
+    print 'Code length:'
+    print '============'
+    print ' - %d lines' % stats['lines']
+    print ' - %d tokens' % stats['tokens']
 
-        value = (stats['bad_indentation']*100.0)/stats['lines']
-        print ' - with bad indentation           : %.02f%%' % value
+    print
+    
+    print 'Aesthetics (and readibility):'
+    print '============================='
+    comments = [
+        ('with tabulators', stats['tabs']),
+        ('bad indented', stats['bad_indentation']),
+        ('longer than 79 characters', stats['bad_length']),
+        ('with trailing whitespaces', stats['bad_end'])]
+    show_comments = []
+    for c in comments:
+        if c[1] != 0:
+            show_comments.append(
+                ' - %2.02f%% lines ' % ((c[1]*100.0)/stats['lines'])+
+                c[0])
+    print_list(show_comments)
 
-        value = (stats['bad_lenght']*100.0)/stats['lines']
-        print ' - with bad lenght (>79)          : %.02f%%' % value
+    print
 
-        value = (stats['bad_end']*100.0)/stats['lines']
-        print ' - with bad end (with " " or "\\t"): %.02f%%' % value
+    print_worses(files_db, ['tabs', 'bad_indentation', 'bad_length', 'bad_end'])
 
-        for name in ['import','except','raise']:
-            if stats[name+'s'] != 0:
-                value = (stats['bad_'+name]*100.0)/stats[name+'s']
-                print ' - with bad %6s/good %6ss   : %.02f%%' %(
-                    name, name, value)
+    print
+    
+    print 'Exception handling:'
+    print '==================='
+    comments = [
+        ('string exceptions are used', stats['string_exception']),
+        ('all exceptions are catched', stats['except_all'])]
+    show_comments = []
+    for c in comments:
+        if c[1] != 0:
+            show_comments.append(' - %d times ' % c[1] + c[0])
+    print_list(show_comments)
 
-    # Show list of worse files
-    if verbosity == 1:
-        print 'Worse files: filename (gravity)'
-        print
-        files.sort()
-        files.reverse()
-        files = files[:3]
-        for gravity, filename in files:
-            if gravity > 0.0:
-                print ' - %s (%f)' %(filename, gravity)
-                f_stats = analyse_file(filename)
-                errors = []
-                for key, value in f_stats.iteritems():
-                    errors.append((weight[key],value,key))
-                errors.sort()
-                errors.reverse()
-                count = 3
-                for error in errors:
-                    if error[0] != 0 and error[1] != 0 :
-                        print '   * %s in %d line(s)'%(error[2],error[1])
-                        count -= 1
-                        if count == 0:
-                            break
+    print
 
+    print_worses(files_db, ['string_exception', 'except_all'])
+
+    print
+    
+    print 'Imports:'
+    print '========'
+    if stats['bad_import'] != 0:
+        show_comments = [' - %d misplaced imports' % stats['bad_import']]
+    else:
+        show_comments = []
+    print_list(show_comments)
+
+    print
+
+    print_worses(files_db, ['bad_import'])
+ 
 
 def fix(filenames):
     for filename in filenames:
@@ -297,12 +301,14 @@ if __name__ == '__main__':
         help="makes some small improvements to the source code "
              "(MAKE A BACKUP FIRST)")
 
-    parser.add_option('-v', action='count', dest='verbosity',
-                      help="to run in verbose mode, -vv is more verbose")
-    parser.set_defaults(verbosity=0)
+    parser.add_option(
+        '-w', '--worse',
+        action='store', type='int', dest='worse',
+        help='number of worse files showed, 0 for all')
+    parser.set_defaults(worse=-1)
 
     options, args = parser.parse_args()
-    verbosity = options.verbosity
+    worse = options.worse
 
     # Making of filenames
     if args:
@@ -311,11 +317,11 @@ if __name__ == '__main__':
         filenames = git.get_filenames()
         filenames = [ x for x in filenames if x.endswith('.py') ]
     else:
-        file = TemporaryFile()
-        call(['find', '-name', '*.py'], stdout=file)
-        file.seek(0)
-        filenames = [ x.strip() for x in file.readlines() ]
-        file.close()
+        tmp = TemporaryFile()
+        call(['find', '-name', '*.py'], stdout=tmp)
+        tmp.seek(0)
+        filenames = [ x.strip() for x in tmp.readlines() ]
+        tmp.close()
 
     # Analyse
     analyse(filenames)

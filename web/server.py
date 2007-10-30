@@ -509,8 +509,8 @@ class Server(object):
         root = context.root
         root.init(context)
         user = context.user = self.get_user(context)
-        root.before_traverse(context)
         site_root = self.get_site_root(context.uri.authority.host)
+        site_root.before_traverse(context)
         context.site_root = site_root
         # Traverse
         path = str(context.path)

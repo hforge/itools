@@ -60,7 +60,8 @@ class OrderAware(object):
         if mode == 'ordered':
             return ordered_folders
         else:
-            unordered_folders = [f for f in real_names if f not in ordered_names]
+            unordered_folders = [f for f in real_names
+                                   if f not in ordered_names]
             if mode == 'all':
                 return ordered_folders, unordered_folders
             else:
@@ -106,7 +107,8 @@ class OrderAware(object):
         here = context.handler
         ordered_folders = []
         unordered_folders = []
-        ordered_folders_names, unordered_folders_names = self.get_ordered_folder_names('all')
+        names = self.get_ordered_folder_names('all')
+        ordered_folders_names, unordered_folders_names = names
 
         for data in [(ordered_folders_names, ordered_folders),
                      (unordered_folders_names, unordered_folders)]:
@@ -141,7 +143,8 @@ class OrderAware(object):
     def order_folders_up(self, context):
         names = context.get_form_values('ordered_names')
         if not names:
-            return context.come_back(u"Please select the ordered objects to order up.")
+            return context.come_back(u'Please select the ordered objects' \
+                                       ' to order up.')
 
         ordered_names = self.get_ordered_folder_names('ordered')
 
@@ -229,7 +232,8 @@ class OrderAware(object):
     def order_folders_ordered(self, context):
         names = context.get_form_values('unordered_names')
         if not names:
-            message = u"Please select the unordered objects to move into the ordered category."
+            message = u'Please select the unordered objects to move ' \
+                       'into the ordered category.'
             return context.come_back(message)
 
         ordered_names, unordered_names = self.get_ordered_folder_names('all')
@@ -244,7 +248,8 @@ class OrderAware(object):
     def order_folders_unordered(self, context):
         names = context.get_form_values('ordered_names')
         if not names:
-            message = u"Please select the ordered objects to move into the unordered category."
+            message = u'Please select the ordered objects to move into ' \
+                       'the unordered category.'
             return context.come_back(message)
 
         ordered_names, unordered_names = self.get_ordered_folder_names('all')
@@ -354,7 +359,7 @@ class Dressable(Folder, EpozEditable):
             if isinstance(data, tuple):
                 handler_name, kk = data
                 if handler_name == name:
-                    return key
+                    return unicode(key)
         return None
 
 
@@ -406,6 +411,8 @@ class Dressable(Folder, EpozEditable):
     edit_document__label__ = 'edit'
     def edit_document(self, context):
         name = context.get_form_value('dress_name')
+        if context.get_form_value('external'):
+            return context.uri.resolve('%s/;externaledit' % name)
         handler = self.get_handler(name)
         return XHTMLFile.edit_form(handler, context)
 
@@ -541,7 +548,8 @@ class Dressable(Folder, EpozEditable):
                     label = handler.name
                 path_to_icon = handler.get_path_to_icon(from_handler=self)
                 if path_to_icon.startswith(';'):
-                    path_to_icon = Path('%s/' % handler.name).resolve(path_to_icon)
+                    path_to_icon = Path('%s/' % handler.name)
+                    path_to_icon = path_to_icon.resolve(path_to_icon)
                 d['label'] = label
                 d['icon'] = path_to_icon
                 d['path'] = here.get_pathto(handler)
@@ -580,11 +588,14 @@ class Dressable(Folder, EpozEditable):
                     if is_datatype(cls, Document):
                         ref = 'edit_document?dress_name=%s' % name
                         subviews.append(ref)
+                        ref = 'edit_document?dress_name=%s&external=1' % name
+                        subviews.append(ref)
                     elif is_datatype(cls, Image):
                         ref = 'edit_image?name=%s' % name
                         subviews.append(ref)
             subviews.sort()
             return subviews
+
         return Folder.get_subviews(self, name)
 
 
@@ -601,7 +612,10 @@ class Dressable(Folder, EpozEditable):
 
     def edit_document__sublabel__(self, **kw):
         dress_name = kw.get('dress_name')
-        return self._get_handler_label(dress_name)
+        label = self._get_handler_label(dress_name)
+        if kw.get('external'):
+            label = u'%s (External)' % label
+        return label
 
 
     def edit_image__sublabel__(self, **kw):

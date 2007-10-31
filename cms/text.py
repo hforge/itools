@@ -48,25 +48,31 @@ class Text(File, BaseText):
 
 
     @classmethod
-    def new_instance_form(cls, context, name=''):
+    def new_instance_form(cls, context, with_language=True):
         root = context.root
         here = context.handler
 
         namespace = {}
-        namespace['name'] = name
-        # The class id
+        # Default title
+        namespace['title'] = context.get_form_value('dc:title')
+        # Default name
+        namespace['name'] = context.get_form_value('name', '')
+        # The class id is important
         namespace['class_id'] = cls.class_id
         # Languages
-        site_root = here.get_site_root()
-        website_languages = site_root.get_property('ikaaro:website_languages')
-        default_language = website_languages[0]
-        languages = []
-        for code in website_languages:
-            language_name = get_language_name(code)
-            languages.append({'code': code,
-                              'name': cls.gettext(language_name),
-                              'isdefault': code == default_language})
-        namespace['languages'] = languages
+        if with_language:
+            site_root = here.get_site_root()
+            ws_languages = site_root.get_property('ikaaro:website_languages')
+            default_language = ws_languages[0]
+            languages = []
+            for code in ws_languages:
+                language_name = get_language_name(code)
+                languages.append({'code': code,
+                                  'name': cls.gettext(language_name),
+                                  'isdefault': code == default_language})
+            namespace['languages'] = languages
+        else:
+            namespace['languages'] = None
 
         handler = root.get_object('ui/text/new_instance.xml')
         return stl(handler, namespace)

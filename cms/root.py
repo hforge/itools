@@ -107,18 +107,6 @@ class Root(WebSite):
         return None
 
 
-    def before_traverse(self, context):
-        # Language negotiation
-        user = context.user
-        if user is None:
-            language = context.get_cookie('language')
-            if language is not None:
-                context.get_accept_language().set(language, 2.0)
-        else:
-            language = user.get_property('ikaaro:user_language')
-            context.get_accept_language().set(language, 2.0)
-
-
     def after_traverse(self, context, body):
         # If there is not content type and the body is not None,
         # wrap it in the skin template

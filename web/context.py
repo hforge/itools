@@ -178,6 +178,12 @@ class Context(object):
         # By default we come back to the referrer
         if goto is None:
             goto = self.request.referrer
+            # Replace goto if no referrer
+            if goto is None:
+                uri = str(self.uri)
+                if '/;' in uri:
+                    goto = uri.split('/;')[0]
+                    goto = get_reference(goto)
         elif isinstance(goto, str):
             goto = get_reference(goto)
         # Preserve some form values

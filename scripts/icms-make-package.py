@@ -49,6 +49,7 @@ def make(parser, options, target):
     namespace = {}
     namespace['YEAR'] = date.today().year
     namespace['PACKAGE_NAME'] = package_name
+    namespace['PACKAGE_PATH'] = package_path
     namespace['PACKAGE'] = '%s/%s' % (package_path, package_name)
     namespace['PYTHON_BIN_PATH'] = python_bin_path
     namespace['PYTHON_BIN_REALPATH'] = python_bin_realpath

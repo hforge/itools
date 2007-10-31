@@ -106,7 +106,6 @@ def analyse_file_pass2(filename):
 
             # Find NEWLINE
             if tok_name[tok_type] == 'NEWLINE':
-                #print 'NEWLINE [%d]'%current_line
                 if command_on_line and not import_on_line:
                     header = False
                 command_on_line = False
@@ -171,12 +170,13 @@ def analyse_file(filename):
     return stats
 
 
-def print_list(string_list):
-    if len(string_list) == 0:
-        print '- no problem'
-    else:
+def print_list(title, string_list):
+    if len(string_list) != 0:
+        print title
+        print '-'*len(title)
         for line in string_list:
             print line
+        print
 
 
 def print_worses(db, criteria):
@@ -196,6 +196,8 @@ def print_worses(db, criteria):
                     print 'Worse files:'
                     first = False
                 print '- %s (%d)' % (f['filename'], sort_key(f))
+        if not first:
+            print
 
     
 def analyse(filenames):
@@ -228,9 +230,8 @@ def analyse(filenames):
     print 'Code length: %d lines, %d tokens' % (stats['lines'],
                                                 stats['tokens'])
     print
-    
-    print 'Aesthetics (and readibility)'
-    print '----------------------------'
+
+    # Aesthetics (and readibility)
     comments = [
         ('with tabulators', stats['tabs']),
         ('bad indented', stats['bad_indentation']),
@@ -242,14 +243,10 @@ def analyse(filenames):
             show_comments.append(
                 '%2.02f%% lines ' % ((c[1]*100.0)/stats['lines'])+
                 c[0])
-    print_list(show_comments)
-    print
-
+    print_list('Aesthetics (and readibility)', show_comments)
     print_worses(files_db, ['tabs', 'bad_indentation', 'bad_length', 'bad_end'])
-    print
     
-    print 'Exception handling'
-    print '------------------'
+    # Exception handling
     comments = [
         ('string exceptions are used', stats['string_exception']),
         ('all exceptions are catched', stats['except_all'])]
@@ -257,24 +254,15 @@ def analyse(filenames):
     for c in comments:
         if c[1] != 0:
             show_comments.append('%d times ' % c[1] + c[0])
-    print_list(show_comments)
-
-    print
-
+    print_list('Exception handling', show_comments)
     print_worses(files_db, ['string_exception', 'except_all'])
 
-    print
-    
-    print 'Imports'
-    print '-------'
+    # Imports
     if stats['bad_import'] != 0:
         show_comments = ['%d misplaced imports' % stats['bad_import']]
     else:
         show_comments = []
-    print_list(show_comments)
-
-    print
-
+    print_list('Imports', show_comments)
     print_worses(files_db, ['bad_import'])
  
 

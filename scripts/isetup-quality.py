@@ -173,7 +173,7 @@ def analyse_file(filename):
 
 def print_list(string_list):
     if len(string_list) == 0:
-        print ' - no problem'
+        print '- no problem'
     else:
         for line in string_list:
             print line
@@ -193,9 +193,9 @@ def print_worses(db, criteria):
         for f in db[:number]:
             if sort_key(f) != 0:
                 if first:
-                    print ' Worse files:'
+                    print 'Worse files:'
                     first = False
-                print '  - %s (%d)' % (f['filename'], sort_key(f))
+                print '- %s (%d)' % (f['filename'], sort_key(f))
 
     
 def analyse(filenames):
@@ -224,15 +224,13 @@ def analyse(filenames):
             files_db.append(f_stats)
 
     # Show quality summary
-    print 'Code length:'
-    print '============'
-    print ' - %d lines' % stats['lines']
-    print ' - %d tokens' % stats['tokens']
-
+    print
+    print 'Code length: %d lines, %d tokens' % (stats['lines'],
+                                                stats['tokens'])
     print
     
-    print 'Aesthetics (and readibility):'
-    print '============================='
+    print 'Aesthetics (and readibility)'
+    print '----------------------------'
     comments = [
         ('with tabulators', stats['tabs']),
         ('bad indented', stats['bad_indentation']),
@@ -242,25 +240,23 @@ def analyse(filenames):
     for c in comments:
         if c[1] != 0:
             show_comments.append(
-                ' - %2.02f%% lines ' % ((c[1]*100.0)/stats['lines'])+
+                '%2.02f%% lines ' % ((c[1]*100.0)/stats['lines'])+
                 c[0])
     print_list(show_comments)
-
     print
 
     print_worses(files_db, ['tabs', 'bad_indentation', 'bad_length', 'bad_end'])
-
     print
     
-    print 'Exception handling:'
-    print '==================='
+    print 'Exception handling'
+    print '------------------'
     comments = [
         ('string exceptions are used', stats['string_exception']),
         ('all exceptions are catched', stats['except_all'])]
     show_comments = []
     for c in comments:
         if c[1] != 0:
-            show_comments.append(' - %d times ' % c[1] + c[0])
+            show_comments.append('%d times ' % c[1] + c[0])
     print_list(show_comments)
 
     print
@@ -269,10 +265,10 @@ def analyse(filenames):
 
     print
     
-    print 'Imports:'
-    print '========'
+    print 'Imports'
+    print '-------'
     if stats['bad_import'] != 0:
-        show_comments = [' - %d misplaced imports' % stats['bad_import']]
+        show_comments = ['%d misplaced imports' % stats['bad_import']]
     else:
         show_comments = []
     print_list(show_comments)

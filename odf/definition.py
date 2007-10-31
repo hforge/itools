@@ -25,6 +25,205 @@ from itools.schemas import Schema as BaseSchema, register_schema
 ############ urn:oasis:names:tc:opendocument:xmlns:text:1.0 ############
 ########################################################################
 
+odt_text_elements = {
+    'a': {'is_inline': False, 'is_empty': False},
+    'alphabetical-index': {'is_inline': False, 'is_empty': False},
+    'alphabetical-index-auto-mark-file': {'is_inline': False, 'is_empty': False},
+    'alphabetical-index-entry-template': {'is_inline': False, 'is_empty': False},
+    'alphabetical-index-mark': {'is_inline': False, 'is_empty': True},
+    'alphabetical-index-mark-end': {'is_inline': False, 'is_empty': True},
+    'alphabetical-index-mark-start': {'is_inline': False, 'is_empty': True},
+    'alphabetical-index-source': {'is_inline': False, 'is_empty': False},
+    #'anchor-page-number'
+    #'anchor-type'
+    #'animation'
+    #'animation-delay'
+    #'animation-direction'
+    #'animation-repeat'
+    #'animation-start-inside'
+    #'animation-steps'
+    #'animation-stop-inside'
+    'author-initials': {'is_inline': False, 'is_empty': True},
+    'author-name': {'is_inline': False, 'is_empty': True},
+    'bibliography': {'is_inline': False, 'is_empty': False},
+    'bibliography-configuration': {'is_inline': False, 'is_empty': False},
+    'bibliography-entry-template': {'is_inline': False, 'is_empty': False},
+    'bibliography-mark': {'is_inline': False, 'is_empty': True},
+    'bibliography-source': {'is_inline': False, 'is_empty': False},
+    'bookmark': {'is_inline': False, 'is_empty': True},
+    'bookmark-end':  {'is_inline': False, 'is_empty': True},
+    'bookmark-ref': {'is_inline': False, 'is_empty': True},
+    'bookmark-start':  {'is_inline': False, 'is_empty': True},
+    #'bullet-char'
+    'change': {'is_inline': False, 'is_empty': True},
+    'change-end': {'is_inline': False, 'is_empty': True},
+    'change-start': {'is_inline': False, 'is_empty': True},
+    'changed-region': {'is_inline': False, 'is_empty': False},
+    'chapter': {'is_inline': False, 'is_empty': True},
+    #'character-count'
+    'conditional-text': {'is_inline': False, 'is_empty': True},
+    'creation-date': {'is_inline': False, 'is_empty': True},
+    'creation-time': {'is_inline': False, 'is_empty': True},
+    'creator': {'is_inline': False, 'is_empty': True},
+    'database-display': {'is_inline': False, 'is_empty': False},
+    'database-name': {'is_inline': False, 'is_empty': False},
+    'database-next': {'is_inline': False, 'is_empty': False},
+    'database-row-number': {'is_inline': False, 'is_empty': False},
+    'database-row-select': {'is_inline': False, 'is_empty': False},
+    'date': {'is_inline': False, 'is_empty': True},
+    #'date-value'
+    'dde-connection': {'is_inline': False, 'is_empty': True},
+    'dde-connection-decl': {'is_inline': False, 'is_empty': True},
+    'dde-connection-decls': {'is_inline': False, 'is_empty': False},
+    'deletion': {'is_inline': False, 'is_empty': False},
+    'description': {'is_inline': False, 'is_empty': True},
+    #'dont-balance-text-columns'
+    'editing-cycles': {'is_inline': False, 'is_empty': True},
+    'editing-duration': {'is_inline': False, 'is_empty': True},
+    'execute-macro': {'is_inline': False, 'is_empty': False},
+    'expression': {'is_inline': False, 'is_empty': True},
+    'file-name': {'is_inline': False, 'is_empty': True},
+    'format-change': {'is_inline': False, 'is_empty': False},
+    'h': {'is_inline': False, 'is_empty': False},
+    'hidden-paragraph': {'is_inline': False, 'is_empty': True},
+    'hidden-text': {'is_inline': False, 'is_empty': True},
+    'illustration-index': {'is_inline': False, 'is_empty': False},
+    'illustration-index-entry-template': {'is_inline': False, 'is_empty': False},
+    'illustration-index-source': {'is_inline': False, 'is_empty': False},
+    #'image-count'
+    'index-body': {'is_inline': False, 'is_empty': False},
+    'index-entry-bibliography': {'is_inline': False, 'is_empty': True},
+    'index-entry-chapter': {'is_inline': False, 'is_empty': True},
+    'index-entry-link-end': {'is_inline': False, 'is_empty': True},
+    'index-entry-link-start': {'is_inline': False, 'is_empty': True},
+    'index-entry-page-number': {'is_inline': False, 'is_empty': True},
+    'index-entry-span': {'is_inline': False, 'is_empty': True},
+    'index-entry-tab-stop':{'is_inline': False, 'is_empty': True},
+    'index-entry-text': {'is_inline': False, 'is_empty': True},
+    'index-source-style': {'is_inline': False, 'is_empty': True},
+    'index-source-styles': {'is_inline': False, 'is_empty': False},
+    'index-title': {'is_inline': False, 'is_empty': False},
+    'index-title-template': {'is_inline': False, 'is_empty': True},
+    'initial-creator': {'is_inline': False, 'is_empty': True},
+    'insertion': {'is_inline': False, 'is_empty': False},
+    'keywords': {'is_inline': False, 'is_empty': True},
+    #'level'
+    'line-break': {'is_inline': False, 'is_empty': True},
+    'linenumbering-configuration': {'is_inline': False,
+                                    'is_empty': False},
+    'linenumbering-separator': {'is_inline': False, 'is_empty': True},
+    'list': {'is_inline': False, 'is_empty': False},
+    'list-header':{'is_inline': False, 'is_empty': False},
+    'list-item': {'is_inline': False, 'is_empty': False},
+    'list-level-style-bullet': {'is_inline': False, 'is_empty': False},
+    'list-level-style-image': {'is_inline': False, 'is_empty': False},
+    'list-level-style-number': {'is_inline': False, 'is_empty': False},
+    'list-style': {'is_inline': False, 'is_empty': False},
+    'measure': {'is_inline': False, 'is_empty': True},
+    #min-label-width
+    'modification-date': {'is_inline': False, 'is_empty': True},
+    'modification-time': {'is_inline': False, 'is_empty': True},
+    'note': {'is_inline': False, 'is_empty': False},
+    'note-body': {'is_inline': False, 'is_empty': False},
+    'note-citation': {'is_inline': False, 'is_empty': True},
+    'note-continuation-notice-backward': {'is_inline': False, 'is_empty': True},
+    'note-continuation-notice-forward': {'is_inline': False, 'is_empty': True},
+    'note-ref': {'is_inline': False, 'is_empty': True},
+    'notes-configuration': {'is_inline': False, 'is_empty': False},
+    'number': {'is_inline': False, 'is_empty': True},
+    'numbered-paragraph': {'is_inline': False, 'is_empty': False},
+    'object-count': {'is_inline': False, 'is_empty': True},
+    'object-index': {'is_inline': False, 'is_empty': False},
+    'object-index-entry-template': {'is_inline': False, 'is_empty': False},
+    'object-index-source': {'is_inline': False, 'is_empty': False},
+    'outline-level-style': {'is_inline': False, 'is_empty': False},
+    'outline-style': {'is_inline': False, 'is_empty': False},
+    'p': {'is_inline': False, 'is_empty': False},
+    'page': {'is_inline': False, 'is_empty': True},
+    'page-continuation': {'is_inline': False, 'is_empty': True},
+    #'page-count'
+    'page-number': {'is_inline': False, 'is_empty': True},
+    'page-sequence': {'is_inline': False, 'is_empty': False},
+    'page-variable-get': {'is_inline': False, 'is_empty': True},
+    'page-variable-set': {'is_inline': False, 'is_empty': True},
+    #'paragraph-count'
+    'placeholder': {'is_inline': False, 'is_empty': True},
+    'print-date': {'is_inline': False, 'is_empty': True},
+    'print-time': {'is_inline': False, 'is_empty': True},
+    'printed-by': {'is_inline': False, 'is_empty': True},
+    'reference-mark': {'is_inline': False, 'is_empty': True},
+    'reference-mark-end': {'is_inline': False, 'is_empty': True},
+    'reference-mark-start': {'is_inline': False, 'is_empty': True},
+    'reference-ref': {'is_inline': False, 'is_empty': False},
+    'ruby': {'is_inline': False, 'is_empty': False},
+    'ruby-base': {'is_inline': False, 'is_empty': False},
+    #'ruby-text':
+    's': {'is_inline': False, 'is_empty': True},
+    'script': {'is_inline': False, 'is_empty': True},
+    'section': {'is_inline': False, 'is_empty': False},
+    'section-source': {'is_inline': False, 'is_empty': True},
+    'sender-city': {'is_inline': False, 'is_empty': True},
+    'sender-company': {'is_inline': False, 'is_empty': True},
+    'sender-country': {'is_inline': False, 'is_empty': True},
+    'sender-email': {'is_inline': False, 'is_empty': True},
+    'sender-fax': {'is_inline': False, 'is_empty': True},
+    'sender-firstname': {'is_inline': False, 'is_empty': True},
+    'sender-initials': {'is_inline': False, 'is_empty': True},
+    'sender-lastname': {'is_inline': False, 'is_empty': True},
+    'sender-phone-private': {'is_inline': False, 'is_empty': True},
+    'sender-phone-work': {'is_inline': False, 'is_empty': True},
+    'sender-position': {'is_inline': False, 'is_empty': True},
+    'sender-postal-code': {'is_inline': False, 'is_empty': True},
+    'sender-state-or-province': {'is_inline': False, 'is_empty': True},
+    'sender-street': {'is_inline': False, 'is_empty': True},
+    'sender-title': {'is_inline': False, 'is_empty': True},
+    'sequence': {'is_inline': False, 'is_empty': True,
+                 'translate_content': False},
+    'sequence-decl':  {'is_inline': False, 'is_empty': True},
+    'sequence-decls': {'is_inline': False, 'is_empty': False},
+    'sequence-ref': {'is_inline': False, 'is_empty': True},
+    'sheet-name': {'is_inline': False, 'is_empty': True},
+    'sort-key': {'is_inline': False, 'is_empty': True},
+    #'space-before'
+    'span': {'is_inline': True, 'is_empty': False},
+    #'style-name'
+    'subject': {'is_inline': False, 'is_empty': True},
+    'tab': {'is_inline': False, 'is_empty': True},
+    #'table-count'
+    'table-formula': {'is_inline': False, 'is_empty': True},
+    'table-index': {'is_inline': False, 'is_empty': False},
+    'table-index-entry-template': {'is_inline': False, 'is_empty': False},
+    'table-index-source': {'is_inline': False, 'is_empty': False},
+    'table-of-content': {'is_inline': False, 'is_empty': False},
+    'table-of-content-entry-template': {'is_inline': False, 'is_empty': False},
+    'table-of-content-source': {'is_inline': False, 'is_empty': False},
+    'template-name': {'is_inline': False, 'is_empty': True},
+    'text-input': {'is_inline': False, 'is_empty': True},
+    'time': {'is_inline': False, 'is_empty': True},
+    #'time-value'
+    'title': {'is_inline': False, 'is_empty': False},
+    'toc-mark': {'is_inline': False, 'is_empty': True},
+    'toc-mark-end': {'is_inline': False, 'is_empty': True},
+    'toc-mark-start': {'is_inline': False, 'is_empty': True},
+    'tracked-changes': {'is_inline': False, 'is_empty': False},
+    'user-defined': {'is_inline': False, 'is_empty': True},
+    'user-field-decl': {'is_inline': False, 'is_empty': True},
+    'user-field-decls': {'is_inline': False, 'is_empty': False},
+    'user-field-get':  {'is_inline': False, 'is_empty': True},
+    'user-field-input': {'is_inline': False, 'is_empty': True},
+    'user-index': {'is_inline': False, 'is_empty': False},
+    'user-index-entry-template': {'is_inline': False, 'is_empty': False},
+    'user-index-mark': {'is_inline': False, 'is_empty': True},
+    'user-index-mark-end': {'is_inline': False, 'is_empty': True},
+    'user-index-mark-start': {'is_inline': False, 'is_empty': True},
+    'user-index-source': {'is_inline': False, 'is_empty': False},
+    'variable-decl': {'is_inline': False, 'is_empty': True},
+    'variable-decls': {'is_inline': False, 'is_empty': False},
+    'variable-get': {'is_inline': False, 'is_empty': True},
+    'variable-input': {'is_inline': False, 'is_empty': True},
+    'variable-set': {'is_inline': False, 'is_empty': True},
+    #'word-count'
+}
 
 class OdtTextNamespace(AbstractNamespace):
 
@@ -34,207 +233,8 @@ class OdtTextNamespace(AbstractNamespace):
 
     @staticmethod
     def get_element_schema(name):
-        elements_schema = {
-            'a': {'is_inline': False, 'is_empty': False},
-            'alphabetical-index': {'is_inline': False, 'is_empty': False},
-            'alphabetical-index-auto-mark-file': {'is_inline': False, 'is_empty': False},
-            'alphabetical-index-entry-template': {'is_inline': False, 'is_empty': False},
-            'alphabetical-index-mark': {'is_inline': False, 'is_empty': True},
-            'alphabetical-index-mark-end': {'is_inline': False, 'is_empty': True},
-            'alphabetical-index-mark-start': {'is_inline': False, 'is_empty': True},
-            'alphabetical-index-source': {'is_inline': False, 'is_empty': False},
-            #'anchor-page-number'
-             #'anchor-type'
-            #'animation'
-            #'animation-delay'
-            #'animation-direction'
-            #'animation-repeat'
-            #'animation-start-inside'
-            #'animation-steps'
-            #'animation-stop-inside'
-            'author-initials': {'is_inline': False, 'is_empty': True},
-            'author-name': {'is_inline': False, 'is_empty': True},
-            'bibliography': {'is_inline': False, 'is_empty': False},
-            'bibliography-configuration': {'is_inline': False, 'is_empty': False},
-            'bibliography-entry-template': {'is_inline': False, 'is_empty': False},
-            'bibliography-mark': {'is_inline': False, 'is_empty': True},
-            'bibliography-source': {'is_inline': False, 'is_empty': False},
-            'bookmark': {'is_inline': False, 'is_empty': True},
-            'bookmark-end':  {'is_inline': False, 'is_empty': True},
-            'bookmark-ref': {'is_inline': False, 'is_empty': True},
-            'bookmark-start':  {'is_inline': False, 'is_empty': True},
-            #'bullet-char'
-            'change': {'is_inline': False, 'is_empty': True},
-            'change-end': {'is_inline': False, 'is_empty': True},
-            'change-start': {'is_inline': False, 'is_empty': True},
-            'changed-region': {'is_inline': False, 'is_empty': False},
-            'chapter': {'is_inline': False, 'is_empty': True},
-            #'character-count'
-            'conditional-text': {'is_inline': False, 'is_empty': True},
-            'creation-date': {'is_inline': False, 'is_empty': True},
-            'creation-time': {'is_inline': False, 'is_empty': True},
-            'creator': {'is_inline': False, 'is_empty': True},
-            'database-display': {'is_inline': False, 'is_empty': False},
-            'database-name': {'is_inline': False, 'is_empty': False},
-            'database-next': {'is_inline': False, 'is_empty': False},
-            'database-row-number': {'is_inline': False, 'is_empty': False},
-            'database-row-select': {'is_inline': False, 'is_empty': False},
-            'date': {'is_inline': False, 'is_empty': True},
-            #'date-value'
-            'dde-connection': {'is_inline': False, 'is_empty': True},
-            'dde-connection-decl': {'is_inline': False, 'is_empty': True},
-            'dde-connection-decls': {'is_inline': False, 'is_empty': False},
-            'deletion': {'is_inline': False, 'is_empty': False},
-            'description': {'is_inline': False, 'is_empty': True},
-            #'dont-balance-text-columns'
-            'editing-cycles': {'is_inline': False, 'is_empty': True},
-            'editing-duration': {'is_inline': False, 'is_empty': True},
-            'execute-macro': {'is_inline': False, 'is_empty': False},
-            'expression': {'is_inline': False, 'is_empty': True},
-            'file-name': {'is_inline': False, 'is_empty': True},
-            'format-change': {'is_inline': False, 'is_empty': False},
-            'h': {'is_inline': False, 'is_empty': False},
-            'hidden-paragraph': {'is_inline': False, 'is_empty': True},
-            'hidden-text': {'is_inline': False, 'is_empty': True},
-            'illustration-index': {'is_inline': False, 'is_empty': False},
-            'illustration-index-entry-template': {'is_inline': False, 'is_empty': False},
-            'illustration-index-source': {'is_inline': False, 'is_empty': False},
-            #'image-count'
-            'index-body': {'is_inline': False, 'is_empty': False},
-            'index-entry-bibliography': {'is_inline': False, 'is_empty': True},
-            'index-entry-chapter': {'is_inline': False, 'is_empty': True},
-            'index-entry-link-end': {'is_inline': False, 'is_empty': True},
-            'index-entry-link-start': {'is_inline': False, 'is_empty': True},
-            'index-entry-page-number': {'is_inline': False, 'is_empty': True},
-            'index-entry-span': {'is_inline': False, 'is_empty': True},
-            'index-entry-tab-stop':{'is_inline': False, 'is_empty': True},
-            'index-entry-text': {'is_inline': False, 'is_empty': True},
-            'index-source-style': {'is_inline': False, 'is_empty': True},
-            'index-source-styles': {'is_inline': False, 'is_empty': False},
-            'index-title': {'is_inline': False, 'is_empty': False},
-            'index-title-template': {'is_inline': False, 'is_empty': True},
-            'initial-creator': {'is_inline': False, 'is_empty': True},
-            'insertion': {'is_inline': False, 'is_empty': False},
-            'keywords': {'is_inline': False, 'is_empty': True},
-            #'level'
-            'line-break': {'is_inline': False, 'is_empty': True},
-            'linenumbering-configuration': {'is_inline': False,
-                                            'is_empty': False},
-            'linenumbering-separator': {'is_inline': False, 'is_empty': True},
-            'list': {'is_inline': False, 'is_empty': False},
-            'list-header':{'is_inline': False, 'is_empty': False},
-            'list-item': {'is_inline': False, 'is_empty': False},
-            'list-level-style-bullet': {'is_inline': False, 'is_empty': False},
-            'list-level-style-image': {'is_inline': False, 'is_empty': False},
-            'list-level-style-number': {'is_inline': False, 'is_empty': False},
-            'list-style': {'is_inline': False, 'is_empty': False},
-            'measure': {'is_inline': False, 'is_empty': True},
-            #min-label-width
-            'modification-date': {'is_inline': False, 'is_empty': True},
-            'modification-time': {'is_inline': False, 'is_empty': True},
-            'note': {'is_inline': False, 'is_empty': False},
-            'note-body': {'is_inline': False, 'is_empty': False},
-            'note-citation': {'is_inline': False, 'is_empty': True},
-            'note-continuation-notice-backward': {'is_inline': False, 'is_empty': True},
-            'note-continuation-notice-forward': {'is_inline': False, 'is_empty': True},
-            'note-ref': {'is_inline': False, 'is_empty': True},
-            'notes-configuration': {'is_inline': False, 'is_empty': False},
-            'number': {'is_inline': False, 'is_empty': True},
-            'numbered-paragraph': {'is_inline': False, 'is_empty': False},
-            'object-count': {'is_inline': False, 'is_empty': True},
-            'object-index': {'is_inline': False, 'is_empty': False},
-            'object-index-entry-template': {'is_inline': False, 'is_empty': False},
-            'object-index-source': {'is_inline': False, 'is_empty': False},
-            'outline-level-style': {'is_inline': False, 'is_empty': False},
-            'outline-style': {'is_inline': False, 'is_empty': False},
-            'p': {'is_inline': False, 'is_empty': False},
-            'page': {'is_inline': False, 'is_empty': True},
-            'page-continuation': {'is_inline': False, 'is_empty': True},
-            #'page-count'
-            'page-number': {'is_inline': False, 'is_empty': True},
-            'page-sequence': {'is_inline': False, 'is_empty': False},
-            'page-variable-get': {'is_inline': False, 'is_empty': True},
-            'page-variable-set': {'is_inline': False, 'is_empty': True},
-            #'paragraph-count'
-            'placeholder': {'is_inline': False, 'is_empty': True},
-            'print-date': {'is_inline': False, 'is_empty': True},
-            'print-time': {'is_inline': False, 'is_empty': True},
-            'printed-by': {'is_inline': False, 'is_empty': True},
-            'reference-mark': {'is_inline': False, 'is_empty': True},
-            'reference-mark-end': {'is_inline': False, 'is_empty': True},
-            'reference-mark-start': {'is_inline': False, 'is_empty': True},
-            'reference-ref': {'is_inline': False, 'is_empty': False},
-            'ruby': {'is_inline': False, 'is_empty': False},
-            'ruby-base': {'is_inline': False, 'is_empty': False},
-      #'ruby-text':
-            's': {'is_inline': False, 'is_empty': True},
-            'script': {'is_inline': False, 'is_empty': True},
-            'section': {'is_inline': False, 'is_empty': False},
-            'section-source': {'is_inline': False, 'is_empty': True},
-            'sender-city': {'is_inline': False, 'is_empty': True},
-            'sender-company': {'is_inline': False, 'is_empty': True},
-            'sender-country': {'is_inline': False, 'is_empty': True},
-            'sender-email': {'is_inline': False, 'is_empty': True},
-            'sender-fax': {'is_inline': False, 'is_empty': True},
-            'sender-firstname': {'is_inline': False, 'is_empty': True},
-            'sender-initials': {'is_inline': False, 'is_empty': True},
-            'sender-lastname': {'is_inline': False, 'is_empty': True},
-            'sender-phone-private': {'is_inline': False, 'is_empty': True},
-            'sender-phone-work': {'is_inline': False, 'is_empty': True},
-            'sender-position': {'is_inline': False, 'is_empty': True},
-            'sender-postal-code': {'is_inline': False, 'is_empty': True},
-            'sender-state-or-province': {'is_inline': False, 'is_empty': True},
-            'sender-street': {'is_inline': False, 'is_empty': True},
-            'sender-title': {'is_inline': False, 'is_empty': True},
-            'sequence': {'is_inline': False, 'is_empty': True,
-                         'translate_content': False},
-            'sequence-decl':  {'is_inline': False, 'is_empty': True},
-            'sequence-decls': {'is_inline': False, 'is_empty': False},
-            'sequence-ref': {'is_inline': False, 'is_empty': True},
-            'sheet-name': {'is_inline': False, 'is_empty': True},
-            'sort-key': {'is_inline': False, 'is_empty': True},
-            #'space-before'
-            'span': {'is_inline': True, 'is_empty': False},
-            #'style-name'
-            'subject': {'is_inline': False, 'is_empty': True},
-            'tab': {'is_inline': False, 'is_empty': True},
-            #'table-count'
-            'table-formula': {'is_inline': False, 'is_empty': True},
-            'table-index': {'is_inline': False, 'is_empty': False},
-            'table-index-entry-template': {'is_inline': False, 'is_empty': False},
-            'table-index-source': {'is_inline': False, 'is_empty': False},
-            'table-of-content': {'is_inline': False, 'is_empty': False},
-            'table-of-content-entry-template': {'is_inline': False, 'is_empty': False},
-            'table-of-content-source': {'is_inline': False, 'is_empty': False},
-            'template-name': {'is_inline': False, 'is_empty': True},
-            'text-input': {'is_inline': False, 'is_empty': True},
-            'time': {'is_inline': False, 'is_empty': True},
-            #'time-value'
-            'title': {'is_inline': False, 'is_empty': False},
-            'toc-mark': {'is_inline': False, 'is_empty': True},
-            'toc-mark-end': {'is_inline': False, 'is_empty': True},
-            'toc-mark-start': {'is_inline': False, 'is_empty': True},
-            'tracked-changes': {'is_inline': False, 'is_empty': False},
-            'user-defined': {'is_inline': False, 'is_empty': True},
-            'user-field-decl': {'is_inline': False, 'is_empty': True},
-            'user-field-decls': {'is_inline': False, 'is_empty': False},
-            'user-field-get':  {'is_inline': False, 'is_empty': True},
-            'user-field-input': {'is_inline': False, 'is_empty': True},
-            'user-index': {'is_inline': False, 'is_empty': False},
-            'user-index-entry-template': {'is_inline': False, 'is_empty': False},
-            'user-index-mark': {'is_inline': False, 'is_empty': True},
-            'user-index-mark-end': {'is_inline': False, 'is_empty': True},
-            'user-index-mark-start': {'is_inline': False, 'is_empty': True},
-            'user-index-source': {'is_inline': False, 'is_empty': False},
-            'variable-decl': {'is_inline': False, 'is_empty': True},
-            'variable-decls': {'is_inline': False, 'is_empty': False},
-            'variable-get': {'is_inline': False, 'is_empty': True},
-            'variable-input': {'is_inline': False, 'is_empty': True},
-            'variable-set': {'is_inline': False, 'is_empty': True},
-            #'word-count'
-        }
         default_schema = {'is_empty': False, 'is_inline': False}
-        return elements_schema.get(name, default_schema)
+        return odt_text_elements.get(name, default_schema)
 
 set_namespace(OdtTextNamespace)
 
@@ -320,6 +320,92 @@ register_schema(OdtOfficeSchema)
 ############ urn:oasis:names:tc:opendocument:xmlns:style:1.0  ##########
 ########################################################################
 
+odt_style_elements = {
+    'background-image': {'is_inline': False, 'is_empty': False},
+    #'border-line-width
+    'chart-properties': {'is_inline': False, 'is_empty': False},
+    'column': {'is_inline': False, 'is_empty': True},
+    'column-sep': {'is_inline': False, 'is_empty': True},
+    #'column-width
+    'columns': {'is_inline': False, 'is_empty': False},
+    'default-style': {'is_inline': False, 'is_empty': False},
+    #'display-name
+    'drawing-page-properties': {'is_inline': False, 'is_empty': False},
+    'drop-cap': {'is_inline': False, 'is_empty': True},
+    #'family
+    #'family-properties
+    #'first-page-number
+    #'font-decl
+    'font-face': {'is_inline': False, 'is_empty': False},
+    #'font-name
+    #'font-relief
+    'footer': {'is_inline': False, 'is_empty': False},
+    'footer-left': {'is_inline': False, 'is_empty': False},
+    'footer-style': {'is_inline': False, 'is_empty': False},
+    #'footnote-max-height
+    'footnote-sep': {'is_inline': False, 'is_empty': True},
+    'graphic-properties': {'is_inline': False, 'is_empty': False},
+    'handout-master': {'is_inline': False, 'is_empty': False},
+    'header': {'is_inline': False, 'is_empty': False},
+    'header-footer-properties': {'is_inline': False, 'is_empty': False},
+    'header-left': {'is_inline': False, 'is_empty': False},
+    'header-style': {'is_inline': False, 'is_empty': False},
+    #'horizontal-pos
+    #'horizontal-rel
+    #'leader-text
+    #'line-spacing
+    'list-level-properties': {'is_inline': False, 'is_empty': True},
+    'map': {'is_inline': False, 'is_empty': True},
+    'master-page': {'is_inline': False, 'is_empty': False},
+    #'may-break-between-rows
+    #'min-row-height
+    #'mirror
+    #'name
+    #'num-format
+    #'number-wrapped-paragraphs
+    'page-layout': {'is_inline': False, 'is_empty': False},
+    'page-layout-properties': {'is_inline': False, 'is_empty': False},
+    'paragraph-properties': {'is_inline': False, 'is_empty': False},
+    #'position
+    'presentation-page-layout': {'is_inline': False, 'is_empty': False},
+    #'print
+    #'print-orientation
+    #'print-page-order
+    'region-center': {'is_inline': False, 'is_empty': False},
+    'region-left': {'is_inline': False, 'is_empty': False},
+    'region-right': {'is_inline': False, 'is_empty': False},
+    #'rel-column-width
+    #'rel-width
+    #'repeat
+    #'row-height
+    'ruby-properties': {'is_inline': False, 'is_empty': True},
+    #'scale-to
+    'section-properties': {'is_inline': False, 'is_empty': False},
+    'style': {'is_inline': False, 'is_empty': False},
+    'tab-stop': {'is_inline': False, 'is_empty': True},
+    'tab-stops': {'is_inline': False, 'is_empty': False},
+    'table': {'is_inline': False, 'is_empty': False},
+    'table-cell': {'is_inline': False, 'is_empty': False},
+    'table-cell-properties': {'is_inline': False, 'is_empty': True},
+    'table-column': {'is_inline': False, 'is_empty': True},
+    'table-column-properties': {'is_inline': False, 'is_empty': True},
+    'table-header-rows': {'is_inline': False, 'is_empty': False},
+    'table-properties': {'is_inline': False, 'is_empty': False},
+    'table-row': {'is_inline': False, 'is_empty': False},
+    'table-row-properties': {'is_inline': False, 'is_empty': False},
+    #'text-blinking
+    #'text-outline
+    #'text-position
+    #'text-propertie
+    'text-properties': {'is_inline': False, 'is_empty': True},
+    #'text-rotation-angle
+    #'text-scale
+    #'text-underline-style
+    #'use-optimal-row-height
+    #'vertical-pos
+    #'vertical-rel
+    #'wrap
+}
 
 class OdtStyleNamespace(AbstractNamespace):
 
@@ -328,94 +414,8 @@ class OdtStyleNamespace(AbstractNamespace):
 
     @staticmethod
     def get_element_schema(name):
-        elements_schema = {
-            'background-image': {'is_inline': False, 'is_empty': False},
-            #'border-line-width
-            'chart-properties': {'is_inline': False, 'is_empty': False},
-            'column': {'is_inline': False, 'is_empty': True},
-            'column-sep': {'is_inline': False, 'is_empty': True},
-            #'column-width
-            'columns': {'is_inline': False, 'is_empty': False},
-            'default-style': {'is_inline': False, 'is_empty': False},
-            #'display-name
-            'drawing-page-properties': {'is_inline': False, 'is_empty': False},
-            'drop-cap': {'is_inline': False, 'is_empty': True},
-            #'family
-            #'family-properties
-            #'first-page-number
-            #'font-decl
-            'font-face': {'is_inline': False, 'is_empty': False},
-            #'font-name
-            #'font-relief
-            'footer': {'is_inline': False, 'is_empty': False},
-            'footer-left': {'is_inline': False, 'is_empty': False},
-            'footer-style': {'is_inline': False, 'is_empty': False},
-            #'footnote-max-height
-            'footnote-sep': {'is_inline': False, 'is_empty': True},
-            'graphic-properties': {'is_inline': False, 'is_empty': False},
-            'handout-master': {'is_inline': False, 'is_empty': False},
-            'header': {'is_inline': False, 'is_empty': False},
-            'header-footer-properties': {'is_inline': False, 'is_empty': False},
-            'header-left': {'is_inline': False, 'is_empty': False},
-            'header-style': {'is_inline': False, 'is_empty': False},
-            #'horizontal-pos
-            #'horizontal-rel
-            #'leader-text
-            #'line-spacing
-            'list-level-properties': {'is_inline': False, 'is_empty': True},
-            'map': {'is_inline': False, 'is_empty': True},
-            'master-page': {'is_inline': False, 'is_empty': False},
-            #'may-break-between-rows
-            #'min-row-height
-            #'mirror
-            #'name
-            #'num-format
-            #'number-wrapped-paragraphs
-            'page-layout': {'is_inline': False, 'is_empty': False},
-            'page-layout-properties': {'is_inline': False, 'is_empty': False},
-            'paragraph-properties': {'is_inline': False, 'is_empty': False},
-            #'position
-            'presentation-page-layout': {'is_inline': False, 'is_empty': False},
-            #'print
-            #'print-orientation
-            #'print-page-order
-            'region-center': {'is_inline': False, 'is_empty': False},
-            'region-left': {'is_inline': False, 'is_empty': False},
-            'region-right': {'is_inline': False, 'is_empty': False},
-            #'rel-column-width
-            #'rel-width
-            #'repeat
-            #'row-height
-            'ruby-properties': {'is_inline': False, 'is_empty': True},
-            #'scale-to
-            'section-properties': {'is_inline': False, 'is_empty': False},
-            'style': {'is_inline': False, 'is_empty': False},
-            'tab-stop': {'is_inline': False, 'is_empty': True},
-            'tab-stops': {'is_inline': False, 'is_empty': False},
-            'table': {'is_inline': False, 'is_empty': False},
-            'table-cell': {'is_inline': False, 'is_empty': False},
-            'table-cell-properties': {'is_inline': False, 'is_empty': True},
-            'table-column': {'is_inline': False, 'is_empty': True},
-            'table-column-properties': {'is_inline': False, 'is_empty': True},
-            'table-header-rows': {'is_inline': False, 'is_empty': False},
-            'table-properties': {'is_inline': False, 'is_empty': False},
-            'table-row': {'is_inline': False, 'is_empty': False},
-            'table-row-properties': {'is_inline': False, 'is_empty': False},
-            #'text-blinking
-            #'text-outline
-            #'text-position
-            #'text-propertie
-            'text-properties': {'is_inline': False, 'is_empty': True},
-            #'text-rotation-angle
-            #'text-scale
-            #'text-underline-style
-            #'use-optimal-row-height
-            #'vertical-pos
-            #'vertical-rel
-            #'wrap
-        }
         default_schema = {'is_empty': False, 'is_inline': False}
-        return elements_schema.get(name, default_schema)
+        return odt_style_elements.get(name, default_schema)
 
 set_namespace(OdtStyleNamespace)
 

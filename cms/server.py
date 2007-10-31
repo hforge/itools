@@ -116,8 +116,11 @@ class Server(BaseServer):
         # Check if PID exist
         if sys.platform[:3] == 'win':
             try:
-                import win32api
-                win32api.OpenProcess(1, False, pid)
+                from win32api import OpenProcess
+            except ImportError:
+                return None
+            try:
+                OpenProcess(1, False, pid)
             except:
                 return None
         else:

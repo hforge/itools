@@ -214,12 +214,14 @@ block."""
         self.assertEqual(len(events), 10)
         self.assertEqual(events[0], (XLIST_BEGIN, u'*'))
         self.assertEqual(events[1], (XLIST_ITEM_BEGIN, 2))
-        self.assertEqual(events[2], (XBLOCK, [u'I am an unordered list item', u'  on several lines.', u'']))
+        self.assertEqual(events[2], (XBLOCK, [u'I am an unordered list item',
+                                              u'  on several lines.', u'']))
         self.assertEqual(events[3], (XLIST_ITEM_END, 2))
         self.assertEqual(events[4], (XLIST_END, u'*'))
         self.assertEqual(events[5], (XLIST_BEGIN, u'#'))
         self.assertEqual(events[6], (XLIST_ITEM_BEGIN, 3))
-        self.assertEqual(events[7], (XBLOCK, [u'I am an ordered list item', u'   on several lines.']))
+        self.assertEqual(events[7], (XBLOCK, [u'I am an ordered list item',
+                                              u'   on several lines.']))
         self.assertEqual(events[8], (XLIST_ITEM_END, 3))
         self.assertEqual(events[9], (XLIST_END, u'#'))
 
@@ -238,7 +240,8 @@ block."""
         self.assertEqual(len(events), 16)
         self.assertEqual(events[0], (XLIST_BEGIN, u'*'))
         self.assertEqual(events[1], (XLIST_ITEM_BEGIN, 2))
-        self.assertEqual(events[2], (XBLOCK, [u'I am an unordered list item;', u'']))
+        self.assertEqual(events[2], (XBLOCK, [u'I am an unordered list item;',
+                                              u'']))
         self.assertEqual(events[3], (XLIST_ITEM_END, 2))
         self.assertEqual(events[4], (XLIST_ITEM_BEGIN, 2))
         self.assertEqual(events[5], (XBLOCK, [u'on several lines.', u'']))
@@ -246,7 +249,8 @@ block."""
         self.assertEqual(events[7], (XLIST_END, u'*'))
         self.assertEqual(events[8], (XLIST_BEGIN, u'#'))
         self.assertEqual(events[9], (XLIST_ITEM_BEGIN, 3))
-        self.assertEqual(events[10], (XBLOCK, [u'I am an ordered list item;', u'']))
+        self.assertEqual(events[10], (XBLOCK, [u'I am an ordered list item;',
+                                               u'']))
         self.assertEqual(events[11], (XLIST_ITEM_END, 3))
         self.assertEqual(events[12], (XLIST_ITEM_BEGIN, 3))
         self.assertEqual(events[13], (XBLOCK, [u'on several lines.']))
@@ -272,10 +276,12 @@ block."""
         self.assertEqual(events[3], (XLIST_BEGIN, u'#'))
         self.assertEqual(events[4], (XLIST_ITEM_BEGIN, 5))
         self.assertEqual(events[5], (XBLOCK, [u'Second list.', u'']))
-        self.assertEqual(events[6], (XBLOCK, [u'     Second list, second paragraph.', u'']))
+        self.assertEqual(events[6], (XBLOCK,
+            [u'     Second list, second paragraph.', u'']))
         self.assertEqual(events[7], (XLIST_ITEM_END, 5))
         self.assertEqual(events[8], (XLIST_END, u'#'))
-        self.assertEqual(events[9], (XBLOCK, [u'  First list, second paragraph.']))
+        self.assertEqual(events[9], (XBLOCK,
+            [u'  First list, second paragraph.']))
         self.assertEqual(events[10], (XLIST_ITEM_END, 2))
         self.assertEqual(events[11], (XLIST_END, u'*'))
 
@@ -292,8 +298,10 @@ But failed with a NotImplementedError."""
         events = list(events)
         self.assertEqual(len(events), 3)
         self.assertEqual(events[0], (XBLOCK, [u'The code reads as follow:']))
-        self.assertEqual(events[1], (XLITERAL_BLOCK, u'    >>> from itools.rest import parser'))
-        self.assertEqual(events[2], (XBLOCK, [u'But failed with a NotImplementedError.']))
+        self.assertEqual(events[1], (XLITERAL_BLOCK,
+            u'    >>> from itools.rest import parser'))
+        self.assertEqual(events[2], (XBLOCK,
+            [u'But failed with a NotImplementedError.']))
 
 
     def test_list_literal(self):
@@ -312,8 +320,10 @@ But failed with a NotImplementedError."""
         self.assertEqual(len(events), 9)
         self.assertEqual(events[0], (XLIST_BEGIN, u'#'))
         self.assertEqual(events[1], (XLIST_ITEM_BEGIN, 3))
-        self.assertEqual(events[2], (XBLOCK, [u'I am a list',  u'   containing a literal:']))
-        self.assertEqual(events[3], (XLITERAL_BLOCK, u'     >>> from itools.rest import parser'))
+        self.assertEqual(events[2], (XBLOCK, [u'I am a list',
+            u'   containing a literal:']))
+        self.assertEqual(events[3], (XLITERAL_BLOCK,
+            u'     >>> from itools.rest import parser'))
         self.assertEqual(events[4], (XLIST_ITEM_END, 3))
         self.assertEqual(events[5], (XLIST_ITEM_BEGIN, 3))
         self.assertEqual(events[6], (XBLOCK, [u'and several',  u'   items.']))
@@ -343,8 +353,8 @@ I am the king of the titles
         events = parse_titles(events)
         events = list(events)
         self.assertEqual(len(events), 1)
-        self.assertEqual(events[0],
-                         (XTITLE, (u'#', u'I am the king of the titles', u'#')))
+        self.assertEqual(events[0], (XTITLE,
+            (u'#', u'I am the king of the titles', u'#')))
 
 
     def test_title_underline(self):
@@ -355,8 +365,8 @@ I am the prince of the titles
         events = parse_titles(events)
         events = list(events)
         self.assertEqual(len(events), 1)
-        self.assertEqual(events[0],
-                         (XTITLE, (u'', u'I am the prince of the titles', u'%')))
+        self.assertEqual(events[0], (XTITLE,
+            (u'', u'I am the prince of the titles', u'%')))
 
 
     def test_title_paragraph(self):
@@ -368,9 +378,10 @@ I'm a man of wealth and taste"""
         events = parse_titles(events)
         events = list(events)
         self.assertEqual(len(events), 2)
-        self.assertEqual(events[0],
-                        (XTITLE, (u'', u'Please allow to introduce myself', u'`')))
-        self.assertEqual(events[1], (XPARAGRAPH, u"I'm a man of wealth and taste"))
+        self.assertEqual(events[0], (XTITLE,
+            (u'', u'Please allow to introduce myself', u'`')))
+        self.assertEqual(events[1], (XPARAGRAPH,
+            u"I'm a man of wealth and taste"))
 
 
     def test_paragraph_literal(self):
@@ -386,8 +397,10 @@ But failed with a NotImplementedError."""
         events = list(events)
         self.assertEqual(len(events), 3)
         self.assertEqual(events[0], (XPARAGRAPH, u'The code reads as follow:'))
-        self.assertEqual(events[1], (XLITERAL_BLOCK, u'    >>> from itools.rest import parser'))
-        self.assertEqual(events[2], (XPARAGRAPH, u'But failed with a NotImplementedError.'))
+        self.assertEqual(events[1], (XLITERAL_BLOCK,
+            u'    >>> from itools.rest import parser'))
+        self.assertEqual(events[2], (XPARAGRAPH,
+            u'But failed with a NotImplementedError.'))
 
 
     def test_paragraph_list(self):

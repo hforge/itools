@@ -173,6 +173,7 @@ class WikiPage(Text):
                     target['wiki_name'] = name
                 else:
                     target['wiki_refname'] = refname
+                    target['wiki_title'] = refname
                     target['wiki_name'] = str(here.get_pathto(ref))
                 return True
 

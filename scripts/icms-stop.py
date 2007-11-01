@@ -17,23 +17,13 @@
 
 # Import from the Standard Library
 from optparse import OptionParser
-import os
-import sys
-from signal import SIGINT
 
 # Import from itools
 import itools
 from itools.cms.server import Server
 from itools.cms.spool import Spool
+from itools.cms.utils import kill
 
-
-def kill(pid):
-    if sys.platform.startswith('win'):
-        import win32api
-        handle = win32api.OpenProcess(1, 0, pid)
-        win32api.TerminateProcess(handle, 0)
-    else:
-        os.kill(pid, SIGINT)
 
 
 def stop(parser, options, target):

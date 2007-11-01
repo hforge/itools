@@ -30,6 +30,7 @@ from itools.cms.database import DatabaseFS
 from handlers import Metadata
 import registry
 from catalog import get_to_index, get_to_unindex
+from utils import is_pid_running
 from website import WebSite
 
 
@@ -113,24 +114,9 @@ class Server(BaseServer):
             return None
 
         pid = int(pid)
-        # Check if PID exist
-        if sys.platform[:3] == 'win':
-            try:
-                from win32api import OpenProcess
-            except ImportError:
-                return None
-            try:
-                OpenProcess(1, False, pid)
-            except:
-                return None
-        else:
-            try:
-                from os import getpgid
-                getpgid(pid)
-            except OSError:
-                return None
-
-        return pid
+        if is_pid_running(pid):
+            return pid
+        return None
 
 
     def send_email(self, message):

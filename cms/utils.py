@@ -19,11 +19,15 @@
 # Import from the Standard Library
 from urllib import quote
 from random import sample
+from sys import platform
 
 # Import from itools
 from itools.web import get_context
 
-
+if platform[:3] == 'win':
+    from utils_windows import is_pid_running, kill
+else:
+    from utils_unix import is_pid_running, kill
 
 
 ###########################################################################
@@ -158,4 +162,5 @@ def generate_name(name, used, suffix='_'):
         name = ''.join([basename, suffix, str(index), extent])
 
     return str(name)
+
 

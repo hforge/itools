@@ -103,8 +103,14 @@ class Text(File, BaseText):
         # Build the object
         handler = cls()
         metadata = handler.build_metadata()
+        if language is not None:
+            # Multilingual support
+            metadata.set_property('dc:language', language)
+        else:
+            # No multilingual, just default language
+            site_root = container.get_site_root()
+            language = site_root.get_default_language()
         metadata.set_property('dc:title', title, language=language)
-        metadata.set_property('dc:language', language)
         # Add the object
         handler, metadata = container.set_object(name, handler, metadata)
 

@@ -29,6 +29,7 @@ import traceback
 from itools.uri import get_absolute_reference2
 from itools import vfs
 from server import get_config
+from utils import is_pid_running
 
 
 
@@ -61,21 +62,9 @@ class Spool(object):
             return None
 
         pid = int(pid)
-        # Check if PID exist
-        if sys.platform[:3] == 'win':
-            try:
-                import win32api
-                win32api.OpenProcess(1, False, pid)
-            except:
-                return None
-        else:
-            try:
-                from os import getpgid
-                getpgid(pid)
-            except OSError:
-                return None
-
-        return pid
+        if is_pid_running(pid):
+            return pid
+        return None
 
 
     def start(self):

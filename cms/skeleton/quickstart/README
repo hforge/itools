@@ -1,25 +1,34 @@
-${PACKAGE_NAME} is a sample itools.cms package, it provide:
+=============================================
+Quickstart for an itools.cms Web application
+=============================================
+
+This quickstart "${PACKAGE_NAME}" is a sample itools.cms package, it provide:
   - the skeleton of a itools.cms Web Application
   - a mywebapp.tgz tarball with a piece of database to populate your application
   - illustration of the multisite feature : severals hostnames managed with one
     website.
 
-Setup an itools.cms Web application driven by ${PACKAGE_NAME}
-==============================================================
+${PACKAGE_NAME} was made by ``icms-make-package`` with the ``quickstart``
+option::
+
+  $ cd ${PACKAGE_PATH}
+  $ icms-make-package.py -t quickstart ${PACKAGE_NAME}
+
+  * Package "${PACKAGE_NAME}" created
+  * ...
+
+Setup an itools.cms Web application ${PACKAGE_NAME}
+========================================================
 
 Enter in your newly created package folder::
 
   $ cd ${PACKAGE}
 
-Start by adding revision control to it
+Start by adding revision control to it::
 
-======================== ====================================================
-with Cogito              or with Git
-======================== ====================================================
-                         $ git-init
-$ cg-init                $ git-add .
-                         $ git-commit
-======================== ====================================================
+  $ git-init
+  $ git-add .
+  $ git-commit
 
 Install ${PACKAGE_NAME} in your python::
 

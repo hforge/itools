@@ -17,7 +17,7 @@
 
 # Import from the Standard Library
 from cStringIO import StringIO
-import os
+from os.path import dirname, join as join_path
 
 # Import from itools
 from itools.datatypes import Unicode, XML
@@ -27,21 +27,17 @@ from itools.stl import stl
 # Import from the reportlab Library
 import reportlab
 from reportlab.pdfgen.canvas import Canvas
-from reportlab.platypus import Paragraph, BaseDocTemplate, \
-                               SimpleDocTemplate, PageTemplate, \
-                               XPreformatted, Preformatted, \
-                               Frame, FrameBreak, NextPageTemplate, \
-                               KeepInFrame, PageBreak, Image, Table, \
-                               TableStyle, Spacer, Indenter
+from reportlab.platypus import (Paragraph, BaseDocTemplate, SimpleDocTemplate,
+    PageTemplate, XPreformatted, Preformatted, Frame, FrameBreak,
+    NextPageTemplate, KeepInFrame, PageBreak, Image, Table, TableStyle,
+    Spacer, Indenter)
 from reportlab.platypus.tableofcontents import TableOfContents
 from reportlab.platypus.flowables import Flowable, HRFlowable
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch, cm, mm, pica
 from reportlab.rl_config import defaultPageSize
-from reportlab.lib.pagesizes import letter, legal, elevenSeventeen, \
-                                    A0, A1, A2, A3, A4, A5, A6, \
-                                    B0, B1, B2, B3, B4, B5, B6, \
-                                    landscape, portrait
+from reportlab.lib.pagesizes import (letter, legal, elevenSeventeen, A0, A1,
+    A2, A3, A4, A5, A6, B0, B1, B2, B3, B4, B5, B6, landscape, portrait)
 from reportlab.lib import pagesizes, colors
 from reportlab.lib.colors import Color, CMYKColor, HexColor
 from reportlab.pdfbase import pdfmetrics
@@ -482,8 +478,7 @@ def docinit_stream(stream, _tag_uri, _tag_name, _attributes):
     stack.append((_tag_name, _attributes, None))
 
     # register font
-    register_font_folder = os.path.dirname(reportlab.__file__)
-    register_font_folder += os.sep + 'fonts'
+    register_font_folder = join_path(dirname(reportlab.__file__), 'fonts')
     afmFile = None
     pfbFile = None
     tag_registerType1Face = False
@@ -522,10 +517,10 @@ def docinit_stream(stream, _tag_uri, _tag_name, _attributes):
                 attrs = prev_elt[1]
                 if exist_attribute(attrs, ['afmFile', 'pfbFile']) == True:
                     tag_registerType1Face = True
-                    afmFile = os.path.join(register_font_folder,
-                                           attrs.get((None, 'afmFile')))
-                    pfbFile = os.path.join(register_font_folder,
-                                           attrs.get((None, 'pfbFile')))
+                    afmFile = join_path(register_font_folder,
+                                        attrs.get((None, 'afmFile')))
+                    pfbFile = join_path(register_font_folder,
+                                        attrs.get((None, 'pfbFile')))
 
             elif prev_elt[1] == 'registerFont':
                 if tag_registerType1Face == True:

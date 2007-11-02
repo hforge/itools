@@ -300,9 +300,12 @@ class Table(File, iTable):
             else:
                 value = context.get_form_value(name, type=datatype)
             record[name] = value
-        self.add_record(record)
+        try:
+            self.add_record(record)
+            message = u'New record added.'
+        except ValueError, strerror:
+            message = u'Error: %s' % strerror
 
-        message = u'New record added.'
         goto = context.uri.resolve2('../;add_record_form')
         return context.come_back(message, goto=goto)
 

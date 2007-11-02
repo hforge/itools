@@ -22,7 +22,8 @@ from datetime import datetime
 # Import from itools
 from itools.vfs import vfs
 from itools.datatypes import DateTime, String, Integer
-from itools.catalog import MemoryCatalog, PhraseQuery, AndQuery, get_field
+from itools.catalog import (MemoryCatalog, PhraseQuery, EqQuery, AndQuery,
+                            get_field)
 from file import File
 
 
@@ -554,6 +555,13 @@ class Table(File):
 
 
     def add_record(self, kw):
+        # Check for duplicate
+        for name in kw:
+            datatype = self.get_datatype(name)
+            if getattr(datatype, 'unique', False) is True:
+                if len(self.search(EqQuery(name, kw[name]))) > 0:
+                    raise ValueError, 'The field %s must be unique' % name
+        # Add version to record
         id = len(self.records)
         record = self.record_class(id)
         version = self.properties_to_dict(kw)

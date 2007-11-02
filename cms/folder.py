@@ -19,11 +19,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-import marshal
+from marshal import dumps, loads
 from string import Template
-import urllib
-import zlib
-import mimetypes
+from urllib import quote, quote_plus, unquote
+from zlib import compress, decompress
 
 # Import from itools
 from itools.i18n import format_datetime, guess_language, has_language
@@ -50,6 +49,15 @@ from utils import generate_name, reduce_string
 import widgets
 from registry import register_object_class, get_object_class
 from catalog import schedule_to_index, schedule_to_unindex
+
+
+
+def encode_copy_cookie(value):
+    return quote(compress(dumps(value), 9))
+
+
+def decode_copy_cookie(str):
+    return loads(decompress(unquote(str)))
 
 
 
@@ -340,7 +348,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
             subviews = []
             for cls in self.get_document_types():
                 id = cls.class_id
-                ref = 'new_resource_form?type=%s' % urllib.quote_plus(id)
+                ref = 'new_resource_form?type=%s' % quote_plus(id)
                 subviews.append(ref)
             return subviews
         return Handler.get_subviews(self, name)
@@ -614,14 +622,23 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
     remove__access__ = 'is_allowed_to_remove'
     def remove(self, context):
+        # Check input
         ids = context.get_form_values('ids')
         if not ids:
             return context.come_back(u'No objects selected.')
 
+        # Clean the copy cookie if needed
+        cp = context.get_cookie('ikaaro_cp')
+        if cp is None:
+            paths = []
+        else:
+            cut, paths = decode_copy_cookie(cp)
+
+        # Remove objects
         removed = []
         not_allowed = []
-
         user = context.user
+        abspath = self.abspath
         for name in ids:
             handler = self.get_handler(name)
             ac = handler.get_access_control()
@@ -629,11 +646,15 @@ class Folder(Handler, BaseFolder, CalendarAware):
                 # Remove handler
                 self.del_object(name)
                 removed.append(name)
+                # Clean cookie
+                if (abspath + '/' + name) in paths:
+                    context.del_cookie('ikaaro_cp')
+                    paths = []
             else:
                 not_allowed.append(name)
 
-        return context.come_back(
-            u'Objects removed: $objects.', objects=', '.join(removed))
+        message = u'Objects removed: $objects.'
+        return context.come_back(message, objects=', '.join(removed))
 
 
     rename_form__access__ = 'is_allowed_to_move'
@@ -718,7 +739,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
         path = self.get_abspath()
         cp = (False, [ '%s/%s' % (path, x) for x in names ])
-        cp = urllib.quote(zlib.compress(marshal.dumps(cp), 9))
+        cp = encode_copy_cookie(cp)
         context.set_cookie('ikaaro_cp', cp, path='/')
 
         return context.come_back(u'Objects copied.')
@@ -738,7 +759,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
         path = self.get_abspath()
         cp = (True, [ '%s/%s' % (path, x) for x in names ])
-        cp = urllib.quote(zlib.compress(marshal.dumps(cp), 9))
+        cp = encode_copy_cookie(cp)
         context.set_cookie('ikaaro_cp', cp, path='/')
 
         return context.come_back(u'Objects cut.')
@@ -752,7 +773,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
         root = context.root
         allowed_types = tuple(self.get_document_types())
-        cut, paths = marshal.loads(zlib.decompress(urllib.unquote(cp)))
+        cut, paths = decode_copy_cookie(cp)
         for path in paths:
             handler, metadata = root.get_object(path)
             if not isinstance(handler, allowed_types):
@@ -828,7 +849,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         for handler_class in self.get_document_types():
             type_ns = {}
             gettext = handler_class.gettext
-            format = urllib.quote(handler_class.class_id)
+            format = quote(handler_class.class_id)
             type_ns['format'] = format
             icon = handler_class.class_icon48
             type_ns['icon'] = self.get_pathtoroot() + 'ui/' + icon

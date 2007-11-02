@@ -88,7 +88,7 @@ class WebSite(RoleAware, Folder):
             website_ns['class_id'] = handler_class.class_id
             website_ns['selected'] = False
             icon = handler_class.class_icon16
-            website_ns['icon'] = context.handler.get_pathtoroot() + 'ui/' + icon
+            website_ns['icon'] = '/ui/' + icon
             namespace['websites'].append(website_ns)
 
         namespace['alone'] = False
@@ -96,7 +96,7 @@ class WebSite(RoleAware, Folder):
             namespace['alone'] = namespace['websites'][0]
         else:
             namespace['websites'][0]['selected'] = True
-        handler = context.root.get_handler('ui/website/new_instance.xml')
+        handler = context.root.get_object('ui/website/new_instance.xml')
         return stl(handler, namespace)
 
 
@@ -559,7 +559,7 @@ class WebSite(RoleAware, Folder):
             handlers = []
             for object in documents:
                 abspath = object.abspath
-                handler = root.get_handler(abspath)
+                handler = root.get_object(abspath)
                 ac = handler.get_access_control()
                 if ac.is_allowed_to_view(user, handler):
                     handlers.append(handler)
@@ -625,7 +625,7 @@ class WebSite(RoleAware, Folder):
         namespace = context.build_form_namespace(self.contact_fields)
 
         # To
-        users = self.get_handler('/users')
+        users = self.get_object('/users')
         namespace['contacts'] = []
         for name in self.get_property('ikaaro:contacts'):
             user = users.get_handler(name)

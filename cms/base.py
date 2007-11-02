@@ -308,7 +308,7 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
                 user_id = history[-1][(None, 'user')]
                 users = self.get_object('/users')
                 try:
-                    user = users.get_handler(user_id)
+                    user = users.get_object(user_id)
                 except LookupError:
                     document['last_author'] = u'Unavailable'
                 else:

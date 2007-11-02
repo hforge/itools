@@ -630,7 +630,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         namespace = {}
         namespace['objects'] = []
         for real_name in names:
-            handler = self.get_handler(real_name)
+            handler = self.get_object(real_name)
             if handler.class_extension is None:
                 name = real_name
             else:
@@ -650,7 +650,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         # Process input data
         for i, old_name in enumerate(names):
             new_name = new_names[i]
-            handler = self.get_handler(old_name)
+            handler = self.get_object(old_name)
             if handler.class_extension is not None:
                 xxx, extension, language = FileName.decode(old_name)
                 new_name = FileName.encode((new_name, extension, language))
@@ -824,7 +824,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
                      batchstart=0, batchsize=20):
         root = context.root
         user = context.user
-        users = root.get_handler('users')
+        users = root.get_object('users')
         namespace = {}
 
         start = context.get_form_value('batchstart', type=Integer,
@@ -839,7 +839,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
         lines = []
         for document in documents:
-            handler = root.get_handler(document.abspath)
+            handler = root.get_object(document.abspath)
             ac = handler.get_access_control()
             if not ac.is_allowed_to_view(user, handler):
                 continue
@@ -849,7 +849,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
                 last_rev = revisions[0]
                 username = last_rev['username']
                 try:
-                    user = users.get_handler(username)
+                    user = users.get_object(username)
                     user_title = user.get_title()
                 except LookupError:
                     user_title = username

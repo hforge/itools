@@ -454,8 +454,7 @@ class CalendarView(object):
                 day = day + timedelta(1)
             namespace['weeks'].append(ns_week)
 
-        add_icon = abspath.get_pathto('/ui/images/button_add.png')
-        namespace['add_icon'] = str(add_icon)
+        namespace['add_icon'] = '/ui/images/button_add.png'
 
         handler = self.get_object('/ui/ical/ical_monthly_view.xml')
         return stl(handler, namespace)

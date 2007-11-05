@@ -434,14 +434,24 @@ class Skin(Folder):
 
 
     def get_meta_tags(self, context):
-        """
-        Return a list of dict with meta tags to give to the template document.
+        """Return a list of dict with meta tags to give to the template
+        document.
         """
         here = context.handler
-        meta = [{'name': 'description',
-                 'content': here.get_property('dc:description')},
-                {'name': 'keywords',
-                 'content': here.get_property('dc:subject')}]
+        root = here.get_site_root()
+
+        meta = []
+        # Set description
+        value, language = here.get_property_and_language('dc:description')
+        if value:
+            meta.append({'name': 'description', 'lang': language,
+                         'content': value})
+        # Set keywords for all languages
+        for language in root.get_property('ikaaro:website_languages'):
+            value = here.get_property('dc:subject', language).strip()
+            if value:
+                meta.append({'name': 'keywords', 'lang': language,
+                             'content': value})
         return meta
 
 

@@ -70,7 +70,7 @@ class User(AccessControl, Folder):
     ########################################################################
     # API
     ########################################################################
-    def get_title(self):
+    def get_title(self, language=None):
         firstname = self.get_property('ikaaro:firstname')
         lastname = self.get_property('ikaaro:lastname')
         if firstname:

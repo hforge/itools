@@ -106,8 +106,12 @@ class Node(BaseNode):
     ########################################################################
     # Properties
     ########################################################################
+    def get_property_and_language(self, name, language=None):
+        return get_datatype(name).default, None
+
+
     def get_property(self, name, language=None):
-        return get_datatype(name).default
+        return self.get_property_and_language(name, language=language)[0]
 
 
     def get_title(self):
@@ -312,11 +316,11 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
         return metadata.has_property(name, language=language)
 
 
-    def get_property(self, name, language=None):
+    def get_property_and_language(self, name, language=None):
         metadata = self.get_metadata()
         if metadata is None:
-            return Node.get_property(self, name)
-        return metadata.get_property(name, language=language)
+            return Node.get_property_and_language(self, name)
+        return metadata.get_property_and_language(name, language=language)
 
 
     def set_property(self, name, value, language=None):

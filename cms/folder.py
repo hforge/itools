@@ -28,7 +28,7 @@ from zlib import compress, decompress
 from itools.i18n import format_datetime
 from itools.uri import Path, get_reference
 from itools.catalog import CatalogAware, EqQuery, AndQuery, PhraseQuery
-from itools.datatypes import Boolean, FileName, Integer, Unicode
+from itools.datatypes import Boolean, DataType, FileName, Integer, Unicode
 from itools import vfs
 from itools.handlers import Folder as BaseFolder, get_handler_class
 from itools.rest import checkid
@@ -51,12 +51,18 @@ from catalog import schedule_to_index, schedule_to_unindex
 
 
 
-def encode_copy_cookie(value):
-    return quote(compress(dumps(value), 9))
+class CopyCookie(DataType):
+
+    default = None, []
+
+    @staticmethod
+    def encode(value):
+        return quote(compress(dumps(value), 9))
 
 
-def decode_copy_cookie(str):
-    return loads(decompress(unquote(str)))
+    @staticmethod
+    def decode(str):
+        return loads(decompress(unquote(str)))
 
 
 
@@ -588,11 +594,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
             return context.come_back(u'No objects selected.')
 
         # Clean the copy cookie if needed
-        cp = context.get_cookie('ikaaro_cp')
-        if cp is None:
-            paths = []
-        else:
-            cut, paths = decode_copy_cookie(cp)
+        cut, paths = context.get_cookie('ikaaro_cp', type=CopyCookie)
 
         # Remove objects
         removed = []
@@ -659,7 +661,11 @@ class Folder(Handler, BaseFolder, CalendarAware):
         names = context.get_form_values('names')
         new_names = context.get_form_values('new_names')
         used_names = self.get_handler_names()
+        # Clean the copy cookie if needed
+        cut, paths = context.get_cookie('ikaaro_cp', type=CopyCookie)
+
         # Process input data
+        abspath = self.abspath
         for i, old_name in enumerate(names):
             new_name = new_names[i]
             handler = self.get_handler(old_name)
@@ -675,6 +681,10 @@ class Folder(Handler, BaseFolder, CalendarAware):
                 if new_name in used_names:
                     # Name already exists
                     return context.come_back(MSG_EXISTANT_FILENAME)
+                # Clean cookie (FIXME Do not clean the cookie, update it)
+                if (abspath + '/' + old_name) in paths:
+                    context.del_cookie('ikaaro_cp')
+                    paths = []
                 # XXX itools should provide an API to copy and move handlers
                 handler = self.get_handler(old_name)
                 handler_metadata = handler.get_metadata()
@@ -699,7 +709,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
         path = self.get_abspath()
         cp = (False, [ '%s/%s' % (path, x) for x in names ])
-        cp = encode_copy_cookie(cp)
+        cp = CopyCookie.encode(cp)
         context.set_cookie('ikaaro_cp', cp, path='/')
 
         return context.come_back(u'Objects copied.')
@@ -719,7 +729,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
         path = self.get_abspath()
         cp = (True, [ '%s/%s' % (path, x) for x in names ])
-        cp = encode_copy_cookie(cp)
+        cp = CopyCookie.encode(cp)
         context.set_cookie('ikaaro_cp', cp, path='/')
 
         return context.come_back(u'Objects cut.')
@@ -727,15 +737,17 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
     paste__access__ = 'is_allowed_to_add'
     def paste(self, context):
-        cp = context.get_cookie('ikaaro_cp')
-        if cp is None:
+        cut, paths = context.get_cookie('ikaaro_cp', type=CopyCookie)
+        if len(paths) == 0:
             return context.come_back(u'Nothing to paste.')
 
         root = context.root
         allowed_types = tuple(self.get_document_types())
-        cut, paths = decode_copy_cookie(cp)
         for path in paths:
-            handler, metadata = root.get_object(path)
+            try:
+                handler, metadata = root.get_object(path)
+            except LookupError:
+                continue
             if not isinstance(handler, allowed_types):
                 continue
 

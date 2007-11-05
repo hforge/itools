@@ -44,8 +44,7 @@ class Context(object):
 
 
     def init(self):
-        """
-        To process a request it must be loaded, in the first place.
+        """To process a request it must be loaded, in the first place.
         """
         request = self.request
         if request.has_header('X-Forwarded-Host'):
@@ -86,6 +85,16 @@ class Context(object):
             self.path = path
             self.method = request.method
 
+        # Language negotiation
+        headers = request.headers
+        if 'accept-language' in headers:
+            # FIXME Done this way the programmer may modify the request object
+            # TODO The 'Accept-Language' header should be deserialized here,
+            # not in the 'Request' object.
+            self.accept_language = headers['accept-language']
+        else:
+            self.accept_language = AcceptLanguageType.decode('')
+
 
     ########################################################################
     # API
@@ -95,19 +104,9 @@ class Context(object):
         self.response.redirect(reference, status)
 
 
+    # FIXME Obsolete. To be removed by 0.17
     def get_accept_language(self):
-        request = self.request
-        if request is None:
-            return AcceptLanguageType.decode('')
-
-        headers = request.headers
-        if 'accept-language' not in headers:
-            return AcceptLanguageType.decode('')
-
-        # FIXME Done this way the programmer may modify the request object
-        # TODO We should instead offer an API that keeps the changes in the
-        # context object
-        return headers['accept-language']
+        return self.accept_language
 
 
     ########################################################################

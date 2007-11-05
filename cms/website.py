@@ -143,15 +143,19 @@ class WebSite(RoleAware, Folder):
 
 
     def before_traverse(self, context):
+        # The default language
+        accept = context.get_accept_language()
+        default = self.get_default_language()
+        accept.set(default, 0.000001)
         # Language negotiation
         user = context.user
         if user is None:
             language = context.get_cookie('language')
             if language is not None:
-                context.get_accept_language().set(language, 2.0)
+                accept.set(language, 2.0)
         else:
             language = user.get_property('ikaaro:user_language')
-            context.get_accept_language().set(language, 2.0)
+            accept.set(language, 2.0)
 
 
     ########################################################################

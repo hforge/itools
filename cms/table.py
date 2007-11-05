@@ -18,13 +18,13 @@
 from operator import itemgetter
 
 # Import from itools
-from itools.datatypes import (DataType, Integer, FileName, is_datatype,
-                              Enumerate, Boolean, Date)
+from itools.datatypes import DataType, Integer, is_datatype, Enumerate, Date
 from itools.handlers.table import Table as iTable, Record
-from itools.i18n import get_language_name
 from itools.stl import stl
-from itools.rest import checkid
-from messages import *
+
+# Import from itools.cms
+from base import Handler
+from messages import MSG_CHANGES_SAVED
 from file import File
 from registry import register_object_class
 import widgets
@@ -56,69 +56,21 @@ class Table(File, iTable):
 
     record_class = Record
 
-    @classmethod
-    def new_instance_form(cls, context):
-        root = context.root
-
-        name = ''
-        namespace = {}
-        namespace['name'] = name
-        # The class id
-        namespace['class_id'] = cls.class_id
-        # Languages
-        languages = []
-        website_languages = root.get_property('ikaaro:website_languages')
-        default_language = website_languages[0]
-        for code in website_languages:
-            language_name = get_language_name(code)
-            languages.append({'code': code,
-                              'name': cls.gettext(language_name),
-                              'isdefault': code == default_language})
-        namespace['languages'] = languages
-
-        handler = root.get_handler('ui/table/new_instance.xml')
-        return stl(handler, namespace)
-
-
-
-    @classmethod
-    def new_instance(cls, container, context):
-        name = context.get_form_value('name')
-        title = context.get_form_value('dc:title')
-        language = context.get_form_value('dc:language')
-
-        # Check the name
-        name = name.strip() or title.strip()
-        if not name:
-            return context.come_back(MSG_NAME_MISSING)
-
-        name = checkid(name)
-        if name is None:
-            return context.come_back(MSG_BAD_NAME)
-
-        # Add the language extension to the name
-        name = FileName.encode((name, cls.class_extension, language))
-
-        # Check the name is free
-        if container.has_handler(name):
-            return context.come_back(MSG_NAME_CLASH)
-
-        # Build the object
-        handler = cls()
-        metadata = handler.build_metadata()
-        metadata.set_property('dc:title', title, language=language)
-        metadata.set_property('dc:language', language)
-        # Add the object
-        handler, metadata = container.set_object(name, handler, metadata)
-
-        goto = './%s/;%s' % (name, handler.get_firstview())
-        return context.come_back(MSG_NEW_RESOURCE, goto=goto)
-
-
 
     #########################################################################
     # User Interface
     #########################################################################
+
+    @classmethod
+    def new_instance_form(cls, context):
+        return Handler.new_instance_form.im_func(cls, context)
+
+
+    @classmethod
+    def new_instance(cls, container, context):
+        return Handler.new_instance.im_func(cls, container, context)
+
+
     def get_fields(self):
         """
         Returns a list of tuples with the name and title of every field.

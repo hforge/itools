@@ -25,24 +25,23 @@ from urllib import quote, quote_plus, unquote
 from zlib import compress, decompress
 
 # Import from itools
-from itools.i18n import format_datetime, guess_language, has_language
-from itools.uri import Path, get_reference, Reference
+from itools.i18n import format_datetime
+from itools.uri import Path, get_reference
 from itools.catalog import CatalogAware, EqQuery, AndQuery, PhraseQuery
 from itools.datatypes import Boolean, FileName, Integer, Unicode
 from itools import vfs
-from itools.handlers import Folder as BaseFolder, Text, get_handler_class
+from itools.handlers import Folder as BaseFolder, get_handler_class
 from itools.rest import checkid
 from itools.stl import stl
 from itools.web import get_context
 from itools.xml import Parser
 
 # Import from itools.cms
-from file import File
 from base import Handler
 from binary import Image
 from handlers import Lock, Metadata, ListOfUsers
 from ical import CalendarAware
-from messages import *
+from messages import MSG_DELETE_SELECTION, MSG_BAD_NAME, MSG_EXISTANT_FILENAME
 from versioning import VersioningAware
 from workflow import WorkflowAware
 from utils import generate_name, reduce_string
@@ -102,45 +101,6 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
     def get_document_types(self):
         return self.class_document_types
-
-
-    @classmethod
-    def new_instance_form(cls, context):
-        namespace = {'class_id': cls.class_id,
-                     'class_title': cls.gettext(cls.class_title)}
-
-        handler = context.root.get_handler('ui/folder/new_instance.xml')
-        return stl(handler, namespace)
-
-
-    @classmethod
-    def new_instance(cls, container, context):
-        name = context.get_form_value('name')
-        title = context.get_form_value('dc:title')
-
-        # Check the name
-        name = name.strip() or title.strip()
-        if not name:
-            return context.come_back(MSG_NAME_MISSING)
-
-        name = checkid(name)
-        if name is None:
-            return context.come_back(MSG_BAD_NAME)
-
-        # Check the name is free
-        if container.has_handler(name):
-            return context.come_back(MSG_NAME_CLASH)
-
-        # Build the object
-        handler = cls()
-        metadata = handler.build_metadata()
-        language = container.get_site_root().get_default_language()
-        metadata.set_property('dc:title', title, language=language)
-        # Add the object
-        handler, metadata = container.set_object(name, handler, metadata)
-
-        goto = './%s/;%s' % (name, handler.get_firstview())
-        return context.come_back(MSG_NEW_RESOURCE, goto=goto)
 
 
     #######################################################################

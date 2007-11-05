@@ -28,8 +28,11 @@ from itools.rest import checkid
 from itools.i18n import guess_language
 from itools.handlers import File as BaseFile, Text
 from itools.stl import stl
+
+# Import from itools.cms
 from base import Handler
-from messages import *
+from messages import (MSG_EMPTY_FILENAME, MSG_BAD_NAME, MSG_NAME_CLASH,
+        MSG_NEW_RESOURCE)
 from registry import register_object_class, get_object_class
 from versioning import VersioningAware
 from workflow import WorkflowAware

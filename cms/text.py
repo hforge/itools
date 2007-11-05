@@ -20,16 +20,16 @@
 import cgi
 
 # Import from itools
-from itools.datatypes import FileName
-from itools.i18n import get_language_name
 from itools.handlers import Text as BaseText, Python as BasePython
 from itools.gettext import PO as BasePO
 from itools.stl import stl
 from itools import rest
-from itools.rest import checkid
+
+# Import from itools.cms
+from base import Handler
 from utils import get_parameters
 from file import File
-from messages import *
+from messages import MSG_CHANGES_SAVED
 from registry import register_object_class
 
 
@@ -47,84 +47,24 @@ class Text(File, BaseText):
                    ['history_form']]
 
 
-    @classmethod
-    def new_instance_form(cls, context, with_language=True):
-        root = context.root
-        here = context.handler
-
-        namespace = {}
-        # Default title
-        namespace['title'] = context.get_form_value('dc:title')
-        # Default name
-        namespace['name'] = context.get_form_value('name', '')
-        # The class id is important
-        namespace['class_id'] = cls.class_id
-        # Languages
-        if with_language:
-            site_root = here.get_site_root()
-            ws_languages = site_root.get_property('ikaaro:website_languages')
-            default_language = ws_languages[0]
-            languages = []
-            for code in ws_languages:
-                language_name = get_language_name(code)
-                languages.append({'code': code,
-                                  'name': cls.gettext(language_name),
-                                  'isdefault': code == default_language})
-            namespace['languages'] = languages
-        else:
-            namespace['languages'] = None
-
-        handler = root.get_handler('ui/text/new_instance.xml')
-        return stl(handler, namespace)
-
-
-    @classmethod
-    def new_instance(cls, container, context):
-        name = context.get_form_value('name')
-        title = context.get_form_value('dc:title')
-        language = context.get_form_value('dc:language')
-
-        # Check the name
-        name = name.strip() or title.strip()
-        if not name:
-            return context.come_back(MSG_NAME_MISSING)
-
-        name = checkid(name)
-        if name is None:
-            return context.come_back(MSG_BAD_NAME)
-
-        # Add the language extension to the name
-        name = FileName.encode((name, cls.class_extension, language))
-
-        # Check the name is free
-        if container.has_handler(name):
-            return context.come_back(MSG_NAME_CLASH)
-
-        # Build the object
-        handler = cls()
-        metadata = handler.build_metadata()
-        if language is not None:
-            # Multilingual support
-            metadata.set_property('dc:language', language)
-        else:
-            # No multilingual, just default language
-            site_root = container.get_site_root()
-            language = site_root.get_default_language()
-        metadata.set_property('dc:title', title, language=language)
-        # Add the object
-        handler, metadata = container.set_object(name, handler, metadata)
-
-        goto = './%s/;%s' % (name, handler.get_firstview())
-        return context.come_back(MSG_NEW_RESOURCE, goto=goto)
+    # Download
+    def get_content_type(self):
+        return '%s; charset=UTF-8' % File.get_content_type(self)
 
 
     #######################################################################
     # User interface
     #######################################################################
 
-    # Download
-    def get_content_type(self):
-        return '%s; charset=UTF-8' % File.get_content_type(self)
+    @classmethod
+    def new_instance_form(cls, context):
+        return Handler.new_instance_form.im_func(cls, context,
+                with_language=True)
+
+
+    @classmethod
+    def new_instance(cls, container, context):
+        return Handler.new_instance.im_func(cls, container, context)
 
 
     #######################################################################

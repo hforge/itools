@@ -23,15 +23,20 @@ from datetime import datetime
 from itools.uri import Path
 from itools.catalog import CatalogAware
 from itools.handlers import Handler as BaseHandler
-from itools.i18n import get_language_name, get_languages
+from itools.i18n import get_language_name
 from itools.schemas import get_datatype
 from itools.stl import stl
 from itools.gettext import DomainAware, get_domain
 from itools.http import Forbidden
 from itools.web import get_context, Node as BaseNode
+from itools.datatypes import FileName
+from itools.rest import checkid
+
+# Import from itools.cms
 from catalog import schedule_to_reindex
 from handlers import Lock, Metadata
-from messages import *
+from messages import (MSG_NAME_MISSING, MSG_BAD_NAME, MSG_NAME_CLASH,
+        MSG_NEW_RESOURCE, MSG_CHANGES_SAVED)
 from registry import get_object_class
 from versioning import VersioningAware
 import webdav
@@ -200,11 +205,6 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
         BaseHandler.set_changed(self)
         if self.uri is not None:
             schedule_to_reindex(self)
-
-
-    @classmethod
-    def new_instance(cls, context):
-        return cls()
 
 
     ########################################################################
@@ -458,6 +458,79 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
     ########################################################################
     # User interface
     ########################################################################
+    @classmethod
+    def new_instance_form(cls, context, with_language=False):
+        root = context.root
+        here = context.handler
+
+        namespace = {}
+        # Default title
+        namespace['title'] = context.get_form_value('dc:title')
+        # Default name
+        namespace['name'] = context.get_form_value('name', '')
+        # The class id is important
+        namespace['class_id'] = cls.class_id
+        # Show the class title to reuse the same form
+        namespace['class_title'] = cls.gettext(cls.class_title)
+        # Languages
+        if with_language:
+            site_root = here.get_site_root()
+            ws_languages = site_root.get_property('ikaaro:website_languages')
+            default_language = ws_languages[0]
+            languages = []
+            for code in ws_languages:
+                language_name = get_language_name(code)
+                languages.append({'code': code,
+                                  'name': cls.gettext(language_name),
+                                  'isdefault': code == default_language})
+            namespace['languages'] = languages
+        else:
+            namespace['languages'] = None
+
+        handler = root.get_handler('ui/base/new_instance.xml')
+        return stl(handler, namespace)
+
+
+    @classmethod
+    def new_instance(cls, container, context):
+        name = context.get_form_value('name')
+        title = context.get_form_value('dc:title')
+        language = context.get_form_value('dc:language')
+
+        # Check the name
+        name = name.strip() or title.strip()
+        if not name:
+            return context.come_back(MSG_NAME_MISSING)
+
+        name = checkid(name)
+        if name is None:
+            return context.come_back(MSG_BAD_NAME)
+
+        # Add the language extension to the name
+        name = FileName.encode((name, cls.class_extension, language))
+
+        # Check the name is free
+        if container.has_handler(name):
+            return context.come_back(MSG_NAME_CLASH)
+
+        # Build the object
+        handler = cls()
+        metadata = handler.build_metadata()
+        if language is not None:
+            # Multilingual support
+            metadata.set_property('dc:language', language)
+        else:
+            # No multilingual, just default language
+            site_root = container.get_site_root()
+            language = site_root.get_default_language()
+        metadata.set_property('dc:title', title, language=language)
+        # Add the object
+        handler, metadata = container.set_object(name, handler, metadata)
+
+        goto = './%s/;%s' % (name, handler.get_firstview())
+        return context.come_back(MSG_NEW_RESOURCE, goto=goto)
+
+
     def get_title(self, language=None):
         return self.get_property('dc:title', language=language) or self.name
 
@@ -538,7 +611,7 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
         namespace['subject'] = self.get_property('dc:subject',
                                                   language=language)
 
-        handler = self.get_handler('/ui/Handler_edit_metadata.xml')
+        handler = self.get_handler('/ui/base/edit_metadata.xml')
         return stl(handler, namespace)
 
 

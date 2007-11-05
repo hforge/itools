@@ -4,7 +4,7 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-  <h2>Add Document</h2>
+  <h2>Add Resource of Type "${class_title}"</h2>
 
   <form name="new_document" action=";new_resource" method="post">
     <dl>

@@ -76,6 +76,10 @@ class AcceptLanguageType(object):
         structure which provides a high level interface to implement language
         negotiation.
         """
+        data = data.strip()
+        if not data:
+            return AcceptLanguage({})
+
         accept = {}
         for language in data.lower().split(','):
             language = language.strip()

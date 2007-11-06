@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2002-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 # Copyright (C) 2006 Luis Arturo Belmar-Letelier <luis@itaapy.com>
+# Copyright (C) 2006-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 # Copyright (C) 2007 Henry Obein <henry@itaapy.com>
 # Copyright (C) 2007 Hervé Cauwelier <herve@itaapy.com>
 #

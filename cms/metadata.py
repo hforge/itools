@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2003-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2005-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 # Copyright (C) 2006 Hervé Cauwelier <herve@itaapy.com>
 # Copyright (C) 2007 Nicolas Deram <nicolas@itaapy.com>
 #

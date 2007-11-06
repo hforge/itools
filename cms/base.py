@@ -495,7 +495,7 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
         else:
             namespace['languages'] = None
 
-        handler = root.get_handler('ui/base/new_instance.xml')
+        handler = root.get_object('ui/base/new_instance.xml')
         return stl(handler, namespace)
 
 

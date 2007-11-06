@@ -23,18 +23,18 @@ from datetime import datetime, date, time, timedelta
 
 # Import from itools
 from itools.uri import Path
-from itools.i18n import get_language_name
-from itools.datatypes import Enumerate, Unicode, Date, DataType
+from itools.datatypes import Enumerate, Unicode, Date, Integer, is_datatype
 from itools.handlers import Folder, Property
 from itools.ical import get_grid_data, icalendar, PropertyValue, DateTime
 from itools.ical import icalendarTable, Record, Time
 from itools.stl import stl
-from registry import register_object_class
 
 # Import from itools.cms
+from registry import register_object_class
 from text import Text
 from base import Handler
 from table import Multiple, Table
+from messages import MSG_CHANGES_SAVED
 
 resolution = timedelta.resolution
 
@@ -1110,6 +1110,11 @@ class Calendar(Text, CalendarView, icalendar):
 
     download_form__access__ = 'is_allowed_to_view'
     download_form__sublabel__ = u'Export in ical format'
+
+
+    @classmethod
+    def new_instance_form(cls, context):
+        return Handler.new_instance_form.im_func(cls, context)
 
 
     GET__mtime__ = None

@@ -20,12 +20,12 @@ from itools.stl import stl
 from itools.uri import Path
 
 # Import from itools.cms
+from itools.cms.base import Handler
 from itools.cms.future import OrderAware
 from itools.cms.registry import register_object_class
-from itools.cms.messages import *
+from itools.cms.messages import MSG_CHANGES_SAVED
 from itools.cms.file import File
 from itools.cms.widgets import Breadcrumb, BooleanRadio
-from itools.cms import Folder
 
 
 
@@ -45,14 +45,8 @@ class Link(File):
 
     @classmethod
     def new_instance_form(cls, context):
-        # Hack in order to do not copy Folder method
-        return Folder.new_instance_form.im_func(cls, context)
-
-
-    @classmethod
-    def new_instance(cls, container, context):
-        # Hack in order to do not copy Folder method
-        return Folder.new_instance.im_func(cls, container, context)
+        # Use the default form without language
+        return Handler.new_instance_form.im_func(cls, context)
 
 
     def GET(self, context):

@@ -243,9 +243,7 @@ class Forum(Folder):
         if self.has_handler(name):
             return context.come_back(u"This thread already exists.")
 
-        root = context.root
-        website_languages = root.get_property('ikaaro:website_languages')
-        default_language = website_languages[0]
+        default_language = context.site_root.get_default_language()
 
         data = context.get_form_value('data')
         thread = self.thread_class(data=data)

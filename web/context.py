@@ -44,8 +44,7 @@ class Context(object):
 
 
     def init(self):
-        """
-        To process a request it must be loaded, in the first place.
+        """To process a request it must be loaded, in the first place.
         """
         request = self.request
         if request.has_header('X-Forwarded-Host'):
@@ -76,6 +75,16 @@ class Context(object):
             self.path = path
             self.method = request.method
 
+        # Language negotiation
+        headers = request.headers
+        if 'accept-language' in headers:
+            # FIXME Done this way the programmer may modify the request object
+            # TODO The 'Accept-Language' header should be deserialized here,
+            # not in the 'Request' object.
+            self.accept_language = headers['accept-language']
+        else:
+            self.accept_language = AcceptLanguageType.decode('')
+
 
     ########################################################################
     # API
@@ -85,19 +94,9 @@ class Context(object):
         self.response.redirect(reference, status)
 
 
+    # FIXME Obsolete. To be removed by 0.17
     def get_accept_language(self):
-        request = self.request
-        if request is None:
-            return AcceptLanguageType.decode('')
-
-        headers = request.headers
-        if 'accept-language' not in headers:
-            return AcceptLanguageType.decode('')
-
-        # FIXME Done this way the programmer may modify the request object
-        # TODO We should instead offer an API that keeps the changes in the
-        # context object
-        return headers['accept-language']
+        return self.accept_language
 
 
     ########################################################################
@@ -135,25 +134,29 @@ class Context(object):
 
     ########################################################################
     # API / cookies (client side sessions)
-    def get_cookie(self, name):
+    def get_cookie(self, name, type=None):
         request, response = self.request, self.response
-
+        # Get the value
         cookie = response.get_cookie(name)
         if cookie is None:
-            return request.get_cookie(name)
+            value = request.get_cookie(name)
+        else:
+            # Check expiration time
+            expires = cookie.expires
+            if expires is not None:
+                expires = expires[5:-4]
+                expires = strptime(expires, '%d-%b-%y %H:%M:%S')
+                year, month, day, hour, min, sec, kk, kk, kk = expires
+                expires = datetime.datetime(year, month, day, hour, min, sec)
 
-        # Check expiration time
-        expires = cookie.expires
-        if expires is not None:
-            expires = expires[5:-4]
-            expires = strptime(expires, '%d-%b-%y %H:%M:%S')
-            year, month, day, hour, minute, second, wday, yday, isdst = expires
-            expires = datetime.datetime(year, month, day, hour, minute, second)
+                if expires < datetime.datetime.now():
+                    return None
 
-            if expires < datetime.datetime.now():
-                return None
-
-        return cookie.value
+            value = cookie.value
+        # Deserialize
+        if type is not None:
+            value = type.decode(value)
+        return value
 
 
     def has_cookie(self, name):

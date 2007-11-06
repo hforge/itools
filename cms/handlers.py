@@ -216,35 +216,45 @@ class Metadata(File):
     ########################################################################
     # API
     ########################################################################
-    def get_property(self, name, language=None):
+    def get_property_and_language(self, name, language=None):
+        """Return the value for the given property and the language of that
+        value.
+
+        For monolingual properties, the language always will be None.
+        """
         key = QName.decode(name)
-
-        # Default value
+        # Check the property exists
         datatype = get_datatype(key)
-        default_value = datatype.default
+        if key not in self.properties:
+            return datatype.default, None
+        # Get the value
+        value = self.properties[key]
 
-        if key in self.properties:
-            value = self.properties[key]
-        else:
-            return default_value
+        # Monolingual property
+        if not isinstance(value, dict):
+            return value, None
 
-        if isinstance(value, dict):
-            # Multiple languages
+        # Language negotiation
+        if language is None:
+            context = get_context()
+            if context is None:
+                language = None
+            else:
+                languages = [ k for k, v in value.items() if v.strip() ]
+                accept = context.get_accept_language()
+                language = accept.select_language(languages)
+            # Default (FIXME pick one at random)
             if language is None:
-                # Language negotiation
-                context = get_context()
-                if context is None:
-                    language = None
-                else:
-                    languages = [ k for k, v in value.items() if v.strip() ]
-                    accept = context.get_accept_language()
-                    language = accept.select_language(languages)
-                # Default (XXX pick one at random)
-                if language is None:
-                    language = value.keys()[0]
-                return value[language]
-            return value.get(language, default_value)
-        return value
+                language = value.keys()[0]
+            return value[language], language
+
+        if language in value:
+            return value[language], language
+        return datatype.default, None
+
+
+    def get_property(self, name, language=None):
+        return self.get_property_and_language(name, language=language)[0]
 
 
     def has_property(self, name, language=None):

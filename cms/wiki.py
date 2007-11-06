@@ -24,7 +24,6 @@ from subprocess import call
 from urllib import urlencode
 
 # Import from itools
-from itools.uri import get_reference, Path
 from itools.datatypes import DateTime
 from itools import vfs
 from itools.stl import stl
@@ -33,10 +32,10 @@ from itools.rest import checkid
 from itools.xml import Parser
 
 # Import from itools.cms
+from base import Handler
 from file import File
 from folder import Folder
-from messages import (MSG_NAME_MISSING, MSG_BAD_NAME, MSG_NAME_CLASH,
-        MSG_NEW_RESOURCE, MSG_EDIT_CONFLICT, MSG_CHANGES_SAVED)
+from messages import MSG_EDIT_CONFLICT, MSG_CHANGES_SAVED
 from text import Text
 from registry import register_object_class
 from binary import Image
@@ -130,7 +129,7 @@ class WikiPage(Text):
     #######################################################################
     @classmethod
     def new_instance_form(cls, context):
-        return Text.new_instance_form(context, with_language=False)
+        return Handler.new_instance_form.im_func(cls, context)
 
 
     GET__mtime__ = None

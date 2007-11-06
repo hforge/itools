@@ -2,7 +2,8 @@
 # Copyright (C) 2005 Nicolas Oyez <nicoyez@gmail.com>
 # Copyright (C) 2005-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 # Copyright (C) 2005-2007 Nicolas Deram <nicolas@itaapy.com>
-# Copyright (C) 2006 Hervé Cauwelier <herve@itaapy.com>
+# Copyright (C) 2006-2007 Hervé Cauwelier <herve@itaapy.com>
+# Copyright (C) 2007 Henry Obein <henry@itaapy.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

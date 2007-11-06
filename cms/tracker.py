@@ -2,6 +2,7 @@
 # Copyright (C) 2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 # Copyright (C) 2007 Luis Arturo Belmar-Letelier <luis@itaapy.com>
 # Copyright (C) 2007 Nicolas Deram <nicolas@itaapy.com>
+# Copyright (C) 2007 Sylvain Taverne <sylvain@itaapy.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

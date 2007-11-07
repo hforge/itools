@@ -351,43 +351,6 @@ class Root(WebSite):
     # Maintenance
     ########################################################################
 
-    ########################################################################
-    # Catalog
-    catalog_form__access__ = 'is_admin'
-    catalog_form__label__ = u'Maintenance'
-    catalog_form__sublabel__ = u'Update Catalog'
-    def catalog_form(self, context):
-        handler = self.get_object('/ui/root/catalog.xml')
-        return stl(handler)
-
-
-    update_catalog__access__ = 'is_admin'
-    def update_catalog(self, context):
-        t0 = time()
-        print 'Updating the catalog:'
-
-        # Start fresh
-        server = context.server
-        catalog_path = '%s/catalog' % server.target
-        vfs.remove(catalog_path)
-        catalog = make_catalog(catalog_path, *self._catalog_fields)
-        server.catalog = catalog
-
-        # Index the documents
-        doc_n = 0
-        for handler in self.traverse_objects():
-            doc_n += 1
-            print doc_n, object.abspath
-            catalog.index_document(handler)
-
-        t = time() - t0
-        print
-        print 'Done. Time taken: %.02f seconds' % t
-
-        message = u'$n handlers have been indexed in $time seconds.'
-        return context.come_back(message, n=doc_n, time=('%.02f' % t))
-
-
     #######################################################################
     # Check groups
     def get_groups(self):

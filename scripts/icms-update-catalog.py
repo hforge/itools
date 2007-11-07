@@ -23,6 +23,7 @@ from time import time
 
 # Import from itools
 import itools
+from itools.catalog import CatalogAware
 from itools.utils import vmsize
 from itools import vfs
 from itools.catalog import make_catalog
@@ -63,12 +64,14 @@ def update_catalog(parser, options, target):
         # Update
         t0, v0 = time(), vmsize()
         doc_n = 0
-        for handler in root.traverse_objects():
-            print doc_n, handler.get_abspath()
+        for obj in root.traverse_objects():
+            if not isinstance(obj, CatalogAware):
+                continue
+            print doc_n, obj.get_abspath()
             doc_n += 1
-            catalog.index_document(handler)
+            catalog.index_document(obj)
         # Update / Free Memory
-        del object, root
+        del obj, root
         # Update / Report
         t1, v1 = time(), vmsize()
         v = (v1 - v0)/1024

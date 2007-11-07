@@ -314,7 +314,9 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
     def _browse_namespace(self, object, icon_size):
         line = {}
-        id = str(self.get_pathto(object))
+        path = self.get_canonical_path()
+        id = Path(path).get_pathto(object.abspath)
+        id = str(id)
         line['id'] = id
         title = object.get_title()
         line['title_or_name'] = title
@@ -405,7 +407,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
     def browse_thumbnails(self, context):
         context.set_cookie('browse', 'thumb')
 
-        query = EqQuery('parent_path', self.get_abspath())
+        query = EqQuery('parent_path', self.get_canonical_path())
         namespace = self.browse_namespace(48, query=query)
 
         handler = self.get_object('/ui/folder/browse_thumbnails.xml')
@@ -427,7 +429,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         sortorder = context.get_form_value('sortorder', sortorder)
 
         # Build the query
-        abspath = self.abspath
+        abspath = self.get_canonical_path()
         if term:
             if search_subfolders is True:
                 query = EqQuery('paths', abspath)
@@ -493,7 +495,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
                 selected_image = None
 
         # look up available images
-        query = EqQuery('parent_path', self.get_abspath())
+        query = EqQuery('parent_path', self.get_canonical_path())
         namespace = self.browse_namespace(48, query=query, batchsize=0)
         objects = []
         offset = 0
@@ -716,10 +718,11 @@ class Folder(Handler, BaseFolder, CalendarAware):
             if not isinstance(handler, allowed_types):
                 continue
 
-            container = handler.parent
             # Cut&Paste in the same place (do nothing)
-            if cut and self is container:
-                continue
+            if cut is True:
+                parent = handler.parent
+                if self.get_canonical_path() == parent.get_canonical_path():
+                    continue
 
             name = generate_name(handler.name, self.get_names(), '_copy_')
             if cut is True:

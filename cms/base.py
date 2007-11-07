@@ -240,7 +240,7 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
         from users import User
 
         name = self.name
-        abspath = self.get_abspath()
+        abspath = self.get_canonical_path()
         get_property = self.get_metadata().get_property
         title = self.get_title()
 
@@ -269,12 +269,9 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
             document['text'] = text
 
         # Parent path
-        parent = self.parent
-        if parent is not None:
-            if parent.parent is None:
-                document['parent_path'] = '/'
-            else:
-                document['parent_path'] = parent.get_abspath()
+        if abspath != '/':
+            parent_path = Path(abspath).resolve2('..')
+            document['parent_path'] = str(parent_path)
 
         # All paths
         abspath = Path(abspath)
@@ -390,6 +387,7 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
     def lock(self):
         lock = Lock(username=get_context().user.name)
 
+        self = self.get_real_object()
         if self.parent is None:
             self.set_handler('.lock', lock)
         else:
@@ -399,6 +397,7 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
 
 
     def unlock(self):
+        self = self.get_real_object()
         if self.parent is None:
             self.del_handler('.lock')
         else:
@@ -406,12 +405,14 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
 
 
     def is_locked(self):
+        self = self.get_real_object()
         if self.parent is None:
             return self.has_handler('.lock')
         return self.parent.has_handler('%s.lock' % self.name)
 
 
     def get_lock(self):
+        self = self.get_real_object()
         if self.parent is None:
             return self.get_handler('.lock')
         return self.parent.get_handler('%s.lock' % self.name)
@@ -575,6 +576,7 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
 
 
     def get_metadata(self):
+        self = self.get_real_object()
         parent = self.parent
         if parent is None:
             return None

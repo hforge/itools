@@ -57,6 +57,24 @@ class Node(object):
     abspath = property(get_abspath, None, None, '')
 
 
+    def get_canonical_path(self):
+        if self.parent is None:
+            return '/'
+
+        parent_path = self.parent.get_canonical_path()
+        if not parent_path.endswith('/'):
+            parent_path += '/'
+
+        return parent_path + self.name
+
+
+    def get_real_object(self):
+        cpath = self.get_canonical_path()
+        if cpath == self.abspath:
+            return self
+        return self.get_object(cpath)
+
+
     def get_root(self):
         if self.parent is None:
             return self

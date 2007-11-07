@@ -1,5 +1,5 @@
-itools 0.16.10 (2007/1X/XX)
-==========================
+itools 0.16.10 (2007/11/08)
+===========================
 
 itools is a Python library, it groups a number of packages into a single
 meta-package for easier development and deployment:
@@ -27,7 +27,7 @@ We have a new package, "itools.git", which offers the beginning of a
 Python programming interface for GIT [3].
 
 The CMS Quick Start [4] has been updated.  And so has the itools related
-code, the "icms-make-package" script.
+code, the "icms-make-package.py" script.
 
 There is a new script that makes some simple statistics about Python
 source code: "isetup-quality.py".
@@ -36,7 +36,7 @@ There is a little change to the API, the search interface for CSV and
 iCal handlers now behaves like the catalog.
 
 There have been also some minor fixes and user interface improvements
-to the CMS, including #128, #131, #133, #134, #135 and #136.
+to the CMS, including #107, #128, #131, #133, #134, #135, #136 and #142.
 
 [1] http://www.zope.org/
 [2] http://www.microsoft.com/windows/default.mspx
@@ -45,12 +45,13 @@ to the CMS, including #128, #131, #133, #134, #135 and #136.
 
 Credits:
 
-  Luis Belamar-Letelier
+  Luis Belmar-Letelier
   Hervé Cauwelier
   Nicolas Deram
   J. David Ibáñez
   Henry Obein
   Sylvain Taverne
+  David Versmisse
 
 
 Resources

@@ -18,6 +18,7 @@
 
 # Import from the Standard Library
 from datetime import datetime
+from HTMLParser import HTMLParseError
 
 # Import from itools
 from itools.uri import Path
@@ -87,7 +88,10 @@ class EpozEditable(object):
             return context.come_back(MSG_EDIT_CONFLICT)
 
         new_body = context.get_form_value('data')
-        new_body = HTMLParser(new_body)
+        try:
+            new_body = HTMLParser(new_body)
+        except HTMLParseError:
+            return context.come_back(u'Invalid HTML code.')
         if sanitize:
             new_body = sanitize_stream(new_body)
         # Save the changes

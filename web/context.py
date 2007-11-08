@@ -165,10 +165,14 @@ class Context(object):
                     return None
 
             value = cookie.value
+
+        if type is None:
+            return value
+
         # Deserialize
-        if type is not None:
-            value = type.decode(value)
-        return value
+        if value is None:
+            return type.default
+        return type.decode(value)
 
 
     def has_cookie(self, name):

@@ -18,6 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from decimal import Decimal
 from string import Template
 
 # Import from itools
@@ -143,11 +144,13 @@ class WebSite(RoleAware, Folder):
         return self.get_property('ikaaro:website_languages')[0]
 
 
-    def before_traverse(self, context):
+    def before_traverse(self, context, min=Decimal('0.000001'),
+                        zero=Decimal('0.0')):
         # The default language
         accept = context.get_accept_language()
         default = self.get_default_language()
-        accept.set(default, 0.000001)
+        if accept.get(default, zero) < min:
+            accept.set(default, min)
         # Language negotiation
         user = context.user
         if user is None:

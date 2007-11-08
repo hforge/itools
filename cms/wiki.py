@@ -35,7 +35,7 @@ from itools.xml import Parser
 from base import Handler
 from file import File
 from folder import Folder
-from messages import MSG_EDIT_CONFLICT, MSG_CHANGES_SAVED
+from messages import *
 from text import Text
 from registry import register_object_class
 from binary import Image

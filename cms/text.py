@@ -29,7 +29,7 @@ from itools import rest
 from base import Handler
 from utils import get_parameters
 from file import File
-from messages import MSG_CHANGES_SAVED
+from messages import *
 from registry import register_object_class
 
 

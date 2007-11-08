@@ -27,7 +27,7 @@ from itools.stl import stl
 
 # Import from itools.cms
 from base import Handler
-from messages import MSG_CHANGES_SAVED
+from messages import *
 from file import File
 from registry import register_object_class
 import widgets

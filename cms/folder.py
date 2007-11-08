@@ -41,7 +41,7 @@ from base import Handler
 from binary import Image
 from handlers import Lock, Metadata
 from ical import CalendarAware
-from messages import MSG_DELETE_SELECTION, MSG_BAD_NAME, MSG_EXISTANT_FILENAME
+from messages import *
 from versioning import VersioningAware
 from workflow import WorkflowAware
 from utils import generate_name, reduce_string

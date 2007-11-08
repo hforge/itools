@@ -34,7 +34,7 @@ from registry import register_object_class
 from text import Text
 from base import Handler
 from table import Multiple, Table
-from messages import MSG_CHANGES_SAVED
+from messages import *
 
 resolution = timedelta.resolution
 

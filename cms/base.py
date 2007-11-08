@@ -37,8 +37,7 @@ from itools.rest import checkid
 # Import from itools.cms
 from catalog import schedule_to_reindex
 from handlers import Lock, Metadata
-from messages import (MSG_NAME_MISSING, MSG_BAD_NAME, MSG_NAME_CLASH,
-        MSG_NEW_RESOURCE, MSG_CHANGES_SAVED)
+from messages import *
 from registry import get_object_class
 from versioning import VersioningAware
 import webdav

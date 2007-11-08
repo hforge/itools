@@ -32,8 +32,7 @@ from itools.stl import stl
 
 # Import from itools.cms
 from base import Handler
-from messages import (MSG_EMPTY_FILENAME, MSG_BAD_NAME, MSG_NAME_CLASH,
-        MSG_NEW_RESOURCE)
+from messages import *
 from registry import register_object_class, get_object_class
 from versioning import VersioningAware
 from workflow import WorkflowAware

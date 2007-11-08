@@ -19,25 +19,23 @@
 
 # Import from the Standard Library
 from operator import itemgetter
+from datetime import datetime
 
 # Import from itools
-from itools.datatypes import FileName, Unicode
+from itools.datatypes import FileName, DateTime
 from itools.i18n import format_datetime
 from itools.stl import stl
 from itools.xml import Parser
 from itools.xhtml import sanitize_stream, xhtml_uri
 from itools.html import Parser as HTMLParser
 from itools.rest import checkid
+
+# Import from itools.cms
 from folder import Folder
-from messages import *
+from messages import MSG_EDIT_CONFLICT, MSG_CHANGES_SAVED
 from registry import register_object_class
 from html import XHTMLFile
 from text import Text
-
-
-def add_forum_style(context):
-    style = context.root.get_handler('ui/forum/forum.css')
-    context.styles.append(context.handler.get_pathto(style))
 
 
 def get_forum_handler(container, handler_name):
@@ -75,10 +73,12 @@ class Message(XHTMLFile):
         return u''
 
 
+    edit_form__access__ = 'is_admin'
     def edit_form(self, context):
         """WYSIWYG editor for HTML documents."""
         # Edit with a rich text editor
         namespace = {}
+        namespace['timestamp'] = DateTime.encode(datetime.now())
         # Epoz expects HTML
         namespace['rte'] = self.get_rte(context, 'data', self.events)
 
@@ -88,6 +88,10 @@ class Message(XHTMLFile):
 
     edit__access__ = 'is_admin'
     def edit(self, context):
+        timestamp = context.get_form_value('timestamp', type=DateTime)
+        if timestamp is None or timestamp < self.timestamp:
+            return context.come_back(MSG_EDIT_CONFLICT)
+
         data = context.get_form_value('data')
         data = HTMLParser(data)
         self.events = sanitize_stream(data)
@@ -98,6 +102,7 @@ class Message(XHTMLFile):
 
     def get_epoz_data(self):
         return self.events
+
 
 
 class Thread(Folder):
@@ -121,7 +126,7 @@ class Thread(Folder):
     def to_text(self):
         text = []
 
-        # index messages in order (XXX necessary?)
+        # Index messages in order (XXX necessary?)
         for id in ([0] + self.get_replies()):
             message = get_forum_handler(self, id)
             text.append(message.to_text())
@@ -139,7 +144,7 @@ class Thread(Folder):
         posts = [int(FileName.decode(x.name)[0]) for x in replies]
         posts.sort()
 
-        # deduce original post
+        # Omit original post
         return posts[1:]
 
 
@@ -185,7 +190,8 @@ class Thread(Folder):
         namespace['description'] = self.get_property('dc:description')
         namespace['messages'] = self.get_message_namespace(context)
         namespace['rte'] = self.get_rte(context, 'data', None)
-        add_forum_style(context)
+
+        context.styles.append('/ui/forum/forum.css')
 
         handler = self.get_handler('/ui/forum/Thread_view.xml')
         return stl(handler, namespace)
@@ -209,8 +215,10 @@ class Thread(Folder):
         return context.come_back(u"Reply Posted.", goto='#new_reply')
 
 
+    # Used by "get_rte" above
     def get_epoz_data(self):
         return None
+
 
 
 class Forum(Folder):
@@ -267,12 +275,11 @@ class Forum(Folder):
     view__label__ = u"View"
     def view(self, context):
         namespace = {}
-
         namespace['title'] = self.get_title()
         namespace['description'] = self.get_property('dc:description')
         namespace['threads'] = self.get_thread_namespace(context)
 
-        add_forum_style(context)
+        context.styles.append('/ui/forum/forum.css')
 
         handler = self.get_handler('/ui/forum/Forum_view.xml')
         return stl(handler, namespace)
@@ -283,7 +290,9 @@ class Forum(Folder):
     def new_thread_form(self, context):
         namespace = {}
         namespace['rte'] =  self.get_rte(context, 'data', None)
-        add_forum_style(context)
+
+        context.styles.append('/ui/forum/forum.css')
+
         handler = self.get_handler('/ui/forum/Forum_new_thread.xml')
         return stl(handler, namespace)
 
@@ -311,6 +320,7 @@ class Forum(Folder):
         return context.come_back(u"Thread Created.", goto=name)
 
 
+    # Used by "get_rte" above
     def get_epoz_data(self):
         return None
 

@@ -108,8 +108,9 @@ class Database(object):
         return list(names - set(removed) | set(added))
 
 
-    def get_handler(self, reference, cls=None):
+    def get_handler(self, reference, cls=None, cache=True):
         fs, reference = cwd.get_fs_and_reference(reference)
+        to_cache = cache
 
         cache = self.cache
         # Check state
@@ -165,7 +166,8 @@ class Database(object):
         handler.uri = reference
         handler.dirty = False
         # Update the cache
-        cache[reference] = handler
+        if to_cache is True:
+            cache[reference] = handler
 
         return handler
 
@@ -183,13 +185,9 @@ class Database(object):
 
         reference = get_absolute_reference(reference)
         if isinstance(handler, Folder):
-            if handler.cache is None:
-                for name in handler.get_handler_names():
-                    subhandler = handler.get_handler(name)
-                    self.set_handler(reference.resolve2(name), subhandler)
-            else:
-                for name, subhandler in handler.cache.items():
-                    self.set_handler(reference.resolve2(name), subhandler)
+            for name in handler.get_handler_names():
+                subhandler = handler.get_handler(name)
+                self.set_handler(reference.resolve2(name), subhandler)
         else:
             self.cache[reference] = handler
             self.added.add(reference)

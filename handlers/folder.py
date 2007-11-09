@@ -39,18 +39,13 @@ class Context(object):
 
 
 class Folder(Handler):
-    """
-    This is the base handler class for any folder handler. It is also used
+    """This is the base handler class for any folder handler. It is also used
     as the default handler class for any folder resource that has not a more
     specific handler.
     """
 
     class_resource_type = 'folder'
     class_mimetypes = ['application/x-not-regular-file']
-
-
-    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
-                 'cache']
 
 
     def __init__(self, ref=None, **kw):
@@ -63,16 +58,9 @@ class Folder(Handler):
         if ref is None:
             # A handler from scratch
             self.uri = None
-            self.cache = {}
-            self.new(**kw)
         else:
             # Calculate the URI
             self.uri = get_absolute_reference(ref)
-            self.cache = None
-
-
-    def new(self, **kw):
-        pass
 
 
     #########################################################################

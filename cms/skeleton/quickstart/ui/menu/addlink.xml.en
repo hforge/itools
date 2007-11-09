@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <head>
+    <title>Epoz-Toolbox</title>
+    <link rel="stylesheet" type="text/css" href="../aruni/aruni.css" />
+    <script type="text/javascript">
+      function select_link(){
+        value = ''
+        elements = document.all['object']
+        if (elements.nodeName ) {
+          value = elements.value
+        }else{
+          for(var i=elements.length-1; i>=0;i--){
+              if(elements[i].checked){
+                value = elements[i].value
+                break;
+              }
+          }
+        }
+        window.opener.copy_to_input('menu:link', value);
+        window.close();
+      }
+
+      function select_uri(){
+        value = document.getElementById('uri').value
+        window.opener.copy_to_input('menu:link', value);
+        window.close();
+      }
+    </script>
+    <style>
+      #body {
+        padding: 20px;
+      }
+      #header_blue{
+        height: 20px;
+        background-color: #30569D;
+        border-bottom: 4px solid #729FCF;
+      }
+      #insert_link td, #insert_link td a {
+        font: 14px Verdana;
+        color: #7986A8;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="header_blue"></div>
+    <div id="body">
+      <!-- Message -->
+      <div id="message" stl:if="message">Message :${message}</div>
+      <!-- External Link -->
+      <h3>Type the URL of an external resource</h3>
+      <form>
+        <input type="text" id="uri" name="uri" size="40" value="http://"/>
+        <input type="button" value="Add" class="button_ok"
+          onclick="javascript:select_uri()"/>
+      </form>
+      <!-- Internal Link -->
+      <h3>Browse and link to a File from the workspace</h3>
+      <!-- Breadcrumbs -->
+      <div id="maintitle">
+        <div id="breadcrumbs">
+          <label>Location:</label>
+          <span stl:repeat="x bc/path">
+            <a href="${x/url}">${x/name}</a> /
+          </span>
+        </div>
+      </div>
+      <form action=";addlink_form" method="get">
+        <table id="insert_link">
+          <tr stl:repeat="object bc/objects">
+            <td>
+              <input type="radio" name="object" value="${object/path}" />
+            </td>
+            <td>
+              <a stl:if="object/is_folder" href="${object/url}">
+                <img border="0" alt="${object/object_type}"
+                  src="${object/icon}" />
+              </a>
+              <img border="0" alt="${object/object_type}"
+                src="${object/icon}" stl:if="not object/is_folder"/>
+            </td>
+            <td>
+              <a stl:if="object/is_folder" href="${object/url}">
+                ${object/name}
+              </a>
+              <stl:inline if="not object/is_folder">${object/name}</stl:inline>
+            </td>
+          </tr>
+        </table>
+        <input stl:if="bc/is_submit" type="button" value="Link"
+          class="button_ok" onclick="select_link()"/>
+      </form>
+      <!-- Upload and Link -->
+      <form action=";addlink" method="post" enctype="multipart/form-data">
+        <p>Upload a file to the current folder and link to it:</p>
+        <input type="hidden" name="target_path" value="${bc/target_path}"/>
+        <input id="file" name="file" size="35" type="file"/>
+        <br/>
+        <input class="button_add" type="submit" value="Upload and Link" />
+      </form>
+    </div>
+  </body>
+</html>

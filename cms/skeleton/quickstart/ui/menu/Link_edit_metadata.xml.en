@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<stl:block xmlns="http://www.w3.org/1999/xhtml"
+           xmlns:stl="http://xml.itools.org/namespaces/stl">
+
+  <h2>Edit Metadata in Current Language</h2>
+
+  <form action=";edit_metadata" method="post">
+    <dl>
+      <dt><label for="dc:title">Title</label></dt>
+      <dd>
+        <input type="text" size="40" id="dc:title" name="dc:title"
+          value="${title}" />
+      </dd>
+      <dt><label for="dc:description">Description</label></dt>
+      <dd>
+        <textarea cols="50" rows="8" id="dc:description"
+          name="dc:description">${description}</textarea>
+      </dd>
+      <dt><label for="menu:link">Lien</label></dt>
+      <dd>
+        <input id="menu:link" name="menu:link" size="40" type="text"
+                 value="${menu:link}"/>
+          <input type="button" value="Parcourir"
+                 onclick="popup(';addlink_form', 620, 300);" />
+      </dd>
+      <dt><label for="target">Target</label></dt>
+      <dd>${target}</dd>
+    </dl>
+    <p>
+      <input type="hidden" name="dc:language" value="${language}" />
+      <input type="submit" value="Change" class="button_ok"/>
+    </p>
+  </form>
+
+</stl:block>

@@ -21,24 +21,19 @@ from operator import itemgetter
 
 # Import from itools
 from itools.datatypes import FileName
-from itools.uri import Path
 from itools.i18n import format_datetime
 from itools.stl import stl
 from itools.xml import Parser
 from itools.xhtml import sanitize_stream, xhtml_uri
 from itools.html import Parser as HTMLParser
 from itools.rest import checkid
+
+# Import from itools.cms
 from folder import Folder
-from messages import *
+from messages import MSG_EDIT_CONFLICT, MSG_CHANGES_SAVED
 from registry import register_object_class
 from html import XHTMLFile
 from text import Text
-
-
-def add_forum_style(context):
-    here = context.handler
-    css = Path(here.abspath).get_pathto('/ui/forum/forum.css')
-    context.styles.append(str(css))
 
 
 
@@ -76,6 +71,7 @@ class Message(XHTMLFile):
         XHTMLFile.edit(self, context, sanitize=True)
 
         return context.come_back(MSG_CHANGES_SAVED, goto='../;view')
+
 
 
 
@@ -125,7 +121,7 @@ class Thread(Folder):
     view__access__ = 'is_allowed_to_view'
     view__label__ = u"View"
     def view(self, context):
-        add_forum_style(context)
+        context.styles.append('/ui/forum/forum.css')
 
         user = context.user
         users = self.get_object('/users')
@@ -165,6 +161,7 @@ class Thread(Folder):
         return context.come_back(u"Reply Posted.", goto='#new_reply')
 
 
+    # Used by "get_rte" above
     def get_epoz_data(self):
         # Default document for new message form
         return None
@@ -190,7 +187,7 @@ class Forum(Folder):
     view__access__ = 'is_allowed_to_view'
     view__label__ = u"View"
     def view(self, context):
-        add_forum_style(context)
+        context.styles.append('/ui/forum/forum.css')
         # Namespace
         namespace = {}
         namespace['title'] = self.get_title()
@@ -214,7 +211,6 @@ class Forum(Folder):
             })
         namespace['threads'].sort(key=itemgetter('date'), reverse=True)
 
-
         handler = self.get_object('/ui/forum/Forum_view.xml')
         return stl(handler, namespace)
 
@@ -222,9 +218,11 @@ class Forum(Folder):
     new_thread_form__access__ = 'is_allowed_to_edit'
     new_thread_form__label__ = u"New Thread"
     def new_thread_form(self, context):
+        context.styles.append('/ui/forum/forum.css')
+
         namespace = {}
         namespace['rte'] =  self.get_rte(context, 'data', None)
-        add_forum_style(context)
+
         handler = self.get_object('/ui/forum/Forum_new_thread.xml')
         return stl(handler, namespace)
 
@@ -252,6 +250,7 @@ class Forum(Folder):
         return context.come_back(u"Thread Created.", goto=name)
 
 
+    # Used by "get_rte" above
     def get_epoz_data(self):
         # Default document for new thread form
         return None

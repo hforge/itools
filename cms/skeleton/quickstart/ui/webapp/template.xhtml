@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:stl="http://xml.itools.org/namespaces/stl">
+  <head>
+    <title>${title}</title>
+    <!-- Meta -->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta stl:repeat="meta meta_tags" name="${meta/name}"
+          content="${meta/content}" />
+
+    <!-- CSS -->
+    <link type="text/css" stl:repeat="style styles" rel="stylesheet"
+          href="${style}"/>
+    <!-- JavaScript -->
+    <script stl:repeat="script scripts" type="text/javascript" src="${script}">
+    </script>
+  </head>
+  <body>
+    <div id="header"><h1>Sports Blog Template</h1></div>
+    <div id="menu">
+      <table border="0" cellpadding="0" cellspacing="0" align="center">
+        <tr>
+          <td stl:repeat="menu tabs/items" class="${menu/class}"
+            onmouseover="show('menu_${menu/id}')"
+            onmouseout="hide('menu_${menu/id}')">
+            <div class="menu">
+                <a href="${menu/path}" id="${menu/id}" target="${menu/target}"
+                   title="${menu/description}">
+                <span>${menu/label}</span></a>
+            </div>
+            <stl:block stl:if="menu/options">
+              <div class="submenu" stl:if="menu/options/items"
+                id="menu_${menu/id}">
+                <ul>
+                  <stl:block stl:repeat="option menu/options/items">
+                    <li stl:if="not repeat/option/end" class="${option/class}">
+                      <a href="${option/path}" target="${menu/target}"
+                         title="${option/description}">${option/label}</a>
+                    </li>
+                    <li stl:if="repeat/option/end" class="last ${option/class}">
+                      <a href="${option/path}" target="${menu/target}"
+                         title="${option/description}">${option/label}</a>
+                    </li>
+                  </stl:block>
+                </ul>
+              </div>
+            </stl:block>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <!-- FLAT SUBMENU -->
+    <!--
+    <div id="flat_submenu" stl:if="tabs/flat/lvl1">
+      <span stl:repeat="item tabs/flat/lvl1">
+        <a href="${item/path}" class="${item/class}" target="${item/target}"
+           title="${menu/description}">
+          ${item/label}
+        </a>
+        <stl:inline if="not repeat/item/end">
+          <span class="separator">|</span>
+        </stl:inline>
+      </span>
+    </div>
+    -->
+    <div id="content">
+        <div id="breadcrumbs">
+          <label>Location:</label>
+          <span stl:repeat="item breadcrumb">
+            <a stl:if="item/url" href="${item/url}"
+              title="${item/name}">${item/short_name}</a>
+            <span stl:if="not item/url"
+              title="${item/name}">${item/short_name}</span>
+            <stl:inline if="not repeat/item/end">/</stl:inline>
+          </span>
+        </div>
+        <div id="message" stl:if="message">${message}</div>
+        ${body}
+    </div>
+    <div id="footer">
+      <p>${today}</p>
+    </div>
+  </body>
+</html>

@@ -42,6 +42,14 @@ from registry import register_object_class, get_object_class
 
 class UIFolder(Node, Folder):
 
+    class_title = 'UI'
+    class_icon48 = None
+
+
+    def get_metadata(self):
+        return None
+
+
     def _get_object(self, name):
         if self.has_handler(name):
             handler = self.get_handler(name)

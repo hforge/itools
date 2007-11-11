@@ -530,8 +530,8 @@ class Server(object):
             abspath = Path(path)
             for x in range(len(abspath) - 1, 0, -1):
                 path = abspath[:x]
-                if site_root.has_handler(path):
-                    context.handler = site_root.get_handler(path)
+                if site_root.has_object(path):
+                    context.handler = site_root.get_object(path)
                     break
             else:
                 context.handler = site_root

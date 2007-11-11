@@ -97,7 +97,7 @@ class Cookie(object):
 
 class Response(Message):
 
-    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
+    __slots__ = ['database', 'uri', 'timestamp', 'dirty',
                  'status', 'headers', 'body', 'cookies']
 
 

@@ -181,7 +181,8 @@ class Database(object):
 
     def set_handler(self, reference, handler):
         if self.has_handler(reference):
-            raise IOError, 'XXX'
+            msg = 'The reference "%s" is busy' % reference
+            raise IOError, msg
 
         reference = get_absolute_reference(reference)
         if isinstance(handler, Folder):

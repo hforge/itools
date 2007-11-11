@@ -213,7 +213,7 @@ class PO(Text):
     class_extension = 'po'
 
 
-    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
+    __slots__ = ['database', 'uri', 'timestamp', 'dirty',
                  'messages', 'encoding']
 
     def new(self):

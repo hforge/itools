@@ -48,15 +48,6 @@ def get_config(target):
 
 
 
-def get_root_class(root):
-    # Get the root resource
-    metadata = Metadata(root.resolve2('.metadata'))
-    format = metadata.get_property('format')
-    # Build and return the root handler
-    return registry.get_object_class(format)
-
-
-
 class Server(BaseServer):
 
     def __init__(self, target, address=None, port=None):
@@ -93,11 +84,13 @@ class Server(BaseServer):
         # The catalog
         self.catalog = Catalog('%s/catalog' % target)
 
-        # Build the root handler
-        root = target.resolve2('database')
-        cls = get_root_class(root)
-        root = cls(root)
-        root.database = database
+        # Find out the root class
+        path = target.resolve2('database/.metadata')
+        metadata = database.get_handler(path, cls=Metadata)
+        format = metadata.get_property('format')
+        cls = registry.get_object_class(format)
+        # Build the root object
+        root = cls(metadata)
         root.name = root.class_title
 
         # Initialize

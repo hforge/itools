@@ -25,8 +25,7 @@ class Text(File):
     class_extension = 'txt'
 
 
-    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
-                 'data', 'encoding']
+    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'data', 'encoding']
 
 
     def new(self, data=u''):

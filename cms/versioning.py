@@ -38,7 +38,7 @@ class VersioningAware(object):
         property = {
             (None, 'user'): username,
             ('dc', 'date'): datetime.now(),
-            (None, 'size'): str(len(self.to_str())),
+            (None, 'size'): str(self.get_size()),
         }
 
         self.set_property('ikaaro:history', property)

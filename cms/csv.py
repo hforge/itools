@@ -22,7 +22,7 @@ from operator import itemgetter
 
 # Import from itools
 from itools.datatypes import Boolean, Enumerate, Integer, is_datatype
-from itools.csv import CSV as iCSV, IntegerKey
+from itools.csv import IntegerKey
 from itools.stl import stl
 from base import Node
 from messages import *
@@ -32,7 +32,7 @@ import widgets
 
 
 
-class CSV(Text, iCSV):
+class CSV(Text):
 
     class_id = 'text/comma-separated-values'
     class_title = u'Comma Separated Values'

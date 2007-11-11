@@ -29,14 +29,33 @@ from itools.datatypes import URI
 from itools.handlers import File, Folder, Database
 from itools.stl import stl
 from itools.web import get_context, AccessControl
-from itools.xml import Parser
+from itools.xml import Parser, Document as XMLDocument
 
 # Import from itools.cms
 from base import Node
 from folder import Folder as DBFolder
 from utils import reduce_string
 from widgets import tree, build_menu
-from registry import register_object_class, get_object_class
+from registry import register_object_class
+
+
+class UIFile(Node, File):
+
+    def GET(self, context):
+        response = context.response
+        response.set_header('Content-Type', self.get_mimetype())
+        return self.to_str()
+
+
+class UITemplate(Node, XMLDocument):
+    pass
+
+
+
+map = {
+    'application/xml': UITemplate,
+    'application/xhtml+xml': UITemplate,
+}
 
 
 
@@ -44,10 +63,6 @@ class UIFolder(Node, Folder):
 
     class_title = 'UI'
     class_icon48 = None
-
-
-    def get_metadata(self):
-        return None
 
 
     def _get_object(self, name):
@@ -80,7 +95,8 @@ class UIFolder(Node, Folder):
             handler = UIFolder(handler.uri)
         else:
             format = handler.get_mimetype()
-            handler = get_object_class(format)(handler.uri)
+            cls = map.get(format, UIFile)
+            handler = cls(handler.uri)
         handler.database = self.database
         return handler
 

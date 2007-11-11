@@ -42,9 +42,7 @@ class Handler(object):
     class_extension = None
 
     # Instance variables. The variable class "__slots__" is to be overriden.
-    # FIXME The 'parent' and 'name' variables are not used by the handlers
-    # layer, but by itools.web, so they should not be defined here.
-    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name']
+    __slots__ = ['database', 'uri', 'timestamp', 'dirty']
 
 
     ########################################################################

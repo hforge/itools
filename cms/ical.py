@@ -32,7 +32,7 @@ from itools.stl import stl
 # Import from itools.cms
 from registry import register_object_class
 from text import Text
-from base import Handler
+from base import DBObject
 from table import Multiple, Table
 from messages import *
 
@@ -1053,7 +1053,7 @@ class CalendarAware(CalendarView):
 
 
 
-class Calendar(Text, CalendarView, icalendar):
+class Calendar(Text, CalendarView):
 
     class_id = 'calendar'
     class_version = '20060720'
@@ -1114,12 +1114,12 @@ class Calendar(Text, CalendarView, icalendar):
 
     @classmethod
     def new_instance_form(cls, context):
-        return Handler.new_instance_form.im_func(cls, context)
+        return DBObject.new_instance_form.im_func(cls, context)
 
 
     GET__mtime__ = None
     def GET(self, context):
-        return Handler.GET(self, context)
+        return DBObject.GET(self, context)
 
 
     # View
@@ -1276,7 +1276,7 @@ register_object_class(icalendar, format='text/calendar')
 
 
 
-class CalendarTable(Table, CalendarView, icalendarTable):
+class CalendarTable(Table, CalendarView):
 
     class_id = 'calendarTable'
     class_version = '20060720'
@@ -1293,7 +1293,7 @@ class CalendarTable(Table, CalendarView, icalendarTable):
 
     GET__mtime__ = None
     def GET(self, context):
-        return Handler.GET(self, context)
+        return DBObject.GET(self, context)
 
 
     # Test if user in context is the organizer of a given event (or is admin)

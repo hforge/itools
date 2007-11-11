@@ -24,7 +24,7 @@ from itools.datatypes import FileName
 from itools.i18n import format_datetime
 from itools.stl import stl
 from itools.xml import Parser
-from itools.xhtml import sanitize_stream, xhtml_uri
+from itools.xhtml import sanitize_stream, xhtml_uri, Document as XHTMLDocument
 from itools.html import Parser as HTMLParser
 from itools.rest import checkid
 
@@ -37,6 +37,18 @@ from text import Text
 
 
 
+def build_document(data):
+    document = XHTMLDocument()
+    new_body = HTMLParser(data)
+    new_body = sanitize_stream(new_body)
+    old_body = document.get_body()
+    document.events = (document.events[:old_body.start+1]
+                       + new_body
+                       + document.events[old_body.end:])
+    return document
+
+
+
 class Message(XHTMLFile):
 
     class_id = 'ForumMessage'
@@ -45,14 +57,12 @@ class Message(XHTMLFile):
     class_views = [['edit_form'], ['history_form']]
 
 
-    def new(self, data):
-        XHTMLFile.new(self)
-        new_body = HTMLParser(data)
-        new_body = sanitize_stream(new_body)
-        old_body = self.get_body()
-        self.events = (self.events[:old_body.start+1]
-                       + new_body
-                       + self.events[old_body.end:])
+    @classmethod
+    def _make_object(cls, folder, name, data):
+        XHTMLFile._make_object.im_func(cls, folder, name)
+        # The message
+        document = build_document(data)
+        folder.set_handler(name, document)
 
 
     def _load_state_from_file(self, file):
@@ -84,13 +94,14 @@ class Thread(Folder):
 
     message_class = Message
 
-
-    def new(self, data=u''):
-        Folder.new(self)
-        cache = self.cache
-        message = self.message_class(data=data)
-        cache['0.xhtml'] = message
-        cache['0.xhtml.metadata'] = message.build_metadata()
+    @classmethod
+    def _make_object(cls, folder, name, data=u''):
+        Folder._make_object.im_func(cls, folder, name)
+        # First post
+        cls = cls.message_class
+        folder.set_handler('%s/0.xhtml.metadata' % name, cls.build_metadata())
+        document = build_document(data)
+        folder.set_handler('%s/0.xhtml' % name, document)
 
 
     def to_text(self):
@@ -138,7 +149,7 @@ class Thread(Folder):
                 'name': message.name,
                 'author': users.get_object(author_id).get_title(),
                 'mtime': format_datetime(message.get_mtime(), accept_language),
-                'body': message.events,
+                'body': message.handler.events,
                 'editable': ac.is_admin(user, message),
             })
         namespace['rte'] = self.get_rte(context, 'data', None)
@@ -155,8 +166,8 @@ class Thread(Folder):
 
         # Post
         data = context.get_form_value('data')
-        reply = self.message_class(data=data)
-        self.set_object(name, reply)
+        cls = self.message_class
+        cls.make_object(self, name, data)
 
         return context.come_back(u"Reply Posted.", goto='#new_reply')
 
@@ -237,14 +248,14 @@ class Forum(Folder):
         if name is None:
             return context.come_back(u"Invalid title.")
 
-        if self.has_handler(name):
+        if self.has_object(name):
             return context.come_back(u"This thread already exists.")
 
         default_language = context.site_root.get_default_language()
 
+        cls = self.thread_class
         data = context.get_form_value('data')
-        thread = self.thread_class(data=data)
-        thread, metadata = self.set_object(name, thread)
+        thread = cls.make_object(self, name, data)
         thread.set_property('dc:title', title, language=default_language)
 
         return context.come_back(u"Thread Created.", goto=name)

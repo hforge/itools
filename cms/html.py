@@ -22,10 +22,11 @@ from HTMLParser import HTMLParseError
 # Import from itools
 from itools.uri import Path
 from itools.datatypes import DateTime
-from itools.xml import Document as XMLDocument, TEXT, START_ELEMENT
+from itools.xml import TEXT, START_ELEMENT
+from itools.xhtml import Document as XHTMLDocument
 from itools.stl import stl
-from itools.xhtml import Document as XHTMLDocument, sanitize_stream
-from itools.html import Document as HTMLDocument, Parser as HTMLParser
+from itools.xhtml import sanitize_stream
+from itools.html import Parser as HTMLParser
 
 # Import from ikaaro
 from messages import *
@@ -33,7 +34,7 @@ from text import Text
 from registry import register_object_class
 
 
-class XMLFile(Text, XMLDocument):
+class XMLFile(Text):
 
     class_id = 'text/xml'
 
@@ -83,7 +84,10 @@ class EpozEditable(object):
     edit__access__ = 'is_allowed_to_edit'
     def edit(self, context, sanitize=False):
         timestamp = context.get_form_value('timestamp', type=DateTime)
-        if timestamp is None or timestamp < self.timestamp:
+        if timestamp is None:
+            return context.come_back(MSG_EDIT_CONFLICT)
+        document = self.get_epoz_document()
+        if document.timestamp is not None and timestamp < document.timestamp:
             return context.come_back(MSG_EDIT_CONFLICT)
 
         # Sanitize
@@ -95,7 +99,6 @@ class EpozEditable(object):
         if sanitize:
             new_body = sanitize_stream(new_body)
         # "get_epoz_document" is to set in your editable handler
-        document = self.get_epoz_document()
         old_body = document.get_body()
         events = (document.events[:old_body.start+1] + new_body
                   + document.events[old_body.end:])
@@ -107,7 +110,7 @@ class EpozEditable(object):
 
 
 
-class XHTMLFile(EpozEditable, Text, XHTMLDocument):
+class XHTMLFile(EpozEditable, Text):
 
     class_id = 'application/xhtml+xml'
     class_title = u'Web Page'
@@ -119,6 +122,7 @@ class XHTMLFile(EpozEditable, Text, XHTMLDocument):
                    ['edit_metadata_form'],
                    ['state_form'],
                    ['history_form']]
+    class_handler = XHTMLDocument
 
 
     GET__mtime__ = None
@@ -161,7 +165,7 @@ class XHTMLFile(EpozEditable, Text, XHTMLDocument):
     view__title__ = u'View'
     def view(self, context):
         namespace = {}
-        body = self.get_body()
+        body = self.handler.get_body()
         if body is None:
             namespace['text'] = None
         else:
@@ -174,11 +178,11 @@ class XHTMLFile(EpozEditable, Text, XHTMLDocument):
     #######################################################################
     # Edit / Inline
     def get_epoz_document(self):
-        return self
+        return self.handler
 
 
 
-class HTMLFile(HTMLDocument, XHTMLFile):
+class HTMLFile(XHTMLFile):
 
     class_id = 'text/html'
 

@@ -33,7 +33,7 @@ from itools.web import get_context
 
 # Import from itools.cms
 from utils import get_parameters
-from base import Handler
+from base import DBObject
 
 
 
@@ -45,7 +45,7 @@ namespaces = {
 # Table
 ###########################################################################
 
-def batch(uri, start, size, total, gettext=Handler.gettext,
+def batch(uri, start, size, total, gettext=DBObject.gettext,
           msgs=(u"There is 1 object.", u"There are ${n} objects.")):
     """
     Outputs an HTML snippet with navigation links to move through a set
@@ -292,7 +292,7 @@ class Breadcrumb(object):
     from the tree root to another tree node, and the content of that node.
     """
 
-    def __init__(self, filter_type=Handler, root=None, start=None):
+    def __init__(self, filter_type=DBObject, root=None, start=None):
         """
         The 'start' must be a handler, 'filter_type' must be a handler class.
         """

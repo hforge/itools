@@ -19,6 +19,7 @@
 # Import from the Standard Library
 from urllib import quote
 from random import sample
+import sha
 from sys import platform
 
 # Import from itools
@@ -122,6 +123,10 @@ def reduce_string(title='', word_treshold=15, phrase_treshold=40):
 tokens = 'abcdefghijkmnopqrstuvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ23456789'
 def generate_password(length=6):
     return ''.join(sample(tokens, length))
+
+
+def crypt_password(password):
+    return sha.new(password).digest()
 
 
 ###########################################################################

@@ -26,10 +26,9 @@ from re import sub
 
 # Import from itools
 from itools.datatypes import Boolean, DateTime, Integer, String, Unicode, XML
-from versioning import VersioningAware
 from itools.i18n import format_datetime
-from itools.rest import checkid
 from itools.handlers import Config
+from itools.rest import checkid
 from itools.csv import IntegerKey, CSV as BaseCSV
 from itools.xml import Parser
 from itools.stl import stl
@@ -41,6 +40,7 @@ from messages import *
 from text import Text
 from utils import generate_name
 from registry import register_object_class, get_object_class
+from versioning import VersioningAware
 import widgets
 
 
@@ -84,15 +84,16 @@ class Tracker(Folder):
         'priorities.csv', 'states.csv']
 
 
-    def new(self, **kw):
-        Folder.new(self, **kw)
-        cache = self.cache
+    @classmethod
+    def _make_object(cls, folder, name):
+        Folder._make_object.im_func(cls, folder, name)
         # Versions
-        csv = Versions()
+        csv = VersionsCSV()
         csv.add_row([u'1.0', False])
         csv.add_row([u'2.0', False])
-        cache['versions.csv'] = csv
-        cache['versions.csv.metadata'] = csv.build_metadata()
+        folder.set_handler('%s/versions.csv' % name, csv)
+        metadata = Versions.build_metadata()
+        folder.set_handler('%s/versions.csv.metadata' % name, metadata)
         # Other Tables
         tables = [
             ('modules.csv', [u'Documentation', u'Unit Tests',
@@ -103,24 +104,25 @@ class Tracker(Folder):
                 u'Performance Improvement', u'Technology Upgrade']),
             ('priorities.csv', [u'High', u'Medium', u'Low']),
             ('states.csv', [u'Open', u'Fixed', u'Closed'])]
-        for name, values in tables:
-            csv = SelectTable()
-            cache[name] = csv
+        for table_name, values in tables:
+            csv = SelectTableCSV()
             for title in values:
                 csv.add_row([title])
-            cache['%s.metadata' % name] = csv.build_metadata()
+            folder.set_handler('%s/%s' % (name, table_name), csv)
+            metadata = SelectTable.build_metadata()
+            folder.set_handler('%s/%s.metadata' % (name, table_name), metadata)
         # Pre-defined stored searches
-        open = StoredSearch(state=0)
-        not_assigned = StoredSearch(assigned_to='nobody')
-        high_priority = StoredSearch(state=0, priority=0)
+        open = Config(state=0)
+        not_assigned = Config(assigned_to='nobody')
+        high_priority = Config(state=0, priority=0)
         i = 0
         for search, title in [(open, u'Open Issues'),
                               (not_assigned, u'Not Assigned'),
                               (high_priority, u'High Priority')]:
-            cache['s%s' % i] = search
-            kw = {}
-            kw['dc:title'] = {'en': title}
-            cache['s%s.metadata' % i] = search.build_metadata(**kw)
+            folder.set_handler('%s/s%s' % (name, i), search)
+            kw = {'dc:title': {'en': title}}
+            metadata = StoredSearch.build_metadata(**kw)
+            folder.set_handler('%s/s%s.metadata' % (name, i), metadata)
             i += 1
 
 
@@ -526,7 +528,7 @@ class Tracker(Folder):
                 comment_index = History.columns.index('comment')
                 row[comment_index] += u'\n\n%s\n\n%s' % (title, modifications)
             # Save issue
-            history = issue.get_handler('.history')
+            history = issue.handler.get_handler('.history')
             history.add_row(row)
             # Mail (create a dict with a list of issues for each user)
             new_assigned_to = context.get_form_value('assigned_to')
@@ -717,7 +719,7 @@ class Tracker(Folder):
 
         # Add
         id = self.get_new_id()
-        issue, metadata = self.set_object(id, Issue())
+        issue = Issue.make_object(self, id)
         issue._add_row(context)
 
         goto = context.uri.resolve2('../%s/;edit_form' % issue.name)
@@ -741,16 +743,28 @@ class Tracker(Folder):
 ###########################################################################
 # Tables
 ###########################################################################
-class SelectTable(CSV):
-
-    class_id = 'tracker_select_table'
+class SelectTableCSV(BaseCSV):
 
     columns = ['id', 'title']
     schema = {'id': IntegerKey, 'title': Unicode}
 
 
+class VersionsCSV(BaseCSV):
+
+    columns = ['id', 'title', 'released']
+    schema = {'id': IntegerKey,
+              'title': Unicode(title=u'Title'),
+              'released': Boolean(title=u'Released')}
+
+
+class SelectTable(CSV):
+
+    class_id = 'tracker_select_table'
+    class_handler = SelectTableCSV
+
     def get_options(self, value=None, sort=True):
-        options = [ {'id': x[0], 'title': x[1]} for x in self.get_rows() ]
+        csv = self.handler
+        options = [ {'id': x[0], 'title': x[1]} for x in csv.get_rows() ]
         if sort is True:
             options.sort(key=lambda x: x['title'])
         # Set 'is_selected'
@@ -768,8 +782,9 @@ class SelectTable(CSV):
 
 
     def get_row_by_id(self, id):
-        for x in self.search(id=id):
-            return self.get_row(x)
+        csv = self.handler
+        for x in csv.search(id=id):
+            return csv.get_row(x)
         return None
 
 
@@ -844,18 +859,14 @@ class SelectTable(CSV):
 class Versions(SelectTable):
 
     class_id = 'tracker_versions'
-
-    columns = ['id', 'title', 'released']
-    schema = {'id': IntegerKey,
-              'title': Unicode(title=u'Title'),
-              'released': Boolean(title=u'Released')}
+    class_handler = VersionsCSV
 
 
 
 ###########################################################################
 # Stored Searches
 ###########################################################################
-class StoredSearch(Text, Config):
+class StoredSearch(Text):
 
     class_id = 'stored_search'
     class_title = u'Stored Search'
@@ -906,10 +917,10 @@ class Issue(Folder, VersioningAware):
         ['history']]
 
 
-    def new(self, **kw):
-        Folder.new(self, **kw)
-        cache = self.cache
-        cache['.history'] = History()
+    @classmethod
+    def _make_object(cls, folder, name):
+        Folder._make_object.im_func(cls, folder, name)
+        folder.set_handler('%s/.history' % name, History())
 
 
     def get_document_types(self):
@@ -924,7 +935,7 @@ class Issue(Folder, VersioningAware):
 
 
     def get_rows(self):
-        return self.get_handler('.history').get_rows()
+        return self.handler.get_handler('.history').get_rows()
 
 
     def _add_row(self, context):
@@ -975,7 +986,7 @@ class Issue(Folder, VersioningAware):
             metadata.set_property('format', mimetype)
         # Update
         modifications = self.get_diff_with(row, context)
-        history = self.get_handler('.history')
+        history = self.handler.get_handler('.history')
         history.add_row(row)
         # Send a Notification Email
         # Notify / From
@@ -1027,7 +1038,7 @@ class Issue(Folder, VersioningAware):
         """Return a text with the diff between the last and new issue state"""
         root = context.root
         modifications = []
-        history = self.get_handler('.history')
+        history = self.handler.get_handler('.history')
         if history.lines:
             # Edit issue
             template = self.gettext(u'%s: %s to %s')
@@ -1082,12 +1093,12 @@ class Issue(Folder, VersioningAware):
 
 
     def get_reported_by(self):
-        history = self.get_handler('.history')
+        history = self.handler.get_handler('.history')
         return history.get_row(0).get_value('username')
 
 
     def get_value(self, name):
-        rows = self.get_handler('.history').lines
+        rows = self.handler.get_handler('.history').lines
         if rows:
             return rows[-1].get_value(name)
         return None
@@ -1126,7 +1137,7 @@ class Issue(Folder, VersioningAware):
 
 
     def get_comment(self):
-        rows = self.get_handler('.history').lines
+        rows = self.handler.get_handler('.history').lines
         i = len(rows) - 1
         while i >= 0:
             row = rows[i]
@@ -1194,7 +1205,7 @@ class Issue(Folder, VersioningAware):
         # Local variables
         users = self.get_object('/users')
         (kk, kk, title, module, version, type, priority, assigned_to, state,
-            comment, file) = self.get_handler('.history').lines[-1]
+            comment, file) = self.handler.get_handler('.history').lines[-1]
 
         # Build the namespace
         namespace = {}
@@ -1368,9 +1379,9 @@ class Issue(Folder, VersioningAware):
         return stl(handler, namespace)
 
 
-    def to_str(self):
-        # XXX Used by VersioningAware to define the size of the document
-        return ''
+    def get_size(self):
+        # FIXME Used by VersioningAware to define the size of the document
+        return 0
 
 
 ###########################################################################

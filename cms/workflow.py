@@ -63,9 +63,8 @@ class WorkflowAware(iWorkflowAware):
     # API
     ########################################################################
     def get_workflow_state(self):
-        metadata = self.metadata
-        if metadata.has_property('state'):
-            return metadata.get_property('state')
+        if self.has_property('state'):
+            return self.get_property('state')
         return self.workflow.initstate
 
     def set_workflow_state(self, value):

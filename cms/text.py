@@ -19,20 +19,18 @@
 import cgi
 
 # Import from itools
-from itools.handlers import Text as BaseText, Python as BasePython
-from itools.gettext import PO as BasePO
 from itools.stl import stl
 from itools import rest
 
 # Import from itools.cms
-from base import Handler
+from base import DBObject
 from utils import get_parameters
 from file import File
 from messages import *
 from registry import register_object_class
 
 
-class Text(File, BaseText):
+class Text(File):
 
     class_id = 'text'
     class_title = u'Plain Text'
@@ -57,13 +55,13 @@ class Text(File, BaseText):
 
     @classmethod
     def new_instance_form(cls, context):
-        return Handler.new_instance_form.im_func(cls, context,
+        return DBObject.new_instance_form.im_func(cls, context,
                 with_language=True)
 
 
     @classmethod
     def new_instance(cls, container, context):
-        return Handler.new_instance.im_func(cls, container, context)
+        return DBObject.new_instance.im_func(cls, container, context)
 
 
     #######################################################################
@@ -73,7 +71,7 @@ class Text(File, BaseText):
     view__sublabel__ = u'Plain Text'
     def view(self, context):
         namespace = {}
-        namespace['text'] = self.to_str()
+        namespace['text'] = self.handler.to_str()
 
         handler = self.get_object('/ui/text/view.xml')
         return stl(handler, namespace)
@@ -104,7 +102,7 @@ class Text(File, BaseText):
     edit_form__sublabel__ = u'Inline'
     def edit_form(self, context):
         namespace = {}
-        namespace['data'] = self.to_str()
+        namespace['data'] = self.handler.to_str()
 
         handler = self.get_object('/ui/text/edit.xml')
         return stl(handler, namespace)
@@ -113,7 +111,7 @@ class Text(File, BaseText):
     edit__access__ = 'is_allowed_to_edit'
     def edit(self, context):
         data = context.get_form_value('data')
-        self.load_state_from_string(data)
+        self.handler.load_state_from_string(data)
 
         return context.come_back(MSG_CHANGES_SAVED)
 
@@ -139,7 +137,7 @@ register_object_class(Text)
 
 
 
-class PO(Text, BasePO):
+class PO(Text):
 
     class_id = 'text/x-po'
     class_title = u'Message Catalog'
@@ -227,7 +225,7 @@ register_object_class(CSS)
 
 
 
-class Python(Text, BasePython):
+class Python(Text):
 
     class_id = 'text/x-python'
     class_icon48 = 'images/Python48.png'

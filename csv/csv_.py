@@ -66,7 +66,7 @@ class CSV(Text):
     class_mimetypes = ['text/comma-separated-values', 'text/csv']
     class_extension = 'csv'
 
-    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
+    __slots__ = ['database', 'uri', 'timestamp', 'dirty',
                  'lines', 'n_lines', 'catalog']
 
     # Hash with column names and its types

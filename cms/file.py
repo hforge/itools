@@ -24,14 +24,15 @@ import mimetypes
 # Import from itools
 from itools.uri import get_reference
 from itools.datatypes import FileName
+from itools.handlers import File as FileHandler
 from itools import vfs
 from itools.rest import checkid
 from itools.i18n import guess_language
-from itools.handlers import File as BaseFile, Text
+from itools.handlers import Text
 from itools.stl import stl
 
 # Import from itools.cms
-from base import Handler
+from base import DBObject
 from messages import *
 from registry import register_object_class, get_object_class
 from versioning import VersioningAware
@@ -40,7 +41,7 @@ from catalog import schedule_to_reindex
 
 
 
-class File(WorkflowAware, VersioningAware, Handler, BaseFile):
+class File(WorkflowAware, VersioningAware, DBObject):
 
     class_id = 'file'
     class_version = '20040625'
@@ -53,6 +54,16 @@ class File(WorkflowAware, VersioningAware, Handler, BaseFile):
                    ['edit_metadata_form'],
                    ['state_form'],
                    ['history_form']]
+    class_handler = FileHandler
+
+
+    @classmethod
+    def _make_object(cls, folder, name, body=None):
+        DBObject._make_object.im_func(cls, folder, name)
+        # Add the body
+        if body is not None:
+            handler = cls.class_handler(string=body)
+            folder.set_handler(name, handler)
 
 
     @classmethod
@@ -98,42 +109,48 @@ class File(WorkflowAware, VersioningAware, Handler, BaseFile):
                 name = FileName.encode((short_name, type, language))
 
         # Check the name is free
-        if container.has_handler(name):
+        if container.has_object(name):
             return context.come_back(MSG_NAME_CLASH)
 
         # Build the object
         cls = get_object_class(mimetype)
-        handler = cls(string=body)
-        metadata = handler.build_metadata()
-        # Add the object
-        handler, metadata = container.set_object(name, handler, metadata)
+        object = cls.make_object(container, name, body)
 
-        goto = './%s/;%s' % (name, handler.get_firstview())
+        goto = './%s/;%s' % (name, object.get_firstview())
         return context.come_back(MSG_NEW_RESOURCE, goto=goto)
 
 
-    GET__mtime__ = Handler.get_mtime
+    GET__mtime__ = DBObject.get_mtime
     def GET(self, context):
         return self.download(context)
 
 
     #######################################################################
     # Versioning & Indexing
+    def to_text(self):
+        return self.handler.to_text()
+
+
+    def get_size(self):
+        return len(self.handler.to_str())
+
+
     def before_commit(self):
         self.commit_revision()
 
 
-    def set_changed(self):
-        BaseFile.set_changed(self)
-        if self.uri is not None:
-            schedule_to_reindex(self)
+#   def set_changed(self):
+#       DBObject.set_changed(self)
+#       if self.uri is not None:
+#           schedule_to_reindex(self)
 
 
     #######################################################################
     # User Interface
     #######################################################################
     def get_human_size(self):
-        bytes = len(self.to_str())
+        file = self.handler
+        bytes = len(file.to_str())
         size = bytes / 1024.0
         if size >= 1024:
             size = size / 1024.0
@@ -159,18 +176,15 @@ class File(WorkflowAware, VersioningAware, Handler, BaseFile):
 
     def get_content_type(self):
         # Content-Type
-        metadata = self.get_metadata()
-        if metadata is None:
-            return self.get_mimetype()
         return self.get_property('format')
 
 
     download__access__ = 'is_allowed_to_view'
-    download__mtime__ = Handler.get_mtime
+    download__mtime__ = DBObject.get_mtime
     def download(self, context):
         response = context.response
         response.set_header('Content-Type', self.get_content_type())
-        return self.to_str()
+        return self.handler.to_str()
 
 
     #######################################################################

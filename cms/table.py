@@ -22,11 +22,11 @@ from operator import itemgetter
 
 # Import from itools
 from itools.datatypes import DataType, Integer, is_datatype, Enumerate, Date
-from itools.handlers.table import Table as iTable, Record
+from itools.handlers.table import Record
 from itools.stl import stl
 
 # Import from itools.cms
-from base import Handler
+from base import DBObject
 from messages import *
 from file import File
 from registry import register_object_class
@@ -48,7 +48,7 @@ class Multiple(DataType):
 
 
 
-class Table(File, iTable):
+class Table(File):
 
     class_id = 'table'
     class_title = u'Table'
@@ -66,12 +66,12 @@ class Table(File, iTable):
 
     @classmethod
     def new_instance_form(cls, context):
-        return Handler.new_instance_form.im_func(cls, context)
+        return DBObject.new_instance_form.im_func(cls, context)
 
 
     @classmethod
     def new_instance(cls, container, context):
-        return Handler.new_instance.im_func(cls, container, context)
+        return DBObject.new_instance.im_func(cls, container, context)
 
 
     def get_fields(self):

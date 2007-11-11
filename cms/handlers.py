@@ -36,7 +36,7 @@ class Lock(Text):
     class_mimetypes = ['text/x-lock']
     class_extension = 'lock'
 
-    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
+    __slots__ = ['database', 'uri', 'timestamp', 'dirty',
                  'username', 'lock_timestamp', 'key']
 
 
@@ -66,8 +66,7 @@ class Metadata(File):
     class_mimetypes = ['text/x-metadata']
     class_extension = 'metadata'
 
-    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
-                 'properties']
+    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'properties']
 
 
     def new(self, handler_class=None, format=None, **kw):

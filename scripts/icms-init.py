@@ -18,21 +18,21 @@
 
 # Import from the Standard Library
 from optparse import OptionParser
-import os
-import random
-import string
+from os import mkdir
 import sys
 
 # Import from itools
 import itools
 from itools.catalog import make_catalog, CatalogAware
 from itools.handlers import Config, Database, get_handler
+from itools.uri import get_absolute_reference
 from itools.cms.root import Root
+from itools.cms.utils import generate_password
 
 
 def init(parser, options, target):
     try:
-        os.mkdir(target)
+        mkdir(target)
     except OSError:
         parser.error('can not create the instance (check permissions)')
 
@@ -96,23 +96,19 @@ def init(parser, options, target):
         email = options.email
     # Get the password
     if options.password is None:
-        password = [ random.choice(string.ascii_letters + string.digits)
-                     for x in range(8) ]
-        password = ''.join(password)
+        password = generate_password()
     else:
         password = options.password
 
     # Build the instance on memory
     database = Database()
-    instance = get_handler(target)
-    instance.database = database
-    # Initialize the database
-    root = root_class(username=email, password=password)
-    instance.set_handler('database', root)
+    mkdir('%s/database' % target)
+    base = get_absolute_reference(target).resolve2('database')
+    # Make the root
+    folder = database.get_handler(base)
+    root = root_class._make_object(folder, email, password)
     database.save_changes()
-
     # Index everything
-    root.parent = None
     catalog = make_catalog('%s/catalog' % target, *root._catalog_fields)
     for handler in root.traverse_objects():
         if isinstance(handler, CatalogAware):

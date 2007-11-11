@@ -32,7 +32,7 @@ from message import Message
 
 class Request(Message):
 
-    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
+    __slots__ = ['database', 'uri', 'timestamp', 'dirty',
                  'request_line', 'method', 'request_uri', 'http_version',
                  'headers', 'body']
 

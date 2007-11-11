@@ -17,7 +17,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-import sha
 from copy import deepcopy
 from string import Template
 
@@ -35,10 +34,8 @@ from folder import Folder
 from metadata import Password
 from messages import *
 from registry import register_object_class, get_object_class
+from utils import crypt_password
 
-
-def crypt_password(password):
-    return sha.new(password).digest()
 
 
 class User(AccessControl, Folder):
@@ -434,24 +431,6 @@ class UserFolder(Folder):
 
 
     #######################################################################
-    # Skeleton
-    #######################################################################
-    def new(self, users=[]):
-        Folder.new(self)
-        cache = self.cache
-        for id, value in enumerate(users):
-            id = str(id)
-            email, password = value
-            # Add User
-            user = get_object_class('user')()
-            cache[id] = user
-            # Add metadata
-            metadata = {'owner': id, 'ikaaro:email': email,
-                        'ikaaro:password': crypt_password(password)}
-            cache['%s.metadata' % id] = user.build_metadata(**metadata)
-
-
-    #######################################################################
     # API
     #######################################################################
     def set_user(self, email=None, password=None):
@@ -486,9 +465,8 @@ class UserFolder(Folder):
 
     def get_usernames(self):
         """Return all user names."""
-        usernames = [ x[:-9] for x in self.get_handler_names()
-                      if x.endswith('.metadata') ]
-        return frozenset(usernames)
+        names = self._get_names()
+        return frozenset(names)
 
 
 

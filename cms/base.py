@@ -21,7 +21,7 @@
 from datetime import datetime
 
 # Import from itools
-from itools.uri import Path
+from itools.uri import Path, get_reference
 from itools import vfs
 from itools.catalog import CatalogAware
 from itools.handlers import Handler as BaseHandler
@@ -35,7 +35,7 @@ from itools.datatypes import FileName
 from itools.rest import checkid
 
 # Import from itools.cms
-from catalog import schedule_to_reindex
+from catalog import schedule_to_reindex, schedule_to_index
 from handlers import Lock, Metadata
 from messages import *
 from registry import get_object_class
@@ -123,27 +123,12 @@ class Node(BaseNode):
         if self.uri is None:
             return None
 
-        metadata = self.get_metadata()
-        if metadata is None:
-            metadata_mtime = None
-        elif metadata.timestamp is not None:
-            metadata_mtime = metadata.timestamp
-        elif vfs.exists(metadata.uri):
-            metadata_mtime = vfs.get_mtime(metadata.uri)
-        else:
-            metadata_mtime = None
-
         if self.timestamp is not None:
-            handler_mtime = self.timestamp
+            return self.timestamp
         elif vfs.exists(self.uri):
-            handler_mtime = vfs.get_mtime(self.uri)
-        else:
-            return metadata_mtime
+            return vfs.get_mtime(self.uri)
 
-        if metadata_mtime is None:
-            return handler_mtime
-
-        return max(handler_mtime, metadata_mtime)
+        return None
 
 
     # XXX TODO remove "from_handler" in 0.17
@@ -191,8 +176,8 @@ class Node(BaseNode):
     # User interface
     ########################################################################
     def get_firstview(self):
-        """
-        Returns the first allowed object view url, or None if there aren't.
+        """Returns the first allowed object view url, or None if there
+        aren't.
         """
         for view in self.get_views():
             return view
@@ -219,16 +204,79 @@ class Node(BaseNode):
 
 
 
-class Handler(CatalogAware, Node, DomainAware, BaseHandler):
+class DBObject(CatalogAware, Node, DomainAware):
 
-    def set_changed(self):
-        if self.uri is not None:
-            schedule_to_reindex(self)
+    def __init__(self, metadata):
+        self.metadata = metadata
+        self._handler = None
+        # The tree
+        self.name = ''
+        self.parent = None
+
+
+
+    @classmethod
+    def make_object(cls, container, name, *args, **kw):
+        from folder import Folder
+
+        cls._make_object(container.handler, name, *args, **kw)
+        object = container.get_object(name)
+
+        # Versioning
+        if isinstance(object, VersioningAware):
+            object.commit_revision()
+        # Schedule to index
+        if isinstance(object, Folder):
+            for x in object.traverse_objects():
+                schedule_to_index(x)
+        else:
+            schedule_to_index(object)
+
+        return object
+
+
+    @classmethod
+    def _make_object(cls, folder, name):
+        metadata = cls.build_metadata()
+        folder.set_handler('%s.metadata' % name, metadata)
+
+
+    def get_handler(self):
+        if self._handler is None:
+            cls = self.class_handler
+            database = self.metadata.database
+            if self.parent is None:
+                uri = self.metadata.uri.resolve('.')
+            else:
+                uri = self.metadata.uri.resolve(self.name)
+            if database.has_handler(uri):
+                self._handler = database.get_handler(uri, cls=cls)
+            else:
+                handler = cls()
+                handler.database = database
+                handler.uri = uri
+                handler.timestamp = None
+                handler.dirty = False
+                database.cache[uri] = handler
+                self._handler = handler
+        return self._handler
+
+    handler = property(get_handler, None, None, '')
+
+
+#   def set_changed(self):
+#       Metadata.set_changed(self)
+#       if self.uri is not None:
+#           schedule_to_reindex(self)
 
 
     ########################################################################
     # Indexing
     ########################################################################
+    def to_text(self):
+        raise NotImplementedError
+
+
     def get_catalog_indexes(self):
         from access import RoleAware
         from file import File
@@ -236,7 +284,7 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
 
         name = self.name
         abspath = self.get_canonical_path()
-        get_property = self.get_metadata().get_property
+        get_property = self.get_property
         title = self.get_title()
 
         mtime = self.get_mtime()
@@ -277,7 +325,7 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
             # FIXME We add an arbitrary size so files will always be bigger
             # than folders. This won't work when there is a folder with more
             # than that size.
-            document['size'] = 2**30 + len(self.to_str())
+            document['size'] = 2**30 + len(self.handler.to_str())
         else:
             names = self.get_names()
             document['size'] = len(names)
@@ -318,17 +366,11 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
     # Properties
     ########################################################################
     def has_property(self, name, language=None):
-        metadata = self.get_metadata()
-        if metadata is None:
-            return Node.has_property(self, name)
-        return metadata.has_property(name, language=language)
+        return self.metadata.has_property(name, language=language)
 
 
     def get_property_and_language(self, name, language=None):
-        metadata = self.get_metadata()
-        if metadata is None:
-            return Node.get_property_and_language(self, name)
-        return metadata.get_property_and_language(name, language=language)
+        return self.metadata.get_property_and_language(name, language=language)
 
 
     def set_property(self, name, value, language=None):
@@ -338,7 +380,32 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
 
     def del_property(self, name, language=None):
         schedule_to_reindex(self)
-        self.metadata.del_property(name, language=language)
+        self.metadata.del_property(self, name, language=language)
+
+
+    def get_mtime(self):
+        metadata = self.metadata
+        if metadata.timestamp is not None:
+            metadata_mtime = metadata.timestamp
+        elif vfs.exists(metadata.uri):
+            metadata_mtime = vfs.get_mtime(metadata.uri)
+        else:
+            metadata_mtime = None
+
+        handler = self.handler
+        if handler is None:
+            return metadata_mtime
+        elif handler.timestamp is not None:
+            handler_mtime = handler.timestamp
+        elif vfs.exists(handler.uri):
+            handler_mtime = vfs.get_mtime(handler.uri)
+        else:
+            return metadata_mtime
+
+        if metadata_mtime is None:
+            return handler_mtime
+
+        return max(handler_mtime, metadata_mtime)
 
 
     ########################################################################
@@ -511,15 +578,16 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
             return context.come_back(MSG_BAD_NAME)
 
         # Add the language extension to the name
-        name = FileName.encode((name, cls.class_extension, language))
+        extension = cls.class_handler.class_extension
+        name = FileName.encode((name, extension, language))
 
         # Check the name is free
-        if container.has_handler(name):
+        if container.has_object(name):
             return context.come_back(MSG_NAME_CLASH)
 
-        # Build the object
-        handler = cls()
-        metadata = handler.build_metadata()
+        object = cls.make_object(container, name)
+        # The metadata
+        metadata = object.metadata
         if language is not None:
             # Multilingual support
             metadata.set_property('dc:language', language)
@@ -528,10 +596,8 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
             site_root = container.get_site_root()
             language = site_root.get_default_language()
         metadata.set_property('dc:title', title, language=language)
-        # Add the object
-        handler, metadata = container.set_object(name, handler, metadata)
 
-        goto = './%s/;%s' % (name, handler.get_firstview())
+        goto = './%s/;%s' % (name, object.get_firstview())
         return context.come_back(MSG_NEW_RESOURCE, goto=goto)
 
 
@@ -568,19 +634,6 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
             kw['state'] = cls.workflow.initstate
 
         return Metadata(handler_class=cls, owner=owner, format=format, **kw)
-
-
-    def get_metadata(self):
-        self = self.get_real_object()
-        parent = self.parent
-        if parent is None:
-            return None
-        metadata_name = '%s.metadata' % self.name
-        if parent.has_handler(metadata_name):
-            return parent.get_handler(metadata_name)
-        return None
-
-    metadata = property(get_metadata, None, None, "")
 
 
     edit_metadata_form__access__ = 'is_allowed_to_edit'

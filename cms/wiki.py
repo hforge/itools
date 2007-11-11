@@ -32,7 +32,7 @@ from itools.rest import checkid
 from itools.xml import Parser
 
 # Import from itools.cms
-from base import Handler
+from base import DBObject
 from file import File
 from folder import Folder
 from messages import *
@@ -70,13 +70,13 @@ class WikiFolder(Folder):
     __fixed_handlers__ = ['FrontPage']
 
 
-    def new(self, **kw):
-        Folder.new(self, **kw)
-        cache = self.cache
-        page = WikiPage()
-        cache['FrontPage'] = page
-        cache['FrontPage.metadata'] = page.build_metadata(
-                **{'dc:title': {'en': u"Front Page"}})
+    @classmethod
+    def _make_object(cls, folder, name):
+        Folder._make_object.im_func(cls, folder, name)
+        # FrontPage
+        kw = {'dc:title': {'en': u"Front Page"}}
+        metadata = WikiPage.build_metadata(**kw)
+        folder.set_handler('%s/FrontPage.metadata' % name, metadata)
 
 
     def get_document_types(self):
@@ -129,7 +129,7 @@ class WikiPage(Text):
     #######################################################################
     @classmethod
     def new_instance_form(cls, context):
-        return Handler.new_instance_form.im_func(cls, context)
+        return DBObject.new_instance_form.im_func(cls, context)
 
 
     GET__mtime__ = None
@@ -185,7 +185,7 @@ class WikiPage(Text):
                 destination_class=io.NullOutput)
         pub.set_components(None, 'restructuredtext', 'null')
         pub.process_programmatic_settings(None, self.overrides, None)
-        pub.set_source(self.to_str(), None)
+        pub.set_source(self.handler.to_str(), None)
         pub.set_destination(None, None)
 
         # Publish!
@@ -428,7 +428,7 @@ class WikiPage(Text):
 
         namespace = {}
         namespace['timestamp'] = DateTime.encode(datetime.now())
-        namespace['data'] = self.to_str()
+        namespace['data'] = self.handler.to_str()
         namespace['text_size'] = text_size
 
         handler = self.get_object('/ui/wiki/WikiPage_edit.xml')
@@ -437,7 +437,7 @@ class WikiPage(Text):
 
     def edit(self, context):
         timestamp = context.get_form_value('timestamp', type=DateTime)
-        if timestamp is None or timestamp < self.timestamp:
+        if timestamp is None or timestamp < self.handler.timestamp:
             return context.come_back(MSG_EDIT_CONFLICT)
 
         data = context.get_form_value('data', type=Unicode)

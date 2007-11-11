@@ -17,21 +17,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.handlers import (Image as BaseImage, ZipArchive as BaseZipArchive,
-                             TarArchive as BaseTarArchive,
-                             Gzip as BaseGzip,
-                             Bzip2 as BaseBzip2)
-from itools.xml import (MSWord as BaseMSWord,
-                        MSExcel as BaseMSExcel,
-                        MSPowerPoint as BaseMSPowerPoint,
-                        RTF as BaseRTF)
-from itools.pdf import PDF as BasePDF
-from itools.odf import (ODT as BaseODT,
-                        ODS as BaseODS,
-                        ODP as BaseODP,
-                        OOWriter as BaseOOWriter,
-                        OOCalc as BaseOOCalc,
-                        OOImpress as BaseOOImpress)
 from itools.stl import stl
 from file import File
 from registry import register_object_class
@@ -40,7 +25,7 @@ from registry import register_object_class
 ###########################################################################
 # Images, Video & Flash
 ###########################################################################
-class Image(File, BaseImage):
+class Image(File):
 
     class_id = 'image'
     class_title = u'Image'
@@ -131,7 +116,7 @@ class Flash(File):
 ###########################################################################
 # Office Documents
 ###########################################################################
-class MSWord(File, BaseMSWord):
+class MSWord(File):
 
     class_id = 'application/msword'
     class_title = u'Word'
@@ -141,7 +126,7 @@ class MSWord(File, BaseMSWord):
 
 
 
-class MSExcel(File, BaseMSExcel):
+class MSExcel(File):
 
     class_id = 'application/vnd.ms-excel'
     class_title = u'Excel'
@@ -151,7 +136,7 @@ class MSExcel(File, BaseMSExcel):
 
 
 
-class MSPowerPoint(File, BaseMSPowerPoint):
+class MSPowerPoint(File):
 
     class_id = 'application/vnd.ms-powerpoint'
     class_title = u'PowerPoint'
@@ -161,7 +146,7 @@ class MSPowerPoint(File, BaseMSPowerPoint):
 
 
 
-class OOWriter(File, BaseOOWriter):
+class OOWriter(File):
 
     class_id = 'application/vnd.sun.xml.writer'
     class_title = u'OOo Writer'
@@ -171,7 +156,7 @@ class OOWriter(File, BaseOOWriter):
 
 
 
-class OOCalc(File, BaseOOCalc):
+class OOCalc(File):
 
     class_id = 'application/vnd.sun.xml.calc'
     class_title = u'OOo Calc'
@@ -181,7 +166,7 @@ class OOCalc(File, BaseOOCalc):
 
 
 
-class OOImpress(File, BaseOOImpress):
+class OOImpress(File):
 
     class_id = 'application/vnd.sun.xml.impress'
     class_title = u'OOo Impress'
@@ -191,7 +176,7 @@ class OOImpress(File, BaseOOImpress):
 
 
 
-class PDF(File, BasePDF):
+class PDF(File):
 
     class_id = 'application/pdf'
     class_title = u'PDF'
@@ -201,7 +186,7 @@ class PDF(File, BasePDF):
 
 
 
-class RTF(File, BaseRTF):
+class RTF(File):
 
     class_id = 'text/rtf'
     class_title = u"RTF"
@@ -211,7 +196,7 @@ class RTF(File, BaseRTF):
 
 
 
-class ODT(File, BaseODT):
+class ODT(File):
 
     class_id ='application/vnd.oasis.opendocument.text'
     class_title = u'ODT'
@@ -221,7 +206,7 @@ class ODT(File, BaseODT):
 
 
 
-class ODS(File, BaseODS):
+class ODS(File):
 
     class_id ='application/vnd.oasis.opendocument.spreadsheet'
     class_title = u'ODS'
@@ -231,7 +216,7 @@ class ODS(File, BaseODS):
 
 
 
-class ODP(File, BaseODP):
+class ODP(File):
 
     class_id ='application/vnd.oasis.opendocument.presentation'
     class_title = u'ODP'
@@ -263,14 +248,14 @@ class Archive(File):
 
 
 
-class ZipArchive(Archive, BaseZipArchive):
+class ZipArchive(Archive):
 
     class_id = 'application/zip'
     class_title = u"Zip Archive"
 
 
 
-class TarArchive(Archive, BaseTarArchive):
+class TarArchive(Archive):
 
     class_id = 'application/x-tar'
     class_title = u"Tar Archive"
@@ -286,13 +271,13 @@ class Compression(File):
     class_icon48 = 'images/Archive48.png'
 
 
-class Gzip(Compression, BaseGzip):
+class Gzip(Compression):
 
     class_id = 'application/x-gzip'
     class_title = u"Gzip"
 
 
-class Bzip2(Compression, BaseBzip2):
+class Bzip2(Compression):
 
     class_id = 'application/x-bzip2'
     class_title = u"Bzip2"

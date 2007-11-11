@@ -30,17 +30,15 @@ from itools.uri import Path, get_reference
 from itools.catalog import CatalogAware, EqQuery, AndQuery, PhraseQuery
 from itools.datatypes import Boolean, DataType, FileName, Integer, Unicode
 from itools import vfs
-from itools.handlers import Folder as BaseFolder, get_handler_class
+from itools.handlers import get_handler_class, Folder as FolderHandler
 from itools.rest import checkid
 from itools.stl import stl
 from itools.web import get_context
 from itools.xml import Parser
 
 # Import from itools.cms
-from base import Handler
+from base import DBObject
 from binary import Image
-from handlers import Lock, Metadata
-from ical import CalendarAware
 from messages import *
 from versioning import VersioningAware
 from workflow import WorkflowAware
@@ -66,11 +64,8 @@ class CopyCookie(DataType):
 
 
 
-class Folder(Handler, BaseFolder, CalendarAware):
+class Folder(DBObject):
 
-    #########################################################################
-    # Class metadata
-    #########################################################################
     class_id = 'folder'
     class_version = '20040625'
     class_layout = {}
@@ -84,6 +79,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
          'browse_content?mode=image'],
         ['new_resource_form'],
         ['edit_metadata_form']]
+    class_handler = FolderHandler
 
 
     search_criteria =  [
@@ -116,9 +112,9 @@ class Folder(Handler, BaseFolder, CalendarAware):
     def GET(self, context):
         # Try index
         try:
-            self.get_handler('index')
+            self.get_object('index')
         except LookupError:
-            return Handler.GET(self, context)
+            return DBObject.GET(self, context)
 
         return context.uri.resolve2('index')
 
@@ -126,76 +122,32 @@ class Folder(Handler, BaseFolder, CalendarAware):
     #######################################################################
     # API
     #######################################################################
+    def set_handler(self, reference, handler):
+        # Remove ".metadata"
+        uri = str(self.uri)[:-9]
+        uri = get_reference(uri)
+        # Set
+        uri = uri.resolve2(reference)
+        self.database.set_handler(uri, handler)
+
+
     def _has_object(self, name):
-        return self.has_handler('%s.metadata' % name)
+        folder = self.handler
+        return folder.has_handler('%s.metadata' % name)
 
 
     def _get_names(self):
-        return [ x[:-9] for x in self.get_handler_names()
+        folder = self.handler
+        return [ x[:-9] for x in folder.get_handler_names()
                  if x[-9:] == '.metadata' ]
 
 
     def _get_object(self, name):
-        database = self.database
-        uri = self.uri.resolve2(name)
-        timestamp = None
-        dirty = False
-        # The metadata
-        metadata = self.get_handler('%s.metadata' % name)
+        folder = self.handler
+        metadata = folder.get_handler('%s.metadata' % name)
         format = metadata.get_property('format')
-        # The object
         cls = get_object_class(format)
-        try:
-            handler = self.get_handler(name, cls=cls)
-        except LookupError:
-            handler = cls()
-            database.cache[uri] = handler
-            # Attach
-            handler.database = database
-            handler.uri = uri
-            handler.timestamp = timestamp
-            handler.dirty = dirty
-        return handler
-
-
-    def set_object(self, name, handler, metadata=None):
-        """
-        Adds the given handler (and metadata). The handler may be not an
-        instance but a class, then the handler will not be added, only
-        the metadata.
-        """
-        if metadata is None:
-            metadata = handler.build_metadata()
-
-        # The metadata
-        self.set_handler('%s.metadata' % name, metadata)
-        metadata.parent = self
-        metadata.name = '%s.metadata' % name
-
-        # The handler
-        if type(handler) is type:
-            # Class
-            handler = handler()
-            handler.database = self.database
-            handler.uri = self.uri.resolve2(name)
-        else:
-            # Instance
-            self.set_handler(name, handler)
-        handler.parent = self
-        handler.name = name
-
-        # Versioning
-        if isinstance(handler, VersioningAware):
-            handler.commit_revision()
-
-        # Schedule to index
-        if isinstance(handler, Folder):
-            for x in handler.traverse_objects():
-                schedule_to_index(x)
-        else:
-            schedule_to_index(handler)
-
-        return handler, metadata
+        return cls(metadata)
 
 
     def del_object(self, name):
@@ -208,16 +160,22 @@ class Folder(Handler, BaseFolder, CalendarAware):
             schedule_to_unindex(handler)
 
         # Remove
-        self.del_handler('%s.metadata' % name)
-        if self.has_handler(name):
-            self.del_handler(name)
+        folder = self.handler
+        folder.del_handler('%s.metadata' % name)
+        if folder.has_handler(name):
+            folder.del_handler(name)
 
 
     def copy_object(self, source, target):
+        if source[0] == '/':
+            source = source[1:]
+            root = self.get_root()
+            source = root.handler.uri.resolve2(source)
         # Copy
-        source = self.get_object(source).uri
-        self.copy_handler(source, target)
-        self.copy_handler('%s.metadata' % source, '%s.metadata' % target)
+        folder = self.handler
+        folder.copy_handler('%s.metadata' % source, '%s.metadata' % target)
+        if folder.has_handler(source):
+            folder.copy_handler(source, target)
 
         # Index
         handler = self.get_object(target)
@@ -238,9 +196,14 @@ class Folder(Handler, BaseFolder, CalendarAware):
             schedule_to_unindex(handler)
 
         # Move
-        source = self.get_object(source).uri
-        self.move_handler(source, target)
-        self.move_handler('%s.metadata' % source, '%s.metadata' % target)
+        if source[0] == '/':
+            source = source[1:]
+            root = self.get_root()
+            source = root.handler.uri.resolve2(source)
+        folder = self.handler
+        folder.move_handler('%s.metadata' % source, '%s.metadata' % target)
+        if folder.has_handler(source):
+            folder.move_handler(source, target)
 
         # Index
         handler = self.get_object(target)
@@ -270,7 +233,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
                 if not isinstance(handler, handler_class):
                     continue
 
-            get_property = handler.get_metadata().get_property
+            get_property = handler.get_property
             if format is None or get_property('format') == format:
                 if state is None:
                     yield handler
@@ -291,7 +254,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
                 ref = 'new_resource_form?type=%s' % quote_plus(id)
                 subviews.append(ref)
             return subviews
-        return Handler.get_subviews(self, name)
+        return DBObject.get_subviews(self, name)
 
 
     def new_resource_form__sublabel__(self, **kw):
@@ -733,7 +696,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
                 self.copy_object(path, name)
                 # Fix metadata properties
                 handler = self.get_object(name)
-                metadata = handler.get_metadata()
+                metadata = handler.metadata
                 # Fix state
                 if isinstance(handler, WorkflowAware):
                     metadata.set_property('state', handler.workflow.initstate)

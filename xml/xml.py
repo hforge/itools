@@ -212,8 +212,7 @@ class Document(Text):
     class_extension = 'xml'
 
 
-    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
-                 'events']
+    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'events']
 
 
     def new(self):

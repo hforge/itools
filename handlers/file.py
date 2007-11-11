@@ -37,16 +37,13 @@ class File(Handler):
     class_resource_type = 'file'
 
 
-    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'parent', 'name',
-                 'data']
+    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'data']
 
 
     def __init__(self, ref=None, string=None, **kw):
         self.database = None
         self.timestamp = None
         self.dirty = False
-        self.parent = None
-        self.name = ''
 
         if ref is None:
             self.uri = None

@@ -44,9 +44,10 @@ from text import PO
 from users import UserFolder
 from website import WebSite
 from handlers import Metadata
-from registry import register_object_class
+from registry import register_object_class, get_object_class
 from folder import Folder
 from skins import ui
+from utils import crypt_password
 
 
 # itools source and target languages
@@ -150,18 +151,23 @@ class Root(WebSite):
         ]
 
 
-    def new(self, username=None, password=None):
-        # Call the parent
-        WebSite.new(self)
-
-        # Create sub-handlers
-        cache = self.cache
-        cache['.metadata'] = self.build_metadata(**{'ikaaro:admins': ('0',)})
-        # Users
-        users = UserFolder(users=[(username, password)])
-        cache['users'] = users
-        cache['users.metadata'] = users.build_metadata(owner=None,
-            **{'dc:title': {'en': u'Users'}})
+    @classmethod
+    def _make_object(cls, folder, email, password):
+        # The metadata
+        kw = {'ikaaro:admins': ('0',)}
+        metadata = cls.build_metadata(**kw)
+        folder.set_handler('.metadata', metadata)
+        # User Folder
+        kw = {'dc:title': {'en': u'Users'}}
+        users = UserFolder.build_metadata(owner=None, **kw)
+        folder.set_handler('users.metadata', users)
+        # Default User
+        password = crypt_password(password)
+        kw = {'ikaaro:email': email, 'ikaaro:password': password}
+        user = get_object_class('user').build_metadata(owner='0', **kw)
+        folder.set_handler('users/0.metadata', user)
+        # Return
+        return cls(metadata)
 
 
     ########################################################################
@@ -210,20 +216,13 @@ class Root(WebSite):
 
 
     def _get_names(self):
-        names = Folder._get_names(self)
-        names.remove('')
+        names = [ x for x in Folder._get_names(self) if x ]
         return names + ['ui']
 
 
     ########################################################################
     # API
     ########################################################################
-    def get_metadata(self):
-        return self.get_handler('.metadata')
-
-    metadata = property(get_metadata, None, None, "")
-
-
     def get_usernames(self):
         return self.get_handler('users').get_usernames()
 

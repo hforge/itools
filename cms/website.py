@@ -116,7 +116,7 @@ class WebSite(RoleAware, Folder):
             return context.come_back(MSG_BAD_NAME)
 
         # Check the name is free
-        if container.has_handler(name):
+        if container.has_object(name):
             return context.come_back(MSG_NAME_CLASH)
 
         class_id = context.get_form_value('class_id')
@@ -124,15 +124,13 @@ class WebSite(RoleAware, Folder):
             return context.come_back(u'Please select a website.')
 
         cls = get_website_class(class_id)
-        # Build the object
-        handler = cls()
-        metadata = handler.build_metadata()
+        object = cls.make_object(container, name)
+        # The metadata
+        metadata = object.metadata
         language = container.get_site_root().get_default_language()
         metadata.set_property('dc:title', title, language=language)
-        # Add the object
-        handler, metadata = container.set_object(name, handler, metadata)
 
-        goto = './%s/;%s' % (name, handler.get_firstview())
+        goto = './%s/;%s' % (name, object.get_firstview())
         return context.come_back(MSG_NEW_RESOURCE, goto=goto)
 
 

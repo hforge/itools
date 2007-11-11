@@ -52,8 +52,6 @@ class Folder(Handler):
         self.database = None
         self.timestamp = None
         self.dirty = False
-        self.parent = None
-        self.name = ''
 
         if ref is None:
             # A handler from scratch

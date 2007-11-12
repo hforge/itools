@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-This module implements an storage for documents, where a document is a
+This module implements a storage for documents, where a document is a
 set of fields, each field has a value (a unicode string) and is identified
 with a number. Documents are also identified with numbers.
 
@@ -222,8 +222,14 @@ class Catalog(object):
         'fields', 'field_numbers', 'indexes',
         'documents', 'n_documents', 'added_documents', 'removed_documents']
 
+    #########################################################################
+    # API / Public
+    #########################################################################
 
     def __init__(self, ref):
+        """
+        Constructor
+        """
         self.uri = get_absolute_reference(ref)
         self.has_changed = False
         self.fields = []
@@ -265,9 +271,170 @@ class Catalog(object):
 
         self.timestamp = vfs.get_mtime(self.uri)
 
+    ####################
+    # Transactions part
+    ####################
+
+    def save_changes(self):
+        """
+        Save the last changes to disk.
+        """
+        # Start
+        path = self.uri.path
+        state = str(path.resolve2('state'))
+        open(state, 'w').write('START\n')
+
+        # Save
+        try:
+            for index in self.indexes:
+                if index is not None:
+                    index.save_state()
+            self.save_documents()
+        except:
+            # Restore from backup
+            src = str(path.resolve2('data.bak'))
+            dst = str(path.resolve2('data'))
+            for name in listdir(src):
+                src_file = src + '/' + name
+                dst_file = dst + '/' + name
+                if getmtime(src_file) < getmtime(dst_file):
+                    data = open(src_file).read()
+                    open(dst_file, 'w').write(data)
+            # Reload the catalog
+            self.__init__(self.uri)
+            # We are done
+            open(state, 'w').write('OK\n')
+            # Forward error
+            raise
+
+        # The transaction was successful
+        open(state, 'w').write('END\n')
+
+        # Backup
+        src = str(path.resolve2('data'))
+        dst = str(path.resolve2('data.bak'))
+        for name in listdir(src):
+            src_file = src + '/' + name
+            dst_file = dst + '/' + name
+            if getmtime(src_file) > getmtime(dst_file):
+                data = open(src_file).read()
+                open(dst_file, 'w').write(data)
+
+        # We are done
+        open(state, 'w').write('OK\n')
+
+        # Update the timestamp
+        self.timestamp = vfs.get_mtime(self.uri)
+
+
+    def abort_changes(self):
+        """
+        Abort the last changes made in memory.
+        """
+        # Indexes
+        for index in self.indexes:
+            if index is not None:
+                index.abort()
+
+
+    #######################
+    # Documents management
+    #######################
+
+    def index_document(self, document):
+        """
+        Add a new docmument.
+        """
+        # Check the input
+        if isinstance(document, CatalogAware):
+            document = document.get_catalog_indexes()
+        elif not isinstance(document, dict):
+            raise ValueError, ('the document must be either a dictionary or'
+                ' a CatalogAware object')
+
+        # Set the catalog as dirty
+        self.has_changed = True
+        # Create the document to index
+        doc_number = self.n_documents
+        catalog_document = Document(doc_number)
+
+        # Index
+        get = document.get
+        for field in self.fields:
+            # Extract the field value from the document
+            value = get(field.name)
+
+            # If value is None, don't go further
+            if value is None:
+                continue
+
+            # Update the Inverted Index
+            if field.is_indexed:
+                index = self.indexes[field.number]
+                # Tokenize
+                terms = set()
+                for word, position in field.split(value):
+                    terms.add(word)
+                    # Update the inverted index
+                    index.index_term(word, doc_number, position)
+
+            # Update the Document
+            if field.is_stored:
+                # Stored
+                # XXX Coerce
+                #if isinstance(value, list):
+                #    value = u' '.join(value)
+                catalog_document.fields[field.number] = value
+            else:
+                # Not Stored
+                catalog_document.fields[field.number] = list(terms)
+
+        # Add the Document
+        # TODO document values must be deserialized
+        doc_n = self.n_documents
+        self.n_documents += 1
+        self.documents[doc_n] = catalog_document
+        self.added_documents.append(doc_n)
+        return doc_n
+
+
+    def unindex_document(self, value):
+        """
+        Remove the document 'value'. Value is the first Field.
+        """
+        query = EqQuery(self.fields[0].name, value)
+        for document in self.search(query).get_documents():
+            self._unindex_document(document.__number__)
+
+
+    def search(self, query=None, **kw):
+        """
+        Launch a search in the catalog.
+        """
+        # Build the query if it is passed through keyword parameters
+        if query is None:
+            if kw:
+                atoms = []
+                for key, value in kw.items():
+                    atoms.append(PhraseQuery(key, value))
+
+                query = AndQuery(*atoms)
+            else:
+                results = {}
+                for doc_n in range(self.n_documents):
+                    try:
+                        document = self.get_document(doc_n)
+                    except LookupError:
+                        continue
+                    results[doc_n] = 1
+                return SearchResults(results, self)
+        # Search
+        results = query.search(self)
+        return SearchResults(results, self)
+
 
     #########################################################################
-    # API / Transactions
+    # API / Private
     #########################################################################
     def save_documents(self):
         base = vfs.open(self.uri)
@@ -325,72 +492,6 @@ class Catalog(object):
             docs_file.close()
 
 
-    def save_changes(self):
-        # Start
-        path = self.uri.path
-        state = str(path.resolve2('state'))
-        open(state, 'w').write('START\n')
-
-        # Save
-        try:
-            for index in self.indexes:
-                if index is not None:
-                    index.save_state()
-            self.save_documents()
-        except:
-            # Restore from backup
-            src = str(path.resolve2('data.bak'))
-            dst = str(path.resolve2('data'))
-            for name in listdir(src):
-                src_file = src + '/' + name
-                dst_file = dst + '/' + name
-                if getmtime(src_file) < getmtime(dst_file):
-                    data = open(src_file).read()
-                    open(dst_file, 'w').write(data)
-            # Reload the catalog
-            self.__init__(self.uri)
-            # We are done
-            open(state, 'w').write('OK\n')
-            # Forward error
-            raise
-
-        # The transaction was successful
-        open(state, 'w').write('END\n')
-
-        # Backup
-        src = str(path.resolve2('data'))
-        dst = str(path.resolve2('data.bak'))
-        for name in listdir(src):
-            src_file = src + '/' + name
-            dst_file = dst + '/' + name
-            if getmtime(src_file) > getmtime(dst_file):
-                data = open(src_file).read()
-                open(dst_file, 'w').write(data)
-
-        # We are done
-        open(state, 'w').write('OK\n')
-
-        # Update the timestamp
-        self.timestamp = vfs.get_mtime(self.uri)
-
-
-    def abort_changes(self):
-        # Indexes
-        for index in self.indexes:
-            if index is not None:
-                index.abort()
-
-        # Documents
-        for doc_n in self.added_documents:
-            del self.documents[doc_n]
-            self.n_documents -= 1
-        self.added_documents = []
-        self.removed_documents = []
-
-
-    #########################################################################
-    # API / Index & Search
-    #########################################################################
     def get_analyser(self, name):
         field_number = self.field_numbers[name]
         return self.fields[field_number]
@@ -455,60 +556,6 @@ class Catalog(object):
         return self.documents[doc_n]
 
 
-    def index_document(self, document):
-        # Check the input
-        if isinstance(document, CatalogAware):
-            document = document.get_catalog_indexes()
-        elif not isinstance(document, dict):
-            raise ValueError, ('the document must be either a dictionary or'
-                ' a CatalogAware object')
-
-        # Set the catalog as dirty
-        self.has_changed = True
-        # Create the document to index
-        doc_number = self.n_documents
-        catalog_document = Document(doc_number)
-
-        # Index
-        get = document.get
-        for field in self.fields:
-            # Extract the field value from the document
-            value = get(field.name)
-
-            # If value is None, don't go further
-            if value is None:
-                continue
-
-            # Update the Inverted Index
-            if field.is_indexed:
-                index = self.indexes[field.number]
-                # Tokenize
-                terms = set()
-                for word, position in field.split(value):
-                    terms.add(word)
-                    # Update the inverted index
-                    index.index_term(word, doc_number, position)
-
-            # Update the Document
-            if field.is_stored:
-                # Stored
-                # XXX Coerce
-                #if isinstance(value, list):
-                #    value = u' '.join(value)
-                catalog_document.fields[field.number] = value
-            else:
-                # Not Stored
-                catalog_document.fields[field.number] = list(terms)
-
-        # Add the Document
-        # TODO document values must be deserialized
-        doc_n = self.n_documents
-        self.n_documents += 1
-        self.documents[doc_n] = catalog_document
-        self.added_documents.append(doc_n)
-        return doc_n
-
-
     def _unindex_document(self, doc_number):
         self.has_changed = True
         # Update the indexes
@@ -536,35 +583,6 @@ class Catalog(object):
         if doc_number in self.added_documents:
             self.added_documents.remove(doc_number)
         self.removed_documents.append(doc_number)
-
-
-    def unindex_document(self, value):
-        query = EqQuery(self.fields[0].name, value)
-        for document in self.search(query).get_documents():
-            self._unindex_document(document.__number__)
-
-
-    def search(self, query=None, **kw):
-        # Build the query if it is passed through keyword parameters
-        if query is None:
-            if kw:
-                atoms = []
-                for key, value in kw.items():
-                    atoms.append(PhraseQuery(key, value))
-
-                query = AndQuery(*atoms)
-            else:
-                results = {}
-                for doc_n in range(self.n_documents):
-                    try:
-                        document = self.get_document(doc_n)
-                    except LookupError:
-                        continue
-                    results[doc_n] = 1
-                return SearchResults(results, self)
-        # Search
-        results = query.search(self)
-        return SearchResults(results, self)
 
 
 

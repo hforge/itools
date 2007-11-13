@@ -150,7 +150,9 @@ def table_head(columns, sortby, sortorder, gettext=lambda x: x):
         if title is None:
             column = None
         else:
-            column = {'title': gettext(title)}
+            column = {'title': title}
+            if isinstance(title, basestring):
+                column['title'] = gettext(title)
             href, sort = table_sortcontrol(name, sortby, sortorder)
             column['href'] = href
             column['order'] = sort

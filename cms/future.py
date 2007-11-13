@@ -18,9 +18,10 @@
 
 # Import from the Standard Library
 import mimetypes
+from HTMLParser import HTMLParseError
 
 # Import from itools
-from itools.datatypes import is_datatype
+from itools.datatypes import is_datatype, DateTime
 from itools.uri import Path
 from itools.stl import stl, set_prefix
 from itools.xhtml import Document
@@ -28,6 +29,7 @@ from itools.xml import Parser
 from itools.handlers import Image
 from itools.rest import checkid
 from itools.web import get_context
+from itools.html import Parser as HTMLParser
 
 # Import from itools.cms
 from registry import register_object_class, get_object_class
@@ -451,6 +453,37 @@ class Dressable(Folder, EpozEditable):
 
         handler = self.get_object('/ui/dressable/upload_image.xml')
         return stl(handler, namespace)
+
+
+    #######################################################################
+    # Edit / Inline / edit
+    edit__access__ = 'is_allowed_to_edit'
+    def edit(self, context, sanitize=False):
+        # FIXME Duplicated code (cms.html)
+        dress_name = context.get_form_value('dress_name')
+        dress_handler = self.get_handler(dress_name)
+        timestamp = context.get_form_value('timestamp', type=DateTime)
+        # Compare the dressable's timestamp and not the folder's timestamp
+        if timestamp is None or timestamp < dress_handler.timestamp:
+            return context.come_back(MSG_EDIT_CONFLICT)
+
+        new_body = context.get_form_value('data')
+        try:
+            new_body = HTMLParser(new_body)
+        except HTMLParseError:
+            return context.come_back(u'Invalid HTML code.')
+        if sanitize:
+            new_body = sanitize_stream(new_body)
+        # Save the changes
+        # "get_epoz_document" is to set in your editable handler
+        document = self.get_epoz_document()
+        old_body = document.get_body()
+        document.set_changed()
+        document.events = (document.events[:old_body.start+1]
+                           + new_body
+                           + document.events[old_body.end:])
+
+        return context.come_back(MSG_CHANGES_SAVED)
 
 
     def get_class_id_image(self, handler_name):

@@ -143,8 +143,7 @@ class SearchResults(object):
 
 
     def get_documents(self, sort_by=None, reverse=False, start=0, size=0):
-        """
-        Returns the documents for the search, sorted by weight.
+        """Returns the documents for the search, sorted by weight.
 
         Four optional arguments are accepted, which will modify the documents
         returned.
@@ -227,9 +226,6 @@ class Catalog(object):
     #########################################################################
 
     def __init__(self, ref):
-        """
-        Constructor
-        """
         self.uri = get_absolute_reference(ref)
         self.has_changed = False
         self.fields = []
@@ -271,13 +267,11 @@ class Catalog(object):
 
         self.timestamp = vfs.get_mtime(self.uri)
 
-    ####################
-    # Transactions part
-    ####################
 
+    #######################################################################
+    # Transactions part
     def save_changes(self):
-        """
-        Save the last changes to disk.
+        """Save the last changes to disk.
         """
         # Start
         path = self.uri.path
@@ -328,8 +322,7 @@ class Catalog(object):
 
 
     def abort_changes(self):
-        """
-        Abort the last changes made in memory.
+        """Abort the last changes made in memory.
         """
         # Indexes
         for index in self.indexes:
@@ -337,13 +330,10 @@ class Catalog(object):
                 index.abort()
 
 
-    #######################
+    #######################################################################
     # Documents management
-    #######################
-
     def index_document(self, document):
-        """
-        Add a new docmument.
+        """Add a new docmument.
         """
         # Check the input
         if isinstance(document, CatalogAware):
@@ -399,8 +389,7 @@ class Catalog(object):
 
 
     def unindex_document(self, value):
-        """
-        Remove the document 'value'. Value is the first Field.
+        """Remove the document 'value'. Value is the first Field.
         """
         query = EqQuery(self.fields[0].name, value)
         for document in self.search(query).get_documents():
@@ -408,8 +397,7 @@ class Catalog(object):
 
 
     def search(self, query=None, **kw):
-        """
-        Launch a search in the catalog.
+        """Launch a search in the catalog.
         """
         # Build the query if it is passed through keyword parameters
         if query is None:
@@ -587,8 +575,7 @@ class Catalog(object):
 
 
 def make_catalog(uri, *fields):
-    """
-    Creates a new catalog in the given uri. The 'id' parameter is the name
+    """Creates a new catalog in the given uri. The 'id' parameter is the name
     of the field that will be considered the external id; it will be used
     when unindexing a document, and to retrieve the original document; this
     field must be "indexed" and "stored".

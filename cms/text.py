@@ -55,8 +55,7 @@ class Text(File):
 
     @classmethod
     def new_instance_form(cls, context):
-        return DBObject.new_instance_form.im_func(cls, context,
-                with_language=True)
+        return DBObject.new_instance_form.im_func(cls, context)
 
 
     @classmethod

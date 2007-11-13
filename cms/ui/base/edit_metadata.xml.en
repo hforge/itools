@@ -6,32 +6,25 @@
 
   <h2>Edit Metadata in ${language_name}</h2>
 
-  <stl:block stl:if="multilingual" stl:repeat="lang languages">
-    <a href="./;edit_metadata_form?dc:language=${lang/code}">
-      ${lang/name}</a>
-    <span stl:if="not repeat/lang/end">-</span>
-  </stl:block>
-
   <form action=";edit_metadata" method="post">
     <dl>
       <dt><label for="dc:title">Title</label></dt>
       <dd>
         <input type="text" size="40" id="dc:title" name="dc:title"
-          value="${title}" />
+          value="${dc:title}" />
       </dd>
       <dt><label for="dc:description">Description</label></dt>
       <dd>
         <textarea cols="50" rows="8" id="dc:description"
-          name="dc:description">${description}</textarea>
+          name="dc:description">${dc:description}</textarea>
       </dd>
       <dt><label for="dc:subject">Keywords</label> (Separated by comma)</dt>
       <dd>
         <input type="text" size="40" id="dc:subject" name="dc:subject"
-          value="${subject}" />
+          value="${dc:subject}" />
       </dd>
     </dl>
     <p>
-      <input type="hidden" name="dc:language" value="${language}" />
       <input type="submit" value="Change" class="button_ok"/>
     </p>
   </form>

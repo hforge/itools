@@ -23,7 +23,7 @@ from string import Template
 
 # Import from itools
 from itools import get_abspath
-from itools.i18n import has_language
+from itools.i18n import has_language, get_language_name
 from itools.uri import Path, decode_query
 from itools.datatypes import URI
 from itools.handlers import File, Folder, Database
@@ -99,6 +99,7 @@ class UIFolder(Node, Folder):
             handler = cls(handler.uri)
         handler.database = self.database
         return handler
+
 
 
 class Skin(UIFolder):
@@ -246,7 +247,36 @@ class Skin(UIFolder):
         return {'title': title, 'content': menu}
 
 
+    def get_content_language_menu(self, context):
+        languages = context.site_root.get_property('ikaaro:website_languages')
+        content_language = context.get_cookie('content_language')
+        if content_language is None:
+            content_language = languages[0]
+
+        options = []
+        for language in languages:
+            title = get_language_name(language)
+            title = self.gettext(title, language=language)
+            if language == content_language:
+                css_class = 'nav_active'
+            else:
+                css_class = ''
+            options.append({
+                'href': ';change_content_language?dc:language=%s' % language,
+                'src': None,
+                'title': title,
+                'class': css_class,
+                'items': [],
+            })
+
+        title = self.gettext(u'Content Language')
+        menu = build_menu(options)
+        return {'title': title, 'content': menu}
+
+
     def get_left_menus(self, context):
+        user = context.user
+
         menus = []
         # Main Menu
         menu = self.get_main_menu(context)
@@ -255,6 +285,10 @@ class Skin(UIFolder):
         # Parent's Menu
         menu = self.get_context_menu(context)
         if menu is not None:
+            menus.append(menu)
+        # Content language
+        if user is not None:
+            menu = self.get_content_language_menu(context)
             menus.append(menu)
         # Navigation
         menu = self.get_navigation_menu(context)

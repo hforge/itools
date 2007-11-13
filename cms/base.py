@@ -530,33 +530,15 @@ class DBObject(CatalogAware, Node, DomainAware):
     # User interface
     ########################################################################
     @classmethod
-    def new_instance_form(cls, context, with_language=False):
+    def new_instance_form(cls, context):
         root = context.root
-        here = context.handler
-
+        # Build the namespace
         namespace = {}
-        # Default title
         namespace['title'] = context.get_form_value('dc:title')
-        # Default name
         namespace['name'] = context.get_form_value('name', '')
-        # The class id is important
+        # The class id and title
         namespace['class_id'] = cls.class_id
-        # Show the class title to reuse the same form
         namespace['class_title'] = cls.gettext(cls.class_title)
-        # Languages
-        if with_language:
-            site_root = here.get_site_root()
-            ws_languages = site_root.get_property('ikaaro:website_languages')
-            default_language = ws_languages[0]
-            languages = []
-            for code in ws_languages:
-                language_name = get_language_name(code)
-                languages.append({'code': code,
-                                  'name': cls.gettext(language_name),
-                                  'isdefault': code == default_language})
-            namespace['languages'] = languages
-        else:
-            namespace['languages'] = None
 
         handler = root.get_object('ui/base/new_instance.xml')
         return stl(handler, namespace)
@@ -566,7 +548,6 @@ class DBObject(CatalogAware, Node, DomainAware):
     def new_instance(cls, container, context):
         name = context.get_form_value('name')
         title = context.get_form_value('dc:title')
-        language = context.get_form_value('dc:language')
 
         # Check the name
         name = name.strip() or title.strip()
@@ -579,7 +560,7 @@ class DBObject(CatalogAware, Node, DomainAware):
 
         # Add the language extension to the name
         extension = cls.class_handler.class_extension
-        name = FileName.encode((name, extension, language))
+        name = FileName.encode((name, extension, None))
 
         # Check the name is free
         if container.has_object(name):
@@ -588,13 +569,7 @@ class DBObject(CatalogAware, Node, DomainAware):
         object = cls.make_object(container, name)
         # The metadata
         metadata = object.metadata
-        if language is not None:
-            # Multilingual support
-            metadata.set_property('dc:language', language)
-        else:
-            # No multilingual, just default language
-            site_root = container.get_site_root()
-            language = site_root.get_default_language()
+        language = container.get_content_language(context)
         metadata.set_property('dc:title', title, language=language)
 
         goto = './%s/;%s' % (name, object.get_firstview())
@@ -612,6 +587,17 @@ class DBObject(CatalogAware, Node, DomainAware):
 
         request = context.request
         return request.referrer
+
+
+    def get_content_language(self, context):
+        site_root = self.get_site_root()
+        languages = site_root.get_property('ikaaro:website_languages')
+        # Check cookie
+        language = context.get_cookie('content_language')
+        if language in languages:
+            return language
+        # Default
+        return languages[0]
 
 
     ########################################################################
@@ -643,29 +629,12 @@ class DBObject(CatalogAware, Node, DomainAware):
         # Build the namespace
         namespace = {}
         # Language
-        site_root = self.get_site_root()
-        website_languages = site_root.get_property('ikaaro:website_languages')
-        language = context.get_form_value('dc:language') or website_languages[0]
-        languages = []
-        for code in website_languages:
-            language_name = get_language_name(code)
-            languages.append({'code': code,
-                              'name': self.gettext(language_name)})
-        namespace['languages'] = languages
-
-        # current language
+        language = self.get_content_language(context)
         language_name = get_language_name(language)
         namespace['language_name'] = self.gettext(language_name)
-        namespace['language'] = language
-        namespace['multilingual'] = len(languages) > 1
-        # Title
-        namespace['title'] = self.get_property('dc:title', language=language)
-        # Description
-        namespace['description'] = self.get_property('dc:description',
-                                                     language=language)
-        # Subject
-        namespace['subject'] = self.get_property('dc:subject',
-                                                  language=language)
+        # Title, Description, Subject
+        for name in 'dc:title', 'dc:description', 'dc:subject':
+            namespace[name] = self.get_property(name, language=language)
 
         handler = self.get_object('/ui/base/edit_metadata.xml')
         return stl(handler, namespace)
@@ -676,7 +645,7 @@ class DBObject(CatalogAware, Node, DomainAware):
         title = context.get_form_value('dc:title')
         description = context.get_form_value('dc:description')
         subject = context.get_form_value('dc:subject')
-        language = context.get_form_value('dc:language')
+        language = self.get_content_language(context)
         self.set_property('dc:title', title, language=language)
         self.set_property('dc:description', description, language=language)
         self.set_property('dc:subject', subject, language=language)

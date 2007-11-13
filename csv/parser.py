@@ -20,7 +20,7 @@ import csv as python_csv
 
 sniffer = python_csv.Sniffer()
 
-def parse(data, n_columns=None):
+def parse(data, columns=None, schema=None):
     """
     This method is a generator that returns one CSV row at a time.
     To do the job it wraps the standard Python's csv parser.
@@ -36,7 +36,9 @@ def parse(data, n_columns=None):
         # Get the reader
         reader = python_csv.reader(lines, dialect)
         # Find out the number of columns, if not specified
-        if n_columns is None:
+        if columns is not None:
+            n_columns = len(columns)
+        else:
             line = reader.next()
             n_columns = len(line)
             yield line
@@ -52,6 +54,9 @@ def parse(data, n_columns=None):
                     # Python 2.5
                     msg = msg % line
                 raise ValueError, msg
+            if schema is not None:
+                line = [ schema[columns[i]].decode(value)
+                         for i, value in enumerate(line) ]
             yield line
 
 

@@ -111,8 +111,12 @@ class Skin(Folder):
 
     def get_context_menu(self, context):
         # FIXME Hard-Coded
-        from wiki import WikiFolder
         from tracker import Tracker
+        try:
+            from wiki import WikiFolder
+        except ImportError:
+            class WikiFolder(object):
+                pass
 
         here = context.handler
         while here is not None:

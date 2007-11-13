@@ -396,8 +396,7 @@ class CalendarView(object):
         today_date = date.today()
 
         # Add ical css
-        css = Path(self.abspath).get_pathto('/ui/ical/calendar.css')
-        context.styles.append(str(css))
+        context.styles.append('/ui/ical/calendar.css')
 
         # Current date
         c_date = get_current_date(context.get_form_value('date', None))
@@ -467,9 +466,7 @@ class CalendarView(object):
         ndays = 7
 
         # Add ical css
-        abspath = Path(self.abspath)
-        css = abspath.get_pathto('/ui/ical/calendar.css')
-        context.styles.append(str(css))
+        context.styles.append('/ui/ical/calendar.css')
 
         # Current date
         c_date = context.get_form_value('date', None)
@@ -495,8 +492,7 @@ class CalendarView(object):
         namespace = self.add_selector_ns(c_date, 'weekly_view' ,namespace)
 
         # Get icon to appear to add a new event
-        add_icon = abspath.get_pathto('/ui/images/button_add.png')
-        namespace['add_icon'] = str(add_icon)
+        namespace['add_icon'] = '/ui/images/button_add.png'
 
         # Get header line with days of the week
         days_of_week_ns = self.days_of_week_ns(start, True, ndays, c_date)
@@ -613,11 +609,8 @@ class CalendarView(object):
         keys = context.get_form_keys()
 
         # Add ical css
-        abspath = Path(self.abspath)
-        css = abspath.get_pathto('/ui/ical/calendar.css')
-        context.styles.append(str(css))
-        js = abspath.get_pathto('/ui/ical/calendar.js')
-        context.scripts.append(str(js))
+        context.styles.append('/ui/ical/calendar.css')
+        context.scripts.append('/ui/ical/calendar.js')
 
         uid = context.get_form_value('id', None)
         # Method
@@ -772,8 +765,7 @@ class CalendarView(object):
     edit_timetables_form__sublabel__ = u'Timetables'
     def edit_timetables_form(self, context):
         # Add ical css
-        css = self.get_handler('/ui/ical/calendar.css')
-        context.styles.append(str(self.get_pathto(css)))
+        context.styles.append('/ui/ical/calendar.css')
 
         # Initialization
         namespace = {}
@@ -790,7 +782,7 @@ class CalendarView(object):
                 ns['start'] = Time.encode(start)
                 ns['end'] = Time.encode(end)
                 namespace['timetables'].append(ns)
-        handler = self.get_handler('/ui/ical/ical_edit_timetables.xml')
+        handler = self.get_object('/ui/ical/ical_edit_timetables.xml')
         return stl(handler, namespace)
 
 
@@ -1013,8 +1005,7 @@ class CalendarAware(CalendarView):
     daily_view__sublabel__ = u'As calendar'
     def daily_view(self, context):
         # Add ical css
-        css = self.get_handler('/ui/ical/calendar.css')
-        context.styles.append(str(self.get_pathto(css)))
+        context.styles.append('/ui/ical/calendar.css')
 
         method = context.get_cookie('method')
         if method != 'daily_view':
@@ -1048,7 +1039,7 @@ class CalendarAware(CalendarView):
             ns_calendars.append(ns_calendar)
         namespace['calendars'] = ns_calendars
 
-        handler = self.get_handler('/ui/ical/daily_view.xml')
+        handler = self.get_object('/ui/ical/daily_view.xml')
         return stl(handler, namespace)
 
 
@@ -1061,10 +1052,11 @@ class Calendar(Text, CalendarView):
     class_description = u'Schedule your time with calendar files.'
     class_icon16 = 'images/icalendar16.png'
     class_icon48 = 'images/icalendar48.png'
-
     class_views = [['monthly_view', 'weekly_view', 'download_form'],
                    ['upload_form', 'edit_timetables_form',
                     'edit_metadata_form', 'edit_event_form']]
+    class_handler = icalendar
+
 
     def get_action_url(self, **kw):
         url = ';edit_event_form'
@@ -1083,8 +1075,9 @@ class Calendar(Text, CalendarView):
 
 
     def get_events_to_display(self, start, end):
+        file = self.handler
         events = []
-        for event in self.search_events_in_range(start, end, sortby='date'):
+        for event in file.search_events_in_range(start, end, sortby='date'):
             e_dtstart = event.get_property('DTSTART').value
             events.append((self.name, e_dtstart, event))
         events.sort(lambda x, y : cmp(x[1], y[1]))
@@ -1375,7 +1368,7 @@ class CalendarTable(Table, CalendarView):
         namespace = {}
         namespace['url'] = '../%s/;download' % self.name
         namespace['title_or_name'] = self.get_title()
-        handler = self.get_handler('/ui/file/download_form.xml')
+        handler = self.get_object('/ui/file/download_form.xml')
         return stl(handler, namespace)
 
 

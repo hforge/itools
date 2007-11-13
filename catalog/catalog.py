@@ -333,7 +333,7 @@ class Catalog(object):
     #######################################################################
     # Documents management
     def index_document(self, document):
-        """Add a new docmument.
+        """Add a new document.
         """
         # Check the input
         if isinstance(document, CatalogAware):

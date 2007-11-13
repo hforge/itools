@@ -29,4 +29,6 @@ def get_file_system(name):
     # 'c' means Windows' "c:\" and is a filesystem
     if len(name) == 1:
         return file.FileFS
+    if name not in _file_systems:
+        raise NotImplementedError
     return _file_systems[name]

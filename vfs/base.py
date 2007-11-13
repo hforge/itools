@@ -43,6 +43,16 @@ class BaseFS(object):
 
 
     @staticmethod
+    def can_read(reference):
+        raise NotImplementedError
+
+
+    @staticmethod
+    def can_write(reference):
+        raise NotImplementedError
+
+
+    @staticmethod
     def get_ctime(reference):
         raise NotImplementedError
 

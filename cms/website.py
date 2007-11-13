@@ -81,8 +81,7 @@ class WebSite(RoleAware, Folder):
             website_ns['title'] = gettext(title)
             website_ns['class_id'] = handler_class.class_id
             website_ns['selected'] = False
-            icon = handler_class.class_icon16
-            website_ns['icon'] = context.handler.get_pathtoroot() + 'ui/' + icon
+            website_ns['icon'] = '/ui/' + handler_class.class_icon16
             namespace['websites'].append(website_ns)
 
         namespace['alone'] = False
@@ -589,7 +588,7 @@ class WebSite(RoleAware, Folder):
                 info['url'] = '%s/;%s' % (self.get_pathto(handler),
                                           handler.get_firstview())
 
-                icon = handler.get_path_to_icon(16, from_handler=self)
+                icon = handler.get_path_to_icon(16)
                 if icon.startswith(';'):
                     icon = Path('%s/' % handler.name).resolve(icon)
                 info['icon'] = icon
@@ -613,9 +612,6 @@ class WebSite(RoleAware, Folder):
                 title = state['title'] or name
                 states.append({'key': name, 'value': title})
         namespace['states'] = states
-
-        icon = self.get_handler('/ui/images/button_calendar.png')
-        namespace['button_calendar'] = self.get_pathto(icon)
 
         handler = self.get_handler('/ui/website/search_form.xml')
         return stl(handler, namespace)

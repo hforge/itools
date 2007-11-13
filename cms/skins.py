@@ -171,7 +171,7 @@ class Skin(Folder):
                 if not ac.is_allowed_to_view(user, handler):
                     continue
                 firstview = handler.get_firstview()
-                src = handler.get_path_to_icon(size=16, from_handler=here)
+                src = handler.get_path_to_icon(size=16)
                 options.append({'href': '%s/;%s' % (handler.name, firstview),
                                 'src': src,
                                 'title': handler.get_title(),

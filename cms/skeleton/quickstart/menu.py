@@ -66,7 +66,7 @@ class Link(File):
         namespace['bc'] = Breadcrumb(filter_type=File, start=start)
         namespace['message'] = context.get_form_value('message')
 
-        prefix = Path(self.abspath).get_pathto('/ui/html/addimage.xml')
+        prefix = Path(self.abspath).get_pathto('/ui/html/addlink.xml')
         handler = self.get_handler('/ui/menu/addlink.xml')
         return stl(handler, namespace, prefix=prefix)
 
@@ -91,9 +91,7 @@ class Link(File):
         namespace['target'] = BooleanRadio.to_html(None, 'menu:new_window',
                                                    new_window, labels)
         # Add a script
-        here = context.handler
-        script = Path(here.abspath).get_pathto('/ui/menu/javascript.js')
-        context.scripts.append(str(script))
+        context.scripts.append('/ui/menu/javascript.js')
 
         handler = self.get_handler('/ui/menu/Link_edit_metadata.xml')
         return stl(handler, namespace)

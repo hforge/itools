@@ -362,7 +362,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         # The url
         line['href'] = href
         # The icon
-        path_to_icon = object.get_path_to_icon(icon_size, from_handler=self)
+        path_to_icon = object.get_path_to_icon(icon_size)
         if path_to_icon.startswith(';'):
             path_to_icon = Path('%s/' % object.name).resolve(path_to_icon)
         line['img'] = path_to_icon
@@ -824,8 +824,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
             gettext = handler_class.gettext
             format = quote(handler_class.class_id)
             type_ns['format'] = format
-            icon = handler_class.class_icon48
-            type_ns['icon'] = self.get_pathtoroot() + 'ui/' + icon
+            type_ns['icon'] = '/ui/' + handler_class.class_icon48
             title = handler_class.class_title
             type_ns['title'] = gettext(title)
             description = handler_class.class_description

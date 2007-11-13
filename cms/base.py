@@ -122,13 +122,12 @@ class Node(BaseNode):
         return self.timestamp
 
 
+    # XXX TODO remove "from_handler" in 0.17
     def get_path_to_icon(self, size=16, from_handler=None):
         if hasattr(self, 'icon%s' % size):
             return ';icon%s' % size
         path_to_icon = getattr(self.__class__, 'class_icon%s' % size)
-        if from_handler is None:
-            from_handler = self
-        return '%sui/%s' % (from_handler.get_pathtoroot(), path_to_icon)
+        return '/ui/' + path_to_icon
 
 
     ########################################################################

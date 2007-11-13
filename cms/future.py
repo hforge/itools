@@ -265,10 +265,9 @@ class OrderAware(object):
 
 
 
+# FIXME keep this function?
 def add_dressable_style(context):
-    here = context.handler
-    css = Path(here.abspath).get_pathto('ui/dressable/dressable.css')
-    context.styles.append(str(css))
+    context.styles.append('/ui/dressable/dressable.css')
 
 
 
@@ -385,6 +384,7 @@ class Dressable(Folder, EpozEditable):
             else:
                 content = getattr(self, data)(context)
             namespace[key] = content
+
         add_dressable_style(context)
 
         handler = self.get_handler(self.template)
@@ -579,7 +579,7 @@ class Dressable(Folder, EpozEditable):
                 label = handler.get_property('dc:title')
                 if label is None or label == '':
                     label = handler.name
-                path_to_icon = handler.get_path_to_icon(from_handler=self)
+                path_to_icon = handler.get_path_to_icon()
                 if path_to_icon.startswith(';'):
                     path_to_icon = Path('%s/' % handler.name)
                     path_to_icon = path_to_icon.resolve(path_to_icon)

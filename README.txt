@@ -4,43 +4,31 @@ meta-package for easier development and deployment.
 
 The packages included are:
 
-  itools.catalog          itools.i18n             itools.uri
-  itools.cms              itools.ical             itools.vfs
-  itools.csv              itools.odf              itools.web
-  itools.datatypes        itools.pdf              itools.workflow
-  itools.gettext          itools.rest             itools.xhtml
-  itools.git              itools.rss              itools.xliff
-  itools.handlers         itools.schemas          itools.xml
-  itools.html             itools.stl
-  itools.http             itools.tmx
+  itools.catalog          itools.i18n             itools.tmx
+  itools.csv              itools.ical             itools.uri
+  itools.datatypes        itools.odf              itools.vfs
+  itools.gettext          itools.pdf              itools.web
+  itools.git              itools.rest             itools.workflow
+  itools.handlers         itools.rss              itools.xhtml
+  itools.html             itools.schemas          itools.xliff
+  itools.http             itools.stl              itools.xml
 
 The scripts included are:
 
-  icatalog-inspect.py     icms-update.py          isetup-build.py
-  icms-init.py            icms-update-catalog.py  isetup-copyright.py
-  icms-restore.py         igettext-build.py       isetup-doc.py
-  icms-start.py           igettext-extract.py     isetup-quality.py
-  icms-stop.py            igettext-merge.py       isetup-update-locale.py
+  icatalog-inspect.py     igettext-merge.py       isetup-doc.py
+  igettext-build.py       isetup-build.py         isetup-quality.py
+  igettext-extract.py     isetup-copyright.py     isetup-update-locale.py
 
 
 Requirements
 ------------
 
-Python 2.5 or later is required.
+Python 2.4 or later is required.
 
 For the implementation of RML (itools.pdf) to work the package reportlab [1]
 must be installed.
 
-For itools.cms, it is recommended to install PIL [2]. For the Wiki to work,
-docutils [3] is required.
-
-Apart from the Python packages listed above, itools.cms requires the commands
-xlhtml, ppthtml, pdftotext, wvText and unrtf to index some types of documents.
-
 [1] http://www.reportlab.org/
-[2] http://www.pythonware.com/products/pil/
-[3] http://docutils.sourceforge.net/
-
 
 
 Install
@@ -107,17 +95,6 @@ Copyright (C) 2005-2007 Hervé Cauwelier <herve@itaapy.com>
 Copyright (C) 2005-2007 Nicolas Deram <nicolas@itaapy.com>
 
 And others. Check the CREDITS file for complete list.
-
-Includes the DHTML Calendar, authored by Mihai Bazon and published under
-the terms of the GNU Lesser General Public License.
-
-The HTML editor is derived from Epoz (XXX), which is authored by Maik
-Jablonski and Benoit Pin, and published under the terms of the Zope
-Public License (ZPL) version 2.1.
-
-Most icons used are copyrighted by the Tango Desktop Project, and licensed
-under the Creative Commons Attribution Share-Alike license, including the
-modifications to them. (http://creativecommons.org/licenses/by-sa/2.5/)
 
 
 License

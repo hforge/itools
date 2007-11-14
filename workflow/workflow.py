@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 # Copyright (C) 2002 Thilo Ernst <Thilo.Ernst@dlr.de>
-# Copyright (C) 2002-2004, 2006-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2002-2004, 2006-2007,
+# Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -54,23 +55,22 @@ class WorkflowError(Exception):
 
 
 class Workflow(object):
-    """
-    This class is used to describe a workflow (actually it's just a
-    graph). A workflow has states (one of them is the initial state),
-    and states have transitions that go to another state.
+    """This class is used to describe a workflow.
+
+    Actually it's just a graph. A workflow has states (one of them
+    is the initial state), and states have transitions that go to
+    another state.
     """
 
     def __init__(self):
-        """
-        Initialize the workflow.
+        """Initialize the workflow.
         """
         self.states = {}
         self.initstate = None
 
 
     def add_state(self, name, **kw):
-        """
-        Adds a new state.
+        """Adds a new state.
 
         The keywords argument lets to add arbitrary metadata to
         describe the transition.
@@ -79,8 +79,7 @@ class Workflow(object):
 
 
     def set_initstate(self, name):
-        """
-        Sets the default initial state.
+        """Sets the default initial state.
         """
         if name not in self.states:
             raise WorkflowError, "invalid initial state: '%s'" % name
@@ -88,10 +87,10 @@ class Workflow(object):
 
 
     def add_trans(self, name, state_from, state_to, **kw):
-        """
-        Adds a new transition, 'state_from' and 'state_to' are
-        respectively the origin and destination states of the
-        transition.
+        """Adds a new transition.
+
+        'state_from' and 'state_to' are respectively the origin
+        and destination states of the transition.
 
         The keywords argument lets to add arbitrary metadata to
         describe the transition.
@@ -110,43 +109,39 @@ class Workflow(object):
 
 
 class State(object):
-    """
-    This class is used to describe a state. An state has transitions
-    to other states.
+    """This class is used to describe a state.
+
+    An state has transitions to other states.
     """
 
     def __init__(self, **kw):
-        """
-        Initialize the state.
+        """Initialize the state.
         """
         self.transitions = {}
         self.metadata = kw
 
 
     def add_trans(self, name, transition):
-        """
-        Adds a new transition.
+        """Adds a new transition.
         """
         self.transitions[name] = transition
 
 
     def __getitem__(self, key):
-        """
-        Access to the metadata as a mapping.
+        """Access to the metadata as a mapping.
         """
         return self.metadata.get(key)
 
 
 
 class Transition(object):
-    """
-    This class is used to describe transitions. Transitions come from
-    one state and go to another.
+    """This class is used to describe transitions.
+
+    Transitions come from one state and go to another.
     """
 
     def __init__(self, state_from, state_to, **kw):
-        """
-        Initialize the transition.
+        """Initialize the transition.
         """
         self.state_from = state_from
         self.state_to = state_to
@@ -154,18 +149,18 @@ class Transition(object):
 
 
     def __getitem__(self, key):
-        """
-        Access to the metadata as a mapping.
+        """Access to the metadata as a mapping.
         """
         return self.metadata.get(key)
 
 
 
 class WorkflowAware(object):
-    """
-    Mixin class to be used for workflow aware objects. The instances of
-    a class that inherits from WorkflowAware can be "within" the workflow,
-    this means that they keep track of the current state of the object.
+    """Mixin class to be used for workflow aware objects.
+
+    The instances of a class that inherits from WorkflowAware can be
+    "within" the workflow, this means that they keep track of the
+    current state of the object.
 
     Specific application semantics for states and transitions can be
     implemented as methods of the WorkflowAware-derived "developer
@@ -195,11 +190,11 @@ class WorkflowAware(object):
     """
 
     def enter_workflow(self, workflow=None, initstate=None, *args, **kw):
-        """
-        [Re-]Bind this object to a specific workflow, if the 'workflow'
-        parameter is omitted then the object associated workflow is kept.
-        This lets, for example, to specify the associate workflow with a
-        class varible instead of with an instance attribute.
+        """[Re-]Bind this object to a specific workflow.
+
+        If the 'workflow' parameter is omitted then the object associated
+        workflow is kept. This lets, for example, to specify the associate
+        workflow with a class varible instead of with an instance attribute.
 
         The 'initstate' parameter is the workflow state that should be
         taken on initially (if omitted or None, the workflow must provide
@@ -231,8 +226,9 @@ class WorkflowAware(object):
 
 
     def do_trans(self, transname, *args, **kw):
-        """
-        Performs a transition, changes the state of the object and
+        """Performs a transition.
+
+        Changes the state of the object and
         runs any defined state/transition handlers. Extra
         arguments are passed down to all handlers called.
         """
@@ -270,12 +266,14 @@ class WorkflowAware(object):
 
 
     def get_statename(self):
-        """Return the name of the current state."""
+        """Return the name of the current state.
+        """
         return self.workflow_state
 
 
     def get_state(self):
-        """Returns the current state instance."""
+        """Returns the current state instance.
+        """
         statename = self.get_statename()
         return self.workflow.states.get(statename)
 

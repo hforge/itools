@@ -417,7 +417,7 @@ def build_menu(options):
 def _tree(node, root, depth, active_node, allow, deny, user, width):
     # Build the namespace
     namespace = {}
-    namespace['src'] = node.get_path_to_icon(size=16, from_handler=active_node)
+    namespace['src'] = node.get_path_to_icon(size=16)
     namespace['title'] = node.get_title()
 
     # The href

@@ -115,8 +115,18 @@ class CSVTestCase(TestCase):
              Date.decode('2001-03-28')]])
 
 
-    def test_load_state_without_schema(self):
+    def test_load_state_without_schema_and_columns(self):
         handler = CSV(string=TEST_DATA_1)
+        rows = list(handler.get_rows())
+        self.assertEqual(rows, [
+            ["python", 'http://python.org/', '52343', '2003-10-23'],
+            ["ruby", 'http://ruby-lang.org/', '42352', '2001-03-28']])
+
+
+    def test_load_state_without_schema(self):
+        handler = CSV()
+        handler.columns = ['name', 'url', 'number', 'date']
+        handler.load_state_from_string(TEST_DATA_1)
         rows = list(handler.get_rows())
         self.assertEqual(rows, [
             ["python", 'http://python.org/', '52343', '2003-10-23'],

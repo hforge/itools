@@ -335,7 +335,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         # The url
         line['href'] = href
         # The icon
-        path_to_icon = object.get_path_to_icon(icon_size, from_handler=self)
+        path_to_icon = object.get_path_to_icon(icon_size)
         if path_to_icon.startswith(';'):
             path_to_icon = Path('%s/' % object.name).resolve(path_to_icon)
         line['img'] = path_to_icon
@@ -784,10 +784,9 @@ class Folder(Handler, BaseFolder, CalendarAware):
         namespace = {}
         namespace['types'] = []
 
-        base = Path(self.abspath).get_pathto('/ui/')
         for cls in self.get_document_types():
             namespace['types'].append({
-                'icon': base.resolve2(cls.class_icon48),
+                'icon': '/ui/' + cls.class_icon48,
                 'title': cls.gettext(cls.class_title),
                 'description': cls.gettext(cls.class_description),
                 'url': ';new_resource_form?type=%s' % quote(cls.class_id)})

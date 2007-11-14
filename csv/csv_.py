@@ -113,15 +113,10 @@ class CSV(Text):
         self.encoding = self.guess_encoding(data)
 
         schema = self.schema
-        if schema is None:
-            for line in parse(data):
-                self._add_row(line)
-        else:
-            columns = self.columns
-            for line in parse(data, len(columns)):
-                row = [ schema[columns[i]].decode(value)
-                        for i, value in enumerate(line) ]
-                self._add_row(row)
+        columns = self.columns
+
+        for line in parse(data, columns, schema):
+            self._add_row(line)
 
 
     def to_str(self, encoding='UTF-8', separator=','):

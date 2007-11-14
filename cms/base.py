@@ -146,16 +146,12 @@ class Node(BaseNode):
         return max(handler_mtime, metadata_mtime)
 
 
+    # XXX TODO remove "from_handler" in 0.17
     def get_path_to_icon(self, size=16, from_handler=None):
         if hasattr(self, 'icon%s' % size):
             return ';icon%s' % size
-        if from_handler is None:
-            from_handler = self
-
-        a = from_handler.get_abspath()
-        b = '/ui/%s' % getattr(self.__class__, 'class_icon%s' % size)
-        c = Path(a).get_pathto(b)
-        return str(c)
+        path_to_icon = getattr(self.__class__, 'class_icon%s' % size)
+        return '/ui/' + path_to_icon
 
 
     ########################################################################

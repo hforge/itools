@@ -30,7 +30,6 @@ into a single meta-package for easier development and deployment. The packages
 included are:
 
  - itools.catalog
- - itools.cms
  - itools.csv
  - itools.datatypes
  - itools.gettext

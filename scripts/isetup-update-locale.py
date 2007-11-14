@@ -58,7 +58,7 @@ if __name__ == '__main__':
     for line in open('MANIFEST').readlines():
         path = line.strip()
         if (not path.endswith('.py') or 'test_' in path or
-                path == 'cms/utils.py' or path.startswith('cms/skeleton')):
+                path == 'utils.py' or path.startswith('skeleton')):
             continue
         sys.stdout.write('.')
         sys.stdout.flush()
@@ -75,7 +75,7 @@ if __name__ == '__main__':
         path = line.strip()
         if (not (path.endswith('.xhtml.' + source_language) or
                 path.endswith('.xml.' + source_language)) or
-                path.startswith('cms/skeleton')):
+                path.startswith('skeleton')):
             continue
         sys.stdout.write('.')
         sys.stdout.flush()

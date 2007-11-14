@@ -118,9 +118,9 @@ if __name__ == '__main__':
     # Build the templates in the target languages
     print '(2) Building XHTML files',
     sys.stdout.flush()
-    # XXX The directory "cms/skeleton" is specific to itools, should not be
+    # XXX The directory "skeleton" is specific to ikaaro, should not be
     # hardcoded.
-    cmd = 'find -name "*.x*ml.%s"| grep -Ev "^./(build|dist|cms/skeleton)"'
+    cmd = 'find -name "*.x*ml.%s"| grep -Ev "^./(build|dist|skeleton)"'
     for path in popen(cmd % source_language).readlines():
         # Load the handler
         path = path.strip()

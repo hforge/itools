@@ -661,3 +661,20 @@ class Table(File):
 
         return [ self.records[x] for x in ids ]
 
+
+    def update_from_csv(self, data, columns):
+        """Update the table by adding record from data
+        The input parameters are :
+        
+        - 'data': the bytes string representation of a CSV.
+        - 'columns': the CSV columns used for the mapping between the CSV
+          columns and the table schema.
+        """
+        from itools.csv import parse
+        schema = self.schema
+        for line in parse(data, columns, schema):
+            record = {}
+            for index, key in enumerate(columns):
+                record[key] = line[index]
+            self.add_record(record)
+

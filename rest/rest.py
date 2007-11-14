@@ -113,7 +113,7 @@ def to_xhtml_stream(stream):
 
 
 
-def stream_to_str_as_latex(stream):
+def stream_to_str_as_latex(stream, endoding='UTF-8'):
     buffer = []
     title_levels = []
     list_items = []

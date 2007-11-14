@@ -234,9 +234,9 @@ if __name__ == '__main__':
     exec('import %s as pkg' % args[0])
     if format == 'text':
         namespace = build_namespace(pkg, format_text)
-        print stl(text_template, namespace)
+        print stl(text_template, namespace, mode='html')
     elif format == 'latex':
         namespace = build_namespace(pkg, format_latex, escape_latex)
-        print stl(latex_template, namespace)
+        print stl(latex_template, namespace, mode='xml')
     else:
         raise ValueError

@@ -78,7 +78,10 @@ class Image(File):
         # Build the PIL object
         data = self.to_str()
         f = StringIO(data)
-        im = PILImage.open(f)
+        try:
+            im = PILImage.open(f)
+        except IOError:
+            return None, None
 
         # Create the thumbnail if needed
         state_width, state_height = self.size

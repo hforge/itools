@@ -525,7 +525,7 @@ class Server(object):
             handler = None
         context.handler = handler
 
-        if not isinstance(handler, Node):
+        if handler is None:
             # Find an ancestor to render the page
             abspath = Path(path)
             for x in range(len(abspath) - 1, 0, -1):

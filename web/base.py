@@ -29,7 +29,13 @@ class Node(object):
     # API / Private
     #######################################################################
     def _has_object(self, name):
-        raise NotImplementedError
+        """Default implementation, may be overriden for a better performance.
+        """
+        try:
+            self._get_object(name)
+        except LookupError:
+            return False
+        return True
 
 
     def _get_names(self):

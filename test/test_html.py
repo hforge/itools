@@ -21,7 +21,7 @@ from unittest import TestCase
 
 # Import from itools
 from itools.xml import stream_to_str, START_ELEMENT, END_ELEMENT
-from itools.html import Document, Parser
+from itools.html import HTMLFile, Parser
 from itools.gettext import PO
 
 
@@ -74,7 +74,7 @@ class i18nTestCase(TestCase):
 
     def test_case1(self):
         """Test element content."""
-        doc = Document(string=
+        doc = HTMLFile(string=
             '<p>hello world</p>')
 
         messages = list(doc.get_messages())
@@ -83,7 +83,7 @@ class i18nTestCase(TestCase):
 
     def test_case2(self):
         """Test simple attribute."""
-        doc = Document(string=
+        doc = HTMLFile(string=
             '<img alt="The beach" src="beach.jpg">')
 
         messages = list(doc.get_messages())
@@ -92,7 +92,7 @@ class i18nTestCase(TestCase):
 
     def test_case3(self):
         """Test complex attribute."""
-        doc = Document(string=
+        doc = HTMLFile(string=
             '<html>\n'
             '<input type="text" name="id">\n'
             '<input type="submit" value="Change">\n'
@@ -104,7 +104,7 @@ class i18nTestCase(TestCase):
 
     def test_case4(self):
         """Test translation of an element content"""
-        doc = Document(string=
+        doc = HTMLFile(string=
             '<p>hello world</p>')
 
         p = PO(string=
@@ -116,7 +116,7 @@ class i18nTestCase(TestCase):
 
     def test_case5(self):
         """Test translation of an element content"""
-        doc = Document(string=
+        doc = HTMLFile(string=
             '<img alt="The beach" src="beach.jpg">')
 
         po = PO(string=
@@ -124,16 +124,16 @@ class i18nTestCase(TestCase):
              'msgstr "La playa"')
 
         string = doc.translate(po)
-        output = Document(string=string)
+        output = HTMLFile(string=string)
 
-        expected = Document(string=
+        expected = HTMLFile(string=
             '<img alt="La playa" src="beach.jpg">')
         self.assertEqual(output, expected)
 
 
     def test_case6(self):
         """Test translation of an element content"""
-        doc = Document(string=
+        doc = HTMLFile(string=
             '<input type="text" name="id">\n'
             '<input type="submit" value="Change">')
 
@@ -141,9 +141,9 @@ class i18nTestCase(TestCase):
             'msgid "Change"\n'
             'msgstr "Cambiar"')
 
-        output = Document(string=doc.translate(p))
+        output = HTMLFile(string=doc.translate(p))
 
-        expected = Document(string=
+        expected = HTMLFile(string=
             '<input type="text" name="id">\n'
             '<input type="submit" value="Cambiar">')
         self.assertEqual(output, expected)

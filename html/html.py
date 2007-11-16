@@ -22,7 +22,7 @@ from parser import Parser
 
 
 
-class Document(XHTMLFile):
+class HTMLFile(XHTMLFile):
     """
     HTML files are a lot like XHTML, only the parsing and the output is
     different, so we inherit from XHTML instead of Text, even if the
@@ -68,4 +68,4 @@ class Document(XHTMLFile):
         return stream_to_str_as_html(stream)
 
 
-register_handler_class(Document)
+register_handler_class(HTMLFile)

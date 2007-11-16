@@ -15,13 +15,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from html import Document
+from html import HTMLFile
 from parser import (Parser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT,
                     COMMENT, TEXT)
 
 
 __all__ = [
-    'Document',
+    'HTMLFile',
     'Parser',
     'DOCUMENT_TYPE',
     'START_ELEMENT',

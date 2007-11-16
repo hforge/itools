@@ -21,11 +21,11 @@ from itools.xml import OfficeDocument
 
 
 
-class PDF(OfficeDocument):
+class PDFFile(OfficeDocument):
 
     class_mimetypes = ['application/pdf']
     class_extension = 'pdf'
     source_converter = 'pdftotext -enc UTF-8 -nopgbrk %s -'
 
 
-register_handler_class(PDF)
+register_handler_class(PDFFile)

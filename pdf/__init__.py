@@ -16,7 +16,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from pdf import PDF
+from pdf import PDFFile
+
+# Import from reportlab
 try:
     from rml import rmltopdf, stl_rmltopdf
 except ImportError:
@@ -26,4 +28,4 @@ except ImportError:
     stl_rmltopdf = rmltopdf
 
 
-__all__ = ['PDF', 'rmltopdf', 'stl_rmltopdf']
+__all__ = ['PDFFile', 'rmltopdf', 'stl_rmltopdf']

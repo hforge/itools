@@ -22,7 +22,7 @@ from types import FunctionType, ClassType
 # Import from itools
 import itools
 from itools import rest
-from itools.xml import Document
+from itools.xml import Document, TEXT
 from itools.stl import stl
 
 
@@ -141,9 +141,6 @@ ${item/doc}</block></block>
 
 
 
-
-
-
 def build_namespace(pkg, format, escape=lambda x: x):
     namespace = {}
     # Package name
@@ -239,6 +236,11 @@ if __name__ == '__main__':
         print stl(text_template, namespace, mode='html')
     elif format == 'latex':
         namespace = build_namespace(pkg, format_latex, escape_latex)
-        print stl(latex_template, namespace, mode='xml')
+        text = []
+        for type, value, line in stl(latex_template, namespace):
+            if type != TEXT:
+                raise ValueError, 'unexpected XML event of type "%s"' % type
+            text.append(value)
+        print ''.join(text)
     else:
         raise ValueError

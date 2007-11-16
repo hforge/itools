@@ -20,7 +20,7 @@ from time import time
 
 # Import from itools
 import itools
-from itools.xml import Document, Parser
+from itools.xml import XMLFile, Parser
 
 
 
@@ -36,7 +36,7 @@ if __name__ == '__main__':
     if 1:
         # The old parser: 0.0234 (reference time)
         # The new parser: 0.0309
-        doc = Document('bench_parser.xml')
+        doc = XMLFile('bench_parser.xml')
         t0 = time()
         doc.load_state()
         t1 = time()

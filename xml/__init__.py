@@ -22,7 +22,7 @@ from namespaces import (XMLNamespace, XMLNSNamespace, AbstractNamespace,
     get_namespace, set_namespace, get_element_schema, is_empty)
 from parser import (Parser, XML_DECL, DOCUMENT_TYPE, START_ELEMENT,
     END_ELEMENT, TEXT, COMMENT, PI, CDATA, XMLError)
-from xml import (Document, Element, stream_to_str, get_qname,
+from xml import (XMLFile, Element, stream_to_str, get_qname,
     get_attribute_qname, get_start_tag, get_end_tag, find_end, get_element)
 from indexer import xml_to_text
 from office import (OfficeDocument, MSWord, MSExcel, MSPowerPoint, RTF)
@@ -60,7 +60,7 @@ __all__ = [
     'PI',
     'CDATA',
     # Handlers
-    'Document',
+    'XMLFile',
     'Element',
     # Office
     'OfficeDocument',

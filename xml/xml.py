@@ -196,9 +196,8 @@ class Element(object):
 #############################################################################
 # Documents
 #############################################################################
-class Document(Text):
-    """
-    An XML file is represented in memory as a tree where the nodes are
+class XMLFile(Text):
+    """An XML file is represented in memory as a tree where the nodes are
     instances of the classes 'Element' and 'Raw'. The 'Element' class
     represents an XML element, the 'Raw' class represents a text string.
 
@@ -261,4 +260,4 @@ class Document(Text):
         return stream_to_str(stream)
 
 
-register_handler_class(Document)
+register_handler_class(XMLFile)

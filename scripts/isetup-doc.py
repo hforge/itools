@@ -22,7 +22,7 @@ from types import FunctionType, ClassType
 # Import from itools
 import itools
 from itools import rest
-from itools.xml import Document, TEXT
+from itools.xml import XMLFile, TEXT
 from itools.stl import stl
 
 
@@ -67,7 +67,7 @@ def format_latex(text):
 
 
 
-text_template = Document(string=
+text_template = XMLFile(string=
 """<block xmlns="http://xml.itools.org/namespaces/stl">
 ${name}
 
@@ -99,7 +99,7 @@ ${item/doc}</block></block>
 </block>""")
 
 
-latex_template = Document(string=
+latex_template = XMLFile(string=
 """<block xmlns="http://xml.itools.org/namespaces/stl">
 \\chapter{${name}}
 \\index{${name}}

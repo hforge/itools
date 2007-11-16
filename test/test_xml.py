@@ -19,7 +19,7 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.xml import (Document, Parser, XMLError, XML_DECL, DOCUMENT_TYPE,
+from itools.xml import (XMLFile, Parser, XMLError, XML_DECL, DOCUMENT_TYPE,
     START_ELEMENT, END_ELEMENT, TEXT, COMMENT, PI, CDATA, stream_to_str)
 from itools.xml.i18n import get_messages
 
@@ -135,8 +135,8 @@ class XMLTestCase(TestCase):
                 ' this is a <span style="color: red">test</span>\n'
                 '</body>\n'
                 '</html>')
-        h1 = Document(string=data)
-        h2 = Document(string=data)
+        h1 = XMLFile(string=data)
+        h2 = XMLFile(string=data)
 
         self.assertEqual(h1, h2)
 

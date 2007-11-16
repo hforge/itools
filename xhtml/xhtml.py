@@ -27,10 +27,10 @@ from itools.datatypes import (Boolean, Integer, Unicode, String, URI,
 from itools.schemas import (Schema as BaseSchema, get_datatype_by_uri,
     register_schema)
 from itools.handlers import register_handler_class
-from itools.xml import (Document as XMLDocument, XML_DECL, DOCUMENT_TYPE,
-    START_ELEMENT, END_ELEMENT, TEXT, COMMENT, AbstractNamespace,
-    set_namespace, stream_to_str, get_qname, get_attribute_qname, is_empty,
-    get_end_tag, get_element)
+from itools.xml import (XMLFile, XML_DECL, DOCUMENT_TYPE, START_ELEMENT,
+    END_ELEMENT, TEXT, COMMENT, AbstractNamespace, set_namespace,
+    stream_to_str, get_qname, get_attribute_qname, is_empty, get_end_tag,
+    get_element)
 
 
 xhtml_uri = 'http://www.w3.org/1999/xhtml'
@@ -459,7 +459,7 @@ register_schema(Schema)
 #############################################################################
 # Document
 #############################################################################
-class Document(XMLDocument):
+class Document(XMLFile):
     """
     This class adds one thing to the XML class, the semantics of translatable
     text.

@@ -21,7 +21,7 @@ import unittest
 from itools.handlers import get_handler
 from itools.stl import stl
 from itools.stl.stl import NamespaceStack, substitute, evaluate
-from itools.xml import Document, stream_to_str
+from itools.xml import XMLFile, stream_to_str
 import itools.xhtml
 
 
@@ -66,7 +66,7 @@ class STLTestCase(unittest.TestCase):
 
 
     def test_attribute(self):
-        handler = Document(string=
+        handler = XMLFile(string=
             '<img xmlns="http://www.w3.org/1999/xhtml" border="${border}" />')
         namespace = {'border': 5}
         stream = stl(handler, namespace)
@@ -77,7 +77,7 @@ class STLTestCase(unittest.TestCase):
 
 
     def test_attribute_accent(self):
-        handler = Document(string=
+        handler = XMLFile(string=
             '<input xmlns="http://www.w3.org/1999/xhtml" value="${name}" />')
         namespace = {'name': u'étoile'}
         stream = stl(handler, namespace)
@@ -88,7 +88,7 @@ class STLTestCase(unittest.TestCase):
 
 
     def test_if(self):
-        handler = Document(string=
+        handler = XMLFile(string=
             '<img xmlns:stl="http://xml.itools.org/namespaces/stl"'
             '  stl:if="img" />')
         namespace = {'img': False}
@@ -99,7 +99,7 @@ class STLTestCase(unittest.TestCase):
 
 
     def test_if_not(self):
-        handler = Document(string=
+        handler = XMLFile(string=
             '<img xmlns:stl="http://xml.itools.org/namespaces/stl"'
             '  stl:if="not img" />')
         namespace = {'img': True}
@@ -110,7 +110,7 @@ class STLTestCase(unittest.TestCase):
 
 
     def test_repeat(self):
-        handler = Document(string=
+        handler = XMLFile(string=
             '<option xmlns:stl="http://xml.itools.org/namespaces/stl"'
             '  stl:repeat="option options" />')
         namespace = {'options': []}

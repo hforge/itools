@@ -61,7 +61,7 @@ class IntegerKey(Integer):
 
 
 
-class CSV(Text):
+class CSVFile(Text):
 
     class_mimetypes = ['text/comma-separated-values', 'text/csv']
     class_extension = 'csv'
@@ -303,4 +303,4 @@ class CSV(Text):
         return set([ x.get_value(name) for x in self.get_rows() ])
 
 
-register_handler_class(CSV)
+register_handler_class(CSVFile)

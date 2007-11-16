@@ -23,7 +23,7 @@ from unittest import TestCase
 # Import from itools
 from itools.datatypes import Boolean, Date, Integer, Unicode, URI
 from itools.catalog import AndQuery, OrQuery, EqQuery
-from itools.csv import CSV
+from itools.csv import CSVFile
 
 
 TEST_DATA_1 = """python,http://python.org/,52343,2003-10-23
@@ -35,8 +35,8 @@ TEST_SYNTAX_ERROR = '"one",,\n,"two",,\n,,"three"'
 
 
 
-class Languages(CSV):
-    __slots__ = CSV.__slots__
+class Languages(CSVFile):
+    __slots__ = CSVFile.__slots__
     columns = ['name', 'url', 'number', 'date']
     schema = {'name': Unicode,
               'url': URI,
@@ -44,28 +44,28 @@ class Languages(CSV):
               'date': Date(index='keyword')}
 
 
-class Things(CSV):
-    __slots__ = CSV.__slots__
+class Things(CSVFile):
+    __slots__ = CSVFile.__slots__
     columns = ['name', 'date']
     schema = {'name': Unicode(index='text'), 'date': Date(index='keyword')}
 
 
-class Numbers(CSV):
-    __slots__ = CSV.__slots__
+class Numbers(CSVFile):
+    __slots__ = CSVFile.__slots__
     columns = ['one', 'two', 'three']
     schema = {'one': Unicode, 'two': Unicode, 'three': Unicode}
 
 
-class People(CSV):
-    __slots__ = CSV.__slots__
+class People(CSVFile):
+    __slots__ = CSVFile.__slots__
     columns = ['name', 'surname', 'date']
     schema = {'name': Unicode,
               'surname': Unicode(index='text'),
               'date': Date(index='keyword')}
 
 
-class Countries(CSV):
-    __slots__ = CSV.__slots__
+class Countries(CSVFile):
+    __slots__ = CSVFile.__slots__
     columns = ['id', 'name', 'country', 'date']
     schema = {'id': Integer,
               'name': Unicode(index='text'),
@@ -73,8 +73,8 @@ class Countries(CSV):
               'date': Date(index='keyword')}
 
 
-class Politicians(CSV):
-    __slots__ = CSV.__slots__
+class Politicians(CSVFile):
+    __slots__ = CSVFile.__slots__
     columns = ['name', 'is_good']
     schema = {'name': Unicode, 'is_good': Boolean(index='bool')}
 
@@ -85,21 +85,21 @@ class CSVTestCase(TestCase):
 
     def test_unicode(self):
         data = '"Martin von Löwis","Marc André Lemburg","Guido van Rossum"\n'
-        handler = CSV(string=data)
+        handler = CSVFile(string=data)
         rows = list(handler.get_rows())
         self.assertEqual(rows, [["Martin von Löwis", "Marc André Lemburg",
                                  "Guido van Rossum"]])
 
 
     def test_num_of_lines(self):
-        handler = CSV(string=TEST_DATA_2)
+        handler = CSVFile(string=TEST_DATA_2)
         rows = list(handler.get_rows())
         self.assertEqual(len(rows), 3)
 
 
     def test_num_of_lines_with_last_new_line(self):
         data = TEST_DATA_2 + '\r\n'
-        handler = CSV(string=data)
+        handler = CSVFile(string=data)
         rows = list(handler.get_rows())
         self.assertEqual(len(rows), 3)
 
@@ -116,7 +116,7 @@ class CSVTestCase(TestCase):
 
 
     def test_load_state_without_schema_and_columns(self):
-        handler = CSV(string=TEST_DATA_1)
+        handler = CSVFile(string=TEST_DATA_1)
         rows = list(handler.get_rows())
         self.assertEqual(rows, [
             ["python", 'http://python.org/', '52343', '2003-10-23'],
@@ -124,7 +124,7 @@ class CSVTestCase(TestCase):
 
 
     def test_load_state_without_schema(self):
-        handler = CSV()
+        handler = CSVFile()
         handler.columns = ['name', 'url', 'number', 'date']
         handler.load_state_from_string(TEST_DATA_1)
         rows = list(handler.get_rows())
@@ -143,7 +143,7 @@ class CSVTestCase(TestCase):
 
 
     def test_to_str_without_schema(self):
-        handler = CSV(string=TEST_DATA_1)
+        handler = CSVFile(string=TEST_DATA_1)
         self.assertEqual(
             handler.to_str(),
             u'"python","http://python.org/","52343","2003-10-23"\n'
@@ -151,55 +151,55 @@ class CSVTestCase(TestCase):
 
 
     def test_get_row(self):
-        handler = CSV(string=TEST_DATA_2)
+        handler = CSVFile(string=TEST_DATA_2)
         self.assertEqual(handler.get_row(1), ['four', 'five', 'six'])
 
 
     def test_get_rows(self):
-        handler = CSV(string=TEST_DATA_2)
+        handler = CSVFile(string=TEST_DATA_2)
         rows = list(handler.get_rows([0, 1]))
         self.assertEqual(rows, [['one', 'two', 'three'],
                                 ['four', 'five', 'six']])
 
 
     def test_add_row(self):
-        handler = CSV(string=TEST_DATA_2)
+        handler = CSVFile(string=TEST_DATA_2)
         handler.add_row(['a', 'b', 'c'])
         self.assertEqual(handler.get_row(3), ['a', 'b', 'c'])
 
 
     def test_del_row(self):
-        handler = CSV(string=TEST_DATA_2)
+        handler = CSVFile(string=TEST_DATA_2)
         handler.del_row(1)
         self.assertRaises(IndexError, handler.get_row, 1)
 
 
     def test_del_rows(self):
-        handler = CSV(string=TEST_DATA_2)
+        handler = CSVFile(string=TEST_DATA_2)
         handler.del_rows([0, 1])
         self.assertRaises(IndexError, handler.get_row, 0)
 
 
     def test_set_state_in_memory_resource(self):
-        handler = CSV(string=TEST_DATA_2)
+        handler = CSVFile(string=TEST_DATA_2)
         handler.add_row(['a', 'b', 'c'])
         data = handler.to_str()
 
-        handler2 = CSV(string=data)
+        handler2 = CSVFile(string=data)
         self.assertEqual(handler2.get_row(3), ['a', 'b', 'c'])
 
 
     def test_set_state_in_file_resource(self):
-        handler = CSV('test.csv')
+        handler = CSVFile('test.csv')
         handler.add_row(['d1', 'e1', 'f1'])
         handler.save_state()
 
-        handler2 = CSV('test.csv')
+        handler2 = CSVFile('test.csv')
         self.assertEqual(handler2.get_row(3), ['d1', 'e1', 'f1'])
         handler2.del_row(3)
         handler2.save_state()
 
-        handler = CSV('test.csv')
+        handler = CSVFile('test.csv')
         self.assertEqual(handler.get_nrows(), 3)
 
 
@@ -293,7 +293,7 @@ class CSVTestCase(TestCase):
 
 
     def test_bad_syntax_csv_file(self):
-        load_state = CSV().load_state_from_string
+        load_state = CSVFile().load_state_from_string
         self.assertRaises(ValueError, load_state, TEST_SYNTAX_ERROR)
 
 

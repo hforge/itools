@@ -19,7 +19,7 @@
 import mimetypes
 
 # Import from itools
-from csv_ import parse, CSV, Row, IntegerKey
+from csv_ import parse, CSVFile, Row, IntegerKey
 from parser import parse
 
 
@@ -27,7 +27,7 @@ __all__ = [
     # Functions
     'parse',
     # Classes
-    'CSV',
+    'CSVFile',
     'Row']
 
 

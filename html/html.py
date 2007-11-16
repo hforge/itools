@@ -17,12 +17,12 @@
 # Import from itools
 from itools.handlers import register_handler_class
 from itools.xml import translate
-from itools.xhtml import Document as XHTMLDocument, stream_to_str_as_html
+from itools.xhtml import XHTMLFile, stream_to_str_as_html
 from parser import Parser
 
 
 
-class Document(XHTMLDocument):
+class Document(XHTMLFile):
     """
     HTML files are a lot like XHTML, only the parsing and the output is
     different, so we inherit from XHTML instead of Text, even if the
@@ -60,7 +60,7 @@ class Document(XHTMLDocument):
         self.events = list(stream)
 
 
-    to_str = XHTMLDocument.to_html
+    to_str = XHTMLFile.to_html
 
 
     def translate(self, catalog):

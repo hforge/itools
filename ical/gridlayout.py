@@ -21,7 +21,7 @@ from datetime import date, timedelta
 # Import from itools
 from itools.datatypes import Date
 from itools.stl import stl
-from itools.xhtml import Document
+from itools.xhtml import XHTMLFile
 
 
 template_string = """
@@ -38,7 +38,7 @@ template_string = """
 """
 
 
-template = Document()
+template = XHTMLFile()
 template.load_state_from_string(template_string)
 icon_path = '/ui/images/button_add.png'
 

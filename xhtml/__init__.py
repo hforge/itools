@@ -18,13 +18,13 @@
 import mimetypes
 
 # Import from itools
-from xhtml import (xhtml_uri, Document, stream_to_str_as_html,
+from xhtml import (xhtml_uri, XHTMLFile, stream_to_str_as_html,
     stream_to_str_as_xhtml, elements_schema, sanitize_stream, sanitize_str)
 
 
 __all__ = [
     'xhtml_uri',
-    'Document',
+    'XHTMLFile',
     'elements_schema',
     # New API (work in progress)
     'stream_to_str_as_html',

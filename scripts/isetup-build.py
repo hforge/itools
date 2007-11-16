@@ -31,7 +31,7 @@ from itools import git
 from itools.handlers import Config, get_handler
 import itools.stl
 from itools.uri import Path
-from itools.xhtml import Document
+from itools.xhtml import XHTMLFile
 
 
 
@@ -125,7 +125,7 @@ if __name__ == '__main__':
         # Load the handler
         path = path.strip()
         src_mtime = vfs.get_mtime(path)
-        src = Document(path)
+        src = XHTMLFile(path)
         done = False
         # Build the translation
         n = path.rfind('.')

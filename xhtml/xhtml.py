@@ -459,7 +459,7 @@ register_schema(Schema)
 #############################################################################
 # Document
 #############################################################################
-class Document(XMLFile):
+class XHTMLFile(XMLFile):
     """
     This class adds one thing to the XML class, the semantics of translatable
     text.
@@ -524,4 +524,4 @@ class Document(XMLFile):
         return get_element(self.events, 'body')
 
 
-register_handler_class(Document)
+register_handler_class(XHTMLFile)

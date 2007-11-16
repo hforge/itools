@@ -22,7 +22,7 @@ from unittest import TestCase
 
 # Import from itools
 from itools.xml import Parser, TEXT
-from itools.xhtml import Document
+from itools.xhtml import XHTMLFile
 from itools.xhtml.xhtml import stream_to_html, sanitize_str
 from itools.gettext import PO
 
@@ -54,7 +54,7 @@ class SegmentationTestCase(TestCase):
 
     def test_paragraph(self):
         """Test formatted paragraph"""
-        doc = Document(string=
+        doc = XHTMLFile(string=
             '<p xmlns="http://www.w3.org/1999/xhtml">\n'
             'The Mozilla project maintains <em>choice</em> and\n'
             '<em>innovation</em> on the Internet. Developing the\n'
@@ -70,7 +70,7 @@ class SegmentationTestCase(TestCase):
 
 
     def test_table(self):
-        doc = Document(string=
+        doc = XHTMLFile(string=
             '<table xmlns="http://www.w3.org/1999/xhtml">\n'
             '  <tr>\n'
             '    <th>Title</th>\n'
@@ -99,7 +99,7 @@ class SegmentationTestCase(TestCase):
     def test_random(self):
         """Test element content."""
         # The document
-        doc = Document(string=
+        doc = XHTMLFile(string=
             '<body xmlns="http://www.w3.org/1999/xhtml">\n'
             '  <p>this <em>word</em> is nice</p>\n'
             '  <a href="/"><img src="logo.png" /></a>\n'
@@ -117,7 +117,7 @@ class SegmentationTestCase(TestCase):
     def test_form(self):
         """Test complex attribute."""
         # The document
-        doc = Document(string=
+        doc = XHTMLFile(string=
             '<form xmlns="http://www.w3.org/1999/xhtml">\n'
             '  <input type="text" name="id" />\n'
             '  <input type="submit" value="Change" />\n'
@@ -128,7 +128,7 @@ class SegmentationTestCase(TestCase):
 
 
     def test_inline(self):
-        doc = Document(string=
+        doc = XHTMLFile(string=
             '<p xmlns="http://www.w3.org/1999/xhtml">'
             'Hi <b>everybody, </b><i>how are you ? </i>'
             '</p>')
@@ -157,7 +157,7 @@ class TranslationTestCase(TestCase):
     def test_case1(self):
         """Test element content."""
         data = self.template % '<p>hello litle world</p>'
-        doc = Document(string=data)
+        doc = XHTMLFile(string=data)
         messages = list(doc.get_messages())
 
         self.assertEqual(messages, [(u'hello litle world', 0)])
@@ -166,7 +166,7 @@ class TranslationTestCase(TestCase):
     def test_case2(self):
         """Test simple attribute."""
         data = self.template % '<img alt="The beach" src="beach.jpg" />'
-        doc = Document(string=data)
+        doc = XHTMLFile(string=data)
         messages = list(doc.get_messages())
 
         self.assertEqual(messages, [(u'The beach', 0)])
@@ -176,7 +176,7 @@ class TranslationTestCase(TestCase):
         """Test complex attribute."""
         data = self.template % ('<input type="text" name="id" />\n'
                                 '<input type="submit" value="Change" />')
-        doc = Document(string=data)
+        doc = XHTMLFile(string=data)
         messages = list(doc.get_messages())
 
         self.assertEqual(messages, [(u'Change', 0)])
@@ -190,10 +190,10 @@ class TranslationTestCase(TestCase):
         p = PO(string=string)
 
         string = self.template % '<p>hello world</p>'
-        source = Document(string=string)
+        source = XHTMLFile(string=string)
 
         string = source.translate(p)
-        xhtml = Document(string=string)
+        xhtml = XHTMLFile(string=string)
 
         messages = list(xhtml.get_messages())
         self.assertEqual(messages, [(u'hola mundo', 0)])
@@ -204,11 +204,11 @@ class TranslationTestCase(TestCase):
         po = PO(string=
             'msgid "The beach"\n'
             'msgstr "La playa"')
-        xhtml = Document(string=
+        xhtml = XHTMLFile(string=
             self.template  % '<img alt="The beach" src="beach.jpg" />')
 
         html = xhtml.translate(po)
-        xhtml = Document(string=html)
+        xhtml = XHTMLFile(string=html)
 
         messages = list(xhtml.get_messages())
         self.assertEqual(messages, [(u'La playa', 0)])

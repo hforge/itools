@@ -201,9 +201,11 @@ def build_namespace(pkg, format, escape=lambda x: x):
                 exceptions.append(ns)
             else:
                 classes.append(ns)
-        elif isinstance(object, ClassType):
-            raise ValueError, ('"%s" is an old style class, don not use'
-                'old style classes, they are obsolete') % name
+        # TODO We should require Python 2.5 to run isetup-doc, uncomment this
+        # sometime in the future
+#        elif isinstance(object, ClassType):
+#            raise ValueError, ('"%s" is an old style class, don not use'
+#                'old style classes, they are obsolete') % name
         else:
             constants.append(ns)
             ns['doc'] = None

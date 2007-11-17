@@ -33,6 +33,7 @@ included are:
  - itools.csv
  - itools.datatypes
  - itools.gettext
+ - itools.git
  - itools.handlers
  - itools.html
  - itools.http
@@ -49,7 +50,6 @@ included are:
  - itools.vfs
  - itools.web
  - itools.workflow
- - itools.xhtml
  - itools.xliff
  - itools.xml
 """

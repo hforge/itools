@@ -24,11 +24,11 @@ import sys
 
 # Import from itools
 import itools
-from itools import vfs
-from itools.handlers import Python, Config
 from itools.gettext import PO
-from itools.xhtml import XHTMLFile
+from itools.handlers import Python, Config
+from itools.html import XHTMLFile
 import itools.stl
+from itools import vfs
 
 
 

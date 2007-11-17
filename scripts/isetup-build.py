@@ -25,13 +25,13 @@ import sys
 
 # Import from itools
 import itools
-from itools import vfs
 import itools.gettext
 from itools import git
 from itools.handlers import Config, get_handler
+from itools.html import XHTMLFile
 import itools.stl
 from itools.uri import Path
-from itools.xhtml import XHTMLFile
+from itools import vfs
 
 
 

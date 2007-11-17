@@ -28,16 +28,16 @@ import re
 from types import GeneratorType
 
 # Import from itools
-from itools.uri import Path
 from itools.datatypes import (Boolean, String, URI, XMLAttribute,
     XML as XMLContent)
 from itools.schemas import (Schema as BaseSchema, get_datatype_by_uri,
     register_schema)
+from itools.uri import Path
 from itools.xml import (XMLError, XMLNSNamespace, get_namespace, set_namespace,
     AbstractNamespace, get_start_tag, get_end_tag, Parser, START_ELEMENT,
     END_ELEMENT, TEXT, COMMENT, find_end, stream_to_str)
-from itools.xhtml import (xhtml_uri, stream_to_str_as_html,
-                          stream_to_str_as_xhtml)
+from itools.html import (xhtml_uri, stream_to_str_as_html,
+                         stream_to_str_as_xhtml)
 
 
 

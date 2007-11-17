@@ -9,9 +9,9 @@ The packages included are:
   itools.datatypes        itools.odf              itools.vfs
   itools.gettext          itools.pdf              itools.web
   itools.git              itools.rest             itools.workflow
-  itools.handlers         itools.rss              itools.xhtml
-  itools.html             itools.schemas          itools.xliff
-  itools.http             itools.stl              itools.xml
+  itools.handlers         itools.rss              itools.xliff
+  itools.html             itools.schemas          itools.xml
+  itools.http             itools.stl
 
 The scripts included are:
 

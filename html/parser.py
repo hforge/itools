@@ -22,7 +22,7 @@ import warnings
 # Import from itools
 from itools.xml import (XMLError, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT,
     COMMENT, TEXT)
-from itools.xhtml import xhtml_uri
+from xhtml import xhtml_uri
 
 
 # TODO Test the parser with different encodings. The behavior must be
@@ -53,8 +53,8 @@ dtd_flow = dtd_block | dtd_inline
 dtd_ = frozenset([])
 
 
-# FIXME This code is duplicated from "itools.xhtml" (actually, this one is
-# more complete).
+# FIXME This code is duplicated from "itools.html.xhtml" (actually, this one
+# is more complete).
 dtd = {
     # Strict (http://www.w3.org/TR/html4/sgml/dtd.html)
     'a': {'contains': dtd_inline},

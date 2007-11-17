@@ -17,7 +17,7 @@
 # Import from itools
 from itools.handlers import register_handler_class
 from itools.xml import translate
-from itools.xhtml import XHTMLFile, stream_to_str_as_html
+from xhtml import XHTMLFile, stream_to_str_as_html
 from parser import Parser
 
 

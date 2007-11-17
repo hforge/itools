@@ -14,17 +14,33 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from the Standard Library
+import mimetypes
+
 # Import from itools
 from html import HTMLFile
-from parser import (Parser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT,
-                    COMMENT, TEXT)
+from parser import Parser
+from xhtml import (xhtml_uri, XHTMLFile, stream_to_str_as_html,
+    stream_to_str_as_xhtml, elements_schema, sanitize_stream, sanitize_str)
 
 
+# Public API
 __all__ = [
+    # File Handlers
+    'XHTMLFile',
     'HTMLFile',
+    # Parsers
     'Parser',
-    'DOCUMENT_TYPE',
-    'START_ELEMENT',
-    'END_ELEMENT',
-    'COMMENT',
-    'TEXT']
+    # Functions
+    'stream_to_str_as_html',
+    'stream_to_str_as_xhtml',
+    'sanitize_stream',
+    'sanitize_str',
+    # Constants
+    'xhtml_uri',
+    'elements_schema',
+    ]
+
+
+# Register
+mimetypes.add_type('application/xhtml+xml', '.xhtml')

@@ -21,7 +21,7 @@ import cgi
 
 # Import from itools
 from itools.xml import TEXT, START_ELEMENT, END_ELEMENT, stream_to_str
-from itools.xhtml import (xhtml_uri, stream_to_str_as_xhtml,
+from itools.html import (xhtml_uri, stream_to_str_as_xhtml,
     stream_to_str_as_html)
 from parser import block_stream, rest_uri
 

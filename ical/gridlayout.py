@@ -21,7 +21,7 @@ from datetime import date, timedelta
 # Import from itools
 from itools.datatypes import Date
 from itools.stl import stl
-from itools.xhtml import XHTMLFile
+from itools.html import XHTMLFile
 
 
 template_string = """

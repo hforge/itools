@@ -22,7 +22,7 @@ from itools.handlers import get_handler
 from itools.stl import stl
 from itools.stl.stl import NamespaceStack, substitute, evaluate
 from itools.xml import XMLFile, stream_to_str
-import itools.xhtml
+import itools.html
 
 
 class SubstituteTestCase(unittest.TestCase):

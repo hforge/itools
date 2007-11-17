@@ -187,7 +187,7 @@ class Element(object):
 
 
     def get_content_as_html(self, encoding='UTF-8'):
-        from itools.xhtml import stream_to_str_as_html
+        from itools.html import stream_to_str_as_html
         return stream_to_str_as_html(self.get_content_elements())
 
 

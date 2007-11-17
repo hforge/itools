@@ -16,14 +16,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from odf import ODT, ODP, ODS
-from OO import OOWriter, OOCalc, OOImpress
+from odf import ODTFile, ODPFile, ODSFile
+from oo import SXWFile, SXCFile, SXIFile
 
 __all__ = [
-    'ODT',
-    'ODP',
-    'ODS',
-    'OOWriter',
-    'OOCalc',
-    'OOImpress']
+    # Opend Document Format
+    'ODTFile',
+    'ODPFile',
+    'ODSFile',
+    # Open Office 1.0
+    'SXWFile',
+    'SXCFile',
+    'SXIFile',
+    ]
 

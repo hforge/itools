@@ -54,27 +54,26 @@ def stl_to_odt(model_odt, namespace):
 
 
 
-class OpenOfficeDocument(OfficeDocument, ZipArchive):
+class OOFile(OfficeDocument, ZipArchive):
+    """SuperClass of OpenDocumentFormat 1.0 & 2.0
     """
-    SuperClass of OpenDocumentFormat 1.0 & 2.0
-    """
+
     def to_text(self):
         return xml_to_text(self.get_file('content.xml'))
 
 
 
-class OdfDocument(OpenOfficeDocument):
+class ODFFile(OOFile):
+    """Format ODF : OpenDocumentFormat 2.0
     """
-    Format ODF : OpenDocumentFormat 2.0
-    """
+
     namespace = 'urn:oasis:names:tc:opendocument:xmlns:office:1.0'
 
     __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'data']
 
 
     def get_meta(self):
-        """
-        Return the meta informations of an ODF Document
+        """Return the meta informations of an ODF Document.
         """
         meta = {}
         meta_tags = ['title', 'description', 'subject', 'initial-creator',
@@ -110,9 +109,7 @@ class OdfDocument(OpenOfficeDocument):
 
 
     def translate(self, catalog):
-        """
-        Translate the document
-        and reconstruct an odt document
+        """Translate the document and reconstruct an odt document.
         """
         content_events = self.get_events('content.xml')
         translation = translate(content_events, catalog)
@@ -133,7 +130,7 @@ class OdfDocument(OpenOfficeDocument):
 
 
 
-class ODT(OdfDocument):
+class ODTFile(ODFFile):
 
     class_mimetypes = ['application/vnd.oasis.opendocument.text']
     class_extension = 'odt'
@@ -142,7 +139,7 @@ class ODT(OdfDocument):
     __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'data']
 
 
-class ODS(OdfDocument):
+class ODSFile(ODFFile):
 
     class_mimetypes = ['application/vnd.oasis.opendocument.spreadsheet']
     class_extension = 'ods'
@@ -151,7 +148,7 @@ class ODS(OdfDocument):
     __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'data']
 
 
-class ODP(OdfDocument):
+class ODPFile(ODFFile):
 
     class_mimetypes = ['application/vnd.oasis.opendocument.presentation']
     class_extension = 'odp'
@@ -161,7 +158,7 @@ class ODP(OdfDocument):
 
 
 # Register handler and mimetypes
-handlers = [ODT, ODS, ODP]
+handlers = [ODTFile, ODSFile, ODPFile]
 for handler in handlers:
     mimetypes.add_type(handler.class_mimetypes[0],
                        '.%s' %handler.class_extension)

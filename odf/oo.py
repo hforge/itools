@@ -15,35 +15,33 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+"""
+Open Office 1.0
+"""
+
 # Import from the Standard Library
 import mimetypes
 from itools.handlers import register_handler_class
 
 # Import from itools
-from odf import OpenOfficeDocument
-
-class OO(OpenOfficeDocument):
-    """
-    Format ODF : OpenDocumentFormat 1.0
-    """
-    pass
+from odf import OOFile
 
 
-class OOWriter(OO):
+class SXWFile(OOFile):
 
     class_mimetypes = ['application/vnd.sun.xml.writer']
     class_extension = 'sxw'
 
 
 
-class OOCalc(OO):
+class SXCFile(OOFile):
 
     class_mimetypes = ['application/vnd.sun.xml.calc']
     class_extension = 'sxc'
 
 
 
-class OOImpress(OO):
+class SXIFile(OOFile):
 
     class_mimetypes = ['application/vnd.sun.xml.impress']
     class_extension = 'sxi'
@@ -54,7 +52,7 @@ mimetypes.add_type('application/vnd.sun.xml.writer', '.sxw')
 mimetypes.add_type('application/vnd.sun.xml.calc', '.sxc')
 mimetypes.add_type('application/vnd.sun.xml.impress', '.sxi')
 
+register_handler_class(SXWFile)
+register_handler_class(SXCFile)
+register_handler_class(SXIFile)
 
-handlers = [OOWriter, OOCalc, OOImpress]
-for handler in handlers:
-    register_handler_class(handler)

@@ -20,9 +20,7 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.odf import (ODT as OdtDocument,
-                        ODP as OdpDocument,
-                        ODS as OdsDocument)
+from itools.odf import ODTFile, ODPFile, ODSFile
 from itools.gettext import PO
 from itools import vfs
 from itools.xml import Parser
@@ -33,7 +31,7 @@ class Test_ODT_File(TestCase):
 
     def setUp(self):
         file = vfs.open('odf/Document.odt', 'r')
-        self.doc = OdtDocument()
+        self.doc = ODTFile()
         self.doc.load_state_from_file(file)
 
 
@@ -51,7 +49,7 @@ class Test_ODT_File(TestCase):
         po = PO(string=str)
         translate_odt_document = self.doc.translate(po)
         # Get the message of the translate document
-        doc2 = OdtDocument()
+        doc2 = ODTFile()
         doc2.load_state_from_string(translate_odt_document)
         messages = list(doc2.get_messages())
         # Check if allright
@@ -80,7 +78,7 @@ class Test_ODP_File(TestCase):
 
     def setUp(self):
         file = vfs.open('odf/Document.odp', 'r')
-        self.doc = OdpDocument()
+        self.doc = ODPFile()
         self.doc.load_state_from_file(file)
 
 
@@ -96,7 +94,7 @@ class Test_ODS_File(TestCase):
 
     def setUp(self):
         file = vfs.open('odf/Document.ods', 'r')
-        self.doc = OdsDocument()
+        self.doc = ODSFile()
         self.doc.load_state_from_file(file)
 
     def test_get_msg(self):

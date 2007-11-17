@@ -175,7 +175,7 @@ class Database(object):
 
     def get_handlers(self, reference):
         fs, reference = cwd.get_fs_and_reference(reference)
-        for name in self.get_names(reference):
+        for name in fs.get_names(reference):
             ref = reference.resolve2(name)
             yield self.get_handler(ref)
 

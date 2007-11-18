@@ -16,18 +16,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the Standard Library
-from datetime import datetime
-
 # Import from itools
-from itools.uri import Path, get_absolute_reference
-from itools.vfs import vfs
+from itools.uri import get_absolute_reference
 from base import Handler
-import registry
+from messages import *
+from registry import register_handler_class
 
-
-
-MSG_NOT_ATTACHED = 'method only available when attached to a database'
 
 
 class Context(object):
@@ -139,4 +133,4 @@ class Folder(Handler):
                         context.skip = False
 
 
-registry.register_handler_class(Folder)
+register_handler_class(Folder)

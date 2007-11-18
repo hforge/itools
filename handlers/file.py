@@ -17,10 +17,9 @@
 # Import from the Standard Library
 from copy import deepcopy
 from cStringIO import StringIO
-import datetime
 
 # Import from itools
-from itools.uri import uri
+from itools.uri import get_absolute_reference
 from itools.vfs import vfs
 from registry import register_handler_class
 from base import Handler
@@ -46,7 +45,7 @@ class File(Handler):
                 self.new(**kw)
         else:
             # Calculate the URI
-            self.uri = uri.get_absolute_reference(ref)
+            self.uri = get_absolute_reference(ref)
 
 
     def new(self, data=''):

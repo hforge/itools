@@ -25,8 +25,9 @@ from thread import allocate_lock, get_ident
 from itools.uri import get_reference, get_absolute_reference, Path
 from itools.vfs import vfs
 from itools.vfs import cwd, READ, WRITE, APPEND
-from registry import get_handler_class
 from folder import Folder
+from messages import *
+from registry import get_handler_class
 
 
 

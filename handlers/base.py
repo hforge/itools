@@ -15,20 +15,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the Standard Library
-from copy import deepcopy
-from datetime import datetime
-
-# Import from itools
-from itools.uri import uri, Path
-from itools.vfs import vfs
-
-"""
-This module provides the abstract class which is the root in the
+"""This module provides the abstract class which is the root in the
 handler class hierarchy.
 """
 
-MSG_NOT_ATTACHED = 'method only available when attached to a database'
+# Import from itools
+from itools.uri import Path
+from itools.vfs import vfs
+from messages import *
+
 
 
 class Handler(object):

@@ -27,7 +27,7 @@ from file import File
 from registry import register_handler_class
 
 
-class ZipArchive(File):
+class ZIPFile(File):
 
     class_mimetypes = ['application/zip']
 
@@ -48,7 +48,7 @@ class ZipArchive(File):
 
 
 
-class TarArchive(File):
+class TARFile(File):
 
     class_mimetypes = ['application/x-tar']
 
@@ -73,7 +73,7 @@ class Bzip2(File):
 
 
 # Register
-for handler_class in [ZipArchive, TarArchive, Gzip, Bzip2]:
+for handler_class in [ZIPFile, TARFile, Gzip, Bzip2]:
     register_handler_class(handler_class)
 
 # Mimetypes BZip2 support

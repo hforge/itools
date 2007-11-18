@@ -27,7 +27,7 @@ import sys
 import itools
 import itools.gettext
 from itools import git
-from itools.handlers import Config, get_handler
+from itools.handlers import ConfigFile, get_handler
 from itools.html import XHTMLFile
 import itools.stl
 from itools.uri import Path
@@ -83,7 +83,7 @@ if __name__ == '__main__':
         print "Warning: not using git."
 
     # Read configuration for languages
-    config = Config('setup.conf')
+    config = ConfigFile('setup.conf')
     source_language = config.get_value('source_language', default='en')
     target_languages = config.get_value('target_languages', default='').split()
 

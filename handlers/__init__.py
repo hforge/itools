@@ -39,7 +39,7 @@ import mimetypes
 # Import from itools
 from archive import ZIPFile, TARFile, Gzip, Bzip2
 from base import Handler
-from config import Config
+from config import ConfigFile
 from file import File
 from folder import Folder
 from image import Image
@@ -59,7 +59,7 @@ __all__ = [
     'TARFile',
     'Gzip',
     'Bzip2',
-    'Config',
+    'ConfigFile',
     'File',
     'Folder',
     'Image',

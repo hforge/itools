@@ -213,7 +213,7 @@ def read_multiline(lines):
 ###########################################################################
 # The handler
 ###########################################################################
-class Config(Text):
+class ConfigFile(Text):
     """The data structure of this handler is:
 
       self.lines:

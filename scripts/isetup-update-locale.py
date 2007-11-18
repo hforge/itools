@@ -25,7 +25,7 @@ import sys
 # Import from itools
 import itools
 from itools.gettext import PO
-from itools.handlers import Python, Config
+from itools.handlers import Python, ConfigFile
 from itools.html import XHTMLFile
 import itools.stl
 from itools import vfs
@@ -46,7 +46,7 @@ if __name__ == '__main__':
         parser.error('incorrect number of arguments')
 
     # Read configuration for languages
-    config = Config('setup.conf')
+    config = ConfigFile('setup.conf')
     source_language = config.get_value('source_language', default='en')
 
     # Initialize message catalog

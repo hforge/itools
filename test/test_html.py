@@ -23,7 +23,7 @@ from unittest import TestCase
 # Import from itools
 from itools.gettext import PO
 from itools.xml import Parser, START_ELEMENT, END_ELEMENT, TEXT, stream_to_str
-from itools.html import HTMLFile, XHTMLFile, Parser as HTMLParser, sanitize_str
+from itools.html import HTMLFile, XHTMLFile, HTMLParser, sanitize_str
 from itools.html.xhtml import stream_to_html
 
 

@@ -19,7 +19,7 @@ import mimetypes
 
 # Import from itools
 from html import HTMLFile
-from parser import Parser
+from parser import HTMLParser
 from xhtml import (xhtml_uri, XHTMLFile, stream_to_str_as_html,
     stream_to_str_as_xhtml, elements_schema, sanitize_stream, sanitize_str)
 
@@ -30,7 +30,7 @@ __all__ = [
     'XHTMLFile',
     'HTMLFile',
     # Parsers
-    'Parser',
+    'HTMLParser',
     # Functions
     'stream_to_str_as_html',
     'stream_to_str_as_xhtml',

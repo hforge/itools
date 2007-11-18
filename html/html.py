@@ -18,15 +18,14 @@
 from itools.handlers import register_handler_class
 from itools.xml import translate
 from xhtml import XHTMLFile, stream_to_str_as_html
-from parser import Parser
+from parser import HTMLParser
 
 
 
 class HTMLFile(XHTMLFile):
-    """
-    HTML files are a lot like XHTML, only the parsing and the output is
-    different, so we inherit from XHTML instead of Text, even if the
-    mime type is 'text/html'.
+    """HTML files are a lot like XHTML, only the parsing and the output is
+    different, so we inherit from XHTML instead of Text, even if the mime
+    type is 'text/html'.
 
     The parsing is based on the HTMLParser class, which has a more object
     oriented approach than the expat parser used for xml, i.e. we inherit
@@ -56,7 +55,7 @@ class HTMLFile(XHTMLFile):
 
     def _load_state_from_file(self, file):
         data = file.read()
-        stream = Parser(data)
+        stream = HTMLParser(data)
         self.events = list(stream)
 
 

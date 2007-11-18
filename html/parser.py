@@ -16,7 +16,7 @@
 
 # Import from the Standard Library
 import htmlentitydefs
-from HTMLParser import HTMLParser
+from HTMLParser import HTMLParser as BaseParser
 import warnings
 
 # Import from itools
@@ -176,7 +176,7 @@ boolean_attributes = set(['checked', 'compact', 'declare', 'defer',
 ###########################################################################
 # The Parser
 ###########################################################################
-class _Parser(HTMLParser, object):
+class Parser(BaseParser, object):
 
     def parse(self, data):
         self.encoding = 'UTF-8'
@@ -348,8 +348,8 @@ def make_xml_compatible(stream):
 
 
 
-def Parser(data):
-    stream = _Parser().parse(data)
+def HTMLParser(data):
+    stream = Parser().parse(data)
     stream = make_xml_compatible(stream)
     # TODO Don't transform to a list, keep the stream
     return list(stream)

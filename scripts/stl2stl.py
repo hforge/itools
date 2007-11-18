@@ -22,7 +22,8 @@ import sys
 import itools
 from itools.datatypes import String
 from itools.schemas import get_schema_by_uri
-from itools.xml import Parser, START_ELEMENT, END_ELEMENT, TEXT, stream_to_str
+from itools.xml import (XMLParser, START_ELEMENT, END_ELEMENT, TEXT,
+    stream_to_str)
 import itools.stl
 
 
@@ -123,7 +124,7 @@ if __name__ == '__main__':
     for filename in args:
         print '>>>', filename
         data = open(filename).read()
-        parser = Parser(data)
+        parser = XMLParser(data)
         new_stl = _stl2stl(parser)
         try:
             new_stl = list(new_stl)

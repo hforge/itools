@@ -20,14 +20,14 @@ from time import time
 
 # Import from itools
 import itools
-from itools.xml import XMLFile, Parser
+from itools.xml import XMLFile, XMLParser
 
 
 
 # itools.xml.parser: 0.0062
 ##data = open('bench_parser.xml').read()
 ##t0 = time()
-##for event, value, line_number in Parser(data):
+##for event, value, line_number in XMLParser(data):
 ##    pass
 ##print time() - t0
 
@@ -43,4 +43,4 @@ if __name__ == '__main__':
         print itools.__version__, t1 - t0
     else:
         data = open('bench_parser.xml').read()
-        profile.run('list(Parser(data))')
+        profile.run('list(XMLParser(data))')

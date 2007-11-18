@@ -19,7 +19,7 @@
 from itools.datatypes import XML as XMLContent
 from itools.i18n import Message
 from namespaces import get_namespace, get_element_schema, XMLNSNamespace
-from parser import Parser, START_ELEMENT, END_ELEMENT, TEXT
+from parser import XMLParser, START_ELEMENT, END_ELEMENT, TEXT
 
 
 
@@ -254,7 +254,7 @@ def translate(events, catalog):
         elif type == MESSAGE:
             for segment in value.get_segments(keep_spaces):
                 segment = catalog.gettext(segment).encode('utf-8')
-                for event in Parser(segment, namespaces):
+                for event in XMLParser(segment, namespaces):
                     yield event
         else:
             yield event

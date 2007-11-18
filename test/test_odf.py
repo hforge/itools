@@ -23,7 +23,7 @@ from unittest import TestCase
 from itools.odf import ODTFile, ODPFile, ODSFile
 from itools.gettext import PO
 from itools import vfs
-from itools.xml import Parser
+from itools.xml import XMLParser
 from itools.xml.i18n import get_messages, translate
 
 
@@ -151,7 +151,7 @@ class Test_ODT_Parser(TestCase):
                    '</text:p>'
                    '</office:text>')
         content = self.template % content
-        events = Parser(content)
+        events = XMLParser(content)
         messages = list(get_messages(events))
         expected = [(u'hello world', 0)]
         self.assertEqual(messages, expected)
@@ -189,7 +189,7 @@ class Test_ODT_Parser(TestCase):
                   """
 
         content = self.template % content
-        events = Parser(content)
+        events = XMLParser(content)
         messages = list(get_messages(events))
         expected= [(u'A', 0), (u'B', 0), (u'C', 0),
                    (u'D', 0), (u'E', 0), (u'F', 0)]
@@ -208,7 +208,7 @@ class Test_ODT_Parser(TestCase):
                    '</office:text>')
 
         content = self.template % content
-        events = Parser(content)
+        events = XMLParser(content)
         string = translate(events, po)
         messages = list(get_messages(string))
         self.assertEqual(messages, [(u'hola mundo', 0)])

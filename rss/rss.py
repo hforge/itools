@@ -17,7 +17,7 @@
 
 # Import from itools
 from itools.handlers import Text, register_handler_class
-from itools.xml import Parser, XML_DECL, START_ELEMENT, END_ELEMENT, TEXT
+from itools.xml import XMLParser, XML_DECL, START_ELEMENT, END_ELEMENT, TEXT
 from itools.datatypes import (is_datatype, Unicode, URI, Integer, String,
     InternetDateTime)
 
@@ -178,7 +178,7 @@ class RSS(Text):
         image = None
         items = []
         # Parse the rss file
-        for event, value, line_number in Parser(file.read()):
+        for event, value, line_number in XMLParser(file.read()):
             if event == XML_DECL:
                 version, encoding, standalone = value
             elif event == START_ELEMENT:

@@ -19,7 +19,7 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.xml import (XMLFile, Parser, XMLError, XML_DECL, DOCUMENT_TYPE,
+from itools.xml import (XMLFile, XMLParser, XMLError, XML_DECL, DOCUMENT_TYPE,
     START_ELEMENT, END_ELEMENT, TEXT, COMMENT, PI, CDATA, stream_to_str)
 from itools.xml.i18n import get_messages
 
@@ -31,7 +31,7 @@ class ParserTestCase(TestCase):
         data = '<?xml version="1.0" encoding="UTF-8"?>'
         token = XML_DECL
         value = '1.0', 'UTF-8', None
-        self.assertEqual(Parser(data).next(), (token, value, 1))
+        self.assertEqual(XMLParser(data).next(), (token, value, 1))
 
 
     def test_doctype_public(self):
@@ -40,7 +40,7 @@ class ParserTestCase(TestCase):
         token = DOCUMENT_TYPE
         value = ('html', 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd',
                  '-//W3C//DTD XHTML 1.0 Strict//EN', None)
-        self.assertEqual(Parser(data).next(), (token, value, 1))
+        self.assertEqual(XMLParser(data).next(), (token, value, 1))
 
 
     def test_doctype_system(self):
@@ -49,7 +49,7 @@ class ParserTestCase(TestCase):
         token = DOCUMENT_TYPE
         value = ('html', 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd',
                  None, None)
-        self.assertEqual(Parser(data).next(), (token, value, 1))
+        self.assertEqual(XMLParser(data).next(), (token, value, 1))
 
 
     #######################################################################
@@ -58,19 +58,19 @@ class ParserTestCase(TestCase):
         data = '&#241;'
         token = TEXT
         value = "ñ"
-        self.assertEqual(Parser(data).next(), (token, value, 1))
+        self.assertEqual(XMLParser(data).next(), (token, value, 1))
 
 
     def test_char_ref_hex(self):
         data = '&#xf1;'
         token = TEXT
         value = "ñ"
-        self.assertEqual(Parser(data).next(), (token, value, 1))
+        self.assertEqual(XMLParser(data).next(), (token, value, 1))
 
 
     def test_char_ref_empty(self):
         data = '&#;'
-        self.assertRaises(XMLError, Parser(data).next)
+        self.assertRaises(XMLError, XMLParser(data).next)
 
 
     #######################################################################
@@ -79,38 +79,38 @@ class ParserTestCase(TestCase):
         data = '<a>'
         token = START_ELEMENT
         value = None, 'a', {}
-        self.assertEqual(Parser(data).next(), (token, value, 1))
+        self.assertEqual(XMLParser(data).next(), (token, value, 1))
 
 
     def test_attributes(self):
         data = '<a href="http://www.ikaaro.org">'
         token = START_ELEMENT
         value = None, 'a', {(None, 'href'): 'http://www.ikaaro.org'}
-        self.assertEqual(Parser(data).next(), (token, value, 1))
+        self.assertEqual(XMLParser(data).next(), (token, value, 1))
 
 
     def test_attributes_single_quote(self):
         data = "<a href='http://www.ikaaro.org'>"
         token = START_ELEMENT
         value = None, 'a', {(None, 'href'): 'http://www.ikaaro.org'}
-        self.assertEqual(Parser(data).next(), (token, value, 1))
+        self.assertEqual(XMLParser(data).next(), (token, value, 1))
 
 
     def test_attributes_no_quote(self):
         data = "<a href=http://www.ikaaro.org>"
-        self.assertRaises(XMLError, Parser(data).next)
+        self.assertRaises(XMLError, XMLParser(data).next)
 
 
     def test_attributes_forbidden_char(self):
         data = '<img title="Black & White">'
-        self.assertRaises(XMLError, Parser(data).next)
+        self.assertRaises(XMLError, XMLParser(data).next)
 
 
     def test_attributes_entity_reference(self):
         data = '<img title="Black &amp; White">'
         token = START_ELEMENT
         value = None, 'img', {(None, 'title'): 'Black & White'}
-        self.assertEqual(Parser(data).next(), (token, value, 1))
+        self.assertEqual(XMLParser(data).next(), (token, value, 1))
 
 
     #######################################################################
@@ -119,7 +119,7 @@ class ParserTestCase(TestCase):
         data = '<![CDATA[Black & White]]>'
         token = CDATA
         value = 'Black & White'
-        self.assertEqual(Parser(data).next(), (token, value, 1))
+        self.assertEqual(XMLParser(data).next(), (token, value, 1))
 
 
 
@@ -144,14 +144,14 @@ class XMLTestCase(TestCase):
     def test_doctype_public(self):
         data = ('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"\n'
                 '  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">')
-        stream = Parser(data)
+        stream = XMLParser(data)
         self.assertEqual(stream_to_str(stream), data)
 
 
     def test_doctype_system(self):
         data = ('<!DOCTYPE html SYSTEM'
                 ' "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">')
-        stream = Parser(data)
+        stream = XMLParser(data)
         self.assertEqual(stream_to_str(stream), data)
 
 
@@ -160,7 +160,7 @@ class TranslatableTestCase(TestCase):
 
     def test_surrounding(self):
         text = '<em>Hello World</em>'
-        parser = Parser(text)
+        parser = XMLParser(text)
         messages = get_messages(parser)
         messages = list(messages)
 

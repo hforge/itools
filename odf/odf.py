@@ -25,7 +25,7 @@ from itools.stl import stl
 from itools.handlers import register_handler_class, ZipArchive
 from itools.xml.i18n import get_messages
 from itools.xml import (xml_to_text, translate, OfficeDocument, stream_to_str,
-                        Parser, XML_DECL, START_ELEMENT, TEXT)
+                        XMLParser, XML_DECL, START_ELEMENT, TEXT)
 
 # Import
 import definition
@@ -97,7 +97,7 @@ class ODFFile(OOFile):
 
     def get_events(self, filename):
         content = self.get_file(filename)
-        for event in Parser(content):
+        for event in XMLParser(content):
             if event == XML_DECL:
                 pass
             else:

@@ -17,7 +17,7 @@
 
 # Import from itools
 from itools.handlers import Text
-from itools.xml import (Parser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT,
+from itools.xml import (XMLParser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT,
                         COMMENT, TEXT)
 
 
@@ -152,7 +152,7 @@ class XLIFF(Text):
     # Load
     def _load_state_from_file(self, file):
         self.files = []
-        for event, value, line_number in Parser(file.read()):
+        for event, value, line_number in XMLParser(file.read()):
             if event == DOCUMENT_TYPE:
                 self.document_type = value
             elif event == START_ELEMENT:

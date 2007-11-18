@@ -17,7 +17,7 @@
 
 # Import from itools
 from itools.handlers import Text, register_handler_class
-from itools.xml import (Parser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT,
+from itools.xml import (XMLParser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT,
                         COMMENT, TEXT)
 
 
@@ -134,7 +134,7 @@ class TMX(Text):
         self.header = {}
         messages = {}
         self.header_notes = {}
-        for event, value, line_number in Parser(file.read()):
+        for event, value, line_number in XMLParser(file.read()):
             if event == DOCUMENT_TYPE:
                 self.document_type = value
             elif event == START_ELEMENT:

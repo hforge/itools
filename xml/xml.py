@@ -21,7 +21,7 @@ from itools.schemas import get_datatype_by_uri
 from itools.handlers import Text, register_handler_class
 from i18n import get_messages, translate
 from namespaces import get_namespace, is_empty, XMLNSNamespace
-from parser import (Parser, XML_DECL, DOCUMENT_TYPE, START_ELEMENT,
+from parser import (XMLParser, XML_DECL, DOCUMENT_TYPE, START_ELEMENT,
                     END_ELEMENT, TEXT, COMMENT, CDATA)
 
 
@@ -222,7 +222,7 @@ class XMLFile(Text):
 
     def _load_state_from_file(self, file):
         data = file.read()
-        stream = Parser(data)
+        stream = XMLParser(data)
         self.events = list(stream)
 
 

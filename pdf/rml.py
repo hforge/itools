@@ -21,7 +21,7 @@ from os.path import dirname, join as join_path
 
 # Import from itools
 from itools.datatypes import Unicode, XML
-from itools.xml import Parser, START_ELEMENT, END_ELEMENT, TEXT, CDATA
+from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, TEXT, CDATA
 from itools.stl import stl
 
 # Import from the reportlab Library
@@ -58,19 +58,19 @@ TAG_NOT_SUPPORTED = '%s: line %s tag "%s" is currently not supported.'
 
 def rmltopdf_test(filename):
     file = open(filename, 'r')
-    stream = Parser(file.read())
+    stream = XMLParser(file.read())
     return document_stream(stream, StringIO(), True)
 
 
 def stl_rmltopdf_test(handler, namespace):
     temp = stl(handler, namespace, mode='xml')
-    stream = Parser(temp)
+    stream = XMLParser(temp)
     return document_stream(stream, StringIO(), True)
 
 
 def rmltopdf(filename):
     file = open(filename, 'r')
-    stream = Parser(file.read())
+    stream = XMLParser(file.read())
     iostream = StringIO()
     document_stream(stream, iostream)
     return iostream.getvalue()
@@ -78,7 +78,7 @@ def rmltopdf(filename):
 
 def stl_rmltopdf(handler, namespace):
     temp = stl(handler, namespace, mode='xml')
-    stream = Parser(temp)
+    stream = XMLParser(temp)
     iostream = StringIO()
     document_stream(stream, iostream)
     return iostream.getvalue()

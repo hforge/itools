@@ -33,7 +33,7 @@ from itools.datatypes import (Boolean, String, URI, XMLAttribute,
 from itools.schemas import BaseSchema, get_datatype_by_uri, register_schema
 from itools.uri import Path
 from itools.xml import (XMLError, XMLNSNamespace, get_namespace, set_namespace,
-    AbstractNamespace, get_start_tag, get_end_tag, Parser, START_ELEMENT,
+    AbstractNamespace, get_start_tag, get_end_tag, XMLParser, START_ELEMENT,
     END_ELEMENT, TEXT, COMMENT, find_end, stream_to_str)
 from itools.html import (xhtml_uri, stream_to_str_as_html,
                          stream_to_str_as_xhtml)
@@ -260,7 +260,7 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
                 # Send back
                 if value is None:
                     continue
-                if isinstance(value, (list, GeneratorType, Parser)):
+                if isinstance(value, (list, GeneratorType, XMLParser)):
                     for x in value:
                         yield x
                 elif isinstance(value, unicode):
@@ -283,7 +283,7 @@ def stl(document=None, namespace={}, prefix=None, events=None, mode='events'):
     if prefix is not None:
         stream = set_prefix(events, prefix)
         events = list(stream)
-    elif isinstance(events, (GeneratorType, Parser)):
+    elif isinstance(events, (GeneratorType, XMLParser)):
         events = list(events)
 
     # Initialize the namespace stacks

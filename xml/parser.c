@@ -1189,7 +1189,7 @@ static PyMethodDef Parser_methods[] = {
 static PyTypeObject ParserType = {
     PyObject_HEAD_INIT(NULL)
     0,                              /* ob_size */
-    "itools.xml.parser.Parser",     /* tp_name */
+    "itools.xml.parser.XMLParser",  /* tp_name */
     sizeof(Parser),                 /* tp_basicsize */
     0,                              /* tp_itemsize */
     (destructor)Parser_dealloc,     /* tp_dealloc */
@@ -1272,7 +1272,7 @@ initparser(void) {
 
     /* Register types */
     Py_INCREF(&ParserType);
-    PyModule_AddObject(module, "Parser", (PyObject *)&ParserType);
+    PyModule_AddObject(module, "XMLParser", (PyObject *)&ParserType);
 
     /* Register exceptions */
     XMLError = PyErr_NewException("itools.xml.parser.XMLError", NULL, NULL);

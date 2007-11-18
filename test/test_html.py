@@ -22,7 +22,7 @@ from unittest import TestCase
 
 # Import from itools
 from itools.gettext import PO
-from itools.xml import Parser, START_ELEMENT, END_ELEMENT, TEXT, stream_to_str
+from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, TEXT, stream_to_str
 from itools.html import HTMLFile, XHTMLFile, HTMLParser, sanitize_str
 from itools.html.xhtml import stream_to_html
 
@@ -161,7 +161,7 @@ class i18nTestCase(TestCase):
 class SerializationTestCase(TestCase):
 
     def test_stream_to_html_escape(self):
-        parser = Parser('<p xmlns="http://www.w3.org/1999/xhtml"></p>')
+        parser = XMLParser('<p xmlns="http://www.w3.org/1999/xhtml"></p>')
         events = list(parser)
         events.insert(1, (TEXT, '<br/>', 0))
 
@@ -171,7 +171,7 @@ class SerializationTestCase(TestCase):
 
 
     def test_html(self):
-        parser = Parser(
+        parser = XMLParser(
             '<p xmlns="http://www.w3.org/1999/xhtml">Bed&amp;Breakfast</p>')
         out = stream_to_html(parser)
         # Assert

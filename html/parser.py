@@ -278,7 +278,7 @@ class Parser(BaseParser, object):
 
 
     def handle_entityref(self, name):
-        # XXX Copied from 'itools.xml.parser.Parser.skipped_entity_handler'
+        # XXX Copied from 'itools.xml.parser.XMLParser.skipped_entity_handler'
         if name in htmlentitydefs.name2codepoint:
             codepoint = htmlentitydefs.name2codepoint[name]
             char = unichr(codepoint)

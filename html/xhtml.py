@@ -21,15 +21,14 @@ import re
 from cStringIO import StringIO
 
 # Import from itools
-from itools.xml import Parser
 from itools.datatypes import (Boolean, Integer, Unicode, String, URI,
     XML as XMLContent, XMLAttribute)
 from itools.schemas import BaseSchema, get_datatype_by_uri, register_schema
 from itools.handlers import register_handler_class
-from itools.xml import (XMLFile, XML_DECL, DOCUMENT_TYPE, START_ELEMENT,
-    END_ELEMENT, TEXT, COMMENT, AbstractNamespace, set_namespace,
-    stream_to_str, get_qname, get_attribute_qname, is_empty, get_end_tag,
-    get_element)
+from itools.xml import (XMLParser, XMLFile, XML_DECL, DOCUMENT_TYPE,
+    START_ELEMENT, END_ELEMENT, TEXT, COMMENT, AbstractNamespace,
+    set_namespace, stream_to_str, get_qname, get_attribute_qname, is_empty,
+    get_end_tag, get_element)
 
 
 xhtml_uri = 'http://www.w3.org/1999/xhtml'
@@ -224,7 +223,7 @@ def sanitize_stream(stream):
 
 
 def sanitize_str(str):
-    stream = Parser(str)
+    stream = XMLParser(str)
     events = sanitize_stream(stream)
     return events
 

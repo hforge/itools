@@ -22,9 +22,9 @@ import unittest
 
 # Import from itools
 from itools.pdf import rmltopdf
-from itools.pdf.rml import rmltopdf_test, normalize, stream_next, \
-                           get_color, get_page_size_orientation
-from itools.xml import Parser, START_ELEMENT, END_ELEMENT, TEXT
+from itools.pdf.rml import (rmltopdf_test, normalize, stream_next,
+    get_color, get_page_size_orientation)
+from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, TEXT
 
 # Import from the reportlab library
 from reportlab.lib.units import inch, cm
@@ -62,7 +62,7 @@ class FunctionTestCase(unittest.TestCase):
         xml += '<td>cell1</td></tr></table>'
         xml += '<para aligment="left">para content</para></document>'
 
-        stream = Parser(xml)
+        stream = XMLParser(xml)
         # <document>
         event, value, line_number = stream_next(stream)
         tag_uri, tag_name, attributes = value

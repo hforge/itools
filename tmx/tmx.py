@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.handlers import Text, register_handler_class
+from itools.handlers import TextFile, register_handler_class
 from itools.xml import (XMLParser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT,
                         COMMENT, TEXT)
 
@@ -109,7 +109,7 @@ class Message(object):
 
 
 
-class TMX(Text):
+class TMX(TextFile):
 
     class_mimetypes = ['application/x-tmx']
     class_extension = 'tmx'

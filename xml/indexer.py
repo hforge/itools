@@ -19,10 +19,10 @@
 from htmlentitydefs import name2codepoint
 
 # Import from itools
-from itools.handlers import Text
+from itools.handlers import TextFile
 
 
-guess_encoding = Text.guess_encoding
+guess_encoding = TextFile.guess_encoding
 
 
 # Append &apos;, the apostrophe (simple quote) for XML

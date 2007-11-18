@@ -19,7 +19,7 @@ import re
 import time
 
 # Import from itools
-from itools.handlers import File, Text, register_handler_class
+from itools.handlers import File, TextFile, register_handler_class
 
 
 ###########################################################################
@@ -207,7 +207,7 @@ msgstr ""
 
 
 
-class PO(Text):
+class PO(TextFile):
 
     class_mimetypes = ['text/x-po']
     class_extension = 'po'

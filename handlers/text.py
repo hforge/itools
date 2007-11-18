@@ -19,7 +19,7 @@ from file import File
 from registry import register_handler_class
 
 
-class Text(File):
+class TextFile(File):
 
     class_mimetypes = ['text']
     class_extension = 'txt'
@@ -77,4 +77,4 @@ class Text(File):
         return unicode(self.to_str(), 'utf-8')
 
 
-register_handler_class(Text)
+register_handler_class(TextFile)

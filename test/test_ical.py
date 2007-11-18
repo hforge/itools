@@ -23,7 +23,7 @@ from cStringIO import StringIO
 from datetime import datetime
 
 # Import from itools
-from itools.handlers import Property, Text
+from itools.handlers import Property
 from itools.datatypes import URI
 from itools.ical import icalendar, PropertyValue, icalendarTable
 

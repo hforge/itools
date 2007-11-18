@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.handlers import Text, register_handler_class
+from itools.handlers import TextFile, register_handler_class
 from itools.xml import XMLParser, XML_DECL, START_ELEMENT, END_ELEMENT, TEXT
 from itools.datatypes import (is_datatype, Unicode, URI, Integer, String,
     InternetDateTime)
@@ -149,7 +149,7 @@ class RssChannelImage(object):
 
 
 
-class RSS(Text):
+class RSS(TextFile):
 
     class_mimetypes = ['application/rss+xml']
     class_extension = 'rss'

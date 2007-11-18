@@ -26,7 +26,7 @@ from operator import itemgetter
 from itools.datatypes import Integer, String, Unicode, URI
 from itools.catalog import (PhraseQuery, EqQuery, RangeQuery, OrQuery,
         AndQuery, KeywordField, MemoryCatalog)
-from itools.handlers import Text, parse_table, fold_line, escape_data
+from itools.handlers import TextFile, parse_table, fold_line, escape_data
 from itools.handlers import Table, Record as TableRecord, Property
 from types import data_properties, DateTime, Time
 
@@ -269,7 +269,7 @@ class Component(object):
 
 
 
-class icalendar(Text):
+class icalendar(TextFile):
     """
     icalendar structure :
 
@@ -345,7 +345,7 @@ class icalendar(Text):
 
         # Read the data and figure out the encoding
         data = file.read()
-        encoding = Text.guess_encoding(data)
+        encoding = TextFile.guess_encoding(data)
         self.encoding = encoding
 
         # Parse

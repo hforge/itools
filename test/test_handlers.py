@@ -22,7 +22,7 @@ from unittest import TestCase
 # Import from itools
 from itools import vfs
 from itools.datatypes import Unicode
-from itools.handlers import get_handler, Database, Text, Table
+from itools.handlers import get_handler, Database, TextFile, Table
 from itools.handlers.table import unfold_lines
 
 
@@ -72,7 +72,7 @@ class FolderTestCase(TestCase):
     def test_remove_add(self):
         folder = self.root.get_handler('tests')
         folder.del_handler('toto.txt')
-        folder.set_handler('toto.txt', Text())
+        folder.set_handler('toto.txt', TextFile())
         self.assertEqual(vfs.exists('tests/toto.txt'), True)
         self.assertEqual(folder.has_handler('toto.txt'), True)
         # Save
@@ -84,7 +84,7 @@ class FolderTestCase(TestCase):
     def test_remove_add_remove(self):
         folder = self.root.get_handler('tests')
         folder.del_handler('toto.txt')
-        folder.set_handler('toto.txt', Text())
+        folder.set_handler('toto.txt', TextFile())
         folder.del_handler('toto.txt')
         self.assertEqual(vfs.exists('tests/toto.txt'), True)
         self.assertEqual(folder.has_handler('toto.txt'), False)
@@ -103,8 +103,8 @@ class FolderTestCase(TestCase):
     def test_remove_add_add(self):
         folder = self.root.get_handler('tests')
         folder.del_handler('toto.txt')
-        folder.set_handler('toto.txt', Text())
-        self.assertRaises(Exception, folder.set_handler, 'toto.txt', Text())
+        folder.set_handler('toto.txt', TextFile())
+        self.assertRaises(Exception, folder.set_handler, 'toto.txt', TextFile())
 
 
     def test_remove_abort(self):
@@ -124,7 +124,7 @@ class FolderTestCase(TestCase):
         database = self.database
         folder = self.root.get_handler('tests')
         self.assertEqual(folder.has_handler('fofo.txt'), False)
-        folder.set_handler('fofo.txt', Text())
+        folder.set_handler('fofo.txt', TextFile())
         self.assertEqual(folder.has_handler('fofo.txt'), True)
         database.abort_changes()
         self.assertEqual(folder.has_handler('fofo.txt'), False)
@@ -144,7 +144,7 @@ class TextTestCase(TestCase):
 ###########################################################################
 # Safe transactions
 ###########################################################################
-class BrokenHandler(Text):
+class BrokenHandler(TextFile):
 
     def to_str(self):
         iamsobroken

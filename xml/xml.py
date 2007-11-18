@@ -18,7 +18,7 @@
 # Import from itools
 from itools.datatypes import XMLAttribute, XML as XMLContent
 from itools.schemas import get_datatype_by_uri
-from itools.handlers import Text, register_handler_class
+from itools.handlers import TextFile, register_handler_class
 from i18n import get_messages, translate
 from namespaces import get_namespace, is_empty, XMLNSNamespace
 from parser import (XMLParser, XML_DECL, DOCUMENT_TYPE, START_ELEMENT,
@@ -196,7 +196,7 @@ class Element(object):
 #############################################################################
 # Documents
 #############################################################################
-class XMLFile(Text):
+class XMLFile(TextFile):
     """An XML file is represented in memory as a tree where the nodes are
     instances of the classes 'Element' and 'Raw'. The 'Element' class
     represents an XML element, the 'Raw' class represents a text string.

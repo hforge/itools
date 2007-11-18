@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.handlers import Text
+from itools.handlers import TextFile
 from itools.xml import (XMLParser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT,
                         COMMENT, TEXT)
 
@@ -129,7 +129,7 @@ class File(object):
 
 
 
-class XLIFF(Text):
+class XLIFF(TextFile):
 
     class_mimetypes = ['application/x-xliff']
     class_extension = 'xlf'

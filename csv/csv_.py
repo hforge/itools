@@ -20,7 +20,7 @@
 
 # Import from itools
 from itools.datatypes import String, Integer, is_datatype
-from itools.handlers import Text, register_handler_class
+from itools.handlers import TextFile, register_handler_class
 from itools.catalog import PhraseQuery, AndQuery, get_field, MemoryCatalog
 from parser import parse
 
@@ -61,7 +61,7 @@ class IntegerKey(Integer):
 
 
 
-class CSVFile(Text):
+class CSVFile(TextFile):
 
     class_mimetypes = ['text/comma-separated-values', 'text/csv']
     class_extension = 'csv'

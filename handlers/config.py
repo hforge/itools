@@ -19,7 +19,7 @@
 from textwrap import wrap
 
 # Import from itools
-from text import Text
+from text import TextFile
 
 
 ###########################################################################
@@ -213,7 +213,7 @@ def read_multiline(lines):
 ###########################################################################
 # The handler
 ###########################################################################
-class ConfigFile(Text):
+class ConfigFile(TextFile):
     """The data structure of this handler is:
 
       self.lines:

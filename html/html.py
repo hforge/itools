@@ -24,8 +24,8 @@ from parser import HTMLParser
 
 class HTMLFile(XHTMLFile):
     """HTML files are a lot like XHTML, only the parsing and the output is
-    different, so we inherit from XHTML instead of Text, even if the mime
-    type is 'text/html'.
+    different, so we inherit from XHTMLFile instead of TextFile, even if the
+    mime type is 'text/html'.
 
     The parsing is based on the HTMLParser class, which has a more object
     oriented approach than the expat parser used for xml, i.e. we inherit

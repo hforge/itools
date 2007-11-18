@@ -45,7 +45,7 @@ from folder import Folder
 from image import Image
 from python import Python
 from registry import get_handler_class, register_handler_class
-from text import Text
+from text import TextFile
 from database import Database, READY, TRANSACTION_PHASE1, TRANSACTION_PHASE2
 from utils import get_handler
 from table import Table, parse_table, fold_line, escape_data, Record, Property
@@ -64,7 +64,7 @@ __all__ = [
     'Folder',
     'Image',
     'Python',
-    'Text',
+    'TextFile',
     'Table',
     # The database
     'Database',

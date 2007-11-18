@@ -19,7 +19,7 @@
 from compiler import parse, walk
 
 # Import from itools
-from text import Text
+from text import TextFile
 from registry import register_handler_class
 
 
@@ -35,7 +35,7 @@ class VisitorUnicode(object):
 
 
 
-class Python(Text):
+class Python(TextFile):
 
     class_mimetypes = ['text/x-python']
     class_extension = 'py'

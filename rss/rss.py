@@ -154,8 +154,6 @@ class RSS(Text):
     class_mimetypes = ['application/rss+xml']
     class_extension = 'rss'
 
-    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'channel']
-
 
     def new(self):
         self.channel = None

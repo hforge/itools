@@ -35,9 +35,6 @@ class HTMLFile(XHTMLFile):
     class_mimetypes = ['text/html']
     class_extension = 'html'
 
-    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'events']
-
-
     @classmethod
     def get_skeleton(cls, title=''):
         skeleton = (

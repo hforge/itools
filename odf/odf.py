@@ -69,9 +69,6 @@ class ODFFile(OOFile):
 
     namespace = 'urn:oasis:names:tc:opendocument:xmlns:office:1.0'
 
-    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'data']
-
-
     def get_meta(self):
         """Return the meta informations of an ODF Document.
         """
@@ -136,7 +133,6 @@ class ODTFile(ODFFile):
     class_extension = 'odt'
     namespace = 'urn:oasis:names:tc:opendocument:xmlns:text:1.0'
 
-    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'data']
 
 
 class ODSFile(ODFFile):
@@ -145,7 +141,6 @@ class ODSFile(ODFFile):
     class_extension = 'ods'
     namespace = 'urn:oasis:names:tc:opendocument:xmlns:spreadsheet:1.0'
 
-    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'data']
 
 
 class ODPFile(ODFFile):
@@ -154,7 +149,6 @@ class ODPFile(ODFFile):
     class_extension = 'odp'
     namespace = 'urn:oasis:names:tc:opendocument:xmlns:presentation:1.0'
 
-    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'data']
 
 
 # Register handler and mimetypes

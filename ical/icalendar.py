@@ -286,8 +286,6 @@ class icalendar(Text):
         END:VCALENDAR
     """
 
-    __slots__ = ['database', 'uri', 'timestamp', 'dirty',
-                 'properties', 'components', 'catalog', 'encoding']
     class_mimetypes = ['text/calendar']
     class_extension = 'ics'
 

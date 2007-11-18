@@ -49,14 +49,7 @@ class Folder(Handler):
 
 
     def __init__(self, ref=None, **kw):
-        self.database = None
-        self.timestamp = None
-        self.dirty = False
-
-        if ref is None:
-            # A handler from scratch
-            self.uri = None
-        else:
+        if ref is not None:
             # Calculate the URI
             self.uri = get_absolute_reference(ref)
 

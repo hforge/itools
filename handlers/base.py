@@ -32,17 +32,19 @@ MSG_NOT_ATTACHED = 'method only available when attached to a database'
 
 
 class Handler(object):
-    """
-    This class represents a resource handler; where a resource can be
-    a file or a directory, and is identified by a URI. It is used as a
-    base class for any other handler class.
+    """This class represents a resource handler; where a resource can be a
+    file or a directory, and is identified by a URI. It is used as a base
+    class for any other handler class.
     """
 
     class_mimetypes = []
     class_extension = None
 
-    # Instance variables. The variable class "__slots__" is to be overriden.
-    __slots__ = ['database', 'uri', 'timestamp', 'dirty']
+    # Default values for the instance variables
+    database = None
+    uri = None
+    timestamp = None
+    dirty = False
 
 
     ########################################################################

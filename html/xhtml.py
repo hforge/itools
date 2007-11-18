@@ -468,9 +468,6 @@ class XHTMLFile(XMLFile):
 
     namespace = xhtml_uri
 
-    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'events']
-
-
     #########################################################################
     # The skeleton
     #########################################################################

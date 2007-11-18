@@ -246,9 +246,6 @@ class Config(Text):
     class_extension = None
 
 
-    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'lines', 'values']
-
-
     def new(self, **kw):
         # Comments are not supported here
         self.values = {}

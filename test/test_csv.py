@@ -36,7 +36,7 @@ TEST_SYNTAX_ERROR = '"one",,\n,"two",,\n,,"three"'
 
 
 class Languages(CSVFile):
-    __slots__ = CSVFile.__slots__
+
     columns = ['name', 'url', 'number', 'date']
     schema = {'name': Unicode,
               'url': URI,
@@ -45,19 +45,19 @@ class Languages(CSVFile):
 
 
 class Things(CSVFile):
-    __slots__ = CSVFile.__slots__
+
     columns = ['name', 'date']
     schema = {'name': Unicode(index='text'), 'date': Date(index='keyword')}
 
 
 class Numbers(CSVFile):
-    __slots__ = CSVFile.__slots__
+
     columns = ['one', 'two', 'three']
     schema = {'one': Unicode, 'two': Unicode, 'three': Unicode}
 
 
 class People(CSVFile):
-    __slots__ = CSVFile.__slots__
+
     columns = ['name', 'surname', 'date']
     schema = {'name': Unicode,
               'surname': Unicode(index='text'),
@@ -65,7 +65,7 @@ class People(CSVFile):
 
 
 class Countries(CSVFile):
-    __slots__ = CSVFile.__slots__
+
     columns = ['id', 'name', 'country', 'date']
     schema = {'id': Integer,
               'name': Unicode(index='text'),
@@ -74,7 +74,7 @@ class Countries(CSVFile):
 
 
 class Politicians(CSVFile):
-    __slots__ = CSVFile.__slots__
+
     columns = ['name', 'is_good']
     schema = {'name': Unicode, 'is_good': Boolean(index='bool')}
 

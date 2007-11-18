@@ -213,9 +213,6 @@ class PO(Text):
     class_extension = 'po'
 
 
-    __slots__ = ['database', 'uri', 'timestamp', 'dirty',
-                 'messages', 'encoding']
-
     def new(self):
         # XXX Old style (like in the "get_skeleton" times)
         now = time.strftime('%Y-%m-%d %H:%m+%Z', time.gmtime(time.time()))

@@ -66,9 +66,6 @@ class CSVFile(Text):
     class_mimetypes = ['text/comma-separated-values', 'text/csv']
     class_extension = 'csv'
 
-    __slots__ = ['database', 'uri', 'timestamp', 'dirty',
-                 'lines', 'n_lines', 'catalog']
-
     # Hash with column names and its types
     # Example: {'firstname': Unicode, 'lastname': Unicode, 'age': Integer}
     # To index some columns the schema should be declared as:

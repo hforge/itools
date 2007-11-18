@@ -252,7 +252,7 @@ lastname:Rousseau
 
 
 class Agenda(Table):
-    __slots__ = Table.__slots__
+
     schema = {'firstname': Unicode(index='text', multiple=False),
               'lastname': Unicode(multiple=False)}
 

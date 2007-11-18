@@ -26,9 +26,6 @@ class MO(File):
     class_mimetypes = ['application/x-mo']
     class_extension = 'mo'
 
-    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'translations']
-
-
     def _load_state_from_file(self, file):
         self.translations = GNUTranslations(file)
 

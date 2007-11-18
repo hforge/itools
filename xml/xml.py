@@ -211,9 +211,6 @@ class XMLFile(Text):
     class_extension = 'xml'
 
 
-    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'events']
-
-
     def new(self):
         # XML is a meta-language, it does not make change to create a bare
         # XML handler without a resource.

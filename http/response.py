@@ -97,10 +97,6 @@ class Cookie(object):
 
 class Response(Message):
 
-    __slots__ = ['database', 'uri', 'timestamp', 'dirty',
-                 'status', 'headers', 'body', 'cookies']
-
-
     def new(self, status_code=200, **kw):
         self.status = status_code
         self.headers = kw

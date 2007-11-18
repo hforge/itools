@@ -28,8 +28,7 @@ from base import Handler
 
 
 class File(Handler):
-    """
-    This is the base handler class for any file handler. It is also used
+    """This is the base handler class for any file handler. It is also used
     as the default handler class for any file resource that has not a more
     specific handler.
     """
@@ -37,16 +36,8 @@ class File(Handler):
     class_resource_type = 'file'
 
 
-    __slots__ = ['database', 'uri', 'timestamp', 'dirty', 'data']
-
-
     def __init__(self, ref=None, string=None, **kw):
-        self.database = None
-        self.timestamp = None
-        self.dirty = False
-
         if ref is None:
-            self.uri = None
             if string is not None:
                 # A handler from a byte string
                 self.load_state_from_string(string)
@@ -63,11 +54,13 @@ class File(Handler):
 
 
     def __getattr__(self, name):
-        if name not in self.__slots__:
+        # Not attached to a URI or already loaded (should be correctly
+        # initialized)
+        if self.uri is None or self.timestamp is not None:
             message = "'%s' object has no attribute '%s'"
             raise AttributeError, message % (self.__class__.__name__, name)
 
-        # Lazy load
+        # Load and try again
         self.load_state()
         return getattr(self, name)
 
@@ -138,27 +131,25 @@ class File(Handler):
 
 
     def clone(self, cls=None):
-        # Create and initialize the instance
+        # Define the class to build
         if cls is None:
             cls = self.__class__
         elif not issubclass(cls, self.__class__):
             msg = 'the given class must be a subclass of the object'
             raise ValueError, msg
 
-        copy = object.__new__(cls)
-        copy.database = None
-        copy.uri = None
-        copy.timestamp = None
-        copy.dirty = False
+        # Load first, if needed
+        if self.uri is not None and self.timestamp is None:
+            self.load_state()
+
         # Copy the state
-        exclude = set(['database', 'uri', 'timestamp', 'dirty', 'parent',
-                       'name'])
-        for name in cls.__slots__:
+        copy = object.__new__(cls)
+        exclude = set(['database', 'uri', 'timestamp', 'dirty'])
+        for name in self.__dict__:
             if name not in exclude:
                 value = getattr(self, name)
                 value = deepcopy(value)
                 setattr(copy, name, value)
-        # Return the copy
         return copy
 
 
@@ -199,13 +190,9 @@ class File(Handler):
         if self.dirty is False:
             return
         # Abort
-        exclude = set(['database', 'uri', 'timestamp', 'dirty', 'parent',
-                       'name'])
-        for name in self.__slots__:
-            if name not in exclude:
-                delattr(self, name)
-        self.timestamp = None
-        self.dirty = False
+        names = [ x for x in self.__dict__ if x not in ('database', 'uri') ]
+        for name in names:
+            delattr(self, name)
 
 
     #########################################################################

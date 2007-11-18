@@ -32,11 +32,6 @@ from message import Message
 
 class Request(Message):
 
-    __slots__ = ['database', 'uri', 'timestamp', 'dirty',
-                 'request_line', 'method', 'request_uri', 'http_version',
-                 'headers', 'body']
-
-
     def new(self, method='GET', uri='/'):
         version = 'HTTP/1.1'
         self.request_line = '%s %s %s\r\n' % (method, uri, version)

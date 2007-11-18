@@ -18,7 +18,7 @@
 # Import from itools
 from itools.datatypes import Unicode
 from itools.xml import AbstractNamespace, set_namespace
-from itools.schemas import Schema as BaseSchema, register_schema
+from itools.schemas import BaseSchema, register_schema
 
 
 ########################################################################

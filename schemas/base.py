@@ -15,10 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-class Schema(object):
+class BaseSchema(object):
 
     datatypes = {}
-
 
     @classmethod
     def get_datatype(cls, name):

@@ -24,8 +24,7 @@ from cStringIO import StringIO
 from itools.xml import Parser
 from itools.datatypes import (Boolean, Integer, Unicode, String, URI,
     XML as XMLContent, XMLAttribute)
-from itools.schemas import (Schema as BaseSchema, get_datatype_by_uri,
-    register_schema)
+from itools.schemas import BaseSchema, get_datatype_by_uri, register_schema
 from itools.handlers import register_handler_class
 from itools.xml import (XMLFile, XML_DECL, DOCUMENT_TYPE, START_ELEMENT,
     END_ELEMENT, TEXT, COMMENT, AbstractNamespace, set_namespace,

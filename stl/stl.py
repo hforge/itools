@@ -30,8 +30,7 @@ from types import GeneratorType
 # Import from itools
 from itools.datatypes import (Boolean, String, URI, XMLAttribute,
     XML as XMLContent)
-from itools.schemas import (Schema as BaseSchema, get_datatype_by_uri,
-    register_schema)
+from itools.schemas import BaseSchema, get_datatype_by_uri, register_schema
 from itools.uri import Path
 from itools.xml import (XMLError, XMLNSNamespace, get_namespace, set_namespace,
     AbstractNamespace, get_start_tag, get_end_tag, Parser, START_ELEMENT,

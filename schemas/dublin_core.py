@@ -21,7 +21,7 @@ from datetime import datetime
 # Import from itools
 from itools.datatypes import (Unicode, String, ISODateTime, ISOCalendarDate,
                               ISOTime)
-from base import Schema
+from base import BaseSchema
 import registry
 
 
@@ -44,7 +44,7 @@ class DateTime(ISODateTime):
 
 
 
-class DublinCore(Schema):
+class DublinCore(BaseSchema):
 
     class_uri = 'http://purl.org/dc/elements/1.1/'
     class_prefix = 'dc'

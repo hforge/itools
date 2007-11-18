@@ -19,7 +19,7 @@ import warnings
 
 # Import from itools
 from itools.datatypes import String, QName
-from base import Schema
+from base import BaseSchema
 
 
 ##############################################################################
@@ -114,7 +114,7 @@ def get_datatype_by_uri(schema_uri, name):
 ##############################################################################
 # The default schema, used when the prefix is None
 ##############################################################################
-class DefaultSchema(Schema):
+class DefaultSchema(BaseSchema):
 
     class_uri = None
     class_prefix = None

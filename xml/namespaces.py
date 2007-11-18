@@ -19,7 +19,7 @@ import warnings
 
 # Import from itools
 from itools.datatypes import String, Unicode
-from itools.schemas import Schema as BaseSchema, register_schema
+from itools.schemas import BaseSchema, register_schema
 from parser import XMLError
 
 

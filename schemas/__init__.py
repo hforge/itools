@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from base import Schema
+from base import BaseSchema
 from dublin_core import DublinCore
 from registry import (register_schema, get_schema, get_schema_by_uri,
                       get_datatype, get_datatype_by_uri)
@@ -23,7 +23,7 @@ from registry import (register_schema, get_schema, get_schema_by_uri,
 
 __all__ = [
     # Abstract classes
-    'Schema',
+    'BaseSchema',
     # Schemas
     'DublinCore',
     # Functions

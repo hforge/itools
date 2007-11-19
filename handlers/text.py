@@ -69,7 +69,7 @@ class TextFile(File):
         return self.encoding
 
 
-    def to_str(self, encoding='UTF-8'):
+    def to_str(self, encoding='utf-8'):
         return self.data.encode(encoding)
 
 

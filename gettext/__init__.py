@@ -19,9 +19,10 @@ import mimetypes
 import os
 
 # Import from itools
+from itools import get_abspath
 from domains import Domain, DomainAware, register_domain, get_domain
-from mo import MO
-from po import PO
+from mo import MOFile
+from po import POFile
 
 
 __all__ = [
@@ -29,13 +30,13 @@ __all__ = [
     'DomainAware',
     'register_domain',
     'get_domain',
-    'MO',
-    'PO']
+    'MOFile',
+    'POFile']
 
 
 mimetypes.add_type('text/x-po', '.po')
 mimetypes.add_type('application/x-mo', '.mo')
 
 # Register the itools domain
-path = os.path.join(os.path.split(globals()['__path__'][0])[0], 'locale')
+path = get_abspath(globals(), 'locale')
 register_domain('itools', path)

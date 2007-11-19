@@ -207,7 +207,7 @@ msgstr ""
 
 
 
-class PO(TextFile):
+class POFile(TextFile):
 
     class_mimetypes = ['text/x-po']
     class_extension = 'po'
@@ -429,4 +429,4 @@ class PO(TextFile):
 
 
 
-register_handler_class(PO)
+register_handler_class(POFile)

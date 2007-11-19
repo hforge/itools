@@ -21,7 +21,7 @@ from gettext import GNUTranslations
 from itools.handlers import File, register_handler_class
 
 
-class MO(File):
+class MOFile(File):
 
     class_mimetypes = ['application/x-mo']
     class_extension = 'mo'
@@ -37,4 +37,4 @@ class MO(File):
         return self.translations.ugettext(message)
 
 
-register_handler_class(MO)
+register_handler_class(MOFile)

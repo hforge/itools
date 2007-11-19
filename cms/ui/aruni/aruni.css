@@ -354,12 +354,17 @@ table.new_resource_thumb {
   padding: 6px 3px;
 }
 
+#browse_list thead th.checkbox input {
+  background-color: #d3d7cf;
+}
+
 #browse_list tbody td {
   padding: 3px;
   vertical-align: top;
 }
 
-tr.odd th, tr.odd td {
+tr.odd th, tr.odd td,
+tr.odd td input {
   background: #eeeeec;
 }
 

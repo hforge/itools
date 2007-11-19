@@ -46,8 +46,7 @@ class OrderAware(object):
     orderable_classes = None
 
     def get_ordered_folder_names(self, mode='mixed'):
-        """
-        Return current order plus the unordered names at the end.
+        """Return current order plus the unordered names at the end.
             mode mixed -> ordered + unordered
             mode ordered -> ordered
             mode all -> (ordered, unordered)
@@ -70,8 +69,13 @@ class OrderAware(object):
                 return ordered_folders + unordered_folders
 
 
-    def get_ordered_objects(self, objects, mode='mix'):
-        "Return a sorted list of child handlers or brains of them."
+    def get_ordered_objects(self, objects, mode='mixed'):
+        """Return a sorted list of child handlers or brains of them.
+            mode mixed -> ordered + unordered
+            mode ordered -> ordered
+            mode all -> (ordered, unordered)
+            default mode : mixed
+        """
         ordered_list = []
         if mode is not 'all':
             ordered_names = self.get_ordered_folder_names(mode)

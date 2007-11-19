@@ -37,7 +37,7 @@ files, etc...
 import mimetypes
 
 # Import from itools
-from archive import ZIPFile, TARFile, Gzip, Bzip2
+from archive import ZIPFile, TARFile, GzipFile, Bzip2File
 from base import Handler
 from config import ConfigFile
 from file import File
@@ -57,8 +57,8 @@ __all__ = [
     # Handlers
     'ZIPFile',
     'TARFile',
-    'Gzip',
-    'Bzip2',
+    'GzipFile',
+    'Bzip2File',
     'ConfigFile',
     'File',
     'Folder',

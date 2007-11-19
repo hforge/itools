@@ -18,8 +18,8 @@
 
 # Import from the Standard Library
 import mimetypes
-from zipfile import ZipFile
-from tarfile import TarFile
+import zipfile
+import tarfile
 from cStringIO import StringIO
 
 # Import from itools
@@ -33,7 +33,7 @@ class ZIPFile(File):
 
     def get_contents(self):
         archive = StringIO(self.to_str())
-        zip = ZipFile(archive)
+        zip = zipfile.ZipFile(archive)
         contents = zip.namelist()
         zip.close()
         return contents
@@ -41,7 +41,7 @@ class ZIPFile(File):
 
     def get_file(self, filename):
         archive = StringIO(self.to_str())
-        zip = ZipFile(archive)
+        zip = zipfile.ZipFile(archive)
         contents = zip.read(filename)
         zip.close()
         return contents
@@ -55,25 +55,25 @@ class TARFile(File):
     def get_contents(self):
         name = self.name
         archive = StringIO(self.to_str())
-        tar = TarFile.open(name=name, fileobj=archive)
+        tar = tarfile.open(name=name, fileobj=archive)
         contents = tar.getnames()
         tar.close()
 
         return contents
 
 
-class Gzip(File):
+class GzipFile(File):
 
     class_mimetypes = ['application/x-gzip']
 
 
-class Bzip2(File):
+class Bzip2File(File):
 
     class_mimetypes = ['application/x-bzip2']
 
 
 # Register
-for handler_class in [ZIPFile, TARFile, Gzip, Bzip2]:
+for handler_class in [ZIPFile, TARFile, GzipFile, Bzip2File]:
     register_handler_class(handler_class)
 
 # Mimetypes BZip2 support

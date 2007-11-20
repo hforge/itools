@@ -30,6 +30,11 @@ from messages import *
 from registry import get_handler_class
 
 
+# TODO We should have two database classes, one for in-memory transactions,
+# another for bullet-proof transactions.  Instead of a class for everything.
+# Because this is a critical code, every single line matters.
+
+
 
 # The database states
 READY = 0
@@ -253,13 +258,19 @@ class Database(object):
             return vfs.make_file(reference)
 
         # Safe
+        tmp_map = get_tmp_map()
+        if reference in tmp_map:
+            tmp_path = tmp_map[reference]
+            return vfs.open(tmp_path, 'w')
+
+        tmp_file, tmp_path = mkstemp(dir=self.commit)
+        tmp_path = get_reference(tmp_path)
         log = open(self.log, 'a+b')
         try:
-            log.write('+%s\n' % reference)
+            log.write('+%s#%s\n' % (reference, tmp_path))
         finally:
             log.close()
-
-        return vfs.make_file(reference)
+        return fdopen(tmp_file, 'w')
 
 
     def safe_make_folder(self, reference):
@@ -362,27 +373,26 @@ class Database(object):
         if self.log is not None:
             vfs.make_file(self.log)
 
+        # State
+        changed = self.changed
+        added = self.added
+        removed = self.removed
+
         # Write changes to disk
         cache = self.cache
         try:
             # Save changed handlers
-            for uri in self.changed:
+            for uri in changed:
                 # Save the handler's state
                 handler = cache[uri]
                 handler.save_state()
-                # Update the handler's timestamp
-                handler.timestamp = vfs.get_mtime(uri)
-                handler.dirty = False
             # Remove handlers
-            for uri in self.removed:
+            for uri in removed:
                 self.safe_remove(uri)
             # Add new handlers
-            for uri in self.added:
+            for uri in added:
                 handler = cache[uri]
                 handler.save_state_to(uri)
-                # Update the handler's timestamp
-                handler.timestamp = vfs.get_mtime(uri)
-                handler.dirty = False
         except:
             # Rollback the changes in memory
             self.abort_changes()
@@ -396,9 +406,9 @@ class Database(object):
                 get_tmp_map().clear()
 
         # Reset the state
-        self.changed.clear()
-        self.added.clear()
-        self.removed.clear()
+        self.changed = set()
+        self.added = set()
+        self.removed = set()
 
         # 2. Transaction commited successfully.
         if self.log is not None:
@@ -409,46 +419,30 @@ class Database(object):
 
             self.save_changes_forever()
 
+        # 3. Update timestamps
+        for uri in changed:
+            handler = cache[uri]
+            handler.timestamp = vfs.get_mtime(uri)
+            handler.dirty = False
+        for uri in added:
+            handler = cache[uri]
+            handler.timestamp = vfs.get_mtime(uri)
+            handler.dirty = False
+
 
     def rollback(self):
-        """
-        This method is to be called when something bad happens while we
-        are saving the changes to disk. For example if somebody pushes
-        the reset button of the computer.
+        """This method is to be called when something bad happens while we
+        are saving the changes to disk. For example if somebody pushes the
+        reset button of the computer.
 
         This method will remove the changes done so far and restore the
         database state before the transaction started.
         """
-        # The data
-        log = open(self.log)
-        try:
-            for line in log.readlines():
-                if line[-1] == '\n':
-                    line = line[:-1]
-                else:
-                    raise RuntimeError, 'log file corrupted'
-                action, line = line[0], line[1:]
-                if action == '-':
-                    pass
-                elif action == '+':
-                    if vfs.exists(line):
-                        vfs.remove(line)
-                elif action == '~':
-                    pass
-                elif action == '>':
-                    pass
-                else:
-                    raise RuntimeError, 'log file corrupted'
-        finally:
-            log.close()
-
-        # We are done. Remove the commit.
         vfs.remove(self.commit)
 
 
     def save_changes_forever(self):
-        """
-        This method makes the transaction changes permanent.
+        """This method makes the transaction changes permanent.
 
         If it fails, for example if the computer crashes, it must be
         safe call this method again so it finishes the work.
@@ -466,7 +460,8 @@ class Database(object):
                     if vfs.exists(line):
                         vfs.remove(line)
                 elif action == '+':
-                    pass
+                    dst, src = line.rsplit('#', 1)
+                    vfs.move(src, dst)
                 elif action == '~':
                     dst, src = line.rsplit('#', 1)
                     if vfs.exists(src):

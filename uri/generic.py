@@ -266,7 +266,9 @@ class Path(list):
 
 
     def get_name(self):
-        return self.path[-1].name
+        if len(self) > 0:
+            return self[-1].name
+        return ''
 
 
     def resolve(self, path):

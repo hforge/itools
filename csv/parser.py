@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from itools.datatypes import String
 import csv as python_csv
 
 
@@ -55,7 +56,7 @@ def parse(data, columns=None, schema=None):
                     msg = msg % line
                 raise ValueError, msg
             if schema is not None:
-                line = [ schema[columns[i]].decode(value)
+                line = [ schema.get(columns[i], String).decode(value)
                          for i, value in enumerate(line) ]
             yield line
 

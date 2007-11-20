@@ -674,6 +674,7 @@ class Table(File):
         for line in parse(data, columns, schema):
             record = {}
             for index, key in enumerate(columns):
-                record[key] = line[index]
+                if key in schema:
+                    record[key] = line[index]
             self.add_record(record)
 

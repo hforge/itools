@@ -665,9 +665,21 @@ class GenericDataType(object):
             return Reference('', Authority(''), Path(''), {}, '')
 
         # All other cases, split the reference in its components
-        # FIXME This is wrong for Windows paths like "c:/a/b", since
-        # "urlsplit" thinks the scheme is "c"
         scheme, authority, path, query, fragment = urlsplit(data)
+
+        # Some special cases for Windows paths
+        if len(scheme) == 1:
+            # found a windows drive name instead of path, because urlsplit
+            # thinks the scheme is "c" for Windows paths like "c:/a/b"
+            path = "%s:%s" % (scheme, path)
+            scheme = "file"
+        elif len(path) > 3 and path[0] == '/' and path[2] == ':':
+            # urlsplit also doesn't correctly handle windows path in url
+            # form like "file:///c:/a/b" -- it thinks the path is "/c:/a/b",
+            # which to be correct requires removing the leading slash.  Also
+            # normalize the drive letter to lower case
+            path = "%s:%s" % (path[1].lower(), path[3:])
+
         # The path
         if path:
             path = urllib.unquote(path)

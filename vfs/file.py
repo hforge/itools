@@ -16,7 +16,8 @@
 
 # Import from the Standard Library
 from datetime import datetime
-from os import listdir, makedirs, mkdir, remove, rename, rmdir, stat, walk
+from os import (listdir, makedirs, mkdir, remove, rename, rmdir, stat, walk,
+                access, R_OK, W_OK)
 from os.path import (exists, getatime, getctime, getmtime, getsize, isfile,
     isdir, join)
 from subprocess import call
@@ -51,21 +52,13 @@ class FileFS(BaseFS):
     @staticmethod
     def can_read(reference):
         path = str(reference.path)
-        st_mode = stat(path).st_mode
-        # Folder
-        if st_mode & 0040000:
-            return st_mode & 5
-        # File
-        elif st_mode & 0100000:
-            return st_mode & 4
-
-        return False
+        return access(path, R_OK)
 
 
     @staticmethod
     def can_write(reference):
         path = str(reference.path)
-        return stat(path).st_mode & 2
+        return access(path, W_OK)
 
 
     @staticmethod

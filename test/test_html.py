@@ -21,7 +21,7 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.gettext import PO
+from itools.gettext import POFile
 from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, TEXT, stream_to_str
 from itools.html import HTMLFile, XHTMLFile, HTMLParser, sanitize_str
 from itools.html.xhtml import stream_to_html
@@ -113,7 +113,7 @@ class i18nTestCase(TestCase):
         doc = HTMLFile(string=
             '<p>hello world</p>')
 
-        p = PO(string=
+        p = POFile(string=
             'msgid "hello world"\n'
             'msgstr "hola mundo"')
 
@@ -125,7 +125,7 @@ class i18nTestCase(TestCase):
         doc = HTMLFile(string=
             '<img alt="The beach" src="beach.jpg">')
 
-        po = PO(string=
+        po = POFile(string=
             'msgid "The beach"\n'
              'msgstr "La playa"')
 
@@ -143,7 +143,7 @@ class i18nTestCase(TestCase):
             '<input type="text" name="id">\n'
             '<input type="submit" value="Change">')
 
-        p = PO(string=
+        p = POFile(string=
             'msgid "Change"\n'
             'msgstr "Cambiar"')
 
@@ -317,7 +317,7 @@ class TranslationTestCase(TestCase):
         string = (
             'msgid "hello world"\n'
             'msgstr "hola mundo"\n')
-        p = PO(string=string)
+        p = POFile(string=string)
 
         string = self.template % '<p>hello world</p>'
         source = XHTMLFile(string=string)
@@ -331,7 +331,7 @@ class TranslationTestCase(TestCase):
 
     def test_case5(self):
         """Test translation of an element content"""
-        po = PO(string=
+        po = POFile(string=
             'msgid "The beach"\n'
             'msgstr "La playa"')
         xhtml = XHTMLFile(string=

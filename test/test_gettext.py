@@ -19,7 +19,7 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.gettext import PO
+from itools.gettext import POFile
 
 
 
@@ -29,7 +29,7 @@ class POTestCase(TestCase):
         """Test for newlines."""
         content = 'msgid "Add"\n' \
                   'msgstr "Ajouter\\n"\n'
-        po = PO()
+        po = POFile()
         po.load_state_from_string(content)
 
         self.assertEqual(po.get_msgstr('Add'), u'Ajouter\n')
@@ -41,7 +41,7 @@ class POTestCase(TestCase):
                   'msgstr ""\n' \
                   '"Hola "\n' \
                   '"mundo"\n'
-        po = PO()
+        po = POFile()
         po.load_state_from_string(content)
 
         self.assertEqual(po.get_msgstr('Hello world'), u'Hola mundo')
@@ -51,7 +51,7 @@ class POTestCase(TestCase):
         """Test for double quotes."""
         content = 'msgid "test"\n' \
                   'msgstr "Esto es una \\"prueba\\""\n'
-        po = PO()
+        po = POFile()
         po.load_state_from_string(content)
 
         self.assertEqual(po.get_msgstr('test'), u'Esto es una "prueba"')
@@ -65,7 +65,7 @@ class POTestCase(TestCase):
                   'msgid "Hello"\n' \
                   'msgstr ""\n' \
                   '"Hola\\n"\n'
-        po = PO()
+        po = POFile()
         po.load_state_from_string(content)
 
         self.assertEqual((po.get_messages())[0].to_str(), content)
@@ -79,7 +79,7 @@ class POTestCase(TestCase):
                   'msgid "Hello"\n' \
                   'msgstr ""\n' \
                   '"Hola\\n"\n'
-        po = PO()
+        po = POFile()
         po.load_state_from_string(content)
 
         translation = po.gettext('Hello')
@@ -91,7 +91,7 @@ class POTestCase(TestCase):
         content = '#, fuzzy\n' \
                   '#~ msgid "Hello"\n' \
                   '#~ msgstr "Hola"\n'
-        po = PO()
+        po = POFile()
         po.load_state_from_string(content)
 
         translation = po.gettext('Hello')

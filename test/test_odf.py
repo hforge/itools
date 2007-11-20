@@ -21,7 +21,7 @@ from unittest import TestCase
 
 # Import from itools
 from itools.odf import ODTFile, ODPFile, ODSFile
-from itools.gettext import PO
+from itools.gettext import POFile
 from itools import vfs
 from itools.xml import XMLParser
 from itools.xml.i18n import get_messages, translate
@@ -46,7 +46,7 @@ class Test_ODT_File(TestCase):
         # Translate the document
         str = ('msgid "Hello <text:span text:style-name="T1">world</text:span> !"\n'
         'msgstr "Hola <text:span text:style-name="T1">mundo</text:span> !"\n')
-        po = PO(string=str)
+        po = POFile(string=str)
         translate_odt_document = self.doc.translate(po)
         # Get the message of the translate document
         doc2 = ODTFile()
@@ -198,7 +198,7 @@ class Test_ODT_Parser(TestCase):
 
     def test_translation_paragraph(self):
         """Test translation of an element content"""
-        po = PO(string=
+        po = POFile(string=
             'msgid "hello world"\n'
             'msgstr "hola mundo"\n')
         content = ('<office:text>'

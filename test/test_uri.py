@@ -266,6 +266,18 @@ class ParseTestCase(TestCase):
         self.assertEqual(ref.query, {'query': None})
 
 
+    def test_windows_normalize(self):
+        uri = GenericDataType.decode('c:stuff/blah')
+        self.assertEqual('c:stuff/blah', uri.path)
+        self.assertEqual('file', uri.scheme)
+        uri = GenericDataType.decode('file:///c:/stuff/blah')
+        self.assertEqual('c:/stuff/blah', uri.path)
+        self.assertEqual('file', uri.scheme)
+        uri = GenericDataType.decode('C:/stuff/blah')
+        self.assertEqual('c:/stuff/blah', uri.path)
+        self.assertEqual('file', uri.scheme)
+
+
 
 class SpecialTestCase(TestCase):
     """Test special cases."""

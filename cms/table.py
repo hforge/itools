@@ -21,7 +21,8 @@
 from operator import itemgetter
 
 # Import from itools
-from itools.datatypes import DataType, Integer, is_datatype, Enumerate, Date
+from itools.datatypes import (DataType, Integer, is_datatype, Enumerate, Date,
+                              Tokens)
 from itools.handlers.table import Table as iTable, Record
 from itools.stl import stl
 
@@ -136,10 +137,13 @@ class Table(File, iTable):
                 datatype = self.get_datatype(field)
 
                 multiple = getattr(datatype, 'multiple', False)
-                if multiple is True:
-                    value.sort()
-                    if len(value) > 0:
-                        rmultiple = len(value) > 1
+                is_tokens = is_datatype(datatype, Tokens)
+                if multiple is True or is_tokens:
+                    if multiple:
+                        value.sort()
+                    value_length = len(value)
+                    if value_length > 0:
+                        rmultiple = value_length > 1
                         value = value[0]
                     else:
                         rmultiple = False
@@ -151,7 +155,7 @@ class Table(File, iTable):
                 else:
                     records[-1][field] = value
 
-                if multiple is True:
+                if multiple is True or is_tokens:
                     records[-1][field] = (records[-1][field], rmultiple)
         # Sorting
         sortby = context.get_form_value('sortby')
@@ -284,6 +288,8 @@ class Table(File, iTable):
             if getattr(datatype, 'multiple', False) is False:
                 value = context.get_form_value(name) \
                         or self.get_value(record, name)
+                if is_datatype(datatype, Tokens):
+                    value = ' '.join(value) # remove parenthesis
             else:
                 value = context.get_form_values(name) \
                         or self.get_value(record, name)

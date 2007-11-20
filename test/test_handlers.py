@@ -234,6 +234,22 @@ class DatabaseTestCase(TestCase):
         self.assertEqual(len(ids), 1)
 
 
+    def test_remove_add(self):
+        fables = self.root
+        # Firstly add 31.txt
+        fables.set_handler('31.txt', TextFile())
+        self.database.save_changes()
+
+        fables.del_handler('31.txt')
+        fables.set_handler('31.txt', TextFile())
+        self.assertEqual(vfs.exists('fables/31.txt'), True)
+        self.assertEqual(fables.has_handler('31.txt'), True)
+        # Save
+        self.database.save_changes()
+        self.assertEqual(vfs.exists('fables/31.txt'), True)
+        self.assertEqual(fables.has_handler('31.txt'), True)
+
+
 
 ##########################################################################
 # The Table handler

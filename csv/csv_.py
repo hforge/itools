@@ -82,8 +82,8 @@ class CSVFile(TextFile):
     # The class to use for each row (this allows easy specialization)
     row_class = Row
 
-    # Parsing options (FIXME Should be False)
-    class_csv_guess = True
+    # Parsing options
+    class_csv_guess = False
 
 
     #########################################################################

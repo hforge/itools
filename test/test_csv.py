@@ -66,6 +66,7 @@ class People(CSVFile):
 
 class Countries(CSVFile):
 
+    class_csv_guess = True
     columns = ['id', 'name', 'country', 'date']
     schema = {'id': Integer,
               'name': Unicode(index='text'),

@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from csv import get_dialect, reader as read_csv, Sniffer
+from csv import reader as read_csv, Sniffer
 
 # Import from itools
 from itools.datatypes import String
@@ -24,29 +24,19 @@ from itools.datatypes import String
 sniffer = Sniffer()
 
 
-def parse(data, columns=None, schema=None, guess=True, **kw):
+def parse(data, columns=None, schema=None, guess=False, **kw):
     """This method is a generator that returns one CSV row at a time.  To
     do the job it wraps the standard Python's csv parser.
     """
-    # FIXME The parameter 'guess' should be False by default (explicit is
-    # better)
-
     # Find out the dialect
     if data:
         lines = data.splitlines(True)
         # The dialect
         if guess is True:
             dialect = sniffer.sniff('\n'.join(lines[:10]))
-            # Fix the fucking sniffer (FIXME To remove now we can make things
-            # explicit, kept here for backwards compatibility).
-            dialect.doublequote = True
-            if dialect.delimiter == '' or dialect.delimiter == ' ':
-                dialect.delimiter = ','
+            reader = read_csv(lines, dialect, **kw)
         else:
-            # Default is Excel
-            dialect = get_dialect('excel')
-        # The low level parser (Python's csv)
-        reader = read_csv(lines, dialect, **kw)
+            reader = read_csv(lines, **kw)
 
         # Find out the number of columns, if not specified
         if columns is not None:

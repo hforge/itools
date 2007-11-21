@@ -15,27 +15,39 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from csv import get_dialect, reader as read_csv, Sniffer
+
+# Import from itools
 from itools.datatypes import String
-import csv as python_csv
 
 
-sniffer = python_csv.Sniffer()
+sniffer = Sniffer()
 
-def parse(data, columns=None, schema=None):
+
+def parse(data, columns=None, schema=None, guess=True, **kw):
+    """This method is a generator that returns one CSV row at a time.  To
+    do the job it wraps the standard Python's csv parser.
     """
-    This method is a generator that returns one CSV row at a time.
-    To do the job it wraps the standard Python's csv parser.
-    """
+    # FIXME The parameter 'guess' should be False by default (explicit is
+    # better)
+
     # Find out the dialect
     if data:
         lines = data.splitlines(True)
-        dialect = sniffer.sniff('\n'.join(lines[:10]))
-        # Fix the fucking sniffer
-        dialect.doublequote = True
-        if dialect.delimiter == '' or dialect.delimiter == ' ':
-            dialect.delimiter = ','
-        # Get the reader
-        reader = python_csv.reader(lines, dialect)
+        # The dialect
+        if guess is True:
+            dialect = sniffer.sniff('\n'.join(lines[:10]))
+            # Fix the fucking sniffer (FIXME To remove now we can make things
+            # explicit, kept here for backwards compatibility).
+            dialect.doublequote = True
+            if dialect.delimiter == '' or dialect.delimiter == ' ':
+                dialect.delimiter = ','
+        else:
+            # Default is Excel
+            dialect = get_dialect('excel')
+        # The low level parser (Python's csv)
+        reader = read_csv(lines, dialect, **kw)
+
         # Find out the number of columns, if not specified
         if columns is not None:
             n_columns = len(columns)

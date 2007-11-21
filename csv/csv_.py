@@ -85,6 +85,10 @@ class CSV(Text):
     # The class to use for each row (this allows easy specialization)
     row_class = Row
 
+    # Parsing options (FIXME Should be False)
+    class_csv_guess = True
+
+
     #########################################################################
     # Load & Save
     #########################################################################
@@ -115,7 +119,7 @@ class CSV(Text):
         schema = self.schema
         columns = self.columns
 
-        for line in parse(data, columns, schema):
+        for line in parse(data, columns, schema, guess=self.class_csv_guess):
             self._add_row(line)
 
 

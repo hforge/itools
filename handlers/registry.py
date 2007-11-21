@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2006-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2005-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -45,3 +45,11 @@ def get_handler_class(uri):
 
     raise ValueError
 
+
+def get_handler(uri):
+    """Returns a resource handler from a uri reference.
+    """
+    if vfs.exists(uri):
+        return get_handler_class(uri)(uri)
+
+    raise LookupError, 'the resource "%s" does not exist' % uri

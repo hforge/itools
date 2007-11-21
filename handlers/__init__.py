@@ -44,10 +44,9 @@ from file import File
 from folder import Folder
 from image import Image
 from python import Python
-from registry import get_handler_class, register_handler_class
+from registry import register_handler_class, get_handler_class, get_handler
 from text import TextFile
 from database import Database, READY, TRANSACTION_PHASE1, TRANSACTION_PHASE2
-from utils import get_handler
 from table import Table, parse_table, fold_line, escape_data, Record, Property
 
 
@@ -65,22 +64,21 @@ __all__ = [
     'Image',
     'Python',
     'TextFile',
-    'Table',
     # The database
     'Database',
     'READY',
     'TRANSACTION_PHASE1',
     'TRANSACTION_PHASE2',
+    # The table handler
+    'Table',
     'Record',
     'Property',
-    # Parsing functions
     'parse_table',
     'fold_line',
     'escape_data',
     # Registry
     'get_handler_class',
     'register_handler_class',
-    # Other functions
     'get_handler']
 
 

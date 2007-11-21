@@ -877,6 +877,8 @@ class StoredSearch(Text, Config):
 ###########################################################################
 class History(BaseCSV):
 
+    class_csv_guess = False
+
     columns = ['datetime', 'username', 'title', 'module', 'version', 'type',
                'priority', 'assigned_to', 'state', 'comment', 'file']
     schema = {'datetime': DateTime,

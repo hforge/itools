@@ -30,58 +30,18 @@ from messages import *
 from registry import get_handler_class
 
 
-# TODO We should have two database classes, one for in-memory transactions,
-# another for bullet-proof transactions.  Instead of a class for everything.
-# Because this is a critical code, every single line matters.
-
-
-
-# The database states
-READY = 0
-TRANSACTION_PHASE1 = 1
-TRANSACTION_PHASE2 = 2
-
-
 ###########################################################################
-# Map from handler path to temporal file
-###########################################################################
-thread_lock = allocate_lock()
-_tmp_maps = {}
-
-
-def get_tmp_map():
-    ident = get_ident()
-    thread_lock.acquire()
-    try:
-        tmp_map = _tmp_maps.setdefault(ident, {})
-    finally:
-        thread_lock.release()
-
-    return tmp_map
-
-
-
-###########################################################################
-# The database
+# The Basic Database (in memory transactions)
 ###########################################################################
 class Database(object):
 
-    def __init__(self, commit=None):
+    def __init__(self):
         # The cache
         self.cache = {}
         # The state, for transactions
         self.changed = set()
         self.added = set()
         self.removed = set()
-        # The commit, for safe transactions
-        if commit is None:
-            self.commit = None
-            self.log = None
-        else:
-            if not isinstance(commit, Path):
-                commit = Path(commit)
-            self.commit = str(commit)
-            self.log = str(commit.resolve2('log'))
 
 
     #######################################################################
@@ -250,14 +210,113 @@ class Database(object):
 
 
     #######################################################################
+    # API / Safe VFS operations (not really safe)
+    #######################################################################
+    def safe_make_file(self, reference):
+        return vfs.make_file(reference)
+
+
+    def safe_make_folder(self, reference):
+        return vfs.make_folder(reference)
+
+
+    def safe_remove(self, reference):
+        return vfs.remove(reference)
+
+
+    def safe_open(self, reference, mode=None):
+        return vfs.open(reference, mode)
+
+
+    #######################################################################
+    # API / Transactions
+    #######################################################################
+    def abort_changes(self):
+        cache = self.cache
+        # Added handlers
+        for uri in self.added:
+            del cache[uri]
+        # Changed handlers
+        for uri in self.changed:
+            cache[uri].abort_changes()
+        # Reset state
+        self.changed.clear()
+        self.added.clear()
+        self.removed.clear()
+
+
+    def save_changes(self):
+        cache = self.cache
+        try:
+            # Save changed handlers
+            for uri in self.changed:
+                # Save the handler's state
+                handler = cache[uri]
+                handler.save_state()
+                # Update timestamp
+                handler.timestamp = vfs.get_mtime(uri)
+                handler.dirty = False
+            # Remove handlers
+            for uri in self.removed:
+                self.safe_remove(uri)
+            # Add new handlers
+            for uri in self.added:
+                handler = cache[uri]
+                handler.save_state_to(uri)
+                # Update timestamp
+                handler.timestamp = vfs.get_mtime(uri)
+                handler.dirty = False
+        except:
+            # Rollback
+            self.abort_changes()
+            raise
+
+        # Reset the state
+        self.changed.clear()
+        self.added.clear()
+        self.removed.clear()
+
+
+
+###########################################################################
+# The Safe Database (bullet-proof transactions)
+###########################################################################
+
+# The database states
+READY = 0
+TRANSACTION_PHASE1 = 1
+TRANSACTION_PHASE2 = 2
+
+# Map from handler path to temporal file
+thread_lock = allocate_lock()
+_tmp_maps = {}
+
+def get_tmp_map():
+    ident = get_ident()
+    thread_lock.acquire()
+    try:
+        tmp_map = _tmp_maps.setdefault(ident, {})
+    finally:
+        thread_lock.release()
+
+    return tmp_map
+
+
+class SafeDatabase(Database):
+
+    def __init__(self, commit):
+        Database.__init__(self)
+        # The commit, for safe transactions
+        if not isinstance(commit, Path):
+            commit = Path(commit)
+        self.commit = str(commit)
+        self.log = str(commit.resolve2('log'))
+
+
+    #######################################################################
     # API / Safe VFS operations
     #######################################################################
     def safe_make_file(self, reference):
-        # Not safe
-        if self.log is None:
-            return vfs.make_file(reference)
-
-        # Safe
         tmp_map = get_tmp_map()
         if reference in tmp_map:
             tmp_path = tmp_map[reference]
@@ -274,11 +333,6 @@ class Database(object):
 
 
     def safe_make_folder(self, reference):
-        # Not safe
-        if self.log is None:
-            return vfs.make_folder(reference)
-
-        # Safe
         log = open(self.log, 'a+b')
         try:
             log.write('+%s\n' % reference)
@@ -289,11 +343,6 @@ class Database(object):
 
 
     def safe_remove(self, reference):
-        # Not safe
-        if self.log is None:
-            return vfs.remove(reference)
-
-        # Safe
         log = open(self.log, 'a+b')
         try:
             log.write('-%s\n' % reference)
@@ -302,11 +351,6 @@ class Database(object):
 
 
     def safe_open(self, reference, mode=None):
-        # Not safe
-        if self.log is None:
-            return vfs.open(reference, mode)
-
-        # Safe
         if mode == WRITE:
             tmp_map = get_tmp_map()
             if reference in tmp_map:
@@ -354,24 +398,9 @@ class Database(object):
         return READY
 
 
-    def abort_changes(self):
-        cache = self.cache
-        # Added handlers
-        for uri in self.added:
-            del cache[uri]
-        # Changed handlers
-        for uri in self.changed:
-            cache[uri].abort_changes()
-        # Reset state
-        self.changed.clear()
-        self.added.clear()
-        self.removed.clear()
-
-
     def save_changes(self):
         # 1. Start
-        if self.log is not None:
-            vfs.make_file(self.log)
+        vfs.make_file(self.log)
 
         # State
         changed = self.changed
@@ -397,13 +426,11 @@ class Database(object):
             # Rollback the changes in memory
             self.abort_changes()
             # Rollback the changes in disk
-            if self.log is not None:
-                self.rollback()
-                get_tmp_map().clear()
+            self.rollback()
+            get_tmp_map().clear()
             raise
         else:
-            if self.log is not None:
-                get_tmp_map().clear()
+            get_tmp_map().clear()
 
         # Reset the state
         self.changed = set()
@@ -411,13 +438,11 @@ class Database(object):
         self.removed = set()
 
         # 2. Transaction commited successfully.
-        if self.log is not None:
-            # Once we pass this point, we will save the changes permanently,
-            # whatever happens (e.g. if there is a current failover we will
-            # continue this process to finish the work).
-            vfs.make_file('%s/done' % self.commit)
-
-            self.save_changes_forever()
+        # Once we pass this point, we will save the changes permanently,
+        # whatever happens (e.g. if there is a current failover we will
+        # continue this process to finish the work).
+        vfs.make_file('%s/done' % self.commit)
+        self.save_changes_forever()
 
         # 3. Update timestamps
         for uri in changed:

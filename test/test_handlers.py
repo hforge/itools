@@ -22,7 +22,8 @@ from unittest import TestCase
 # Import from itools
 from itools import vfs
 from itools.datatypes import Unicode
-from itools.handlers import get_handler, Database, TextFile, Table
+from itools.handlers import (get_handler, Database, SafeDatabase, TextFile,
+    Table)
 from itools.handlers.table import unfold_lines
 
 
@@ -154,7 +155,7 @@ class BrokenHandler(TextFile):
 class DatabaseTestCase(TestCase):
 
     def setUp(self):
-        database = Database('database.commit')
+        database = SafeDatabase('database.commit')
         self.database = database
         root = get_handler('fables')
         root.database = database

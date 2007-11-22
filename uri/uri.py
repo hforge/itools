@@ -27,8 +27,7 @@ import registry
 
 
 def get_reference(reference):
-    """
-    Returns a URI reference of the good type from the given string.
+    """Returns a URI reference of the good type from the given string.
     """
     if ':' in reference:
         scheme_name, scheme_specifics = reference.split(':', 1)
@@ -40,8 +39,7 @@ def get_reference(reference):
 
 
 def get_cwd():
-    """
-    Returns the current working directory as a URI object.
+    """Returns the current working directory as a URI object.
     """
     # Get the base path
     base = os.getcwd()
@@ -55,8 +53,7 @@ def get_cwd():
 
 
 def get_absolute_reference(reference, base=None):
-    """
-    Returns the absolute URI for the given reference. Uses "base" to
+    """Returns the absolute URI for the given reference. Uses "base" to
     resolve the reference, if "base" is not given default to the current
     working directory.
     """
@@ -74,8 +71,7 @@ def get_absolute_reference(reference, base=None):
 
 
 def get_absolute_reference2(reference, base=None):
-    """
-    Like "get_absolute_reference", but uses the "resolve2" algorithm
+    """Like "get_absolute_reference", but uses the "resolve2" algorithm
     (ignores trailing slashes).
     """
     # Check the reference is of the good type

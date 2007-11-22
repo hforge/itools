@@ -305,30 +305,33 @@ class ResolveTestCase(TestCase):
 
 
     def test_standard(self):
-        # Test the cases defined by RFC2396, section C.1
+        # Test Cases defined by RFC2396, section C.1
+        cases = [
+            ('gg:h', 'gg:h'),  # NOTE This is a little different
+            ('g', 'http://a/b/c/g'),
+            ('./g', 'http://a/b/c/g'),
+            ('g/', 'http://a/b/c/g/'),
+            ('/g', 'http://a/g'),
+# FIXME     ('//g', 'http://g'),
+            ('?y', 'http://a/b/c/?y'),
+            ('g?y', 'http://a/b/c/g?y'),
+            ('#s', 'http://a/b/c/d;p?q#s'),
+            ('g#s', 'http://a/b/c/g#s'),
+            ('g?y#s', 'http://a/b/c/g?y#s'),
+            (';x', 'http://a/b/c/;x'),
+            ('g;x', 'http://a/b/c/g;x'),
+            ('g;x?y#s', 'http://a/b/c/g;x?y#s'),
+            ('.', 'http://a/b/c/'),
+            ('./', 'http://a/b/c/'),
+# FIXME     ('..', 'http://a/b/'),
+            ('../', 'http://a/b/'),
+            ('../g', 'http://a/b/g'),
+            ('../..', 'http://a/'),
+            ('../../', 'http://a/'),
+            ('../../g', 'http://a/g')]
+        # Test
         failure = 0
-        for reference, expected in [('g:h', 'g:h'),
-                                    ('g', 'http://a/b/c/g'),
-                                    ('./g', 'http://a/b/c/g'),
-                                    ('g/', 'http://a/b/c/g/'),
-                                    ('/g', 'http://a/g'),
-# FIXME                                    ('//g', 'http://g'),
-                                    ('?y', 'http://a/b/c/?y'),
-                                    ('g?y', 'http://a/b/c/g?y'),
-                                    ('#s', 'http://a/b/c/d;p?q#s'),
-                                    ('g#s', 'http://a/b/c/g#s'),
-                                    ('g?y#s', 'http://a/b/c/g?y#s'),
-                                    (';x', 'http://a/b/c/;x'),
-                                    ('g;x', 'http://a/b/c/g;x'),
-                                    ('g;x?y#s', 'http://a/b/c/g;x?y#s'),
-                                    ('.', 'http://a/b/c/'),
-                                    ('./', 'http://a/b/c/'),
-# FIXME                                    ('..', 'http://a/b/'),
-                                    ('../', 'http://a/b/'),
-                                    ('../g', 'http://a/b/g'),
-                                    ('../..', 'http://a/'),
-                                    ('../../', 'http://a/'),
-                                    ('../../g', 'http://a/g')]:
+        for reference, expected in cases:
             x = self.base.resolve(reference)
             try:
                 self.assertEqual(x, expected)

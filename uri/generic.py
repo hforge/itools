@@ -29,19 +29,23 @@ Other related RFCs include:
  - Registration of new schemes, http://www.ietf.org/rfc/rfc2717.txt
 """
 
-# FIXME Latest URI RFC is 3986: http://www.faqs.org/rfcs/rfc3986.html
-# Check agains it.
-# Consider a C library, for instance: http://uriparser.sourceforge.net/
+# TODO Consider a C library, for instance: http://uriparser.sourceforge.net/
 
-# XXX A resource should be an inmutable object, at least its components
-# (scheme, authority, path, query and fragment). Then we could get rid
-# of the copy method. And this change woule easy the way to a datetime
-# like API.
+# TODO Check against (latest) RFC 3986: http://www.faqs.org/rfcs/rfc3986.html
+
+# TODO A URI reference should be an inmutable object, at least its components
+# (scheme, authority, path, query and fragment). Then we could get rid of the
+# copy method. And this change would easy the way to a datetime like API.
+
+# NOTE The RFC supports one letter schemes, but there are not official one
+# letter schemes (http://www.iana.org/assignments/uri-schemes.html), and
+# they are rarely used in practice.  Also, one letter schemes conflict with
+# windows paths; for this reasons we do not support one letter schemes.
 
 # Import from the Standard Library
 from copy import copy
 from urlparse import urlsplit, urlunsplit
-import urllib
+from urllib import quote_plus, unquote, unquote_plus
 
 
 ##########################################################################
@@ -49,8 +53,7 @@ import urllib
 ##########################################################################
 
 class Authority(object):
-    """
-    There are two types of authorities: registry based and server-based;
+    """There are two types of authorities: registry based and server-based;
     right now only server-based are supported (XXX).
 
     The userinfo component could be further processed.
@@ -103,8 +106,7 @@ class Authority(object):
 ##########################################################################
 
 def normalize_path(path):
-    """
-    Normalize the path (we don't use os.path because on Windows it
+    """Normalize the path (we don't use os.path because on Windows it
     converts forward slashes to back slashes).
 
     Examples:
@@ -179,8 +181,7 @@ class Segment(str):
 
 
 class Path(list):
-    """
-    A path is a sequence of segments. A segment is has a name and,
+    """A path is a sequence of segments. A segment is has a name and,
     optionally one or more parameters.
 
     A path may start and/or end by an slash. This information is only
@@ -272,8 +273,7 @@ class Path(list):
 
 
     def resolve(self, path):
-        """
-        Resolve the path following the standard (RFC2396). This is to say,
+        """Resolve the path following the standard (RFC2396). This is to say,
         it takes into account the trailing slash, so:
 
           Path('/a/b').resolve('c') => Path('/a/c')
@@ -292,8 +292,7 @@ class Path(list):
 
 
     def resolve2(self, path):
-        """
-        This method provides an alternative to the standards resolution
+        """This method provides an alternative to the standards resolution
         algorithm. The difference is that it not takes into account the
         trailing slash (it behaves like if always there was a trailing
         slash):
@@ -313,8 +312,7 @@ class Path(list):
 
 
     def get_prefix(self, path):
-        """
-        Returns the common prefix of two paths, for example:
+        """Returns the common prefix of two paths, for example:
 
           >>> print Path('a/b/c').get_prefix(Path('a/b/d/e'))
           a/b
@@ -331,8 +329,7 @@ class Path(list):
 
 
     def get_pathto(self, path):
-        """
-        Returns the relative path from 'self' to 'path'. This operation is
+        """Returns the relative path from 'self' to 'path'. This operation is
         the complement of 'resolve2'. So, if 'x = a.get_pathto(b)', then
         'b = a.resolve2(x)'.
         """
@@ -345,8 +342,7 @@ class Path(list):
 
 
     def get_pathtoroot(self):
-        """
-        Returns the path from the tail to the head, for example: '../../..'
+        """Returns the path from the tail to the head, for example: '../../..'
         """
         return Path('../' * (len(self) - 1))
 
@@ -368,8 +364,7 @@ class Path(list):
 # them.
 
 def decode_query(data):
-    """
-    Decodes a query as defined by the "application/x-www-form-urlencoded"
+    """Decodes a query as defined by the "application/x-www-form-urlencoded"
     content type.
 
     The value expected is a byte string like "a=1&b=2"; the value returned
@@ -384,11 +379,11 @@ def decode_query(data):
             if x:
                 if '=' in x:
                     key, value = x.split('=', 1)
-                    value = urllib.unquote_plus(value)
+                    value = unquote_plus(value)
                 else:
                     key, value = x, None
 
-                key = urllib.unquote_plus(key)
+                key = unquote_plus(key)
                 if key in query:
                     old_value = query[key]
                     if isinstance(old_value, list):
@@ -402,8 +397,7 @@ def decode_query(data):
 
 
 def encode_query(query):
-    """
-    This method encodes a query as defined by the
+    """This method encodes a query as defined by the
     "application/x-www-form-urlencoded" content type (see
     http://www.w3.org/TR/REC-html40/interact/forms.html#h-17.13.4.1 for
     details)
@@ -413,7 +407,7 @@ def encode_query(query):
     """
     line = []
     for key, value in query.items():
-        key = urllib.quote_plus(key)
+        key = quote_plus(key)
         if value is None:
             # XXX As of the application/x-www-form-urlencoded content type,
             # it has not sense to have a parameter without a value, so
@@ -425,11 +419,11 @@ def encode_query(query):
             for x in value:
                 if isinstance(x, unicode):
                     x = x.encode('UTF-8')
-                line.append('%s=%s' % (key, urllib.quote_plus(x)))
+                line.append('%s=%s' % (key, quote_plus(x)))
         else:
             if isinstance(value, unicode):
                 value = value.encode('UTF-8')
-            line.append('%s=%s' % (key, urllib.quote_plus(value)))
+            line.append('%s=%s' % (key, quote_plus(value)))
     return '&'.join(line)
 
 
@@ -439,8 +433,7 @@ def encode_query(query):
 ##########################################################################
 
 class Reference(object):
-    """
-    A common URI reference is made of five components:
+    """A common URI reference is made of five components:
 
     - the scheme
     - the authority
@@ -501,8 +494,7 @@ class Reference(object):
 
 
     def resolve(self, reference):
-        """
-        Resolve the given relative URI, this URI (self) is considered to be
+        """Resolve the given relative URI, this URI (self) is considered to be
         the base.
 
         If the given uri is not relative, it is returned. If 'self' is not
@@ -555,8 +547,8 @@ class Reference(object):
 
 
     def resolve2(self, reference):
-        """
-        This is much like 'resolv', but uses 'Path.resolve2' method instead.
+        """This is much like 'resolv', but uses 'Path.resolve2' method
+        instead.
 
         XXX Too much code is duplicated, the only difference beween 'resolve'
         and 'resolve2' is one character. Refactor!
@@ -608,8 +600,7 @@ class Reference(object):
 
 
     def replace(self, **kw):
-        """
-        This method returns a new uri reference, equal to this one, but
+        """This method returns a new uri reference, equal to this one, but
         with the given keyword parameters set in the query.
         """
         query = copy(self.query)
@@ -682,11 +673,11 @@ class GenericDataType(object):
 
         # The path
         if path:
-            path = urllib.unquote(path)
+            path = unquote(path)
         elif authority:
             path = '/'
         # The authority
-        authority = urllib.unquote(authority)
+        authority = unquote(authority)
         authority = Authority(authority)
         # The query
         try:

@@ -717,7 +717,7 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
                 window.opener.CreateImage('%s');
                 window.close();
             </script>
-                    """ % handler.abspath
+                    """ % context.handler.get_pathto(handler)
 
         return context.come_back(message=uri.query['message'])
 
@@ -764,7 +764,7 @@ class Handler(CatalogAware, Node, DomainAware, BaseHandler):
                 window.opener.CreateLink('%s');
                 window.close();
             </script>
-                    """ % handler.abspath
+                    """ % context.handler.get_pathto(handler)
 
         return context.come_back(message=uri.query['message'])
 

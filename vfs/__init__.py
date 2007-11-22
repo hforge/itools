@@ -17,7 +17,7 @@
 # Import from itools
 from base import BaseFS
 from file import FileFS
-from registry import register_file_system
+from registry import register_file_system, deregister_file_system
 from vfs import (cwd, exists, is_file, is_folder, can_read, can_write,
                  get_ctime, get_mtime, get_atime, get_mimetype, get_size,
                  make_file, make_folder, remove, open, copy, move, get_names,
@@ -34,6 +34,7 @@ __all__ = [
     'APPEND',
     # Registry
     'register_file_system',
+    'deregister_file_system',
     # Functions
     'exists',
     'is_file',

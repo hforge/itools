@@ -130,7 +130,6 @@ class Database(object):
         handler = object.__new__(cls)
         handler.database = self
         handler.uri = reference
-        handler.dirty = False
         # Update the cache
         if to_cache is True:
             cache[reference] = handler

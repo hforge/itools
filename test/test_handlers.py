@@ -55,8 +55,10 @@ class FolderTestCase(TestCase):
 
 
     def tearDown(self):
-        if vfs.exists('tests/toto.txt'):
-            vfs.remove('tests/toto.txt')
+        folder = vfs.open('tests')
+        for name in 'toto.txt', 'fofo.txt', 'fofo2.txt':
+            if folder.exists(name):
+                folder.remove(name)
 
 
     def test_remove(self):
@@ -132,6 +134,16 @@ class FolderTestCase(TestCase):
         # Save
         database.save_changes()
         self.assertEqual(vfs.exists('tests/fofo.txt'), False)
+
+
+    def test_add_copy(self):
+        database = self.database
+        folder = self.root.get_handler('tests')
+        folder.set_handler('fofo.txt', TextFile())
+        folder.copy_handler('fofo.txt', 'fofo2.txt')
+        # Save
+        database.save_changes()
+        self.assertEqual(vfs.exists('tests/fofo2.txt'), True)
 
 
 

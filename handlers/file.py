@@ -34,13 +34,14 @@ class File(Handler):
 
     class_resource_type = 'file'
 
-    # By default handlers are not loaded, nor changed
+    # By default handlers are not loaded
     timestamp = None
     dirty = False
 
 
     def __init__(self, ref=None, string=None, **kw):
         if ref is None:
+            self.dirty = True
             if string is not None:
                 # A handler from a byte string
                 self.load_state_from_string(string)
@@ -77,7 +78,8 @@ class File(Handler):
 
 
     def load_state(self):
-        # XXX Use "with" once "urllib.urlopen" supports it
+        # TODO Use "with" once we move to Python 2.5 and "urllib.urlopen"
+        # supports it
         file = vfs.open(self.uri, 'r')
         try:
             self._load_state_from_file(file)
@@ -142,8 +144,9 @@ class File(Handler):
             raise ValueError, msg
 
         # Load first, if needed
-        if self.uri is not None and self.timestamp is None:
-            self.load_state()
+        if self.dirty is False:
+            if self.uri is not None and self.timestamp is None:
+                self.load_state()
 
         # Copy the state
         copy = object.__new__(cls)
@@ -153,6 +156,7 @@ class File(Handler):
                 value = getattr(self, name)
                 value = deepcopy(value)
                 setattr(copy, name, value)
+        copy.dirty = True
         return copy
 
 
@@ -174,15 +178,20 @@ class File(Handler):
 
 
     def set_changed(self):
-        if self.uri is not None:
-            self.dirty = True
-            database = self.database
-            if database is None:
-                return
-            if self.timestamp is None:
-                database.added.add(self.uri)
-            else:
-                database.changed.add(self.uri)
+        # Not attached to a URI
+        if self.uri is None:
+            return
+        # Set dirty
+        self.dirty = True
+        # Not attached to a database
+        database = self.database
+        if database is None:
+            return
+        # Update database state
+        if self.timestamp is None:
+            database.added.add(self.uri)
+        else:
+            database.changed.add(self.uri)
 
 
     def abort_changes(self):

@@ -35,11 +35,9 @@ class Handler(object):
     class_mimetypes = []
     class_extension = None
 
-    # Default values for the instance variables
+    # By default handlers are not attached to a database, nor a URI
     database = None
     uri = None
-    timestamp = None
-    dirty = False
 
 
     ########################################################################

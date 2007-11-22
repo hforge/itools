@@ -34,6 +34,10 @@ class File(Handler):
 
     class_resource_type = 'file'
 
+    # By default handlers are not loaded, nor changed
+    timestamp = None
+    dirty = False
+
 
     def __init__(self, ref=None, string=None, **kw):
         if ref is None:

@@ -564,10 +564,7 @@ class MultilineWidget(Widget):
     def to_html(datatype, name, value):
         namespace = {}
         namespace['name'] = name
-        if getattr(datatype, 'multiple', False) is False:
-            namespace['value'] = value
-        else:
-            namespace['value'] = '\n'.join(value)
+        namespace['value'] = '\n'.join(value)
 
         return stl(events=MultilineWidget.template, namespace=namespace)
 

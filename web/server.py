@@ -241,7 +241,10 @@ class Server(object):
                                 conn, client_address = ear.accept()
                             except SocketError:
                                 continue
-
+                            # Debug
+                            if self.debug_log is not None:
+                                peer = conn.getpeername()
+                                self.log_debug('%s:%s => New connection' % peer)
                             # Set non-blocking mode
                             conn.setblocking(0)
                             # Register the connection
@@ -256,6 +259,11 @@ class Server(object):
                             # Load request
                             poll.unregister(fileno)
                             conn, request, loader = requests.pop(fileno)
+                            # Debug
+                            if self.debug_log is not None:
+                                peer = conn.getpeername()
+                                self.log_debug('%s:%s => IN' % peer)
+                            # Read
                             try:
                                 loader.next()
                             except StopIteration:
@@ -277,6 +285,10 @@ class Server(object):
                     elif event & POLLOUT:
                         poll.unregister(fileno)
                         conn, response = requests.pop(fileno)
+                        # Debug
+                        if self.debug_log is not None:
+                            peer = conn.getpeername()
+                            self.log_debug('%s:%s => OUT' % peer)
                         # Send the response
                         n = conn.send(response)
                         response = response[n:]
@@ -286,15 +298,18 @@ class Server(object):
                         else:
                             conn.close()
                     elif event & POLLERR:
+                        self.log_debug('ERROR CONDITION')
                         poll.unregister(fileno)
                         if fileno in requests:
                             del requests[fileno]
                     elif event & POLLHUP:
+                        self.log_debug('HUNG UP')
                         # XXX Is this right?
                         poll.unregister(fileno)
                         if fileno in requests:
                             del requests[fileno]
                     elif event & POLLNVAL:
+                        self.log_debug('INVALID REQUEST (descriptor not open)')
                         # XXX Is this right?
                         poll.unregister(fileno)
                         if fileno in requests:

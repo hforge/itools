@@ -180,9 +180,8 @@ class Context(object):
     ########################################################################
     # API / high level
     def come_back(self, message, goto=None, keep=[], **kw):
-        """
-        This is a handy method that builds a URI object from some parameters.
-        It exists to make short some common patterns.
+        """This is a handy method that builds a URI object from some
+        parameters.  It exists to make short some common patterns.
         """
         # By default we come back to the referrer
         if goto is None:
@@ -211,24 +210,22 @@ class Context(object):
             goto = goto.replace(**form)
         # Translate the source message
         if message:
-            message = self.handler.gettext(message)
+            message = self.object.gettext(message)
             message = Template(message).substitute(kw)
             return goto.replace(message=message)
         return goto
 
 
     def build_form_namespace(self, fields):
-        """
-        This utility method builds a namespace suitable to use to produce
-        an HTML form. Its input data is a list (fields) that defines the
-        form variables to consider:
+        """This utility method builds a namespace suitable to use to produce
+        an HTML form. Its input data is a list (fields) that defines the form
+        variables to consider:
 
             [(<field name>, <is field required>),
              ...]
 
-        Every element of the list is a tuple with the name of the field
-        and a boolean value that specifies whether the field is mandatory
-        or not.
+        Every element of the list is a tuple with the name of the field and a
+        boolean value that specifies whether the field is mandatory or not.
 
         The output is like:
 
@@ -269,13 +266,12 @@ class Context(object):
 
 
     def check_form_input(self, fields):
-        """
-        This utility method checks the request form and returns an error
-        code if there is something wrong (a mandatory field is missing,
-        or a value is not valid) or None if everything is ok.
+        """This utility method checks the request form and returns an error
+        code if there is something wrong (a mandatory field is missing, or a
+        value is not valid) or None if everything is ok.
 
-        Its input data is a list (fields) that defines the form variables
-        to consider:
+        Its input data is a list (fields) that defines the form variables to
+        consider:
 
             [(<field name>, <is field required>[ , <datatype>]),
              ...]

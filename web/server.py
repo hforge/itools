@@ -350,7 +350,7 @@ class Server(object):
         if status == 200:
             # Check modification time
             mtime = '%s__mtime__' % context.method
-            mtime = getattr(context.handler, mtime, None)
+            mtime = getattr(context.object, mtime, None)
             if mtime is not None:
                 mtime = mtime().replace(microsecond=0)
                 response.set_header('last-modified', mtime)
@@ -544,7 +544,7 @@ class Server(object):
             handler = site_root.get_object(path)
         except LookupError:
             handler = None
-        context.handler = handler
+        context.object = handler
 
         if handler is None:
             # Find an ancestor to render the page
@@ -552,10 +552,10 @@ class Server(object):
             for x in range(len(abspath) - 1, 0, -1):
                 path = abspath[:x]
                 if site_root.has_object(path):
-                    context.handler = site_root.get_object(path)
+                    context.object = site_root.get_object(path)
                     break
             else:
-                context.handler = site_root
+                context.object = site_root
             return 404, root.not_found
 
         method = handler.get_method(context.method)

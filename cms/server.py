@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from os import fdopen
+from os import fdopen, environ
 import sys
 from tempfile import mkstemp
 
@@ -100,11 +100,19 @@ class Server(BaseServer):
         root = database.root
         root.name = root.class_title
 
-        # Initialize
         path = target.path
+        # Debug mode (TODO This should be a config and command line param)
+        debug = bool(int(environ.get('DEBUG', '0')))
+        if debug:
+            debug_log = '%s/debug_log' % path
+        else:
+            debug_log = None
+
+        # Initialize
         BaseServer.__init__(self, root, address=address, port=port,
                             access_log='%s/access_log' % path,
                             error_log='%s/error_log' % path,
+                            debug_log=debug_log,
                             pid_file='%s/pid' % path)
 
 

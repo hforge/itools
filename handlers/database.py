@@ -24,7 +24,7 @@ from thread import allocate_lock, get_ident
 # Import from itools
 from itools.uri import get_reference, get_absolute_reference, Path
 from itools.vfs import vfs
-from itools.vfs import cwd, READ, WRITE, APPEND
+from itools.vfs import cwd, READ, WRITE, READ_WRITE, APPEND
 from folder import Folder
 from messages import *
 from registry import get_handler_class
@@ -319,7 +319,7 @@ class SafeDatabase(Database):
         tmp_map = get_tmp_map()
         if reference in tmp_map:
             tmp_path = tmp_map[reference]
-            return vfs.open(tmp_path, 'w')
+            return vfs.open(tmp_path, WRITE)
 
         tmp_file, tmp_path = mkstemp(dir=self.commit)
         tmp_path = get_reference(tmp_path)
@@ -365,6 +365,8 @@ class SafeDatabase(Database):
             finally:
                 log.close()
             return fdopen(tmp_file, 'w')
+        elif mode == READ_WRITE:
+            raise NotImplementedError
         elif mode == APPEND:
             tmp_map = get_tmp_map()
             if reference in tmp_map:
@@ -380,7 +382,7 @@ class SafeDatabase(Database):
             finally:
                 log.close()
             return fdopen(tmp_file, 'w')
-
+        # READ by default
         return vfs.open(reference, mode)
 
 
@@ -493,7 +495,7 @@ class SafeDatabase(Database):
                         vfs.move(src, dst)
                 elif action == '>':
                     dst, src = line.rsplit('#', 1)
-                    data = open(src, READ).read()
+                    data = open(src).read()
                     file = vfs.open(dst, APPEND)
                     try:
                         file.write(data)

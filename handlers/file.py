@@ -80,7 +80,7 @@ class File(Handler):
     def load_state(self):
         # TODO Use "with" once we move to Python 2.5 and "urllib.urlopen"
         # supports it
-        file = vfs.open(self.uri, 'r')
+        file = vfs.open(self.uri)
         try:
             self._load_state_from_file(file)
         finally:

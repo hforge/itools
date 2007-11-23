@@ -21,7 +21,7 @@ from registry import register_file_system, deregister_file_system
 from vfs import (cwd, exists, is_file, is_folder, can_read, can_write,
                  get_ctime, get_mtime, get_atime, get_mimetype, get_size,
                  make_file, make_folder, remove, open, copy, move, get_names,
-                 traverse, READ, WRITE, APPEND)
+                 traverse, READ, WRITE, READ_WRITE, APPEND)
 
 
 __all__ = [
@@ -31,6 +31,7 @@ __all__ = [
     # File modes
     'READ',
     'WRITE',
+    'READ_WRITE',
     'APPEND',
     # Registry
     'register_file_system',

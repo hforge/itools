@@ -79,7 +79,7 @@ from os.path import getmtime
 
 # Import from itools
 from itools.uri import get_absolute_reference
-from itools.vfs import vfs
+from itools.vfs import vfs, READ_WRITE, APPEND
 from base import CatalogAware
 from index import Index, VERSION, ZERO
 import fields
@@ -426,8 +426,8 @@ class Catalog(object):
     #########################################################################
     def save_documents(self):
         base = vfs.open(self.uri)
-        index_file = base.open('data/documents_index')
-        docs_file = base.open('data/documents')
+        index_file = base.open('data/documents_index', READ_WRITE)
+        docs_file = base.open('data/documents', APPEND)
         try:
             # Removed documents
             for doc_n in self.removed_documents:
@@ -438,7 +438,6 @@ class Catalog(object):
                 if doc_n in self.documents:
                     del self.documents[doc_n]
             # Added documents
-            docs_file.seek(0, 2)
             index_file.seek(0, 2)
             for doc_n in self.added_documents:
                 document = self.documents[doc_n]
@@ -505,8 +504,8 @@ class Catalog(object):
             document = Document(doc_n)
             # Load document from the documents file
             base = vfs.open(self.uri)
-            index_file = base.open('data/documents_index', 'r')
-            docs_file = base.open('data/documents', 'r')
+            index_file = base.open('data/documents_index')
+            docs_file = base.open('data/documents')
             try:
                 # Read the index entry
                 index_file.seek(doc_n * 8)

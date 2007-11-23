@@ -30,7 +30,7 @@ from itools.xml.i18n import get_messages, translate
 class Test_ODT_File(TestCase):
 
     def setUp(self):
-        file = vfs.open('odf/Document.odt', 'r')
+        file = vfs.open('odf/Document.odt')
         self.doc = ODTFile()
         self.doc.load_state_from_file(file)
 
@@ -77,7 +77,7 @@ class Test_ODT_File(TestCase):
 class Test_ODP_File(TestCase):
 
     def setUp(self):
-        file = vfs.open('odf/Document.odp', 'r')
+        file = vfs.open('odf/Document.odp')
         self.doc = ODPFile()
         self.doc.load_state_from_file(file)
 
@@ -93,7 +93,7 @@ class Test_ODP_File(TestCase):
 class Test_ODS_File(TestCase):
 
     def setUp(self):
-        file = vfs.open('odf/Document.ods', 'r')
+        file = vfs.open('odf/Document.ods')
         self.doc = ODSFile()
         self.doc.load_state_from_file(file)
 

@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.vfs import vfs
+from itools.vfs import vfs, READ_WRITE
 from io import (decode_character, encode_character, decode_link, encode_link,
                 decode_uint32, encode_uint32, encode_uint32_2, encode_version,
                 NULL)
@@ -176,8 +176,7 @@ class Node(object):
     # Search
     #######################################################################
     def search_range(self, tree_file, docs_file, left, right):
-        """
-        Searches the index from 'left' to 'right', left included and right
+        """Searches the index from 'left' to 'right', left included and right
         excluded: [left, right[
 
         Returns a mapping with all the documents found, the values of the
@@ -276,8 +275,7 @@ class Index(object):
     # API / Private
     #######################################################################
     def _index_term(self, tree_file, docs_file, word, documents):
-        """
-        Indexes the given documents for the given words.
+        """Indexes the given documents for the given words.
 
         Input:
 
@@ -372,8 +370,7 @@ class Index(object):
 
 
     def _unindex_term(self, tree_file, docs_file, word, documents):
-        """
-        Un-indexes the given term. The parameter 'documents' is a list with
+        """Un-indexes the given term. The parameter 'documents' is a list with
         the numbers of the documents that must be un-indexed.
         """
         # Get the node
@@ -448,8 +445,8 @@ class Index(object):
     #######################################################################
     def save_state(self):
         base = vfs.open(self.uri)
-        tree_file = base.open('%d_tree' % self.n)
-        docs_file = base.open('%d_docs' % self.n)
+        tree_file = base.open('%d_tree' % self.n, READ_WRITE)
+        docs_file = base.open('%d_docs' % self.n, READ_WRITE)
         try:
             # Removed terms
             for term in self.removed_terms:
@@ -529,8 +526,7 @@ class Index(object):
 
 
     def search_range(self, left, right):
-        """
-        Searches the index from 'left' to 'right', left included and right
+        """Searches the index from 'left' to 'right', left included and right
         excluded: [left, right[
 
         Returns a mapping with all the documents found, the values of the

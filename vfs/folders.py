@@ -159,7 +159,7 @@ class Folder(object):
                 if source_fs.is_folder(source_ref):
                     target_fs.make_folder(target_ref)
                 else:
-                    data = source_fs.open(source_ref, 'r').read()
+                    data = source_fs.open(source_ref).read()
                     file = target_fs.make_file(target_ref)
                     try:
                         file.write(data)

@@ -24,7 +24,7 @@ from subprocess import call
 
 # Import from itools
 from itools.uri import Path, Reference
-from vfs import READ, WRITE, APPEND, copy
+from vfs import READ, WRITE, READ_WRITE, APPEND, copy
 from base import BaseFS
 from registry import register_file_system
 
@@ -143,14 +143,17 @@ class FileFS(BaseFS):
             except IOError:
                 return file(path, 'rb')
 
-        # Open for read
-        if mode == READ:
-            return file(path, 'rb')
+        # Open for write
+        if mode == WRITE:
+            return file(path, 'wb')
+        # Open for read/write
+        if mode == READ_WRITE:
+            return file(path, 'r+b')
         # Open for append
         if mode == APPEND:
             return file(path, 'ab')
-        # Open for write
-        return file(path, 'r+b')
+        # Open for read (default)
+        return file(path, 'rb')
 
 
     @staticmethod

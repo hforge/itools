@@ -16,8 +16,7 @@
 
 # Import from the Standard Library
 from datetime import datetime
-import mimetypes
-import os
+from mimetypes import guess_type
 from urllib import quote
 
 # Import from itools
@@ -93,7 +92,7 @@ class BaseFS(object):
 
         # Get the mimetype
         if type is not None:
-            mimetype, encoding = mimetypes.guess_type('.%s' % type)
+            mimetype, encoding = guess_type('.%s' % type)
             if mimetype is not None:
                 return mimetype
 
@@ -119,7 +118,7 @@ class BaseFS(object):
 
 
     @staticmethod
-    def open(reference):
+    def open(reference, mode=None):
         raise NotImplementedError
 
 

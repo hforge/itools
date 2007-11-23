@@ -38,6 +38,8 @@ from context import Context, get_context, set_context
 from base import Node
 
 
+# TODO Support multiple threads
+
 ###########################################################################
 # Some pre-historic systems (e.g. Windows and MacOS) don't implement
 # the "poll" sytem call. The code below is a wrapper around the "select"
@@ -47,8 +49,8 @@ POLLIN, POLLPRI, POLLOUT, POLLERR, POLLHUP, POLLNVAL = 1, 2, 4, 8, 16, 32
 try:
     from select import poll as Poll
 except ImportError:
+    # Implement a wrapper around select with the API of poll
     from select import select
-    # TODO: implement a wrapper around select with the API of poll
     class Poll(object):
         def __init__(self):
             self.iwtd, self.owtd, self.ewtd = [], [], []
@@ -168,7 +170,7 @@ class SocketWrapper(object):
 class Server(object):
 
     def __init__(self, root, address=None, port=None, access_log=None,
-                 error_log=sys.stderr, pid_file=None):
+                 error_log=sys.stderr, debug_log=None, pid_file=None):
         if address is None:
             address = ''
         if port is None:
@@ -178,14 +180,18 @@ class Server(object):
         # The address and port the server will listen to
         self.address = address
         self.port = port
-        # The access log
+        # Access log
         if isinstance(access_log, str):
             access_log = open(access_log, 'a+')
         self.access_log = access_log
-        # The error log
+        # Error log
         if isinstance(error_log, str):
             error_log = open(error_log, 'a+')
         self.error_log = error_log
+        # Debug log
+        if isinstance(debug_log, str):
+            debug_log = open(debug_log, 'a+')
+        self.debug_log = debug_log
         # The pid file
         self.pid_file = pid_file
 
@@ -198,7 +204,7 @@ class Server(object):
         ear = Socket(AF_INET, SOCK_STREAM)
         # Allow to reuse the address, this solves the bug "icms.py won't
         # close its connection properly". But is probably not the right
-        # solution (XXX).
+        # solution (FIXME).
         ear.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
         ear.bind((self.address, self.port))
         ear.listen(5)
@@ -262,7 +268,7 @@ class Server(object):
                                 requests[fileno] = conn, response
                             except:
                                 self.log_error()
-                                # XXX Send a response to the client
+                                # FIXME Send a response to the client
                                 # (BadRequest, etc.)?
                                 conn.close()
                             else:
@@ -573,47 +579,60 @@ class Server(object):
         # Common Log Format
         #  - IP address of the client
         #  - RFC 1413 identity (not available)
-        #  - username (XXX not provided right now should we?)
+        #  - username (XXX not provided right now, should we?)
         #  - time (XXX we use the timezone name, while we should use the
         #    offset, e.g. +0100)
         #  - the request line
         #  - the status code
         #  - content length of the response
         log = self.access_log
-        if log is not None:
-            host, port = conn.getpeername()
-            namespace = (host, strftime('%d/%b/%Y:%H:%M:%S %Z'),
-                         request.request_line, response.status,
-                         response.get_content_length())
-            log.write('%s - - [%s] "%s" %s %s\n' % namespace)
-            log.flush()
+        if log is None:
+            return
+
+        # Log
+        host, port = conn.getpeername()
+        namespace = (host, strftime('%d/%b/%Y:%H:%M:%S %Z'),
+                     request.request_line, response.status,
+                     response.get_content_length())
+        log.write('%s - - [%s] "%s" %s %s\n' % namespace)
+        log.flush()
 
 
     def log_error(self, context=None):
-        # TODO This method may be called from different threads, lock
         log = self.error_log
-        if log is not None:
-            # The separator
-            log.write('\n')
-            log.write('%s\n' % ('*' * 78))
-            # The date
-            log.write('DATE: %s\n' % datetime.now())
-            # The request data
-            if context is not None:
-                # The URI and user
-                user = context.user
-                log.write('URI : %s\n' % str(context.uri))
-                log.write('USER: %s\n' % (user and user.name or None))
-                log.write('\n')
-                # The request
-                request = context.request
-                log.write(request.request_line_to_str())
-                log.write(request.headers_to_str())
+        if log is None:
+            return
 
-            # The traceback
+        # The separator
+        log.write('\n')
+        log.write('%s\n' % ('*' * 78))
+        # The date
+        log.write('DATE: %s\n' % datetime.now())
+        # The request data
+        if context is not None:
+            # The URI and user
+            user = context.user
+            log.write('URI : %s\n' % str(context.uri))
+            log.write('USER: %s\n' % (user and user.name or None))
             log.write('\n')
-            print_exc(file=log)
-            log.flush()
+            # The request
+            request = context.request
+            log.write(request.request_line_to_str())
+            log.write(request.headers_to_str())
+
+        # The traceback
+        log.write('\n')
+        print_exc(file=log)
+        log.flush()
+
+
+    def log_debug(self, message):
+        log = self.debug_log
+        if log is None:
+            return
+
+        log.write('%s %s\n' % (datetime.now(), message))
+        log.flush()
 
 
     ########################################################################

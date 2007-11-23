@@ -20,19 +20,20 @@
 from base64 import decodestring
 from copy import copy
 from datetime import datetime
-import os
+from os import getpid, remove as remove_file
 from select import error as SelectError
 from signal import signal, SIGINT
-import socket
+from socket import (socket as Socket, error as SocketError, AF_INET,
+    SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR)
 import sys
-import time
-import traceback
+from time import strftime
+from traceback import print_exc
 from urllib import unquote
 
 # Import from itools
 from itools.uri import Reference, Path
 from itools.http import (Forbidden, HTTPError, NotFound, Unauthorized,
-                         Request, Response)
+    Request, Response)
 from context import Context, get_context, set_context
 from base import Node
 
@@ -78,8 +79,7 @@ except ImportError:
 # like API
 ###########################################################################
 class SocketWrapper(object):
-    """
-    Offers a file-like interface for sockets in non-blocking mode.
+    """Offers a file-like interface for sockets in non-blocking mode.
     Read only.
     """
 
@@ -113,8 +113,8 @@ class SocketWrapper(object):
 
 
     def readline(self):
-        """
-        This method is like the file object readline method, but not exactly.
+        """This method is like the file object readline method, but not
+        exactly.
 
         Written specifically for the HTTP protocol, it expects the sequence
         '\r\n' to signal line ending.
@@ -192,14 +192,14 @@ class Server(object):
 
     def start(self):
         if self.pid_file is not None:
-            pid = os.getpid()
+            pid = getpid()
             open(self.pid_file, 'w').write(str(pid))
 
-        ear = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        ear = Socket(AF_INET, SOCK_STREAM)
         # Allow to reuse the address, this solves the bug "icms.py won't
         # close its connection properly". But is probably not the right
         # solution (XXX).
-        ear.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        ear.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
         ear.bind((self.address, self.port))
         ear.listen(5)
         ear_fileno = ear.fileno()
@@ -233,7 +233,7 @@ class Server(object):
                             # New request
                             try:
                                 conn, client_address = ear.accept()
-                            except socket.error:
+                            except SocketError:
                                 continue
 
                             # Set non-blocking mode
@@ -309,7 +309,7 @@ class Server(object):
             self.error_log.close()
         # Remove pid file
         if self.pid_file is not None:
-            os.remove(self.pid_file)
+            remove_file(self.pid_file)
 
 
     ########################################################################
@@ -328,7 +328,8 @@ class Server(object):
         status, method = self.traverse(context)
         if status == 200:
             # Check modification time
-            mtime = getattr(context.handler, '%s__mtime__' % context.method, None)
+            mtime = '%s__mtime__' % context.method
+            mtime = getattr(context.handler, mtime, None)
             if mtime is not None:
                 mtime = mtime().replace(microsecond=0)
                 response.set_header('last-modified', mtime)
@@ -503,8 +504,7 @@ class Server(object):
 
 
     def traverse(self, context):
-        """
-        Returns the status code (200 if everything is Ok so far) and
+        """Returns the status code (200 if everything is Ok so far) and
         the method to call.
         """
         root = context.root
@@ -582,7 +582,7 @@ class Server(object):
         log = self.access_log
         if log is not None:
             host, port = conn.getpeername()
-            namespace = (host, time.strftime('%d/%b/%Y:%H:%M:%S %Z'),
+            namespace = (host, strftime('%d/%b/%Y:%H:%M:%S %Z'),
                          request.request_line, response.status,
                          response.get_content_length())
             log.write('%s - - [%s] "%s" %s %s\n' % namespace)
@@ -612,7 +612,7 @@ class Server(object):
 
             # The traceback
             log.write('\n')
-            traceback.print_exc(file=log)
+            print_exc(file=log)
             log.flush()
 
 

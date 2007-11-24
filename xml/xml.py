@@ -230,6 +230,11 @@ class XMLFile(TextFile):
         return stream_to_str(self.events, encoding)
 
 
+    def set_events(self, events):
+        self.set_changed()
+        self.events = events
+
+
     def __cmp__(self, other):
         if not isinstance(other, self.__class__):
             return 1
@@ -237,8 +242,7 @@ class XMLFile(TextFile):
 
 
     def to_text(self):
-        """
-        Removes the markup and returns a plain text string.
+        """Removes the markup and returns a plain text string.
         """
         text = [ unicode(value, 'utf-8') for event, value, line in self.events
                  if event == TEXT ]

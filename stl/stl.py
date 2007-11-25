@@ -23,18 +23,16 @@ language I could imagine.
 """
 
 # Import from the Standard Library
-from decimal import Decimal
 import re
 from types import GeneratorType
 
 # Import from itools
-from itools.datatypes import (Boolean, String, URI, XMLAttribute,
-    XML as XMLContent)
+from itools.datatypes import Boolean, String, URI
 from itools.schemas import BaseSchema, get_datatype_by_uri, register_schema
 from itools.uri import Path
-from itools.xml import (XMLError, XMLNSNamespace, get_namespace, set_namespace,
-    AbstractNamespace, get_start_tag, get_end_tag, XMLParser, START_ELEMENT,
-    END_ELEMENT, TEXT, COMMENT, find_end, stream_to_str)
+from itools.xml import (XMLError, XMLNSNamespace, set_namespace,
+    AbstractNamespace, XMLParser, START_ELEMENT, END_ELEMENT, TEXT, COMMENT,
+    find_end, stream_to_str)
 from itools.html import (xhtml_uri, stream_to_str_as_html,
                          stream_to_str_as_xhtml)
 

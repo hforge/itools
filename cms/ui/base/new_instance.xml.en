@@ -13,7 +13,7 @@
         <input type="text" id="dc:title" name="dc:title" size="40"
           value="${title}" />
       </dd>
-      <dt>(optional)<label for="name">Name</label></dt>
+      <dt><label for="name">Name (optional)</label></dt>
       <dd>
         <input type="text" id="name" name="name" size="40" value="${name}" />
       </dd>

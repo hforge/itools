@@ -50,28 +50,21 @@ class Node(object):
     # API / Tree
     #######################################################################
     def get_abspath(self):
-        # TODO Should return a Path instance
         if self.parent is None:
-            return '/'
-
+            return Path('/')
         parent_path = self.parent.get_abspath()
-        if not parent_path.endswith('/'):
-            parent_path += '/'
 
-        return parent_path + self.name
+        return parent_path.resolve2(self.name)
 
     abspath = property(get_abspath, None, None, '')
 
 
     def get_canonical_path(self):
         if self.parent is None:
-            return '/'
-
+            return Path('/')
         parent_path = self.parent.get_canonical_path()
-        if not parent_path.endswith('/'):
-            parent_path += '/'
 
-        return parent_path + self.name
+        return parent_path.resolve2(self.name)
 
 
     def get_real_object(self):
@@ -88,8 +81,7 @@ class Node(object):
 
 
     def get_pathto(self, handler):
-        path = Path(self.get_abspath())
-        return path.get_pathto(handler.get_abspath())
+        return self.get_abspath().get_pathto(handler.get_abspath())
 
 
     def has_object(self, path):

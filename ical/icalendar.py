@@ -23,11 +23,11 @@ from datetime import datetime, timedelta
 from operator import itemgetter
 
 # Import from itools
-from itools.datatypes import Integer, String, Unicode, URI
 from itools.catalog import (PhraseQuery, EqQuery, RangeQuery, OrQuery,
         AndQuery, KeywordField, MemoryCatalog)
-from itools.handlers import TextFile, parse_table, fold_line, escape_data
-from itools.handlers import Table, Record as TableRecord, Property
+from itools.datatypes import Integer, String, Unicode, URI
+from itools.handlers import (escape_data, guess_encoding, fold_line,
+    parse_table, Property, Record as TableRecord, Table, TextFile)
 from types import data_properties, DateTime, Time
 
 
@@ -270,8 +270,7 @@ class Component(object):
 
 
 class icalendar(TextFile):
-    """
-    icalendar structure :
+    """icalendar structure :
 
         BEGIN:VCALENDAR
 
@@ -345,7 +344,7 @@ class icalendar(TextFile):
 
         # Read the data and figure out the encoding
         data = file.read()
-        encoding = TextFile.guess_encoding(data)
+        encoding = guess_encoding(data)
         self.encoding = encoding
 
         # Parse

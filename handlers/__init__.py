@@ -45,7 +45,7 @@ from folder import Folder
 from image import Image
 from python import Python
 from registry import register_handler_class, get_handler_class, get_handler
-from text import TextFile
+from text import TextFile, guess_encoding
 from database import (Database, SafeDatabase, READY, TRANSACTION_PHASE1,
     TRANSACTION_PHASE2)
 from table import Table, parse_table, fold_line, escape_data, Record, Property
@@ -81,7 +81,10 @@ __all__ = [
     # Registry
     'get_handler_class',
     'register_handler_class',
-    'get_handler']
+    'get_handler',
+    # Some functions
+    'guess_encoding',
+    ]
 
 
 

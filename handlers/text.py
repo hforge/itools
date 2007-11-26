@@ -19,6 +19,23 @@ from file import File
 from registry import register_handler_class
 
 
+def guess_encoding(data):
+    """Tries to guess the encoding by brute force. It is likely to get
+    the wrong encoding, for example many utf8 files will be identified
+    as latin1.
+    """
+    for encoding in ('ascii', 'utf8', 'iso8859'):
+        try:
+            unicode(data, encoding)
+        except UnicodeError:
+            pass
+        else:
+            return encoding
+
+    # Default to UTF-8
+    return 'utf8'
+
+
 class TextFile(File):
 
     class_mimetypes = ['text']
@@ -32,34 +49,8 @@ class TextFile(File):
 
     def _load_state_from_file(self, file):
         data = file.read()
-        self.encoding = self.guess_encoding(data)
+        self.encoding = guess_encoding(data)
         self.data = unicode(data, self.encoding)
-
-
-    @staticmethod
-    def guess_encoding(data):
-        """
-        Tries to guess the encoding by brute force. It is likely to get
-        the wrong encoding, for example many utf8 files will be identified
-        as latin1.
-        """
-        for encoding in ('ascii', 'utf8', 'iso8859'):
-            try:
-                unicode(data, encoding)
-            except UnicodeError:
-                pass
-            else:
-                return encoding
-
-        # Default to UTF-8
-        return 'utf8'
-
-
-##    def guess_language(self):
-##        """
-##        XXX Now it does nothing, sometime in the future it will try to guess
-##        the language of the data.
-##        """
 
 
     #########################################################################

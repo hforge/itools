@@ -76,7 +76,7 @@ class Node(object):
 
     def get_real_object(self):
         cpath = self.get_canonical_path()
-        if cpath == self.abspath:
+        if cpath == self.get_abspath():
             return self
         return self.get_object(cpath)
 

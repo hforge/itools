@@ -32,8 +32,10 @@ name2codepoint['apos'] = 39
 def xml_to_text(data):
     """A brute-force text extractor for XML and HTML syntax, even broken to
     some extent.
-    We don't use itools.xml.parser (yet) because expat would raise an error for
-    too many documents.
+
+    We don't use itools.xml.parser (yet) because expat would raise an error
+    for too many documents.
+
     The encoding is guessed for each text chunk because 'xlhtml' mixes UTF-8
     and Latin1 encodings, and the most broken converters don't declare the
     encoding at all.

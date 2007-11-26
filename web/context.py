@@ -96,11 +96,6 @@ class Context(object):
         self.response.redirect(reference, status)
 
 
-    # FIXME Obsolete. To be removed by 0.17
-    def get_accept_language(self):
-        return self.accept_language
-
-
     ########################################################################
     # API / parameters
     def get_form_keys(self):

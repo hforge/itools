@@ -17,11 +17,8 @@
 
 # Import from itools
 from rest import checkid, to_html_events, to_str
-from rest import to_xml, to_html, to_latex
 
 
 __all__ = [
     'checkid', 'to_html_events', 'to_str',
-    # XXX Keep for backwards compatibility (to remove by 0.17)
-    'to_xml', 'to_html', 'to_latex',
     ]

@@ -205,8 +205,7 @@ for i in range(len(src)):
 
 
 def checkid(id):
-    """
-    Turn a bytestring or unicode into an identifier only composed of
+    """Turn a bytestring or unicode into an identifier only composed of
     alphanumerical characters and a limited list of signs.
 
     It only supports Latin-based alphabets.
@@ -253,20 +252,5 @@ def to_str(text, format, encoding='utf-8'):
     elif format == 'latex':
         events = block_stream(text)
         return stream_to_str_as_latex(events, encoding)
-    else:
-        raise ValueError, "unexpected format '%s'" % format
 
-
-###########################################################################
-# API Public (XXX for backwards compatibility)
-###########################################################################
-def to_xml(text, encoding='UTF-8'):
-    return to_str(text, 'xml', encoding)
-
-
-def to_html(text, encoding='UTF-8'):
-    return to_str(text, 'xhtml', encoding)
-
-
-def to_latex(text, encoding='UTF-8'):
-    return to_str(text, 'latex', encoding)
+    raise ValueError, "unexpected format '%s'" % format

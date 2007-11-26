@@ -128,8 +128,7 @@ def unescape(s):
 
 
 class Message(object):
-    """
-    An entry in a PO file has the syntax:
+    """An entry in a PO file has the syntax:
 
     #  translator-comments
     #. automatic-comments
@@ -312,8 +311,7 @@ class POFile(TextFile):
 
 
     def _load_state_from_file(self, file):
-        """
-        A PO file is made of entries, where entries are separated by one
+        """A PO file is made of entries, where entries are separated by one
         or more blank lines. Each entry consists of a msgid and a msgstr,
         optionally preceded by comments; if there are comments at the end
         of the entry they are ignored. So, an entry looks like:
@@ -379,17 +377,20 @@ class POFile(TextFile):
     # API / Public
     #######################################################################
     def get_msgids(self):
-        """Rerturns all the message ids."""
+        """Rerturns all the message ids.
+        """
         return self.messages.keys()
 
 
     def get_messages(self):
-        """Rerturns all the message (objects of the class <Message>)."""
+        """Rerturns all the message (objects of the class <Message>).
+        """
         return self.messages.values()
 
 
     def get_msgstr(self, msgid):
-        """Returns the 'msgstr' for the given message id."""
+        """Returns the 'msgstr' for the given message id.
+        """
         message = self.messages.get(msgid)
         if message:
             return ''.join(message.msgstr)
@@ -397,8 +398,7 @@ class POFile(TextFile):
 
 
     def gettext(self, msgid):
-        """
-        Returns the translation of the given message id.
+        """Returns the translation of the given message id.
 
         If the message id is not present in the message catalog, or if it
         is marked as "fuzzy", then the message id is returned.
@@ -411,14 +411,9 @@ class POFile(TextFile):
         return msgid
 
 
-    # FIXME For backwards compatibility with 0.15 (o be removed by 0.17)
-    get_translation = gettext
-
-
     def set_message(self, msgid, msgstr=[u''], comments=[], references={},
                     fuzzy=False):
-        """
-        Adds the given message id to the catalog.
+        """Adds the given message id to the catalog.
 
         Initialize it with the given, and optional, information: message
         string, comments, references and fuzzy.

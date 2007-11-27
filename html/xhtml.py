@@ -510,13 +510,22 @@ class XHTMLFile(XMLFile):
     # API
     ########################################################################
     def get_head(self):
-        """Returns the head element."""
+        """Returns the head element.
+        """
         return get_element(self.events, 'head')
 
 
     def get_body(self):
-        """Returns the body element."""
+        """Returns the body element.
+        """
         return get_element(self.events, 'body')
+
+
+    def set_body(self, events):
+        body = self.get_body()
+        events = self.events[:body.start+1] + events + self.events[body.end:]
+        self.set_changed()
+        self.events = events
 
 
 register_handler_class(XHTMLFile)

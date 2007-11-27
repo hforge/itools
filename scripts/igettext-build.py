@@ -24,7 +24,6 @@ from zipfile import is_zipfile
 # Import from itools
 import itools
 from itools.handlers import get_handler
-from itools.gettext import PO
 import itools.html
 import itools.stl
 import itools.odf

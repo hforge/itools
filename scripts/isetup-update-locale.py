@@ -24,7 +24,7 @@ import sys
 
 # Import from itools
 import itools
-from itools.gettext import PO
+from itools.gettext import POFile
 from itools.handlers import Python, ConfigFile
 from itools.html import XHTMLFile
 import itools.stl
@@ -50,7 +50,7 @@ if __name__ == '__main__':
     source_language = config.get_value('source_language', default='en')
 
     # Initialize message catalog
-    po = PO()
+    po = POFile()
 
     # Process Python files
     print '(1) Processing Python files',

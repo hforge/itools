@@ -23,7 +23,7 @@ import sys
 # Import from itools
 import itools
 from itools.handlers import get_handler
-from itools.gettext import PO
+from itools.gettext import POFile
 import itools.html
 import itools.stl
 import itools.odf
@@ -52,7 +52,7 @@ if __name__ == '__main__':
         output = open(options.output, 'w')
 
     try:
-        po = PO()
+        po = POFile()
         for filename in args:
             handler = get_handler(filename)
             try:

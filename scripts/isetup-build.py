@@ -30,7 +30,6 @@ from itools import git
 from itools.handlers import ConfigFile, get_handler
 from itools.html import XHTMLFile
 import itools.stl
-from itools.uri import Path
 from itools import vfs
 
 

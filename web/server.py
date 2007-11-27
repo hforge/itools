@@ -551,8 +551,12 @@ class Server(object):
             abspath = Path(path)
             for x in range(len(abspath) - 1, 0, -1):
                 path = abspath[:x]
-                if site_root.has_object(path):
-                    context.object = site_root.get_object(path)
+                try:
+                    object = site_root.get_object(path)
+                except LookupError:
+                    continue
+                else:
+                    context.object = object
                     break
             else:
                 context.object = site_root

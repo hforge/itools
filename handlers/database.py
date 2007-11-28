@@ -203,9 +203,27 @@ class Database(object):
 
 
     def move_handler(self, source, target):
-        # XXX Not efficient implementation
-        self.copy_handler(source, target)
-        self.del_handler(source)
+        # TODO This method can be optimized further
+        source = get_absolute_reference(source)
+        target = get_absolute_reference(target)
+
+        handler = self.get_handler(source)
+        handler.load_state()
+        if isinstance(handler, Folder):
+            # Folder
+            for name in handler.get_handler_names():
+                self.move_handler(source.resolve2(name), target.resolve2(name))
+        else:
+            # File
+            handler.uri = target
+            self.cache[target] = handler
+            del self.cache[source]
+            # Add to target
+            self.added.add(target)
+            if source in self.added:
+                self.added.remove(source)
+            else:
+                self.removed.add(source)
 
 
     #######################################################################

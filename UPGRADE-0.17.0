@@ -1,0 +1,18 @@
+**************************************************************************
+ikaaro 0.17.0
+**************************************************************************
+
+1. Imports
+==========
+
+The package "itools.xhtml" has been merged into "itools.html", and there have
+been many naming normalizations.  Non exhaustive list follows:
+
+  from itools.schemas import Schema         # Before
+  from itools.schemas import BaseSchema     # Now
+
+  from itools.xml import Parser             # Before
+  from itools.xml import XMLParser          # Now
+
+  from itools.xhtml import Document         # Before
+  from itools.html import XHTMLFile         # Now

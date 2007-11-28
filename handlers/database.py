@@ -216,6 +216,8 @@ class Database(object):
         else:
             # File
             handler.uri = target
+            handler.timestamp = None
+            handler.dirty = True
             self.cache[target] = handler
             del self.cache[source]
             # Add to target

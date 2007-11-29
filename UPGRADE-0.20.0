@@ -8,11 +8,33 @@ itools 0.20.0
 The package "itools.xhtml" has been merged into "itools.html", and there have
 been many naming normalizations.  Non exhaustive list follows:
 
-  from itools.schemas import Schema         # Before
-  from itools.schemas import BaseSchema     # Now
+  Before              Now
+  ---------------     -------------------
+  csv.CSV             csv.CSVFile
+  html.Document       html.HTMLFile
+  xhtml.Document      html.XHTMLFile
+  odf.ODP             odf.ODPFile
+  odf.ODS             odf.ODSFile
+  odf.ODT             odf.ODTFile
+  odf.OOCalc          odf.SXCFile
+  odf.OOImpress       odf.SXIFile
+  odf.OOWriter        odf.SXWFile
+  pdf.PDF             pdf.PDFFile
+  schemas.Schema      schemas.BaseSchema
+  xml.Document        xml.XMLFile
+  xml.Parser          xml.XMLParser
 
-  from itools.xml import Parser             # Before
-  from itools.xml import XMLParser          # Now
 
-  from itools.xhtml import Document         # Before
-  from itools.html import XHTMLFile         # Now
+Catalog
+=======
+abort => abort_changes
+
+Web
+===
+
+Remove "get_pathtoroot"
+
+
+Unclassified
+============
+

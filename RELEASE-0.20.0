@@ -1,0 +1,53 @@
+
+itools 0.20.0 (2007/12/20)
+==========================
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.catalog          itools.i18n             itools.tmx
+  itools.csv              itools.ical             itools.uri
+  itools.datatypes        itools.odf              itools.vfs
+  itools.gettext          itools.pdf              itools.web
+  itools.git              itools.rest             itools.workflow
+  itools.handlers         itools.rss              itools.xliff
+  itools.html             itools.schemas          itools.xml
+  itools.http             itools.stl
+
+The most visible change in this major release is that "itools.cms" has
+been moved out of itools and is now distributed as a separate package,
+named "ikaaro".  Also in the code reorganization category: "itools.xhtml"
+has been merged into "itools.html".
+
+The most important change is the architecture overhaul of the "handlers"
+package.  From a functional point of view, the big news is the database
+layer that has been included, which provides atomic transactions for the
+file system.  But the changes go well beyond that, read the documentation
+to learn how things work now.
+
+
+XXX
+Improved "itools.web" API (moved from "itools.handlers").
+XXX
+
+Continue at fc5821cce818f6aeaed01912e75797c60bef1009
+
+
+
+Resources
+---------
+
+Download
+http://download.ikaaro.org/itools/itools-0.20.0.tar.gz
+http://download.ikaaro.org/itools/itools-0.20.0.win32-py2.5.exe
+http://download.ikaaro.org/itools/itools-0.20.0.win32-py2.4.exe
+
+Home
+http://www.ikaaro.org/itools
+
+Mailing list
+http://mail.ikaaro.org/mailman/listinfo/itools
+
+Bug Tracker
+http://bugs.ikaaro.org/
+

@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 # Copyright (C) 2004-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 # Copyright (C) 2006-2007 Hervé Cauwelier <herve@itaapy.com>
+# Copyright (C) 2007 David Versmisse <david.versmisse@itaapy.com>
 # Copyright (C) 2007 Henry Obein <henry@itaapy.com>
 #
 # This program is free software: you can redistribute it and/or modify

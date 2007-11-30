@@ -49,6 +49,7 @@ from text import TextFile, guess_encoding
 from database import (Database, SafeDatabase, READY, TRANSACTION_PHASE1,
     TRANSACTION_PHASE2)
 from table import Table, parse_table, fold_line, escape_data, Record, Property
+from utils import checkid
 
 
 __all__ = [
@@ -83,6 +84,7 @@ __all__ = [
     'register_handler_class',
     'get_handler',
     # Some functions
+    'checkid',
     'guess_encoding',
     ]
 

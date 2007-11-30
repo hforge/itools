@@ -14,6 +14,7 @@ have been many naming normalizations.  Non exhaustive list follows:
   gettext.MO                    gettext.MOFile
   gettext.PO                    gettext.POFile
   handlers.Bzip2                handlers.Bzip2File
+  rest.checkid                  handlers.checkid
   handlers.Config               handlers.ConfigFile
   handlers.Gzip                 handlers.GzipFile
   handlers.TarArchive           handlers.TARFile

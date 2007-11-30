@@ -27,8 +27,7 @@ import git
 
 
 def get_abspath(globals_namespace, local_path):
-    """
-    Returns the absolute path to the required file.
+    """Returns the absolute path to the required file.
     """
     mname = globals_namespace['__name__']
 
@@ -60,7 +59,8 @@ def get_abspath(globals_namespace, local_path):
 class build_py_fixed(build_py):
 
     def get_data_files(self):
-        """Generate list of '(package,src_dir,build_dir,filenames)' tuples"""
+        """Generate list of '(package,src_dir,build_dir,filenames)' tuples.
+        """
         data = []
         if not self.packages:
             return data

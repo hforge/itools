@@ -37,6 +37,8 @@ def get_domain(name):
 
 
 
+# FIXME The "Folder" handler class is not meant to be a base class, we should
+# not inherit from it.  Figure out another way to do the job.
 class Domain(Folder):
 
     def gettext(self, message, language):

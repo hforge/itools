@@ -21,13 +21,12 @@ import os
 
 # Import from itools
 from itools import get_abspath
-from domains import Domain, DomainAware, register_domain, get_domain
+from domains import DomainAware, register_domain, get_domain
 from mo import MOFile
 from po import POFile
 
 
 __all__ = [
-    'Domain',
     'DomainAware',
     'register_domain',
     'get_domain',

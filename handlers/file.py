@@ -181,16 +181,17 @@ class File(Handler):
         # Not attached to a URI
         if self.uri is None:
             return
-        # Set dirty
-        self.dirty = True
         # Not attached to a database
         database = self.database
         if database is None:
+            self.dirty = True
             return
+
         # Update database state
-        if self.timestamp is None:
+        if self.timestamp is None and self.dirty is True:
             database.added.add(self.uri)
         else:
+            self.dirty = True
             database.changed.add(self.uri)
 
 

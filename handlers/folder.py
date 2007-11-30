@@ -38,7 +38,6 @@ class Folder(Handler):
     specific handler.
     """
 
-    class_resource_type = 'folder'
     class_mimetypes = ['application/x-not-regular-file']
 
 

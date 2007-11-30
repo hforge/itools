@@ -43,8 +43,6 @@ class File(Handler):
 
     """
 
-    class_resource_type = 'file'
-
     # By default handlers are not loaded
     timestamp = None
     dirty = False

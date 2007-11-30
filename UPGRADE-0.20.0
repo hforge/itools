@@ -1,38 +1,83 @@
-**************************************************************************
+*************************************************************************
 itools 0.20.0
-**************************************************************************
+*************************************************************************
 
 1. Imports
 ==========
 
-The package "itools.xhtml" has been merged into "itools.html", and there have
-been many naming normalizations.  Non exhaustive list follows:
+The package "itools.xhtml" has been merged into "itools.html", and there
+have been many naming normalizations.  Non exhaustive list follows:
 
-  Before              Now
-  ---------------     -------------------
-  csv.CSV             csv.CSVFile
-  html.Document       html.HTMLFile
-  xhtml.Document      html.XHTMLFile
-  odf.ODP             odf.ODPFile
-  odf.ODS             odf.ODSFile
-  odf.ODT             odf.ODTFile
-  odf.OOCalc          odf.SXCFile
-  odf.OOImpress       odf.SXIFile
-  odf.OOWriter        odf.SXWFile
-  pdf.PDF             pdf.PDFFile
-  schemas.Schema      schemas.BaseSchema
-  xml.Document        xml.XMLFile
-  xml.Parser          xml.XMLParser
+  Before                        Now
+  ---------------               -------------------
+  csv.CSV                       csv.CSVFile
+  gettext.MO                    gettext.MOFile
+  gettext.PO                    gettext.POFile
+  handlers.Bzip2                handlers.Bzip2File
+  handlers.Config               handlers.ConfigFile
+  handlers.Gzip                 handlers.GzipFile
+  handlers.TarArchive           handlers.TARFile
+  handlers.Text                 handlers.TextFile
+  handlers.ZipArchive           handlers.ZIPFile
+  html.Document                 html.HTMLFile
+  html.Parser                   html.HTMLParser
+  xhtml.Document                html.XHTMLFile
+  xhtml.elements_schema         html.elements_schema
+  xhtml.sanitize_str            html.sanitize_str
+  xhtml.sanitize_stream         html.sanitize_stream
+  xhtml.stream_to_str_as_html   html.stream_to_str_as_html
+  xhtml.stream_to_str_as_xhtml  html.stream_to_str_as_xhtml
+  xhtml.xhtml_uri               html.xhtml_uri
+  odf.ODP                       odf.ODPFile
+  odf.ODS                       odf.ODSFile
+  odf.ODT                       odf.ODTFile
+  odf.OOCalc                    odf.SXCFile
+  odf.OOImpress                 odf.SXIFile
+  odf.OOWriter                  odf.SXWFile
+  pdf.PDF                       pdf.PDFFile
+  schemas.Schema                schemas.BaseSchema
+  xml.Document                  xml.XMLFile
+  xml.Parser                    xml.XMLParser
+
+
+Remove obsolete code
+====================
+gettext.PO.get_translation
+rest.to_xml
+rest.to_html
+rest.to_latex
+web.Context.get_accept_language
+
+
+VFS
+===
+
+Open modes changed:
+
+  Before           Now             Posix
+  ---------------  --------------  -----
+  READ             READ (default)  rb
+                   WRITE           wb
+  WRITE (default)  READ_WRITE      r+b
+  APPEND           APPEND          ab
 
 
 Catalog
 =======
 abort => abort_changes
 
+
+Handlers
+========
+Do not use __slots__
+Text.guess_encoding => guess_encoding
+
+
 Web
 ===
-
 Remove "get_pathtoroot"
+context.handler => context.object
+get_abspath returns a Path object
 
 
 Unclassified

@@ -16,7 +16,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from rest import checkid, to_html_events, to_str
+from parser import checkid
+from rest import to_html_events, to_str
 
 
 __all__ = [

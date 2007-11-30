@@ -33,6 +33,45 @@ from itools.xml import TEXT, START_ELEMENT, END_ELEMENT
 
 
 
+src = ur"""ÄÅÁÀÂÃäåáàâãÇçÉÈÊËéèêëæÍÌÎÏíìîïÑñÖÓÒÔÕØöóòôõøßÜÚÙÛüúùûÝŸýÿ"""
+dst = ur"""AAAAAAaaaaaaCcEEEEeeeeeIIIIiiiiNnOOOOOOooooooSUUUUuuuuYŸyy"""
+
+transmap = {}
+for i in range(len(src)):
+    a, b = src[i], dst[i]
+    transmap[ord(a)] = ord(b)
+
+
+def checkid(id):
+    """Turn a bytestring or unicode into an identifier only composed of
+    alphanumerical characters and a limited list of signs.
+
+    It only supports Latin-based alphabets.
+    """
+    if isinstance(id, str):
+        id = unicode(id, 'utf8')
+
+    # Strip diacritics
+    id = id.strip().translate(transmap)
+
+    # Check for unallowed characters
+    allowed_characters = set([u'.', u'-', u'_', u'@'])
+    id = [ (c.isalnum() or c in allowed_characters) and c or u'-' for c in id ]
+
+    # Merge hyphens
+    id = u''.join(id)
+    id = id.split(u'-')
+    id = u'-'.join([x for x in id if x])
+
+    # Check wether the id is empty
+    if len(id) == 0:
+        return None
+
+    # Return a safe ASCII bytestring
+    return str(id)
+
+
+
 def parse_blocks(text):
     """Splits the given text in blocks separated by blank lines.
     """

@@ -30,6 +30,17 @@ class File(Handler):
     """This is the base handler class for any file handler. It is also used
     as the default handler class for any file resource that has not a more
     specific handler.
+
+    The variables 'timestamp' and 'dirty' define the state of the file
+    handler:
+
+       timestamp/dirty => means...
+       -------------------------------------
+       None/False => not loaded (yet)
+       None/True  => new
+       <dt>/False => loaded, but not changed
+       <dt>/True  => loaded, and changed
+
     """
 
     class_resource_type = 'file'

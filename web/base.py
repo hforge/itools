@@ -107,10 +107,7 @@ class Node(object):
         else:
             here = self
 
-        if len(path) == 0:
-            return here
-
-        while path[0] == '..':
+        while path and path[0] == '..':
             here = here.parent
             path = path[1:]
 

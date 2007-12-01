@@ -25,11 +25,15 @@ layer that has been included, which provides atomic transactions for the
 file system.  But the changes go well beyond that, read the documentation
 to learn how things work now.
 
+Other packages that have seen more or less important API improvements
+include "itools.vfs", "itools.catalog" and "itools.web".  There have been
+also many naming normalizations.  Check the upgrade notes for further
+details.
 
-XXX
-Improved "itools.web" API (moved from "itools.handlers").
-XXX
-
+The numbering scheme has changed, we have jumped from the 0.16 to the
+0.20 version, and future major releases will be numbered 0.30, 0.40,
+0.50, etc.  (This change is to define an implicit releationship with
+the numbering scheme of "ikaaro".)
 
 
 Resources

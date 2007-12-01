@@ -85,6 +85,3 @@ context.handler => context.object
 get_abspath returns a Path object
 
 
-Unclassified
-============
-

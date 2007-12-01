@@ -21,28 +21,41 @@ from time import time
 
 # Import from itools
 from itools import vfs
-from itools.xml import get_element
+from itools.xml import get_element, TEXT
 from itools.html import HTMLFile
-from itools.catalog import Catalog, make_catalog, TextField
+from itools.catalog import Catalog, CatalogAware, make_catalog, TextField
 from itools.utils import vmsize
 
 
 
-docs_path = '/usr/share/doc/python-docs-2.4.3/html/lib'
+docs_path = '/usr/share/doc/python-docs-2.4.4/html/lib'
 
 
-class Document(HTMLFile):
+class Document(CatalogAware, HTMLFile):
+
+    def get_catalog_fields(self):
+        return [TextField('title', is_stored=True), TextField('body')]
+
+
+    def get_catalog_values(self):
+        values = {}
+        values['title'] = self.title()
+        values['body'] = self.body()
+        return values
+
 
     def title(self):
-        # FIXME
         title = get_element(self.events, 'title')
-        head = self.get_head()
-        title = head.get_elements('title')[0]
         return title.get_content()
 
 
     def body(self):
-        return self.to_text()
+        text = [ unicode(value, 'latin-1')
+                 for event, value, line in self.events
+                 if event == TEXT ]
+        return u' '.join(text)
+        # FIXME Should be...
+##        return self.to_text(encoding=)
 
 
 
@@ -53,9 +66,7 @@ def create_catalog():
     if vfs.exists('/tmp/catalog_prof'):
         vfs.remove('/tmp/catalog_prof')
     # Create and get a new empty catalog
-    catalog = make_catalog('/tmp/catalog_prof',
-                           TextField('title', is_stored=True),
-                           TextField('body'))
+    catalog = make_catalog('/tmp/catalog_prof')
     print 'done'
 
 
@@ -74,7 +85,7 @@ def load_documents():
         doc_uri = src.uri.resolve2(name)
         doc = Document(doc_uri)
         try:
-            doc = {'title': doc.title(), 'body': doc.body()}
+            doc.load_state()
         except:
             print doc_uri, '!!'
         else:

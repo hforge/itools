@@ -140,11 +140,7 @@ class CatalogTestCase(TestCase):
 
     def setUp(self):
         # Make the catalog
-        catalog = make_catalog('tests/catalog',
-            KeywordField('name', is_stored=True),
-            TextField('title', is_indexed=False, is_stored=True),
-            TextField('data'),
-            IntegerField('size'))
+        catalog = make_catalog('tests/catalog')
         # Index
         fables = vfs.open('fables')
         for name in fables.get_names():
@@ -195,7 +191,15 @@ class Document(CatalogAware):
         self.uri = uri
 
 
-    def get_catalog_indexes(self):
+    def get_catalog_fields(self):
+        return [
+            KeywordField('name', is_stored=True),
+            TextField('title', is_indexed=False, is_stored=True),
+            TextField('data'),
+            IntegerField('size')]
+
+
+    def get_catalog_values(self):
         data = vfs.open(self.uri).read()
 
         indexes = {}

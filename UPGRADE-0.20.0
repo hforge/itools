@@ -65,7 +65,11 @@ Open modes changed:
 
 Catalog
 =======
-abort => abort_changes
+Catalog.abort => Catalog.abort_changes
+
+make_catalog(uri, *fields) => make_catalog(uri)
+ => CatalogAware.get_catalog_fields
+CatalogAware.get_catalog_indexes => CatalogAware.get_catalog_values
 
 
 Handlers

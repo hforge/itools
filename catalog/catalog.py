@@ -74,9 +74,10 @@ If it is not it will be a list of terms:
 """
 
 # Import from the Standard Library
+from copy import deepcopy
 from operator import itemgetter
-from os import listdir
-from os.path import getmtime
+from os import listdir, remove
+from os.path import exists, getmtime
 
 # Import from itools
 from itools.uri import get_absolute_reference
@@ -222,9 +223,9 @@ class Catalog(object):
         'fields', 'field_numbers', 'indexes',
         'documents', 'n_documents', 'added_documents', 'removed_documents']
 
-    #########################################################################
+    #######################################################################
     # API / Public
-    #########################################################################
+    #######################################################################
 
     def __init__(self, ref):
         self.uri = get_absolute_reference(ref)
@@ -234,7 +235,7 @@ class Catalog(object):
         self.indexes = []
         # Load
         base = vfs.open(self.uri)
-        for line in base.open('fields').readlines():
+        for line in base.open('data/fields').readlines():
             line = line.strip()
             if not line:
                 continue
@@ -295,6 +296,9 @@ class Catalog(object):
                 if getmtime(src_file) < getmtime(dst_file):
                     data = open(src_file).read()
                     open(dst_file, 'w').write(data)
+            for name in listdir(dst):
+                if not exists(src + '/' + name):
+                    remove(dst + '/' + name)
             # Reload the catalog
             self.__init__(self.uri)
             # We are done
@@ -311,7 +315,7 @@ class Catalog(object):
         for name in listdir(src):
             src_file = src + '/' + name
             dst_file = dst + '/' + name
-            if getmtime(src_file) > getmtime(dst_file):
+            if not exists(dst_file) or getmtime(src_file) > getmtime(dst_file):
                 data = open(src_file).read()
                 open(dst_file, 'w').write(data)
 
@@ -337,11 +341,46 @@ class Catalog(object):
         """Add a new document.
         """
         # Check the input
-        if isinstance(document, CatalogAware):
-            document = document.get_catalog_indexes()
-        elif not isinstance(document, dict):
-            raise ValueError, ('the document must be either a dictionary or'
-                ' a CatalogAware object')
+        if not isinstance(document, CatalogAware):
+            raise ValueError, 'the document must be a CatalogAware object'
+
+        # Extract the definition and values (do it first, because it may
+        # fail).
+        fields = document.get_catalog_fields()
+        values = document.get_catalog_values()
+
+        # Create new indexes if needed
+        new_fields = [ x for x in fields if x.name not in self.field_numbers ]
+        if new_fields:
+            base = self.uri.resolve2('data')
+            folder = vfs.open(base)
+            file = folder.open('fields', APPEND)
+            try:
+                i = len(self.fields)
+                for field in new_fields:
+                    field = deepcopy(field)
+                    field.number = i
+                    # Update metadata file
+                    file.write('%d#%s#%s#%d#%d\n' % (i, field.name,
+                        field.type, field.is_indexed, field.is_stored))
+                    # Make index files
+                    folder.make_file('%d_docs' % i)
+                    tree = folder.make_file('%d_tree' % i)
+                    try:
+                        tree.write(''.join([VERSION, ZERO, NULL, NULL]))
+                    finally:
+                        tree.close()
+                    # Data Structure
+                    self.fields.append(field)
+                    self.field_numbers[field.name] = i
+                    if field.is_indexed:
+                        self.indexes.append((Index(base, i)))
+                    else:
+                        self.indexes.append(None)
+                    # Next
+                    i += 1
+            finally:
+                file.close()
 
         # Set the catalog as dirty
         self.has_changed = True
@@ -350,7 +389,7 @@ class Catalog(object):
         catalog_document = Document(doc_number)
 
         # Index
-        get = document.get
+        get = values.get
         for field in self.fields:
             # Extract the field value from the document
             value = get(field.name)
@@ -422,9 +461,9 @@ class Catalog(object):
         return SearchResults(results, self)
 
 
-    #########################################################################
+    #######################################################################
     # API / Private
-    #########################################################################
+    #######################################################################
     def save_documents(self):
         base = vfs.open(self.uri)
         index_file = base.open('data/documents_index', READ_WRITE)
@@ -574,56 +613,19 @@ class Catalog(object):
 
 
 
-def make_catalog(uri, *fields):
-    """Creates a new catalog in the given uri. The 'id' parameter is the name
-    of the field that will be considered the external id; it will be used
-    when unindexing a document, and to retrieve the original document; this
-    field must be "indexed" and "stored".
-
-    The positional arguments define the fields to be indexed (and/or stored).
-    The first field (there must be at least one) defines the "external id",
-    which is a unique identifier used to unindex the document and to load
-    the original document; this field must be both indexed and stored.
+def make_catalog(uri):
+    """Creates a new and empty catalog in the given uri.
     """
-    if len(fields) == 0:
-        raise ValueError, 'at least one field must be provided'
-
-    master = fields[0]
-    if master.is_indexed is False or master.is_stored is False:
-        msg = 'the first field (master) must be both indexed and stored'
-        raise ValueError, msg
-
     uri = get_absolute_reference(uri)
     vfs.make_folder(uri)
     base = vfs.open(uri)
 
-    base.make_folder('data')
-
-    # Create the indexes
-    metadata = []
-    for i, field in enumerate(fields):
-        # The metadata file
-        metadata.append('%d#%s#%s#%d#%d\n' % (i, field.name, field.type,
-            field.is_indexed, field.is_stored))
-        # Create the index file
-        base.make_file('data/%d_docs' % i)
-        file = base.make_file('data/%d_tree' % i)
-        try:
-            file.write(''.join([VERSION, ZERO, NULL, NULL]))
-        finally:
-            file.close()
-
     # Write the metadata file
-    file = base.make_file('fields')
-    try:
-        file.write(''.join(metadata))
-    finally:
-        file.close()
-
+    base.make_folder('data')
+    file = base.make_file('data/fields')
     # Create the documents
     base.make_file('data/documents')
     base.make_file('data/documents_index')
-
     # Create the backup data
     base.copy('data', 'data.bak')
     file = base.make_file('state')

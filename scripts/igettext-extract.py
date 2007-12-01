@@ -58,7 +58,8 @@ if __name__ == '__main__':
             try:
                 get_messages = handler.get_messages
             except AttributeError:
-                sys.stderr.write('ERROR: The file "%s" could not be processed\n' % filename)
+                message = 'ERROR: The file "%s" could not be processed\n'
+                sys.stderr.write(message % filename)
                 continue
             # Extract the messages
             for msgid, line_number in get_messages():

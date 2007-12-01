@@ -21,6 +21,8 @@ protocol.
 
 # Import from the Standard Library
 from decimal import Decimal
+from locale import getdefaultlocale
+
 
 
 zero = Decimal('0.0')
@@ -29,8 +31,7 @@ one = Decimal('1.0')
 
 
 class AcceptLanguage(dict):
-    """
-    Implements the Accept-Language tree.
+    """Implements the Accept-Language tree.
     """
 
     def set(self, key, quality):
@@ -52,10 +53,9 @@ class AcceptLanguage(dict):
 
 
     def select_language(self, languages):
-        """
-        This is the selection language algorithm, it returns the user
-        prefered language for the given list of available languages,
-        if the intersection is void returns None.
+        """This is the selection language algorithm, it returns the user
+        prefered language for the given list of available languages, if the
+        intersection is void returns None.
         """
         language, quality = None, zero
         for lang in languages:
@@ -71,10 +71,9 @@ class AcceptLanguageType(object):
 
     @staticmethod
     def decode(data):
-        """
-        From a string formatted as specified in the RFC2616, it builds a data
-        structure which provides a high level interface to implement language
-        negotiation.
+        """From a string formatted as specified in the RFC2616, it builds a
+        data structure which provides a high level interface to implement
+        language negotiation.
         """
         data = data.strip()
         if not data:
@@ -120,9 +119,6 @@ class AcceptLanguageType(object):
 
 
 def get_accept():
-    # Import from the Standard Library
-    from locale import getdefaultlocale
-
     locale = getdefaultlocale()
     language = locale[0]
     if language is None:

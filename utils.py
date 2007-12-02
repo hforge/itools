@@ -97,7 +97,7 @@ def get_version(namespace):
 
 
 
-def setup(namespace, description='', classifiers=[], ext_modules=[]):
+def setup(namespace, classifiers=[], ext_modules=[]):
     version = get_version(namespace)
     try:
         from itools.handlers import ConfigFile
@@ -166,7 +166,7 @@ def setup(namespace, description='', classifiers=[], ext_modules=[]):
                license = config.get_value('license'),
                url = config.get_value('url'),
                description = config.get_value('description'),
-               long_description = description,
+               long_description = config.get_value('long_description'),
                classifiers = classifiers,
                # Packages
                package_dir = {package_name: ''},

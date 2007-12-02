@@ -24,37 +24,7 @@ import os
 from utils import setup
 
 
-# XXX Information to be moved to setup.conf
-description = """itools is a Python library, it groups a number of packages
-into a single meta-package for easier development and deployment. The packages
-included are:
-
- - itools.catalog
- - itools.csv
- - itools.datatypes
- - itools.gettext
- - itools.git
- - itools.handlers
- - itools.html
- - itools.http
- - itools.i18n
- - itools.ical
- - itools.odf
- - itools.pdf
- - itools.rest
- - itools.rss
- - itools.schemas
- - itools.stl
- - itools.tmx
- - itools.uri
- - itools.vfs
- - itools.web
- - itools.workflow
- - itools.xliff
- - itools.xml
-"""
-
-
+# FIXME Information to be moved to setup.conf
 classifiers = ['Development Status :: 3 - Alpha',
                'Intended Audience :: Developers',
                'License :: OSI Approved :: GNU General Public License (GPL)',
@@ -74,5 +44,4 @@ classifiers = ['Development Status :: 3 - Alpha',
 
 if __name__ == '__main__':
     cparser = Extension('itools.xml.parser', sources=['xml/parser.c'])
-    setup(globals(), description= description, classifiers=classifiers,
-          ext_modules=[cparser])
+    setup(globals(), classifiers=classifiers, ext_modules=[cparser])

@@ -87,7 +87,7 @@ def get_lines(file):
                 raise SyntaxError, 'unknown line "%d"' % line_num
         elif state == 1:
             # Multiline value
-            if line[-1] == '"':
+            if line and line[-1] == '"':
                 yield VAR_END, line[:-1], line_num
                 state = 0
             else:
@@ -97,6 +97,7 @@ def get_lines(file):
         line_num += 1
 
     yield EOF, None, line_num
+
 
 
 class Lines(object):
@@ -158,7 +159,7 @@ def read_block(lines):
     elif type == VAR_START:
         name, value = value
         lines.next()
-        value = value + ' ' + read_multiline(lines)
+        value = value + '\n' + read_multiline(lines)
         return [], (name, value)
     else:
         raise SyntaxError, 'unexpected line "%d"' % line_num
@@ -190,7 +191,7 @@ def read_variable(lines):
     elif type == VAR_START:
         name, value = value
         lines.next()
-        return name, value + ' ' + read_multiline(lines)
+        return name, value + '\n' + read_multiline(lines)
 
 
 def read_multiline(lines):
@@ -202,7 +203,7 @@ def read_multiline(lines):
     type, value, line_num = lines.current
     if type == VAR_CONT:
         lines.next()
-        return value + ' ' + read_multiline(lines)
+        return value + '\n' + read_multiline(lines)
     elif type == VAR_END:
         lines.next()
         return value

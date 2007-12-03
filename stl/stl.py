@@ -23,7 +23,7 @@ language I could imagine.
 """
 
 # Import from the Standard Library
-import re
+from re import compile
 from types import GeneratorType
 
 # Import from itools
@@ -169,8 +169,8 @@ class NamespaceStack(list):
 ########################################################################
 # The run-time engine
 ########################################################################
-subs_expr_solo = re.compile("^\$\{([\w\/:]+?)\}$")
-subs_expr = re.compile("\$\{(.+?)\}")
+subs_expr_solo = compile("^\$\{([\w\/:]+?)\}$")
+subs_expr = compile("\$\{(.+?)\}")
 
 
 def substitute_boolean(data, stack, repeat_stack, encoding='utf-8'):

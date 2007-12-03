@@ -17,10 +17,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-import mimetypes
-from os.path import join as path_join
+from os.path import join as join_path
 from subprocess import call
-import tempfile
+from tempfile import mkdtemp
 
 # Import from itools
 from itools import vfs
@@ -33,17 +32,17 @@ def convert(handler, cmdline, outfile=None):
     cmdline = cmdline % 'stdin'
 
     # Serialize the handler to a temporary file in the file system
-    path = tempfile.mkdtemp('itools')
-    file_path = path_join(path, 'stdin')
+    path = mkdtemp('itools')
+    file_path = join_path(path, 'stdin')
     open(file_path, 'w').write(handler.to_str())
 
     # stdout
-    stdout_path = path_join(path, 'stdout')
+    stdout_path = join_path(path, 'stdout')
     stdout = open(stdout_path, 'w')
     if outfile is not None:
-        stdout_path = path_join(path, outfile)
+        stdout_path = join_path(path, outfile)
     # stderr
-    stderr_path = path_join(path, 'stderr')
+    stderr_path = join_path(path, 'stderr')
     stderr = open(stderr_path, 'w')
 
     # Call convert method

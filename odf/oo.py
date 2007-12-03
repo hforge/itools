@@ -2,6 +2,7 @@
 # Copyright (C) 2006 Hervé Cauwelier <herve@itaapy.com>
 # Copyright (C) 2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 # Copyright (C) 2007 Sylvain Taverne <sylvain@itaapy.com>
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -15,15 +16,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-"""
-Open Office 1.0
+"""This module provides file handlers for Open Office 1.0 documents
+(Writer, Calc and Impress).
 """
 
 # Import from the Standard Library
-import mimetypes
-from itools.handlers import register_handler_class
+from mimetypes import add_type
 
 # Import from itools
+from itools.handlers import register_handler_class
 from odf import OOFile
 
 
@@ -48,9 +49,9 @@ class SXIFile(OOFile):
 
 
 # Register
-mimetypes.add_type('application/vnd.sun.xml.writer', '.sxw')
-mimetypes.add_type('application/vnd.sun.xml.calc', '.sxc')
-mimetypes.add_type('application/vnd.sun.xml.impress', '.sxi')
+add_type('application/vnd.sun.xml.writer', '.sxw')
+add_type('application/vnd.sun.xml.calc', '.sxc')
+add_type('application/vnd.sun.xml.impress', '.sxi')
 
 register_handler_class(SXWFile)
 register_handler_class(SXCFile)

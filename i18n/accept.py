@@ -119,11 +119,11 @@ class AcceptLanguageType(object):
 
 
 def get_accept():
-    locale = getdefaultlocale()
-    language = locale[0]
+    language = getdefaultlocale()[0]
     if language is None:
         language = ''
-    else:
+    elif '_' in language:
         language = language.replace('_', '-')
+        language = '%s, %s;q=0.5' % (language, language.split('-')[0])
 
     return AcceptLanguageType.decode(language)

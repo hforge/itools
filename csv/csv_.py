@@ -37,15 +37,6 @@ class Row(list):
         return self[column]
 
 
-    def set_value(self, name, value):
-        if self.columns is None:
-            column = int(name)
-        else:
-            column = self.columns.index(name)
-
-        self[column] = value
-
-
     def copy(self):
         clone = self.__class__(self)
         clone.number = self.number
@@ -228,6 +219,27 @@ class CSVFile(TextFile):
         """
         self.set_changed()
         self._add_row(row)
+
+
+    def update_row(self, index, **kw):
+        row = self.get_row(index)
+        self.set_changed()
+        # Un-index
+        if self.schema is not None:
+            self.catalog.unindex_document(row, index)
+        # Update
+        columns = self.columns
+        if columns is None:
+            for name in kw:
+                column = int(name)
+                row[column] = kw[name]
+        else:
+            for name in kw:
+                column = columns.index(name)
+                row[column] = kw[name]
+        # Index
+        if self.schema is not None:
+            self.catalog.index_document(row, index)
 
 
     def del_row(self, number):

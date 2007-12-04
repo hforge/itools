@@ -174,23 +174,33 @@ function CreateTable(rows, cols, border, head) {
     rows = parseInt(rows);
     cols = parseInt(cols);
 
-  if ((rows > 0) && (cols > 0)) {
-      table = ' <table border="' + border + '">\n';
-
-    for (var i=0; i < rows; i++) {
-          table = table + " <tr>\n";
-            for (var j=0; j < cols; j++) {
-              if(i==0 && head=="1") {
-                   table += "  <th>#</th>\n";
-              } else {
-                 table += "  <td>#</td>\n";
-        }
-      }
-            table += " </tr>\n";
+    // cls is an optional parameter
+    if (CreateTable.arguments.length == 5) {
+        cls = CreateTable.arguments[4];
+    } else {
+        cls = false;
     }
-    table += " </table>\n";
-    InsertHTML(table);
-  }
+    if ((rows > 0) && (cols > 0)) {
+        table = ' <table border="' + border + '"';
+        if (cls) {
+            table += ' class="' + cls + '"';
+        }
+        table += '>\n';
+
+        for (var i=0; i < rows; i++) {
+            table = table + " <tr>\n";
+            for (var j=0; j < cols; j++) {
+                if(i==0 && head=="1") {
+                    table += "  <th>#</th>\n";
+                } else {
+                    table += "  <td>#</td>\n";
+                }
+            }
+            table += " </tr>\n";
+        }
+        table += " </table>\n";
+        InsertHTML(table);
+    }
     EpozElement.contentWindow.focus()
 }
 

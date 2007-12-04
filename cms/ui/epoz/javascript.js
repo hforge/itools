@@ -10,6 +10,9 @@ function InitDocument(iframe) {
         scriptExpr = 'EnableDesignMode("' + iframe.id + '");';
         window.setTimeout(scriptExpr, 10);
     }
+    // Force initialization
+    // Useful for Opera & Safari
+    redirectEpoz(iframe);
 }
 
 
@@ -195,14 +198,15 @@ function CreateTable(rows, cols, border, head) {
 // Sets selected formats
 function SelectFormat(selectname) {
     index = selectname.selectedIndex;
-    content = EpozElement.contentWindow;
     // First one is only a label
     if (index != 0) {
         value = selectname.options[index].value;
-        content.document.execCommand(selectname.id, false, value);
+        // Not compatible with IEx
+        // x = EpozElement.contentWindow; x.document....
+        EpozElement.contentWindow.document.execCommand(selectname.id, false, value);
         selectname.selectedIndex = 0;
     }
-    content.focus();
+    EpozElement.contentWindow.focus();
 }
 
 

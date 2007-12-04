@@ -192,6 +192,9 @@ class Context(object):
         # Preserve some form values
         form = {}
         for key, value in self.request.form.items():
+            # Be robust
+            if not key:
+                continue
             # Omit methods
             if key[0] == ';':
                 continue

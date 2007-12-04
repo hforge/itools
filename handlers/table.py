@@ -34,7 +34,6 @@ from file import File
 def unescape_data(data):
     """Unescape the data
     """
-
     data = [ x.replace("\\r", "\r").replace("\\n", "\n")
               for x in data.split('\\\\') ]
     return '\\'.join(data)
@@ -44,7 +43,6 @@ def unescape_data(data):
 def escape_data(data):
     """Escape the data
     """
-
     data = data.replace("\\", "\\\\")
     data = data.replace("\r", "\\r").replace("\n", "\\n")
     return data
@@ -54,7 +52,6 @@ def escape_data(data):
 def unfold_lines(data):
     """Unfold the folded lines.
     """
-
     i = 0
     lines = data.splitlines()
 
@@ -76,7 +73,6 @@ def unfold_lines(data):
 def fold_line(data):
     """Fold the unfolded line over 75 characters.
     """
-
     if len(data) <= 75:
         return data
 

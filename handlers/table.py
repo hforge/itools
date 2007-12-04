@@ -32,8 +32,7 @@ from file import File
 # Parser
 ###########################################################################
 def unescape_data(data):
-    """
-    Unescape the data
+    """Unescape the data
     """
 
     data = [ x.replace("\\r", "\r").replace("\\n", "\n")
@@ -43,8 +42,7 @@ def unescape_data(data):
 
 
 def escape_data(data):
-    """
-    Escape the data
+    """Escape the data
     """
 
     data = data.replace("\\", "\\\\")
@@ -54,8 +52,7 @@ def escape_data(data):
 
 
 def unfold_lines(data):
-    """
-    Unfold the folded lines.
+    """Unfold the folded lines.
     """
 
     i = 0
@@ -77,8 +74,7 @@ def unfold_lines(data):
 
 
 def fold_line(data):
-    """
-    Fold the unfolded line over 75 characters.
+    """Fold the unfolded line over 75 characters.
     """
 
     if len(data) <= 75:
@@ -104,8 +100,7 @@ def fold_line(data):
 
 
 def read_name(line):
-    """
-    Reads the property name from the line. Returns the name and the
+    """Reads the property name from the line. Returns the name and the
     rest of the line:
 
         name
@@ -247,8 +242,7 @@ def get_tokens(property):
 
 
 def parse_table(data):
-    """
-    This is the public interface of the module "itools.ical.parser", a
+    """This is the public interface of the module "itools.ical.parser", a
     low-level parser of iCalendar files.
 
     The input is the data to be parsed (a byte strings), the output
@@ -359,8 +353,7 @@ class Table(File):
 
 
     def properties_to_dict(self, properties, version=None):
-        """
-        Add the given "properties" as Property objects or Property objects
+        """Add the given "properties" as Property objects or Property objects
         list to the given dictionnary "version".
         """
         if version is None:
@@ -621,8 +614,7 @@ class Table(File):
 
 
     def get_value(self, record, name):
-        """
-        Return the value if name is in record
+        """Return the value if name is in record
         else if name is define in the schema
         return [] is name is a multiple, the default value otherwise.
         """
@@ -638,8 +630,7 @@ class Table(File):
 
 
     def search(self, query=None, **kw):
-        """
-        Return list of row numbers returned by executing the query.
+        """Return list of row numbers returned by executing the query.
         """
         if query is None:
             if kw:

@@ -178,7 +178,8 @@ class CSVFile(TextFile):
 
 
     def _add_row(self, row):
-        """Append new row as an instance of row class."""
+        """Append new row as an instance of row class.
+        """
         # Build the row
         row = self.row_class(row)
         row.number = self.n_lines
@@ -202,7 +203,8 @@ class CSVFile(TextFile):
     # API / Public
     #########################################################################
     def is_indexed(self):
-        """Check if at least one index is available for searching, etc."""
+        """Check if at least one index is available for searching, etc.
+        """
         if self.catalog is None:
             return False
         return bool(self.catalog.indexes)
@@ -213,8 +215,7 @@ class CSVFile(TextFile):
 
 
     def get_row(self, number):
-        """
-        Return row at the given line number. Count begins at 0.
+        """Return row at the given line number. Count begins at 0.
 
         Raise an exception (IndexError) if the row is not available.
         XXX Maybe it should be better to return None.
@@ -226,8 +227,7 @@ class CSVFile(TextFile):
 
 
     def get_rows(self, numbers=None):
-        """
-        Return rows at the given list of line numbers. If no numbers
+        """Return rows at the given list of line numbers. If no numbers
         are given, then all rows are returned.
 
         Count begins at 0.
@@ -242,7 +242,8 @@ class CSVFile(TextFile):
 
 
     def add_row(self, row):
-        """Append new row as an instance of row class."""
+        """Append new row as an instance of row class.
+        """
         if self.columns is not None:
             # Insert the generated values of the IntegerKey columns
             for index, column in enumerate(self.columns):
@@ -255,7 +256,8 @@ class CSVFile(TextFile):
 
 
     def del_row(self, number):
-        """Delete row at the given line number. Count begins at 0."""
+        """Delete row at the given line number. Count begins at 0.
+        """
         self.set_changed()
 
         # Remove
@@ -270,7 +272,8 @@ class CSVFile(TextFile):
 
 
     def del_rows(self, numbers):
-        """Delete rows at the given line numbers. Count begins at 0."""
+        """Delete rows at the given line numbers. Count begins at 0.
+        """
         self.set_changed()
         # Indexes are changing while deleting process
         for i in numbers:
@@ -278,7 +281,8 @@ class CSVFile(TextFile):
 
 
     def search(self, query=None, **kw):
-        """Return list of row numbers returned by executing the query."""
+        """Return list of row numbers returned by executing the query.
+        """
         if not self.is_indexed():
             raise IndexError, 'no index is defined in the schema'
 

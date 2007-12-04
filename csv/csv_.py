@@ -55,12 +55,6 @@ class Row(list):
 
 
 
-class IntegerKey(Integer):
-
-    index = 'keyword'
-
-
-
 class CSVFile(TextFile):
 
     class_mimetypes = ['text/comma-separated-values', 'text/csv']
@@ -147,18 +141,6 @@ class CSVFile(TextFile):
     #########################################################################
     # API / Private
     #########################################################################
-    def get_key(self, name):
-        if self.columns is None:
-            return None
-
-        size = self.get_nrows()
-        if size == 0:
-            return 0
-
-        row = self.get_row(size - 1)
-        return row.get_value(name) + 1
-
-
     def get_analyser(self, name):
         datatype = self.schema[name]
         return get_field(datatype.index)
@@ -244,13 +226,6 @@ class CSVFile(TextFile):
     def add_row(self, row):
         """Append new row as an instance of row class.
         """
-        if self.columns is not None:
-            # Insert the generated values of the IntegerKey columns
-            for index, column in enumerate(self.columns):
-                datatype = self.schema[column]
-                if is_datatype(datatype, IntegerKey):
-                    row.insert(index, self.get_key(column))
-
         self.set_changed()
         self._add_row(row)
 

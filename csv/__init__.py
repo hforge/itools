@@ -19,7 +19,7 @@
 import mimetypes
 
 # Import from itools
-from csv_ import parse, CSVFile, Row, IntegerKey
+from csv_ import parse, CSVFile, Row
 from parser import parse
 
 

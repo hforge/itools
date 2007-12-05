@@ -20,42 +20,66 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.rss import RSS
-from itools.handlers import get_handler
-from itools.stl import stl
+from itools.uri import Reference
+from itools.xml import XMLParser, XML_DECL
+from itools.rss import RSSFile
 
 
 
 class RSSTestCase(TestCase):
+    """Only testing required attributes, the logic behind is the same for
+    all kinds.
+    """
 
-    def test_parsing(self):
-        rss = RSS('test.rss')
-        template = get_handler('test.xml')
-        output = stl(template, rss.get_namespace())
-
-##        html = get_handler('test.html')
-##        self.assertEqual(output, html.to_str().strip())
+    def setUp(self):
+        self.rss = RSSFile('sample-rss-2.xml')
 
 
-    def test_parsing_full(self):
-        rss = RSS('test_full.rss')
-        template = get_handler('test_full.xml')
-        output = stl(template, rss.get_namespace())
-
-##        html = get_handler('test_full.html')
-##        self.assertEqual(output, html.to_str().strip())
-
-
-    def test_to_str(self):
-        out_resource = get_handler('test2-out.rss')
-        rss = RSS('test2.rss')
-        self.assertEqual(rss.to_str(), out_resource.to_str().strip())
+    def test_channel(self):
+        channel = self.rss.channel
+        self.assertEqual(channel['title'], u"Liftoff News")
+        link = channel['link']
+        self.assert_(isinstance(link, Reference))
+        self.assertEqual(str(link), 'http://liftoff.msfc.nasa.gov/')
+        self.assertEqual(channel['description'],
+                u"Liftoff to Space Exploration.")
 
 
-    def test_namespace(self):
-        rss = RSS('test.rss')
-        ns = rss.get_namespace()
-        self.assertEqual(len(ns['channel']['items']), 2)
+    def test_image(self):
+        # TODO Our sample actually don't have an image
+        self.assertEqual(self.rss.image, None)
+
+
+    def test_items(self):
+        items = self.rss.items
+        self.assertEqual(len(items), 4)
+
+
+    def test_item(self):
+        item = self.rss.items[0]
+        self.assertEqual(item['title'], u"Star City")
+        link = item['link']
+        self.assert_(isinstance(link, Reference))
+        self.assertEqual(str(link),
+                'http://liftoff.msfc.nasa.gov/news/2003/news-starcity.asp')
+        expected = u"How do Americans get ready to work with Russians"
+        self.assert_(item['description'].startswith(expected))
+
+
+    def test_serialize(self):
+        data = self.rss.to_str()
+        # Testing the hand-written XML is well-formed
+        events = list(XMLParser(data))
+        # Testing the XML processing instruction
+        event, value, line_number = events[0]
+        self.assertEqual(event, XML_DECL)
+        version, encoding, standalone = value
+        self.assertEqual(version, '1.0')
+        self.assertEqual(encoding, 'UTF-8')
+
+
+    def tearDown(self):
+        del self.rss
 
 
 

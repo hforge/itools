@@ -146,18 +146,19 @@ class Database(object):
 
 
     def set_handler(self, reference, handler):
+        if isinstance(handler, Folder):
+            raise ValueError, 'unexpected folder (only files can be "set")'
+
+        if handler.uri is not None:
+            raise ValueError, 'only new files can be added, try to clone first'
+
         if self.has_handler(reference):
-            msg = 'The reference "%s" is busy' % reference
-            raise IOError, msg
+            raise IOError, 'The reference "%s" is busy' % reference
 
         reference = get_absolute_reference(reference)
-        if isinstance(handler, Folder):
-            for name in handler.get_handler_names():
-                subhandler = handler.get_handler(name)
-                self.set_handler(reference.resolve2(name), subhandler)
-        else:
-            self.cache[reference] = handler
-            self.added.add(reference)
+        self.cache[reference] = handler
+        self.added.add(reference)
+        # Attach
         handler.database = self
         handler.uri = reference
 

@@ -188,6 +188,8 @@ class Database(object):
     def copy_handler(self, source, target):
         source = get_absolute_reference(source)
         target = get_absolute_reference(target)
+        if source == target:
+            return
 
         handler = self.get_handler(source)
         if isinstance(handler, Folder):
@@ -208,6 +210,8 @@ class Database(object):
         # TODO This method can be optimized further
         source = get_absolute_reference(source)
         target = get_absolute_reference(target)
+        if source == target:
+            return
 
         handler = self.get_handler(source)
         handler.load_state()

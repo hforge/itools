@@ -25,7 +25,8 @@ from registry import register_handler_class
 
 
 class Context(object):
-    """Used by 'traverse2' to control the traversal."""
+    """Used by 'traverse2' to control the traversal.
+    """
 
     def __init__(self):
         self.skip = False

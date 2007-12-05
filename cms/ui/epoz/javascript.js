@@ -12,7 +12,9 @@ function InitDocument(iframe) {
     }
     // Force initialization
     // Useful for Opera & Safari
-    redirectEpoz(iframe);
+    if (browser.isSafari || browser.isOpera) {
+        redirectEpoz(iframe);
+    }
 }
 
 

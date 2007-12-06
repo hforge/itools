@@ -147,6 +147,22 @@ class FolderTestCase(TestCase):
         self.assertEqual(vfs.exists('tests/fofo2.txt'), True)
 
 
+    def test_del_change(self):
+        """Cannot change removed files.
+        """
+        folder = self.root.get_handler('tests')
+        file = folder.get_handler('toto.txt')
+        folder.del_handler('toto.txt')
+        self.assertRaises(RuntimeError, file.set_data, u'Oh dear\n')
+
+
+    def test_nocache_change(self):
+        """Only can change cached files.
+        """
+        file = self.root.get_handler('tests/toto.txt', cache=False)
+        self.assertRaises(RuntimeError, file.set_data, u'Oh dear\n')
+
+
 
 class TextTestCase(TestCase):
 

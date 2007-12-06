@@ -196,6 +196,12 @@ class File(Handler):
             self.dirty = True
             return
 
+        # Check the handler is in the cache
+        if self.uri not in database.cache:
+            raise RuntimeError, 'cannot change an orphaned file handler'
+        if database.cache[self.uri] is not self:
+            raise RuntimeError, 'cannot change an orphaned file handler'
+
         # Update database state
         if self.timestamp is None and self.dirty is True:
             database.added.add(self.uri)

@@ -113,16 +113,22 @@ class Database(object):
 
         # Lookup the cache
         if reference in cache:
-            # Cache hit
             handler = cache[reference]
+            # Not yet loaded or new
             if handler.timestamp is None:
                 return handler
-            # Check the timestamp
+            # Timestamp cannot be more recent than mtime
             mtime = fs.get_mtime(reference)
-            if mtime < handler.timestamp:
-                raise RuntimeError, 'XXX'
-            elif mtime == handler.timestamp:
+            if handler.timestamp > mtime:
+                raise RuntimeError, "file's timestamp does not match mtime"
+            # Handler loaded and up-to-date
+            if handler.timestamp == mtime:
                 return handler
+            # Conflict, file modified both in filesystem and memory
+            if self.dirty is True:
+                raise RuntimeError, MSG_CONFLICT
+            # Remove from cache
+            del cache[reference]
 
         # Cache miss
         if cls is None:

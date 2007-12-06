@@ -23,7 +23,7 @@ from itools.handlers import TextFile, register_handler_class
 from itools.xml import (XMLParser, XML_DECL, START_ELEMENT, END_ELEMENT,
         TEXT)
 from itools.datatypes import (is_datatype, Unicode, URI, Integer, String,
-    InternetDateTime)
+        HTTPDate)
 
 
 # RSS channel elements definition
@@ -48,9 +48,9 @@ schema = {'title': Unicode,
           'link': URI,
           'description': Unicode,
           'copyright': Unicode,
-          'pubDate': InternetDateTime,
+          'pubDate': HTTPDate,
           'ttl': Integer,
-          'lastBuildDate': InternetDateTime,
+          'lastBuildDate': HTTPDate,
           'generator': Unicode,
           'url': URI,
           'width': Integer,
@@ -87,7 +87,7 @@ class RSSFile(TextFile):
             'title': None,
             'description': None,
             'link': None,
-            # Optional but set sensible default
+            # Optional but set sensible default with timezone
             'lastBuildDate': datetime.now()}
 
         # Image, optional, the API will be a dictionary like the channel

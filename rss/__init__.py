@@ -19,7 +19,7 @@
 import mimetypes
 
 # Import from itools
-from rss import RSSFile as RSSFile
+from rss import RSSFile
 
 
 __all__ = ['RSSFile']

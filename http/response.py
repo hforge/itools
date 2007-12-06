@@ -20,7 +20,7 @@ from datetime import datetime
 # Import from itools
 from itools.schemas import get_datatype
 import headers
-from headers import HTTPDate
+from itools.datatypes import HTTPDate
 from message import Message
 import entities
 
@@ -126,7 +126,7 @@ class Response(Message):
         data.append('HTTP/1.0 %d %s\r\n' % (status_code, status_message))
         # Headers
         # Date:
-        date = datetime.utcnow()
+        date = datetime.now()
         data.append('Date: %s\r\n' % HTTPDate.encode(date))
         # Server:
         data.append('Server: itools.web\r\n')

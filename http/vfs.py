@@ -20,7 +20,7 @@ from urllib import urlopen
 
 # Import from itools
 from itools.vfs import BaseFS, register_file_system
-from headers import HTTPDate
+from itools.datatypes import HTTPDate
 
 
 class HTTPFS(BaseFS):

@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from time import timezone, mktime
 from datetime import time, date, datetime
 import unittest
 from unittest import TestCase
@@ -24,13 +25,13 @@ import random, decimal
 
 # Import from itools
 from itools.datatypes import (ISOTime, ISOCalendarDate, ISODateTime,
-                              InternetDateTime,
                               Integer, Decimal, Boolean,
                               Unicode, URI, Email,
                               FileName, QName, Tokens,
                               Enumerate,
                               XML,
-                              XMLAttribute)
+                              XMLAttribute,
+                              HTTPDate)
 
 
 class BasicTypeTest(TestCase):
@@ -201,21 +202,6 @@ class ISODateTimeTestCase(TestCase):
             self.assertEqual(value, expected)
 
 
-class InternetDateTimeTestCase(TestCase):
-
-    def test_datetime(self):
-        test_dates = {
-            'Tue, 14 Jun 2005 09:00:00 -0400': '2005-06-14 13:00:00',
-            'Tue, 14 Jun 2005 09:00:00 +0200': '2005-06-14 07:00:00',
-            'Thu, 28 Jul 2005 15:36:55 EDT': '2005-07-28 19:36:55',
-            'Fri, 29 Jul 2005 05:50:13 GMT': '2005-07-29 05:50:13',
-            '29 Jul 2005 07:27:19 UTC': '2005-07-29 07:27:19',
-            '02 Jul 2005 09:52:23 GMT': '2005-07-02 09:52:23'
-        }
-        for dt, utc in test_dates.items():
-            d = InternetDateTime.decode(dt)
-            self.assertEqual(InternetDateTime.encode(d), utc)
-
 
 class XMLTestCase(TestCase):
     data  = """<dc:title xmlns:dc="http://purl.org/dc/elements/1.1/">""" \
@@ -232,6 +218,99 @@ class XMLTestCase(TestCase):
     def test_decode(self):
         self.assertEqual(XML.decode(self.result1), self.data)
         self.assertEqual(XMLAttribute.decode(self.result2), self.data)
+
+
+
+class HTTPDateTestCase(TestCase):
+
+    def setUp(self):
+        """Nearly all tests use the same date.
+        But it needs to be converted from the local time to the universal time
+        (UTC).
+        """
+        # the tested date expressed in UTC
+        date = datetime(2007, 11, 6, 8, 49, 37)
+        parts = date.timetuple()
+        timestamp = mktime(parts)
+        # Convert it to local time
+        timestamp = timestamp - timezone
+        # Convert it back to datetime
+        self.expected = datetime.fromtimestamp(timestamp)
+
+
+    def test_rfc1123(self):
+        """RFC 1123 is mainly used in HTTP.
+        """
+        date = 'Tue, 06 Nov 2007 08:49:37 GMT'
+        date = HTTPDate.decode(date)
+        self.assertEqual(date, self.expected)
+
+
+    def test_rfc1123_variation(self):
+        """Variation of RFC-1123, uses full day name.
+        (sent by Netscape 4)
+        """
+        date = 'Tuesday, 06 Nov 2007 08:49:37 GMT'
+        date = HTTPDate.decode(date)
+        self.assertEqual(date, self.expected)
+
+
+    def test_rfc822(self):
+        """RFC 822 is the ancestor of RFC 1123.
+        """
+        date = 'Tue, 06 Nov 07 08:49:37 GMT'
+        date = HTTPDate.decode(date)
+        self.assertEqual(date, self.expected)
+
+
+    def test_rfc850(self):
+        """RFC 850
+        """
+        date = 'Tuesday, 06-Nov-07 08:49:37 GMT'
+        date = HTTPDate.decode(date)
+        self.assertEqual(date, self.expected)
+
+
+    def test_rfc850_variation(self):
+        """Variation of RFC-850, uses full month name and full year.
+        (unknow sender)
+        """
+        date = 'Tuesday, 06-November-07 08:49:37 GMT'
+        date = HTTPDate.decode(date)
+        self.assertEqual(date, self.expected)
+
+
+    def test_rfc_2822(self):
+        """RFC 2822
+        """
+        date = 'Tue, 06 Nov 2007 10:49:37 +0200'
+        date = HTTPDate.decode(date)
+        self.assertEqual(date, self.expected)
+
+
+    def test_timezone(self):
+        """CST is GMT-6.
+        """
+        date = 'Tue, 06 Nov 2007 02:49:37 CST'
+        date = HTTPDate.decode(date)
+        self.assertEqual(date, self.expected)
+
+
+    def test_asctime(self):
+        """ANSI C's asctime().
+        """
+        # Convert to 'Tue Nov  6 09:49:37 2007' in UTC+1
+        date = self.expected.ctime()
+        date = HTTPDate.decode(date)
+        self.assertEqual(date, self.expected)
+
+
+    def test_encode(self):
+        """Convert local time to universal time.
+        """
+        date = self.expected
+        date = HTTPDate.encode(date)
+        self.assertEqual(date, 'Tue, 06 Nov 2007 08:49:37 GMT')
 
 
 

@@ -22,7 +22,7 @@ from unittest import TestCase
 
 # Import from itools
 from itools import vfs
-from itools.vfs import APPEND, FileFS
+from itools.vfs import APPEND, WRITE, FileFS
 from itools.vfs.registry import get_file_system
 
 
@@ -156,6 +156,23 @@ class FileTestCase(TestCase):
         # Remove temporary file
         vfs.remove('tests/toto.txt')
 
+
+    def test21_write_and_truncate(self):
+        # Initialize
+        file = vfs.make_file('tests/toto.txt')
+        try:
+            file.write('hello\n')
+        finally:
+            file.close()
+        # Test
+        file = vfs.open('tests/toto.txt', WRITE)
+        try:
+            file.write('bye\n')
+        finally:
+            file.close()
+        self.assertEqual(open('tests/toto.txt').read(), 'bye\n')
+        # Remove temporary file
+        vfs.remove('tests/toto.txt')
 
 
 class FSTestCase(TestCase):

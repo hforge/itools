@@ -18,7 +18,6 @@
 
 # Import from the Standard Library
 from distutils.core import Extension
-import os
 
 # Import from itools
 from utils import setup

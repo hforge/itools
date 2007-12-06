@@ -165,8 +165,8 @@ def setup(namespace, classifiers=[], ext_modules=[]):
                author_email = config.get_value('author_email'),
                license = config.get_value('license'),
                url = config.get_value('url'),
-               description = config.get_value('description'),
-               long_description = config.get_value('long_description'),
+               description = config.get_value('title'),
+               long_description = config.get_value('description'),
                classifiers = classifiers,
                # Packages
                package_dir = {package_name: ''},

@@ -167,7 +167,7 @@ table_with_form_template = list(Parser("""
 """, namespaces))
 
 table_template = list(Parser("""
-<table>
+<table class="${css}">
   <thead stl:if="columns">
     <tr>
       <th stl:if="column_checkbox" class="checkbox">
@@ -207,7 +207,7 @@ table_template = list(Parser("""
 
 
 def table(columns, rows, sortby, sortorder, actions=[], gettext=lambda x: x,
-          table_with_form=True):
+          table_with_form=True, css=None):
     """
     The parameters are:
 
@@ -268,6 +268,7 @@ def table(columns, rows, sortby, sortorder, actions=[], gettext=lambda x: x,
         aux.append(x)
 
     namespace['rows'] = aux
+    namespace['css'] = css
     # The actions
     namespace['actions'] = [
         {'name': name, 'value': value, 'class': cls, 'onclick': onclick}

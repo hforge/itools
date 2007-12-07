@@ -527,7 +527,7 @@ class SafeDatabase(Database):
                         vfs.move(src, dst)
                 elif action == '>':
                     dst, src = line.rsplit('#', 1)
-                    data = open(src).read()
+                    data = vfs.open(src).read()
                     file = vfs.open(dst, APPEND)
                     try:
                         file.write(data)

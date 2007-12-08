@@ -97,74 +97,73 @@ if __name__ == '__main__':
     filenames = [ x for x in filenames if not islink(x) ]
     manifest.extend(filenames)
 
-    # Build MO files
-    print '(1) Compiling message catalogs:',
-    sys.stdout.flush()
-    for language in [source_language] + target_languages:
-        print language,
+    # Internationalization
+    if vfs.exists('locale'):
+        # Build MO files
+        print '* Compiling message catalogs:',
         sys.stdout.flush()
-        system('msgfmt locale/%s.po -o locale/%s.mo' % (language, language))
-        # Add to the manifest
-        manifest.append('locale/%s.mo' % language)
-    print 'OK'
-
-    # Load message catalogs
-    message_catalogs = {}
-    for language in target_languages:
-        path = 'locale/%s.po' % language
-        message_catalogs[language] = (get_handler(path), vfs.get_mtime(path))
-
-    # Build the templates in the target languages
-    print '(2) Building XHTML files',
-    sys.stdout.flush()
-    # XXX The directory "skeleton" is specific to ikaaro, should not be
-    # hardcoded.
-    cmd = 'find -name "*.x*ml.%s"| grep -Ev "^./(build|dist|skeleton)"'
-    for path in popen(cmd % source_language).readlines():
-        # Load the handler
-        path = path.strip()
-        src_mtime = vfs.get_mtime(path)
-        src = XHTMLFile(path)
-        done = False
-        # Build the translation
-        n = path.rfind('.')
-        for language in target_languages:
-            po, po_mtime = message_catalogs[language]
-            dst = '%s.%s' % (path[:n], language)
+        for lang in [source_language] + target_languages:
+            print lang,
+            sys.stdout.flush()
+            system('msgfmt locale/%s.po -o locale/%s.mo' % (lang, lang))
             # Add to the manifest
-            manifest.append(dst[2:])
-            # Skip the file if it is already up-to-date
-            if vfs.exists(dst):
-                dst_mtime = vfs.get_mtime(dst)
-                if dst_mtime > src_mtime and dst_mtime > po_mtime:
-                    continue
-            try:
-                data = src.translate(po)
-            except:
-                print 'Error with file "%s"' % path
-                raise
-            open(dst, 'w').write(data)
-            done = True
-        # Done
-        if done is True:
-            sys.stdout.write('*')
-        else:
-            sys.stdout.write('.')
+            manifest.append('locale/%s.mo' % lang)
+        print 'OK'
+
+        # Load message catalogs
+        message_catalogs = {}
+        for lang in target_languages:
+            path = 'locale/%s.po' % lang
+            message_catalogs[lang] = (get_handler(path), vfs.get_mtime(path))
+
+        # Build the templates in the target languages
+        print '* Building XHTML files',
         sys.stdout.flush()
-    print ' OK'
+        # XXX The directory "skeleton" is specific to ikaaro, should not be
+        # hardcoded.
+        cmd = 'find -name "*.x*ml.%s"| grep -Ev "^./(build|dist|skeleton)"'
+        for path in popen(cmd % source_language).readlines():
+            # Load the handler
+            path = path.strip()
+            src_mtime = vfs.get_mtime(path)
+            src = XHTMLFile(path)
+            done = False
+            # Build the translation
+            n = path.rfind('.')
+            for language in target_languages:
+                po, po_mtime = message_catalogs[language]
+                dst = '%s.%s' % (path[:n], language)
+                # Add to the manifest
+                manifest.append(dst[2:])
+                # Skip the file if it is already up-to-date
+                if vfs.exists(dst):
+                    dst_mtime = vfs.get_mtime(dst)
+                    if dst_mtime > src_mtime and dst_mtime > po_mtime:
+                        continue
+                try:
+                    data = src.translate(po)
+                except:
+                    print 'Error with file "%s"' % path
+                    raise
+                open(dst, 'w').write(data)
+                done = True
+            # Done
+            if done is True:
+                sys.stdout.write('*')
+            else:
+                sys.stdout.write('.')
+            sys.stdout.flush()
+        print ' OK'
 
     # Find out the version string
     manifest.append('version.txt')
     if git_available:
-        print '(3) Find out the version string',
-        sys.stdout.flush()
         version = get_version()
         open('version.txt', 'w').write(version)
-        print 'OK'
+        print '* Version:', version
 
     # Build the manifest file
-    print '(4) Building list of files to install',
-    sys.stdout.flush()
     manifest.sort()
-    open('MANIFEST', 'w').write('\n'.join(manifest))
-    print 'OK'
+    lines = [ x + '\n' for x in manifest ]
+    open('MANIFEST', 'w').write(''.join(lines))
+    print '* Build MANIFEST file (list of files to install)'

@@ -76,11 +76,15 @@ if __name__ == '__main__':
     print
 
     # Process XHTML files
-    write('* Extract translatable strings from XHTML files')
+    paths = []
     for path in lines:
         name = basename(path)
         name, extension, language = FileName.decode(name)
-        if extension in ('xhtml', 'xml') and language != source_language:
+        if extension in ('xhtml', 'xml') and language == source_language:
+            paths.append(path)
+    if paths:
+        write('* Extract text strings from XHTML files')
+        for path in paths:
             write('.')
             handler = XHTMLFile(path)
             messages = handler.get_messages()
@@ -95,13 +99,13 @@ if __name__ == '__main__':
             for msgid, line_number in messages:
                 if len(msgid) > 1:
                     po.set_message(msgid, references={path: [line_number]})
-    print
+        print
 
     # Update locale.pot
     if not vfs.exists('locale/locale.pot'):
         vfs.make_file('locale/locale.pot')
 
-    write('* Update "locale.pot" ')
+    write('* Update PO template ')
     data = po.to_str()
     file = vfs.open('locale/locale.pot', WRITE)
     try:
@@ -119,11 +123,12 @@ if __name__ == '__main__':
     filenames = list(filenames)
     filenames.sort()
 
-    write('* Update PO files: ')
+    print '* Update PO files:'
     for filename in filenames:
-        write(filename + ' ')
         if folder.exists(filename):
+            write('  %s ' % filename)
             system('msgmerge -U -s locale/%s locale/locale.pot' % filename)
         else:
+            print '  %s (new)' % filename
             folder.copy('locale.pot', filename)
     print

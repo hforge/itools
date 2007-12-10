@@ -19,16 +19,24 @@
 
 # Import from the Standard Library
 from optparse import OptionParser
-import os
+from os import system, sep
+from os.path import basename
 import sys
 
 # Import from itools
 import itools
+from itools.datatypes import FileName
 from itools.gettext import POFile
 from itools.handlers import Python, ConfigFile
 from itools.html import XHTMLFile
 import itools.stl
 from itools import vfs
+from itools.vfs import WRITE
+
+
+def write(text):
+    sys.stdout.write(text)
+    sys.stdout.flush()
 
 
 
@@ -38,8 +46,7 @@ if __name__ == '__main__':
     description = ('Updates the message catalogs (POT and PO files) in the'
                    ' "locale" directory, with the messages found in the'
                    ' source.')
-    parser = OptionParser('%prog',
-                          version=version, description=description)
+    parser = OptionParser('%prog', version=version, description=description)
 
     options, args = parser.parse_args()
     if len(args) != 0:
@@ -51,63 +58,72 @@ if __name__ == '__main__':
 
     # Initialize message catalog
     po = POFile()
+    lines = []
+    for line in open('MANIFEST').readlines():
+        line = line.strip()
+        if line.split(sep)[0] not in ('skeleton', 'test'):
+            lines.append(line)
 
     # Process Python files
-    print '(1) Processing Python files',
-    sys.stdout.flush()
-    for line in open('MANIFEST').readlines():
-        path = line.strip()
-        if (not path.endswith('.py') or 'test_' in path or
-                path == 'utils.py' or path.startswith('skeleton')):
-            continue
-        sys.stdout.write('.')
-        sys.stdout.flush()
-        handler = Python(path)
-        for msgid, line_number in handler.get_messages():
-            if len(msgid) > 2:
-                po.set_message(msgid, references={path: [line_number]})
-    print ' OK'
+    write('* Extract text strings from Python files')
+    for path in lines:
+        if path.endswith('.py') and path != 'utils.py':
+            write('.')
+            handler = Python(path)
+            for msgid, line_number in handler.get_messages():
+                if len(msgid) > 2:
+                    po.set_message(msgid, references={path: [line_number]})
+    print
 
     # Process XHTML files
-    print '(2) Processing XHTML files',
-    sys.stdout.flush()
-    for line in open('MANIFEST').readlines():
-        path = line.strip()
-        if (not (path.endswith('.xhtml.' + source_language) or
-                path.endswith('.xml.' + source_language)) or
-                path.startswith('skeleton')):
-            continue
-        sys.stdout.write('.')
-        sys.stdout.flush()
-        handler = XHTMLFile(path)
-        messages = handler.get_messages()
-        try:
-            messages = list(messages)
-        except:
-            print
-            print
-            print 'ERROR:', path
-            print
-            raise
-        for msgid, line_number in messages:
-            if len(msgid) > 1:
-                po.set_message(msgid, references={path: [line_number]})
-    print ' OK'
+    write('* Extract translatable strings from XHTML files')
+    for path in lines:
+        name = basename(path)
+        name, extension, language = FileName.decode(name)
+        if extension in ('xhtml', 'xml') and language != source_language:
+            write('.')
+            handler = XHTMLFile(path)
+            messages = handler.get_messages()
+            try:
+                messages = list(messages)
+            except:
+                print
+                print '*'
+                print '* Error:', path
+                print '*'
+                raise
+            for msgid, line_number in messages:
+                if len(msgid) > 1:
+                    po.set_message(msgid, references={path: [line_number]})
+    print
 
     # Update locale.pot
-    print '(3) Updating "locale/locale.pot"',
-    sys.stdout.flush()
-    open('locale/locale.pot', 'w').write(po.to_str())
-    print 'OK'
+    if not vfs.exists('locale/locale.pot'):
+        vfs.make_file('locale/locale.pot')
 
-    # Update language files
-    print '(4) Updating language files:'
-    print '',
-    sys.stdout.flush()
+    write('* Update "locale.pot" ')
+    data = po.to_str()
+    file = vfs.open('locale/locale.pot', WRITE)
+    try:
+        file.write(data)
+    finally:
+        file.close()
+    print
+
+    # Update PO files
     folder = vfs.open('locale')
-    for filename in folder.get_names():
-        if not filename.endswith('.po'):
-            continue
-        print filename,
-        sys.stdout.flush()
-        os.system('msgmerge -U -s locale/%s locale/locale.pot' % filename)
+    filenames = set([ x for x in folder.get_names() if x[-3:] == '.po' ])
+    filenames.add('%s.po' % source_language)
+    for language in config.get_value('target_languages', default='').split():
+        filenames.add('%s.po' % language)
+    filenames = list(filenames)
+    filenames.sort()
+
+    write('* Update PO files: ')
+    for filename in filenames:
+        write(filename + ' ')
+        if folder.exists(filename):
+            system('msgmerge -U -s locale/%s locale/locale.pot' % filename)
+        else:
+            folder.copy('locale.pot', filename)
+    print

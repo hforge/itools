@@ -2,57 +2,98 @@
 itools 0.20.0
 *************************************************************************
 
-1. Imports
-==========
+Imports
+=======
 
 The package "itools.xhtml" has been merged into "itools.html", and there
 have been many naming normalizations.  Non exhaustive list follows:
 
-  Before                        Now
-  ---------------               -------------------
-  csv.CSV                       csv.CSVFile
-  gettext.MO                    gettext.MOFile
-  gettext.PO                    gettext.POFile
-  handlers.Bzip2                handlers.Bzip2File
-  rest.checkid                  handlers.checkid
-  handlers.Config               handlers.ConfigFile
-  handlers.Gzip                 handlers.GzipFile
-  handlers.TarArchive           handlers.TARFile
-  handlers.Text                 handlers.TextFile
-  handlers.ZipArchive           handlers.ZIPFile
-  html.Document                 html.HTMLFile
-  html.Parser                   html.HTMLParser
-  xhtml.Document                html.XHTMLFile
-  xhtml.elements_schema         html.elements_schema
-  xhtml.sanitize_str            html.sanitize_str
-  xhtml.sanitize_stream         html.sanitize_stream
-  xhtml.stream_to_str_as_html   html.stream_to_str_as_html
-  xhtml.stream_to_str_as_xhtml  html.stream_to_str_as_xhtml
-  xhtml.xhtml_uri               html.xhtml_uri
-  odf.ODP                       odf.ODPFile
-  odf.ODS                       odf.ODSFile
-  odf.ODT                       odf.ODTFile
-  odf.OOCalc                    odf.SXCFile
-  odf.OOImpress                 odf.SXIFile
-  odf.OOWriter                  odf.SXWFile
-  pdf.PDF                       pdf.PDFFile
-  schemas.Schema                schemas.BaseSchema
-  xml.Document                  xml.XMLFile
-  xml.Parser                    xml.XMLParser
+  Before                         Now (alphabetical order)
+  ----------------------------   ---------------------------
+  csv.CSV                        csv.CSVFile
+  gettext.MO                     gettext.MOFile
+  gettext.PO                     gettext.POFile
+  handlers.Bzip2                 handlers.Bzip2File
+  rest.checkid                   handlers.checkid
+  handlers.Config                handlers.ConfigFile
+  handlers.Gzip                  handlers.GzipFile
+  handlers.TarArchive            handlers.TARFile
+  handlers.Text                  handlers.TextFile
+  handlers.ZipArchive            handlers.ZIPFile
+  html.Document                  html.HTMLFile
+  html.Parser                    html.HTMLParser
+  xhtml.Document                 html.XHTMLFile
+  xhtml.elements_schema          html.elements_schema
+  xhtml.sanitize_str             html.sanitize_str
+  xhtml.sanitize_stream          html.sanitize_stream
+  xhtml.stream_to_str_as_html    html.stream_to_str_as_html
+  xhtml.stream_to_str_as_xhtml   html.stream_to_str_as_xhtml
+  xhtml.xhtml_uri                html.xhtml_uri
+  odf.ODP                        odf.ODPFile
+  odf.ODS                        odf.ODSFile
+  odf.ODT                        odf.ODTFile
+  odf.OOCalc                     odf.SXCFile
+  odf.OOImpress                  odf.SXIFile
+  odf.OOWriter                   odf.SXWFile
+  pdf.PDF                        pdf.PDFFile
+  schemas.Schema                 schemas.BaseSchema
+  xml.Document                   xml.XMLFile
+  xml.Parser                     xml.XMLParser
 
 
-Remove obsolete code
-====================
-gettext.PO.get_translation
-rest.to_xml
-rest.to_html
-rest.to_latex
-web.Context.get_accept_language
+Packaging
+=========
+
+The options of the "setup.conf" file have changed a little, the "description"
+field must be renamed to "title".
 
 
-VFS
-===
 
+TODO The sections below must be written in proper English TODO
+
+itools.catalog
+==============
+Catalog.abort => Catalog.abort_changes
+
+make_catalog(uri, *fields) => make_catalog(uri)
+ => CatalogAware.get_catalog_fields
+CatalogAware.get_catalog_indexes => CatalogAware.get_catalog_values
+
+
+itools.csv
+==========
+Remove IntegerKey
+Replace "Row.set_value" by "CSVFile.update_row"
+
+
+itools.datatypes
+================
+InternetDateTime => HTTPDate
+
+
+itools.gettext
+==============
+Remove gettext.PO.get_translation
+
+
+itools.handlers
+===============
+Do not use __slots__
+Text.guess_encoding => guess_encoding
+
+
+itools.rest
+===========
+Remove rest.to_xml rest.to_html rest.to_latex
+
+
+itools.rss
+==========
+API refactor
+
+
+itools.vfs
+==========
 Open modes changed:
 
   Before           Now             Posix
@@ -63,23 +104,9 @@ Open modes changed:
   APPEND           APPEND          ab
 
 
-Catalog
-=======
-Catalog.abort => Catalog.abort_changes
-
-make_catalog(uri, *fields) => make_catalog(uri)
- => CatalogAware.get_catalog_fields
-CatalogAware.get_catalog_indexes => CatalogAware.get_catalog_values
-
-
-Handlers
-========
-Do not use __slots__
-Text.guess_encoding => guess_encoding
-
-
-Web
-===
+itools.web
+==========
+Remove web.Context.get_accept_language
 Remove "get_pathtoroot"
 context.handler => context.object
 get_abspath returns a Path object

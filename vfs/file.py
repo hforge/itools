@@ -137,13 +137,6 @@ class FileFS(BaseFS):
         if not exists(path):
             raise OSError, "File does not exist '%s'" % reference
 
-        # Open for write if possible, otherwise for read
-        if mode is None:
-            try:
-                return file(path, 'r+b')
-            except IOError:
-                return file(path, 'rb')
-
         # Open for write
         if mode == WRITE:
             return file(path, 'wb')

@@ -476,7 +476,7 @@ class Dressable(Folder, EpozEditable):
         new_body = context.get_form_value('data')
         try:
             new_body = HTMLParser(new_body)
-        except HTMLParseError:
+        except (HTMLParseError, ValueError):
             return context.come_back(u'Invalid HTML code.')
         if sanitize:
             new_body = sanitize_stream(new_body)

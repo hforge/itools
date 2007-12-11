@@ -96,7 +96,7 @@ class Parameters(DataType):
 
     @staticmethod
     def encode(parameters):
-        parameters = [ '%s=%s' % (attribute, value)
+        parameters = [ '%s="%s"' % (attribute, value)
                        for attribute, value in parameters.items() ]
         return '; '.join(parameters)
 

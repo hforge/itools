@@ -16,7 +16,7 @@
 
 # Import from the Standard Library
 import htmlentitydefs
-from HTMLParser import HTMLParser as BaseParser
+from HTMLParser import HTMLParser as BaseParser, HTMLParseError
 import warnings
 
 # Import from itools
@@ -257,8 +257,8 @@ class Parser(BaseParser, object):
                 if attribute_name in boolean_attributes:
                     attribute_value = attribute_name
                 else:
-                    raise ValueError, \
-                          'missing attribute value for "%s"' % attribute_name
+                    message = 'missing attribute value for "%s"'
+                    raise XMLError, message % attribute_name
             attributes[(xhtml_uri, attribute_name)] = attribute_value
 
         # Start element
@@ -341,7 +341,7 @@ def make_xml_compatible(stream):
                     last = stack.pop()
                 else:
                     msg = 'missing end tag </%s> at line %s'
-                    raise ValueError, msg % (last, line)
+                    raise XMLError, msg % (last, line)
             yield event
         else:
             yield event
@@ -349,7 +349,10 @@ def make_xml_compatible(stream):
 
 
 def HTMLParser(data):
-    stream = Parser().parse(data)
+    try:
+        stream = Parser().parse(data)
+    except HTMLParseError, message:
+        raise XMLError, message
     stream = make_xml_compatible(stream)
     # TODO Don't transform to a list, keep the stream
     return list(stream)

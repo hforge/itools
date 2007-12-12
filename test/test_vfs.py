@@ -22,7 +22,8 @@ from unittest import TestCase
 
 # Import from itools
 from itools import vfs
-from itools.vfs import APPEND, WRITE, FileFS
+from itools.vfs import APPEND, WRITE
+from itools.vfs.file import FileFS
 from itools.vfs.registry import get_file_system
 
 

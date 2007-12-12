@@ -16,7 +16,7 @@
 
 # Import from itools
 from base import BaseFS
-from file import FileFS
+import file
 from registry import register_file_system, deregister_file_system
 from vfs import (cwd, exists, is_file, is_folder, can_read, can_write,
                  get_ctime, get_mtime, get_atime, get_mimetype, get_size,
@@ -27,7 +27,6 @@ from vfs import (cwd, exists, is_file, is_folder, can_read, can_write,
 __all__ = [
     'cwd',
     'BaseFS',
-    'FileFS',
     # File modes
     'READ',
     'WRITE',
@@ -55,5 +54,4 @@ __all__ = [
     'move',
     'get_names',
     'traverse']
-
 

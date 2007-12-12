@@ -15,25 +15,24 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-import warnings
+from warnings import warn
 
 # Import from itools
 from itools.datatypes import String, QName
 from base import BaseSchema
 
 
-##############################################################################
+###########################################################################
 # The schemas registry
-##############################################################################
+###########################################################################
 
 schemas = {}
 prefixes = {}
 
 
 def register_schema(schema, *args):
-    """
-    Associates a schema handler to a schema uri. It a prefix is
-    given it also associates that that prefix to the given schema.
+    """Associates a schema handler to a schema uri. It a prefix is given it
+    also associates that that prefix to the given schema.
     """
     # Register the URI
     schemas[schema.class_uri] = schema
@@ -42,7 +41,7 @@ def register_schema(schema, *args):
     prefix = schema.class_prefix
     if prefix is not None:
         if prefix in prefixes:
-            warnings.warn('The prefix "%s" is already registered.' % prefix)
+            warn('The prefix "%s" is already registered.' % prefix)
         prefixes[prefix] = schema.class_uri
 
     # Register additional URIs
@@ -50,13 +49,12 @@ def register_schema(schema, *args):
         schemas[uri] = schema
 
 
-##############################################################################
+###########################################################################
 # API
-##############################################################################
+###########################################################################
 
 def get_schema(name):
-    """
-    Returns the schema handler associated to the given prefix. If there
+    """Returns the schema handler associated to the given prefix. If there
     is none the default schema handler is returned, and a warning message
     is issued.
     """
@@ -66,32 +64,30 @@ def get_schema(name):
 
     # Use default
     if name is not None:
-        warnings.warn('Unknown schema prefix "%s" (using default)' % name)
+        warn('Unknown schema prefix "%s" (using default)' % name)
     return schemas[None]
 
 
 def get_schema_by_uri(schema_uri):
-    """
-    Returns the schema handler associated to the given uri. If there
-    is none the default schema handler will be returned, and a warning
-    message will be issued.
+    """Returns the schema handler associated to the given uri.  If there is
+    none the default schema handler will be returned, and a warning message
+    will be issued.
     """
     if schema_uri in schemas:
         return schemas[schema_uri]
 
     # Use default
-    warnings.warn('Unknown schema "%s" (using default)' % schema_uri)
+    warn('Unknown schema "%s" (using default)' % schema_uri)
     return schemas[None]
 
 
 def has_schema(schema_uri):
-    """
-    Returns true if there is schema handler associated to the given uri.
+    """Returns true if there is schema handler associated to the given uri.
     """
     return schema_uri in schemas
 
 
-##############################################################################
+###########################################################################
 # API / DataTypes
 def get_datatype(qname):
     if isinstance(qname, str):
@@ -106,14 +102,14 @@ def get_datatype_by_uri(schema_uri, name):
         schema = schemas[schema_uri]
     else:
         # Use default
-        warnings.warn('Unknown schema "%s" (using default)' % schema_uri)
+        warn('Unknown schema "%s" (using default)' % schema_uri)
         schema = schemas[None]
     return schema.get_datatype(name)
 
 
-##############################################################################
+###########################################################################
 # The default schema, used when the prefix is None
-##############################################################################
+###########################################################################
 class DefaultSchema(BaseSchema):
 
     class_uri = None

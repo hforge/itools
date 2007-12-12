@@ -22,7 +22,7 @@ from datetime import datetime
 from itools.datatypes import (Unicode, String, ISODateTime, ISOCalendarDate,
                               ISOTime)
 from base import BaseSchema
-import registry
+from registry import register_schema
 
 
 # XXX Backwards compatibility, an upgrade method needed in itools.cms to
@@ -68,6 +68,6 @@ class DublinCore(BaseSchema):
                  }
 
 
-# XXX For backwards compatibility, register the schema also with the old
+# FIXME For backwards compatibility, register the schema also with the old
 # and wrong uri (introduced in 0.15.1)
-registry.register_schema(DublinCore, 'http://purl.org/dc/elements/1.1')
+register_schema(DublinCore, 'http://purl.org/dc/elements/1.1')

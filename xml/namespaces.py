@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-import warnings
+from warnings import warn
 
 # Import from itools
 from itools.datatypes import String, Unicode
@@ -41,17 +41,16 @@ be used carefully, collisions
 """
 
 
-#############################################################################
+###########################################################################
 # The registry
-#############################################################################
+###########################################################################
 
 namespaces = {}
 prefixes = {}
 
 
 def set_namespace(namespace):
-    """
-    Associates a namespace handler to a namespace uri. It a prefix is
+    """Associates a namespace handler to a namespace uri. It a prefix is
     given it also associates that that prefix to the given namespace.
     """
     namespaces[namespace.class_uri] = namespace
@@ -59,13 +58,12 @@ def set_namespace(namespace):
     prefix = namespace.class_prefix
     if prefix is not None:
         if prefix in prefixes:
-            warnings.warn('The prefix "%s" is already registered.' % prefix)
+            warn('The prefix "%s" is already registered.' % prefix)
         prefixes[prefix] = namespace.class_uri
 
 
 def get_namespace(namespace_uri):
-    """
-    Returns the namespace handler associated to the given uri. If there
+    """Returns the namespace handler associated to the given uri. If there
     is none the default namespace handler will be returned, and a warning
     message will be issued.
     """
@@ -73,20 +71,18 @@ def get_namespace(namespace_uri):
         return namespaces[namespace_uri]
 
     # Use default
-    warnings.warn('Unknown namespace "%s" (using default)' % namespace_uri)
+    warn('Unknown namespace "%s" (using default)' % namespace_uri)
     return namespaces[None]
 
 
 def has_namespace(namespace_uri):
-    """
-    Returns true if there is namespace handler associated to the given uri.
+    """Returns true if there is namespace handler associated to the given uri.
     """
     return namespace_uri in namespaces
 
 
 def get_namespace_by_prefix(prefix):
-    """
-    Returns the namespace handler associated to the given prefix. If there
+    """Returns the namespace handler associated to the given prefix. If there
     is none the default namespace handler is returned, and a warning message
     is issued.
     """
@@ -95,7 +91,7 @@ def get_namespace_by_prefix(prefix):
         return get_namespace(namespace_uri)
 
     # Use default
-    warnings.warn('Unknown namespace prefix "%s" (using default)' % prefix)
+    warn('Unknown namespace prefix "%s" (using default)' % prefix)
     return namespaces[None]
 
 
@@ -108,13 +104,12 @@ def is_empty(namespace, name):
     return schema.get('is_empty', False)
 
 
-#############################################################################
+###########################################################################
 # Namespaces
-#############################################################################
+###########################################################################
 
 class AbstractNamespace(object):
-    """
-    This class defines the default behaviour for namespaces, which is to
+    """This class defines the default behaviour for namespaces, which is to
     raise an error.
 
     Subclasses should define:
@@ -142,8 +137,7 @@ class AbstractNamespace(object):
     # Internationalization
     @classmethod
     def is_translatable(cls, tag_uri, tag_name, attributes, attribute_name):
-        """
-        Some elements may contain text addressed to users, that is, text
+        """Some elements may contain text addressed to users, that is, text
         that could be translated in different human languages, for example
         the 'p' element of XHTML. This method should return 'True' in that
         cases, False (the default) otherwise.
@@ -157,9 +151,8 @@ class AbstractNamespace(object):
 
 
 class DefaultNamespace(AbstractNamespace):
-    """
-    Default namespace handler for elements and attributes that are not bound
-    to a particular namespace.
+    """Default namespace handler for elements and attributes that are not
+    bound to a particular namespace.
     """
 
     class_uri = None
@@ -198,7 +191,9 @@ class XMLNSNamespace(AbstractNamespace, BaseSchema):
 
 
 
-# Register the namespaces
+###########################################################################
+# Register
+###########################################################################
 set_namespace(DefaultNamespace)
 register_schema(XMLNamespace)
 register_schema(XMLNSNamespace)

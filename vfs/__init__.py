@@ -17,6 +17,7 @@
 # Import from itools
 from base import BaseFS
 import file
+import memfs
 from registry import register_file_system, deregister_file_system
 from vfs import (cwd, exists, is_file, is_folder, can_read, can_write,
                  get_ctime, get_mtime, get_atime, get_mimetype, get_size,

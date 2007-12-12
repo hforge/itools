@@ -69,8 +69,7 @@ class BaseFS(object):
 
     @classmethod
     def get_mimetype(cls, reference):
-        """
-        Try to guess the mimetype for a resource, given the resource itself
+        """Try to guess the mimetype for a resource, given the resource itself
         and its name. To guess from the name we need to extract the type
         extension, we use an heuristic for this task, but it needs to be
         improved because there are many patterns:
@@ -87,20 +86,19 @@ class BaseFS(object):
 
         XXX Use magic numbers too (like file -i).
         """
-        name = reference.path[-1]
-        # Parse the filename
-        name, type, language = FileName.decode(name)
+        if not cls.is_file(reference):
+            return 'application/x-not-regular-file'
 
-        # Get the mimetype
-        if type is not None:
-            mimetype, encoding = guess_type('.%s' % type)
+        # Find out the filename extension
+        name = reference.path[-1]
+        name, extension, language = FileName.decode(name)
+        # Figure out the mimetype from the filename extension
+        if extension is not None:
+            mimetype, encoding = guess_type('.%s' % extension)
             if mimetype is not None:
                 return mimetype
 
-        if cls.is_file(reference):
-            return 'application/octet-stream'
-
-        return 'application/x-not-regular-file'
+        return 'application/octet-stream'
 
 
     @staticmethod

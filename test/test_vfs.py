@@ -29,8 +29,7 @@ from itools.vfs.registry import get_file_system
 
 
 class FileTestCase(TestCase):
-    """
-    Test the whole API for the filesystem layer, "file://..."
+    """Test the whole API for the filesystem layer, "file://..."
     """
 
     def test00_exists(self):
@@ -195,11 +194,22 @@ class FoldersTestCase(TestCase):
 
     def setUp(self):
         self.tests = vfs.open('tests/')
+        vfs.make_folder('tests/toto.txt')
 
 
-    def test00_exists(self):
+    def tearDown(self):
+        if vfs.exists('tests/toto.txt'):
+            vfs.remove('tests/toto.txt')
+
+
+    def test_exists(self):
         exists = self.tests.exists('index.html.en')
         self.assertEqual(exists, True)
+
+
+    def test_mimetype(self):
+        mimetype = vfs.get_mimetype('tests/toto.txt')
+        self.assertEqual(mimetype, 'application/x-not-regular-file')
 
 
 

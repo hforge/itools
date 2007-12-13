@@ -19,18 +19,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from copy import deepcopy
-import datetime
+from datetime import datetime
 from string import Template
 from thread import get_ident, allocate_lock
 from time import strptime
 
 # Import from itools
-from itools.uri import Path, get_reference
-from itools.datatypes import Enumerate, is_datatype
-from itools.i18n import AcceptLanguageType
-from itools.schemas import get_datatype
+from itools.datatypes import is_datatype, Enumerate
 from itools.http import Response
+from itools.i18n import AcceptLanguageType
+from itools.uri import get_reference
 
 
 
@@ -144,9 +142,8 @@ class Context(object):
                 expires = expires[5:-4]
                 expires = strptime(expires, '%d-%b-%y %H:%M:%S')
                 year, month, day, hour, min, sec, kk, kk, kk = expires
-                expires = datetime.datetime(year, month, day, hour, min, sec)
-
-                if expires < datetime.datetime.now():
+                expires = datetime(year, month, day, hour, min, sec)
+                if expires < datetime.now():
                     return None
 
             value = cookie.value
@@ -219,25 +216,19 @@ class Context(object):
         an HTML form. Its input data is a list (fields) that defines the form
         variables to consider:
 
-            [(<field name>, <is field required>),
-             ...]
+            [(<field name>, <is field required>, <datatype>), ...]
 
         Every element of the list is a tuple with the name of the field and a
         boolean value that specifies whether the field is mandatory or not.
 
         The output is like:
 
-            {<field name>: {'value': <field value>,
-                            'class': <CSS class>}
+            {<field name>: {'value': <field value>, 'class': <CSS class>}
              ...}
         """
         namespace = {}
         for field in fields:
-            if len(field) == 2:
-                field, is_mandatory = field
-                datatype = get_datatype(field)
-            else:
-                field, is_mandatory, datatype = field
+            field, is_mandatory, datatype = field
             # The value
             value = self.get_form_value(field)
             # The style
@@ -271,8 +262,7 @@ class Context(object):
         Its input data is a list (fields) that defines the form variables to
         consider:
 
-            [(<field name>, <is field required>[ , <datatype>]),
-             ...]
+            [(<field name>, <is field required>, <datatype>), ...]
 
         Every element of the list is a tuple with the name of the field
         and a boolean value that specifies whether the field is mandatory
@@ -283,12 +273,7 @@ class Context(object):
             u' Please correct them and continue.')
         # Check mandatory fields
         for field in fields:
-            if len(field) == 2:
-                field, is_mandatory = field
-                datatype = get_datatype(field)
-            else:
-                field, is_mandatory, datatype = field
-
+            field, is_mandatory, datatype = field
             try:
                 value = self.get_form_value(field, type=datatype)
             except:

@@ -57,43 +57,63 @@ TODO The sections below must be written in proper English TODO
 
 itools.catalog
 ==============
-Catalog.abort => Catalog.abort_changes
 
-make_catalog(uri, *fields) => make_catalog(uri)
- => CatalogAware.get_catalog_fields
-CatalogAware.get_catalog_indexes => CatalogAware.get_catalog_values
+The abort method has been renamed to abort_changes.
+**Catalog.abort => Catalog.abort_changes**
+
+The make_catalog method don't take anymore the fields in parameter.
+The fields parameter is replaced by the method CatalogAware.get_catalog_fields.
+It is not necessary to inherit from ikaaro.Root class to define the catalog fields now.
+
+get_catalog_indexes method has been replaced by get_catalog_values. This method
+returns a dictionary with the values of the fields to be indexed.
+
+**make_catalog(uri, *fields) => make_catalog(uri)**
+** => CatalogAware.get_catalog_fields **
+**CatalogAware.get_catalog_indexes => CatalogAware.get_catalog_values**
 
 
 itools.csv
 ==========
-Remove IntegerKey
-Replace "Row.set_value" by "CSVFile.update_row"
+
+Remove advanced feature "IntegerKey" (use the Table handler instead).
+The Row.set_value method has been replaced by update_row.
+Its functioning is similar to method itools.table.update_record.
+But changed values only must be specified.
+
+**Remove IntegerKey**
+**Replace "Row.set_value" by "CSVFile.update_row"**
 
 
 itools.datatypes
 ================
-InternetDateTime => HTTPDate
+
+The parsing of dates in Internet protocols is unified now (reuse Standard
+Library):
+**InternetDateTime => HTTPDate**
 
 
 itools.gettext
 ==============
 Remove gettext.PO.get_translation
-
+TODO
 
 itools.handlers
 ===============
-Do not use __slots__
-Text.guess_encoding => guess_encoding
 
+Do not use __slots__ anymore for handlers.
+Now guess_encoding is a function.
+TODO
 
 itools.rest
 ===========
 Remove rest.to_xml rest.to_html rest.to_latex
-
+TODO
 
 itools.rss
 ==========
 API refactor
+TODO
 
 
 itools.vfs
@@ -112,7 +132,8 @@ itools.web
 ==========
 Remove web.Context.get_accept_language
 Remove "get_pathtoroot"
-context.handler => context.object
-get_abspath returns a Path object
+TODO
 
-
+abspath attribute is now deprecated, it's replaced by get_abspath method which
+returns a Path object.
+Replace "context.handler" by "context.object".

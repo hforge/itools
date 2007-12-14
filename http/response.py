@@ -18,11 +18,10 @@
 from datetime import datetime
 
 # Import from itools
-from itools.schemas import get_datatype
-import headers
 from itools.datatypes import HTTPDate
+from headers import get_type
+from entities import read_headers
 from message import Message
-import entities
 
 
 status_messages = {
@@ -111,7 +110,7 @@ class Response(Message):
         status_code = int(status_code)
         self.set_status(status_code)
         # The headers
-        self.headers = entities.read_headers(file)
+        self.headers = read_headers(file)
         # The body
         self.body = file.read()
         # The cookies
@@ -133,7 +132,7 @@ class Response(Message):
         # User defined headers
         for name in self.headers:
             if name not in ['date', 'server']:
-                datatype = headers.get_type(name)
+                datatype = get_type(name)
                 value = self.headers[name]
                 value = datatype.encode(value)
                 data.append('%s: %s\r\n' % (name.title(), value))
@@ -160,11 +159,8 @@ class Response(Message):
             if cookie.secure is not None:
                 parameters.append('; secure=%s' % cookie.secure)
             # The value
-            datatype = get_datatype(name)
-            value = datatype.encode(cookie.value)
-
-            data.append('Set-Cookie: %s="%s"%s\r\n' % (name, value,
-                                                   ''.join(parameters)))
+            data.append('Set-Cookie: %s="%s"%s\r\n'
+                        % (name, cookie.value, ''.join(parameters)))
         # A blank line separates the header from the body
         data.append('\r\n')
         # The body

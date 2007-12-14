@@ -5,14 +5,14 @@ itools 0.20.0 (2007/12/20)
 itools is a Python library, it groups a number of packages into a single
 meta-package for easier development and deployment:
 
-  itools.catalog          itools.i18n             itools.tmx
-  itools.csv              itools.ical             itools.uri
-  itools.datatypes        itools.odf              itools.vfs
-  itools.gettext          itools.pdf              itools.web
-  itools.git              itools.rest             itools.workflow
-  itools.handlers         itools.rss              itools.xliff
-  itools.html             itools.schemas          itools.xml
-  itools.http             itools.stl
+  itools.catalog          itools.i18n             itools.uri
+  itools.csv              itools.ical             itools.vfs
+  itools.datatypes        itools.odf              itools.web
+  itools.gettext          itools.pdf              itools.workflow
+  itools.git              itools.rest             itools.xliff
+  itools.handlers         itools.rss              itools.xml
+  itools.html             itools.stl
+  itools.http             itools.tmx
 
 The most visible change in this major release is that "itools.cms" has
 been moved out of itools and is now distributed as a separate package,

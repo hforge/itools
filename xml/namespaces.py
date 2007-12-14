@@ -19,7 +19,6 @@ from warnings import warn
 
 # Import from itools
 from itools.datatypes import String, Unicode
-from itools.schemas import BaseSchema, register_schema
 from parser import XMLError
 
 
@@ -49,17 +48,23 @@ namespaces = {}
 prefixes = {}
 
 
-def set_namespace(namespace):
+def set_namespace(namespace, *args):
     """Associates a namespace handler to a namespace uri. It a prefix is
     given it also associates that that prefix to the given namespace.
     """
+    # Register the URI
     namespaces[namespace.class_uri] = namespace
 
+    # Register the prefix
     prefix = namespace.class_prefix
     if prefix is not None:
         if prefix in prefixes:
             warn('The prefix "%s" is already registered.' % prefix)
         prefixes[prefix] = namespace.class_uri
+
+    # Register additional URIs
+    for uri in args:
+        namespaces[uri] = namespace
 
 
 def get_namespace(namespace_uri):
@@ -127,10 +132,20 @@ class AbstractNamespace(object):
     class_uri = None
     class_prefix = None
 
+    datatypes = {}
+
 
     @staticmethod
     def get_element_schema(name):
         raise XMLError, 'undefined element "%s"' % name
+
+
+    @classmethod
+    def get_datatype(cls, name):
+        if name in cls.datatypes:
+            return cls.datatypes[name]
+
+        raise KeyError, '"%s" not defined' % name
 
 
     #######################################################################
@@ -164,29 +179,34 @@ class DefaultNamespace(AbstractNamespace):
         return {'is_empty': False}
 
 
+    @classmethod
+    def get_datatype(cls, name):
+        return String
 
-class XMLNamespace(AbstractNamespace, BaseSchema):
+
+
+class XMLNamespace(AbstractNamespace):
 
     class_uri = 'http://www.w3.org/XML/1998/namespace'
     class_prefix = 'xml'
 
 
-    @staticmethod
-    def get_datatype(name):
+    @classmethod
+    def get_datatype(cls, name):
         if name == 'lang':
             return String
         return Unicode
 
 
 
-class XMLNSNamespace(AbstractNamespace, BaseSchema):
+class XMLNSNamespace(AbstractNamespace):
 
     class_uri = 'http://www.w3.org/2000/xmlns/'
     class_prefix = 'xmlns'
 
 
-    @staticmethod
-    def get_datatype(name):
+    @classmethod
+    def get_datatype(cls, name):
         return String
 
 
@@ -195,7 +215,5 @@ class XMLNSNamespace(AbstractNamespace, BaseSchema):
 # Register
 ###########################################################################
 set_namespace(DefaultNamespace)
-register_schema(XMLNamespace)
-register_schema(XMLNSNamespace)
 set_namespace(XMLNamespace)
 set_namespace(XMLNSNamespace)

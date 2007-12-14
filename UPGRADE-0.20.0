@@ -36,9 +36,13 @@ have been many naming normalizations.  Non exhaustive list follows:
   odf.OOImpress                  odf.SXIFile
   odf.OOWriter                   odf.SXWFile
   pdf.PDF                        pdf.PDFFile
-  schemas.Schema                 schemas.BaseSchema
   xml.Document                   xml.XMLFile
   xml.Parser                     xml.XMLParser
+
+
+
+The itools.schemas package has been removed, use instead the XML namespaces, or
+explicit schemas.
 
 
 Packaging

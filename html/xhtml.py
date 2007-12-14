@@ -17,13 +17,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-import re
+from re import finditer
 from cStringIO import StringIO
 
 # Import from itools
 from itools.datatypes import (Boolean, Integer, Unicode, String, URI,
     XML as XMLContent, XMLAttribute)
-from itools.schemas import BaseSchema, get_datatype_by_uri, register_schema
 from itools.handlers import register_handler_class
 from itools.xml import (XMLParser, XMLFile, XML_DECL, DOCUMENT_TYPE,
     START_ELEMENT, END_ELEMENT, TEXT, COMMENT, AbstractNamespace,
@@ -66,7 +65,6 @@ def stream_to_html(stream, encoding='UTF-8'):
             for attr_uri, attr_name in attributes:
                 value = attributes[(attr_uri, attr_name)]
                 qname = get_attribute_qname(attr_uri, attr_name)
-                type = get_datatype_by_uri(attr_uri, attr_name)
                 value = XMLAttribute.encode(value)
                 s += ' %s="%s"' % (qname, value)
             data.append(s + '>')
@@ -133,8 +131,7 @@ def stream_to_str_as_html(stream, encoding='UTF-8'):
 
 
 def sanitize_stream(stream):
-    """
-    Method that removes potentially dangerous HTML tags and attributes
+    """Method that removes potentially dangerous HTML tags and attributes
     from the events
     """
     safe_tags = frozenset(['a', 'abbr', 'acronym', 'address', 'area',
@@ -197,7 +194,7 @@ def sanitize_stream(stream):
                 # Check CSS
                 if attr_name in 'style':
                     value = attributes[c_attribute]
-                    for m in re.finditer(r'url\s*\(([^)]+)', value):
+                    for m in finditer(r'url\s*\(([^)]+)', value):
                         href = m.group(1)
                         if ':' in href:
                             scheme = href.split(':')[0]
@@ -291,35 +288,6 @@ elements_schema = {
 
 
 class Namespace(AbstractNamespace):
-
-    class_uri = xhtml_uri
-    class_prefix = None
-
-
-    @staticmethod
-    def get_element_schema(name):
-        default_schema = {'is_empty': False, 'is_inline': False}
-        return elements_schema.get(name, default_schema)
-
-
-    @classmethod
-    def is_translatable(cls, tag_uri, tag_name, attributes, attribute_name):
-        # Attributes
-        if attribute_name == 'title':
-            return True
-        if tag_name == 'img' and attribute_name == 'alt':
-            return True
-        if tag_name == 'input' and attribute_name == 'value':
-            value = attributes.get((cls.class_uri, 'type'))
-            return value == 'submit'
-        return False
-
-
-set_namespace(Namespace)
-
-
-
-class Schema(BaseSchema):
 
     class_uri = xhtml_uri
     class_prefix = None
@@ -446,11 +414,31 @@ class Schema(BaseSchema):
                  }
 
 
+    @staticmethod
+    def get_element_schema(name):
+        default_schema = {'is_empty': False, 'is_inline': False}
+        return elements_schema.get(name, default_schema)
+
+
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
 
-register_schema(Schema)
+
+    @classmethod
+    def is_translatable(cls, tag_uri, tag_name, attributes, attribute_name):
+        # Attributes
+        if attribute_name == 'title':
+            return True
+        if tag_name == 'img' and attribute_name == 'alt':
+            return True
+        if tag_name == 'input' and attribute_name == 'value':
+            value = attributes.get((cls.class_uri, 'type'))
+            return value == 'submit'
+        return False
+
+
+set_namespace(Namespace)
 
 
 
@@ -458,9 +446,8 @@ register_schema(Schema)
 # Document
 #############################################################################
 class XHTMLFile(XMLFile):
-    """
-    This class adds one thing to the XML class, the semantics of translatable
-    text.
+    """This class adds one thing to the XML class, the semantics of
+    translatable text.
     """
 
     class_mimetypes = ['application/xhtml+xml']

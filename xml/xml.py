@@ -17,7 +17,6 @@
 
 # Import from itools
 from itools.datatypes import XMLAttribute, XML as XMLContent
-from itools.schemas import get_datatype_by_uri
 from itools.handlers import TextFile, register_handler_class
 from i18n import get_messages, translate
 from namespaces import get_namespace, is_empty, XMLNSNamespace
@@ -74,7 +73,6 @@ def get_start_tag(tag_uri, tag_name, attributes):
     # Output the attributes
     for attr_uri, attr_name in attributes:
         value = attributes[(attr_uri, attr_name)]
-        datatype = get_datatype_by_uri(attr_uri, attr_name)
         qname = get_attribute_qname(attr_uri, attr_name)
         value = XMLAttribute.encode(value)
         s += ' %s="%s"' % (qname, value)

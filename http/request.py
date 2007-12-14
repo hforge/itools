@@ -21,8 +21,7 @@ from urllib import urlencode
 
 # Import from itools
 from itools.uri import get_reference, decode_query
-from itools.datatypes import QName
-from itools.schemas import get_datatype
+from itools.datatypes import QName, String
 from itools.handlers import Handler
 from exceptions import BadRequest, NotImplemented
 import headers
@@ -181,7 +180,7 @@ class Request(Message):
     # The Form
     def get_parameter(self, name, default=None, type=None):
         if type is None:
-            type = get_datatype(name)
+            type = String
 
         form = self.form
         if name in form:

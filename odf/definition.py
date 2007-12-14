@@ -18,7 +18,6 @@
 # Import from itools
 from itools.datatypes import Unicode
 from itools.xml import AbstractNamespace, set_namespace
-from itools.schemas import BaseSchema, register_schema
 
 
 ########################################################################
@@ -225,32 +224,23 @@ odt_text_elements = {
     #'word-count'
 }
 
+
 class OdtTextNamespace(AbstractNamespace):
-
-    class_uri = 'urn:oasis:names:tc:opendocument:xmlns:text:1.0'
-    class_prefix = 'text'
-
-
-    @staticmethod
-    def get_element_schema(name):
-        default_schema = {'is_empty': False, 'is_inline': False}
-        return odt_text_elements.get(name, default_schema)
-
-set_namespace(OdtTextNamespace)
-
-
-class OdtTextSchema(BaseSchema):
 
     class_uri = 'urn:oasis:names:tc:opendocument:xmlns:text:1.0'
     class_prefix = 'text'
 
     datatypes = {'style-name': Unicode}
 
+    @staticmethod
+    def get_element_schema(name):
+        default_schema = {'is_empty': False, 'is_inline': False}
+        return odt_text_elements.get(name, default_schema)
+
+
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
-
-register_schema(OdtTextSchema)
 
 
 
@@ -258,11 +248,12 @@ register_schema(OdtTextSchema)
 ############ urn:oasis:names:tc:opendocument:xmlns:office:1.0 ##########
 ########################################################################
 
-
 class OdtOfficeNamespace(AbstractNamespace):
 
     class_uri = 'urn:oasis:names:tc:opendocument:xmlns:office:1.0'
     class_prefix = 'office'
+
+    datatypes = {'version': Unicode}
 
     @staticmethod
     def get_element_schema(name):
@@ -297,22 +288,9 @@ class OdtOfficeNamespace(AbstractNamespace):
         default_schema = {'is_empty': False, 'is_inline': False}
         return elements_schema.get(name, default_schema)
 
-set_namespace(OdtOfficeNamespace)
-
-
-
-class OdtOfficeSchema(BaseSchema):
-
-    class_uri = 'urn:oasis:names:tc:opendocument:xmlns:office:1.0'
-    class_prefix = 'office'
-
-    datatypes = {'version': Unicode}
-
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
-
-register_schema(OdtOfficeSchema)
 
 
 
@@ -412,27 +390,16 @@ class OdtStyleNamespace(AbstractNamespace):
     class_uri = 'urn:oasis:names:tc:opendocument:xmlns:style:1.0'
     class_prefix = 'style'
 
+    datatypes = {'name': Unicode}
+
     @staticmethod
     def get_element_schema(name):
         default_schema = {'is_empty': False, 'is_inline': False}
         return odt_style_elements.get(name, default_schema)
 
-set_namespace(OdtStyleNamespace)
-
-
-
-class OdtStyleSchema(BaseSchema):
-
-    class_uri = 'urn:oasis:names:tc:opendocument:xmlns:style:1.0'
-    class_prefix = 'style'
-
-    datatypes = {'name': Unicode}
-
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
-
-register_schema(OdtStyleSchema)
 
 
 
@@ -440,11 +407,12 @@ register_schema(OdtStyleSchema)
 ############ urn:oasis:names:tc:opendocument:xmlns:table:1.0  ##########
 ########################################################################
 
-
 class OdtTableNamespace(AbstractNamespace):
 
     class_uri = "urn:oasis:names:tc:opendocument:xmlns:table:1.0"
     class_prefix = 'table'
+
+    datatypes = {}
 
     @staticmethod
     def get_element_schema(name):
@@ -550,22 +518,9 @@ class OdtTableNamespace(AbstractNamespace):
         default_schema = {'is_empty': False, 'is_inline': False}
         return elements_schema.get(name, default_schema)
 
-set_namespace(OdtTableNamespace)
-
-
-
-class OdtTableSchema(BaseSchema):
-
-    class_uri = 'urn:oasis:names:tc:opendocument:xmlns:table:1.0'
-    class_prefix = 'table'
-
-    datatypes = {}
-
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
-
-register_schema(OdtTableSchema)
 
 
 
@@ -577,6 +532,8 @@ class OdtDrawingNamespace(AbstractNamespace):
 
     class_uri = "urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
     class_prefix = 'draw'
+
+    datatypes = {}
 
     @staticmethod
     def get_element_schema(name):
@@ -629,33 +586,22 @@ class OdtDrawingNamespace(AbstractNamespace):
         default_schema = {'is_empty': False, 'is_inline': False}
         return elements_schema.get(name, default_schema)
 
-set_namespace(OdtDrawingNamespace)
-
-
-
-class OdtDrawingSchema(BaseSchema):
-
-    class_uri = 'urn:oasis:names:tc:opendocument:xmlns:drawing:1.0'
-    class_prefix = 'draw'
-
-    datatypes = {}
-
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
 
-register_schema(OdtDrawingSchema)
 
 
-
-################################################################################
-############ urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0  ######
-################################################################################
+###########################################################################
+############ urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0
+###########################################################################
 
 class OdtFoNamespace(AbstractNamespace):
 
     class_uri = "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0"
     class_prefix = 'fo'
+
+    datatypes = {}
 
     @staticmethod
     def get_element_schema(name):
@@ -663,22 +609,9 @@ class OdtFoNamespace(AbstractNamespace):
         default_schema = {'is_empty': False, 'is_inline': False}
         return elements_schema.get(name, default_schema)
 
-set_namespace(OdtFoNamespace)
-
-
-
-class OdtFoSchema(BaseSchema):
-
-    class_uri = 'urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0'
-    class_prefix = 'fo'
-
-    datatypes = {}
-
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
-
-register_schema(OdtFoSchema)
 
 
 
@@ -690,6 +623,8 @@ class OdtMetaNamespace(AbstractNamespace):
 
     class_uri = "urn:oasis:names:tc:opendocument:xmlns:meta:1.0"
     class_prefix = 'meta'
+
+    datatypes = {}
 
     @staticmethod
     def get_element_schema(name):
@@ -712,22 +647,9 @@ class OdtMetaNamespace(AbstractNamespace):
         default_schema = {'is_empty': False, 'is_inline': False}
         return elements_schema.get(name, default_schema)
 
-set_namespace(OdtMetaNamespace)
-
-
-
-class OdtMetaSchema(BaseSchema):
-
-    class_uri = 'urn:oasis:names:tc:opendocument:xmlns:meta:1.0'
-    class_prefix = 'meta'
-
-    datatypes = {}
-
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
-
-register_schema(OdtMetaSchema)
 
 
 
@@ -735,11 +657,12 @@ register_schema(OdtMetaSchema)
 ######## urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0  ######
 #########################################################################
 
-
 class OdtSvgNamespace(AbstractNamespace):
 
     class_uri = "urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0"
     class_prefix = 'svg'
+
+    datatypes = {}
 
     @staticmethod
     def get_element_schema(name):
@@ -757,22 +680,9 @@ class OdtSvgNamespace(AbstractNamespace):
         default_schema = {'is_empty': False, 'is_inline': False}
         return elements_schema.get(name, default_schema)
 
-set_namespace(OdtSvgNamespace)
-
-
-
-class OdtSvgSchema(BaseSchema):
-
-    class_uri = "urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0"
-    class_prefix = 'svg'
-
-    datatypes = {}
-
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
-
-register_schema(OdtSvgSchema)
 
 
 
@@ -784,6 +694,8 @@ class OdtDr3dNamespace(AbstractNamespace):
 
     class_uri = "urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0"
     class_prefix = 'dr3d'
+
+    datatypes = {}
 
     @staticmethod
     def get_element_schema(name):
@@ -798,22 +710,9 @@ class OdtDr3dNamespace(AbstractNamespace):
         default_schema = {'is_empty': False, 'is_inline': False}
         return elements_schema.get(name, default_schema)
 
-set_namespace(OdtDr3dNamespace)
-
-
-
-class OdtDr3dSchema(BaseSchema):
-
-    class_uri = "urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0"
-    class_prefix = 'dr3d'
-
-    datatypes = {}
-
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
-
-register_schema(OdtDr3dSchema)
 
 
 
@@ -825,6 +724,8 @@ class OdtFormNamespace(AbstractNamespace):
 
     class_uri = "urn:oasis:names:tc:opendocument:xmlns:form:1.0"
     class_prefix = 'form'
+
+    datatypes = {}
 
     @staticmethod
     def get_element_schema(name):
@@ -863,22 +764,9 @@ class OdtFormNamespace(AbstractNamespace):
         default_schema = {'is_empty': False, 'is_inline': False}
         return elements_schema.get(name, default_schema)
 
-set_namespace(OdtFormNamespace)
-
-
-
-class OdtFormSchema(BaseSchema):
-
-    class_uri = "urn:oasis:names:tc:opendocument:xmlns:form:1.0"
-    class_prefix = 'form'
-
-    datatypes = {}
-
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
-
-register_schema(OdtFormSchema)
 
 
 
@@ -886,11 +774,12 @@ register_schema(OdtFormSchema)
 ######   urn:oasis:names:tc:opendocument:xmlns:script:1.0     ########
 ######################################################################
 
-
 class OdtScriptNamespace(AbstractNamespace):
 
     class_uri = "urn:oasis:names:tc:opendocument:xmlns:script:1.0"
     class_prefix = 'script'
+
+    datatypes = {}
 
     @staticmethod
     def get_element_schema(name):
@@ -900,22 +789,9 @@ class OdtScriptNamespace(AbstractNamespace):
         default_schema = {'is_empty': False, 'is_inline': False}
         return elements_schema.get(name, default_schema)
 
-set_namespace(OdtScriptNamespace)
-
-
-
-class OdtScriptSchema(BaseSchema):
-
-    class_uri =  "urn:oasis:names:tc:opendocument:xmlns:script:1.0"
-    class_prefix = 'script'
-
-    datatypes = {}
-
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
-
-register_schema(OdtScriptSchema)
 
 
 
@@ -928,28 +804,17 @@ class OdtOooNamespace(AbstractNamespace):
     class_uri = "http://openoffice.org/2004/office"
     class_prefix = 'ooo'
 
+    datatypes = {}
+
     @staticmethod
     def get_element_schema(name):
         elements_schema = {}
         default_schema = {'is_empty': False, 'is_inline': False}
         return elements_schema.get(name, default_schema)
 
-set_namespace(OdtOooNamespace)
-
-
-
-class OdtOooSchema(BaseSchema):
-
-    class_uri = "http://openoffice.org/2004/office"
-    class_prefix = 'ooo'
-
-    datatypes = {}
-
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
-
-register_schema(OdtOooSchema)
 
 
 
@@ -961,28 +826,17 @@ class OdtWriterNamespace(AbstractNamespace):
     class_uri = "http://openoffice.org/2004/writer"
     class_prefix = 'ooow'
 
+    datatypes = {}
+
     @staticmethod
     def get_element_schema(name):
         elements_schema = {}
         default_schema = {'is_empty': False, 'is_inline': False}
         return elements_schema.get(name, default_schema)
 
-set_namespace(OdtWriterNamespace)
-
-
-
-class OdtWriterSchema(BaseSchema):
-
-    class_uri = "http://openoffice.org/2004/writer"
-    class_prefix = 'ooow'
-
-    datatypes = {}
-
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
-
-register_schema(OdtWriterSchema)
 
 
 
@@ -994,28 +848,17 @@ class OdtCalcNamespace(AbstractNamespace):
     class_uri = "http://openoffice.org/2004/calc"
     class_prefix = 'oooc'
 
+    datatypes = {}
+
     @staticmethod
     def get_element_schema(name):
         elements_schema = {}
         default_schema = {'is_empty': False, 'is_inline': False}
         return elements_schema.get(name, default_schema)
 
-set_namespace(OdtCalcNamespace)
-
-
-
-class OdtCalcSchema(BaseSchema):
-
-    class_uri = "http://openoffice.org/2004/calc"
-    class_prefix = 'oooc'
-
-    datatypes = {}
-
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
-
-register_schema(OdtCalcSchema)
 
 
 
@@ -1023,11 +866,12 @@ register_schema(OdtCalcSchema)
 ########  urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0 #########
 #######################################################################
 
-
 class OdtDataStyleNamespace(AbstractNamespace):
 
     class_uri = "urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0"
     class_prefix = 'number'
+
+    datatypes = {}
 
     @staticmethod
     def get_element_schema(name):
@@ -1062,22 +906,9 @@ class OdtDataStyleNamespace(AbstractNamespace):
         default_schema = {'is_empty': False, 'is_inline': False}
         return elements_schema.get(name, default_schema)
 
-set_namespace(OdtDataStyleNamespace)
-
-
-
-class OdtDataStyleSchema(BaseSchema):
-
-    class_uri =  "urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0"
-    class_prefix = 'number'
-
-    datatypes = {}
-
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
-
-register_schema(OdtDataStyleSchema)
 
 
 
@@ -1089,6 +920,8 @@ class OdtAnimationNamespace(AbstractNamespace):
 
     class_uri = "urn:oasis:names:tc:opendocument:xmlns:animation:1.0"
     class_prefix = 'anim'
+
+    datatypes = {}
 
     @staticmethod
     def get_element_schema(name):
@@ -1109,22 +942,9 @@ class OdtAnimationNamespace(AbstractNamespace):
         default_schema = {'is_empty': False, 'is_inline': False}
         return elements_schema.get(name, default_schema)
 
-set_namespace(OdtAnimationNamespace)
-
-
-
-class OdtAnimationSchema(BaseSchema):
-
-    class_uri =  "urn:oasis:names:tc:opendocument:xmlns:animation:1.0"
-    class_prefix = 'anim'
-
-    datatypes = {}
-
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
-
-register_schema(OdtAnimationSchema)
 
 
 
@@ -1132,11 +952,12 @@ register_schema(OdtAnimationSchema)
 ########  urn:oasis:names:tc:opendocument:xmlns:chart:1.0 #########
 #######################################################################
 
-
 class OdtChartNamespace(AbstractNamespace):
 
     class_uri = "urn:oasis:names:tc:opendocument:xmlns:chart:1.0"
     class_prefix = 'chart'
+
+    datatypes = {}
 
     @staticmethod
     def get_element_schema(name):
@@ -1166,22 +987,9 @@ class OdtChartNamespace(AbstractNamespace):
         default_schema = {'is_empty': False, 'is_inline': False}
         return elements_schema.get(name, default_schema)
 
-set_namespace(OdtChartNamespace)
-
-
-
-class OdtChartSchema(BaseSchema):
-
-    class_uri =  "urn:oasis:names:tc:opendocument:xmlns:chart:1.0"
-    class_prefix = 'chart'
-
-    datatypes = {}
-
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
-
-register_schema(OdtChartSchema)
 
 
 
@@ -1189,11 +997,12 @@ register_schema(OdtChartSchema)
 ######## urn:oasis:names:tc:opendocument:xmlns:config:1.0    #########
 #######################################################################
 
-
 class OdtConfigNamespace(AbstractNamespace):
 
     class_uri = "urn:oasis:names:tc:opendocument:xmlns:config:1.0"
     class_prefix = 'config'
+
+    datatypes = {}
 
     @staticmethod
     def get_element_schema(name):
@@ -1207,22 +1016,9 @@ class OdtConfigNamespace(AbstractNamespace):
         default_schema = {'is_empty': False, 'is_inline': False}
         return elements_schema.get(name, default_schema)
 
-set_namespace(OdtConfigNamespace)
-
-
-
-class OdtConfigSchema(BaseSchema):
-
-    class_uri =  "urn:oasis:names:tc:opendocument:xmlns:config:1.0"
-    class_prefix = 'config'
-
-    datatypes = {}
-
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
-
-register_schema(OdtConfigSchema)
 
 
 
@@ -1230,11 +1026,12 @@ register_schema(OdtConfigSchema)
 ######## urn:oasis:names:tc:opendocument:xmlns:manifest:1.0    #########
 #######################################################################
 
-
 class OdtManifestNamespace(AbstractNamespace):
 
     class_uri = "urn:oasis:names:tc:opendocument:xmlns:manifest:1.0"
     class_prefix = 'manifest'
+
+    datatypes = {}
 
     @staticmethod
     def get_element_schema(name):
@@ -1248,22 +1045,9 @@ class OdtManifestNamespace(AbstractNamespace):
         default_schema = {'is_empty': False, 'is_inline': False}
         return elements_schema.get(name, default_schema)
 
-set_namespace(OdtManifestNamespace)
-
-
-
-class OdtManifestSchema(BaseSchema):
-
-    class_uri =  "urn:oasis:names:tc:opendocument:xmlns:manifest:1.0"
-    class_prefix = 'manifest'
-
-    datatypes = {}
-
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
-
-register_schema(OdtManifestSchema)
 
 
 
@@ -1271,11 +1055,12 @@ register_schema(OdtManifestSchema)
 ###### urn:oasis:names:tc:opendocument:xmlns:presentation:1.0 ########
 ######################################################################
 
-
 class OdtPresentationNamespace(AbstractNamespace):
 
     class_uri = "urn:oasis:names:tc:opendocument:xmlns:presentation:1.0"
     class_prefix = 'presentation'
+
+    datatypes = {}
 
     @staticmethod
     def get_element_schema(name):
@@ -1304,22 +1089,9 @@ class OdtPresentationNamespace(AbstractNamespace):
         default_schema = {'is_empty': False, 'is_inline': False}
         return elements_schema.get(name, default_schema)
 
-set_namespace(OdtPresentationNamespace)
-
-
-
-class OdtPresentationSchema(BaseSchema):
-
-    class_uri =  "urn:oasis:names:tc:opendocument:xmlns:presentation:1.0"
-    class_prefix = 'presentation'
-
-    datatypes = {}
-
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
-
-register_schema(OdtPresentationSchema)
 
 
 
@@ -1327,30 +1099,45 @@ register_schema(OdtPresentationSchema)
 ###### urn:oasis:names:tc:opendocument:xmlns:smil-compatible:1.0 ########
 #########################################################################
 
-
 class OdtSmilNamespace(AbstractNamespace):
 
     class_uri = "urn:oasis:names:tc:opendocument:xmlns:smil-compatible:1.0"
     class_prefix = 'smil'
+
+    datatypes = {}
 
     @staticmethod
     def get_element_schema(name):
         default_schema = {'is_empty': False, 'is_inline': False}
         return elements_schema.get(name, default_schema)
 
-set_namespace(OdtSmilNamespace)
-
-
-
-class OdtSmilSchema(BaseSchema):
-
-    class_uri =  "urn:oasis:names:tc:opendocument:xmlns:smil-compatible:1.0"
-    class_prefix = 'smil'
-
-    datatypes = {}
-
     @classmethod
     def get_datatype(cls, name):
         return cls.datatypes.get(name, Unicode)
 
-register_schema(OdtSmilSchema)
+
+
+###########################################################################
+# Register
+###########################################################################
+set_namespace(OdtTextNamespace)
+set_namespace(OdtOfficeNamespace)
+set_namespace(OdtStyleNamespace)
+set_namespace(OdtTableNamespace)
+set_namespace(OdtDrawingNamespace)
+set_namespace(OdtFoNamespace)
+set_namespace(OdtMetaNamespace)
+set_namespace(OdtSvgNamespace)
+set_namespace(OdtDr3dNamespace)
+set_namespace(OdtFormNamespace)
+set_namespace(OdtScriptNamespace)
+set_namespace(OdtOooNamespace)
+set_namespace(OdtWriterNamespace)
+set_namespace(OdtCalcNamespace)
+set_namespace(OdtDataStyleNamespace)
+set_namespace(OdtAnimationNamespace)
+set_namespace(OdtChartNamespace)
+set_namespace(OdtConfigNamespace)
+set_namespace(OdtManifestNamespace)
+set_namespace(OdtPresentationNamespace)
+set_namespace(OdtSmilNamespace)

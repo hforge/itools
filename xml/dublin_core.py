@@ -15,10 +15,32 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from the Standard Library
+from datetime import datetime
+
 # Import from itools
-from itools.schemas import DublinCore
+from itools.datatypes import (Unicode, String, ISODateTime, ISOCalendarDate,
+                              ISOTime)
 from namespaces import AbstractNamespace, set_namespace
 from parser import XMLError
+
+
+# FIXME For backwards compatibility with old ikaaro's metadata files (to
+# remove by 0.30)
+class DateTime(ISODateTime):
+
+    @staticmethod
+    def decode(value):
+        if not value:
+            return None
+        if ' ' in value:
+            date, time = value.split()
+        else:
+            date, time = value.split('T')
+        date = ISOCalendarDate.decode(date)
+        time = ISOTime.decode(time)
+
+        return datetime.combine(date, time)
 
 
 
@@ -26,6 +48,23 @@ class Namespace(AbstractNamespace):
 
     class_uri = 'http://purl.org/dc/elements/1.1/'
     class_prefix = 'dc'
+
+    datatypes = {'contributor': None,
+                 'coverage': None,
+                 'creator': String,
+                 'date': DateTime,
+                 'description': Unicode,
+                 'format': None,
+                 'identifier': String,
+                 'language': String,
+                 'publisher': Unicode,
+                 'relation': None,
+                 'rights': None,
+                 'source': None,
+                 'subject': Unicode,
+                 'title': Unicode,
+                 'type': None,
+                 }
 
 
     @staticmethod
@@ -42,4 +81,7 @@ class Namespace(AbstractNamespace):
         return elements_schema.get(name)
 
 
-set_namespace(Namespace)
+# FIXME Register the schema also with the old and wrong uri (introduced in
+# 0.15.1).  For backwards compatibility with old ikaaro's metadata files
+# (to remove by 0.30)
+set_namespace(Namespace, 'http://purl.org/dc/elements/1.1')

@@ -28,11 +28,10 @@ from types import GeneratorType
 
 # Import from itools
 from itools.datatypes import Boolean, String, URI
-from itools.schemas import BaseSchema, get_datatype_by_uri, register_schema
 from itools.uri import Path
 from itools.xml import (XMLError, XMLNSNamespace, set_namespace,
-    AbstractNamespace, XMLParser, START_ELEMENT, END_ELEMENT, TEXT, COMMENT,
-    find_end, stream_to_str)
+    get_namespace, AbstractNamespace, XMLParser, START_ELEMENT, END_ELEMENT,
+    TEXT, COMMENT, find_end, stream_to_str)
 from itools.html import (xhtml_uri, stream_to_str_as_html,
                          stream_to_str_as_xhtml)
 
@@ -63,8 +62,7 @@ class STLTypeError(TypeError):
 # Expressions
 ########################################################################
 def evaluate(expression, stack, repeat_stack):
-    """
-    Parses and evaluates stl expressions.
+    """Parses and evaluates stl expressions.
 
     Examples of allowed expressions:
 
@@ -128,8 +126,7 @@ def evaluate_repeat(expression, stack, repeat_stack):
 # Namespace
 ###########################################################################
 def lookup(namespace, name):
-    """
-    Looks for a variable in a namespace (an instance, a mapping, etc..)
+    """Looks for a variable in a namespace (an instance, a mapping, etc..)
     """
     if hasattr(namespace, 'stl_lookup'):
         return namespace.stl_lookup(name)
@@ -144,8 +141,7 @@ def lookup(namespace, name):
 
 
 class NamespaceStack(list):
-    """
-    This class represents a namespace stack as used by STL. A variable
+    """This class represents a namespace stack as used by STL. A variable
     is looked up in the stack from the top to the bottom until found.
     """
 
@@ -186,8 +182,7 @@ def substitute_boolean(data, stack, repeat_stack, encoding='utf-8'):
 
 
 def substitute_attribute(data, stack, repeat_stack, encoding='utf-8'):
-    """
-    Interprets the given data as a substitution string with the "${expr}"
+    """Interprets the given data as a substitution string with the "${expr}"
     format, where the expression within the brackets is an STL expression.
 
     Returns a tuple with the interpreted string and the number of
@@ -223,8 +218,7 @@ def substitute_attribute(data, stack, repeat_stack, encoding='utf-8'):
 
 
 def substitute(data, stack, repeat_stack, encoding='utf-8'):
-    """
-    Interprets the given data as a substitution string with the "${expr}"
+    """Interprets the given data as a substitution string with the "${expr}"
     format, where the expression within the brackets is an STL expression.
 
     Returns a tuple with the interpreted string and the number of
@@ -326,7 +320,7 @@ def process_start_tag(tag_uri, tag_name, attributes, stack, repeat, encoding):
 
         value = attributes[(attr_uri, attr_name)]
         # Process "${...}" expressions
-        datatype = get_datatype_by_uri(attr_uri, attr_name)
+        datatype = get_namespace(attr_uri).get_datatype(attr_name)
         # Boolean attributes
         if issubclass(datatype, Boolean):
             value = substitute_boolean(value, stack, repeat, encoding)
@@ -488,6 +482,7 @@ class Namespace(AbstractNamespace):
     class_uri = 'http://xml.itools.org/namespaces/stl'
     class_prefix = 'stl'
 
+    datatypes = {'repeat': String, 'if': String}
 
     @staticmethod
     def get_element_schema(name):
@@ -498,13 +493,3 @@ class Namespace(AbstractNamespace):
 
 set_namespace(Namespace)
 
-
-class Schema(BaseSchema):
-
-    class_uri = 'http://xml.itools.org/namespaces/stl'
-    class_prefix = 'stl'
-
-    datatypes = {'repeat': String, 'if': String}
-
-
-register_schema(Schema)

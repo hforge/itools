@@ -4,7 +4,7 @@
 <stl:block xmlns="http://www.w3.org/1999/xhtml"
   xmlns:stl="http://xml.itools.org/namespaces/stl">
 
-  <h2>Upload File</h2>
+  <h2>Replace File</h2>
 
   <p>
     You can upload a new file to replace the current one. Note the name

@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-08-28 12:08+CET\n"
+"POT-Creation-Date: 2007-12-13 14:12+CET\n"
 "PO-Revision-Date: 2007-08-31 17:00+0100\n"
 "Last-Translator: Henry Obein <henry@itaapy.com>\n"
 "Language-Team: French\n"
@@ -20,7 +20,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
 
-#: cms/tracker.py:527
+#: cms/tracker.py:529
 msgid ""
 "\n"
 "\n"
@@ -29,16 +29,17 @@ msgid ""
 "%s"
 msgstr ""
 
-#: cms/tracker.py:1005
-#, fuzzy
+#: cms/tracker.py:1012
 msgid "  New Attachment: %s"
-msgstr " Nouvelle pièce jointe: %s"
+msgstr " Nouvelle pièce jointe&nbsp;: %s"
 
 #: cms/ui/tracker/view_tracker.xml.en:0
 msgid ""
 "\",\")<br/> <input name=\"editor\" type=\"radio\" value=\"excel\"/> For "
 "Excel (Encoding:"
 msgstr ""
+"\",\")<br/> <input name=\"editor\" type=\"radio\" value=\"excel\"/> Pour "
+"Excel (codage&nbsp;:"
 
 #: cms/ui/tracker/view_tracker.xml.en:0
 msgid ""
@@ -46,11 +47,11 @@ msgid ""
 "\"submit\" value=\"Exporter\"/>"
 msgstr ""
 
-#: cms/tracker.py:608
+#: cms/tracker.py:610
 msgid "#%s"
 msgstr ""
 
-#: cms/root.py:398
+#: cms/root.py:396
 msgid "$n handlers have been indexed in $time seconds."
 msgstr "$n objets ont été réindexés en $time secondes."
 
@@ -88,10 +89,6 @@ msgstr ""
 
 #: cms/ui/ical/ical_grid_weekly_view.xml.en:0
 msgid "${cell/ns}"
-msgstr ""
-
-#: cms/ui/website/new_instance.xml.en:0
-msgid "${class_title}"
 msgstr ""
 
 #: cms/ui/ical/daily_view.xml.en:0
@@ -135,9 +132,8 @@ msgid "${contents}"
 msgstr ""
 
 #: cms/ui/dressable/view.xml.en:0
-#, fuzzy
 msgid "${content}"
-msgstr "Contenu"
+msgstr ""
 
 #: cms/ui/wiki/WikiPage_edit.xml.en:0
 msgid "${data}"
@@ -186,6 +182,10 @@ msgstr ""
 msgid "${folder/title}"
 msgstr ""
 
+#: cms/ui/folder/order_items.xml.en:0
+msgid "${folder/workflow_state}"
+msgstr ""
+
 #: cms/ui/root/check_groups.xml.en:0
 msgid "${group/path}:"
 msgstr ""
@@ -218,7 +218,7 @@ msgstr ""
 msgid "${js_data}"
 msgstr ""
 
-#: cms/ui/text/new_instance.xml.en:0
+#: cms/ui/table/new_instance.xml.en:0
 msgid "${lang/name}"
 msgstr ""
 
@@ -265,9 +265,8 @@ msgid "${metadata/title}"
 msgstr ""
 
 #: cms/ui/root/credits.xml.en:0
-#, fuzzy
 msgid "${name}"
-msgstr "Renommer"
+msgstr ""
 
 #: cms/ui/folder/rename.xml.en:0
 msgid "${object/name}"
@@ -361,13 +360,13 @@ msgstr ""
 msgid "${row/version}<br/>"
 msgstr ""
 
-#: cms/ui/html/edit.xml.en:0
+#: cms/ui/forum/Forum_new_thread.xml.en:0
 msgid "${rte}"
 msgstr ""
 
 #: cms/ui/forum/Thread_view.xml.en:0
 msgid "${rte} <input type=\"submit\" value=\"Reply\"/>"
-msgstr ""
+msgstr "${rte} <input type=\"submit\" value=\"Répondre\"/>"
 
 #: cms/ui/ical/ical_edit_event_form.xml.en:0
 msgid "${s/value}"
@@ -430,10 +429,10 @@ msgid "${title}"
 msgstr ""
 
 #: cms/ui/tracker/view_tracker.xml.en:0
-#, fuzzy
 msgid ""
 "${title} <a href=\";search_form?${search_parameters}\">(Edit search)</a>"
-msgstr "(<a href=\";search_form?search_name=${search/name}\">Modifier</a>)"
+msgstr ""
+"${title} <a href=\";search_form?${search_parameters}\">(Modifier)</a>"
 
 #: cms/ui/root/internal_server_error.xml.en:0
 msgid "${traceback}"
@@ -463,31 +462,35 @@ msgstr ""
 msgid "${tt/start}"
 msgstr ""
 
-#: cms/ui/folder/new_resource.xml.en:0
-msgid "${type/description}"
+#: cms/ui/aruni/template.xhtml.en:0
+msgid "${view_title}"
 msgstr ""
 
-#: cms/ui/folder/new_resource.xml.en:0
-msgid "${type/title}"
+#: cms/ui/website/new_instance.xml.en:0
+msgid "${website/title}"
 msgstr ""
 
 #: cms/ui/ical/ical_monthly_view.xml.en:0
 msgid "${week/month}"
 msgstr ""
 
-#: cms/file.py:132
+#: cms/file.py:135
 msgid "%.01f KB"
 msgstr "%.01f Ko"
 
-#: cms/file.py:130
+#: cms/file.py:133
 msgid "%.01f MB"
 msgstr "%.01f Mo"
 
-#: cms/tracker.py:1028
-msgid "%s: %s to %s"
-msgstr ""
+#: cms/future.py:655
+msgid "%s (External)"
+msgstr "%s (Externe)"
 
-#: cms/tracker.py:1031
+#: cms/tracker.py:1035
+msgid "%s: %s to %s"
+msgstr "%s&nbsp;: %s en %s"
+
+#: cms/tracker.py:1038
 msgid "%s: %s%s"
 msgstr ""
 
@@ -519,7 +522,7 @@ msgstr "(<a href=\"./versions.csv/;view\">Modifier</a>)"
 msgid "(<a href=\";search_form?search_name=${search/name}\">Edit</a>)"
 msgstr "(<a href=\";search_form?search_name=${search/name}\">Modifier</a>)"
 
-#: cms/ui/Handler_edit_metadata.xml.en:0
+#: cms/ui/base/edit_metadata.xml.en:0
 msgid "(Separated by comma)"
 msgstr ""
 
@@ -547,11 +550,11 @@ msgstr ""
 "\">Connexion</a> <a id=\"top_menu_register\" stl:if=\"user/joinisopen\" href="
 "\"/;register_form\">Inscription</a>"
 
-#: cms/ui/text/new_instance.xml.en:0
+#: cms/ui/website/new_instance.xml.en:0
 msgid "(optional)"
 msgstr "(facultatif)"
 
-#: cms/tracker.py:552
+#: cms/tracker.py:554
 msgid ""
 "--- Comment from : %s ---\n"
 "\n"
@@ -559,26 +562,31 @@ msgid ""
 "\n"
 "%s"
 msgstr ""
+"--- Commentaire de : %s ---\n"
+"\n"
+"%s\n"
+"\n"
+"%s"
 
-#: cms/tracker.py:1011
+#: cms/tracker.py:1018
 msgid ""
 "-------\n"
 "\n"
 msgstr ""
 
-#: ical/icalendar.py:236
+#: ical/icalendar.py:1121
 msgid "-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN"
 msgstr ""
 
-#: cms/tracker.py:91
+#: cms/tracker.py:92
 msgid "1.0"
 msgstr ""
 
-#: ical/icalendar.py:235
+#: ical/icalendar.py:1120
 msgid "2.0"
 msgstr ""
 
-#: cms/skins.py:402
+#: cms/skins.py:429
 msgid "404 Not Found"
 msgstr "404 Introuvable"
 
@@ -620,8 +628,18 @@ msgstr ""
 msgid "<a href=\"${row/file}\">${row/file}</a> <br/>"
 msgstr ""
 
+#: cms/ui/folder/new_resource.xml.en:0
+msgid "<a href=\"${type/url}\">${type/title}</a> <br/> ${type/description}"
+msgstr ""
+
 #: cms/ui/html/addlink.xml.en:0
 msgid "<a href=\"${x/url}\">${x/name}</a> /"
+msgstr ""
+
+#: cms/ui/base/edit_metadata.xml.en:0
+msgid ""
+"<a href=\"./;edit_metadata_form?dc:language=${lang/code}\"> ${lang/name}</a> "
+"<span stl:if=\"not repeat/lang/end\">-</span>"
 msgstr ""
 
 #: cms/ui/aruni/template.xhtml.en:0
@@ -676,11 +694,23 @@ msgid ""
 "a> | <a href=\";view?${search_parameters}&amp;export_to_csv=1#link\"> Export "
 "to CSV </a>"
 msgstr ""
+"<a name=\"link\"></a> <a href=\";view?${search_parameters}&amp;"
+"change_several_bugs=1#link\"> Modifier les fiches en série </a> | <a href="
+"\";view?${search_parameters}&amp;export_to_text=1#link\"> Exporter en texte </"
+"a> | <a href=\";view?${search_parameters}&amp;export_to_csv=1#link\"> Exporter "
+"en CSV </a>"
 
 #: cms/ui/ical/daily_view.xml.en:0
 msgid ""
 "<a stl:if=\"col/evt_url\" class=\"evt_value\" href=\"${col/evt_url}\">${col/"
 "evt_value}</a> <span stl:if=\"col/SUMMARY\">${col/SUMMARY}</span>"
+msgstr ""
+
+#: cms/ui/folder/order_items.xml.en:0
+msgid ""
+"<a stl:if=\"folder/is_orderaware\" href=\"${folder/path}\"> ${folder/name} </"
+"a> <stl:inline stl:if=\"not folder/is_orderaware\"> ${folder/name} </stl:"
+"inline>"
 msgstr ""
 
 #: cms/ui/aruni/template.xhtml.en:0
@@ -707,11 +737,21 @@ msgstr ""
 msgid "<a style=\"font-size: 10px\" href=\"${messages_previous}\">&lt;</a>"
 msgstr ""
 
+#: cms/ui/tracker/search.xml.en:0
+msgid ""
+"<br/> <input value=\"${mtime}\" name=\"mtime\" size=\"2\" id=\"mtime\" type="
+"\"text\" xclass=\"tracker_select\"/> days ago"
+msgstr ""
+"<br/> <input value=\"${mtime}\" name=\"mtime\" size=\"2\" id=\"mtime\" type="
+"\"text\" xclass=\"tracker_select\"/> jours"
+
 #: cms/ui/tracker/add_issue.xml.en:0
 msgid ""
-"<br/> <textarea name=\"comment\" id=\"description\" rows=\"10\" cols=\"68\">"
+"<br/> <textarea name=\"comment\" id=\"description\" rows=\"10\" cols=\"60\">"
 "${comment}</textarea>"
 msgstr ""
+"<br/> <textarea name=\"comment\" id=\"description\" rows=\"10\" cols=\"60\">"
+"${comment}</textarea>"
 
 #: cms/ui/website/anonymous.xml.en:0
 msgid "<br/> Authentication will be required for any level of access."
@@ -725,6 +765,20 @@ msgid ""
 msgstr ""
 "<br/> Les utilisateurs non authentifiés pourront accéder au contenu publié "
 "et créer leur compte."
+
+#: cms/ui/epoz/rte.xml.en:0
+msgid ""
+"<img height=\"22\" src=\"../images/epoz/epoz_button_hyperlink.png\" alt="
+"\"Insert Link\" title=\"Insert Link\" name=\"epoz_button_hyperlink\" width="
+"\"23\" class=\"button epoz_button_hyperlink\" onclick=\"popup(';"
+"addlink_form', 640, 480);\"/><img height=\"22\" src=\"../images/epoz/"
+"epoz_button_anchor.png\" alt=\"Insert Anchor\" title=\"Insert Anchor\" name="
+"\"epoz_button_anchor\" width=\"23\" class=\"button epoz_button_anchor\" "
+"onclick=\"CreateAnchor();\"/><img height=\"22\" src=\"../images/epoz/"
+"epoz_button_image.png\" alt=\"Insert Image\" title=\"Insert Image\" name="
+"\"epoz_button_image\" width=\"23\" class=\"button epoz_button_image\" "
+"onclick=\"popup(';addimage_form', 640, 480);\"/>"
+msgstr ""
 
 #: cms/ui/website/search.xml.en:0
 msgid ""
@@ -743,21 +797,21 @@ msgstr ""
 
 #: cms/ui/website/login.xml.en:0
 msgid ""
-"<input id=\"password\" name=\"password\" type=\"password\"/> <a href=\";"
+"<input id=\"password\" name=\"password\" type=\"password\"/> <a href=\"/;"
 "forgotten_password_form\">I forgot my password</a>"
 msgstr ""
 "<input id=\"password\" name=\"password\" type=\"password\"/> <a href=\";"
 "forgotten_password_form\">Mot de passe oublié&nbsp;?</a>"
 
 #: cms/ui/tracker/view_tracker.xml.en:0
-#, fuzzy
 msgid ""
 "<input name=\"${c/name}\" type=\"hidden\" stl:repeat=\"c criteria\" value="
 "\"${c/value}\"/> <input name=\"editor\" type=\"radio\" value=\"oo\" checked="
 "\"on\"/> For OpenOffice (Encoding:"
 msgstr ""
-"<input name=\"names\" type=\"hidden\" value=\"${object/real_name}\"/> en "
-"<input name=\"new_names\" type=\"text\" value=\"${object/name}\"/>"
+"<input name=\"${c/name}\" type=\"hidden\" stl:repeat=\"c criteria\" value="
+"\"${c/value}\"/> <input name=\"editor\" type=\"radio\" value=\"oo\" checked="
+"\"on\"/> Pour OpenOffice.org (codage :"
 
 #: cms/ui/ical/ical_edit_event_form.xml.en:0
 msgid ""
@@ -770,13 +824,12 @@ msgid ""
 msgstr ""
 
 #: cms/ui/ical/ical_edit_event_form.xml.en:0
-#, fuzzy
 msgid ""
 "<input name=\"DTEND_minutes\" id=\"DTEND_minutes\" size=\"2\" type=\"text\" "
 "value=\"${DTEND_minutes}\"/>"
 msgstr ""
-"<input name=\"mtime\" id=\"mtime\" size=\"3\" type=\"text\" value=\"${mtime}"
-"\"/> derniers jours."
+"<input name=\"DTEND_minutes\" id=\"DTEND_minutes\" size=\"2\" type=\"text\" "
+"value=\"${DTEND_minutes}\"/>"
 
 #: cms/ui/ical/daily_view.xml.en:0
 msgid ""
@@ -786,14 +839,6 @@ msgid ""
 "\"button_ok\"/>"
 msgstr ""
 
-#: cms/ui/tracker/search.xml.en:0
-msgid ""
-"<input name=\"mtime\" id=\"mtime\" size=\"3\" type=\"text\" value=\"${mtime}"
-"\"/> days."
-msgstr ""
-"<input name=\"mtime\" id=\"mtime\" size=\"3\" type=\"text\" value=\"${mtime}"
-"\"/> derniers jours."
-
 #: cms/ui/folder/rename.xml.en:0
 msgid ""
 "<input name=\"names\" type=\"hidden\" value=\"${object/real_name}\"/> to "
@@ -802,10 +847,9 @@ msgstr ""
 "<input name=\"names\" type=\"hidden\" value=\"${object/real_name}\"/> en "
 "<input name=\"new_names\" type=\"text\" value=\"${object/name}\"/>"
 
-#: cms/ui/website/new_instance.xml.en:0
+#: cms/ui/html/edit.xml.en:0
 msgid ""
-"<input name=\"skin_name\" type=\"radio\" value=\"${skin/name}\"/> ${skin/"
-"title}<br/> <img src=\"${skin/image_uri}\"/>"
+"<input name=\"timestamp\" type=\"hidden\" value=\"${timestamp}\"/> ${rte}"
 msgstr ""
 
 #: cms/ui/ical/ical_edit_event_form.xml.en:0
@@ -840,23 +884,22 @@ msgstr ""
 #: cms/ui/ical/ical_monthly_view.xml.en:0
 msgid ""
 "<span stl:if=\"not day/selected\" class=\"bold\">${day/nday}</span> <span "
-"stl:if=\"day/selected\" class=\"cal_day_selected\">${day/nday}</span> <a "
-"class=\"add_event\" href=\"${day/url}\"><img src=\"${add_icon}\" height=\"16"
-"\" width=\"16\"/></a>"
+"stl:if=\"day/selected\" class=\"cal_day_selected\">${day/nday}</span> <a stl:"
+"if=\"day/url\" class=\"add_event\" href=\"${day/url}\"> <img src="
+"\"${add_icon}\" height=\"16\" width=\"16\"/></a>"
 msgstr ""
 
 #: cms/ui/aruni/template.xhtml.en:0
 msgid "<span>${menu/label}</span>"
 msgstr ""
 
-#: cms/tracker.py:375
-#, fuzzy
+#: cms/tracker.py:377
 msgid "<span>There are ${n} results.</span>"
-msgstr "Il y a ${n} objets."
+msgstr "<span>Il y a ${n} résultats.</span>"
 
-#: cms/tracker.py:374
+#: cms/tracker.py:376
 msgid "<span>There is 1 result.</span>"
-msgstr ""
+msgstr "<span>Il y a 1 résultat.</span>"
 
 #: cms/ui/WorkflowAware_state.xml.en:0
 msgid "<strong class=\"wf_${statename}\">${state}</strong>"
@@ -868,45 +911,55 @@ msgstr ""
 
 #: cms/ui/tracker/issue_history.xml.en:0
 msgid "<strong>Assign To:</strong>"
-msgstr "<strong>Assigner à&nbsp;:</strong>"
+msgstr "<strong>Assigner à&nbsp;: </strong>"
 
 #: cms/ui/tracker/issue_history.xml.en:0
 msgid "<strong>Attachement:</strong>"
-msgstr "<strong>Pièce jointe&nbsp;:</strong>"
+msgstr "<strong>Pièce jointe&nbsp;: </strong>"
 
 #: cms/ui/tracker/issue_history.xml.en:0
 msgid "<strong>Comment:</strong>"
-msgstr "<strong>Commentaire&nbsp;:</strong>"
+msgstr "<strong>Commentaire&nbsp;: </strong>"
 
 #: cms/ui/tracker/issue_history.xml.en:0
 msgid "<strong>Module:</strong>"
-msgstr "<strong>Module&nbsp;:</strong>"
+msgstr "<strong>Module&nbsp;: </strong>"
 
 #: cms/ui/tracker/issue_history.xml.en:0
 msgid "<strong>Priority:</strong>"
-msgstr "<strong>Priorité&nbsp;:</strong>"
+msgstr "<strong>Priorité&nbsp;: </strong>"
 
 #: cms/ui/tracker/issue_history.xml.en:0
 msgid "<strong>State:</strong>"
-msgstr "<strong>État&nbsp;:</strong>"
+msgstr "<strong>État&nbsp;: </strong>"
 
 #: cms/ui/tracker/issue_history.xml.en:0
 msgid "<strong>Title:</strong>"
-msgstr "<strong>Titre&nbsp;:</strong>"
+msgstr "<strong>Titre&nbsp;: </strong>"
 
 #: cms/ui/tracker/issue_history.xml.en:0
 msgid "<strong>Type:</strong>"
-msgstr "<strong>Type&nbsp;:</strong>"
+msgstr "<strong>Type&nbsp;: </strong>"
 
 #: cms/ui/tracker/issue_history.xml.en:0
 msgid "<strong>Version:</strong>"
-msgstr "<strong>Version&nbsp;:</strong>"
+msgstr "<strong>Version&nbsp;: </strong>"
 
-#: cms/future.py:257
+#: cms/ui/website/virtual_hosts.xml.en:0
+msgid ""
+"<textarea name=\"vhosts\" cols=\"62\" rows=\"7\">${vhosts}</textarea> <br/> "
+"<input type=\"submit\" value=\"Ok\"/>"
+msgstr ""
+
+#: cms/future.py:287
 msgid "A dressable folder"
 msgstr ""
 
-#: cms/messages.py:27
+#: cms/messages.py:28
+msgid "A given name already exists."
+msgstr "Ce nom est déjà pris."
+
+#: cms/messages.py:32
 msgid "A new resource has been added."
 msgstr "Nouvelle ressource ajoutée."
 
@@ -924,7 +977,7 @@ msgstr "Un document privé n'est accessible qu'aux utilisateurs autorisés."
 msgid "A public document can be reached by even anonymous users."
 msgstr "Un document public est accessible même aux utilisateurs anonymes."
 
-#: cms/forum.py:107
+#: cms/forum.py:112
 msgid "A thread to discuss"
 msgstr "Un fil de discussion"
 
@@ -932,11 +985,11 @@ msgstr "Un fil de discussion"
 msgid "A transition must be selected."
 msgstr "Vous devez choisir une action."
 
-#: rest/rest.py:282
+#: rest/rest.py:199
 msgid "AAAAAAaaaaaaCcEEEEeeeeeIIIIiiiiNnOOOOOOooooooSUUUUuuuuYŸyy"
 msgstr ""
 
-#: cms/tracker.py:979
+#: cms/tracker.py:986
 msgid "ANONYMOUS"
 msgstr "ANONYME"
 
@@ -952,7 +1005,7 @@ msgstr "Accepter le document"
 msgid "Access Control"
 msgstr "Contrôle d'accès"
 
-#: cms/root.py:194
+#: cms/root.py:184
 msgid "Access forbidden, you are not authorized to access this resource."
 msgstr "Accès refusé, vous n'êtes pas autorisé à accéder à cette ressource."
 
@@ -976,7 +1029,7 @@ msgstr "Action"
 msgid "Add"
 msgstr "Ajouter"
 
-#: cms/ui/text/new_instance.xml.en:0
+#: cms/ui/table/new_instance.xml.en:0
 msgid "Add Document"
 msgstr "Ajouter un document"
 
@@ -988,12 +1041,11 @@ msgstr "Ajouter une fiche de suivi"
 msgid "Add New User"
 msgstr "Créer un utilisateur"
 
-#: cms/ui/folder/new_instance.xml.en:0
+#: cms/ui/website/new_instance.xml.en:0
 msgid "Add Resource of Type \"${class_title}\""
 msgstr "Ajouter une ressource de type &laquo;&nbsp;${class_title}&nbsp;&raquo;"
 
 #: cms/ui/table/add_record.xml.en:0
-#, fuzzy
 msgid "Add a new record"
 msgstr "Ajouter un nouvel enregistrement"
 
@@ -1017,7 +1069,7 @@ msgstr "Ajouter et voir"
 msgid "Add new content"
 msgstr "Ajouter du contenu"
 
-#: cms/website.py:61
+#: cms/website.py:69
 msgid "Admin"
 msgstr "Administrateur"
 
@@ -1040,7 +1092,7 @@ msgstr ""
 "Un courriel vous a été envoyé, contenant les instructions pour changer votre "
 "mot de passe."
 
-#: cms/website.py:288
+#: cms/website.py:399
 msgid ""
 "An email has been sent to you, to finish the registration process follow the "
 "instructions detailed in it."
@@ -1048,7 +1100,7 @@ msgstr ""
 "Un courriel vient de vous être envoyé, avec les instructions pour valider "
 "votre inscription."
 
-#: cms/forum.py:220
+#: cms/forum.py:228
 msgid "An iKaaro forum"
 msgstr "Un forum Ikaaro"
 
@@ -1068,36 +1120,35 @@ msgstr "Préférences de l'application"
 msgid "Application preferences changed."
 msgstr "Préférences de l'application modifiées."
 
-#: cms/ical.py:36
+#: cms/ical.py:40
 msgid "April"
 msgstr "Avril"
 
-#: cms/messages.py:22
+#: cms/messages.py:25
 msgid "Are you sure you want to delete the selection?"
 msgstr "Êtes-vous sûr de vouloir supprimer la sélection ?"
 
-#: cms/messages.py:21
-#, fuzzy
+#: cms/messages.py:24
 msgid "Are you sure you want to delete this object?"
 msgstr "Êtes-vous sûr de vouloir supprimer la sélection ?"
 
-#: cms/wiki.py:490
+#: cms/folder.py:789
 msgid "As Icons"
 msgstr "Icônes"
 
-#: cms/wiki.py:492
+#: cms/folder.py:791
 msgid "As Image Gallery"
 msgstr "Galerie d'images"
 
-#: cms/wiki.py:491
+#: cms/folder.py:790
 msgid "As List"
 msgstr "Vue listée"
 
-#: cms/ical.py:424
+#: cms/ical.py:1011
 msgid "As calendar"
 msgstr "Calendrier"
 
-#: cms/text.py:137
+#: cms/text.py:91
 msgid "As reStructuredText"
 msgstr "Texte au format Restructured Text"
 
@@ -1105,12 +1156,11 @@ msgstr "Texte au format Restructured Text"
 msgid "Assign To"
 msgstr "Assigner à"
 
-#: cms/tracker.py:65
+#: cms/tracker.py:66
 msgid "Assigned To"
 msgstr "Assigné à"
 
-#: cms/tracker.py:1073
-#, fuzzy
+#: cms/tracker.py:1080
 msgid "Assigned to"
 msgstr "Assigné à"
 
@@ -1126,7 +1176,7 @@ msgstr "Pièce jointe&nbsp;:"
 msgid "Attendees"
 msgstr "Participants"
 
-#: cms/ical.py:37
+#: cms/ical.py:41
 msgid "August"
 msgstr "Août"
 
@@ -1166,7 +1216,15 @@ msgstr "Parcourir"
 msgid "Browse Members"
 msgstr "Membres"
 
-#: cms/tracker.py:100
+#: cms/ui/html/addimage.xml.en:0
+msgid "Browse and insert an Image from the workspace"
+msgstr "Parcourir l'application pour sélectionner une image&nbsp;:"
+
+#: cms/ui/html/addlink.xml.en:0
+msgid "Browse and link to a File from the workspace"
+msgstr "» Parcourir l'application pour sélectionner un fichier&nbsp;:"
+
+#: cms/tracker.py:101
 msgid "Bug"
 msgstr "Bug"
 
@@ -1180,25 +1238,33 @@ msgstr ""
 
 #: cms/ui/tracker/view_tracker.xml.en:0
 msgid "CP1252, Separator:"
-msgstr ""
+msgstr "CP1252, séparateur&nbsp;:"
 
 #: cms/csv.py:36
 msgid "CSV Row"
 msgstr "Enregistrement CSV"
 
-#: csv/parser.py:49
+#: csv/parser.py:65
+msgid "CSV syntax error: wrong number of columns"
+msgstr "Erreur de syntaxe CSV : nombre de colonnes erroné"
+
+#: csv/parser.py:61
 msgid "CSV syntax error: wrong number of columns at line %d"
 msgstr "Erreur de syntaxe CSV : nombre de colonnes erroné à la ligne %d"
 
-#: cms/ical.py:981
+#: cms/ical.py:1058
 msgid "Calendar"
+msgstr "Calendrier"
+
+#: cms/ical.py:1281
+msgid "CalendarTable"
 msgstr "Calendrier"
 
 #: cms/ui/ical/ical_edit_event_form.xml.en:0
 msgid "Cancel"
 msgstr "Annuler"
 
-#: cms/ical.py:99
+#: cms/ical.py:103
 msgid "Cancelled"
 msgstr "Annulé"
 
@@ -1236,18 +1302,21 @@ msgstr "Modifier les préférences"
 
 #: cms/ui/tracker/view_tracker.xml.en:0
 msgid "Change several Issues at once"
-msgstr ""
+msgstr "Changer des fiches en série"
 
-#: cms/tracker.py:475
-#, fuzzy
+#: cms/tracker.py:477
 msgid "Change several bugs"
-msgstr "Modifier la langue par défaut"
+msgstr "Changer des fiches en série"
+
+#: cms/messages.py:26
+msgid "Changes could not be saved, there was an edit conflict."
+msgstr ""
 
 #: cms/ui/text/externaledit.xml.en:0
 msgid "Character encoding"
 msgstr "Codage des caractères"
 
-#: cms/root.py:415
+#: cms/root.py:413
 msgid "Check Groups"
 msgstr "Vérifier les groupes"
 
@@ -1267,10 +1336,6 @@ msgstr "Consultez la <a href=\";license\">licence</a>&nbsp;;"
 msgid "Choose a language"
 msgstr "Choisissez une langue"
 
-#: cms/ui/website/new_instance.xml.en:0
-msgid "Choose a template:"
-msgstr "Choisir un modèle&nbsp;:"
-
 #: cms/ui/access/new_user.xml.en:0
 msgid "Choose the role for the new member"
 msgstr "Choisir le rôle de l'utilisateur"
@@ -1279,7 +1344,7 @@ msgstr "Choisir le rôle de l'utilisateur"
 msgid "Choose your password"
 msgstr "Saisissez un mot de passe"
 
-#: cms/tracker.py:104
+#: cms/tracker.py:105
 msgid "Closed"
 msgstr "Fermé"
 
@@ -1291,11 +1356,11 @@ msgstr "Code"
 msgid "Come back to today"
 msgstr "Revenir à aujourd'hui"
 
-#: cms/csv.py:68
+#: cms/csv.py:65
 msgid "Comma Separated Values"
 msgstr "Format CSV"
 
-#: cms/tracker.py:98
+#: cms/tracker.py:99
 msgid "Command Line Interface"
 msgstr "Interface en ligne de commande"
 
@@ -1304,9 +1369,8 @@ msgid "Comment"
 msgstr "Commentaire"
 
 #: cms/ui/tracker/edit_issue.xml.en:0
-#, fuzzy
 msgid "Comment <a href=\"#c${comment/number}\">${comment/number}</a>"
-msgstr "Commentaire #${comment/number}"
+msgstr "Commentaire <a href=\"#c${comment/number}\">${comment/number}</a>"
 
 #: cms/ui/WorkflowAware_state.xml.en:0
 msgid "Comments"
@@ -1324,7 +1388,7 @@ msgstr "Nom"
 msgid "Confirm"
 msgstr "Confirmation"
 
-#: cms/ical.py:98
+#: cms/ical.py:102
 msgid "Confirmed"
 msgstr "Confirmé"
 
@@ -1340,11 +1404,11 @@ msgstr "Options de contact"
 msgid "Contacts"
 msgstr "Contacts"
 
-#: cms/wiki.py:62
+#: cms/wiki.py:59
 msgid "Container for a wiki"
 msgstr "Conteneur de wiki"
 
-#: cms/skins.py:155
+#: cms/skins.py:183
 msgid "Content ($size)"
 msgstr "Contenu ($size)"
 
@@ -1352,40 +1416,43 @@ msgstr "Contenu ($size)"
 msgid "Contents"
 msgstr "Contenu"
 
-#: cms/folder.py:509
+#: cms/folder.py:496
 msgid "Copy"
 msgstr "Copier"
 
-#: cms/website.py:44
+#: cms/ui/html/addlink.xml.en:0
+msgid "Create a new Web Page and link to it:"
+msgstr "Créer une nouvelle page Web à la volée :"
+
+#: cms/website.py:47
 msgid "Create a new Web Site or Work Place."
 msgstr "Créer un nouveau site Web"
 
-#: cms/html.py:102
-msgid "Create and publish a Web Document."
-msgstr "Créer un publier un document Web."
+#: cms/html.py:114
+msgid "Create and publish a Web Page."
+msgstr "Créer un publier une page Web."
 
 #: cms/ui/root/credits.xml.en:0
 msgid "Credits"
 msgstr "Crédits"
 
 #: cms/ui/dressable/upload_image.xml.en:0
-#, fuzzy
 msgid "Current image"
-msgstr "État actuel&nbsp;:"
+msgstr "Image actuelle"
 
 #: cms/ui/WorkflowAware_state.xml.en:0
 msgid "Current state:"
 msgstr "État actuel&nbsp;:"
 
-#: cms/folder.py:510
+#: cms/folder.py:497
 msgid "Cut"
 msgstr "Couper"
 
-#: cms/tracker.py:101
+#: cms/tracker.py:102
 msgid "Data Corruption Issue"
 msgstr "Probléme de corruption de données"
 
-#: cms/ical.py:973
+#: cms/ical.py:1548
 msgid "Data updated"
 msgstr "Données mises à jour."
 
@@ -1397,7 +1464,7 @@ msgstr "Date"
 msgid "Date :"
 msgstr "Date :"
 
-#: cms/ical.py:38
+#: cms/ical.py:42
 msgid "December"
 msgstr "Décembre"
 
@@ -1418,9 +1485,8 @@ msgid "Description"
 msgstr "Description"
 
 #: cms/ui/tracker/view_tracker.xml.en:0
-#, fuzzy
 msgid "Do not change"
-msgstr "Compte modifié."
+msgstr "Ne pas modifier"
 
 #: cms/binary.py:148
 msgid "Document Excel"
@@ -1438,7 +1504,7 @@ msgstr "Présentation au format MS PowerPoint"
 msgid "Document Word"
 msgstr "Texte au format MS Word"
 
-#: cms/tracker.py:97
+#: cms/tracker.py:98
 msgid "Documentation"
 msgstr "Documentation"
 
@@ -1446,10 +1512,9 @@ msgstr "Documentation"
 msgid "Download"
 msgstr "Télécharger"
 
-#: cms/future.py:256
-#, fuzzy
+#: cms/future.py:286
 msgid "Dressable"
-msgstr "Message"
+msgstr "Habillage"
 
 #: cms/ui/user/edit_account.xml.en:0
 msgid "E-mail"
@@ -1460,13 +1525,12 @@ msgid "Edit"
 msgstr "Modifier"
 
 #: cms/ui/tracker/view_tracker.xml.en:0
-#, fuzzy
 msgid "Edit Issues"
-msgstr "Ajouter une fiche de suivi"
+msgstr "Modifier les fiches"
 
-#: cms/ui/Handler_edit_metadata.xml.en:0
-msgid "Edit Metadata in Current Language"
-msgstr "Modifier les métadonnées dans la langue courante"
+#: cms/ui/base/edit_metadata.xml.en:0
+msgid "Edit Metadata in ${language_name}"
+msgstr "Modifier les métadonnées en ${language_name}"
 
 #: cms/ui/text/edit.xml.en:0
 msgid "Edit Text"
@@ -1481,9 +1545,8 @@ msgid "Edit preferences;"
 msgstr "Modifier les préférences de l'application&nbsp;:"
 
 #: cms/ui/table/edit_record.xml.en:0
-#, fuzzy
 msgid "Edit record ${id}"
-msgstr "Editer la ligne ${index}"
+msgstr "Editer la ligne ${id}"
 
 #: cms/ui/csv/edit_row.xml.en:0
 msgid "Edit row ${index}"
@@ -1513,15 +1576,19 @@ msgstr "Epoz"
 msgid "Epoz-Toolbox"
 msgstr "boite à outils Epoz"
 
-#: cms/ical.py:705
+#: cms/table.py:275
+msgid "Error: %s"
+msgstr "Erreur : %s"
+
+#: cms/ical.py:610
 msgid "Event"
 msgstr "Evénement"
 
-#: cms/ical.py:1220
+#: cms/ical.py:1144
 msgid "Event definitely deleted."
 msgstr "Evénement définitivement supprimé."
 
-#: cms/ical.py:765
+#: cms/ical.py:670
 msgid "Event not found"
 msgstr "Evénement introuvable"
 
@@ -1533,9 +1600,9 @@ msgstr "Tout est sous contrôle."
 msgid "Excel"
 msgstr "Classeur MS Excel"
 
-#: cms/tracker.py:429
+#: cms/tracker.py:431
 msgid "Export as CSV"
-msgstr ""
+msgstr "Exporter en CSV"
 
 #: cms/ical.py:1110
 msgid "Export in ical format"
@@ -1543,14 +1610,13 @@ msgstr "Exporter au format iCal"
 
 #: cms/ui/tracker/view_tracker.xml.en:0
 msgid "Export to CSV"
-msgstr ""
+msgstr "Exporter en CSV"
 
 #: cms/ui/tracker/view_tracker.xml.en:0
-#, fuzzy
 msgid "Export to Text"
-msgstr "Modifier le texte"
+msgstr "Exporter en texte"
 
-#: cms/file.py:170
+#: cms/file.py:173
 msgid "External"
 msgstr "Externe"
 
@@ -1570,7 +1636,7 @@ msgstr "Éditeur externe..."
 msgid "Extranet"
 msgstr "Extranet"
 
-#: cms/ical.py:36
+#: cms/ical.py:40
 msgid "February"
 msgstr "Février"
 
@@ -1590,15 +1656,15 @@ msgstr "Prénom"
 msgid "Fix"
 msgstr "Corriger"
 
-#: cms/tracker.py:104
+#: cms/tracker.py:105
 msgid "Fixed"
-msgstr "Fixé"
+msgstr "Corrigé"
 
 #: cms/binary.py:117
 msgid "Flash"
 msgstr "Animation Flash"
 
-#: cms/folder.py:64
+#: cms/folder.py:78
 msgid "Folder"
 msgstr "Dossier"
 
@@ -1614,11 +1680,11 @@ msgstr "Format&nbsp;:"
 msgid "Formatted"
 msgstr "Formatté"
 
-#: cms/forum.py:219
+#: cms/forum.py:227
 msgid "Forum"
 msgstr "Forum"
 
-#: cms/ical.py:41
+#: cms/ical.py:45
 msgid "Friday"
 msgstr "Vendredi"
 
@@ -1626,7 +1692,7 @@ msgstr "Vendredi"
 msgid "From"
 msgstr "À partir de"
 
-#: cms/wiki.py:82
+#: cms/wiki.py:79
 msgid "Front Page"
 msgstr ""
 
@@ -1639,8 +1705,10 @@ msgid ""
 "Go to issue #<input name=\"issue_name\" size=\"6\" type=\"text\"/> <input "
 "class=\"button_ok\" type=\"submit\" value=\"OK\"/>"
 msgstr ""
+"Aller à la fiche #<input name=\"issue_name\" size=\"6\" type=\"text\"/> <input "
+"class=\"button_ok\" type=\"submit\" value=\"OK\"/>"
 
-#: cms/root.py:444
+#: cms/root.py:442
 msgid "Groups fixed."
 msgstr "Groupes corrigés."
 
@@ -1684,7 +1752,7 @@ msgstr "Titre 5"
 msgid "Heading 6"
 msgstr "Titre 6"
 
-#: cms/wiki.py:527
+#: cms/wiki.py:465
 msgid "Help"
 msgstr "Aide"
 
@@ -1692,11 +1760,11 @@ msgstr "Aide"
 msgid "Hervé Cauwelier (French)"
 msgstr ""
 
-#: cms/tracker.py:103
+#: cms/tracker.py:104
 msgid "High"
 msgstr "Haute"
 
-#: cms/tracker.py:118
+#: cms/tracker.py:119
 msgid "High Priority"
 msgstr "Haute priorité"
 
@@ -1711,7 +1779,7 @@ msgid ""
 msgstr ""
 
 #: cms/ui/root/internal_server_error.xml.en:0
-msgid "If the error persits contact with the system administrator."
+msgid "If the error persists contact with the system administrator."
 msgstr "Si l'erreur persiste, contactez l'administrateur du site."
 
 #: cms/ui/text/externaledit.xml.en:0
@@ -1738,21 +1806,9 @@ msgstr ""
 msgid "Indent"
 msgstr "Indenter"
 
-#: cms/text.py:204
+#: cms/text.py:158
 msgid "Inline"
 msgstr "En ligne"
-
-#: cms/ui/epoz/rte.xml.en:0
-msgid "Insert Anchor"
-msgstr "Insérer ancre"
-
-#: cms/ui/epoz/rte.xml.en:0
-msgid "Insert Image"
-msgstr "Insérer image"
-
-#: cms/ui/epoz/rte.xml.en:0
-msgid "Insert Link"
-msgstr "Insérer lien (sélectionner texte d'abord)"
 
 #: cms/ui/epoz/rte.xml.en:0
 msgid "Insert Rule"
@@ -1774,11 +1830,19 @@ msgstr "Erreur interne du serveur"
 msgid "Intranet"
 msgstr ""
 
-#: cms/forum.py:299
+#: cms/html.py:94
+msgid "Invalid HTML code."
+msgstr "Code HTML invalide."
+
+#: cms/ical.py:660
+msgid "Invalid argument."
+msgstr "Argument invalide."
+
+#: cms/forum.py:308
 msgid "Invalid title."
 msgstr "Titre invalide."
 
-#: cms/tracker.py:895
+#: cms/tracker.py:904
 msgid "Issue"
 msgstr "Fiche"
 
@@ -1786,25 +1850,23 @@ msgstr "Fiche"
 msgid "Issue #${number}"
 msgstr "Fiche #${number}"
 
-#: cms/tracker.py:72
+#: cms/tracker.py:73
 msgid "Issue Tracker"
 msgstr "Outils de suivi de fiches"
 
-#: cms/tracker.py:738
-#, fuzzy
+#: cms/tracker.py:736
 msgid "Issue not found."
-msgstr "Evénement introuvable"
+msgstr "Fiche introuvable"
 
 #: cms/tracker.py:797
-#, fuzzy
 msgid "Issues"
-msgstr "Fiche"
+msgstr "Fiches"
 
 #: cms/ui/epoz/rte.xml.en:0
 msgid "Italic"
 msgstr "Italique"
 
-#: cms/ical.py:36
+#: cms/ical.py:40
 msgid "January"
 msgstr "Janvier"
 
@@ -1812,11 +1874,11 @@ msgstr "Janvier"
 msgid "Juan David Ibáñez Palomar (Spanish)"
 msgstr ""
 
-#: cms/ical.py:37
+#: cms/ical.py:41
 msgid "July"
 msgstr "Juillet"
 
-#: cms/ical.py:37
+#: cms/ical.py:41
 msgid "June"
 msgstr "Juin"
 
@@ -1824,7 +1886,7 @@ msgstr "Juin"
 msgid "Keep your notes with plain text files."
 msgstr "Conserver vos notes dans des fichiers texte."
 
-#: cms/ui/Handler_edit_metadata.xml.en:0
+#: cms/ui/base/edit_metadata.xml.en:0
 msgid "Keywords"
 msgstr ""
 
@@ -1836,27 +1898,27 @@ msgstr "Langue"
 msgid "Language Settings"
 msgstr "Configuration des langues"
 
-#: cms/website.py:159
+#: cms/website.py:270
 msgid "Language added."
 msgstr "Langue ajoutée."
 
-#: cms/website.py:87
+#: cms/website.py:198
 msgid "Languages"
 msgstr "Langues"
 
-#: cms/website.py:146
+#: cms/website.py:257
 msgid "Languages removed."
 msgstr "Langues supprimées."
 
-#: cms/folder.py:889
+#: cms/folder.py:908
 msgid "Last Author"
 msgstr "Dernier auteur"
 
-#: cms/folder.py:839
+#: cms/folder.py:858
 msgid "Last Changes"
 msgstr "Dernier changements"
 
-#: cms/folder.py:888
+#: cms/folder.py:907
 msgid "Last Modified"
 msgstr "Dernière modification"
 
@@ -1892,15 +1954,15 @@ msgstr "Connexion"
 msgid "Login"
 msgstr "Connexion"
 
-#: cms/tracker.py:103
+#: cms/tracker.py:104
 msgid "Low"
 msgstr "Basse"
 
-#: cms/skins.py:111
+#: cms/skins.py:99
 msgid "Main Menu"
 msgstr "Menu principal"
 
-#: cms/root.py:414
+#: cms/root.py:412
 msgid "Maintenance"
 msgstr "Maintenance"
 
@@ -1916,15 +1978,15 @@ msgstr "Gérer un projet avec l'outil de suivi de fiches"
 msgid "Manage personal content;"
 msgstr "Gérer les documents personnels&nbsp;;"
 
-#: cms/ical.py:36
+#: cms/ical.py:40
 msgid "March"
 msgstr "Mars"
 
-#: cms/ical.py:37
+#: cms/ical.py:41
 msgid "May"
 msgstr "Mai"
 
-#: cms/tracker.py:103
+#: cms/tracker.py:104
 msgid "Medium"
 msgstr "Moyenne"
 
@@ -1945,19 +2007,18 @@ msgid "Message"
 msgstr "Message"
 
 #: cms/ui/html/addlink.xml.en:0
-#, fuzzy
 msgid "Message :${message}"
-msgstr "Message envoyé."
+msgstr "Message : ${message}"
 
-#: cms/text.py:192
+#: cms/text.py:146
 msgid "Message Catalog"
 msgstr "Catalogue de messages"
 
-#: cms/forum.py:58
+#: cms/forum.py:56
 msgid "Message in a thread"
 msgstr "Message d'un fil de discussion"
 
-#: cms/website.py:561
+#: cms/website.py:671
 msgid "Message sent."
 msgstr "Message envoyé."
 
@@ -1969,13 +2030,11 @@ msgstr "Message&nbsp;:"
 msgid "Metadata"
 msgstr "Métadonnées"
 
-#: cms/tracker.py:525
-#, fuzzy
+#: cms/tracker.py:527
 msgid "Modifications:"
-msgstr "Emplacement&nbsp;:"
+msgstr "Modifications&nbsp;:"
 
-#: cms/tracker.py:66
-#, fuzzy
+#: cms/tracker.py:67
 msgid "Modified"
 msgstr "Dernière modification"
 
@@ -1987,15 +2046,19 @@ msgstr "Modifié après le"
 msgid "Modified before"
 msgstr "Modifié avant le"
 
+#: cms/ui/tracker/search.xml.en:0
+msgid "Modified since:"
+msgstr "Modifié il y a&nbsp;:"
+
 #: cms/ui/tracker/view_tracker.xml.en:0
 msgid "Module"
 msgstr "Module"
 
-#: cms/ical.py:40
+#: cms/ical.py:44
 msgid "Monday"
 msgstr "Lundi"
 
-#: cms/ical.py:468
+#: cms/ical.py:392
 msgid "Monthly"
 msgstr "Mensuel"
 
@@ -2007,11 +2070,11 @@ msgstr "Déplacer vers ordonnés"
 msgid "Move into unordered category"
 msgstr "Déplacer vers sans ordre"
 
-#: cms/skins.py:78
+#: cms/skins.py:66
 msgid "My Content"
 msgstr "Mon Contenu"
 
-#: cms/skins.py:75
+#: cms/skins.py:63
 msgid "My Profile"
 msgstr "Mon Profil"
 
@@ -2022,6 +2085,10 @@ msgstr "Aucun"
 #: cms/ui/wiki/WikiPage_new_instance.xml.en:0
 msgid "Name"
 msgstr "Nom"
+
+#: cms/ui/base/new_instance.xml.en:0
+msgid "Name (optional)"
+msgstr "Nom (facultatif)"
 
 #: cms/ui/website/search_form.xml.en:0
 msgid "Name contains"
@@ -2043,7 +2110,7 @@ msgstr "Nouvelle pièce jointe"
 msgid "New Comment"
 msgstr "Nouveau commentaire"
 
-#: cms/tracker.py:100
+#: cms/tracker.py:101
 msgid "New Feature"
 msgstr "Nouvelle fonctionnalité"
 
@@ -2059,7 +2126,7 @@ msgstr "Nouveau membre"
 msgid "New Password"
 msgstr "Nouveau mot de passe"
 
-#: cms/wiki.py:509
+#: cms/folder.py:329
 msgid "New Resource"
 msgstr "Nouvelle ressource"
 
@@ -2067,24 +2134,19 @@ msgstr "Nouvelle ressource"
 msgid "New Thread"
 msgstr "Nouveau fil de discussion"
 
-#: cms/ui/website/new_instance.xml.en:0
-msgid "New WebSite"
-msgstr "Nouveau site Web"
-
 #: cms/ui/wiki/WikiPage_new_instance.xml.en:0
 msgid "New Wiki Page"
 msgstr "Nouvelle page Wiki"
 
-#: cms/tracker.py:728
+#: cms/tracker.py:726
 msgid "New issue addded."
-msgstr "Nouveau bug ajouté"
+msgstr "Nouvelle fiche ajoutée."
 
-#: cms/table.py:305
-#, fuzzy
+#: cms/table.py:273
 msgid "New record added."
-msgstr "Nouvelle colonne ajoutée."
+msgstr "Nouvel enregistrement ajouté."
 
-#: cms/csv.py:223
+#: cms/csv.py:220
 msgid "New row added."
 msgstr "Nouvelle colonne ajoutée."
 
@@ -2096,15 +2158,15 @@ msgstr "Suivant"
 msgid "Nicolas Deram (French)"
 msgstr ""
 
-#: cms/tracker.py:465
+#: cms/tracker.py:467
 msgid "No data to export."
-msgstr ""
+msgstr "Pas de données à exporter."
 
 #: cms/ui/user/tasks.xml.en:0
 msgid "No document awaits your review."
 msgstr "Aucun document en attente."
 
-#: cms/file.py:254
+#: cms/ical.py:1357
 msgid "No file has been entered."
 msgstr "Aucun fichier n'a été entré."
 
@@ -2112,11 +2174,11 @@ msgstr "Aucun fichier n'a été entré."
 msgid "No history."
 msgstr "Rien dans l'historique."
 
-#: cms/folder.py:714
+#: cms/folder.py:729
 msgid "No objects selected."
 msgstr "Aucun objet sélectionné."
 
-#: cms/forum.py:295
+#: cms/forum.py:304
 msgid "No title given."
 msgstr "Aucun titre donné."
 
@@ -2124,7 +2186,7 @@ msgstr "Aucun titre donné."
 msgid "Normal"
 msgstr "Normal"
 
-#: cms/tracker.py:117
+#: cms/tracker.py:118
 msgid "Not Assigned"
 msgstr "Pas assigné"
 
@@ -2140,19 +2202,19 @@ msgstr "Notez que ni le nom ni le titre ne changeront."
 msgid "Note:"
 msgstr "Note&nbsp;:"
 
-#: cms/ical.py:1258
+#: cms/ical.py:803
 msgid "Nothing to change."
 msgstr "Aucune modification."
 
-#: cms/folder.py:728
+#: cms/folder.py:743
 msgid "Nothing to paste."
 msgstr "Rien à coller."
 
-#: cms/ical.py:1264
+#: cms/ical.py:809
 msgid "Nothing to remove."
 msgstr "Rien à supprimer."
 
-#: cms/ical.py:38
+#: cms/ical.py:42
 msgid "November"
 msgstr "Novembre"
 
@@ -2200,81 +2262,75 @@ msgstr "Texte OpenOffice.org"
 msgid "OPTIONNAL"
 msgstr "Facultatif"
 
-#: cms/future.py:159
-#, fuzzy
+#: cms/future.py:181
 msgid "Objects already down."
-msgstr "Dossiers déjà en bas."
+msgstr "Objets déjà en bas."
 
-#: cms/future.py:204
-#, fuzzy
+#: cms/future.py:226
 msgid "Objects already on bottom."
-msgstr "Dossiers déjà tout en bas"
+msgstr "Objets déjà tout en bas"
 
-#: cms/future.py:183
-#, fuzzy
+#: cms/future.py:205
 msgid "Objects already on top."
-msgstr "Dossiers déjà tout en haut."
+msgstr "Objets déjà tout en haut."
 
-#: cms/future.py:136
-#, fuzzy
+#: cms/future.py:158
 msgid "Objects already up."
-msgstr "Objets renommés."
+msgstr "Objets en haut."
 
-#: cms/folder.py:701
+#: cms/folder.py:716
 msgid "Objects copied."
 msgstr "Objets copiés."
 
-#: cms/folder.py:721
+#: cms/folder.py:736
 msgid "Objects cut."
 msgstr "Objets coupés."
 
-#: cms/future.py:243
-#, fuzzy
+#: cms/future.py:267
 msgid "Objects moved to ordered category."
-msgstr "Objets supprimés&nbsp;: $objects."
+msgstr "Objets maintenant ordonnés."
 
-#: cms/future.py:169
-#, fuzzy
+#: cms/future.py:191
 msgid "Objects ordered down."
-msgstr "Dossiers descendus."
+msgstr "Objets descendus."
 
-#: cms/future.py:211
-#, fuzzy
+#: cms/future.py:233
 msgid "Objects ordered on bottom."
-msgstr "Dossiers déplacés tout en bas."
+msgstr "Objets déplacés tout en bas."
 
-#: cms/future.py:190
-#, fuzzy
+#: cms/future.py:212
 msgid "Objects ordered on top."
-msgstr "Dossiers déplacés tout en haut."
+msgstr "Objets déplacés tout en haut."
 
-#: cms/future.py:145
-#, fuzzy
+#: cms/future.py:167
 msgid "Objects ordered up."
-msgstr "Objets renommés."
+msgstr "Objets déplacés en haut."
 
-#: cms/folder.py:761
+#: cms/folder.py:781
 msgid "Objects pasted."
 msgstr "Objets collés."
 
-#: cms/folder.py:623
+#: cms/folder.py:619
 msgid "Objects removed: $objects."
 msgstr "Objets supprimés&nbsp;: $objects."
 
-#: cms/future.py:460
-#, fuzzy
+#: cms/future.py:562
 msgid "Objects removed: %s"
-msgstr "Objets supprimés&nbsp;: $objects."
+msgstr "Objets supprimés&nbsp;: %s."
 
-#: cms/folder.py:680
+#: cms/folder.py:695
 msgid "Objects renamed."
 msgstr "Objets renommés."
 
-#: cms/ical.py:38
+#: cms/ical.py:42
 msgid "October"
 msgstr "Octobre"
 
-#: cms/ical.py:929
+#: cms/ui/html/addlink.xml.en:0
+msgid "Ok"
+msgstr ""
+
+#: cms/ical.py:1493
 msgid "One or more field is invalid."
 msgstr "un champ ou plus est invalide."
 
@@ -2283,11 +2339,11 @@ msgid "Only administrators will be able to register new users."
 msgstr ""
 "Seuls les administrateurs pourront enregistrer de nouveaux utilisateurs"
 
-#: cms/tracker.py:104
+#: cms/tracker.py:105
 msgid "Open"
 msgstr "Ouvert"
 
-#: cms/tracker.py:116
+#: cms/tracker.py:117
 msgid "Open Issues"
 msgstr "Fiches ouvertes"
 
@@ -2307,7 +2363,7 @@ msgstr "Classeur au format OpenOffice.org"
 msgid "Operation successful ! Welcome."
 msgstr "Votre compte est activé. Bienvenue&nbsp;!"
 
-#: cms/future.py:101
+#: cms/future.py:109
 msgid "Order"
 msgstr "Ordre"
 
@@ -2335,7 +2391,7 @@ msgstr "Liste numérotée"
 msgid "Ordered Objects"
 msgstr "Objets ordonnés"
 
-#: cms/folder.py:65
+#: cms/folder.py:79
 msgid "Organize your files and documents with folders."
 msgstr "Organisez vos fichiers et documents dans des dossiers."
 
@@ -2343,7 +2399,7 @@ msgstr "Organisez vos fichiers et documents dans des dossiers."
 msgid "Outdent"
 msgstr "Désindenter"
 
-#: cms/binary.py:197
+#: cms/wiki.py:253
 msgid "PDF"
 msgstr "Document PDF"
 
@@ -2354,6 +2410,10 @@ msgstr "Document au format PDF"
 #: cms/wiki.py:405
 msgid "PDF generation failed."
 msgstr "La géneration de PDF a échoué"
+
+#: cms/wiki.py:390
+msgid "PDF generation failed. Please install pdflatex."
+msgstr "La géneration de PDF a échoué. Vérifiez si pdflatex est installé."
 
 #: cms/ui/root/credits.xml.en:0
 msgid "Paolo Dina (Italian)"
@@ -2383,7 +2443,7 @@ msgstr "Vous devez saisir un mot de passe."
 msgid "Passwords mismatch, please try again."
 msgstr "Les mots de passe sont différents, veuillez réessayez."
 
-#: cms/folder.py:515
+#: cms/folder.py:502
 msgid "Paste"
 msgstr "Coller"
 
@@ -2395,56 +2455,49 @@ msgstr "En attente de validation"
 msgid "Pending tasks."
 msgstr "Voir les tâches en cours."
 
-#: cms/tracker.py:102
+#: cms/tracker.py:103
 msgid "Performance Improvement"
 msgstr "Amélioration des performances"
 
-#: cms/text.py:120
+#: cms/text.py:74
 msgid "Plain Text"
 msgstr "Texte intégral"
 
-#: cms/ical.py:865
-msgid "Please select a resource."
-msgstr "Veuillez sélectionner une ressource."
+#: cms/website.py:116
+msgid "Please select a website."
+msgstr "Veuillez sélectionner un site Web."
 
 #: cms/ui/tracker/view_tracker.xml.en:0
 msgid "Please select encoding:<br/><br/>"
-msgstr ""
+msgstr "Veuillez sélectionner le codage&nbsp;:<br/><br/>"
 
 #: cms/ui/tracker/view_tracker.xml.en:0
-#, fuzzy
 msgid "Please select the columns to export:"
-msgstr "Veuillez sélectionner les dossiers à monter."
+msgstr "Veuillez sélectionner les colonnes à exporter :"
 
-#: cms/future.py:234
-#, fuzzy
+#: cms/future.py:257
 msgid "Please select the ordered objects to move into the unordered category."
-msgstr "Veuillez sélectionner les dossiers à déplacer en haut."
+msgstr "Veuillez sélectionner les objets à ne plus ordonner."
 
-#: cms/future.py:154
-#, fuzzy
+#: cms/future.py:176
 msgid "Please select the ordered objects to order down."
-msgstr "Veuillez sélectionner les dossiers à descendre."
+msgstr "Veuillez sélectionner les objets à descendre."
 
-#: cms/future.py:198
-#, fuzzy
+#: cms/future.py:220
 msgid "Please select the ordered objects to order on bottom."
-msgstr "Veuillez sélectionner les dossiers à déplacer en bas."
+msgstr "Veuillez sélectionner les objets à déplacer en bas."
 
-#: cms/future.py:177
-#, fuzzy
+#: cms/future.py:199
 msgid "Please select the ordered objects to order on top."
-msgstr "Veuillez sélectionner les dossiers à déplacer en haut."
+msgstr "Veuillez sélectionner les objets à déplacer en haut."
 
-#: cms/future.py:131
-#, fuzzy
+#: cms/future.py:152
 msgid "Please select the ordered objects to order up."
-msgstr "Veuillez sélectionner les dossiers à monter."
+msgstr "Veuillez sélectionner les objets à monter."
 
-#: cms/future.py:219
-#, fuzzy
+#: cms/future.py:241
 msgid "Please select the unordered objects to move into the ordered category."
-msgstr "Veuillez sélectionner les dossiers à déplacer en haut."
+msgstr "Veuillez sélectionner les objets à ordonner"
 
 #: cms/ui/forum/Forum_new_thread.xml.en:0
 msgid "Post"
@@ -2466,7 +2519,7 @@ msgstr "Préférences"
 msgid "Presence"
 msgstr "Présence"
 
-#: cms/widgets.py:82
+#: cms/widgets.py:84
 msgid "Previous"
 msgstr "Précédent"
 
@@ -2482,7 +2535,7 @@ msgstr "Privé"
 msgid "Profile"
 msgstr "Profil"
 
-#: cms/tracker.py:98
+#: cms/tracker.py:99
 msgid "Programming Interface"
 msgstr "Interface de programmation"
 
@@ -2510,8 +2563,7 @@ msgstr "Document au format RTF"
 msgid "Recipient"
 msgstr "Destinataire"
 
-#: cms/table.py:230
-#, fuzzy
+#: cms/table.py:198
 msgid "Record deleted."
 msgstr "Enregistrement supprimé."
 
@@ -2535,7 +2587,7 @@ msgstr "Réindexer"
 msgid "Reject the document."
 msgstr "Rejeter le document."
 
-#: cms/tracker.py:850
+#: cms/tracker.py:851
 msgid "Released"
 msgstr "Livrée"
 
@@ -2563,17 +2615,21 @@ msgstr "Renommer les objets"
 msgid "Repeat Password"
 msgstr "Confirmer le mot de passe"
 
+#: cms/ui/file/upload.xml.en:0
+msgid "Replace File"
+msgstr "Remplacer le fichier"
+
 #: cms/ui/forum/Forum_view.xml.en:0
 msgid "Replies"
 msgstr "Réponses"
 
-#: cms/forum.py:209
+#: cms/forum.py:215
 msgid "Reply Posted."
 msgstr "Réponse postée."
 
 #: cms/ui/tracker/edit_issue.xml.en:0
 msgid "Reported by <em>${reported_by}</em>"
-msgstr "Reporté par <em>${reported_by}</em>"
+msgstr "Rapporté par <em>${reported_by}</em>"
 
 #: cms/workflow.py:42
 msgid "Request the document publication."
@@ -2582,6 +2638,10 @@ msgstr "Demander la publication du document."
 #: cms/ui/ical/ical_edit_event_form.xml.en:0
 msgid "Resource"
 msgstr "Ressource"
+
+#: cms/ical.py:765
+msgid "Resource not found."
+msgstr "Evénement introuvable"
 
 #: cms/ui/website/search.xml.en:0
 msgid "Results"
@@ -2607,11 +2667,11 @@ msgstr "Rôle"
 msgid "Role updated."
 msgstr "Rôle mis à jour."
 
-#: cms/csv.py:176
+#: cms/csv.py:173
 msgid "Row deleted."
 msgstr "Enregistrement supprimé."
 
-#: cms/ical.py:41
+#: cms/ical.py:45
 msgid "Saturday"
 msgstr "Samedi"
 
@@ -2619,7 +2679,7 @@ msgstr "Samedi"
 msgid "Save"
 msgstr "Sauvegarder"
 
-#: cms/ical.py:982
+#: cms/ical.py:1282
 msgid "Schedule your time with calendar files."
 msgstr "Organisez votre temps à l'aide d'agendas."
 
@@ -2635,7 +2695,7 @@ msgstr "Inclure les sous-dossiers"
 msgid "Search:"
 msgstr "Rechercher&nbsp;:"
 
-#: cms/tracker.py:100
+#: cms/tracker.py:101
 msgid "Security Issue"
 msgstr "Problème de sécurité"
 
@@ -2655,19 +2715,15 @@ msgstr "Envoyer"
 msgid "Sender"
 msgstr "Expéditeur"
 
-#: cms/ical.py:37
+#: cms/ical.py:41
 msgid "September"
 msgstr "Septembre"
 
-#: cms/website.py:191
+#: cms/skins.py:71
 msgid "Settings"
 msgstr "Configuration"
 
-#: cms/ui/tracker/search.xml.en:0
-msgid "Show Issues modified sometime the last"
-msgstr "Voir les fiches modifiées durant les"
-
-#: cms/folder.py:496
+#: cms/folder.py:483
 msgid "Size"
 msgstr "Taille"
 
@@ -2683,7 +2739,7 @@ msgstr "Taille&nbsp;:"
 msgid "Skin"
 msgstr "Habillage"
 
-#: web/context.py:281
+#: web/context.py:298
 msgid ""
 "Some required fields are missing, or some values are not valid. Please "
 "correct them and continue."
@@ -2695,7 +2751,7 @@ msgstr ""
 msgid "Some things you can do with ikaaro:"
 msgstr "Voici quelques fonctionnalités d'ikaaro&nbsp;:"
 
-#: cms/tracker.py:101
+#: cms/tracker.py:102
 msgid "Stability Issue"
 msgstr "Problème de stabilité"
 
@@ -2703,15 +2759,15 @@ msgstr "Problème de stabilité"
 msgid "Start"
 msgstr "Début"
 
-#: cms/ical.py:934
+#: cms/ical.py:1498
 msgid "Start date MUST be earlier than end date."
 msgstr "La date de début doit être antérieure à la date de fin."
 
-#: cms/ical.py:90
+#: cms/ical.py:94
 msgid "Start time must be earlier than end time."
 msgstr "L'heure de début doit être antérieure à l'heure de fin."
 
-#: cms/workflow.py:104
+#: cms/ui/folder/order_items.xml.en:0
 msgid "State"
 msgstr "État"
 
@@ -2733,7 +2789,7 @@ msgstr "Recherche enregistrée"
 
 #: cms/ui/tracker/search.xml.en:0
 msgid "Stored Searches"
-msgstr "Recherche enregistrées"
+msgstr "Recherches enregistrées"
 
 #: cms/ui/epoz/rte.xml.en:0
 msgid "Strikethrough"
@@ -2755,7 +2811,11 @@ msgstr "Indice"
 msgid "Summary"
 msgstr "Titre"
 
-#: cms/ical.py:41
+#: cms/ical.py:1251
+msgid "Summary must be filled."
+msgstr ""
+
+#: cms/ical.py:45
 msgid "Sunday"
 msgstr "Dimanche"
 
@@ -2767,14 +2827,13 @@ msgstr "Exposant"
 msgid "Sylvain Taverne (French)"
 msgstr ""
 
-#: cms/wiki.py:471
+#: cms/wiki.py:450
 msgid "Syntax error, please check the view for details."
 msgstr "Erreur de syntaxe, merci de vérifier la vue pour plus de détails"
 
-#: cms/table.py:51
-#, fuzzy
+#: cms/table.py:55
 msgid "Table"
-msgstr "Lignes"
+msgstr ""
 
 #: cms/ui/epoz/script_table.xml.en:0
 msgid "Table columns"
@@ -2792,15 +2851,15 @@ msgstr "Archive Tar"
 msgid "Tasks"
 msgstr "Tâches"
 
-#: cms/tracker.py:102
+#: cms/tracker.py:103
 msgid "Technology Upgrade"
 msgstr "Mise à jour technique"
 
-#: cms/ical.py:97
+#: cms/ical.py:101
 msgid "Tentative"
 msgstr "Provisoire"
 
-#: cms/folder.py:78
+#: cms/folder.py:92
 msgid "Text"
 msgstr "Texte"
 
@@ -2816,7 +2875,7 @@ msgstr "Couleur du texte"
 msgid "Text contains"
 msgstr "Le texte contient"
 
-#: cms/ical.py:1121
+#: cms/ical.py:1126
 msgid "Text view"
 msgstr "Vue textuelle"
 
@@ -2830,15 +2889,15 @@ msgid ""
 msgstr ""
 "Les champs <span class=\"field_required\">soulignés</span> sont requis."
 
-#: cms/messages.py:20
+#: cms/messages.py:23
 msgid "The changes have been saved."
 msgstr "Changements sauvegardés."
 
-#: cms/website.py:129
+#: cms/website.py:240
 msgid "The default language has been changed."
 msgstr "La langue par défaut a été changée."
 
-#: cms/messages.py:19
+#: cms/messages.py:22
 msgid "The document name contains illegal characters, choose another one."
 msgstr ""
 "Le nom du document contient des caractères interdits, choisissez-en un autre."
@@ -2852,16 +2911,15 @@ msgstr ""
 msgid "The email address is missing, please type it."
 msgstr "Une adresse de courriel doit être saisie."
 
-#: cms/messages.py:24
+#: cms/messages.py:29
 msgid "The email address provided is invalid."
 msgstr "Le courriel est incorrect, veuillez réessayer."
 
-#: cms/future.py:438
+#: cms/future.py:540
 msgid "The file is not an image"
 msgstr ""
 
-#: cms/messages.py:23
-#, fuzzy
+#: cms/messages.py:27
 msgid "The file must be entered."
 msgstr "Le fichier doit être saisi."
 
@@ -2869,15 +2927,15 @@ msgstr "Le fichier doit être saisi."
 msgid "The following groups contain users that don't exist anymore:"
 msgstr "Les groupes suivants contiennent des utilisateurs effacés&nbsp;:"
 
-#: cms/messages.py:26
+#: cms/messages.py:31
 msgid "The name is missing."
 msgstr "Le nom doit être saisi."
 
-#: cms/website.py:342
+#: cms/website.py:453
 msgid "The password is wrong."
 msgstr "Le mot de passe est incorrect."
 
-#: cms/messages.py:28
+#: cms/messages.py:34
 msgid "The provided passwords do not match."
 msgstr "Les mots de passe ne correspondent pas."
 
@@ -2885,16 +2943,16 @@ msgstr "Les mots de passe ne correspondent pas."
 msgid "The requested URL ${uri} was not found on this server."
 msgstr "L'URL demandée ${uri} est introuvable sur ce serveur."
 
-#: cms/website.py:328
+#: cms/website.py:439
 msgid "The user \"$username\" does not exist."
 msgstr "L'utilisateur &laquo;&nbsp;$username&nbsp;&raquo; n'existe pas."
 
-#: cms/website.py:337
+#: cms/website.py:448
 msgid "The user \"$username\" is not active."
 msgstr ""
 "L'utilisateur &laquo;&nbsp;$username&nbsp;&raquo; n'a pas activé son compte."
 
-#: cms/tracker.py:1002
+#: cms/tracker.py:1009
 msgid "The user %s did some changes."
 msgstr "L'utilisateur %s a modifié cette fiche."
 
@@ -2902,9 +2960,17 @@ msgstr "L'utilisateur %s a modifié cette fiche."
 msgid "The user is already here."
 msgstr "L'utilisateur est déjà membre."
 
-#: cms/widgets.py:47
+#: cms/widgets.py:49
 msgid "There are ${n} objects."
 msgstr "Il y a ${n} objets."
+
+#: cms/ui/folder/order_items.xml.en:0
+msgid "There are no ordered objects"
+msgstr "Il n'y aucun objet ordonné."
+
+#: cms/ui/folder/order_items.xml.en:0
+msgid "There are no unordered objects"
+msgstr "Il n'y aucun objet sans ordre."
 
 #: cms/ui/tracker/search.xml.en:0
 msgid "There are not stored searches."
@@ -2918,15 +2984,15 @@ msgstr "Aucun message."
 msgid "There has been an error, please try again later."
 msgstr "Une erreur s'est produite, veuillez réessayer plus tard."
 
-#: cms/widgets.py:47
+#: cms/widgets.py:49
 msgid "There is 1 object."
 msgstr "Il y a 1 objet."
 
-#: cms/website.py:270
+#: cms/website.py:381
 msgid "There is already an active user with that email."
 msgstr "Il existe déjà un utilisateur avec cette adresse de courriel."
 
-#: cms/messages.py:25
+#: cms/messages.py:30
 msgid "There is already another object with this name."
 msgstr "Il existe déjà un autre objet avec ce nom."
 
@@ -2936,7 +3002,7 @@ msgstr ""
 "Il existe déjà un utilisateur avec le courriel &laquo;&nbsp;%s&nbsp;&raquo;, "
 "veuillez en changer."
 
-#: cms/website.py:387
+#: cms/website.py:498
 msgid "There is not a user identified as \"$username\""
 msgstr "Il n'existe pas d'utilisateur &laquo;&nbsp;$username&nbsp;&raquo;."
 
@@ -2948,11 +3014,11 @@ msgstr ""
 "Ceci est votre espace personnel où vous pouvez gérer vos propres documents "
 "et les faire publier."
 
-#: cms/file.py:212
+#: cms/file.py:215
 msgid "This page is lock by another user"
 msgstr ""
 
-#: cms/messages.py:29
+#: cms/messages.py:33
 msgid "This page is locked by $user"
 msgstr ""
 
@@ -2966,31 +3032,31 @@ msgstr ""
 msgid "This program is free software:"
 msgstr ""
 
-#: cms/forum.py:302
+#: cms/forum.py:311
 msgid "This thread already exists."
 msgstr "Ce fil de discussion existe déjà."
 
-#: cms/forum.py:106
+#: cms/forum.py:111
 msgid "Thread"
 msgstr "Fil de discussion"
 
-#: cms/forum.py:313
+#: cms/forum.py:320
 msgid "Thread Created."
 msgstr "Fil de discussion créé."
 
-#: cms/ical.py:40
+#: cms/ical.py:44
 msgid "Thursday"
 msgstr "Jeudi"
 
-#: cms/ical.py:1269
+#: cms/ical.py:814
 msgid "Timetable(s) removed successfully."
 msgstr "Horaire(s) supprimé(s)."
 
-#: cms/ical.py:1225
+#: cms/ical.py:770
 msgid "Timetables"
 msgstr "Horaires"
 
-#: cms/ical.py:1289
+#: cms/ical.py:834
 msgid "Timetables updated successfully."
 msgstr "Horaire modifié."
 
@@ -3010,15 +3076,11 @@ msgstr "Le titre contient"
 msgid "Title:"
 msgstr "Titre&nbsp;:"
 
-#: cms/wiki.py:280
-msgid "To PDF"
-msgstr "Format PDF"
-
 #: cms/ui/user/confirm_registration.xml.en:0
 msgid "To activate your account, please type a password."
 msgstr "Pour activer votre compte, vous devez saisir un mot de passe."
 
-#: cms/ical.py:732
+#: cms/ical.py:629
 msgid "To add an event, click on + symbol from the views."
 msgstr "Pour ajouter un événement, cliquez sur le symbole + dans les vues."
 
@@ -3047,7 +3109,7 @@ msgstr ""
 msgid "To learn more, check out these resources:"
 msgstr "Pour en savoir plus, consultez ces ressources&nbsp;:"
 
-#: cms/tracker.py:73
+#: cms/tracker.py:74
 msgid "To manage bugs and tasks"
 msgstr "Pour gérer les bugs et les tâches"
 
@@ -3077,7 +3139,7 @@ msgstr "Action effectuée."
 msgid "Translators"
 msgstr "Traducteurs"
 
-#: cms/ical.py:40
+#: cms/ical.py:44
 msgid "Tuesday"
 msgstr "Mardi"
 
@@ -3089,7 +3151,16 @@ msgstr "Type"
 msgid "Type (mandatory)"
 msgstr "Type (obligatoire)"
 
-#: cms/website.py:319
+#: cms/ui/html/addlink.xml.en:0
+msgid "Type the URL of an external resource"
+msgstr ""
+
+#: cms/ui/website/virtual_hosts.xml.en:0
+msgid ""
+"Type the hostnames this website will apply to, each one in a different line."
+msgstr ""
+
+#: cms/website.py:430
 msgid "Type your email please."
 msgstr "Veuillez taper votre adresse de courriel."
 
@@ -3099,13 +3170,9 @@ msgstr "Tapez votre texte ici..."
 
 #: cms/ui/tracker/view_tracker.xml.en:0
 msgid "UTF-8, Separator:"
-msgstr ""
+msgstr "UTF-8, séparateur :"
 
-#: scripts/icms-start.py:75
-msgid "Unable to daemonize on Windows... Please use the option -d"
-msgstr ""
-
-#: cms/base.py:295
+#: cms/base.py:301
 msgid "Unavailable"
 msgstr "Indisponible"
 
@@ -3117,7 +3184,7 @@ msgstr "Souligné"
 msgid "Undo"
 msgstr "Annuler"
 
-#: cms/tracker.py:97
+#: cms/tracker.py:98
 msgid "Unit Tests"
 msgstr "Tests unitaires"
 
@@ -3133,28 +3200,43 @@ msgstr "Objets sans ordre"
 msgid "Update"
 msgstr "Mettre à jour"
 
-#: cms/root.py:367
+#: cms/root.py:365
 msgid "Update Catalog"
 msgstr "Mettre à jour le catalogue"
 
 #: cms/ui/tracker/view_tracker.xml.en:0
 msgid "Update text export"
-msgstr ""
+msgstr "Mettre à jour l'export texte"
 
 #: cms/ui/file/upload.xml.en:0
 msgid "Upload"
 msgstr "Remplacer"
 
-#: cms/ui/file/upload.xml.en:0
+#: cms/ui/file/new_instance.xml.en:0
 msgid "Upload File"
-msgstr "Remplacer par un fichier"
+msgstr "Importer un fichier"
 
 #: cms/ui/dressable/upload_image.xml.en:0
-#, fuzzy
 msgid "Upload Image"
 msgstr "Remplacer par un fichier"
 
-#: cms/file.py:262
+#: cms/ui/html/addlink.xml.en:0
+msgid "Upload a file to the current folder and link to it:"
+msgstr ""
+
+#: cms/ui/html/addimage.xml.en:0
+msgid "Upload an image to the current folder and insert it:"
+msgstr ""
+
+#: cms/ui/html/addimage.xml.en:0
+msgid "Upload and Insert"
+msgstr "Insérer une nouvelle image"
+
+#: cms/ui/html/addlink.xml.en:0
+msgid "Upload and Link"
+msgstr "Insérer un nouveau fichier"
+
+#: cms/ical.py:1365
 msgid ""
 "Upload failed: either the file does not match this document type ($mimetype) "
 "or it contains errors."
@@ -3162,7 +3244,11 @@ msgstr ""
 "Le chargement a échoué&nbsp;: veuillez vérifier le type du fichier et son "
 "intégrité."
 
-#: cms/file.py:44
+#: cms/ical.py:1352
+msgid "Upload from an ical file"
+msgstr ""
+
+#: cms/file.py:47
 msgid "Upload office documents, images, media files, etc."
 msgstr ""
 "Importer des documents bureautiques, des images, des fichiers de média, etc."
@@ -3179,11 +3265,11 @@ msgstr "ID utilisateur"
 msgid "User added."
 msgstr "Utilisateur ajouté."
 
-#: cms/root.py:175
+#: cms/root.py:169
 msgid "Users"
 msgstr "Utilisateurs"
 
-#: cms/skins.py:81
+#: cms/skins.py:69
 msgid "Users Directory"
 msgstr "Dossier utilisateurs"
 
@@ -3195,7 +3281,7 @@ msgstr "Version"
 msgid "Version (mandatory)"
 msgstr "Version (obligatoire)"
 
-#: cms/file.py:266
+#: cms/ical.py:1369
 msgid "Version uploaded."
 msgstr "Version chargée."
 
@@ -3211,19 +3297,23 @@ msgstr "Vidéo"
 msgid "View"
 msgstr "Voir"
 
-#: cms/tracker.py:359
+#: cms/tracker.py:358
 msgid "View Tracker"
 msgstr "Voir le tracker"
 
-#: cms/widgets.py:105
+#: cms/widgets.py:107
 msgid "View from ${start} to ${end} (${link}):"
 msgstr "Vue de ${start} à ${end} (${link})&nbsp;:"
+
+#: cms/ui/website/virtual_hosts.xml.en:0
+msgid "Virtual Hosts"
+msgstr ""
 
 #: cms/ui/root/about.xml.en:0
 msgid "Visit the project's <a href=\"http://www.ikaaro.org/\">Web Site</a>;"
 msgstr "Visitez le <a href=\"http://www.ikaaro.org\">site Web</a> du projet."
 
-#: cms/tracker.py:99
+#: cms/tracker.py:100
 msgid "Visual Interface"
 msgstr "Interface utilisateur"
 
@@ -3231,23 +3321,23 @@ msgstr "Interface utilisateur"
 msgid "Want to know who is behind this software?"
 msgstr "Découvrez qui se cache derrière ce logiciel"
 
-#: cms/html.py:101
-msgid "Web Document"
-msgstr "Document Web"
+#: cms/html.py:113
+msgid "Web Page"
+msgstr "Page Web"
 
-#: cms/website.py:43
+#: cms/website.py:46
 msgid "Web Site"
 msgstr "Site Web"
 
-#: cms/ical.py:40
+#: cms/ical.py:44
 msgid "Wednesday"
 msgstr "Mercredi"
 
-#: cms/ical.py:169
+#: cms/ical.py:204
 msgid "Week "
 msgstr "Semaine "
 
-#: cms/ical.py:648
+#: cms/ical.py:465
 msgid "Weekly"
 msgstr "Hebdomadaire"
 
@@ -3255,15 +3345,15 @@ msgstr "Hebdomadaire"
 msgid "Welcome to your home folder."
 msgstr "Bienvenue dans votre espace personnel."
 
-#: cms/wiki.py:61
-msgid "Wiki Folder"
+#: cms/wiki.py:58
+msgid "Wiki"
 msgstr "Wiki"
 
-#: cms/wiki.py:115
+#: cms/wiki.py:107
 msgid "Wiki Page"
 msgstr "Page de Wiki"
 
-#: cms/wiki.py:116
+#: cms/wiki.py:108
 msgid "Wiki contents"
 msgstr "Contenu du wiki"
 
@@ -3291,15 +3381,15 @@ msgstr "État de workflow"
 msgid "Workflow state"
 msgstr "État de workflow"
 
-#: cms/ical.py:88
+#: cms/ical.py:92
 msgid "Wrong time selection (HH:MM)."
 msgstr "Horaire incorrect (HH:MM)."
 
-#: cms/ical.py:83
+#: cms/ical.py:87
 msgid "Wrong time selection."
 msgstr "Horaire incorrect."
 
-#: pdf/rml.py:1445
+#: pdf/rml.py:1440
 msgid "X%sX"
 msgstr ""
 
@@ -3311,7 +3401,7 @@ msgstr "Oui"
 msgid "You Are Now Logged out"
 msgstr "Vous êtes maintenant déconnecté."
 
-#: cms/ical.py:891
+#: cms/ical.py:1455
 msgid "You are not authorized to modify this event."
 msgstr "Accès refusé, vous n'êtes pas autorisé à modifier cet événement."
 
@@ -3337,7 +3427,7 @@ msgstr ""
 "Vous pouvez modifier ce document à l'aide d'une application de votre "
 "ordinateur, comme MS Office ou OpenOffice.org."
 
-#: cms/website.py:140
+#: cms/website.py:251
 msgid "You can not remove the default language."
 msgstr "Vous ne pouvez pas supprimer la langue par défaut."
 
@@ -3365,11 +3455,11 @@ msgstr ""
 "Vous avez mal saisi votre mot de passe actuel, votre compte n'a pas été "
 "modifié."
 
-#: cms/website.py:153
+#: cms/website.py:264
 msgid "You must choose a language"
 msgstr "Vous devez choisir une langue."
 
-#: cms/website.py:121
+#: cms/website.py:232
 msgid "You must select one and only one language."
 msgstr "Vous ne devez sélectionner qu'une langue."
 
@@ -3397,7 +3487,7 @@ msgid ""
 "a>]"
 msgstr ""
 
-#: cms/tracker.py:555
+#: cms/tracker.py:557
 msgid "[%s]"
 msgstr ""
 
@@ -3470,7 +3560,7 @@ msgstr ""
 msgid "está"
 msgstr ""
 
-#: pdf/rml.py:2020
+#: pdf/rml.py:2015
 msgid "false"
 msgstr ""
 
@@ -3482,7 +3572,7 @@ msgstr ""
 msgid "hay"
 msgstr ""
 
-#: cms/root.py:66
+#: cms/root.py:64
 msgid "iKaaro"
 msgstr ""
 
@@ -3544,13 +3634,9 @@ msgstr ""
 msgid "qué"
 msgstr ""
 
-#: http/request.py:101
+#: http/request.py:102
 msgid "request method \"%s\" not yet implemented"
 msgstr "Méthode &laquo;&nbsp;%s&nbsp;&raquo; pas encore implémentée"
-
-#: cms/tracker.py:1356
-msgid "search"
-msgstr "rechercher"
 
 #: i18n/oracle.py:109
 msgid "she"
@@ -3588,7 +3674,7 @@ msgstr ""
 "traduction<br/> <textarea name=\"msgstr\" cols=\"65\" rows=\"8\">${msgstr}</"
 "textarea>"
 
-#: pdf/rml.py:2019
+#: pdf/rml.py:2014
 msgid "true"
 msgstr ""
 
@@ -3618,7 +3704,7 @@ msgid ""
 "PARTICULAR PURPOSE."
 msgstr ""
 
-#: pdf/rml.py:2019
+#: pdf/rml.py:2014
 msgid "yes"
 msgstr ""
 
@@ -3637,29 +3723,7 @@ msgstr ""
 msgid "your"
 msgstr ""
 
-#: cms/ui/html/addlink.xml.en:0
-msgid "» Add a file in this folder:"
-msgstr ""
-
-#: cms/ui/html/addimage.xml.en:0
-msgid "» Add an image in this folder"
-msgstr ""
-
-#: cms/ui/html/addimage.xml.en:0
-#, fuzzy
-msgid "» Browse and insert an Image from the workspace:"
-msgstr "» Parcourir l'application pour sélectionner une image&nbsp;:"
-
-#: cms/ui/html/addlink.xml.en:0
-#, fuzzy
-msgid "» Browse and link a file from the workspace:"
-msgstr "» Parcourir l'application pour sélectionner une image&nbsp;:"
-
-#: cms/ui/html/addlink.xml.en:0
-msgid "» Type the url to add:"
-msgstr "» Veuillez saisir l'URL à ajouter&nbsp;:"
-
-#: rest/rest.py:281
+#: rest/rest.py:198
 msgid "ÄÅÁÀÂÃäåáàâãÇçÉÈÊËéèêëæÍÌÎÏíìîïÑñÖÓÒÔÕØöóòôõøßÜÚÙÛüúùûÝŸýÿ"
 msgstr ""
 
@@ -3668,9 +3732,6 @@ msgstr ""
 
 #~ msgid "  Module: %s"
 #~ msgstr "  Module: %s"
-
-#~ msgid "  Priority: %s"
-#~ msgstr "  Priorité:%s"
 
 #~ msgid "  State: %s"
 #~ msgstr "État: %s"
@@ -3687,6 +3748,9 @@ msgstr ""
 #~ msgid "Browse-Directories"
 #~ msgstr "Naviguer dans les dossiers"
 
+#~ msgid "Choose a template:"
+#~ msgstr "Choisir un modèle&nbsp;:"
+
 #~ msgid "Each version is given a distinguishing version number."
 #~ msgstr "Chaque version à un numéro de version distinct."
 
@@ -3696,8 +3760,20 @@ msgstr ""
 #~ msgid "Folders ordered up."
 #~ msgstr "Dossiers montés."
 
+#~ msgid "Insert Anchor"
+#~ msgstr "Insérer ancre"
+
+#~ msgid "Insert Image"
+#~ msgstr "Insérer image"
+
+#~ msgid "Insert Link"
+#~ msgstr "Insérer lien (sélectionner texte d'abord)"
+
 #~ msgid "Link"
 #~ msgstr "Lien"
+
+#~ msgid "New WebSite"
+#~ msgstr "Nouveau site Web"
 
 #~ msgid "Please fill the missing fields."
 #~ msgstr "Veuillez remplir les champs obligatoires."
@@ -3711,5 +3787,23 @@ msgstr ""
 #~ msgid "Select None"
 #~ msgstr "Ne rien séléctionner"
 
+#~ msgid "Show Issues modified sometime the last"
+#~ msgstr "Voir les fiches modifiées durant les"
+
+#~ msgid "To PDF"
+#~ msgstr "Format PDF"
+
+#~ msgid "Web Document"
+#~ msgstr "Document Web"
+
+#~ msgid "Wiki Folder"
+#~ msgstr "Wiki"
+
+#~ msgid "search"
+#~ msgstr "rechercher"
+
 #~ msgid "» Browse and link an object from the workspace:"
 #~ msgstr "» Parcourir l'application pour sélectionner un document&nbsp;:"
+
+#~ msgid "» Type the url to add:"
+#~ msgstr "» Veuillez saisir l'URL à ajouter&nbsp;:"

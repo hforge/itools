@@ -101,7 +101,8 @@ class CSVFile(TextFile):
         schema = self.schema
         columns = self.columns
 
-        for line in parse(data, columns, schema, guess=self.class_csv_guess):
+        for line in parse(data, columns, schema, guess=self.class_csv_guess,
+                          encoding=self.encoding):
             self._add_row(line)
 
 

@@ -25,7 +25,8 @@ from itools.datatypes import String
 sniffer = Sniffer()
 
 
-def parse(data, columns=None, schema=None, guess=False, **kw):
+def parse(data, columns=None, schema=None, guess=False, encoding='UTF-8',
+          **kw):
     """This method is a generator that returns one CSV row at a time.  To
     do the job it wraps the standard Python's csv parser.
     """
@@ -59,8 +60,15 @@ def parse(data, columns=None, schema=None, guess=False, **kw):
                     msg = msg % line
                 raise ValueError, msg
             if schema is not None:
-                line = [ schema.get(columns[i], String).decode(value)
-                         for i, value in enumerate(line) ]
+                datatypes = [schema.get(c, String) for c in columns]
+                decoded = []
+                for i, datatype in enumerate(datatypes):
+                    try:
+                        value = datatype.decode(line[i], encoding=encoding)
+                    except TypeError:
+                        value = datatype.decode(line[i])
+                    decoded.append(value)
+                line = decoded
             yield line
 
 

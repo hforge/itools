@@ -24,10 +24,11 @@ from operator import itemgetter
 
 # Import from itools
 from itools.catalog import (PhraseQuery, EqQuery, RangeQuery, OrQuery,
-        AndQuery, KeywordField, MemoryCatalog)
+    AndQuery, KeywordField, MemoryCatalog)
+from itools.csv import (escape_data, fold_line, parse_table, Property,
+    Record as TableRecord, Table)
 from itools.datatypes import Integer, String, Unicode, URI
-from itools.handlers import (escape_data, guess_encoding, fold_line,
-    parse_table, Property, Record as TableRecord, Table, TextFile)
+from itools.handlers import guess_encoding, TextFile
 from types import data_properties, DateTime, Time
 
 

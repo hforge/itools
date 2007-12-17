@@ -16,14 +16,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-import os
-import sys
 import unittest
 from cStringIO import StringIO
 from datetime import datetime
 
 # Import from itools
-from itools.handlers import Property
+from itools.csv import Property
 from itools.datatypes import URI
 from itools.ical import icalendar, PropertyValue, icalendarTable
 

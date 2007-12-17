@@ -16,11 +16,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-import mimetypes
+from mimetypes import add_type
 
 # Import from itools
 from csv_ import parse, CSVFile, Row
 from parser import parse
+from table import Table, parse_table, fold_line, escape_data, Record, Property
 
 
 __all__ = [
@@ -28,8 +29,16 @@ __all__ = [
     'parse',
     # Classes
     'CSVFile',
-    'Row']
+    'Row',
+    # The Table handler (a kind of CSV on steroids)
+    'Table',
+    'Record',
+    'Property',
+    'parse_table',
+    'fold_line',
+    'escape_data',
+    ]
 
 
 
-mimetypes.add_type('text/comma-separated-values', '.csv')
+add_type('text/comma-separated-values', '.csv')

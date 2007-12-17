@@ -21,11 +21,18 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools import vfs
+from itools.csv import Table
 from itools.datatypes import Unicode
-from itools.handlers import (get_handler, Database, SafeDatabase, TextFile,
-    Table)
-from itools.handlers.table import unfold_lines
+from itools.handlers import get_handler, Database, SafeDatabase, TextFile
+from itools import vfs
+
+
+
+class Agenda(Table):
+
+    schema = {'firstname': Unicode(index='text', multiple=False),
+              'lastname': Unicode(multiple=False)}
+
 
 
 class StateTestCase(TestCase):
@@ -278,119 +285,6 @@ class DatabaseTestCase(TestCase):
         self.database.save_changes()
         self.assertEqual(vfs.exists('fables/31.txt'), True)
         self.assertEqual(fables.has_handler('31.txt'), True)
-
-
-
-##########################################################################
-# The Table handler
-##########################################################################
-
-agenda_file = """id:0/0
-ts:2007-07-13T17:19:21
-firstname:Karl
-lastname:Marx
-
-id:1/0
-ts:2007-07-14T16:43:49
-firstname:Jean-Jacques
-lastname:Rousseau
-"""
-
-
-class Agenda(Table):
-
-    schema = {'firstname': Unicode(index='text', multiple=False),
-              'lastname': Unicode(multiple=False)}
-
-
-class TableTestCase(TestCase):
-
-    def tearDown(self):
-        if vfs.exists('tests/agenda'):
-            vfs.remove('tests/agenda')
-
-
-    def test_unfolding(self):
-        """Test unfolding lines."""
-        input = (
-            'BEGIN:VCALENDAR\n'
-            'VERSION:2.0\n'
-            'BEGIN:VEVENT\n'
-            'UID:581361a0-1dd2-11b2-9a42-bd3958eeac9a\n'
-            'X-MOZILLA-RECUR-DEFAULT-INTERVAL:0\n'
-            'DTSTART;VALUE=DATE:20050530\n'
-            'DTEND;VALUE=DATE:20050531\n'
-            'DTSTAMP:20050601T074604Z\n'
-            'DESCRIPTION:opps !!! this is a really big information, ..., '
-            'but does it change anything \n'
-            ' in reality ?? We should see a radical change in the next \n'
-            ' 3 months, shouldn\'t we ???\\nAaah !!!\n' )
-
-        expected = [
-            'BEGIN:VCALENDAR',
-            'VERSION:2.0',
-            'BEGIN:VEVENT',
-            'UID:581361a0-1dd2-11b2-9a42-bd3958eeac9a',
-            'X-MOZILLA-RECUR-DEFAULT-INTERVAL:0',
-            'DTSTART;VALUE=DATE:20050530',
-            'DTEND;VALUE=DATE:20050531',
-            'DTSTAMP:20050601T074604Z',
-            'DESCRIPTION:opps !!! this is a really big information, ..., but'
-            ' does it change anything in reality ?? We should see a radical'
-            ' change in the next 3 months, shouldn\'t we ???\\nAaah !!!']
-
-        output = unfold_lines(input)
-
-        i = 0
-        for line in output:
-            self.assertEqual(line, expected[i])
-            i = i + 1
-
-
-    def test_de_serialize(self):
-        data = ('id:0/0\n'
-                'ts:2007-07-13T17:19:21\n'
-                '\n'
-                'id:1/0\n'
-                'title;language=en:hello\n'
-                'title;language=es:hola\n'
-                'ts:2007-07-14T16:43:49\n'
-                '\n')
-        table = Table(string=data)
-        self.assertEqual(table.to_str(), data)
-
-
-    def test_multiple(self):
-        self.assertRaises(Exception, Agenda, string=
-            'id:0/0\n'
-            'ts:2007-07-13T17:19:21\n'
-            'firstname:Karl\n'
-            'firstname:Marx\n')
-
-
-    def test_search(self):
-        agenda = Agenda(string=agenda_file)
-        ids = [ x.id for x in agenda.search(firstname=u'Jean') ]
-        self.assertEqual(ids, [1])
-
-
-    def test_save(self):
-        agenda = Agenda(string=agenda_file)
-        agenda.save_state_to('tests/agenda')
-        # Change
-        agenda = Agenda('tests/agenda')
-        fake = agenda.add_record({'firstname': u'Toto', 'lastname': u'Fofo'})
-        agenda.add_record({'firstname': u'Albert', 'lastname': u'Einstein'})
-        agenda.del_record(fake.id)
-        agenda.save_state()
-        # Test
-        agenda = Agenda('tests/agenda')
-        ids = [ x.id for x in agenda.search(firstname=u'Toto') ]
-        self.assertEqual(len(ids), 0)
-        ids = [ x.id for x in agenda.search(firstname=u'Albert') ]
-        self.assertEqual(len(ids), 1)
-        # Clean
-        vfs.remove('tests/agenda')
 
 
 

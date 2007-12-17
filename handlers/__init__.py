@@ -48,7 +48,6 @@ from registry import register_handler_class, get_handler_class, get_handler
 from text import TextFile, guess_encoding
 from database import (Database, SafeDatabase, READY, TRANSACTION_PHASE1,
     TRANSACTION_PHASE2)
-from table import Table, parse_table, fold_line, escape_data, Record, Property
 from utils import checkid
 
 
@@ -72,13 +71,6 @@ __all__ = [
     'READY',
     'TRANSACTION_PHASE1',
     'TRANSACTION_PHASE2',
-    # The table handler
-    'Table',
-    'Record',
-    'Property',
-    'parse_table',
-    'fold_line',
-    'escape_data',
     # Registry
     'get_handler_class',
     'register_handler_class',
@@ -90,5 +82,4 @@ __all__ = [
 
 
 
-mimetypes.add_type('text/comma-separated-values', '.csv')
 mimetypes.encodings_map['.bz2'] = 'bzip2'

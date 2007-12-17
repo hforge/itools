@@ -21,11 +21,12 @@
 from datetime import datetime
 
 # Import from itools
-from itools.vfs import vfs
+from itools.catalog import (get_field, PhraseQuery, EqQuery, AndQuery,
+    MemoryCatalog)
 from itools.datatypes import DateTime, String, Integer
-from itools.catalog import (MemoryCatalog, PhraseQuery, EqQuery, AndQuery,
-                            get_field)
-from file import File
+from itools.handlers import File
+from itools import vfs
+from parser import parse
 
 
 ###########################################################################
@@ -654,7 +655,6 @@ class Table(File):
         - 'columns': the CSV columns used for the mapping between the CSV
           columns and the table schema.
         """
-        from itools.csv import parse
         schema = self.schema
         for line in parse(data, columns, schema):
             record = {}

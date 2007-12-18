@@ -53,7 +53,7 @@ class TARFile(File):
     class_mimetypes = ['application/x-tar']
 
     def get_contents(self):
-        name = self.name
+        name = self.uri.path[-1]
         archive = StringIO(self.to_str())
         tar = tarfile.open(name=name, fileobj=archive)
         contents = tar.getnames()

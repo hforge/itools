@@ -431,13 +431,13 @@ def inline_stream(text):
         if event == XTEXT:
             events.append((TEXT, value.encode('utf-8'), None))
         elif event == XFOOTNOTE:
-            target = checkid(value).lower()
+            target = checkid(value)
             attributes = {XTARGET: target}
             events.append((START_ELEMENT, (rest_uri, event, attributes), None))
             events.append((TEXT, value.encode('utf-8'), None))
             events.append((END_ELEMENT, (rest_uri, event), None))
         elif event == XREFERENCE:
-            target = checkid(value).lower()
+            target = checkid(value)
             attributes = {XTARGET: target}
             events.append((START_ELEMENT, (rest_uri, event, attributes), None))
             events.append((TEXT, value.encode('utf-8'), None))
@@ -473,7 +473,7 @@ def block_stream(text):
     for event, value in parse_everything(text):
         if event == XTITLE:
             overline, title, underline = value
-            target = checkid(title).lower()
+            target = checkid(title)
             attributes = {(rest_uri, 'overline'): overline,
                           (rest_uri, 'underline'): underline,
                           (rest_uri, XTARGET): target}

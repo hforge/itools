@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-import mimetypes
+from mimetypes import add_type
 from zipfile import ZipFile
 from cStringIO import StringIO
 
@@ -26,8 +26,6 @@ from itools.handlers import register_handler_class, ZIPFile
 from itools.xml.i18n import get_messages
 from itools.xml import (xml_to_text, translate, OfficeDocument, stream_to_str,
                         XMLParser, XML_DECL, START_ELEMENT, TEXT)
-
-# Import
 import definition
 import w3
 
@@ -154,7 +152,6 @@ class ODPFile(ODFFile):
 # Register handler and mimetypes
 handlers = [ODTFile, ODSFile, ODPFile]
 for handler in handlers:
-    mimetypes.add_type(handler.class_mimetypes[0],
-                       '.%s' %handler.class_extension)
+    add_type(handler.class_mimetypes[0], '.%s' %handler.class_extension)
     register_handler_class(handler)
 

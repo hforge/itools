@@ -51,5 +51,6 @@ def checkid(id):
         return None
 
     # Return a safe ASCII bytestring
+    id = id.lower()
     return str(id)
 

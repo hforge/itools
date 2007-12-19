@@ -8,27 +8,26 @@ Imports
 The package "itools.xhtml" has been merged into "itools.html", and there
 have been many naming normalizations.  Non exhaustive list follows:
 
-  Before                         Now (alphabetical order)
+  Before (alphabetical order)    Now
   ----------------------------   ---------------------------
   csv.CSV                        csv.CSVFile
+  datatypes.InternetDateTime     datatypes.HTTPDate
   gettext.MO                     gettext.MOFile
   gettext.PO                     gettext.POFile
   handlers.Bzip2                 handlers.Bzip2File
-  rest.checkid                   handlers.checkid
   handlers.Config                handlers.ConfigFile
+  handlers.escape_data           csv.escape_data
+  handlers.fold_line             csv.fold_line
   handlers.Gzip                  handlers.GzipFile
+  handlers.parse_table           csv.parse_table
+  handlers.Property              csv.Property
+  handlers.Record                csv.Record
+  handlers.Table                 csv.Table
   handlers.TarArchive            handlers.TARFile
   handlers.Text                  handlers.TextFile
   handlers.ZipArchive            handlers.ZIPFile
   html.Document                  html.HTMLFile
   html.Parser                    html.HTMLParser
-  xhtml.Document                 html.XHTMLFile
-  xhtml.elements_schema          html.elements_schema
-  xhtml.sanitize_str             html.sanitize_str
-  xhtml.sanitize_stream          html.sanitize_stream
-  xhtml.stream_to_str_as_html    html.stream_to_str_as_html
-  xhtml.stream_to_str_as_xhtml   html.stream_to_str_as_xhtml
-  xhtml.xhtml_uri                html.xhtml_uri
   odf.ODP                        odf.ODPFile
   odf.ODS                        odf.ODSFile
   odf.ODT                        odf.ODTFile
@@ -36,67 +35,105 @@ have been many naming normalizations.  Non exhaustive list follows:
   odf.OOImpress                  odf.SXIFile
   odf.OOWriter                   odf.SXWFile
   pdf.PDF                        pdf.PDFFile
+  rest.checkid                   handlers.checkid
+  xhtml.Document                 html.XHTMLFile
+  xhtml.elements_schema          html.elements_schema
+  xhtml.sanitize_str             html.sanitize_str
+  xhtml.sanitize_stream          html.sanitize_stream
+  xhtml.stream_to_str_as_html    html.stream_to_str_as_html
+  xhtml.stream_to_str_as_xhtml   html.stream_to_str_as_xhtml
+  xhtml.xhtml_uri                html.xhtml_uri
   xml.Document                   xml.XMLFile
   xml.Parser                     xml.XMLParser
 
-
-
-The itools.schemas package has been removed, use instead the XML namespaces, or
-explicit schemas.
+The "itools.schemas" package has been drop, use instead explicit schemas,
+or the XML namespaces (depends on what you want to do, ask to the mailing
+list for advice).
 
 
 Packaging
 =========
 
-The options of the "setup.conf" file have changed a little, the "description"
-field must be renamed to "title".
+The "setup.conf" options have changed a little, rename the "description"
+field to "title":
 
+  # Before
+  description = "The itools library"
 
+  # Now
+  title = "The itools library"
 
-TODO The sections below must be written in proper English TODO
 
 itools.catalog
 ==============
 
-The abort method has been renamed to abort_changes.
-**Catalog.abort => Catalog.abort_changes**
+The abort method has been renamed to abort_changes:
 
-The make_catalog method don't take anymore the fields in parameter.
-The fields parameter is replaced by the method CatalogAware.get_catalog_fields.
-It is not necessary to inherit from ikaaro.Root class to define the catalog fields now.
+  Catalog.abort()           # Before
+  Catalog.abort_changes()   # Now
 
-get_catalog_indexes method has been replaced by get_catalog_values. This method
-returns a dictionary with the values of the fields to be indexed.
+Before the fields to index (or store) were defined once and for all at
+creation time with the "make_catalog" function.  Now they are defined
+on a per object basis.  Also, the "get_catalog_indexes" method has been
+renamed to "get_catalog_values".
 
-**make_catalog(uri, *fields) => make_catalog(uri)**
-** => CatalogAware.get_catalog_fields **
-**CatalogAware.get_catalog_indexes => CatalogAware.get_catalog_values**
+  # Before
+  make_catalog(path, TextField('title'), TextField('body'))
+
+  class Document(CatalogAware):
+      def get_catalog_indexes(self):
+          return {'title': ..., 'body': ...}
+
+  # Now
+  make_catalog(path)
+
+  class Document(CatalogAware):
+      def get_catalog_fields(self):
+          return [TextField('title'), TextField('body')]
+
+      def get_catalog_values(self):
+          return {'title': ..., 'body': ...}
 
 
 itools.csv
 ==========
 
-Remove advanced feature "IntegerKey" (use the Table handler instead).
-The Row.set_value method has been replaced by update_row.
-Its functioning is similar to method itools.table.update_record.
-But changed values only must be specified.
+The "Row.set_value" method has been removed, use instead the new method
+"CSVFile.update_row".
 
-**Remove IntegerKey**
-**Replace "Row.set_value" by "CSVFile.update_row"**
+  # Before
+  row = csv.get_row(index)
+  csv.set_changed()
+  row.set_value(name1, value1)
+  row.set_value(name2, value2)
+
+  # Now
+  csv.update_row(index, name1=value1, name2=value2)
+
+The new method, "update_row", takes care to set the csv file as dirty,
+and updates the reverse indexes needed to search.
+
+The advanced feature "IntegerKey" has been removed (if you need advanced
+features, consider using the "Table" handler, which is, from a functional
+point of view, a CSV on steroids).
+
+
+
+** TODO **
 
 
 itools.datatypes
 ================
 
-The parsing of dates in Internet protocols is unified now (reuse Standard
-Library):
-**InternetDateTime => HTTPDate**
+From UTC to local time.
 
 
 itools.gettext
 ==============
 Remove gettext.PO.get_translation
+Drop Domain from the public API
 TODO
+
 
 itools.handlers
 ===============
@@ -104,6 +141,12 @@ itools.handlers
 Do not use __slots__ anymore for handlers.
 Now guess_encoding is a function.
 TODO
+
+
+itools.html
+===========
+raise XMLError
+
 
 itools.rest
 ===========
@@ -132,6 +175,8 @@ itools.web
 ==========
 Remove web.Context.get_accept_language
 Remove "get_pathtoroot"
+Now "build_form_value" and "check_form_input" require the datatype.
+
 TODO
 
 abspath attribute is now deprecated, it's replaced by get_abspath method which

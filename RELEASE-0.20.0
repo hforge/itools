@@ -16,8 +16,11 @@ meta-package for easier development and deployment:
 
 The most visible change in this major release is that "itools.cms" has
 been moved out of itools and is now distributed as a separate package,
-named "ikaaro".  Also in the code reorganization category: "itools.xhtml"
-has been merged into "itools.html".
+named "ikaaro".
+
+Also in the code reorganization category: "itools.xhtml" has been merged
+into "itools.html".  And the "itools.schemas" package has been removed,
+since we do the same thing in a different way.
 
 The most important change is the architecture overhaul of the "handlers"
 package.  From a functional point of view, the big news is the database

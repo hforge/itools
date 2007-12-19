@@ -36,7 +36,7 @@ def format_int_as_hex(x, length=4):
 
 
 def inspect_index(target):
-    file = target.open('tree')
+    file = vfs.open('%s_tree' % target)
     try:
         i = 0
         data = file.read(16)
@@ -63,8 +63,8 @@ def inspect_index(target):
 
 
 def inspect_documents(target):
-    index = target.open('index').read()
-    docs = target.open('documents').read()
+    index = vfs.open('%s/documents_index' % target).read()
+    docs = vfs.open('%s/documents' % target).read()
 
     n = len(index) / 8
     for i in range(n):
@@ -96,7 +96,6 @@ def inspect_documents(target):
 
 
 
-
 if __name__ == '__main__':
     # The command line parser
     usage = '%prog INDEX'
@@ -109,10 +108,8 @@ if __name__ == '__main__':
         parser.error('incorrect number of arguments')
 
     target = args[0]
-    target = vfs.open(target)
-    if target.exists('tree'):
+    if vfs.exists('%s_tree' % target):
         inspect_index(target)
-    else:
+    elif vfs.exists('%s/documents' % target):
         inspect_documents(target)
-
 

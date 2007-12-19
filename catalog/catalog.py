@@ -390,7 +390,10 @@ class Catalog(object):
 
         # Index
         get = values.get
-        for field in self.fields:
+        for field in fields:
+            # Add number attribute
+            field.number = self.field_numbers[field.name]
+
             # Extract the field value from the document
             value = get(field.name)
 

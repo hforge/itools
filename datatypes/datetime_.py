@@ -47,7 +47,7 @@ class HTTPDate(DataType):
         parts = parsedate_tz(data)
         if parts is None:
             raise ValueError, 'date "%s" is not supported' % data
-        has_tz = parts[-1] is None
+#        has_tz = parts[-1] is None
         timestamp = mktime_tz(parts)
 
         return datetime.fromtimestamp(timestamp)

@@ -2,6 +2,10 @@
 itools 0.20.0
 *************************************************************************
 
+The current upgrade notes are no complete, most notably for the
+"itools.handlers" and "itools.web" packages.  Thanks to report any
+problem you find.
+
 Imports
 =======
 
@@ -118,50 +122,108 @@ features, consider using the "Table" handler, which is, from a functional
 point of view, a CSV on steroids).
 
 
-
-** TODO **
-
-
 itools.datatypes
 ================
 
-From UTC to local time.
+The "InternetDateTime" class has been renamed to "HTTPDate", and includes
+a semantic difference.  Before it returned "aware" datetime objects, this
+is to say, objects with a timezone (always in UTC).
+
+Now it returns "naive" datetime objects, this is to say, objects without
+a timezone (always in local time).
 
 
 itools.gettext
 ==============
-Remove gettext.PO.get_translation
-Drop Domain from the public API
-TODO
+
+The obsolete method "PO.get_translation" has been removed:
+
+  # Before
+  po.get_translation(msgid)
+
+  # Now
+  po.gettext(msgid)
+
+The "Domain" class has been drop from the public API, use always the
+registry:
+
+  # Before
+  domain = Domain(path)
+
+  # Now
+  register_domain(name, path)
+  domain = get_domain(name)
 
 
 itools.handlers
 ===============
 
-Do not use __slots__ anymore for handlers.
-Now guess_encoding is a function.
-TODO
+The changes to the handlers package are too many to describe all of them
+here, check the documentation to know how things work now.  However, some
+patterns that have a direct translation.
+
+Do not define the "__slots__" variable class anymore when implementing
+your own handler classes.
+
+The "guess_encoding" method is not a (static) method anymore, but a
+function:
+
+  # Before
+  from itools.handlers import Text
+  Text.guess_encoding('...')
+
+  # Now
+  from itools.handlers import guess_encoding
+  guess_encoding('...')
 
 
 itools.html
 ===========
-raise XMLError
+
+Now the HTML parser behaves more like the XML parser, when a parsing
+error happens the "XMLError" exception is raised:
+
+  # Before
+  from HTMLParser import HTMLParseError
+  from itools.html import Parser
+  try:
+      Parser(...)
+  except (HTMLParserError, ValueError):
+      ...
+
+  # Now
+  from itools.xml import XMLError
+  from itools.html import HTMLParser
+  try:
+      HTMLParser(...)
+  except XMLError:
+      ...
 
 
-itools.rest
+itools.http
 ===========
-Remove rest.to_xml rest.to_html rest.to_latex
-TODO
+
+Now the "Request.get_parameter" method does not automatically try to
+figure out the datatype from the field name:
+
+  # Before
+  value = request.get_parameter('dc:title')
+
+  # Now
+  value = request.get_parameter('dc:title', type=Unicode)
+
 
 itools.rss
 ==========
-API refactor
-TODO
+
+The changes to the rss package are too many to describe all of them here,
+check the documentation to know how things work now.
 
 
 itools.vfs
 ==========
-Open modes changed:
+
+The modes to open a file have changed, this table summarizes the changes:
 
   Before           Now             Posix
   ---------------  --------------  -----
@@ -170,15 +232,47 @@ Open modes changed:
   WRITE (default)  READ_WRITE      r+b
   APPEND           APPEND          ab
 
+Follow the patterns that must be updated:
+
+  Before                 Now
+  ---------------------  -------------------------
+  vfs.open(uri)          vfs.open(uri, READ_WRITE)
+  vfs.open(uri, WRITE)   vfs.open(uri, READ_WRITE)
+
 
 itools.web
 ==========
-Remove web.Context.get_accept_language
-Remove "get_pathtoroot"
-Now "build_form_value" and "check_form_input" require the datatype.
 
-TODO
+The changes to the web package are too many to describe all of them
+here, check the documentation to know how things work now.  However,
+some patterns that have a direct translation.
 
-abspath attribute is now deprecated, it's replaced by get_abspath method which
-returns a Path object.
-Replace "context.handler" by "context.object".
+Renames in the context API include:
+
+  Before (alphabetical order)   Now
+  ----------------------------  -----------------------
+  context.handler               context.object
+  context.get_accept_language   context.accept_language
+
+Now the "context.get_form_value" method does not automatically try to
+figure out the datatype from the field name:
+
+  # Before
+  value = context.get_form_value('dc:title')
+
+  # Now
+  value = context.get_form_value('dc:title', type=Unicode)
+
+Now the "context.build_form_namespace" and "context.check_form_input"
+methods require the fields parameter to explicitly define the datatype:
+
+  # Before
+  fields = [(name, True)]
+  context.build_form_namespace(fields)
+  context.check_form_input(fields)
+
+  # Now
+  fields = [(name, True, String)]
+  context.build_form_namespace(fields)
+  context.check_form_input(fields)
+

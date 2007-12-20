@@ -159,7 +159,7 @@ class Database(object):
             raise ValueError, 'only new files can be added, try to clone first'
 
         if self.has_handler(reference):
-            raise IOError, 'The reference "%s" is busy' % reference
+            raise RuntimeError, MSG_URI_IS_BUSY % reference
 
         reference = get_absolute_reference(reference)
         self.cache[reference] = handler
@@ -197,6 +197,10 @@ class Database(object):
         if source == target:
             return
 
+        # Check the target is free
+        if self.has_handler(target):
+            raise RuntimeError, MSG_URI_IS_BUSY % target
+
         handler = self.get_handler(source)
         if isinstance(handler, Folder):
             # Folder
@@ -218,6 +222,10 @@ class Database(object):
         target = get_absolute_reference(target)
         if source == target:
             return
+
+        # Check the target is free
+        if self.has_handler(target):
+            raise RuntimeError, MSG_URI_IS_BUSY % target
 
         handler = self.get_handler(source)
         handler.load_state()

@@ -15,4 +15,5 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 MSG_CONFLICT = 'Conflict, file changed in the file system and in memory.'
-MSG_NOT_ATTACHED = 'method only available when attached to a database'
+MSG_NOT_ATTACHED = 'Method only available when attached to a database.'
+MSG_URI_IS_BUSY = 'The "%s" URI is busy.'

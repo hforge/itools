@@ -421,7 +421,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
         # Build namespace
         namespace = {}
-        total = results.get_n_documents()
+        total = len(handlers)
         namespace['total'] = total
         namespace['objects'] = objects
 
@@ -859,7 +859,6 @@ class Folder(Handler, BaseFolder, CalendarAware):
     def last_changes(self, context, sortby=['mtime'], sortorder='down',
                      batchstart=0, batchsize=20):
         root = context.root
-        user = context.user
         users = root.get_handler('users')
         namespace = {}
 
@@ -877,7 +876,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         for document in documents:
             handler = root.get_handler(document.abspath)
             ac = handler.get_access_control()
-            if not ac.is_allowed_to_view(user, handler):
+            if not ac.is_allowed_to_view(context.user, handler):
                 continue
             line = self._browse_namespace(handler, 16)
             revisions = handler.get_revisions(context)
@@ -898,7 +897,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         namespace['search_fields'] = None
 
         # The batch
-        total = results.get_n_documents()
+        total = len(lines)
         namespace['batch'] = widgets.batch(context.uri, start, batchsize,
                                            total)
 

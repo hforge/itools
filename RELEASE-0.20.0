@@ -35,7 +35,7 @@ naming normalizations.  Check the upgrade notes for further details.
 
 The numbering scheme has changed, we have jumped from the 0.16 to the
 0.20 version, and future major releases will be numbered 0.30, 0.40,
-0.50, etc.  (This change is to define an implicit releationship with
+0.50, etc.  (This change is to define an implicit relationship with
 the numbering scheme of "ikaaro".)
 
 

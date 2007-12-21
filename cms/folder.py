@@ -421,7 +421,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
 
         # Build namespace
         namespace = {}
-        total = len(handlers)
+        total = results.get_n_documents()
         namespace['total'] = total
         namespace['objects'] = objects
 
@@ -897,7 +897,7 @@ class Folder(Handler, BaseFolder, CalendarAware):
         namespace['search_fields'] = None
 
         # The batch
-        total = len(lines)
+        total = results.get_n_documents()
         namespace['batch'] = widgets.batch(context.uri, start, batchsize,
                                            total)
 

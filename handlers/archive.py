@@ -30,6 +30,7 @@ from registry import register_handler_class
 class ZIPFile(File):
 
     class_mimetypes = ['application/zip']
+    class_extension = 'zip'
 
     def get_contents(self):
         archive = StringIO(self.to_str())
@@ -51,6 +52,7 @@ class ZIPFile(File):
 class TARFile(File):
 
     class_mimetypes = ['application/x-tar']
+    class_extension = 'tar'
 
     def get_contents(self):
         name = self.uri.path[-1]
@@ -65,11 +67,13 @@ class TARFile(File):
 class GzipFile(File):
 
     class_mimetypes = ['application/x-gzip']
+    class_extension = 'gz'
 
 
 class Bzip2File(File):
 
     class_mimetypes = ['application/x-bzip2']
+    class_extension = 'bz2'
 
 
 # Register

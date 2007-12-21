@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: it\n"
-"POT-Creation-Date: 2007-12-13 14:12+CET\n"
+"POT-Creation-Date: 2007-12-21 11:12+CET\n"
 "PO-Revision-Date: 2004-11-26 14:39+0100\n"
 "Last-Translator: Paolo Dina <paolo@php3.it>\n"
 "Language-Team: Italian <paolo@php3.it>\n"
@@ -1296,11 +1296,11 @@ msgstr ""
 msgid "CSV Row"
 msgstr ""
 
-#: csv/parser.py:65
+#: csv/parser.py:66
 msgid "CSV syntax error: wrong number of columns"
 msgstr ""
 
-#: csv/parser.py:61
+#: csv/parser.py:62
 msgid "CSV syntax error: wrong number of columns at line %d"
 msgstr ""
 
@@ -2811,6 +2811,11 @@ msgstr "Rinomina oggetti.."
 #: cms/ui/user/confirm_registration.xml.en:0
 msgid "Repeat Password"
 msgstr "Ripeti la parola d'accesso"
+
+#: cms/file.py:246
+#, fuzzy
+msgid "Replace"
+msgstr "Carica file"
 
 #: cms/ui/file/upload.xml.en:0
 #, fuzzy

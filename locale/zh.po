@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: zh\n"
-"POT-Creation-Date: 2007-12-13 14:12+CET\n"
+"POT-Creation-Date: 2007-12-21 11:12+CET\n"
 "PO-Revision-Date: 2007-10-30 17:58+0100\n"
 "Last-Translator: Zhouli <zhouli@in-girum.net>\n"
 "Language-Team:  <zh@li.org>\n"
@@ -1250,11 +1250,11 @@ msgstr ""
 msgid "CSV Row"
 msgstr ""
 
-#: csv/parser.py:65
+#: csv/parser.py:66
 msgid "CSV syntax error: wrong number of columns"
 msgstr ""
 
-#: csv/parser.py:61
+#: csv/parser.py:62
 msgid "CSV syntax error: wrong number of columns at line %d"
 msgstr ""
 
@@ -2736,6 +2736,11 @@ msgstr "重命名物件"
 #: cms/ui/user/confirm_registration.xml.en:0
 msgid "Repeat Password"
 msgstr "重复密码"
+
+#: cms/file.py:246
+#, fuzzy
+msgid "Replace"
+msgstr "上载文件"
 
 #: cms/ui/file/upload.xml.en:0
 #, fuzzy

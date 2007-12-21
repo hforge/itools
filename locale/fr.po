@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-12-13 14:12+CET\n"
+"POT-Creation-Date: 2007-12-21 11:12+CET\n"
 "PO-Revision-Date: 2007-08-31 17:00+0100\n"
 "Last-Translator: Henry Obein <henry@itaapy.com>\n"
 "Language-Team: French\n"
@@ -431,8 +431,7 @@ msgstr ""
 #: cms/ui/tracker/view_tracker.xml.en:0
 msgid ""
 "${title} <a href=\";search_form?${search_parameters}\">(Edit search)</a>"
-msgstr ""
-"${title} <a href=\";search_form?${search_parameters}\">(Modifier)</a>"
+msgstr "${title} <a href=\";search_form?${search_parameters}\">(Modifier)</a>"
 
 #: cms/ui/root/internal_server_error.xml.en:0
 msgid "${traceback}"
@@ -695,10 +694,10 @@ msgid ""
 "to CSV </a>"
 msgstr ""
 "<a name=\"link\"></a> <a href=\";view?${search_parameters}&amp;"
-"change_several_bugs=1#link\"> Modifier les fiches en série </a> | <a href="
-"\";view?${search_parameters}&amp;export_to_text=1#link\"> Exporter en texte </"
-"a> | <a href=\";view?${search_parameters}&amp;export_to_csv=1#link\"> Exporter "
-"en CSV </a>"
+"change_several_bugs=1#link\"> Modifier les fiches en série </a> | <a href=\";"
+"view?${search_parameters}&amp;export_to_text=1#link\"> Exporter en texte </"
+"a> | <a href=\";view?${search_parameters}&amp;export_to_csv=1#link\"> "
+"Exporter en CSV </a>"
 
 #: cms/ui/ical/daily_view.xml.en:0
 msgid ""
@@ -1244,11 +1243,11 @@ msgstr "CP1252, séparateur&nbsp;:"
 msgid "CSV Row"
 msgstr "Enregistrement CSV"
 
-#: csv/parser.py:65
+#: csv/parser.py:66
 msgid "CSV syntax error: wrong number of columns"
 msgstr "Erreur de syntaxe CSV : nombre de colonnes erroné"
 
-#: csv/parser.py:61
+#: csv/parser.py:62
 msgid "CSV syntax error: wrong number of columns at line %d"
 msgstr "Erreur de syntaxe CSV : nombre de colonnes erroné à la ligne %d"
 
@@ -1705,8 +1704,8 @@ msgid ""
 "Go to issue #<input name=\"issue_name\" size=\"6\" type=\"text\"/> <input "
 "class=\"button_ok\" type=\"submit\" value=\"OK\"/>"
 msgstr ""
-"Aller à la fiche #<input name=\"issue_name\" size=\"6\" type=\"text\"/> <input "
-"class=\"button_ok\" type=\"submit\" value=\"OK\"/>"
+"Aller à la fiche #<input name=\"issue_name\" size=\"6\" type=\"text\"/> "
+"<input class=\"button_ok\" type=\"submit\" value=\"OK\"/>"
 
 #: cms/root.py:442
 msgid "Groups fixed."
@@ -2614,6 +2613,10 @@ msgstr "Renommer les objets"
 #: cms/ui/user/confirm_registration.xml.en:0
 msgid "Repeat Password"
 msgstr "Confirmer le mot de passe"
+
+#: cms/file.py:246
+msgid "Replace"
+msgstr "Remplacer"
 
 #: cms/ui/file/upload.xml.en:0
 msgid "Replace File"

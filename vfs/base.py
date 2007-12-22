@@ -24,6 +24,9 @@ from urllib import quote
 from itools.datatypes import FileName
 
 
+# Translate compression encoding to mimetype
+encoding_map = {'gzip': 'application/x-gzip', 'bzip2': 'application/x-bzip2'}
+
 
 class BaseFS(object):
 
@@ -95,7 +98,10 @@ class BaseFS(object):
         # Figure out the mimetype from the filename extension
         if extension is not None:
             mimetype, encoding = guess_type('.%s' % extension)
-            if mimetype is not None:
+            if encoding is not None:
+                if encoding in encoding_map:
+                    return encoding_map[encoding]
+            elif mimetype is not None:
                 return mimetype
 
         return 'application/octet-stream'

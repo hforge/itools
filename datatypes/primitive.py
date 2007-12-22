@@ -18,9 +18,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-import decimal
+from decimal import Decimal as decimal
 import mimetypes
-import re
+from re import match
 from copy import deepcopy
 
 # Import from itools
@@ -67,7 +67,7 @@ class Decimal(DataType):
     def decode(value):
         if not value:
             return None
-        return decimal.Decimal(value)
+        return decimal(value)
 
     @staticmethod
     def encode(value):
@@ -144,59 +144,42 @@ class Email(String):
     @staticmethod
     def is_valid(value):
         expr = "^[0-9a-z]+[_\.0-9a-z-'+]*@([0-9a-z][0-9a-z-]+\.)+[a-z]{2,4}$"
-        return re.match(expr, value.lower()) is not None
+        return match(expr, value.lower()) is not None
 
 
 
 class FileName(DataType):
+    """A filename is tuple consisting of a name, a type and a language.
     """
-    A filename is tuple consisting of a name, a type and a language.
-
-    XXX We should extend this to add the character encoding
-    """
+    # TODO Consider the compression encoding (gzip, ...)
+    # TODO Consider the character encoding (utf-8, ...)
 
     @staticmethod
     def decode(data):
-        data = data.split('.')
+        parts = data.rsplit('.', 1)
+        # Case 1: name
+        if len(parts) == 1:
+            return data, None, None
 
-        # XXX The encoding (UTF-8, etc.)
+        name, ext = parts
+        # Case 2: name.encoding
+        if '.%s' % ext.lower() in mimetypes.encodings_map:
+            return name, ext, None
 
-        n = len(data)
-        if n == 1:
-            return data[0], None, None
-        elif n == 2:
-            if '.%s' % data[-1].lower() in mimetypes.types_map:
-                name, type = data
-                return name, type, None
-            elif has_language(data[-1]):
-                name, language = data
-                return name, None, language
-            else:
-                return '.'.join(data), None, None
-        else:
-            # Default values
-            type = encoding = language = None
+        if '.' in name:
+            a, b = name.rsplit('.', 1)
+            if '.%s' % b.lower() in mimetypes.types_map and has_language(ext):
+                # Case 3: name.type.language
+                return a, b, ext
+        if '.%s' % ext.lower() in mimetypes.types_map:
+            # Case 4: name.type
+            return name, ext, None
+        elif has_language(ext):
+            # Case 5: name.language
+            return name, None, ext
 
-            # The language
-            if '.%s' % data[-1].lower() in mimetypes.encodings_map:
-                encoding = data[-1]
-                data = data[:-1]
-            elif has_language(data[-1]):
-                language = data[-1]
-                data = data[:-1]
-
-            # The type
-            if '.%s' % data[-1].lower() in mimetypes.types_map:
-                type = data[-1]
-                data = data[:-1]
-
-            if encoding is not None:
-                type = '%s.%s' % (type, encoding)
-
-            # The name
-            name = '.'.join(data)
-
-        return name, type, language
+        # Case 1: name
+        return data, None, None
 
 
     @staticmethod

@@ -75,9 +75,17 @@ class BasicTypeTest(TestCase):
 
 
     def test_FileName(self):
-        for name, result in {'index.html.en':('index', 'html', 'en'),
-                             'index.html':('index', 'html', None),
-                             'index':('index', None, None)}.iteritems():
+        map = {
+            'index': ('index', None, None),
+            'index.html': ('index', 'html', None),
+            'index.html.en': ('index', 'html', 'en'),
+            'index.html.en.gz': ('index.html.en', 'gz', None),
+            'itools.tar': ('itools', 'tar', None),
+            'itools.tar.gz': ('itools.tar', 'gz', None),
+            'toto.en': ('toto', None, 'en'),
+            'toto.gz': ('toto', 'gz', None),
+            }
+        for name, result in map.iteritems():
             self.assertEqual(FileName.decode(name), result)
             self.assertEqual(FileName.encode(result), name)
 

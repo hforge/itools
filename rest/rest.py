@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-import cgi
+from cgi import escape
 
 # Import from itools
 from itools.xml import TEXT, START_ELEMENT, END_ELEMENT, stream_to_str
@@ -40,7 +40,7 @@ def to_xhtml_stream(stream):
     events = []
     for event, value, line in stream:
         if event == TEXT:
-            data = cgi.escape(value)
+            data = escape(value)
             events.append((event, data, line))
         elif event == START_ELEMENT:
             _, name, attributes = value

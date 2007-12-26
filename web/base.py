@@ -43,7 +43,7 @@ class Node(object):
 
 
     def _get_object(self, name):
-        raise NotImplementedError
+        raise LookupError
 
 
     #######################################################################

@@ -22,7 +22,7 @@ from os import popen
 def is_available():
     """Returns True if we are in a git working directory, False otherwise.
     """
-    return bool(popen('git-branch').read())
+    return bool(popen('git branch').read())
 
 
 def get_filenames():
@@ -31,7 +31,7 @@ def get_filenames():
     if not is_available():
         return []
 
-    return [ x.strip() for x in popen('git-ls-files').readlines() ]
+    return [ x.strip() for x in popen('git ls-files').readlines() ]
 
 
 def get_metadata(reference='HEAD'):
@@ -39,7 +39,7 @@ def get_metadata(reference='HEAD'):
 
     For now only the commit id and the timestamp are returned.
     """
-    lines = popen('git-cat-file commit %s' % reference).readlines()
+    lines = popen('git cat-file commit %s' % reference).readlines()
     # The commit id
     commit_id = lines[0].strip().split()[1]
     # The author
@@ -49,7 +49,7 @@ def get_metadata(reference='HEAD'):
             break
     else:
         raise ValueError, ("cannot find the commit author, "
-            "please report the output of 'git-cat-file commit %s'" % reference)
+            "please report the output of 'git cat-file commit %s'" % reference)
     # The timestamp
     timestamp = datetime.fromtimestamp(int(author.strip().split()[-2]))
 
@@ -59,7 +59,7 @@ def get_metadata(reference='HEAD'):
 def get_branch_name():
     """Returns the name of the current branch.
     """
-    for line in popen('git-branch').readlines():
+    for line in popen('git branch').readlines():
         if line.startswith('*'):
             return line[2:-1]
 
@@ -69,7 +69,7 @@ def get_branch_name():
 def get_tag_names():
     """Returns the names of all the tags.
     """
-    cmd = 'git-ls-remote -t .'
+    cmd = 'git ls-remote --tags .'
     return [ x.strip().split('/')[-1] for x in popen(cmd).readlines() ]
 
 

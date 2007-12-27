@@ -16,8 +16,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-import re
-import time
+from re import compile
+from time import gmtime, strftime, time
 
 # Import from itools
 from itools.handlers import File, TextFile, register_handler_class
@@ -60,10 +60,10 @@ STRING = 'string'
 EOF = None
 
 # The regular expressions for the line types
-re_comment = re.compile('^#.*')
-re_msgid = re.compile(r'^msgid *"(.*[^\\]*)"$')
-re_msgstr = re.compile(r'^msgstr *"(.*[^\\]*)"$')
-re_str = re.compile(r'^"(.*[^\\])"$')
+re_comment = compile('^#.*')
+re_msgid = compile(r'^msgid *"(.*[^\\]*)"$')
+re_msgstr = compile(r'^msgstr *"(.*[^\\]*)"$')
+re_str = compile(r'^"(.*[^\\])"$')
 
 
 def get_lines(data):
@@ -122,7 +122,7 @@ def escape(s):
     return s.replace('\n', '\\n').replace('"', '\\"')
 
 
-expr = re.compile(r'(\\.)')
+expr = compile(r'(\\.)')
 def unescape(s):
     return expr.sub(lambda x: eval("'%s'" % x.group(0)), s)
 
@@ -215,7 +215,7 @@ class POFile(TextFile):
 
     def new(self):
         # XXX Old style (like in the "get_skeleton" times)
-        now = time.strftime('%Y-%m-%d %H:%m+%Z', time.gmtime(time.time()))
+        now = strftime('%Y-%m-%d %H:%m+%Z', gmtime(time()))
         self.load_state_from_string(skeleton % {'pot_creation_date': now})
 
 

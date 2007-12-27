@@ -86,9 +86,8 @@ class BaseFS(object):
 
         And even more complex, the name could contain dots, or the filename
         could start by a dot (a hidden file in Unix systems).
-
-        XXX Use magic numbers too (like file -i).
         """
+        # TODO Use magic numbers too (like file -i).
         if not cls.is_file(reference):
             return 'application/x-not-regular-file'
 

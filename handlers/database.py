@@ -228,12 +228,14 @@ class Database(object):
             raise RuntimeError, MSG_URI_IS_BUSY % target
 
         handler = self.get_handler(source)
-        handler.load_state()
         if isinstance(handler, Folder):
             # Folder
             for name in handler.get_handler_names():
                 self.move_handler(source.resolve2(name), target.resolve2(name))
         else:
+            # Load if needed
+            if handler.timestamp is None and handler.dirty is False:
+                handler.load_state()
             # File
             handler.uri = target
             handler.timestamp = None
@@ -244,6 +246,9 @@ class Database(object):
             self.added.add(target)
             if source in self.added:
                 self.added.remove(source)
+            elif source in self.changed:
+                self.changed.remove(source)
+                self.removed.add(source)
             else:
                 self.removed.add(source)
 

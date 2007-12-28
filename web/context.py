@@ -31,6 +31,13 @@ from itools.i18n import AcceptLanguageType
 from itools.uri import get_reference
 
 
+class FormError(Exception):
+    """Raised when a form is invalid (missing or invalid fields)"""
+
+    def __init__(self, missing, invalid):
+          self.missing = missing
+          self.invalid = invalid
+
 
 class Context(object):
 
@@ -211,89 +218,102 @@ class Context(object):
         return goto
 
 
-    def build_form_namespace(self, fields):
+    def build_form_namespace(self, schema):
         """This utility method builds a namespace suitable to use to produce
-        an HTML form. Its input data is a list (fields) that defines the form
+        an HTML form. Its input data is a dictionnary that defines the form
         variables to consider:
 
-            [(<field name>, <is field required>, <datatype>), ...]
+          {'toto': Unicode(mandatory=True, multiple=False, default=u'toto'),
+           'tata': Unicode(mandatory=True, multiple=False, default=u'tata')}
 
-        Every element of the list is a tuple with the name of the field and a
-        boolean value that specifies whether the field is mandatory or not.
-
+        Every element specifies the datatype of the field.
         The output is like:
 
             {<field name>: {'value': <field value>, 'class': <CSS class>}
              ...}
         """
         namespace = {}
-        for field in fields:
-            field, is_mandatory, datatype = field
-            # The value
-            value = self.get_form_value(field)
-            # The style
-            # Is the field required
-            cls = []
-            if is_mandatory:
-                cls.append('field_required')
-            # Missing or not valid
-            if self.has_form_value(field):
-                if is_mandatory and not value:
-                    cls.append('missing')
-                elif value and not datatype.is_valid(value):
-                    cls.append('missing')
-            # Enumerate
-            if is_datatype(datatype, Enumerate):
-                value = datatype.get_namespace(value)
-            if cls:
-                cls = ' '.join(cls)
+        for name in schema:
+            datatype = schema[name]
+            # Value
+            if getattr(datatype, 'multiple', False):
+                value = self.get_form_values(name)
             else:
-                cls = None
-            namespace[field] = {'value': value, 'class': cls}
-
+                value = self.get_form_value(name)
+            # cls
+            cls = []
+            if getattr(datatype, 'mandatory', False):
+                cls.append('field_required')
+            if self.form_is_missing(name, datatype):
+                cls.append('missing')
+            elif self.form_is_invalid(name, datatype):
+                cls.append('missing')
+            cls = ' '.join(cls) or None
+            namespace[name] = {'name': name, 'value': value, 'class': cls}
         return namespace
 
 
-    def check_form_input(self, fields):
-        """This utility method checks the request form and returns an error
-        code if there is something wrong (a mandatory field is missing, or a
+    def check_form_input(self, schema):
+        """
+        Form checks the request form and collect inputs consider the schema.
+        This method also checks the request form and raise an FormError if
+        there is something wrong (a mandatory field is missing, or a
         value is not valid) or None if everything is ok.
 
         Its input data is a list (fields) that defines the form variables to
-        consider:
-
-            [(<field name>, <is field required>, <datatype>), ...]
-
-        Every element of the list is a tuple with the name of the field
-        and a boolean value that specifies whether the field is mandatory
-        or not.
+          {'toto': Unicode(mandatory=True, multiple=False, default=u'toto'),
+           'tata': Unicode(mandatory=True, multiple=False, default=u'tata')}
         """
-        message = (
-            u'Some required fields are missing, or some values are not valid.'
-            u' Please correct them and continue.')
-        # Check mandatory fields
-        for field in fields:
-            field, is_mandatory, datatype = field
-            try:
-                value = self.get_form_value(field, type=datatype)
-            except:
-                return message
-
-            if is_mandatory:
-                if value is None:
-                    return message
-                if isinstance(value, (str, unicode)):
-                    value = value.strip()
-                    if not value:
-                        return message
-                if not datatype.is_valid(value):
-                    return message
+        # TODO manage multiple Datatype - get_form_values
+        values = {}
+        invalid = []
+        missing = []
+        for name in schema:
+            datatype = schema[name]
+            if self.form_is_missing(name, datatype):
+                missing.append(name)
+            if self.form_is_invalid(name, datatype):
+                invalid.append(name)
+            if getattr(datatype, 'multiple', False):
+                value = self.get_form_values(name, datatype.default, datatype)
             else:
-                if value:
-                    if not datatype.is_valid(value):
-                        return message
-        return None
+                value = self.get_form_value(name, datatype.default, datatype)
+            values[name] = value
+        if missing or invalid:
+            raise FormError(missing, invalid)
+        return values
 
+
+    def form_is_invalid(self, name, datatype):
+        """Check if a form is invalid or not (Referred to its datatype)"""
+        value = self.get_form_value(name)
+        if not self.get_form_keys():
+            return False
+        if getattr(datatype, 'mandatory', False):
+            if not datatype.is_valid(value):
+                return True
+        else:
+            if value:
+                if not datatype.is_valid(value):
+                    return True
+        return False
+
+
+    def form_is_missing(self, name, datatype):
+        """Check if a form is missing or not."""
+        value = self.get_form_value(name)
+        if not self.get_form_keys():
+            return False
+        if getattr(datatype, 'mandatory', False):
+            if value is None:
+                return True
+            if isinstance(value, (str, unicode)):
+                value = value.strip()
+                if not value:
+                    return True
+            return False
+        else:
+            return False
 
 
 contexts = {}

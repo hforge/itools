@@ -16,7 +16,7 @@
 
 # Import from itools
 from access import AccessControl
-from context import get_context, set_context, Context
+from context import get_context, set_context, Context, FormError
 from server import Server
 from base import Root, Node
 
@@ -28,4 +28,5 @@ __all__ = [
     'AccessControl',
     'Server',
     'Root',
-    'Node']
+    'Node',
+    'FormError']

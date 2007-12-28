@@ -78,8 +78,7 @@ class HTTPDate(DataType):
 # In the long run we will need to replace Python dates by something else.
 
 class ISOCalendarDate(DataType):
-    """
-    Extended formats (from max. to min. precission): %Y-%m-%d, %Y-%m, %Y
+    """Extended formats (from max. to min. precission): %Y-%m-%d, %Y-%m, %Y
 
     Basic formats: %Y%m%d, %Y%m, %Y
     """
@@ -129,8 +128,7 @@ class ISOCalendarDate(DataType):
 
 
 class ISOTime(DataType):
-    """
-    Extended formats (from max. to min. precission): %H:%M:%S, %H:%M, %H
+    """Extended formats (from max. to min. precission): %H:%M:%S, %H:%M, %H
 
     Basic formats: %H%M%S, %H%M, %H
     """
@@ -182,7 +180,12 @@ class ISODateTime(DataType):
     def decode(value):
         if not value:
             return None
-        date, time = value.split('T')
+        # FIXME try/except block introduced in 0.20.0 for backwards
+        # compatibility, to be removed by 0.30.0
+        try:
+            date, time = value.split('T')
+        except ValueError:
+            date, time = value.split(' ')
         date = ISOCalendarDate.decode(date)
         time = ISOTime.decode(time)
 

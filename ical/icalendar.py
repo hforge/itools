@@ -1049,6 +1049,8 @@ class icalendarTable(Table):
     file but here as a table object.
     """
 
+    record_class = Record
+
     schema = {
       'type': String(index='keyword'),
       # Calendar properties
@@ -1131,6 +1133,7 @@ class icalendarTable(Table):
         Deserialize an ical file, generally named .ics
         Output data structure is a table.
         """
+        self.set_changed()
         self.new()
 
         properties = {}
@@ -1226,7 +1229,8 @@ class icalendarTable(Table):
                     # Next
                     c_type = None
                     uid = None
-                    id = id + 1
+                    if n == 0:
+                        id = id + 1
                 #elif prop_value.value in component_list:
                 #    raise ValueError, '%s component can NOT be inserted '\
                 #          'into %s component' % (prop_value.value, c_type)

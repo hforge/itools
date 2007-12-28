@@ -45,6 +45,7 @@ def checkid(id):
     id = u''.join(id)
     id = id.split(u'-')
     id = u'-'.join([x for x in id if x])
+    id = id.strip('-')
 
     # Check wether the id is empty
     if len(id) == 0:

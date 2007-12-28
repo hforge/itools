@@ -125,7 +125,7 @@ class Database(object):
             if handler.timestamp == mtime:
                 return handler
             # Conflict, file modified both in filesystem and memory
-            if self.dirty is True:
+            if handler.dirty is True:
                 raise RuntimeError, MSG_CONFLICT
             # Remove from cache
             del cache[reference]

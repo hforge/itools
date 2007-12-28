@@ -9,7 +9,7 @@ from reportlab.pdfgen.canvas import Canvas
 from reportlab.lib.units import inch, cm, mm, pica
 from reportlab.lib.pagesizes import (letter, legal, elevenSeventeen, A0, A1,
     A2, A3, A4, A5, A6, B0, B1, B2, B3, B4, B5, B6, landscape, portrait)
-
+from reportlab.platypus import (Paragraph)
 
 TAG_NOT_SUPPORTED = '%s: line %s tag "%s" is currently not supported.'
 
@@ -37,6 +37,7 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
         stream : parser stream
         pdf_stream : reportlab write the pdf into pdf_stream.
         document_name : name of the source file
+
         Childs : template, stylesheet, story
     """
 
@@ -66,9 +67,13 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
                 p = create_pdf(document_name + ".pdf")
 #                pdf_filename = attributes.get((None, 'filename'), 'noname.pdf')
                 stack.append((tag_name, attributes, None))
-            elif tag_name == 'p':
-                
-                
+#            elif tag_name == 'body':
+
+#            elif tag_name == 'p':
+#                paragraph = Paragraph("test", [])
+#                w,h = p.wrap(480, 600)
+#                P.drawOn(p, 0, 480)
+
 #            elif tag_name == 'docinit':
 #                docinit_stream(stream, tag_uri, tag_name, attributes)
 #            elif tag_name == 'template':
@@ -82,7 +87,7 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
 #              story = story_stream(stream, tag_uri,tag_name, attributes,
 #                                   pdf_stylesheet, pdf_table_style,
 #                                   alias_style)
-            else:
+            else :
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
                 stack.append((tag_name, attributes, None))
@@ -127,4 +132,5 @@ def stream_next(stream):
         return (event, value, line_number)
     except StopIteration:
         return (None, None, None)
+
 

@@ -24,6 +24,7 @@ import unittest
 from itools.pdf import rmltopdf
 from itools.pdf.rml import (rmltopdf_test, normalize, stream_next,
     get_color, get_page_size_orientation)
+from itools.pdf.rml2 import (create_pdf, close_pdf)
 from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, TEXT
 
 # Import from the reportlab library

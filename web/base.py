@@ -89,7 +89,10 @@ class Node(object):
             path = Path(path)
 
         path, name = path[:-1], path[-1]
-        container = self.get_object(path)
+        try:
+            container = self.get_object(path)
+        except LookupError:
+            return False
         return container._has_object(name)
 
 

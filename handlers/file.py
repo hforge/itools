@@ -226,6 +226,20 @@ class File(Handler):
     #########################################################################
     # API
     #########################################################################
+    def get_mtime(self):
+        """Returns the last modification time.
+        """
+        if self.timestamp is None:
+            # FIXME We don't know the modification time of new handlers
+            if self.dirty is True:
+                return None
+            # Not yet loaded, check the VFS
+            return vfs.get_mtime(self.uri)
+
+        # FIXME If the handlers has been modified, the mtime will be wrong
+        return self.timestamp
+
+
     def to_str(self):
         return self.data
 

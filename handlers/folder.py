@@ -18,6 +18,7 @@
 
 # Import from itools
 from itools.uri import get_absolute_reference
+from itools import vfs
 from base import Handler
 from messages import *
 from registry import register_handler_class
@@ -51,6 +52,14 @@ class Folder(Handler):
     #########################################################################
     # API (public)
     #########################################################################
+    def get_mtime(self):
+        """Returns the last modification time.
+        """
+        if vfs.exists(self.uri):
+            return vfs.get_mtime(self.uri)
+        return None
+
+
     def has_handler(self, reference):
         if self.database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED

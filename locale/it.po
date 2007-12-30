@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: it\n"
-"POT-Creation-Date: 2007-11-27 11:11+CET\n"
+"POT-Creation-Date: 2007-12-30 22:12+CET\n"
 "PO-Revision-Date: 2004-11-26 14:39+0100\n"
 "Last-Translator: Paolo Dina <paolo@php3.it>\n"
 "Language-Team: Italian <paolo@php3.it>\n"
@@ -16,23 +16,23 @@ msgstr ""
 "X-Poedit-Language: Italian\n"
 "X-Poedit-Country: ITALY\n"
 
-#: ical/icalendar.py:1118
+#: ical/icalendar.py:1121
 msgid "-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN"
 msgstr ""
 
-#: ical/icalendar.py:1117
+#: ical/icalendar.py:1120
 msgid "2.0"
 msgstr ""
 
-#: rest/rest.py:199
+#: handlers/utils.py:20
 msgid "AAAAAAaaaaaaCcEEEEeeeeeIIIIiiiiNnOOOOOOooooooSUUUUuuuuYŸyy"
 msgstr ""
 
-#: csv/parser.py:55
+#: csv/parser.py:57
 msgid "CSV syntax error: wrong number of columns"
 msgstr ""
 
-#: csv/parser.py:51
+#: csv/parser.py:53
 msgid "CSV syntax error: wrong number of columns at line %d"
 msgstr ""
 
@@ -40,7 +40,7 @@ msgstr ""
 msgid "Inc"
 msgstr ""
 
-#: web/context.py:279
+#: web/context.py:272
 msgid ""
 "Some required fields are missing, or some values are not valid. Please "
 "correct them and continue."
@@ -172,10 +172,6 @@ msgstr "Basco"
 msgid "qué"
 msgstr ""
 
-#: http/request.py:97
-msgid "request method \"%s\" not yet implemented"
-msgstr ""
-
 #: i18n/oracle.py:109
 msgid "she"
 msgstr ""
@@ -239,7 +235,7 @@ msgstr ""
 msgid "your"
 msgstr ""
 
-#: rest/rest.py:198
+#: handlers/utils.py:19
 msgid "ÄÅÁÀÂÃäåáàâãÇçÉÈÊËéèêëæÍÌÎÏíìîïÑñÖÓÒÔÕØöóòôõøßÜÚÙÛüúùûÝŸýÿ"
 msgstr ""
 

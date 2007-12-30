@@ -93,7 +93,7 @@ class Request(Message):
         # Check we support the method
         if method not in ['GET', 'HEAD', 'POST', 'PUT', 'LOCK', 'UNLOCK']:
             # Not Implemented (501)
-            message = u'request method "%s" not yet implemented'
+            message = 'request method "%s" not yet implemented'
             raise NotImplemented, message % method
 
         # Load headers

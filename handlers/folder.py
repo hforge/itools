@@ -18,7 +18,7 @@
 
 # Import from itools
 from itools.uri import get_absolute_reference
-from itools import vfs
+from itools.vfs import vfs
 from base import Handler
 from messages import *
 from registry import register_handler_class

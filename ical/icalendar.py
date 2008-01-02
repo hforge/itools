@@ -47,8 +47,7 @@ resolution = timedelta.resolution
 
 
 class PropertyValue(object):
-    """
-    PropertyValue handles a property value and parameters.
+    """PropertyValue handles a property value and parameters.
 
     Parameters are a dict containing list of values:
         {param1_name: [param_values], ...}
@@ -60,8 +59,7 @@ class PropertyValue(object):
 
 
 class Component(object):
-    """
-    Parses and evaluates a component block.
+    """Parses and evaluates a component block.
 
         input :   string values for c_type and uid
                   a list of Property objects
@@ -77,8 +75,7 @@ class Component(object):
     # more than one time, ...)
 
     def __init__(self, c_type, uid):
-        """
-        Initialize the component.
+        """Initialize the component.
 
         c_type -- type of component as a string (i.e. 'VEVENT')
         """
@@ -91,8 +88,8 @@ class Component(object):
     # API / Private
     #######################################################################
     def get_value(self, name):
-        """
-        Returns the value of a property if it exists. Otherwise returns None.
+        """Returns the value of a property if it exists. Otherwise returns
+        None.
         """
         # Case insensitive
         name = name.upper()
@@ -148,8 +145,7 @@ class Component(object):
     # API / Public
     #######################################################################
     def get_version(self, sequence=None):
-        """
-        Return the last version of current component or the sequence's one.
+        """Return the last version of current component or the sequence's one.
         """
         if sequence is None:
             sequence = self.get_sequences()[-1]
@@ -158,9 +154,8 @@ class Component(object):
 
     # Get a property of current component
     def get_property(self, name=None):
-        """
-        Return the value of given name property as a PropertyValue or as a list
-        of PropertyValue objects if it can occur more than once.
+        """Return the value of given name property as a PropertyValue or as a
+        list of PropertyValue objects if it can occur more than once.
 
         Return icalendar property values as a dict {name: value, ...} where
         value is a PropertyValue or a list of PropertyValue objects if it can
@@ -183,8 +178,7 @@ class Component(object):
     def get_ns_event(self, day, resource_name=None, conflicts_list=[],
                      timetable=None, grid=False,
                      starts_on=True, ends_on=True, out_on=True):
-        """
-        Specify the namespace given on views to represent an event.
+        """Specify the namespace given on views to represent an event.
 
         day: date selected XXX not used for now
         conflicts_list: list of conflicts for current resource, [] if not used
@@ -542,7 +536,8 @@ class icalendar(TextFile):
     #######################################################################
     @classmethod
     def generate_uid(cls, c_type='UNKNOWN'):
-        """ Generate a uid based on c_type and current datetime. """
+        """Generate a uid based on c_type and current datetime.
+        """
         return ' '.join([c_type, datetime.now().isoformat()])
 
 
@@ -550,10 +545,9 @@ class icalendar(TextFile):
     # API
     #######################################################################
     def check_properties(self, properties):
-        """
-        Check each property has a correct number of occurrences.
-        It replaces a unique value of a multiple occurrences allowed
-        property by a list with this value.
+        """Check each property has a correct number of occurrences.  It
+        replaces a unique value of a multiple occurrences allowed property by
+        a list with this value.
         """
         for name, value in properties.items():
             datatype = self.get_datatype(name)
@@ -569,9 +563,8 @@ class icalendar(TextFile):
 
 
     def add_component(self, c_type, **kw):
-        """
-        Add a new component of type c_type.
-        It generates a uid and a new version with the given properties if any.
+        """Add a new component of type c_type.  It generates a uid and a new
+        version with the given properties if any.
         """
         # Check the properties
         kw = self.check_properties(kw)
@@ -595,8 +588,7 @@ class icalendar(TextFile):
 
 
     def update_component(self, uid, **kw):
-        """
-        Update component with given uid with properties given as kw,
+        """Update component with given uid with properties given as kw,
         creating a new version based on the previous one.
         """
         # Check the properties
@@ -626,9 +618,8 @@ class icalendar(TextFile):
 
 
     def remove(self, uid):
-        """
-        Definitely remove from the calendar an existant component with all its
-        versions.
+        """Definitely remove from the calendar an existant component with all
+        its versions.
         """
         self.set_changed()
         # Remove
@@ -639,9 +630,7 @@ class icalendar(TextFile):
 
 
     def get_property_values(self, name=None):
-        """
-        Return PropertyValue[] for the given icalendar property name
-        or
+        """Return PropertyValue[] for the given icalendar property name or
         Return icalendar property values as a dict
             {property_name: PropertyValue object, ...}
 
@@ -653,8 +642,7 @@ class icalendar(TextFile):
 
 
     def set_property(self, name, values):
-        """
-        Set values to the given calendar property, removing previous ones.
+        """Set values to the given calendar property, removing previous ones.
 
         name -- name of the property as a string
         values -- PropertyValue[]
@@ -675,8 +663,7 @@ class icalendar(TextFile):
 
 
     def get_components(self, type=None):
-        """
-        Return a dict {component_type: Component[], ...}
+        """Return a dict {component_type: Component[], ...}
         or
         Return Component[] of given type.
         """
@@ -688,9 +675,8 @@ class icalendar(TextFile):
 
     # Get some events corresponding to arguments
     def search_events(self, subset=None, **kw):
-        """
-        Return a list of Component objects of type 'VEVENT' corresponding to
-        the given filters.
+        """Return a list of Component objects of type 'VEVENT' corresponding
+        to the given filters.
 
         It should be used like this, for example:
 
@@ -748,16 +734,14 @@ class icalendar(TextFile):
 
 
     def get_component_by_uid(self, uid):
-        """
-        Return components with the given uid, None if it doesn't appear.
+        """Return components with the given uid, None if it doesn't appear.
         """
         return self.components.get(uid)
 
 
     def search_events_in_date(self, selected_date, sortby=None, **kw):
-        """
-        Return a list of Component objects of type 'VEVENT' matching the given
-        date and sorted if requested.
+        """Return a list of Component objects of type 'VEVENT' matching the
+        given date and sorted if requested.
         """
         dtstart = datetime(selected_date.year, selected_date.month,
                            selected_date.day)
@@ -766,11 +750,10 @@ class icalendar(TextFile):
 
 
     def search_events_in_range(self, dtstart, dtend, sortby=None, **kw):
-        """
-        Return a list of Component objects of type 'VEVENT' matching the given
-        dates range and sorted  if requested.
-        If kw is filled, it calls search_events on the found subset to return
-        only components matching filters.
+        """Return a list of Component objects of type 'VEVENT' matching the
+        given dates range and sorted  if requested.  If kw is filled, it calls
+        search_events on the found subset to return only components matching
+        filters.
 
         RangeSearch is [left, right[
         """
@@ -835,15 +818,13 @@ class icalendar(TextFile):
 
     # Test if any event corresponds to a given date
     def has_event_in_date(self, date):
-        """
-        Return True if there is at least one event matching the given date.
+        """Return True if there is at least one event matching the given date.
         """
         return self.search_events_in_date(date) != []
 
 
     def get_conflicts(self, date):
-        """
-        Returns a list of uid couples which happen at the same time.
+        """Returns a list of uid couples which happen at the same time.
         We check only last occurrence of events.
         """
         events = self.search_events_in_date(date)
@@ -893,8 +874,8 @@ class icalendar(TextFile):
 
 
     def search(self, query=None, **kw):
-        """
-        Return list of component internal ids returned by executing the query.
+        """Return list of component internal ids returned by executing the
+        query.
         """
         if query is None:
             if kw:
@@ -916,13 +897,11 @@ class icalendar(TextFile):
 
 
 class Record(TableRecord):
-    """
-    A Record with some icalendar specific methods in addition.
+    """A Record with some icalendar specific methods in addition.
     """
 
     def get_version(self, sequence=None):
-        """
-        Return the last version of current component or the sequence's one.
+        """Return the last version of current component or the sequence's one.
         """
         if sequence is None:
             sequence = self[-1]
@@ -934,8 +913,7 @@ class Record(TableRecord):
 
     # Get a property of current component
     def get_property(self, name=None):
-        """
-        Return the value of given name property as a Property or as a list
+        """Return the value of given name property as a Property or as a list
         of Property objects if it can occur more than once.
 
         Return all property values as a dict {name: value, ...} where
@@ -956,8 +934,7 @@ class Record(TableRecord):
     def get_ns_event(self, day, resource_name=None, conflicts_list=[],
                      timetable=None, grid=False,
                      starts_on=True, ends_on=True, out_on=True):
-        """
-        Specify the namespace given on views to represent an event.
+        """Specify the namespace given on views to represent an event.
 
         day: date selected XXX not used for now
         conflicts_list: list of conflicts for current resource, [] if not used
@@ -1044,9 +1021,8 @@ class Record(TableRecord):
 
 
 class icalendarTable(Table):
-    """
-    An icalendarTable is a handler for calendar data, generally used as an ical
-    file but here as a table object.
+    """An icalendarTable is a handler for calendar data, generally used as an
+    ical file but here as a table object.
     """
 
     record_class = Record
@@ -1129,8 +1105,7 @@ class icalendarTable(Table):
     # Load State
     #########################################################################
     def _load_state_from_ical_file(self, file):
-        """
-        Deserialize an ical file, generally named .ics
+        """Deserialize an ical file, generally named .ics
         Output data structure is a table.
         """
         self.set_changed()
@@ -1260,7 +1235,8 @@ class icalendarTable(Table):
 
 
     def to_ical(self):
-        """ Serialize as an ical file, generally named .ics """
+        """Serialize as an ical file, generally named .ics
+        """
         lines = []
 
         line = 'BEGIN:VCALENDAR\n'
@@ -1306,8 +1282,7 @@ class icalendarTable(Table):
 
 
     def set_property(self, name, values):
-        """
-        Set values to the given calendar property, removing previous ones.
+        """Set values to the given calendar property, removing previous ones.
 
         name -- name of the property as a string
         values -- Property[]
@@ -1336,15 +1311,13 @@ class icalendarTable(Table):
 
 
     def get_component_by_uid(self, uid):
-        """
-        Return components with the given uid, None if it doesn't appear.
+        """Return components with the given uid, None if it doesn't appear.
         """
         return self.search(UID=uid)
 
 
     def get_property(self, name=None):
-        """
-        Return Property[] for the given icalendar property name
+        """Return Property[] for the given icalendar property name
         or
         Return icalendar property values as a dict
             {property_name: Property object, ...}
@@ -1358,8 +1331,7 @@ class icalendarTable(Table):
 
     # Deprecated
     def get_components(self, type=None):
-        """
-        Return a dict {component_type: Record[], ...}
+        """Return a dict {component_type: Record[], ...}
         or
         Return Record[] of given type.
         """
@@ -1371,8 +1343,7 @@ class icalendarTable(Table):
 
     # Get some events corresponding to arguments
     def search_events(self, subset=None, **kw):
-        """
-        Return a list of Record objects of type 'VEVENT' corresponding to
+        """Return a list of Record objects of type 'VEVENT' corresponding to
         the given filters.
 
         It should be used like this, for example:
@@ -1433,11 +1404,10 @@ class icalendarTable(Table):
 
 
     def search_events_in_range(self, dtstart, dtend, sortby=None, **kw):
-        """
-        Return a list of Records objects of type 'VEVENT' matching the given
-        dates range and sorted if requested.
-        If kw is filled, it calls search_events on the found subset to return
-        only components matching filters.
+        """Return a list of Records objects of type 'VEVENT' matching the
+        given dates range and sorted if requested.  If kw is filled, it calls
+        search_events on the found subset to return only components matching
+        filters.
 
         RangeSearch is [left, right[
         """
@@ -1501,9 +1471,8 @@ class icalendarTable(Table):
 
 
     def search_events_in_date(self, selected_date, sortby=None, **kw):
-        """
-        Return a list of Component objects of type 'VEVENT' matching the given
-        date and sorted if requested.
+        """Return a list of Component objects of type 'VEVENT' matching the
+        given date and sorted if requested.
         """
         dtstart = datetime(selected_date.year, selected_date.month,
                            selected_date.day)
@@ -1513,15 +1482,13 @@ class icalendarTable(Table):
 
     # Test if any event corresponds to a given date
     def has_event_in_date(self, date):
-        """
-        Return True if there is at least one event matching the given date.
+        """Return True if there is at least one event matching the given date.
         """
         return self.search_events_in_date(date) != []
 
 
     def get_conflicts(self, date):
-        """
-        Returns a list of uid couples which happen at the same time.
+        """Returns a list of uid couples which happen at the same time.
         We check only last occurrence of events.
         """
         events = self.search_events_in_date(date)

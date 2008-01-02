@@ -223,9 +223,6 @@ class Catalog(object):
         'fields', 'field_numbers', 'indexes',
         'documents', 'n_documents', 'added_documents', 'removed_documents']
 
-    #######################################################################
-    # API / Public
-    #######################################################################
 
     def __init__(self, ref):
         self.uri = get_absolute_reference(ref)
@@ -271,7 +268,8 @@ class Catalog(object):
 
 
     #######################################################################
-    # Transactions part
+    # API / Public / Transactions
+    #######################################################################
     def save_changes(self):
         """Save the last changes to disk.
         """
@@ -336,7 +334,8 @@ class Catalog(object):
 
 
     #######################################################################
-    # Documents management
+    # API / Public / (Un)Index
+    #######################################################################
     def index_document(self, document):
         """Add a new document.
         """
@@ -439,6 +438,9 @@ class Catalog(object):
             self._unindex_document(document.__number__)
 
 
+    #######################################################################
+    # API / Public / Search
+    #######################################################################
     def search(self, query=None, **kw):
         """Launch a search in the catalog.
         """
@@ -462,6 +464,24 @@ class Catalog(object):
         # Search
         results = query.search(self)
         return SearchResults(results, self)
+
+
+    def get_unique_values(self, name):
+        values = set()
+
+        index = self.field_numbers[name]
+        field = self.fields[index]
+
+        for i in range(self.n_documents):
+            document = self.get_document(i)
+            value = document.fields.get(index)
+            if value is None:
+                continue
+            if field.is_stored:
+                value = [ term for term, position in field.split(value) ]
+            values.update(value)
+
+        return values
 
 
     #######################################################################

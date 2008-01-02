@@ -17,7 +17,7 @@
 
 # Import from the Standard Library
 from datetime import date
-import random
+from random import sample
 import unittest
 from unittest import TestCase
 
@@ -39,14 +39,14 @@ class IOTestCase(TestCase):
 
 
     def test_unit32(self):
-        for value in random.sample(xrange(2**30), 255):
+        for value in sample(xrange(2**30), 255):
             aux = io.encode_uint32(value)
             aux = io.decode_uint32(aux)
             self.assertEqual(aux, value)
 
 
     def test_vint(self):
-        for value in random.sample(xrange(2**30), 255):
+        for value in sample(xrange(2**30), 255):
             aux = io.encode_vint(value)
             aux = io.decode_vint(aux)
             self.assertEqual(aux[0], value)
@@ -68,7 +68,7 @@ class IOTestCase(TestCase):
 
 
     def test_link(self):
-        for value in random.sample(xrange(2**30), 255):
+        for value in sample(xrange(2**30), 255):
             aux = io.encode_link(value)
             aux = io.decode_link(aux)
             self.assertEqual(aux, value)
@@ -108,7 +108,7 @@ class FieldsTestCase(TestCase):
 
 
     def test_integer(self):
-        for value in random.sample(xrange(1000000000), 255):
+        for value in sample(xrange(1000000000), 255):
             words = list(IntegerField.split(value))
             self.assertEqual(len(words), 1)
             word, position = words[0]
@@ -182,6 +182,12 @@ class CatalogTestCase(TestCase):
         results = catalog.search(query)
         self.assertEqual(results.get_n_documents(), 27)
 
+
+    def test_unique_values(self):
+        catalog = Catalog('tests/catalog')
+        values = catalog.get_unique_values('title')
+        self.assert_('pearl' in values)
+        self.assert_('motorola' not in values)
 
 
 

@@ -34,8 +34,10 @@ class EqQuery(object):
 
 
     def search(self, catalog):
-        # A simple query
         index = catalog.get_index(self.name)
+        if index is None:
+            return {}
+
         documents = index.search_word(self.value)
         # Calculate the weight
         for doc_number in documents:
@@ -55,8 +57,10 @@ class RangeQuery(object):
 
     def search(self, catalog):
         index = catalog.get_index(self.name)
-        documents = index.search_range(self.left, self.right)
-        return documents
+        if index is None:
+            return {}
+
+        return index.search_range(self.left, self.right)
 
 
 
@@ -68,8 +72,10 @@ class PhraseQuery(object):
 
 
     def search(self, catalog):
-        # Get the index
         index = catalog.get_index(self.name)
+        if index is None:
+            return {}
+
         # Get the analyser
         field = catalog.get_analyser(self.name)
 

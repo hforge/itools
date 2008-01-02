@@ -529,9 +529,9 @@ class Catalog(object):
 
     def get_index(self, name):
         field_numbers = self.field_numbers
-        # Check the field exists
+        # The field may be defined by objects not yet indexed
         if name not in field_numbers:
-            raise ValueError, 'the field "%s" is not defined' % name
+            return None
         # Get the index
         number = field_numbers[name]
         index = self.indexes[number]

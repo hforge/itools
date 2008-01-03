@@ -254,6 +254,8 @@ class ConfigFile(TextFile):
 
         n = 0
         for name, value in kw.items():
+            if isinstance(value, str) is False:
+                raise TypeError, 'the value must be a string.'
             # Add the variable, with an empty comment
             self.lines.append(([], (name, value)))
             # Separate with a blank line
@@ -297,6 +299,8 @@ class ConfigFile(TextFile):
         """
         if isinstance(comment, str):
             comment = wrap(comment)
+        if isinstance(value, str) is False:
+            raise TypeError, 'the value must be a string.'
 
         self.set_changed()
         if name in self.values:

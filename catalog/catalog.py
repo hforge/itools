@@ -473,7 +473,10 @@ class Catalog(object):
         field = self.fields[index]
 
         for i in range(self.n_documents):
-            document = self.get_document(i)
+            try:
+                document = self.get_document(i)
+            except LookupError:
+                continue
             value = document.fields.get(index)
             if value is None:
                 continue

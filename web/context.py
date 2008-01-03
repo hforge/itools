@@ -206,7 +206,7 @@ class Context(object):
             if isinstance(value, tuple) and len(value) == 3:
                 continue
             # Keep form field
-            if key in keep:
+            if (key is True) or (key in keep):
                 form[key] = value
         if form:
             goto = goto.replace(**form)

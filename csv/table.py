@@ -534,6 +534,16 @@ class Table(File):
         return self.catalog.indexes[name]
 
 
+    def get_field_title(self, name):
+        if name not in self.schema:
+            raise ValueError, 'the field "%s" is not defined' % name
+        if getattr(self, 'form', None) is None:
+            return name
+        for widget in self.form:
+            if widget.name == name:
+                return  getattr(widget, 'title', name)
+
+
     #######################################################################
     # API / Public
     #######################################################################
@@ -549,7 +559,8 @@ class Table(File):
             datatype = self.get_datatype(name)
             if getattr(datatype, 'unique', False) is True:
                 if len(self.search(EqQuery(name, kw[name]))) > 0:
-                    raise ValueError, 'The field %s must be unique' % name
+                    title = self.get_field_title(name)
+                    raise ValueError, 'The field %s must be unique' % title
         # Add version to record
         id = len(self.records)
         record = self.record_class(id)
@@ -566,6 +577,15 @@ class Table(File):
 
 
     def update_record(self, id, **kw):
+        # Check for duplicate
+        for name in kw:
+            datatype = self.get_datatype(name)
+            if getattr(datatype, 'unique', False) is True:
+                search = self.search(EqQuery(name, kw[name]))
+                if search and (search[0] != self.records[id]):
+                    title = self.get_field_title(name)
+                    raise ValueError, 'The field %s must be unique' % title
+        # Version of record
         record = self.records[id]
         version = record[-1].copy()
         version = self.properties_to_dict(kw, version)

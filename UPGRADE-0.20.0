@@ -254,8 +254,8 @@ Renames in the context API include:
   context.handler               context.object
   context.get_accept_language   context.accept_language
 
-Now the "context.get_form_value" method does not automatically try to
-figure out the datatype from the field name:
+(1) Now the "context.get_form_value" method does not automatically try
+to figure out the datatype from the field name:
 
   # Before
   value = context.get_form_value('dc:title')
@@ -263,16 +263,37 @@ figure out the datatype from the field name:
   # Now
   value = context.get_form_value('dc:title', type=Unicode)
 
-Now the "context.build_form_namespace" and "context.check_form_input"
-methods require the fields parameter to explicitly define the datatype:
+(2) The "context.check_form_input" method has changed.  Before it just
+tested whether the input data was valid or not, and returned an error
+message if it was not.
+
+Now if everything is ok it will return a dictionary with the deserialized
+values.  If there was an error it will raise an exception describing the
+fields that are missing or invalid.
+
+  # Before
+  schema = [('name', True, Unicode)]
+  error = context.check_form_input(schema)
+  if error is not None:
+      return ...
+  value = context.get_form_value('name', type=Unicode)
+
+  # Now
+  schema = {'name': Unicode(mandatory=True)}
+  try:
+      values = context.check_form_input(schema)
+  except FormError, error:
+      return ...
+  value = values['name']
+
+(3) Now the "context.build_form_namespace" method requires the fields
+parameter to explicitly define the datatype:
 
   # Before
   fields = [(name, True)]
   context.build_form_namespace(fields)
-  context.check_form_input(fields)
 
   # Now
   fields = [(name, True, String)]
   context.build_form_namespace(fields)
-  context.check_form_input(fields)
 

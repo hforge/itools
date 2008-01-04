@@ -1,0 +1,44 @@
+
+itools 0.20.2 (2008/01/04)
+==========================
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.catalog          itools.i18n             itools.uri
+  itools.csv              itools.ical             itools.vfs
+  itools.datatypes        itools.odf              itools.web
+  itools.gettext          itools.pdf              itools.workflow
+  itools.git              itools.rest             itools.xliff
+  itools.handlers         itools.rss              itools.xml
+  itools.html             itools.stl
+  itools.http             itools.tmx
+
+This release brings a couple API enhancements.
+
+The "context.check_form_input" method from itools.web has been improved.
+Before it just tested whether the input data was valid or not; now, if
+everything is fine, it returns the deserialized values.
+
+The "Catalog.get_unique_values" method has been added to the programming
+interface of the Index&Search engine.  It returns all the values stored
+in the catalog for a given field.
+
+
+Resources
+---------
+
+Download
+http://download.ikaaro.org/itools/itools-0.20.2.tar.gz
+http://download.ikaaro.org/itools/itools-0.20.2.win32-py2.5.exe
+http://download.ikaaro.org/itools/itools-0.20.2.win32-py2.4.exe
+
+Home
+http://www.ikaaro.org/itools
+
+Mailing list
+http://mail.ikaaro.org/mailman/listinfo/itools
+
+Bug Tracker
+http://bugs.ikaaro.org/
+

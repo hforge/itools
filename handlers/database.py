@@ -18,6 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from datetime import datetime
 from os import fdopen
 from tempfile import mkstemp
 from thread import allocate_lock, get_ident
@@ -348,13 +349,17 @@ def get_tmp_map():
 
 class SafeDatabase(Database):
 
-    def __init__(self, commit):
+    def __init__(self, commit, log=None):
         Database.__init__(self)
         # The commit, for safe transactions
         if not isinstance(commit, Path):
             commit = Path(commit)
         self.commit = str(commit)
-        self.log = str(commit.resolve2('log'))
+        self.commit_log = str(commit.resolve2('log'))
+        # The transactions log
+        if isinstance(log, str):
+            log = open(log, 'a+')
+        self.log = log
 
 
     #######################################################################
@@ -368,7 +373,7 @@ class SafeDatabase(Database):
 
         tmp_file, tmp_path = mkstemp(dir=self.commit)
         tmp_path = get_reference(tmp_path)
-        log = open(self.log, 'a+b')
+        log = open(self.commit_log, 'a+b')
         try:
             log.write('+%s#%s\n' % (reference, tmp_path))
         finally:
@@ -377,7 +382,7 @@ class SafeDatabase(Database):
 
 
     def safe_make_folder(self, reference):
-        log = open(self.log, 'a+b')
+        log = open(self.commit_log, 'a+b')
         try:
             log.write('+%s\n' % reference)
         finally:
@@ -387,7 +392,7 @@ class SafeDatabase(Database):
 
 
     def safe_remove(self, reference):
-        log = open(self.log, 'a+b')
+        log = open(self.commit_log, 'a+b')
         try:
             log.write('-%s\n' % reference)
         finally:
@@ -404,7 +409,7 @@ class SafeDatabase(Database):
             tmp_file, tmp_path = mkstemp(dir=self.commit)
             tmp_path = get_reference(tmp_path)
             tmp_map[reference] = tmp_path
-            log = open(self.log, 'a+b')
+            log = open(self.commit_log, 'a+b')
             try:
                 log.write('~%s#%s\n' % (reference, tmp_path))
             finally:
@@ -421,7 +426,7 @@ class SafeDatabase(Database):
             tmp_file, tmp_path = mkstemp(dir=self.commit)
             tmp_path = get_reference(tmp_path)
             tmp_map[reference] = tmp_path
-            log = open(self.log, 'a+b')
+            log = open(self.commit_log, 'a+b')
             try:
                 log.write('>%s#%s\n' % (reference, tmp_path))
             finally:
@@ -446,7 +451,7 @@ class SafeDatabase(Database):
 
     def save_changes(self):
         # 1. Start
-        vfs.make_file(self.log)
+        vfs.make_file(self.commit_log)
 
         # State
         changed = self.changed
@@ -474,6 +479,8 @@ class SafeDatabase(Database):
             # Rollback the changes in disk
             self.rollback()
             get_tmp_map().clear()
+            # Log
+            self.log_event('Transaction failed.')
             raise
         else:
             get_tmp_map().clear()
@@ -500,6 +507,9 @@ class SafeDatabase(Database):
             handler.timestamp = vfs.get_mtime(uri)
             handler.dirty = False
 
+        # 4. Log
+        self.log_event('Transaction done.')
+
 
     def rollback(self):
         """This method is to be called when something bad happens while we
@@ -519,7 +529,7 @@ class SafeDatabase(Database):
         safe call this method again so it finishes the work.
         """
         # Save the transaction
-        log = open(self.log)
+        log = open(self.commit_log)
         try:
             for line in log.readlines():
                 if line[-1] == '\n':
@@ -553,4 +563,17 @@ class SafeDatabase(Database):
 
         # We are done. Remove the commit.
         vfs.remove(self.commit)
+
+
+    #######################################################################
+    # API / Log
+    #######################################################################
+    def log_event(self, message):
+        log = self.log
+        if log is None:
+            return
+
+        log.write('%s %s\n' % (datetime.now(), message))
+        log.flush()
+
 

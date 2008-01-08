@@ -27,8 +27,9 @@ from itools.xliff import XLIFF
 class TMXTestCase(TestCase):
 
     def test_input(self):
-        """Test input."""
-        xliff = XLIFF('gettext_en_es.xlf')
+        """Test input.
+        """
+        xliff = XLIFF('tests/gettext_en_es.xlf')
         xliff.to_str()
 
 

@@ -1,6 +1,0 @@
-<stl:block xmlns:stl="http://xml.itools.org/namespaces/stl">
-  <h1 stl:content="title">The title</h1>
-  <p>
-    Esto es una prueba.
-  </p>
-</stl:block>

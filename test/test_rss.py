@@ -32,7 +32,7 @@ class RSSTestCase(TestCase):
     """
 
     def setUp(self):
-        self.rss = RSSFile('sample-rss-2.xml')
+        self.rss = RSSFile('tests/sample-rss-2.xml')
 
 
     def test_channel(self):

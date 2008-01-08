@@ -193,16 +193,16 @@ class CSVTestCase(TestCase):
 
 
     def test_set_state_in_file_resource(self):
-        handler = CSVFile('test.csv')
+        handler = CSVFile('tests/test.csv')
         handler.add_row(['d1', 'e1', 'f1'])
         handler.save_state()
 
-        handler2 = CSVFile('test.csv')
+        handler2 = CSVFile('tests/test.csv')
         self.assertEqual(handler2.get_row(3), ['d1', 'e1', 'f1'])
         handler2.del_row(3)
         handler2.save_state()
 
-        handler = CSVFile('test.csv')
+        handler = CSVFile('tests/test.csv')
         self.assertEqual(handler.get_nrows(), 3)
 
 
@@ -258,7 +258,7 @@ class CSVTestCase(TestCase):
 
     def test_advanced_search(self):
         handler = Countries()
-        handler.load_state_from('test_adv.csv')
+        handler.load_state_from('tests/test_adv.csv')
         result1 = handler.search(name='dde', country='sweden')
         self.assertEqual(result1, [5, 6])
 

@@ -27,8 +27,9 @@ from itools.tmx import TMX
 class TMXTestCase(TestCase):
 
     def test_input(self):
-        """Test input."""
-        tmx = TMX('localizermsgs.tmx')
+        """Test input.
+        """
+        tmx = TMX('tests/localizermsgs.tmx')
         tmx.to_str()
 
 

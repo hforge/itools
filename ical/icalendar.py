@@ -275,8 +275,8 @@ class icalendar(TextFile):
     # To override a component property from the spec, or to add a new one,
     # define this class variable.
     schema = {
-##        'DTSTART': DateTime(occurs=1, index='keyword'),
-##        'DTEND': DateTime(occurs=1, index='keyword'),
+##        'DTSTART': DateTime(multiple=False, index='keyword'),
+##        'DTEND': DateTime(multiple=False, index='keyword'),
     }
 
 
@@ -289,7 +289,7 @@ class icalendar(TextFile):
         if name in data_properties:
             return data_properties[name]
         # Default
-        return String(occurs=0)
+        return String(multiple=True)
 
 
     #########################################################################
@@ -416,7 +416,7 @@ class icalendar(TextFile):
                     uid = prop_value.value
                 else:
                     datatype = self.get_datatype(prop_name)
-                    if datatype.occurs == 1:
+                    if datatype.multiple is False:
                         # Check the property has not yet being found
                         if prop_name in c_properties:
                             msg = ('the property %s can be assigned only one'
@@ -539,7 +539,7 @@ class icalendar(TextFile):
         """
         for name, value in properties.items():
             datatype = self.get_datatype(name)
-            if datatype.occurs == 1:
+            if datatype.multiple is False:
                 if isinstance(value, list):
                     msg = 'property "%s" requires only one value' % name
                     raise TypeError, msg
@@ -636,7 +636,7 @@ class icalendar(TextFile):
         values -- Property[]
         """
         datatype = self.get_datatype(name)
-        if datatype.occurs == 1:
+        if datatype.multiple is False:
             # If the property can occur only once, set the first value of the
             # list, ignoring others
             if isinstance(values, list):
@@ -699,7 +699,7 @@ class icalendar(TextFile):
                 expected = kw.get(filter)
                 property_value = version[filter]
                 datatype = self.get_datatype(filter)
-                if datatype.occurs == 1:
+                if datatype.multiple is False:
                     if property_value.value != expected:
                         break
                 else:
@@ -1015,66 +1015,8 @@ class icalendarTable(Table):
 
     record_class = Record
 
-    schema = {
-      'type': String(index='keyword'),
-      # Calendar properties
-      'BEGIN': String,
-      'END': String,
-      'VERSION': Unicode,
-      'PRODID': Unicode,
-      'METHOD': Unicode,
-      # Component properties
-      'ATTACH': URI(multiple=True),
-      'CATEGORY': Unicode,
-      'CATEGORIES': Unicode(multiple=True),
-      'CLASS': Unicode,
-      'COMMENT': Unicode(multiple=True),
-      'DESCRIPTION': Unicode,
-      'GEO': Unicode,
-      'LOCATION': Unicode,
-      'PERCENT-COMPLETE': Integer,
-      'PRIORITY': Integer,
-      'RESOURCES': Unicode(multiple=True),
-      'STATUS': Unicode,
-      'SUMMARY': Unicode(index='text', mandatory=True),
-      # Date & Time component properties
-      'COMPLETED': DateTime,
-      'DTEND': DateTime(index='keyword'),
-      'DUE': DateTime,
-      'DTSTART': DateTime(index='keyword'),
-      'DURATION': Unicode,
-      'FREEBUSY': Unicode,
-      'TRANSP': Unicode,
-      # Time Zone component properties
-      'TZID': Unicode,
-      'TZNAME': Unicode(multiple=True),
-      'TZOFFSETFROM': Unicode,
-      'TZOFFSETTO': Unicode,
-      'TZURL': URI,
-      # Relationship component properties
-      'ATTENDEE': URI(multiple=True),
-      'CONTACT': Unicode(multiple=True),
-      'ORGANIZER': URI,
-      # Recurrence component properties
-      'EXDATE': DateTime(multiple=True),
-      'EXRULE': Unicode(multiple=True),
-      'RDATE': Unicode(multiple=True),
-      'RRULE': Unicode(multiple=True),
-      # Alarm component properties
-      'ACTION': Unicode,
-      'REPEAT': Integer,
-      'TRIGGER': Unicode,
-      # Change management component properties
-      'CREATED': DateTime,
-      'DTSTAMP': DateTime,
-      'LAST-MODIFIED': DateTime,
-      'SEQUENCE': Integer,
-      # Others
-      'RECURRENCE-ID': DateTime,
-      'RELATED-TO': Unicode,
-      'URL': URI,
-      'UID': String(index='keyword')
-    }
+    schema = data_properties.copy()
+    schema['type'] = String(index='keyword')
 
 
     def new(self):

@@ -23,9 +23,8 @@ from itools.datatypes import DataType, Integer, ISOTime , URI, Unicode, String
 
 
 class Time(ISOTime):
-    """
-    This datatype is the same as ISOTime except that its encode method don't use
-    seconds if not explicitely notified.
+    """This datatype is the same as ISOTime except that its encode method
+    don't use seconds if not explicitely notified.
     """
     @staticmethod
     def encode(value, seconds=False):
@@ -38,8 +37,7 @@ class Time(ISOTime):
 
 
 class DateTime(DataType):
-    """
-    iCalendar Date format:
+    """iCalendar Date format:
 
     DTSTART:19970714T133000.000000 (Local time)
 
@@ -132,64 +130,63 @@ class DateTime(DataType):
 
 # data types for each property
 # --> TO VERIFY AND COMPLETE
-# occurs = 0  means 0..n occurrences
 data_properties = {
-  'BEGIN': Unicode(occurs=1),
-  'END': Unicode(occurs=1),
-  'VERSION': Unicode(occurs=1),
-  'PRODID': Unicode(occurs=1),
-  'METHOD': Unicode(occurs=1),
+  'BEGIN': String(multiple=False),
+  'END': String(multiple=False),
+  'VERSION': Unicode(multiple=False),
+  'PRODID': Unicode(multiple=False),
+  'METHOD': Unicode(multiple=False),
   # Component properties
-  'ATTACH': URI(occurs=0),
-  'CATEGORY': Unicode(occurs=1),
-  'CATEGORIES': Unicode(occurs=0),
-  'CLASS': Unicode(occurs=1),
-  'COMMENT': Unicode(occurs=0),
-  'DESCRIPTION': Unicode(occurs=1),
-  'GEO': Unicode(occurs=1),
-  'LOCATION': Unicode(occurs=1),
-  'PERCENT-COMPLETE': Integer(occurs=1),
-  'PRIORITY': Integer(occurs=1),
-  'RESOURCES': Unicode(occurs=0),
-  'STATUS': Unicode(occurs=1),
-  'SUMMARY': Unicode(occurs=1),
+  'ATTACH': URI(multiple=True),
+  'CATEGORY': Unicode(multiple=False),
+  'CATEGORIES': Unicode(multiple=True),
+  'CLASS': Unicode(multiple=False),
+  'COMMENT': Unicode(multiple=True),
+  'DESCRIPTION': Unicode(multiple=False),
+  'GEO': Unicode(multiple=False),
+  'LOCATION': Unicode(multiple=False),
+  'PERCENT-COMPLETE': Integer(multiple=False),
+  'PRIORITY': Integer(multiple=False),
+  'RESOURCES': Unicode(multiple=True),
+  'STATUS': Unicode(multiple=False),
+  'SUMMARY': Unicode(multiple=False, index='text', mandatory=True),
   # Date & Time component properties
-  'COMPLETED': DateTime(occurs=1),
-  'DTEND': DateTime(occurs=1),
-  'DUE': DateTime(occurs=1),
-  'DTSTART': DateTime(occurs=1),
-  'DURATION': Unicode(occurs=1),
-  'FREEBUSY': Unicode(occurs=1),
-  'TRANSP': Unicode(occurs=1),
+  'COMPLETED': DateTime(multiple=False),
+  'DTEND': DateTime(multiple=False, index='keyword'),
+  'DUE': DateTime(multiple=False),
+  'DTSTART': DateTime(multiple=False, index='keyword'),
+  'DURATION': Unicode(multiple=False),
+  'FREEBUSY': Unicode(multiple=False),
+  'TRANSP': Unicode(multiple=False),
   # Time Zone component properties
-  'TZID': Unicode(occurs=1),
-  'TZNAME': Unicode(occurs=0),
-  'TZOFFSETFROM': Unicode(occurs=1),
-  'TZOFFSETTO': Unicode(occurs=1),
-  'TZURL': URI(occurs=1),
+  'TZID': Unicode(multiple=False),
+  'TZNAME': Unicode(multiple=True),
+  'TZOFFSETFROM': Unicode(multiple=False),
+  'TZOFFSETTO': Unicode(multiple=False),
+  'TZURL': URI(multiple=False),
   # Relationship component properties
-  'ATTENDEE': URI(occurs=0),
-  'CONTACT': Unicode(occurs=0),
-  'ORGANIZER': URI(occurs=1),
+  'ATTENDEE': URI(multiple=True),
+  'CONTACT': Unicode(multiple=True),
+  'ORGANIZER': URI(multiple=False),
   # Recurrence component properties
-  'EXDATE': DateTime(occurs=0),
-  'EXRULE': Unicode(occurs=0),
-  'RDATE': Unicode(occurs=0),
-  'RRULE': Unicode(occurs=0),
+  'EXDATE': DateTime(multiple=True),
+  'EXRULE': Unicode(multiple=True),
+  'RDATE': Unicode(multiple=True),
+  'RRULE': Unicode(multiple=True),
   # Alarm component properties
-  'ACTION': Unicode(occurs=1),
-  'REPEAT': Integer(occurs=1),
-  'TRIGGER': Unicode(occurs=1),
+  'ACTION': Unicode(multiple=False),
+  'REPEAT': Integer(multiple=False),
+  'TRIGGER': Unicode(multiple=False),
   # Change management component properties
-  'CREATED': DateTime(occurs=1),
-  'DTSTAMP': DateTime(occurs=1),
-  'LAST-MODIFIED': DateTime(occurs=1),
-  'SEQUENCE': Integer(occurs=1),
+  'CREATED': DateTime(multiple=False),
+  'DTSTAMP': DateTime(multiple=False),
+  'LAST-MODIFIED': DateTime(multiple=False),
+  'SEQUENCE': Integer(multiple=False),
   # Others
-  'RECURRENCE-ID': DateTime(occurs=1),
-  'RELATED-TO': Unicode(occurs=1),
-  'URL': URI(occurs=1),
-  'UID': String(occurs=1)
+  'RECURRENCE-ID': DateTime(multiple=False),
+  'RELATED-TO': Unicode(multiple=False),
+  'URL': URI(multiple=False),
+  'UID': String(multiple=False, index='keyword')
 }
 
 ################################################################

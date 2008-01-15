@@ -232,7 +232,7 @@ class icalTestCase(unittest.TestCase):
         version = event.get_version()
         for prop_name in version:
             datatype = cal.get_datatype(prop_name)
-            if datatype.occurs == 1:
+            if datatype.multiple is False:
                 prop = version[prop_name]
                 property = self.property_to_string(prop_name, prop)
                 properties.append(property)
@@ -300,7 +300,7 @@ class icalTestCase(unittest.TestCase):
                 if prop_name == 'DTSTAMP':
                     continue
                 datatype = cal.get_datatype(prop_name)
-                if datatype.occurs == 1:
+                if datatype.multiple is False:
                     prop = version[prop_name]
                     property = self.property_to_string(prop_name, prop)
                     properties.append(property)

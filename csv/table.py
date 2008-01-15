@@ -577,6 +577,10 @@ class Table(File):
 
 
     def update_record(self, id, **kw):
+        record = self.records[id]
+        if record is None:
+            msg = 'cannot modify record "%s" because it has been deleted'
+            raise LookupError, msg % id
         # Check for duplicate
         for name in kw:
             datatype = self.get_datatype(name)
@@ -586,7 +590,6 @@ class Table(File):
                     title = self.get_field_title(name)
                     raise ValueError, 'The field %s must be unique' % title
         # Version of record
-        record = self.records[id]
         version = record[-1].copy()
         version = self.properties_to_dict(kw, version)
         version['ts'] = Property(datetime.now())
@@ -601,6 +604,9 @@ class Table(File):
 
     def del_record(self, id):
         record = self.records[id]
+        if record is None:
+            msg = 'cannot delete record "%s" because it was deleted before'
+            raise LookupError, msg % id
         # Change
         self.set_changed()
         if (id, 0) not in self.added_records:

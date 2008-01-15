@@ -72,9 +72,8 @@ class Request(Message):
 
 
     def non_blocking_load(self, file):
-        """
-        Loads the request state from in non-blocking mode. Aimed at sockets,
-        it works for files too.
+        """Loads the request state from in non-blocking mode. Aimed at
+        sockets, it works for files too.
         """
         # Read the request line
         try:
@@ -83,7 +82,9 @@ class Request(Message):
                 yield None
                 line = file.readline()
         except EOFError:
-            raise BadRequest
+            # FIXME What should we do here?
+            msg = 'unable to read the request line, unexpected end-of-file'
+            raise BadRequest, msg
         # Parse the request line
         self.request_line = line
         method, request_uri, http_version = line.split()

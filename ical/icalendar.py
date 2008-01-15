@@ -46,18 +46,6 @@ from types import data_properties, DateTime, Time
 resolution = timedelta.resolution
 
 
-class PropertyValue(object):
-    """PropertyValue handles a property value and parameters.
-
-    Parameters are a dict containing list of values:
-        {param1_name: [param_values], ...}
-    """
-
-    def __init__(self, value, **kw):
-        self.value = value
-        self.parameters = kw
-
-
 class Component(object):
     """Parses and evaluates a component block.
 
@@ -68,7 +56,7 @@ class Component(object):
 
         output :  unchanged c_type and uid
                   a dictionnary of versions of this component including
-                  a dict {'property_name': PropertyValue[] } for properties
+                  a dict {'property_name': Property[] } for properties
     """
     # XXX A parse method should be added to test properties inside of current
     # component-type/properties (for example to test if property can appear
@@ -136,7 +124,7 @@ class Component(object):
 
         # Timestamp
         if 'DTSTAMP' not in properties:
-            properties['DTSTAMP'] = PropertyValue(datetime.today())
+            properties['DTSTAMP'] = Property(datetime.today())
 
         self.versions[sequence] = properties
 
@@ -154,11 +142,11 @@ class Component(object):
 
     # Get a property of current component
     def get_property(self, name=None):
-        """Return the value of given name property as a PropertyValue or as a
-        list of PropertyValue objects if it can occur more than once.
+        """Return the value of given name property as a Property or as a
+        list of Property objects if it can occur more than once.
 
         Return icalendar property values as a dict {name: value, ...} where
-        value is a PropertyValue or a list of PropertyValue objects if it can
+        value is a Property or a list of Property objects if it can
         occur more than once.
 
         Note that it return values for the last version of this component.
@@ -324,7 +312,7 @@ class icalendar(TextFile):
             ('PRODID', {}, u'-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN')
           )
         for name, param, value in properties:
-            self.properties[name] = PropertyValue(value, **param)
+            self.properties[name] = Property(value, param)
 
         # The encoding
         self.encoding = 'UTF-8'
@@ -351,8 +339,8 @@ class icalendar(TextFile):
                 value = datatype.decode(value, encoding=encoding)
             else:
                 value = datatype.decode(value)
-            # Build the value (a PropertyValue instance)
-            value = PropertyValue(value, **parameters)
+            # Build the value (a Property instance)
+            value = Property(value, parameters)
             # Append
             lines.append((name, value))
 
@@ -630,9 +618,9 @@ class icalendar(TextFile):
 
 
     def get_property_values(self, name=None):
-        """Return PropertyValue[] for the given icalendar property name or
+        """Return Property[] for the given icalendar property name or
         Return icalendar property values as a dict
-            {property_name: PropertyValue object, ...}
+            {property_name: Property object, ...}
 
         *searching only for general properties, not components ones.
         """
@@ -645,7 +633,7 @@ class icalendar(TextFile):
         """Set values to the given calendar property, removing previous ones.
 
         name -- name of the property as a string
-        values -- PropertyValue[]
+        values -- Property[]
         """
         datatype = self.get_datatype(name)
         if datatype.occurs == 1:

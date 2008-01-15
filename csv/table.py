@@ -268,11 +268,16 @@ def parse_table(data):
 
 
 
-
 ###########################################################################
 # File Handler
 ###########################################################################
 class Property(object):
+    """A property has a value, and may have one or more parameters.
+
+    The parameters is a dictionary containing a list of values:
+
+        {param1_name: [param_values], ...}
+    """
 
     __slots__ = ['value', 'parameters']
 

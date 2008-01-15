@@ -83,13 +83,18 @@ class Image(File):
         # Create the thumbnail if needed
         state_width, state_height = self.size
         if state_width > width or state_height > height:
-            # XXX Improve the quality of the thumbnails by cropping? The
-            # only problem would be the loss of information.
-            im.thumbnail((width, height), PILImage.ANTIALIAS)
-            thumbnail = StringIO()
-            im.save(thumbnail, im.format)
-            data = thumbnail.getvalue()
-            thumbnail.close()
+            # TODO Improve the quality of the thumbnails by cropping? The only
+            # problem would be the loss of information.
+            try:
+                im.thumbnail((width, height), PILImage.ANTIALIAS)
+            except IOError:
+                # PIL does not support interlaced PNG files, raises IOError
+                return None, None
+            else:
+                thumbnail = StringIO()
+                im.save(thumbnail, im.format)
+                data = thumbnail.getvalue()
+                thumbnail.close()
         else:
             data = self.to_str()
 

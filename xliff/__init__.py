@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-import mimetypes
+from mimetypes import add_type
 
 # Import from itools
 from xliff import XLIFF, Translation, Note, File
@@ -26,5 +26,5 @@ __all__ = ['XLIFF', 'Translation', 'Note', 'File']
 
 
 
-mimetypes.add_type('application/x-xliff', '.xlf')
+add_type('application/x-xliff', '.xlf')
 

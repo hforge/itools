@@ -432,7 +432,7 @@ PyObject* xml_entity_reference(Parser* self) {
     self->column++;
 
     /* To codepoint */
-    /* XXX Specific to HTML */
+    /* FIXME Specific to HTML */
     /* htmlentitydefs.name2unicodepoint[value] */
     cp = PyDict_GetItem(p_name2codepoint, value);
     Py_DECREF(value);

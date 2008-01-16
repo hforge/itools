@@ -17,7 +17,7 @@
 # Import from the Standard Library
 import htmlentitydefs
 from HTMLParser import HTMLParser as BaseParser, HTMLParseError
-import warnings
+from warnings import warn
 
 # Import from itools
 from itools.xml import (XMLError, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT,
@@ -278,7 +278,7 @@ class Parser(BaseParser, object):
 
 
     def handle_entityref(self, name):
-        # XXX Copied from 'itools.xml.parser.XMLParser.skipped_entity_handler'
+        # FIXME Duplicated code, also written in C in "xml/parser.c".
         if name in htmlentitydefs.name2codepoint:
             codepoint = htmlentitydefs.name2codepoint[name]
             char = unichr(codepoint)
@@ -294,10 +294,10 @@ class Parser(BaseParser, object):
             else:
                 self.events.append((TEXT, char, self.getpos()[0]))
         else:
-            warnings.warn('Unknown entity reference "%s" (ignoring)' % name)
+            warn('Unknown entity reference "%s" (ignoring)' % name)
 
 
-    # XXX handlers that remain to implement include
+    # TODO handlers that remain to implement include
 ##    def handle_pi(self, data):
 
 

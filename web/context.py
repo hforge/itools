@@ -32,7 +32,8 @@ from itools.uri import get_reference
 
 
 class FormError(Exception):
-    """Raised when a form is invalid (missing or invalid fields)"""
+    """Raised when a form is invalid (missing or invalid fields).
+    """
 
     def __init__(self, missing, invalid):
           self.missing = missing
@@ -254,11 +255,10 @@ class Context(object):
 
 
     def check_form_input(self, schema):
-        """
-        Form checks the request form and collect inputs consider the schema.
-        This method also checks the request form and raise an FormError if
-        there is something wrong (a mandatory field is missing, or a
-        value is not valid) or None if everything is ok.
+        """Form checks the request form and collect inputs consider the
+        schema.  This method also checks the request form and raise an
+        FormError if there is something wrong (a mandatory field is missing,
+        or a value is not valid) or None if everything is ok.
 
         Its input data is a list (fields) that defines the form variables to
           {'toto': Unicode(mandatory=True, multiple=False, default=u'toto'),
@@ -285,7 +285,8 @@ class Context(object):
 
 
     def form_is_invalid(self, name, datatype):
-        """Check if a form is invalid or not (Referred to its datatype)"""
+        """Check if a form is invalid or not (Referred to its datatype).
+        """
         value = self.get_form_value(name)
         if not self.get_form_keys():
             return False
@@ -300,7 +301,8 @@ class Context(object):
 
 
     def form_is_missing(self, name, datatype):
-        """Check if a form is missing or not."""
+        """Check if a form is missing or not.
+        """
         value = self.get_form_value(name)
         if not self.get_form_keys():
             return False

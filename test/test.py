@@ -16,7 +16,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-import os
 from unittest import TestCase, TestLoader, TestSuite, TextTestRunner
 
 # Import tests

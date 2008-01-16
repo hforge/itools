@@ -33,9 +33,6 @@ example there is a handler to manage XML files, another to manage PO
 files, etc...
 """
 
-# Import from the Standard Library
-import mimetypes
-
 # Import from itools
 from archive import ZIPFile, TARFile, GzipFile, Bzip2File
 from base import Handler
@@ -80,6 +77,3 @@ __all__ = [
     'guess_encoding',
     ]
 
-
-
-mimetypes.encodings_map['.bz2'] = 'bzip2'

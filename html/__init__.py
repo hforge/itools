@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-import mimetypes
+from mimetypes import add_type
 
 # Import from itools
 from html import HTMLFile
@@ -43,4 +43,4 @@ __all__ = [
 
 
 # Register
-mimetypes.add_type('application/xhtml+xml', '.xhtml')
+add_type('application/xhtml+xml', '.xhtml')

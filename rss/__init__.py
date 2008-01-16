@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-import mimetypes
+from mimetypes import add_type
 
 # Import from itools
 from rss import RSSFile
@@ -25,4 +25,4 @@ from rss import RSSFile
 __all__ = ['RSSFile']
 
 
-mimetypes.add_type('application/rss+xml', '.rss')
+add_type('application/rss+xml', '.rss')

@@ -14,9 +14,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the Standard Library
-import os
-
 # Import from itools
 from itools.handlers import Folder, Database
 from itools.i18n import get_accept

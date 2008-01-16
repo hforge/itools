@@ -17,7 +17,8 @@
 
 # Import from the Standard Library
 from optparse import OptionParser
-import os
+from os import popen
+from os.path import exists
 import sys
 
 # Import from itools
@@ -48,9 +49,9 @@ if __name__ == '__main__':
 
     try:
         pot, po = args
-        if os.path.exists(po):
+        if exists(po):
             # a .po file already exist, merge it with locale.pot
-            output.write(os.popen('msgmerge -s %s %s' % (po, pot)).read())
+            output.write(popen('msgmerge -s %s %s' % (po, pot)).read())
         else:
             # po doesn't exist, just copy locale.pot
             output.write(open(pot).read())

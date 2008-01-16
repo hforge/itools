@@ -16,11 +16,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-import mimetypes
-import os
+from mimetypes import add_type
 
 # Import from itools
-from itools import get_abspath
 from domains import DomainAware, register_domain, get_domain
 from mo import MOFile
 from po import POFile
@@ -34,9 +32,5 @@ __all__ = [
     'POFile']
 
 
-mimetypes.add_type('text/x-po', '.po')
-mimetypes.add_type('application/x-mo', '.mo')
-
-# Register the itools domain
-path = get_abspath(globals(), 'locale')
-register_domain('itools', path)
+add_type('text/x-po', '.po')
+add_type('application/x-mo', '.mo')

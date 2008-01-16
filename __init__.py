@@ -17,6 +17,11 @@
 
 # Import from itools
 from utils import get_version, get_abspath
+from gettext import register_domain
 
 
 __version__ = get_version(globals())
+
+# Register the itools domain
+path = get_abspath(globals(), 'locale')
+register_domain('itools', path)

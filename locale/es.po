@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: es\n"
-"POT-Creation-Date: 2007-12-30 22:12+CET\n"
+"POT-Creation-Date: 2008-01-16 10:01+CET\n"
 "PO-Revision-Date: 2006-12-06 16:23+0100\n"
 "Last-Translator: J. David Ibáñez <jdavid@itaapy.com>\n"
 "Language-Team: Spanish\n"
@@ -12,11 +12,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
 
-#: ical/icalendar.py:1121
+#: ical/icalendar.py:1027
 msgid "-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN"
 msgstr ""
 
-#: ical/icalendar.py:1120
+#: ical/icalendar.py:1026
 msgid "2.0"
 msgstr ""
 
@@ -24,22 +24,8 @@ msgstr ""
 msgid "AAAAAAaaaaaaCcEEEEeeeeeIIIIiiiiNnOOOOOOooooooSUUUUuuuuYŸyy"
 msgstr ""
 
-#: csv/parser.py:57
-msgid "CSV syntax error: wrong number of columns"
-msgstr ""
-
-#: csv/parser.py:53
-msgid "CSV syntax error: wrong number of columns at line %d"
-msgstr ""
-
 #: i18n/segment.py:19
 msgid "Inc"
-msgstr ""
-
-#: web/context.py:272
-msgid ""
-"Some required fields are missing, or some values are not valid. Please "
-"correct them and continue."
 msgstr ""
 
 #: pdf/rml.py:1440

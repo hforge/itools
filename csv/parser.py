@@ -50,11 +50,11 @@ def parse(data, columns=None, schema=None, guess=False, encoding='UTF-8',
         # Go
         for line in reader:
             if len(line) != n_columns:
-                msg = u'CSV syntax error: wrong number of columns at line %d'
+                msg = 'CSV syntax error: wrong number of columns at line %d'
                 line = getattr(reader, 'line_num', None)
                 if line is None:
                     # Python 2.4
-                    msg = u'CSV syntax error: wrong number of columns'
+                    msg = 'CSV syntax error: wrong number of columns'
                 else:
                     # Python 2.5
                     msg = msg % line

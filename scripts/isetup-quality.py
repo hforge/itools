@@ -36,14 +36,12 @@ worse = -1
 
 
 def analyse_file_pass1(filename):
-    """
-    This function analyses a file and produces a dict with these members:
+    """This function analyses a file and produces a dict with these members:
      - 'lines': number of lines;
      - 'bad_length': number of lines longer than 79 characters;
      - 'bad_end': number of lines with trailing whitespaces;
      - 'tabs': number of lines with tabulators;
     """
-
     stats = {
         'lines': 0,
         'bad_length': 0,
@@ -55,7 +53,7 @@ def analyse_file_pass1(filename):
         stats['lines'] += 1
 
         # Bad length
-        if len(line.rstrip()) > 79:
+        if len(line) > 79:
             stats['bad_length'] += 1
 
         # Bad end
@@ -70,15 +68,13 @@ def analyse_file_pass1(filename):
 
 
 def analyse_file_pass2(filename):
-    """
-    This function analyses a file and produces a dict with these members:
+    """This function analyses a file and produces a dict with these members:
      - 'tokens': number of tokens;
      - 'string_exception': number of lines with string exceptions;
      - 'except_all': number of line where all exceptions are catched;
      - 'bad_indentation': number of lines with a bad indentation;
      - 'syntax_error': number of lines with an error;
     """
-
     stats = {
         'tokens': 0,
         'string_exception': 0,
@@ -154,10 +150,8 @@ def analyse_file_pass2(filename):
 
 
 def analyse_file(filename):
+    """This function merges the two dictionnaries for a file
     """
-    This function merges the two dictionnaries for a file
-    """
-    
     stats = {}
 
     stats1 = analyse_file_pass1(filename)
@@ -202,8 +196,7 @@ def print_worses(db, criteria):
 
     
 def analyse(filenames):
-    """
-    Analyse a list of files
+    """Analyse a list of files
     """
     stats = {
         'lines': 0,
@@ -238,15 +231,13 @@ def analyse(filenames):
         ('bad indented', stats['bad_indentation']),
         ('longer than 79 characters', stats['bad_length']),
         ('with trailing whitespaces', stats['bad_end'])]
-    show_comments = []
-    for c in comments:
-        if c[1] != 0:
-            show_comments.append(
-                '%2.02f%% lines ' % ((c[1]*100.0)/stats['lines'])+
-                c[0])
+    show_comments = [
+        '%5.02f%% lines ' % ((value*100.0)/stats['lines']) + comment
+        for comment, value in comments if value != 0 ]
     print_list('Aesthetics (and readibility)', show_comments)
-    print_worses(files_db, ['tabs', 'bad_indentation', 'bad_length', 'bad_end'])
-    
+    print_worses(files_db, ['tabs', 'bad_indentation', 'bad_length',
+                            'bad_end'])
+
     # Exception handling
     comments = [
         ('string exceptions are used', stats['string_exception']),

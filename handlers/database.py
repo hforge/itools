@@ -51,11 +51,19 @@ class Database(object):
     #######################################################################
     def has_handler(self, reference):
         fs, reference = cwd.get_fs_and_reference(reference)
-
+        # Check the state
         if reference in self.added:
             return True
         if reference in self.removed:
             return False
+
+        # Check the file system
+        if fs.is_file(reference):
+            return True
+        if fs.is_folder(reference):
+            # Empty folders do not exist
+            return fs.get_names(reference)
+        # Neither a file nor a folder
         return fs.exists(reference)
 
 

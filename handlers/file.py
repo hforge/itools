@@ -128,6 +128,10 @@ class File(Handler):
 
 
     def save_state_to(self, uri):
+        # If there is an empty folder in the given URI, remove it
+        if vfs.is_folder(uri) and not vfs.get_names(uri):
+            vfs.remove(uri)
+        # Save the file
         file = self.safe_make_file(uri)
         try:
             self.save_state_to_file(file)

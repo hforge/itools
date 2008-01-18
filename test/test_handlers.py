@@ -64,7 +64,7 @@ class FolderTestCase(TestCase):
 
     def tearDown(self):
         folder = vfs.open('tests')
-        for name in 'toto.txt', 'fofo.txt', 'fofo2.txt':
+        for name in 'toto.txt', 'fofo.txt', 'fofo2.txt', 'empty':
             if folder.exists(name):
                 folder.remove(name)
 
@@ -168,6 +168,36 @@ class FolderTestCase(TestCase):
         """
         file = self.root.get_handler('tests/toto.txt', cache=False)
         self.assertRaises(RuntimeError, file.set_data, u'Oh dear\n')
+
+
+    def test_empty_folder(self):
+        """Empty folders do not exist.
+        """
+        database = self.database
+        root = self.root
+        # Setup
+        root.set_handler('tests/empty/toto.txt', TextFile())
+        database.save_changes()
+        root.del_handler('tests/empty/toto.txt')
+        database.save_changes()
+        self.assertEqual(vfs.exists('tests/empty'), True)
+        # Test
+        root.set_handler('tests/empty', TextFile())
+        database.save_changes()
+        self.assertEqual(vfs.is_file('tests/empty'), True)
+
+
+    def test_not_empty_folder(self):
+        """Empty folders do not exist.
+        """
+        database = self.database
+        root = self.root
+        # Setup
+        root.set_handler('tests/empty/toto.txt', TextFile())
+        database.save_changes()
+        # Test
+        self.assertRaises(RuntimeError, root.set_handler, 'tests/empty',
+                          TextFile())
 
 
 

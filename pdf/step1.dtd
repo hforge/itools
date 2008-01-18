@@ -1,0 +1,19 @@
+<!ELEMENT html (head, body) >
+<!ELEMENT body (h1*, h2*, h3*, hr*, p*, pre*, ul*, ol*) >
+<!ELEMENT head () >
+<!ELEMENT h1 (#PCDATA) >
+<!ELEMENT h2 (#PCDATA) >
+<!ELEMENT h3 (#PCDATA) >
+<!ELEMENT hr ( ) >
+<!ELEMENT p (b*, i*, u*, em*, strong*, sub*, sup*, #PCDATA) >
+<!ELEMENT pre (#PCDATA) >
+<!ELEMENT ul (li*) >
+<!ELEMENT ol (li*) >
+<!ELEMENT li (#PCDATA) >
+<!ELEMENT i (#PCDATA) >
+<!ELEMENT u (#PCDATA) >
+<!ELEMENT b (#PCDATA) >
+<!ELEMENT em (#PCDATA) >
+<!ELEMENT strong (#PCDATA) >
+<!ELEMENT sub (#PCDATA) >
+<!ELEMENT sup (#PCDATA) >

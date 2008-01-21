@@ -191,6 +191,9 @@ class SearchResults(object):
             document.field_numbers = field_numbers
             documents.append(document)
 
+        if not documents:
+            return []
+
         # Sort by something
         if sort_by is not None:
             if isinstance(sort_by, list):

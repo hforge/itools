@@ -25,19 +25,26 @@ from thread import get_ident, allocate_lock
 from time import strptime
 
 # Import from itools
-from itools.datatypes import is_datatype, Enumerate
+from itools.datatypes import String
 from itools.http import Response
 from itools.i18n import AcceptLanguageType
 from itools.uri import get_reference
 
 
-class FormError(Exception):
+
+class FormError(StandardError):
     """Raised when a form is invalid (missing or invalid fields).
     """
 
-    def __init__(self, missing, invalid):
-          self.missing = missing
-          self.invalid = invalid
+    def __init__(self, missing=None, invalid=None):
+          self.missing = missing or []
+          self.invalid = invalid or []
+
+
+    def __str__(self):
+        return '%s field(s) are missing and %s field(s) are invalid' \
+               % (len(self.missing), len(self.invalid))
+
 
 
 class Context(object):
@@ -94,91 +101,14 @@ class Context(object):
             self.accept_language = AcceptLanguageType.decode('')
 
 
-    ########################################################################
-    # API
-    ########################################################################
+    #######################################################################
+    # API / Redirect
+    #######################################################################
     def redirect(self, reference, status=302):
         reference = self.uri.resolve(reference)
         self.response.redirect(reference, status)
 
 
-    ########################################################################
-    # API / parameters
-    def get_form_keys(self):
-        return self.request.form.keys()
-
-
-    def get_form_value(self, name, default=None, type=None):
-        value = self.request.get_parameter(name, default=default, type=type)
-        if isinstance(value, list):
-            if value:
-                return value[0]
-            return None
-        return value
-
-
-    def get_form_values(self, name, default=[], type=None):
-        request = self.request
-        if request.has_parameter(name):
-            value = request.get_parameter(name)
-            if not isinstance(value, list):
-                value = [value]
-
-            if type is None:
-                return value
-            return [ type.decode(x) for x in value ]
-
-        return default
-
-
-    def has_form_value(self, name):
-        return self.request.has_parameter(name)
-
-
-    ########################################################################
-    # API / cookies (client side sessions)
-    def get_cookie(self, name, type=None):
-        request, response = self.request, self.response
-        # Get the value
-        cookie = response.get_cookie(name)
-        if cookie is None:
-            value = request.get_cookie(name)
-        else:
-            # Check expiration time
-            expires = cookie.expires
-            if expires is not None:
-                expires = expires[5:-4]
-                expires = strptime(expires, '%d-%b-%y %H:%M:%S')
-                year, month, day, hour, min, sec, kk, kk, kk = expires
-                expires = datetime(year, month, day, hour, min, sec)
-                if expires < datetime.now():
-                    return None
-
-            value = cookie.value
-
-        if type is None:
-            return value
-
-        # Deserialize
-        if value is None:
-            return type.default
-        return type.decode(value)
-
-
-    def has_cookie(self, name):
-        return self.get_cookie(name) is not None
-
-
-    def set_cookie(self, name, value, **kw):
-        self.response.set_cookie(name, value, **kw)
-
-
-    def del_cookie(self, name):
-        self.response.del_cookie(name)
-
-
-    ########################################################################
-    # API / high level
     def come_back(self, message, goto=None, keep=[], **kw):
         """This is a handy method that builds a URI object from some
         parameters.  It exists to make short some common patterns.
@@ -219,6 +149,92 @@ class Context(object):
         return goto
 
 
+    #######################################################################
+    # API / Forms
+    #######################################################################
+    def get_form_keys(self):
+        return self.request.form.keys()
+
+
+    # TODO For the next major release, change the method signature, it
+    # should be:
+    #
+    #   get_form_value(name, type=None, default=None)
+    #
+    def get_form_value(self, name, default=None, type=String):
+        request = self.request
+
+        # Missing
+        is_mandatory = getattr(type, 'mandatory', False)
+        is_missing = not request.has_parameter(name)
+        if is_missing:
+            # Mandatory: raise an error
+            if is_mandatory and is_missing:
+                raise FormError(missing=[name])
+            # Optional: return the default value
+            if default is not None:
+                return default
+            is_multiple = getattr(type, 'multiple', False)
+            if is_multiple:
+                # FIXME: This does not work for "Type(default=[...])"
+                return []
+            return type.default
+
+        # Multiple values
+        is_multiple = getattr(type, 'multiple', False)
+        if is_multiple:
+            value = request.get_parameter(name)
+            if not isinstance(value, list):
+                value = [value]
+            try:
+                values = [ type.decode(x) for x in value ]
+            except:
+                raise FormError(invalid=[name])
+            # Check the values are valid
+            for value in values:
+                if not type.is_valid(value):
+                    raise FormError(invalid=[name])
+            return value
+
+        # Single value
+        value = request.get_parameter(name)
+        if isinstance(value, list):
+            value = value[0]
+        try:
+            value = type.decode(value)
+        except:
+            raise FormError(invalid=[name])
+
+        # We consider a blank string to be a missing value (FIXME not
+        # reliable)
+        is_blank = isinstance(value, (str, unicode)) and not value.strip()
+        if is_mandatory and is_blank:
+            raise FormError(missing=[name])
+
+        if not type.is_valid(value):
+            raise FormError(invalid=[name])
+        return value
+
+
+    # FIXME Obsolete since 0.20.4, to be removed by the next major release
+    def get_form_values(self, name, default=[], type=None):
+        request = self.request
+        if request.has_parameter(name):
+            value = request.get_parameter(name)
+            if not isinstance(value, list):
+                value = [value]
+
+            if type is None:
+                return value
+            return [ type.decode(x) for x in value ]
+
+        return default
+
+
+    def has_form_value(self, name):
+        return self.request.has_parameter(name)
+
+
     def build_form_namespace(self, schema):
         """This utility method builds a namespace suitable to use to produce
         an HTML form. Its input data is a dictionnary that defines the form
@@ -233,22 +249,25 @@ class Context(object):
             {<field name>: {'value': <field value>, 'class': <CSS class>}
              ...}
         """
+        # Figure out whether the form has been submit or not (FIXME This
+        # heuristic is not reliable)
+        submit = set(self.get_form_keys()) & set(schema.keys())
+
+        # Build the namespace
         namespace = {}
         for name in schema:
             datatype = schema[name]
-            # Value
-            if getattr(datatype, 'multiple', False):
-                value = self.get_form_values(name)
-            else:
-                value = self.get_form_value(name)
-            # cls
             cls = []
             if getattr(datatype, 'mandatory', False):
                 cls.append('field_required')
-            if self.form_is_missing(name, datatype):
-                cls.append('missing')
-            elif self.form_is_invalid(name, datatype):
-                cls.append('missing')
+            if submit:
+                try:
+                    value = self.get_form_value(name, type=datatype)
+                except FormError:
+                    value = self.get_form_value(name)
+                    cls.append('missing')
+            else:
+                value = datatype.default
             cls = ' '.join(cls) or None
             namespace[name] = {'name': name, 'value': value, 'class': cls}
         return namespace
@@ -264,60 +283,70 @@ class Context(object):
           {'toto': Unicode(mandatory=True, multiple=False, default=u'toto'),
            'tata': Unicode(mandatory=True, multiple=False, default=u'tata')}
         """
-        # TODO manage multiple Datatype - get_form_values
         values = {}
         invalid = []
         missing = []
         for name in schema:
             datatype = schema[name]
-            if self.form_is_missing(name, datatype):
-                missing.append(name)
-            if self.form_is_invalid(name, datatype):
-                invalid.append(name)
-            if getattr(datatype, 'multiple', False):
-                value = self.get_form_values(name, datatype.default, datatype)
-            else:
-                value = self.get_form_value(name, datatype.default, datatype)
+            try:
+                value = self.get_form_value(name, type=datatype)
+            except FormError, error:
+                value = self.get_form_value(name)
+                missing.extend(error.missing)
+                invalid.extend(error.invalid)
             values[name] = value
         if missing or invalid:
             raise FormError(missing, invalid)
         return values
 
 
-    def form_is_invalid(self, name, datatype):
-        """Check if a form is invalid or not (Referred to its datatype).
-        """
-        value = self.get_form_value(name)
-        if not self.get_form_keys():
-            return False
-        if getattr(datatype, 'mandatory', False):
-            if not datatype.is_valid(value):
-                return True
+    #######################################################################
+    # API / Cookies
+    #######################################################################
+    def get_cookie(self, name, type=None):
+        request, response = self.request, self.response
+        # Get the value
+        cookie = response.get_cookie(name)
+        if cookie is None:
+            value = request.get_cookie(name)
         else:
-            if value:
-                if not datatype.is_valid(value):
-                    return True
-        return False
+            # Check expiration time
+            expires = cookie.expires
+            if expires is not None:
+                expires = expires[5:-4]
+                expires = strptime(expires, '%d-%b-%y %H:%M:%S')
+                year, month, day, hour, min, sec, kk, kk, kk = expires
+                expires = datetime(year, month, day, hour, min, sec)
+                if expires < datetime.now():
+                    return None
+
+            value = cookie.value
+
+        if type is None:
+            return value
+
+        # Deserialize
+        if value is None:
+            return type.default
+        return type.decode(value)
 
 
-    def form_is_missing(self, name, datatype):
-        """Check if a form is missing or not.
-        """
-        value = self.get_form_value(name)
-        if not self.get_form_keys():
-            return False
-        if getattr(datatype, 'mandatory', False):
-            if value is None:
-                return True
-            if isinstance(value, (str, unicode)):
-                value = value.strip()
-                if not value:
-                    return True
-            return False
-        else:
-            return False
+    def has_cookie(self, name):
+        return self.get_cookie(name) is not None
 
 
+    def set_cookie(self, name, value, **kw):
+        self.response.set_cookie(name, value, **kw)
+
+
+    def del_cookie(self, name):
+        self.response.del_cookie(name)
+
+
+
+###########################################################################
+# One context per thread
+###########################################################################
 contexts = {}
 contexts_lock = allocate_lock()
 

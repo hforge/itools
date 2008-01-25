@@ -297,3 +297,17 @@ parameter to explicitly define the datatype:
   fields = [(name, True, String)]
   context.build_form_namespace(fields)
 
+(4) The traversal API has changed.
+
+  # Before
+  def _get_handler(self, segment, uri):
+      ...
+      return handler_class(uri)
+
+  # Now
+  def _get_object(self, name):
+      metadata = self.handler.get_handler('%s.metadata' % name)
+      ...
+      return object_class(metadata)
+
+

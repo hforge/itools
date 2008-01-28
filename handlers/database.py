@@ -62,7 +62,7 @@ class Database(object):
             return True
         if fs.is_folder(reference):
             # Empty folders do not exist
-            return fs.get_names(reference)
+            return bool(fs.get_names(reference))
         # Neither a file nor a folder
         return fs.exists(reference)
 

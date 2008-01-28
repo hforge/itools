@@ -17,12 +17,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from httplib import HTTPConnection
+from httplib import HTTPConnection, FOUND
 from urllib import urlopen
 
 # Import from itools
 from itools.vfs import BaseFS, register_file_system
 from itools.datatypes import HTTPDate
+from itools.uri import get_reference
 
 
 class HTTPFS(BaseFS):
@@ -32,7 +33,13 @@ class HTTPFS(BaseFS):
         conn = HTTPConnection(str(reference.authority))
         # XXX Add the query
         conn.request('HEAD', str(reference.path))
-        return conn.getresponse()
+        response = conn.getresponse()
+        if response.status == FOUND:
+            # Follow the redirection
+            location = response.getheader('location')
+            return HTTPFS._head(get_reference(location))
+
+        return response
 
 
     @staticmethod

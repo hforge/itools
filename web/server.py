@@ -365,7 +365,7 @@ class Server(object):
         except Forbidden:
             if context.user is None:
                 status = 401
-                body = context.root.unauthorized(context)
+                body = context.site_root.unauthorized(context)
             else:
                 status = 403
                 body = context.root.forbidden(context)
@@ -410,7 +410,7 @@ class Server(object):
         except Forbidden:
             if context.user is None:
                 status = 401
-                body = context.root.unauthorized(context)
+                body = context.site_root.unauthorized(context)
             else:
                 status = 403
                 body = context.root.forbidden(context)
@@ -568,7 +568,7 @@ class Server(object):
             return 200, method
         # Not allowed
         if user is None:
-            return 401, root.unauthorized
+            return 401, site_root.unauthorized
         return 403, root.forbidden
 
 

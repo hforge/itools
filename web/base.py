@@ -88,11 +88,16 @@ class Node(object):
         if not isinstance(path, Path):
             path = Path(path)
 
+        # If path is "/" or "."
+        if len(path) == 0:
+            return True
+
         path, name = path[:-1], path[-1]
         try:
             container = self.get_object(path)
         except LookupError:
             return False
+
         return container._has_object(name)
 
 

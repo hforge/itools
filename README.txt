@@ -15,9 +15,9 @@ The packages included are:
 
 The scripts included are:
 
-  icatalog-inspect.py     igettext-merge.py       isetup-doc.py
-  igettext-build.py       isetup-build.py         isetup-quality.py
-  igettext-extract.py     isetup-copyright.py     isetup-update-locale.py
+  icatalog-inspect.py     igettext-merge.py       isetup-quality.py
+  igettext-build.py       isetup-build.py         isetup-update-locale.py
+  igettext-extract.py     isetup-copyright.py
 
 
 Requirements

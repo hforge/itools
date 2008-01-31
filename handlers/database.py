@@ -220,7 +220,7 @@ class Database(object):
             handler = handler.clone()
             handler.database = self
             handler.uri = target
-            # Update the state 
+            # Update the state
             self.cache[target] = handler
             self.added.add(target)
 

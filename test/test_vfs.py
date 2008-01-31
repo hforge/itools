@@ -307,7 +307,7 @@ class MemFSTestCase(TestCase):
     def test10_creation(self):
         fh = vfs.make_file('mem:testfile.txt')
         fh.write("one\n")
-        fh.close()        
+        fh.close()
         self.assertEqual(vfs.is_file('mem:testfile.txt'), True)
         url = 'mem:test/dir'
         vfs.make_folder(url)

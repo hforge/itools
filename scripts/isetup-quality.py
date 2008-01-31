@@ -52,7 +52,7 @@ def analyse_file_pass1(filename):
         # Number of line
         stats['lines'] += 1
 
-        # Bad length
+        # Bad length (XXX We consider a tab as one character, we may not)
         if len(line) > 79:
             stats['bad_length'] += 1
 
@@ -128,7 +128,7 @@ def analyse_file_pass2(filename):
                 current_indentation = begin[1]
 
             # String exceptions except or raise ?
-            if ((last_name == 'except' or last_name == 'raise') and 
+            if ((last_name == 'except' or last_name == 'raise') and
                 tok_name[tok_type] == 'STRING'):
                 stats['string_exception'] += 1
 
@@ -260,7 +260,24 @@ def analyse(filenames):
 
 def fix(filenames):
     for filename in filenames:
-        lines = [ x.rstrip() + '\n' for x in open(filename).readlines() ]
+        lines = []
+        for line in open(filename).readlines():
+            # Calculate the indentation level
+            # http://docs.python.org/ref/indentation.html
+            indent = 0
+            for c in line:
+                if c == ' ':
+                    indent += 1
+                elif c == '\t':
+                    indent = ((indent/8) + 1) * 8
+                else:
+                    break
+            # Remove trailing spaces & remove tabulators used for indentation
+            line = ' ' * indent + line.strip() + '\n'
+            # Append
+            lines.append(line)
+
+        # Save
         open(filename, 'w').write(''.join(lines))
 
 

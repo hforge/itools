@@ -139,7 +139,7 @@ def read_name(line):
 #     8 --> value begun
 
 # Tokens
-TPARAM, TVALUE = range(2)
+TPARAM, TVALUE = 0, 1
 token_name = ['name', 'parameter', 'value']
 
 
@@ -153,14 +153,16 @@ def get_tokens(property):
     elif c == ':':
         status = 7
 
+    error1 = 'unexpected character (%s) at status %s'
+    error2 = 'unexpected repeated character (%s) at status %s'
+
     for c in property:
         # parameter begun (just after ';')
         if status == 1:
             if c.isalnum() or c in ('-'):
                 lexeme, status = c, 2
             else:
-                raise SyntaxError, 'unexpected character (%s) at status %s'\
-                                    % (c, status)
+                raise SyntaxError, error1 % (c, status)
 
         # param-name begun
         elif status == 2:
@@ -170,17 +172,15 @@ def get_tokens(property):
                 lexeme += c
                 status = 3
             else:
-                raise SyntaxError, 'unexpected character (%s) at status %s'\
-                                    % (c, status)
+                raise SyntaxError, error1 % (c, status)
 
         # param-name ended, param-value beginning
         elif status == 3:
             if c == '"':
                 lexeme += c
                 status = 4
-            elif c in (';',':',',') :
-                raise SyntaxError, 'unexpected character (%s) at status %s'\
-                                    % (c, status)
+            elif c in (';', ':', ',') :
+                raise SyntaxError, error1 % (c, status)
             else:
                 lexeme += c
                 status = 5
@@ -195,11 +195,10 @@ def get_tokens(property):
 
         # param-value NOT quoted begun
         elif status == 5:
-            if c in (':',';',',') :
+            if c in (':', ';', ',') :
                 status = 6
             elif c=='"':
-                raise SyntaxError, 'unexpected character (%s) at status %s'\
-                                    % (c, status)
+                raise SyntaxError, error1 % (c, status)
             else:
                 lexeme += c
 
@@ -224,12 +223,10 @@ def get_tokens(property):
                 status = 3
             elif c == '"':
                 if last == '"':
-                    raise SyntaxError, 'unexpected repeated character (%s)'\
-                          ' at status %s' % (c, status)
+                    raise SyntaxError, error2 % (c, status)
                 last = '"'
             else:
-                raise SyntaxError, 'unexpected character (%s) at status %s'\
-                                    % (c, status)
+                raise SyntaxError, error1 % (c, status)
 
     if status not in (7, 8):
         raise SyntaxError, 'unexpected property (%s)' % property

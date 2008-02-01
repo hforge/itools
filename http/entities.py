@@ -16,7 +16,7 @@
 
 # Import from itools
 from itools.handlers import File
-import headers
+from headers import get_type
 
 
 def parse_header(line):
@@ -24,7 +24,7 @@ def parse_header(line):
         name, value = line.split(':', 1)
         name = name.strip().lower()
         value = value.strip()
-        type = headers.get_type(name)
+        type = get_type(name)
         return name, type.decode(value)
 
     return None, None
@@ -36,7 +36,7 @@ def parse_header(line):
         name, value = line.split(':', 1)
         name = name.strip().lower()
         value = value.strip()
-        type = headers.get_type(name)
+        type = get_type(name)
         return name, type.decode(value)
 
     return None, None

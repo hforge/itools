@@ -23,9 +23,9 @@ from urllib import urlencode
 from itools.uri import get_reference, decode_query
 from itools.datatypes import QName, String
 from itools.handlers import Handler
+from entities import Entity, parse_header
 from exceptions import BadRequest, NotImplemented
-import headers
-import entities
+from headers import get_type
 from message import Message
 
 
@@ -49,7 +49,7 @@ class Request(Message):
     def headers_to_str(self):
         lines = []
         for name in self.headers:
-            datatype = headers.get_type(name)
+            datatype = get_type(name)
             value = self.headers[name]
             value = datatype.encode(value)
             lines.append('%s: %s\r\n' % (name.title(), value))
@@ -110,13 +110,13 @@ class Request(Message):
                 break
             # Parse the line
             try:
-                name, value = entities.parse_header(line)
+                name, value = parse_header(line)
             except:
                 raise BadRequest, 'unexpected header "%s"' % line
             headers[name] = value
 
         # Cookies
-        self.headers.setdefault('cookie', {})
+        headers.setdefault('cookie', {})
 
         # Load the body
         self.body = {}
@@ -141,7 +141,7 @@ class Request(Message):
                         elif part.startswith('\n'):
                             part = part[1:]
                         # Parse the entity
-                        entity = entities.Entity()
+                        entity = Entity()
                         entity.load_state_from_string(part)
                         # Find out the parameter name
                         header = entity.get_header('Content-Disposition')
@@ -220,4 +220,5 @@ class Request(Message):
 
     def get_cookies_as_str(self):
         cookies = self.get_header('cookie')
-        return '; '.join([ '%s="%s"' % (x, cookies[x]) for x in cookies ])
+        return '; '.join([ '%s="%s"' % x for x in cookies.items() ])
+

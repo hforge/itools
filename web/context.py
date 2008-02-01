@@ -308,7 +308,9 @@ class Context(object):
         # Get the value
         cookie = response.get_cookie(name)
         if cookie is None:
-            value = request.get_cookie(name)
+            cookie = request.get_cookie(name)
+            if cookie is None:
+                return None
         else:
             # Check expiration time
             expires = cookie.expires
@@ -320,8 +322,7 @@ class Context(object):
                 if expires < datetime.now():
                     return None
 
-            value = cookie.value
-
+        value = cookie.value
         if type is None:
             return value
 

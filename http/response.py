@@ -19,6 +19,7 @@ from datetime import datetime
 
 # Import from itools
 from itools.datatypes import HTTPDate
+from cookies import Cookie, SetCookieDataType
 from headers import get_type
 from entities import read_headers
 from message import Message
@@ -79,21 +80,6 @@ status_messages = {
     }
 
 
-class Cookie(object):
-
-    def __init__(self, value, expires=None, domain=None, path=None,
-                 max_age=None, comment=None, secure=None):
-        self.value = value
-        # Parameters
-        self.expires = expires
-        self.domain = domain
-        self.path = path
-        self.max_age = max_age
-        self.comment = comment
-        self.secure = secure
-
-
-
 class Response(Message):
 
     def new(self, status_code=200, **kw):
@@ -139,28 +125,10 @@ class Response(Message):
         # Content-Length:
         if not self.has_header('content-length'):
             data.append('Content-Length: %d\r\n' % self.get_content_length())
-        # The Cookies
+        # The Cookies (one SetCookie header per cookie)
         for name in self.cookies:
-            cookie = self.cookies[name]
-            # The parameters
-            parameters = []
-            if cookie.expires is not None:
-                parameters.append('; expires=%s' % cookie.expires)
-            if cookie.domain is not None:
-                parameters.append('; domain=%s' % cookie.domain)
-            if cookie.path is not None:
-                parameters.append('; path=%s' % cookie.path)
-            else:
-                parameters.append('; path=/')
-            if cookie.max_age is not None:
-                parameters.append('; max-age=%s' % cookie.max_age)
-            if cookie.comment is not None:
-                parameters.append('; comment=%s' % cookie.comment)
-            if cookie.secure is not None:
-                parameters.append('; secure=%s' % cookie.secure)
-            # The value
-            data.append('Set-Cookie: %s="%s"%s\r\n'
-                        % (name, cookie.value, ''.join(parameters)))
+            value = SetCookieDataType.encode({name: self.cookies[name]})
+            data.append('Set-Cookie: %s\r\n' % value)
         # A blank line separates the header from the body
         data.append('\r\n')
         # The body

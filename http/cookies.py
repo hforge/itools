@@ -65,6 +65,15 @@ class Cookie(object):
         return True
 
 
+    def __str__(self):
+        output = ['"%s"' % self.value]
+        if self.path is not None:
+            output.append('$Path="%s"' % self.path)
+        if self.domain is not None:
+            output.append('$Domain="%s"' % self.domain)
+        return '; '.join(output)
+
+
 
 class CookieDataType(DataType):
 
@@ -142,13 +151,9 @@ class CookieDataType(DataType):
             if version is not None and version != '1':
                 raise ValueError, 'unexpected cookie version "%s"' % version
 
-            output.append('%s="%s"' % (name, cookie.value))
-            if cookie.path is not None:
-                output.append('$Path="%s"' % cookie.path)
-            if cookie.domain is not None:
-                output.append('$Domain="%s"' % cookie.domain)
+            output.append('%s=%s' % (name, cookie))
 
-        return ';'.join(output)
+        return '; '.join(output)
 
 
 

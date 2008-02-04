@@ -23,6 +23,7 @@ from urllib import urlencode
 from itools.uri import get_reference, decode_query
 from itools.datatypes import QName, String
 from itools.handlers import Handler
+from cookies import CookieDataType
 from entities import Entity, parse_header
 from exceptions import BadRequest, NotImplemented
 from headers import get_type
@@ -220,5 +221,5 @@ class Request(Message):
 
     def get_cookies_as_str(self):
         cookies = self.get_header('cookie')
-        return '; '.join([ '%s="%s"' % x for x in cookies.items() ])
+        return CookieDataType.encode(cookies)
 

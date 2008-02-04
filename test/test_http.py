@@ -25,6 +25,7 @@ from itools.http.parsing import (read_token, read_quoted_string,
     read_parameter, read_parameters)
 
 
+
 class ParsingTestCase(TestCase):
     """Test basic parsing functions.
     """
@@ -75,7 +76,7 @@ class StandardHeadersTestCase(TestCase):
 class CookieTestCase(TestCase):
 
     def test_set_cookie_decode_encode_decode(self):
-        a = 'Customer="WILE_E_COYOTE"; Version="1"; Path="/acme"'
+        a = 'Customer="WILE_E_COYOTE"; Path="/acme"'
         b = SetCookieDataType.decode(a)
         c = SetCookieDataType.encode(b)
         d = SetCookieDataType.decode(c)
@@ -83,7 +84,7 @@ class CookieTestCase(TestCase):
 
 
     def test_cookie_decode_encode_decode(self):
-        a = '$Version="1"; Customer="WILE_E_COYOTE"; $Path="/acme"'
+        a = 'Customer="WILE_E_COYOTE"; $Path="/acme"'
         b = CookieDataType.decode(a)
         c = CookieDataType.encode(b)
         d = CookieDataType.decode(c)
@@ -91,50 +92,38 @@ class CookieTestCase(TestCase):
 
 
     #######################################################################
-    # RFC 2109 Section 5.1 (Example 1)
+    # Netscape Cookies
+    # http://wp.netscape.com/newsref/std/cookie_spec.html
     #######################################################################
-    def test_example1_2(self):
-        a = 'Customer="WILE_E_COYOTE"; Version="1"; Path="/acme"'
-        b = {'customer': Cookie('WILE_E_COYOTE', version='1', path='/acme')}
+    def test_example1(self):
+        # Client requests a document, and receives in the response:
+        a = ('CUSTOMER=WILE_E_COYOTE; path=/; expires=Wednesday,'
+             ' 09-Nov-99 23:12:40 GMT')
+        b = {'customer': Cookie('WILE_E_COYOTE', path='/',
+                                expires='Wednesday, 09-Nov-99 23:12:40 GMT')}
         self.assertEqual(SetCookieDataType.decode(a), b)
-
-
-    def test_example1_3(self):
-        a = '$Version="1"; Customer="WILE_E_COYOTE"; $Path="/acme"'
-        b = {'customer': Cookie('WILE_E_COYOTE', version='1', path='/acme')}
+        # When client requests a URL in path "/" on this server, it sends:
+        a = 'CUSTOMER=WILE_E_COYOTE'
+        b = {'customer': Cookie('WILE_E_COYOTE')}
         self.assertEqual(CookieDataType.decode(a), b)
-
-
-    def test_example1_4(self):
-        a = 'Part_Number="Rocket_Launcher_0001"; Version="1"; Path="/acme"'
-        b = {'part_number': Cookie('Rocket_Launcher_0001', version='1',
-                                   path='/acme')}
+        # Client requests a document, and receives in the response:
+        a = 'PART_NUMBER=ROCKET_LAUNCHER_0001; path=/'
+        b = {'part_number': Cookie('ROCKET_LAUNCHER_0001', path='/')}
         self.assertEqual(SetCookieDataType.decode(a), b)
-
-
-    def test_example1_5(self):
-        a = ('$Version="1"; Customer="WILE_E_COYOTE"; $Path="/acme";'
-             'Part_Number="Rocket_Launcher_0001"; $Path="/acme"')
-        b = {'customer': Cookie('WILE_E_COYOTE', version='1', path='/acme'),
-             'part_number': Cookie('Rocket_Launcher_0001', version='1',
-                                   path='/acme')}
+        # When client requests a URL in path "/" on this server, it sends:
+        a = 'CUSTOMER=WILE_E_COYOTE; PART_NUMBER=ROCKET_LAUNCHER_0001'
+        b = {'customer': Cookie('WILE_E_COYOTE'),
+             'part_number': Cookie('ROCKET_LAUNCHER_0001')}
         self.assertEqual(CookieDataType.decode(a), b)
-
-
-    def test_example1_6(self):
-        a = 'Shipping="FedEx"; Version="1"; Path="/acme"'
-        b = {'shipping': Cookie('FedEx', version='1', path='/acme')}
+        # Client receives:
+        a = 'SHIPPING=FEDEX; path=/foo'
+        b = {'shipping': Cookie('FEDEX', path='/foo')}
         self.assertEqual(SetCookieDataType.decode(a), b)
-
-
-    def test_example1_7(self):
-        a = ('$Version="1"; Customer="WILE_E_COYOTE"; $Path="/acme";'
-             'Part_Number="Rocket_Launcher_0001"; $Path="/acme";'
-             'Shipping="FedEx"; $Path="/acme"')
-        b = {'customer': Cookie('WILE_E_COYOTE', version='1', path='/acme'),
-             'part_number': Cookie('Rocket_Launcher_0001', version='1',
-                            path='/acme'),
-             'shipping': Cookie('FedEx', version='1', path='/acme')}
+        # When client requests a URL in path "/foo" on this server, it sends:
+        a = 'CUSTOMER=WILE_E_COYOTE; PART_NUMBER=ROCKET_LAUNCHER_0001; SHIPPING=FEDEX'
+        b = {'customer': Cookie('WILE_E_COYOTE'),
+             'part_number': Cookie('ROCKET_LAUNCHER_0001'),
+             'shipping': Cookie('FEDEX')}
         self.assertEqual(CookieDataType.decode(a), b)
 
 

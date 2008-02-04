@@ -16,15 +16,16 @@
 
 # Import from itools
 from itools.datatypes import DataType
-from parsing import (read_char, read_opaque, read_parameter, read_parameters,
-    read_quoted_string, read_token, read_white_space)
-
+from parsing import (read_char, read_opaque, read_quoted_string, read_token,
+    read_white_space)
 
 """
-Partial implementation of an "HTTP State Management Mechanism", also known
-as cookies.
+Partial implementation of HTTP Cookies.
 
-Related documents:
+Support for cookies varies from software to software, standards are in
+general very poorly implemeted.
+
+This is a list of related documents:
 
  - Netscape Cookies
    http://wp.netscape.com/newsref/std/cookie_spec.html
@@ -37,19 +38,80 @@ Related documents:
 
  - Wikipedia entry for cookies
    http://en.wikipedia.org/wiki/HTTP_cookie
-
-Browsers like firefox have a very poor support for cookie standars, they
-still use the old Netscape Cookies.  See for instance this bug:
-
-  https://bugzilla.mozilla.org/show_bug.cgi?id=208985
-
 """
 
+# TODO We need to make up a list of the browsers (or other software, like
+# servers) we want to support, and document how they handle cookies, so we
+# can properly communicate with them:
+#
+# - Firefox
+#   https://bugzilla.mozilla.org/show_bug.cgi?id=208985
+#
 
-# TODO There are three cookie specs, we should correctly identify which
-# spec a cookie uses an trigger the right logic.
+
+###########################################################################
+# Parsing
+###########################################################################
+
+# The parsing functions defined here must be robust to values not conformed
+# to the standards (RFCs).  In particular they must be able to handler the
+# cookie values sent by today's browsers.
+#
+# Syntax:
+#
+#   parameters    : parameter (; parameter)*
+#
+#   parameter     : name=value
+#   name          : token
+#   value         : quoted-string | opaque-string
+#
+#   token         : as defined by RFC 1945 Section 2.2
+#   quoted-string : as defined by RFC 1945 Section 2.2
+#   opaque-string : any character except ";"
+#
+
+def read_parameter(data):
+    # name
+    name, data = read_token(data)
+    name = name.lower()
+    # =
+    white, data = read_white_space(data)
+    data = read_char('=', data)
+    white, data = read_white_space(data)
+    # value
+    if data[0] == '"':
+        value, data = read_quoted_string(data)
+    else:
+        value, data = read_opaque(data, ';')
+
+    return (name, value), data
 
 
+
+def read_parameters(data):
+    parameters = {}
+    while data:
+        # End mark
+        if data[0] != ';':
+            return parameters, data
+        data = data[1:]
+        # White Space
+        white, data = read_white_space(data)
+        # Parameter
+        parameter, data = read_parameter(data)
+        name, value = parameter
+        parameters[name] = value
+        # White Space
+        white, data = read_white_space(data)
+
+    # End-Of-Data
+    return parameters, ''
+
+
+
+###########################################################################
+# Values
+###########################################################################
 
 class Cookie(object):
 
@@ -90,6 +152,9 @@ class Cookie(object):
         return '; '.join(output)
 
 
+###########################################################################
+# Data Types
+###########################################################################
 
 class CookieDataType(DataType):
 
@@ -98,20 +163,8 @@ class CookieDataType(DataType):
         # Cookies
         cookies = {}
         while data:
-            # name
-            cookie_name, data = read_token(data)
-            cookie_name = cookie_name.lower()
-            # =
-            white, data = read_white_space(data)
-            data = read_char('=', data)
-            white, data = read_white_space(data)
-            # value
-            if data[0] == '"':
-                cookie_value, data = read_quoted_string(data)
-            else:
-                # XXX Old Netscape Cookies
-                cookie_value, data = read_opaque(data, ';')
-
+            value, data = read_parameter(data)
+            cookie_name, cookie_value = value
             path = domain = None
             # White Space
             white, data = read_white_space(data)

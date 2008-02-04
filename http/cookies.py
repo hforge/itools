@@ -16,8 +16,8 @@
 
 # Import from itools
 from itools.datatypes import DataType
-from parsing import (read_char, read_parameter, read_parameters,
-    read_white_space)
+from parsing import (read_char, read_opaque, read_parameter, read_parameters,
+    read_quoted_string, read_token, read_white_space)
 
 
 """
@@ -26,12 +26,28 @@ as cookies.
 
 Related documents:
 
- - RFC 2109, http://www.ietf.org/rfc/rfc2109.txt
+ - Netscape Cookies
+   http://wp.netscape.com/newsref/std/cookie_spec.html
 
- - RFC 2965, http://www.ietf.org/rfc/rfc2965.txt
+ - RFC 2109
+   http://www.ietf.org/rfc/rfc2109.txt
 
- - http://en.wikipedia.org/wiki/HTTP_cookie
+ - RFC 2965
+   http://www.ietf.org/rfc/rfc2965.txt
+
+ - Wikipedia entry for cookies
+   http://en.wikipedia.org/wiki/HTTP_cookie
+
+Browsers like firefox have a very poor support for cookie standars, they
+still use the old Netscape Cookies.  See for instance this bug:
+
+  https://bugzilla.mozilla.org/show_bug.cgi?id=208985
+
 """
+
+
+# TODO There are three cookie specs, we should correctly identify which
+# spec a cookie uses an trigger the right logic.
 
 
 
@@ -96,8 +112,20 @@ class CookieDataType(DataType):
         # Cookies
         cookies = {}
         while data:
-            cookie, data = read_parameter(data)
-            cookie_name, cookie_value = cookie
+            # name
+            cookie_name, data = read_token(data)
+            cookie_name = cookie_name.lower()
+            # =
+            white, data = read_white_space(data)
+            data = read_char('=', data)
+            white, data = read_white_space(data)
+            # value
+            if data[0] == '"':
+                cookie_value, data = read_quoted_string(data)
+            else:
+                # XXX Old Netscape Cookies
+                cookie_value, data = read_opaque(data, ';')
+
             path = domain = None
             # White Space
             white, data = read_white_space(data)

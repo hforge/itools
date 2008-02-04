@@ -36,6 +36,21 @@ def read_char(char, data):
 
 
 
+def read_opaque(data, delimiters):
+    index = 0
+    n = len(data)
+    while index < n:
+        # End mark
+        if data[index] in delimiters:
+            return data[:index], data[index:]
+        # Next
+        index += 1
+
+    # End-Of-Data
+    return data, ''
+
+
+
 def read_white_space(data):
     index = 0
     n = len(data)

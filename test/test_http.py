@@ -139,7 +139,7 @@ class CookieTestCase(TestCase):
 
 
     #######################################################################
-    # Examples found in real experience
+    # Netscape Cookies (old style)
     #######################################################################
     def test_google(self):
         cookie = '__utma=148580960.1549592533.1131137049.1200608996.1200962259.202; __qca=1193853942-44919481-52504193; __utmz=148580960.1196124914.184.2.utmccn=(organic)|utmcsr=google|utmctr=lorum+generator|utmcmd=organic; __qcb=689621141; __utmc=148580960; T3CK=TANT%3D1%7CTANO%3D0; __utma=148580960.1549592533.1131137049.1140634832.1140725853.67'

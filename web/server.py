@@ -32,10 +32,10 @@ from urllib import unquote
 
 # Import from itools
 from itools.uri import Reference, Path
-from itools.http import (Forbidden, HTTPError, NotFound, Unauthorized,
-    Request, Response)
-from context import Context, get_context, set_context
+from itools.http import (HTTPError, BadRequest, Forbidden, NotFound,
+    Unauthorized, Request, Response)
 from base import Node
+from context import Context, get_context, set_context
 
 
 # TODO Support multiple threads
@@ -269,6 +269,16 @@ class Server(object):
                             except StopIteration:
                                 response = self.handle_request(request)
                                 # Log access
+                                self.log_access(conn, request, response)
+                                # Ready to send response
+                                poll.register(fileno, POLL_WRITE)
+                                response = response.to_str()
+                                requests[fileno] = conn, response
+                            except BadRequest:
+                                response = Response(status_code=400)
+                                response.set_body('Bad Request')
+                                # Log access
+                                self.log_error()
                                 self.log_access(conn, request, response)
                                 # Ready to send response
                                 poll.register(fileno, POLL_WRITE)

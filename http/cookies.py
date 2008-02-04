@@ -95,20 +95,6 @@ class CookieDataType(DataType):
 
     @staticmethod
     def decode(data):
-        # Version (old clients do not send "$Version")
-        first, rest = read_parameter(data)
-        if first[0] == '$version':
-            version = first[1]
-            if version != '1':
-                raise ValueError, 'unexpected cookie version "%s"' % version
-            data = rest
-            # ;
-            white, data = read_white_space(data)
-            data = read_char(';', data)
-            white, data = read_white_space(data)
-        else:
-            version = None
-
         # Cookies
         cookies = {}
         while data:
@@ -162,7 +148,7 @@ class CookieDataType(DataType):
                         white, data = read_white_space(data)
             # Set
             cookies[cookie_name] = Cookie(cookie_value, path=path,
-                                          domain=domain, version=version)
+                                          domain=domain)
 
         return cookies
 
@@ -170,15 +156,9 @@ class CookieDataType(DataType):
     @staticmethod
     def encode(cookies):
         output = []
-        # Version
-        output.append('$Version="1"')
         # Cookies
         for name in cookies:
             cookie = cookies[name]
-            version = cookie.version
-            if version is not None and version != '1':
-                raise ValueError, 'unexpected cookie version "%s"' % version
-
             output.append('%s=%s' % (name, cookie))
 
         return '; '.join(output)
@@ -214,16 +194,14 @@ class SetCookieDataType(DataType):
             aux = []
             aux.append('%s="%s"' % (name, cookie.value))
             # The parameters
-            if cookie.version is not None:
-                aux.append('version="%s"' % cookie.version)
             if cookie.expires is not None:
-                aux.append('expires="%s"' % cookie.expires)
+                aux.append('expires=%s' % cookie.expires)
             if cookie.domain is not None:
-                aux.append('domain="%s"' % cookie.domain)
+                aux.append('domain=%s' % cookie.domain)
             if cookie.path is not None:
-                aux.append('path="%s"' % cookie.path)
+                aux.append('path=%s' % cookie.path)
             else:
-                aux.append('path="/"')
+                aux.append('path=/')
             if cookie.max_age is not None:
                 aux.append('max-age="%s"' % cookie.max_age)
             if cookie.comment is not None:

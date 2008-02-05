@@ -104,6 +104,11 @@ class SocketWrapper(object):
             data = self.socket.recv(size - buffer_size)
         except:
             return None
+        # This method is supposed to be called only when there is data to be
+        # read. So if no data is available, we suppose the data is truncated
+        # and we raise the EOFError exception.
+        if not data:
+            raise EOFError
         buffer += data
         # Check we now have the required data
         if len(buffer) >= size:

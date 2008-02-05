@@ -128,10 +128,14 @@ class Request(Message):
         # The body
         if 'content-length' in headers and 'content-type' in headers:
             size = headers['content-length']
-            body = file.read(size)
-            while body is None:
-                yield None
+            try:
                 body = file.read(size)
+                while body is None:
+                    yield None
+                    body = file.read(size)
+            except EOFError:
+                msg = 'unable to read the request content, %s bytes expected'
+                raise BadRequest, msg % size
 
             if body:
                 type, type_parameters = self.get_header('content-type')

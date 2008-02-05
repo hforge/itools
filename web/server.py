@@ -600,12 +600,18 @@ class Server(object):
 
 
     def commit_transaction(self, context):
+        # Don't commit
         if context.commit is False:
-            # Don't commit
+            self.abort_transaction(context)
+            return
+
+        # Commit
+        try:
+            self.before_commit()
+        except:
+            self.log_error(context)
             self.abort_transaction(context)
         else:
-            # Commit
-            self.before_commit()
             for db in self.get_databases():
                 db.save_changes()
 

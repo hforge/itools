@@ -346,6 +346,15 @@ def make_xml_compatible(stream):
         else:
             yield event
 
+    # Close missing optional end tags
+    while stack:
+        last = stack.pop()
+        if last in optional_end_tag_elements:
+            yield END_ELEMENT, (xhtml_uri, last), line
+        else:
+            msg = 'missing end tag </%s> at line %s'
+            raise XMLError, msg % (last, line)
+
 
 
 def HTMLParser(data):

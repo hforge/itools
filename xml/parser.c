@@ -19,7 +19,7 @@
 /* Errors */
 #define BAD_XML_DECL "XML declaration not well-formed: line %d, column %d"
 #define INVALID_TOKEN "not well-formed (invalid token): line %d, column %d"
-#define MISMATCH "mismatched tag: line %d, column %d"
+#define MISSING "expected end tag is missing: line %d, column %d"
 #define BAD_ENTITY_REF "error parsing entity reference: line %d, column %d"
 #define BAD_CHAR_REF "error parsing character reference: line %d, column %d"
 #define DUP_ATTR "duplicate attribute: line %d, column %d"
@@ -732,14 +732,18 @@ static PyObject* Parser_iternext(Parser* self) {
         return value;
     }
 
+    line = self->line_no;
+    column = self->column;
+
     /* Check for EOF */
     /* FIXME, there are many places else we must check for EOF */
     c = *(self->cursor);
-    if (c == '\0')
+    if (c == '\0') {
+        /* Check the open tags are closed. */
+        if (self->tag_stack_top > 0)
+            return ERROR(MISSING, line, column);
         return NULL;
-
-    line = self->line_no;
-    column = self->column;
+    }
 
     if (c == '<') {
         self->cursor++;
@@ -765,7 +769,7 @@ static PyObject* Parser_iternext(Parser* self) {
             /* Remove from the stack */
             value = pop_tag(self, value);
             if (value == NULL)
-                return ERROR(MISMATCH, line, column);
+                return ERROR(MISSING, line, column);
  
             return Py_BuildValue("(iNi)", END_ELEMENT, value, line);
         } else if (c == '!') {

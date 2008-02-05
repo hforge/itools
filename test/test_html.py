@@ -22,7 +22,8 @@ from unittest import TestCase
 
 # Import from itools
 from itools.gettext import POFile
-from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, TEXT, stream_to_str
+from itools.xml import (XMLParser, XMLError, START_ELEMENT, END_ELEMENT, TEXT,
+    stream_to_str)
 from itools.html import HTMLFile, XHTMLFile, HTMLParser, sanitize_str
 from itools.html.xhtml import stream_to_html
 
@@ -73,6 +74,17 @@ class HTMLParserTestCase(TestCase):
         self.assertEqual(parse_tags(data), expected)
 
 
+    #######################################################################
+    # Broken HTML
+    #######################################################################
+    def test_missing_end_element(self):
+        data = '<div><span></div>'
+        self.assertRaises(XMLError, HTMLParser, data)
+
+
+    def test_missing_end_element2(self):
+        data = '<div>'
+        self.assertRaises(XMLError, HTMLParser, data)
 
 
 

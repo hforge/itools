@@ -122,6 +122,21 @@ class ParserTestCase(TestCase):
         self.assertEqual(XMLParser(data).next(), (token, value, 1))
 
 
+    #######################################################################
+    # Broken XML
+    #######################################################################
+    def test_missing_end_element(self):
+        data = '<div><span></div>'
+        parser = XMLParser(data)
+        self.assertRaises(XMLError, list, parser)
+
+
+    def test_missing_end_element2(self):
+        data = '<div>'
+        parser = XMLParser(data)
+        self.assertRaises(XMLError, list, parser)
+
+
 
 class XMLTestCase(TestCase):
 

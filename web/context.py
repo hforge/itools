@@ -205,8 +205,13 @@ class Context(object):
         except:
             raise FormError(invalid=[name])
 
+        # We consider that if the type deserializes the value to None, then
+        # we must use the default.
+        if value is None:
+            return default
+
         # We consider a blank string to be a missing value (FIXME not
-        # reliable)
+        # reliable).
         is_blank = isinstance(value, (str, unicode)) and not value.strip()
         if is_mandatory and is_blank:
             raise FormError(missing=[name])

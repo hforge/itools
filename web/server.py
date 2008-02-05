@@ -300,13 +300,17 @@ class Server(object):
                             peer = conn.getpeername()
                             self.log_debug('%s:%s => OUT' % peer)
                         # Send the response
-                        n = conn.send(response)
-                        response = response[n:]
-                        if response:
-                            poll.register(fileno, POLL_WRITE)
-                            requests[fileno] = conn, response
-                        else:
+                        try:
+                            n = conn.send(response)
+                        except SocketError:
                             conn.close()
+                        else:
+                            response = response[n:]
+                            if response:
+                                poll.register(fileno, POLL_WRITE)
+                                requests[fileno] = conn, response
+                            else:
+                                conn.close()
                     elif event & POLLERR:
                         self.log_debug('ERROR CONDITION')
                         poll.unregister(fileno)

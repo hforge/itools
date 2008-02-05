@@ -164,6 +164,13 @@ class Context(object):
     def get_form_value(self, name, default=None, type=String):
         request = self.request
 
+        # Figure out the default value
+        is_multiple = getattr(type, 'multiple', False)
+        if default is None:
+            default = type.default
+            if is_multiple and not isinstance(default, list):
+                default = []
+
         # Missing
         is_mandatory = getattr(type, 'mandatory', False)
         is_missing = not request.has_parameter(name)
@@ -172,16 +179,9 @@ class Context(object):
             if is_mandatory and is_missing:
                 raise FormError(missing=[name])
             # Optional: return the default value
-            if default is not None:
-                return default
-            is_multiple = getattr(type, 'multiple', False)
-            if is_multiple:
-                # FIXME: This does not work for "Type(default=[...])"
-                return []
-            return type.default
+            return default
 
         # Multiple values
-        is_multiple = getattr(type, 'multiple', False)
         if is_multiple:
             value = request.get_parameter(name)
             if not isinstance(value, list):

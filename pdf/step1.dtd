@@ -1,10 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
 <!ELEMENT html (head, body) >
 <!ELEMENT body (h1*, h2*, h3*, hr*, p*, pre*, ul*, ol*) >
-<!ELEMENT head () >
+<!ELEMENT head (#PCDATA) >
 <!ELEMENT h1 (#PCDATA) >
 <!ELEMENT h2 (#PCDATA) >
 <!ELEMENT h3 (#PCDATA) >
-<!ELEMENT hr ( ) >
+<!ELEMENT hr (#PCDATA) >
 <!ELEMENT p (b*, i*, u*, em*, strong*, sub*, sup*, #PCDATA) >
 <!ELEMENT pre (#PCDATA) >
 <!ELEMENT ul (li*) >

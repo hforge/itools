@@ -10,25 +10,13 @@ from reportlab.pdfgen.canvas import Canvas
 from reportlab.lib.units import inch, cm, mm, pica
 from reportlab.lib.pagesizes import (letter, legal, elevenSeventeen, A0, A1,
     A2, A3, A4, A5, A6, B0, B1, B2, B3, B4, B5, B6, landscape, portrait)
-from reportlab.platypus import (Paragraph, SimpleDocTemplate)
+from reportlab.platypus import (Paragraph, SimpleDocTemplate, Preformatted)
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 
 TAG_NOT_SUPPORTED = '%s: line %s tag "%s" is currently not supported.'
+WARNING_DTD = '%s: line %s tag "%s" is unapproprieted here.'
 encoding = 'UTF-8'
 
-def create_pdf(name):
-    """
-        return a new pdf document using out.pdf as name if no name is provided 
-    """
-    if name == "":
-        name = "out.pdf"
-    return Canvas(name)
-
-def save_pdf(p):
-    p.showPage()
-
-def close_pdf(p):
-    p.save()
 
 def rmltopdf(filename):
     file = open(filename, 'r')
@@ -67,10 +55,8 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
             tag_uri, tag_name, attributes = value
             if tag_name == 'html':
                 a = 1
-#                p = create_pdf(document_name + ".pdf")
-#                stack.append((tag_name, attributes, None))
-#            elif tag_name == 'head':
-
+            elif tag_name == 'head':
+                a = 2
             elif tag_name == 'body':
                 story += body_stream(stream, tag_uri, tag_name, attributes)
 
@@ -83,6 +69,8 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
             tag_uri, tag_name = value
             if tag_name == 'html':
                 break
+            if tag_name == 'head':
+                continue
             else:
                 # unknown tag
                 stack.pop()
@@ -94,7 +82,7 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
     if is_test == True:
         _story = list(story)
 
-    print story
+    #print story
 
     doc = SimpleDocTemplate(document_name + ".pdf", pagesize = letter)
     doc.build(story)
@@ -122,6 +110,8 @@ def body_stream(stream, _tag_uri, _tag_name, _attributes):
             tag_uri, tag_name, attributes = value
             if tag_name == 'p':
                 story.append(p_stream(stream, tag_uri, tag_name, attributes, pdf_stylesheet))
+            if tag_name == 'pre':
+                story.append(pre_stream(stream, tag_uri, tag_name, attributes, pdf_stylesheet))
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
@@ -135,6 +125,7 @@ def body_stream(stream, _tag_uri, _tag_name, _attributes):
 
     #return 1
     return story
+
 
 def p_stream(stream , tag_uri, tag_name, attributes, pdf_stylesheet):
     stack = []
@@ -152,13 +143,38 @@ def p_stream(stream , tag_uri, tag_name, attributes, pdf_stylesheet):
         #### START ELEMENT ####
         if event == START_ELEMENT:
             tag_uri, tag_name, attributes = value
-            continue 
+            if tag_name == 'p':
+                print WARNING_DTD % ('document', line_number, tag_name)
+            elif tag_name in ['i', 'em']:
+                content.append("<i>")
+            elif tag_name in ['b', 'strong']:
+                content.append("<b>")
+            elif tag_name == 'u':
+                content.append("<u>")
+            elif tag_name == 'sup':
+                content.append("<super>")
+            elif tag_name == 'sub':
+                content.append("<sub>")
+            else:
+                print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
+                # unknown tag
+                stack.append((tag_name, attributes, None))   
 
         #### END ELEMENT ####
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
             if tag_name == 'p':
                 return create_paragraph(pdf_stylesheet, {}, stack.pop(), content)
+            elif tag_name in ['i', 'em']:
+                content.append("</i>")
+            elif tag_name in ['b', 'strong']:
+                content.append("</b>")
+            elif tag_name == 'u':
+                content.append("</u>")
+            elif tag_name == 'sup':
+                content.append("</super>")
+            elif tag_name == 'sub':
+                content.append("</sub>")
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
@@ -175,6 +191,42 @@ def p_stream(stream , tag_uri, tag_name, attributes, pdf_stylesheet):
                     value = value.lstrip()
                 content.append(value)
                 has_content = True
+
+
+def pre_stream(stream , tag_uri, tag_name, attributes, pdf_stylesheet):
+    stack = []
+    story = []
+    styles = getSampleStyleSheet()
+    styleN = styles['Normal']
+    content = []
+    has_content = False
+    stack.append((tag_name, attributes, None))
+
+    while True:
+        event, value, line_number = stream_next(stream)
+        if event == None:
+            break
+        #### START ELEMENT ####
+        if event == START_ELEMENT:
+            print WARNING-DTD % ('document', line_number, tag_name)
+            stack.append((tag_name, attributes, None))   
+
+        #### END ELEMENT ####
+        elif event == END_ELEMENT:
+            tag_uri, tag_name = value
+            if tag_name == 'pre':
+                return create_preformatted(pdf_stylesheet, {}, stack.pop(), content)
+            else:
+                print WARNING_DTD % ('document', line_number, tag_name)
+                # unknown tag
+                stack.append((tag_name, attributes, None))   
+
+        #### TEXT ELEMENT ####        
+        elif event == TEXT:
+            if stack:
+                # we dont strip the string --> preformatted widget
+                value = XML.encode(Unicode.decode(value, encoding)) # entities
+                content.append(value)
 
 
 #######################################################################
@@ -237,6 +289,26 @@ def create_paragraph(pdf_stylesheet, alias_style, element, content):
     style = ParagraphStyle(style_name, parent=parent_style, **style_attr)
     return Paragraph(content, style, bulletText)
 
+
+def create_preformatted(pdf_stylesheet, alias_style, element, content):
+    """
+        Create a reportlab preformatted widget.
+    """
+
+    content = ''.join(content)
+    style_name = 'Normal'
+
+    for key, attr_value in element[1].iteritems():
+        if key[1] == 'style':
+            style_name = attr_value
+
+    if element[0] == 'pre':
+        fn = Preformatted
+
+    style = get_style(pdf_stylesheet, alias_style, style_name)
+
+    widget = fn(content, style)
+    return widget
 
 
 def get_style(stylesheet, alias, name):

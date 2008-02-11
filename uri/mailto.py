@@ -54,9 +54,9 @@ class MailtoDataType(object):
 
     @staticmethod
     def decode(data):
-    # It is normal to use mailto references like 'toto AT example
-    # DOT com' to trick robots. In this case we just return the
-    # given string.
+        # It is normal to use mailto references like 'toto AT example
+        # DOT com' to trick robots. In this case we just return the
+        # given string.
         return Mailto(data[7:])
 
 

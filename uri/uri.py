@@ -16,13 +16,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-import os
+from os import getcwd
+from os.path import sep
 
 # Import from itools
-import mailto
-import generic
-from generic import Path, Reference
-import registry
+from generic import Path, Reference, GenericDataType
+from registry import get_scheme
 
 
 
@@ -31,9 +30,9 @@ def get_reference(reference):
     """
     if ':' in reference:
         scheme_name, scheme_specifics = reference.split(':', 1)
-        scheme = registry.get_scheme(scheme_name)
+        scheme = get_scheme(scheme_name)
     else:
-        scheme = generic.GenericDataType
+        scheme = GenericDataType
     return scheme.decode(reference)
 
 
@@ -42,13 +41,13 @@ def get_cwd():
     """Returns the current working directory as a URI object.
     """
     # Get the base path
-    base = os.getcwd()
+    base = getcwd()
     # Make it working with Windows
-    if os.path.sep == '\\':
+    if sep == '\\':
         # Internally we use always the "/"
-        base = base.replace(os.path.sep, '/')
+        base = base.replace(sep, '/')
 
-    return generic.GenericDataType.decode('file://%s/' % base)
+    return GenericDataType.decode('file://%s/' % base)
 
 
 

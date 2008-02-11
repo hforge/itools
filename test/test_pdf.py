@@ -32,7 +32,6 @@ from reportlab.lib import colors
 from reportlab.lib.colors import Color, CMYKColor
 from reportlab.lib.pagesizes import landscape, portrait
 
-from reportlab.platypus.doctemplate import LayoutError
 
 
 class FunctionTestCase(unittest.TestCase):
@@ -267,11 +266,6 @@ class StylesheetTestCase(unittest.TestCase):
 
     def test_style_sheet_report_lab_exemple(self):
         story, stylesheet = rmltopdf_test('pdf/22.xml')
-
-
-    def test_style_sheet_table_style(self):
-        story, stylesheet = rmltopdf_test('pdf/23.xml')
-        self.assertRaises(LayoutError, rmltopdf_test, 'pdf/24.xml')
 
 
     def test_template(self):

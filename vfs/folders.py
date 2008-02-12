@@ -39,12 +39,10 @@ class Folder(object):
 
 
     def get_fs_and_reference(self, reference):
+        """Internal function, from the given reference (usually a byte
+        string), builds the absolute URI reference. Then find outs which is
+        the protocol handler for it (layer), and returns both.
         """
-        Internal function, from the given reference (usually a byte string),
-        builds the absolute URI reference. Then find outs which is the
-        protocol handler for it (layer), and returns both.
-        """
-
         reference = get_absolute_reference2(reference, base=self.uri)
         try:
             fs = get_file_system(reference.scheme)

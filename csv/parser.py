@@ -51,13 +51,13 @@ def parse(data, columns=None, schema=None, guess=False, encoding='UTF-8',
         for line in reader:
             if len(line) != n_columns:
                 msg = 'CSV syntax error: wrong number of columns at line %d'
-                line = getattr(reader, 'line_num', None)
-                if line is None:
+                line_num = getattr(reader, 'line_num', None)
+                if line_num is None:
                     # Python 2.4
                     msg = 'CSV syntax error: wrong number of columns'
                 else:
                     # Python 2.5
-                    msg = msg % line
+                    msg = msg % line_num
                 raise ValueError, msg
             if schema is not None:
                 datatypes = [schema.get(c, String) for c in columns]

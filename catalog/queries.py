@@ -46,6 +46,11 @@ class EqQuery(object):
         return documents
 
 
+    def __repr__(self):
+        return "<%s.%s(%s=%r)>" % (self.__module__, self.__class__.__name__,
+                                   self.name, self.value)
+
+
 
 class RangeQuery(object):
 
@@ -61,6 +66,12 @@ class RangeQuery(object):
             return {}
 
         return index.search_range(self.left, self.right)
+
+
+    def __repr__(self):
+        return "<%s.%s(%s=[%r:%r])>" % (self.__module__,
+                                        self.__class__.__name__, self.name,
+                                        self.left, self.right)
 
 
 
@@ -100,6 +111,11 @@ class PhraseQuery(object):
         return documents
 
 
+    def __repr__(self):
+        return "<%s.%s(%s=%r)>" % (self.__module__, self.__class__.__name__,
+                                   self.name, self.value)
+
+
 ############################################################################
 # Boolean or complex searches
 ############################################################################
@@ -122,6 +138,11 @@ class AndQuery(object):
         return documents
 
 
+    def __repr__(self):
+        return "<%s.%s(%s)>" % (self.__module__, self.__class__.__name__,
+                                ', '.join([repr(x) for x in self.atoms]))
+
+
 
 class OrQuery(object):
 
@@ -140,6 +161,11 @@ class OrQuery(object):
                     documents[id] = sub_results[id]
 
         return documents
+
+
+    def __repr__(self):
+        return "<%s.%s(%s)>" % (self.__module__, self.__class__.__name__,
+                                ', '.join([repr(x) for x in self.atoms]))
 
 
 

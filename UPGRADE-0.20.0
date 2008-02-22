@@ -160,7 +160,7 @@ itools.handlers
 
 The changes to the handlers package are too many to describe all of them
 here, check the documentation to know how things work now.  However, some
-patterns that have a direct translation.
+patterns have a direct translation.
 
 Do not define the "__slots__" variable class anymore when implementing
 your own handler classes.
@@ -249,10 +249,10 @@ some patterns that have a direct translation.
 
 Renames in the context API include:
 
-  Before (alphabetical order)   Now
-  ----------------------------  -----------------------
-  context.handler               context.object
-  context.get_accept_language   context.accept_language
+  Before (alphabetical order)     Now
+  ------------------------------  -----------------------
+  context.handler                 context.object
+  context.get_accept_language()   context.accept_language
 
 (1) Now the "context.get_form_value" method does not automatically try
 to figure out the datatype from the field name:
@@ -310,4 +310,11 @@ parameter to explicitly define the datatype:
       ...
       return object_class(metadata)
 
+
+  Before                      Now
+  -------------------------   ------------------
+  _get_handler_names          ?
+  _get_virtual_handler        _get_object
+  get_real_handler            get_real_object
+  get_physical_path           get_canonical_path
 

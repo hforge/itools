@@ -318,3 +318,6 @@ parameter to explicitly define the datatype:
   get_real_handler            get_real_object
   get_physical_path           get_canonical_path
 
+
+(5) The methods "get_abspath" and "get_canonical_path" return Path instances,
+so that you need to str() their return value for use in catalog searches.

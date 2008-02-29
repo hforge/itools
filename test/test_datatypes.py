@@ -34,6 +34,21 @@ from itools.datatypes import (ISOTime, ISOCalendarDate, ISODateTime,
                               HTTPDate)
 
 
+def datetime_utc2local(dt):
+    """Given a naive datetime object in UTC, return a naive datetime object
+    in local time.
+    """
+    # Transform the datetime object to Unix time.
+    parts = dt.utctimetuple()
+    timestamp = mktime(parts)
+    # Change from UTC to local time. (XXX david: I'm still not sure about the
+    # line below.)
+    timestamp = timestamp - timezone
+    # Transform the Unix time to a naive datetime object.
+    return datetime.fromtimestamp(timestamp)
+
+
+
 class BasicTypeTest(TestCase):
 
     def test_Integer(self):
@@ -236,14 +251,10 @@ class HTTPDateTestCase(TestCase):
         But it needs to be converted from the local time to the universal time
         (UTC).
         """
-        # the tested date expressed in UTC
-        date = datetime(2007, 11, 6, 8, 49, 37)
-        parts = date.timetuple()
-        timestamp = mktime(parts)
-        # Convert it to local time
-        timestamp = timestamp - timezone
-        # Convert it back to datetime
-        self.expected = datetime.fromtimestamp(timestamp)
+        # The tested date expressed in UTC
+        dt = datetime(2007, 11, 6, 8, 49, 37)
+        # To local time
+        self.expected = datetime_utc2local(dt)
 
 
     def test_rfc1123(self):
@@ -316,9 +327,17 @@ class HTTPDateTestCase(TestCase):
     def test_encode(self):
         """Convert local time to universal time.
         """
-        date = self.expected
-        date = HTTPDate.encode(date)
-        self.assertEqual(date, 'Tue, 06 Nov 2007 08:49:37 GMT')
+        # November
+        dt_utc = datetime(2007, 11, 6, 8, 49, 37)
+        expected = 'Tue, 06 Nov 2007 08:49:37 GMT'
+        dt_local = datetime_utc2local(dt_utc)
+        self.assertEqual(HTTPDate.encode(dt_local), expected)
+
+        # August
+        dt_utc = datetime(2007, 8, 6, 8, 49, 37)
+        expected = 'Mon, 06 Aug 2007 08:49:37 GMT'
+        dt_local = datetime_utc2local(dt_utc)
+        self.assertEqual(HTTPDate.encode(dt_local), expected)
 
 
 

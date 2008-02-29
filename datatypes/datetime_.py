@@ -61,10 +61,13 @@ class HTTPDate(DataType):
 
         "Day" and "Month" are the English names abbreviated.
         """
-        # "formatdate" only accepts timestamps with the "usegmt" parameter
+        # The given "value" must be a naive datetime object, we consider it
+        # represents a local time.  Transform it to Unix time (always UTC).
         parts = value.timetuple()
         timestamp = mktime(parts)
 
+        # Transform the Unix time to a string in RFC 2822 format (with "GMT"
+        # instead of "-0000").
         return formatdate(timestamp, usegmt=True)
 
 

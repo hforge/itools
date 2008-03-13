@@ -1,3 +1,22 @@
+# -*- coding: UTF-8 -*-
+# Copyright (C) 2007 Henry Obein <henry@itaapy.com>
+# Copyright (C) 2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2008 Fabrice Decroix <fabrice.decroix@gmail.com>
+# Copyright (C) 2008 Yannick Martel <yannick.martel@gmail.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 # Import from the Standard Library
 from cStringIO import StringIO
 
@@ -24,9 +43,16 @@ encoding = 'UTF-8'
 
 
 def rmltopdf(filename):
+    """
+      Main function: produces a pdf file from a html-like xml document
+
+      filename: source file
+    """
+
     file = open(filename, 'r')
     stream = XMLParser(file.read())
     return document_stream(stream, StringIO(), filename, False)
+
 
 def document_stream(stream, pdf_stream, document_name, is_test=False):
     """
@@ -44,11 +70,7 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
                        'showBoundary': 0, 'allowSplitting': 1,
                      }
 
-#    pdf_table_style = {}
-    # tag alias
-    # Aliases allow you to assign more than one name to a paragraph style.
     alias_style = {}
-#    page_templates = []
     stack = []
     story = []
     while True:
@@ -87,7 +109,6 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
     if is_test == True:
         _story = list(story)
 
-    #print story
 
     doc = SimpleDocTemplate(document_name + ".pdf", pagesize = letter)
     doc.build(story)
@@ -100,6 +121,7 @@ def body_stream(stream, _tag_uri, _tag_name, _attributes, alias_style):
     """
         stream : parser stream
     """
+
     stack = []
     pdf_stylesheet = getSampleStyleSheet()
     story = []
@@ -140,6 +162,10 @@ def body_stream(stream, _tag_uri, _tag_name, _attributes, alias_style):
 
 
 def p_stream(stream , tag_uri, tag_name, attributes, pdf_stylesheet):
+    """
+        stream : parser stream
+    """
+
     stack = []
     story = []
     styles = getSampleStyleSheet()
@@ -157,22 +183,16 @@ def p_stream(stream , tag_uri, tag_name, attributes, pdf_stylesheet):
             tag_uri, tag_name, attributes = value
             if tag_name == 'p':
                 print WARNING_DTD % ('document', line_number, tag_name)
-            elif tag_name in ['i', 'em']:
-                content.append("<i>")
-            elif tag_name in ['b', 'strong']:
-                content.append("<b>")
-            elif tag_name == 'u':
-                content.append("<u>")
-            elif tag_name == 'sup':
-                content.append("<super>")
-            elif tag_name == 'sub':
-                content.append("<sub>")
+            elif tag_name in ['i', 'em', 'b', 'strong', 'u', 'sup', 'sub']:
+                content.append(create_layout(tag_name, event))
             elif tag_name == 'br':
                 continue
             elif tag_name == 'ol':
-                content += ol_stream(stream, tag_uri, tag_name, attributes, pdf_stylesheet)
+                content += ol_stream(stream, tag_uri, tag_name, attributes)
             elif tag_name == 'ul':
-                content += ul_stream(stream, tag_uri, tag_name, attributes, pdf_stylesheet)
+                content += ul_stream(stream, tag_uri, tag_name, attributes)
+            elif tag_name == 'a':
+                content += link_stream(stream, tag_uri, tag_name, attributes)
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
@@ -183,16 +203,8 @@ def p_stream(stream , tag_uri, tag_name, attributes, pdf_stylesheet):
             tag_uri, tag_name = value
             if tag_name == 'p':
                 return create_paragraph(pdf_stylesheet, {}, stack.pop(), content)
-            elif tag_name in ['i', 'em']:
-                content.append("</i>")
-            elif tag_name in ['b', 'strong']:
-                content.append("</b>")
-            elif tag_name == 'u':
-                content.append("</u>")
-            elif tag_name == 'sup':
-                content.append("</super>")
-            elif tag_name == 'sub':
-                content.append("</sub>")
+            elif tag_name in ['i', 'em', 'b', 'strong', 'u', 'sup', 'sub']:
+                content.append(create_layout(tag_name, event))
             elif tag_name == 'br':
                 content.append("<br/>")
             else:
@@ -214,6 +226,10 @@ def p_stream(stream , tag_uri, tag_name, attributes, pdf_stylesheet):
 
 
 def pre_stream(stream , tag_uri, tag_name, attributes, pdf_stylesheet):
+    """
+        stream : parser stream
+    """
+
     stack = []
     story = []
     styles = getSampleStyleSheet()
@@ -253,7 +269,10 @@ def heading_stream(stream, _tag_uri, _tag_name, _attributes, pdf_stylesheet,
                    alias_style):
     """
         Create a heading widget.
+
+        stream : parser stream
     """
+
 
     content = []
     stack = []
@@ -293,7 +312,10 @@ def heading_stream(stream, _tag_uri, _tag_name, _attributes, pdf_stylesheet,
 def hr_stream(stream, _tag_uri, _tag_name, _attributes):
     """
         Create a hr widget.
+
+        stream : parser stream
     """
+
     stack = []
     stack.append((_tag_name, _attributes, None))
     while True:
@@ -317,8 +339,11 @@ def hr_stream(stream, _tag_uri, _tag_name, _attributes):
             pass
 
 
-def ol_stream(stream , tag_uri, tag_name, attributes, pdf_stylesheet):
-    #TODO Fix the space at the begining of a new list-lign
+def ol_stream(stream , tag_uri, tag_name, attributes):
+    """
+        stream : parser stream
+    """
+
     stack = []
     story = []
     styles = getSampleStyleSheet()
@@ -351,8 +376,12 @@ def ol_stream(stream , tag_uri, tag_name, attributes, pdf_stylesheet):
             tag_uri, tag_name, attributes = value
             if tag_name == 'ol':
                 print WARNING_DTD % ('document', line_number, tag_name)
+            elif tag_name in ['i', 'em', 'b', 'strong', 'u', 'sup', 'sub']:
+                content.append(create_layout(tag_name, event))
             elif tag_name == 'li':
                 content.append("<seq> ")
+            elif tag_name == 'a':
+                content += link_stream(stream, tag_uri, tag_name, attributes)
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
@@ -362,17 +391,10 @@ def ol_stream(stream , tag_uri, tag_name, attributes, pdf_stylesheet):
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
             if tag_name == 'ol':
+                content.append("<seqReset/>")
                 return content
-            elif tag_name in ['i', 'em']:
-                content.append("</i>")
-            elif tag_name in ['b', 'strong']:
-                content.append("</b>")
-            elif tag_name == 'u':
-                content.append("</u>")
-            elif tag_name == 'sup':
-                content.append("</super>")
-            elif tag_name == 'sub':
-                content.append("</sub>")
+            elif tag_name in ['i', 'em', 'b', 'strong', 'u', 'sup', 'sub']:
+                content.append(create_layout(tag_name, event))
             elif tag_name == 'li':
                 content.append("</seq><br/>")
             else:
@@ -387,14 +409,16 @@ def ol_stream(stream , tag_uri, tag_name, attributes, pdf_stylesheet):
                 # alow to write :
                 # <para><u><i>foo</i> </u></para>
                 value = XML.encode(value) # entities
-                if has_content and content[-1] == '</br>':
-                    value = value.lstrip()
+                value = value.lstrip()
                 content.append(value)
                 has_content = True
 
 
-def ul_stream(stream , tag_uri, tag_name, attributes, pdf_stylesheet):
-    #TODO Fix the space at the begining of a new list-lign
+def ul_stream(stream , tag_uri, tag_name, attributes):
+    """
+        stream : parser stream
+    """
+
     stack = []
     story = []
     styles = getSampleStyleSheet()
@@ -415,6 +439,10 @@ def ul_stream(stream , tag_uri, tag_name, attributes, pdf_stylesheet):
                 print WARNING_DTD % ('document', line_number, tag_name)
             elif tag_name == 'li':
                 content.append('- ')
+            elif tag_name in ['i', 'em', 'b', 'strong', 'u', 'sup', 'sub']:
+                content.append(create_layout(tag_name, event))
+            elif tag_name == 'a':
+                content += link_stream(stream, tag_uri, tag_name, attributes)
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
@@ -425,16 +453,8 @@ def ul_stream(stream , tag_uri, tag_name, attributes, pdf_stylesheet):
             tag_uri, tag_name = value
             if tag_name == 'ul':
                 return content
-            elif tag_name in ['i', 'em']:
-                content.append("</i>")
-            elif tag_name in ['b', 'strong']:
-                content.append("</b>")
-            elif tag_name == 'u':
-                content.append("</u>")
-            elif tag_name == 'sup':
-                content.append("</super>")
-            elif tag_name == 'sub':
-                content.append("</sub>")
+            elif tag_name in ['i', 'em', 'b', 'strong', 'u', 'sup', 'sub']:
+                content.append(create_layout(tag_name, event))
             elif tag_name == 'li':
                 content.append("<br/>")
             else:
@@ -449,8 +469,64 @@ def ul_stream(stream , tag_uri, tag_name, attributes, pdf_stylesheet):
                 # alow to write :
                 # <para><u><i>foo</i> </u></para>
                 value = XML.encode(value) # entities
-                if has_content and content[-1] == '</br>':
-                    value = value.lstrip()
+                value = value.lstrip()
+                content.append(value)
+                has_content = True
+
+
+def link_stream(stream , tag_uri, tag_name, attributes):
+    """
+        stream : parser stream
+    """
+
+    stack = []
+    story = []
+    styles = getSampleStyleSheet()
+    styleN = styles['Normal']
+    content = []
+    has_content = False
+    stack.append((tag_name, attributes, None))
+    attrs = {}
+    if exist_attribute(attributes, ['href']):
+      attrs['href'] = attributes.get((None,'href')).lower()
+      content.append("<a href=\"%s\">" % attrs['href'] )
+    elif exist_attribute(attributes, ['id']):
+      attrs['href'] = attributes.get((None,'id')).lower()
+      content.append("<a name=\"%s\">" % attrs['href'] )
+
+    while True:
+        event, value, line_number = stream_next(stream)
+        if event == None:
+            break
+        #### START ELEMENT ####
+        if event == START_ELEMENT:
+            tag_uri, tag_name, attributes = value
+            if tag_name == 'a':
+                print WARNING_DTD % ('document', line_number, tag_name)
+            else:
+                print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
+                # unknown tag
+                stack.append((tag_name, attributes, None))
+
+        #### END ELEMENT ####
+        elif event == END_ELEMENT:
+            tag_uri, tag_name = value
+            if tag_name == 'a':
+                content.append("</a>")
+                return content
+            else:
+                print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
+                # unknown tag
+                stack.append((tag_name, attributes, None))
+
+        #### TEXT ELEMENT ####
+        elif event == TEXT:
+            value = normalize(Unicode.decode(value, encoding), True)
+            if len(value) > 0:
+                # alow to write :
+                # <para><u><i>foo</i> </u></para>
+                value = XML.encode(value) # entities
+                value = value.lstrip()
                 content.append(value)
                 has_content = True
 
@@ -480,8 +556,6 @@ def normalize(data, least=False):
 
     if least == True:
         data = u'X%sX' % data
-    # we normalize the string
-#    data = u' '.join(data.split())
     if least == True:
         return data[1:-1]
     return data
@@ -537,6 +611,29 @@ def create_preformatted(pdf_stylesheet, alias_style, element, content):
 
     widget = fn(content, style)
     return widget
+
+
+def create_layout(tag_name, event):
+    """
+        return the string used to build layout for tags
+        i, em, u, b, strong, sup, sub
+        event tells if it is an opening or a closing tag
+    """
+    ret = ""
+    end = ""
+    if event == END_ELEMENT:
+      end = "/"
+    if tag_name in ['i', 'em']:
+      ret = "i"
+    elif tag_name in ['b', 'strong']:
+      ret = "b"
+    elif tag_name == 'u':
+      ret = "u"
+    elif tag_name == 'sup':
+      ret = "super"
+    elif tag_name == 'sub':
+      ret = "sub"
+    return "<" + end + ret + ">"
 
 
 def build_start_tag(tag_name, attributes):

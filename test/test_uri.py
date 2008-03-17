@@ -22,12 +22,79 @@ from unittest import TestCase
 
 # Import from itools
 from itools.uri import get_reference, Path, Reference
+from itools.uri.parsing import grammar as uri_grammar, parse_uri
 from itools.uri.generic import normalize_path, GenericDataType
 from itools.uri.mailto import Mailto, MailtoDataType
 
 
+class ParsingTestCase(TestCase):
 
-class PathNormalizeTestCase(unittest.TestCase):
+    def test_is_valid(self):
+        """Test the examples from RFC 3986, Section 1.1.2
+        """
+        is_valid = uri_grammar.is_valid
+        a = 'ldap://[2001:db8::7]/c=GB?objectClass?one'
+        self.assertEqual(is_valid('URI-reference', a), True)
+        a = 'mailto:John.Doe@example.com'
+        self.assertEqual(is_valid('URI-reference', a), True)
+        a = 'news:comp.infosystems.www.servers.unix'
+        self.assertEqual(is_valid('URI-reference', a), True)
+        a = 'tel:+1-816-555-1212'
+        self.assertEqual(is_valid('URI-reference', a), True)
+        a = 'telnet://192.0.2.16:80/'
+        self.assertEqual(is_valid('URI-reference', a), True)
+        a = 'urn:oasis:names:specification:docbook:dtd:xml:4.1.2'
+        self.assertEqual(is_valid('URI-reference', a), True)
+
+
+    def test_urlsplit_section_1_1_2(self):
+        """Test the examples from RFC 3986, Section 1.1.2
+        """
+#       a = 'ftp://ftp.is.co.za/rfc/rfc1808.txt'
+#       b = ('ftp', 'ftp.is.co.za', '/rfc/rfc1808.txt', '', '')
+#       self.assertEqual(urlsplit(a), b)
+
+#       a = 'http://www.ietf.org/rfc/rfc2396.txt'
+#       b = ('http', 'www.ietf.org', '/rfc/rfc2396.txt', '', '')
+#       self.assertEqual(urlsplit(a), b)
+
+        a = 'ldap://[2001:db8::7]/c=GB?objectClass?one'
+        b = ('ldap', '[2001:db8::7]', '/c=GB', 'objectClass?one', '')
+        self.assertEqual(parse_uri(a), b)
+
+        a = 'mailto:John.Doe@example.com'
+        a = 'news:comp.infosystems.www.servers.unix'
+        a = 'tel:+1-816-555-1212'
+        a = 'telnet://192.0.2.16:80/'
+        a = 'urn:oasis:names:specification:docbook:dtd:xml:4.1.2'
+
+
+    def xtest_urlspslit_uri(self):
+        a = 'http://example.com/'
+        b = ('http', 'example.com', '/', '', '')
+        self.assertEqual(urlsplit(a), b)
+
+        a = 'http://example.com/a/b/c?x=1&y=5#top'
+        b = ('http', 'example.com', '/a/b/c', 'x=1&y=5', 'top')
+        self.assertEqual(urlsplit(a), b)
+
+        a = 'file:///a/b/c?x=1&y=5#top'
+        b = ('file', '', '/a/b/c', 'x=1&y=5', 'top')
+        self.assertEqual(urlsplit(a), b)
+
+        a = 'mailto:'
+        b = ('mailto', '', '', '', '')
+        self.assertEqual(urlsplit(a), b)
+
+
+#    def test_urlspslit_relative_reference(self):
+#        a = '//example.com/a/b/c?x=1&y=5#top'
+#        b = ('', 'example.com', '/a/b/c', 'x=1&y=5', 'top')
+#        self.assertEqual(urlsplit(a), b)
+
+
+
+class PathNormalizeTestCase(TestCase):
     """These tests come from the uri.generic.normalize_path docstring."""
 
     def test1(self):
@@ -56,7 +123,7 @@ class PathNormalizeTestCase(unittest.TestCase):
 
 
 
-class PathComparisonTestCase(unittest.TestCase):
+class PathComparisonTestCase(TestCase):
 
     def setUp(self):
         self.path_wo_slash = Path('/a/b/c')
@@ -94,7 +161,7 @@ class PathComparisonTestCase(unittest.TestCase):
 
 
 
-class PathResolveTestCase(unittest.TestCase):
+class PathResolveTestCase(TestCase):
 
     def test_resolve_wo_slash(self):
         before = Path('/a/b')
@@ -109,7 +176,7 @@ class PathResolveTestCase(unittest.TestCase):
 
 
 
-class PathResolve2TestCase(unittest.TestCase):
+class PathResolve2TestCase(TestCase):
 
     def test_resolve2_wo_slash(self):
         before = Path('/a/b')
@@ -124,7 +191,7 @@ class PathResolve2TestCase(unittest.TestCase):
 
 
 
-class PathPrefixTestCase(unittest.TestCase):
+class PathPrefixTestCase(TestCase):
     # TODO more test cases.
 
     def test1(self):
@@ -134,7 +201,7 @@ class PathPrefixTestCase(unittest.TestCase):
 
 
 
-class PathPathToTestCase(unittest.TestCase):
+class PathPathToTestCase(TestCase):
 
     def test_pathto_wo_slash(self):
         before = Path('/a/b')
@@ -149,7 +216,7 @@ class PathPathToTestCase(unittest.TestCase):
 
 
 
-class PathPathToRootTestCase(unittest.TestCase):
+class PathPathToRootTestCase(TestCase):
 
     def test1(self):
         a = Path('/a')
@@ -349,7 +416,7 @@ class ResolveTestCase(TestCase):
 
 
 
-class ReferenceTestCase(unittest.TestCase):
+class ReferenceTestCase(TestCase):
 
     def test_mailto(self):
         """Test if mailto references are detected."""
@@ -376,7 +443,7 @@ class ReferenceTestCase(unittest.TestCase):
 
 
 
-class MailtoTestCase(unittest.TestCase):
+class MailtoTestCase(TestCase):
 
     def setUp(self):
         self.username = 'jdavid'

@@ -18,7 +18,7 @@
 from string import ascii_letters, digits, hexdigits
 
 # Import from itools
-from grammar import Grammar, EOI, BaseContext
+from grammar import Grammar, BaseContext
 
 
 # Constants (core rules)
@@ -46,15 +46,14 @@ SLASH = frozenset('/')
 # Grammar
 abnf_grammar = Grammar()
 add_rule = abnf_grammar.add_rule
-add_rule("rulelist$", "rulelist", EOI)
 # rulelist
-add_rule("rulelist", (1, None, "rulelist'"))
+add_rule("rulelist", "rulelist'", (None, "rulelist'"))
 add_rule("rulelist'", "rule")
 add_rule("rulelist'", "*c-wsp", "c-nl")
 # rule
 add_rule("rule", "rulename", "defined-as", "elements", "c-nl")
 # rulename
-add_rule("rulename", ALPHA, (0, None, "rulename'"))
+add_rule("rulename", ALPHA, (None, "rulename'"))
 add_rule("rulename'", ALPHA)
 add_rule("rulename'", DIGIT)
 add_rule("rulename'", DASH)
@@ -67,13 +66,13 @@ add_rule("elements", "alternation", "*c-wsp")
 # c-wsp
 add_rule("c-wsp", WSP)
 add_rule("c-wsp", "c-nl", WSP)
-add_rule("*c-wsp", (0, None, "c-wsp"))
-add_rule("+c-wsp", (1, None, "c-wsp"))
+add_rule("*c-wsp", (None, "c-wsp"))
+add_rule("+c-wsp", "c-wsp", "*c-wsp")
 # c-nl
 add_rule("c-nl", "comment")
 add_rule("c-nl", "crlf")
 # comment
-add_rule("comment", frozenset(';'), (0, None, "comment'"), "crlf")
+add_rule("comment", frozenset(';'), (None, "comment'"), "crlf")
 add_rule("comment'", WSP)
 add_rule("comment'", VCHAR)
 # alternation
@@ -82,18 +81,18 @@ add_rule("alternation'",
     "*c-wsp", SLASH, "*c-wsp", "concatenation", "alternation'")
 add_rule("alternation'")
 #add_rule("alternation",
-#    "concatenation", (0, None, "*c-wsp", SLASH, "*c-wsp", "concatenation"))
+#    "concatenation", (None, "*c-wsp", SLASH, "*c-wsp", "concatenation"))
 # concatenation
 add_rule("concatenation", "repetition", "concatenation'")
 add_rule("concatenation'", "+c-wsp", "repetition", "concatenation'")
 add_rule("concatenation'")
-#add_rule("concatenation", "repetition", (0, None, "+c-wsp", "repetition"))
+#add_rule("concatenation", "repetition", (None, "+c-wsp", "repetition"))
 # repetition
-add_rule("repetition", (0, 1, "repeat"), "element")
+add_rule("repetition", (1, "repeat"), "element")
 # repeat
 add_rule("repeat", "+digit")
 add_rule("repeat", "*digit", frozenset('*'), "*digit")
-add_rule("*digit", (0, None, DIGIT))
+add_rule("*digit", (None, DIGIT))
 # element
 add_rule("element", "rulename")
 add_rule("element", "group")
@@ -109,30 +108,30 @@ add_rule("option",
     frozenset('['), "*c-wsp", "alternation", "*c-wsp", frozenset(']'))
 # char-val
 aux = frozenset([ chr(x) for x in [32, 33] + range(35, 127) ])
-add_rule("char-val", DQUOTE, (0, None, aux), DQUOTE)
+add_rule("char-val", DQUOTE, (None, aux), DQUOTE)
 # num-val
 add_rule("num-val", frozenset('%'), "num-val'")
 #add_rule("num-val'", "bin-val")
 add_rule("num-val'", "dec-val")
 add_rule("num-val'", "hex-val")
 # bin-val
-#add_rule("bin-val", frozenset('b'), "+bit", (0, 1, "bin-val'"))
-#add_rule("bin-val'", (1, None, DOT, "+bit"))
+#add_rule("bin-val", frozenset('b'), "+bit", (1, "bin-val'"))
+#add_rule("bin-val'", DOT, "+bit", (None, DOT, "+bit"))
 #add_rule("bin-val'", DASH, "+bit")
-#add_rule("+bit", (1, None, BIT))
+#add_rule("+bit", BIT, (None, BIT))
 # dec-val
-add_rule("dec-val", frozenset('d'), "+digit", (0, 1, "dec-val'"))
-add_rule("dec-val'", (1, None, DOT, "+digit"))
+add_rule("dec-val", frozenset('d'), "+digit", (1, "dec-val'"))
+add_rule("dec-val'", DOT, "+digit", (None, DOT, "+digit"))
 add_rule("dec-val'", DASH, "+digit")
-add_rule("+digit", (1, None, DIGIT))
+add_rule("+digit", DIGIT, (None, DIGIT))
 # hex-val
-add_rule("hex-val", frozenset('x'), "+hexdig", (0, 1, "hex-val'"))
-add_rule("hex-val'", (1, None, DOT, "+hexdig"))
+add_rule("hex-val", frozenset('x'), "+hexdig", (1, "hex-val'"))
+add_rule("hex-val'", DOT, "+hexdig", (None, DOT, "+hexdig"))
 add_rule("hex-val'", DASH, "+hexdig")
-add_rule("+hexdig", (1, None, HEXDIG))
+add_rule("+hexdig", HEXDIG, (None, HEXDIG))
 # prose-val
 aux = frozenset([ chr(x) for x in range(32, 62) + range(63, 127) ])
-add_rule("prose-val", frozenset('<'), (0, None, aux), frozenset('>'))
+add_rule("prose-val", frozenset('<'), (None, aux), frozenset('>'))
 # crlf
 add_rule("crlf", CR, LF)
 
@@ -176,7 +175,7 @@ class Context(BaseContext):
         return [ frozenset([x.lower(), x.upper()]) for x in value ]
 
 
-    def num_val(self, start, end, kk, value):
+    def num_val(self, start, end, value):
         return value
 
 
@@ -242,20 +241,14 @@ class Context(BaseContext):
         repeat, element = args
         if isinstance(repeat, int):
             # <n>element
-            if repeat == 0:
-                return []
-            element = [repeat] + element
-            return tuple(element)
+            return repeat * element
         else:
             # <a>*<b>element
             min, max = repeat
-            element = [min, max] + element
-            return tuple(element)
+            return (min * element) + [tuple([max] + element)]
 
 
     def concatenation(self, start, end, first, rest):
-        if isinstance(first, tuple):
-            first = [first]
         if rest is None:
             return first
         return first + rest
@@ -264,7 +257,7 @@ class Context(BaseContext):
     def concatenation_(self, start, end, *args):
         if len(args) == 0:
             return None
-        kk, first, rest = args
+        space, first, rest = args
         if isinstance(first, tuple):
             first = [first]
         if rest is None:
@@ -278,7 +271,16 @@ class Context(BaseContext):
         return [first] + rest
 
 
-    def group(self, start, end, open, space1, alternation, space2, close):
+    def alternation_(self, start, end, *args):
+        if len(args) == 0:
+            return None
+        space, space, first, rest = args
+        if rest is None:
+            return [first]
+        return [first] + rest
+
+
+    def group(self, start, end, space1, alternation, space2):
         if len(alternation) == 1:
             return alternation[0]
 
@@ -289,19 +291,10 @@ class Context(BaseContext):
         return [rulename]
 
 
-    def option(self, start, end, open, space1, alternation, space2, close):
+    def option(self, start, end, space1, alternation, space2):
         if len(alternation) == 1:
-            return tuple([0, 1] + alternation[0])
+            return [tuple([1] + alternation[0])]
         raise NotImplementedError
-
-
-    def alternation_(self, start, end, *args):
-        if len(args) == 0:
-            return None
-        space, slash, space, first, rest = args
-        if rest is None:
-            return [first]
-        return [first] + rest
 
 
     def elements(self, start, end, alternation, space):
@@ -315,11 +308,8 @@ class Context(BaseContext):
             self.grammar.add_rule(rulename, *elements)
 
 
-
-def build_grammar(data):
-    context = Context(data)
-    abnf_grammar.run('rulelist$', data, context)
-    return context.grammar
+    def rulelist(self, start, end, *args):
+        return self.grammar
 
 
 
@@ -329,10 +319,12 @@ class Parser(object):
         self.grammar = grammar
         self.context_class = context_class
         self.start_symbol = start_symbol
-        grammar.get_table(start_symbol)
+        grammar.get_table(start_symbol, context_class)
 
 
     def __call__(self, data):
         context = self.context_class(data)
         return self.grammar.run(self.start_symbol, data, context)
 
+
+build_grammar = Parser(abnf_grammar, Context, 'rulelist')

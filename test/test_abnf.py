@@ -111,8 +111,7 @@ class IPv4Context(BaseContext):
 
 
     def IPv4address(self, start, end, *args):
-        o1, dot, o2, dot, o3, dot, o4 = args
-        return o1, o2, o3, o4
+        return args
 
 
 

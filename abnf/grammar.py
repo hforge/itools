@@ -351,13 +351,21 @@ class Grammar(object):
     def pformat_stack(self, stack, data):
         line = []
         for x in stack:
-            if isinstance(x, tuple):
-                state, start = x
-                line.append('S%s' % state)
-            elif x == 0:
-                line.append('$')
-            else:
+            # Tokens
+            if isinstance(x, int):
+                if x == 0:
+                    line.append('$')
+                    continue
                 line.append(str(x))
+                continue
+            # Non-Terminals
+            if isinstance(x[0], str):
+                symbol, value = x
+                line.append(symbol)
+                continue
+            # State
+            state, start = x
+            line.append('S%d' % state)
         return ' '.join(line)
 
 
@@ -438,33 +446,26 @@ class Grammar(object):
                 if isinstance(element, tuple):
                     left = tuple(elements[:index])
                     right = tuple(elements[index+1:])
-                    if element[1] is None:
-                        # Case 1: from "min" to infinitum
-                        min = element[0]
-                        rest = tuple(element[2:])
+                    max = element[0]
+                    rest = element[1:]
+                    if max is None:
+                        # Case 1: max = infinitum
+                        rest = tuple(rest)
                         aux = self.get_internal_rulename(name)
-                        stack.append(left + (min * rest) + (aux,) + right)
+                        stack.append(left + (aux,) + right)
                         self.add_rule(aux, *(rest + (aux,)))
                         self.add_rule(aux)
-                    elif isinstance(element[1], int):
-                        # Case 2: from "min" to "max"
-                        min = element[0]
-                        max = element[1]
-                        rest = element[2:]
-                        for i in range(min, max+1):
-                            stack.append(left + (i * rest) + right)
                     else:
-                        # Case 3: exactly "n"
-                        n = element[0]
-                        rest = element[1:]
-                        stack.append(left + (n * rest) + right)
+                        # Case 2: max = n
+                        for i in range(max+1):
+                            stack.append(left + (i * rest) + right)
                     break
             else:
                 elements = list(elements)
                 rules.append(elements)
 
 
-    def get_table(self, start_symbol):
+    def get_table(self, start_symbol, context_class=None):
         """Build the parsing tables.
         """
         if start_symbol in self.tables:
@@ -543,13 +544,30 @@ class Grammar(object):
 #        self.pprint_grammar()
 #        self.build_graph(reduce_table, token_table, symbol_table)
 
-        # Change the reduce-table to a tuple
-        reduce_table = [
-            (x, self._find_handles(y)) for x, y in reduce_table.items() ]
-        reduce_table.sort()
-        reduce_table = [ y for x, y in reduce_table ]
-        reduce_table.insert(0, self._find_handles(frozenset()))
-        reduce_table = tuple(reduce_table)
+        # The semantic side of things
+        map = {}
+        if context_class is not None:
+            for name in symbols:
+                method_name = name.replace('-', '_').replace("'", '_')
+                map[name] = getattr(context_class, method_name, None)
+
+        # Finish the reduce-table
+        reduce_table[0] = frozenset()
+        # Find handles, calculate rule length and change to a tuple
+        aux = []
+        for state in reduce_table:
+            item_set = reduce_table[state]
+            shift, handles = self._find_handles(item_set)
+            # A handle is a 4 elements tuple:
+            #
+            #  rulename, stack-elements-to-pop, look-ahead, semantic-method
+            #
+            handles = [ (x, 2 * len(rules[x][y]), z, map.get(x))
+                        for x, y, z in handles ]
+            aux.append((state, (shift, handles)))
+        aux.sort()
+        aux = [ y for x, y in aux ]
+        reduce_table = tuple(aux)
 
         # Update grammar
         table = token_table, symbol_table, reduce_table
@@ -571,20 +589,21 @@ class Grammar(object):
         paths = deque()
         paths.append((stack, 0))
 
+#        file = open('/tmp/trace.txt', 'w')
         rules = self.rules
 #        loops = reduces = conflicts = 0
         while paths:
 #            loops += 1
-#            self.pprint_paths(paths, data)
+#            self.pprint_paths(paths, data, file)
             stack, data_idx = paths.pop()
             # Stop condition
             state, start = stack[-1]
-            if len(stack) == 3 and stack[1][0] == start_symbol and state == 0:
-#                print loops, reduces, conflicts
-                return stack[1][1]
-
-            # Find handles
-            shift, handles = reduce_table[state]
+            if state == 0 and len(stack) == 3:
+                last_symbol = stack[1]
+                if isinstance(last_symbol, tuple):
+                    if last_symbol[0] == start_symbol:
+#                        print loops, reduces, conflicts
+                        return last_symbol[1]
 
             # Next token
             if data_idx == len(data):
@@ -597,34 +616,33 @@ class Grammar(object):
                     msg = 'lexical error, unexpected character "%s"'
                     raise ValueError, msg % char
 
+            # Find handles
+            shift, handles = reduce_table[state]
+
 #            aux = 0
             # Reduce
-            for name, i, look_ahead in handles:
+            for name, n, look_ahead, method in handles:
                 # LR(1): reduce only if next token in look-ahead
                 if token not in look_ahead:
                     continue
 #                aux += 1
                 # Fork the stack
-                rule = rules[name][i]
-                n = len(rule)
                 if n == 0:
                     alt_stack = stack[:]
-                    children = []
+                    values = []
                 else:
-                    n = 2 * n
-                    children = [ stack[x][1] for x in range(-n, 0, 2) ]
+                    values = [ stack[x][1] for x in range(-n, 0, 2)
+                               if isinstance(stack[x], tuple) ]
                     alt_stack = stack[:-n]
                 # Callback (the semantic level)
                 last_state, last_state_start = alt_stack[-1]
-                if context is not None:
-                    method_name = name.replace('-', '_').replace("'", '_')
-                    method = getattr(context, method_name, None)
-                    if method is None:
-                        value = children
-                    else:
-                        value = method(last_state_start, data_idx, *children)
-                else:
+                if context is None:
                     value = None
+                elif method is None:
+                    value = values
+                else:
+                    value = method(context, last_state_start, data_idx,
+                                   *values)
                 # Reduce
                 alt_stack.append((name, value))
                 next_state = symbol_table.get((last_state, name), 0)
@@ -639,7 +657,7 @@ class Grammar(object):
             if shift:
                 if token != EOI:
                     data_idx += 1
-                stack.append((token, None))
+                stack.append(token)
                 state = token_table.get((state, token), 0)
                 stack.append((state, data_idx))
                 paths.append((stack, data_idx))

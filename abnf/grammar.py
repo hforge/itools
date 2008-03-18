@@ -171,7 +171,18 @@ class Grammar(object):
             name, i, j, look_ahead = item
             rule = rules[name][i]
             # Move
-            if j < len(rule) and rule[j] == symbol:
+            if j == len(rule):
+                continue
+            element = rule[j]
+            # Non terminal
+            if isinstance(symbol, str):
+                if symbol == element:
+                    next_item_set.add((name, i, j+1, look_ahead))
+                continue
+            # Terminal
+            if isinstance(element, str):
+                continue
+            if symbol in element:
                 next_item_set.add((name, i, j+1, look_ahead))
 
         return self._expand(next_item_set, first_table)
@@ -221,44 +232,34 @@ class Grammar(object):
             token += 1
         self.lexical_table = lexical_table
 
-        # Expand the grammar, replace character sets by tokens.
-        map = {}
+        # Update the grammar, replace the sets-of-characters by sets-of-tokens
         symbols = rules.keys()
         for symbol in symbols:
             for rule in rules[symbol]:
                 for j, element in enumerate(rule):
                     if isinstance(element, frozenset):
-                        terminals = [
-                            (token+1) for token, chars in enumerate(tokens)
-                            if chars.issubset(element) ]
-                        if len(terminals) == 1:
-                            rule[j] = terminals.pop()
-                        else:
-                            if element in map:
-                                rule[j] = map[element]
-                            else:
-                                aux = self.get_internal_rulename()
-                                rule[j] = aux
-                                map[element] = aux
-                                rules[aux] = []
-                                for terminal in terminals:
-                                    rules[aux].append([terminal])
+                        rule[j] = frozenset([
+                            lexical_table[ord(char)] for char in element ])
 
 
     def get_first_table(self):
         symbols = self.symbols
         rules = self.rules
+        lexical_table = self.lexical_table
 
         first = {}
         # Initialize
-        for token in self.tokens:
-            first[token] = frozenset([token])
         for symbol in symbols:
             first[symbol] = frozenset()
             for rule in rules[symbol]:
                 for i in range(len(rule)):
                     alternative = tuple(rule[i:])
-                    first[alternative] = frozenset()
+                    element = rule[i]
+                    if isinstance(element, frozenset):
+                        first[element] = element
+                        first[alternative] = element
+                    else:
+                        first[alternative] = frozenset()
         first[()] = EPSILON_SET
         # Closure
         changed = True
@@ -298,12 +299,15 @@ class Grammar(object):
     # API Private / Pretty Print
     #######################################################################
     def pformat_element(self, element):
-        if element is EOI:
-            return '$'
-        elif isinstance(element, str):
+        if isinstance(element, str):
             return element
-        else:
-            return str(element)
+        tokens = []
+        for token in element:
+            if token is EOI:
+                tokens.append('$')
+            else:
+                tokens.append(str(token))
+        return "{%s}" % ','.join(tokens)
 
 
     def pformat_rule(self, name, rule):

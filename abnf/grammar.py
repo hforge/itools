@@ -475,14 +475,63 @@ class Grammar(object):
         if start_symbol in self.tables:
             return self.tables[start_symbol]
 
+        # Build the lexical table
         if self.lexical_table is None:
             self.build_lexical_table()
+
+        # The semantic side of things
+        rules = self.rules
+        symbols = rules.keys()
+        map = {}
+        if context_class is not None:
+            for name in symbols:
+                method_name = name.replace('-', '_').replace("'", '_')
+                map[name] = getattr(context_class, method_name, None)
+
+        # Optimize the grammar, reduce rules that are just a frozenset (and
+        # not used by the semantic layer).
+        changed = True
+        while changed:
+            changed = False
+            # Merge rules of the kind: A = {tokens}
+            for symbol in symbols:
+                terminal_rules = []
+                for i, rule in enumerate(rules[symbol]):
+                    if len(rule) == 1 and isinstance(rule[0], frozenset):
+                        terminal_rules.append(i)
+                if len(terminal_rules) > 1:
+                    terminal_rules.reverse()
+                    aux = frozenset()
+                    for i in terminal_rules:
+                        aux |= rules[symbol][i][0]
+                        del rules[symbol][i]
+                    rules[symbol].append([aux])
+
+            # Inline symbols that only have one rule of the form: A = {tokens}
+            # and that are not used by the semantic layer.
+            reducible = {}
+            for symbol in symbols:
+                if map.get(symbol) is not None:
+                    continue
+                if len(rules[symbol]) == 1:
+                    rule = rules[symbol][0]
+                    if len(rule) == 1 and isinstance(rule[0], frozenset):
+                        reducible[symbol] = rule[0]
+                        del rules[symbol]
+                        changed = True
+            self.symbols = set(rules.keys())
+            symbols = self.symbols
+            # Reduce
+            for symbol in symbols:
+                for rule in rules[symbol]:
+                    for i, element in enumerate(rule):
+                        if isinstance(element, str) and element in reducible:
+                            rule[i] = reducible[element]
 
         # First table
         first = self.get_first_table()
 
         # Build the initial set (s0)
-        rules = self.rules
         s0 = set()
         for i in range(len(rules[start_symbol])):
             s0.add((start_symbol, i, 0, frozenset([EOI])))
@@ -490,8 +539,6 @@ class Grammar(object):
         # Initialize
         token_table = {}
         symbol_table = {}
-        # Local variables
-        symbols = rules.keys()
         # Build the shift-tables
         reduce_table = {1: s0}
         s0_core = get_item_set_core(s0)
@@ -547,13 +594,6 @@ class Grammar(object):
         # Debug
 #        self.pprint_grammar()
 #        self.build_graph(reduce_table, token_table, symbol_table)
-
-        # The semantic side of things
-        map = {}
-        if context_class is not None:
-            for name in symbols:
-                method_name = name.replace('-', '_').replace("'", '_')
-                map[name] = getattr(context_class, method_name, None)
 
         # Finish the reduce-table
         reduce_table[0] = frozenset()

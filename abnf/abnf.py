@@ -268,6 +268,13 @@ class Context(BaseContext):
     def alternation(self, start, end, first, rest):
         if rest is None:
             return [first]
+        # Optimize, compact structures of the form: "a" / "b"
+        if len(first) == 1 and isinstance(first[0], frozenset):
+            for i, conc in enumerate(rest):
+                if len(conc) == 1 and isinstance(conc[0], frozenset):
+                    rest[i] = [first[0] | conc[0]]
+                    return rest
+
         return [first] + rest
 
 
@@ -277,6 +284,14 @@ class Context(BaseContext):
         space, space, first, rest = args
         if rest is None:
             return [first]
+        # Optimize, compact structures of the form: "a" / "b"
+        # FIXME Duplicated code (see above)
+        if len(first) == 1 and isinstance(first[0], frozenset):
+            for i, conc in enumerate(rest):
+                if len(conc) == 1 and isinstance(conc[0], frozenset):
+                    rest[i] = [first[0] | conc[0]]
+                    return rest
+
         return [first] + rest
 
 

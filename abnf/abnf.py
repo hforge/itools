@@ -245,6 +245,8 @@ class Context(BaseContext):
         else:
             # <a>*<b>element
             min, max = repeat
+            if max is not None:
+                max = max - min
             return (min * element) + [tuple([max] + element)]
 
 

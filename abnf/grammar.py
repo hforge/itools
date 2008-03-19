@@ -396,15 +396,21 @@ class Grammar(object):
             item_set = '\\l'.join(item_set)
             lines.append('    %s [label="S%s\\n%s\l",shape="box"];\n'
                          % (state, state, item_set))
-        # The tokens transitions
+        # Build the transitions
+        transitions = {}
         for key in token_table:
-            src, label = key
+            src, token = key
             dst = token_table[key]
-            lines.append('    %s -> %s [label="%s"];\n' % (src, dst, label))
-        # The symbol transitions
+            transitions.setdefault((src, dst), set()).add(token)
         for key in symbol_table:
-            src, label = key
+            src, symbol = key
             dst = symbol_table[key]
+            transitions.setdefault((src, dst), set()).add(symbol)
+        # Add the transitions to the dot file
+        for key in transitions:
+            src, dst = key
+            label = [ x == 0 and '$' or str(x) for x in transitions[key] ]
+            label = ','.join(label)
             lines.append('    %s -> %s [label="%s"];\n' % (src, dst, label))
 
         lines.append('}\n')

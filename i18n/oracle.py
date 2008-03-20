@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 # Copyright (C) 2004 Thierry Fromon <from.t@free.fr>
 # Copyright (C) 2004, 2006-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2008 Henry Obein <henry@itaapy.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -36,6 +37,9 @@
 #
 #     Defines some words that do not belong to the language.
 ###########################################################################
+
+import unicodedata
+
 positive_chars = {
     u'¡': ['es'],
     u'¿': ['es'],
@@ -49,6 +53,20 @@ positive_chars = {
     u'ó': ['es'],
     u'ü': ['de'],
     u'ú': ['es'],
+    # Asian languages
+    # Japanese : based on particles (hiragana)
+    u'の': ['ja'],
+    u'は': ['ja'],
+    u'で': ['ja'],
+    u'に': ['ja'],
+    u'が': ['ja'],
+    u'へ': ['ja'],
+    u'を': ['ja'],
+    u'や': ['ja'],
+    u'と': ['ja'],
+    # Japanese : punctuation
+    u'、': ['ja'],
+    u'。': ['ja'],
 }
 
 negative_chars = {}
@@ -134,6 +152,121 @@ negative_words = {
 
 # One thousand words should be enough
 MAX_WORDS = 1000
+
+
+def is_asian_character(c):
+
+    # get the decimal value of the character
+    code = int('%04x' % ord(c), 16)
+
+    # http://en.wikipedia.org/wiki/Template:Unicode_chart_CJK_Compatibility
+    # CJK Compatibility
+    # Range: 3300–33FF
+    if code >= 13056 and code <= 13311:
+        return True
+
+    # http://en.wikipedia.org/wiki/Template:Unicode_chart_CJK_Compatibility_Forms
+    # CJK Compatibility Forms
+    # Range: FE30–FE4F
+    if code >= 65072 and code <= 65103:
+        return True
+
+    # http://en.wikipedia.org/wiki/Template:Unicode_chart_CJK_Compatibility_Ideographs
+    # CJK Compatibility Ideographs
+    # Range: F900–FAFF
+    if code >= 63744 and code <= 64255:
+        return True
+
+    # http://en.wikipedia.org/wiki/Template:Unicode_chart_CJK_Radicals_Supplement
+    # CJK Radicals Supplement
+    # Range: 2E80–2EFF
+    if code >= 11904 and code <= 12031:
+        return True
+
+    # http://en.wikipedia.org/wiki/Template:Unicode_chart_CJK_Strokes
+    # CJK Strokes
+    # Range: 31C0–31EF
+    if code >= 12736 and code <= 12783:
+        return True
+
+    # http://en.wikipedia.org/wiki/Template:Unicode_chart_CJK_Unified_Ideographs
+    # CJK Unified Ideographs
+    # Range: 4E00–9FBF
+    if code >= 19968 and code <= 40895:
+        return True
+
+    # http://en.wikipedia.org/wiki/Template:Unicode_chart_CJK_Unified_Ideographs_Extension_A
+    # CJK Unified Ideographs Extension A
+    # Range: 3400–4DBF
+    if code >= 13312 and code <= 19903:
+        return True
+
+    # http://en.wikipedia.org/wiki/Template:Unicode_chart_Halfwidth_and_Fullwidth_Forms
+    # Halfwidth and Fullwidth Forms
+    # Range: FF00–FFEF
+    if code >= 65280 and code <= 65519 :
+        return True
+
+    # http://en.wikipedia.org/wiki/Template:Unicode_chart_Hangul_Compatibility_Jamo
+    # Hangul Compatibility Jamo
+    # Range: 3130–318F
+    if code >= 12592 and code <= 12687:
+        return True
+
+    # http://en.wikipedia.org/wiki/Template:Unicode_chart_Hangul_Jamo
+    # Hangul Jamo
+    # Range: 1100–11FF
+    if code >= 4352 and code <= 4607:
+        return True
+
+    # http://en.wikipedia.org/wiki/Template:Unicode_chart_Hangul_Syllables
+    # Hangul Syllables
+    # Range: AC00–D7AF
+    if code >= 44032 and code <= 55215:
+        return True
+
+    # http://en.wikipedia.org/wiki/Template:Unicode_chart_Hiragana
+    # Hiragana
+    # Range: 3040–309F
+    if code >= 12352 and code <= 12447:
+        return True
+
+    # http://en.wikipedia.org/wiki/Template:Unicode_chart_Katakana
+    # Katakana
+    # Range: 30A0–30FF
+    if code >= 12448 and code <= 12543:
+        return True
+
+    # http://en.wikipedia.org/wiki/Template:Unicode_chart_Katakana_Phonetic_Extensions
+    # Katakana Phonetic Extensions
+    # Range: 31F0–31FF
+    if code >= 12784 and code <= 12799:
+        return True
+
+    return False
+
+
+def is_punctuation(c):
+    """Check if c is a punctuation symbol
+    http://en.wikipedia.org/wiki/Template:Unicode_chart_General_Punctuation
+    General Punctuation
+    Range: 2000–206F
+
+    http://en.wikipedia.org/wiki/Template:Unicode_chart_CJK_Symbols_and_Punctuation
+    CJK Symbols and Punctuation
+    Range: 3000–303F
+    """
+
+    # call isalnum before check character code
+    if c.isalnum() is False:
+        return True
+
+    # get the decimal value of the character
+    code = int('%04x' % ord(c), 16)
+    if (code >= 8192 and code <= 8303) or (code >= 12288 and code <= 12351):
+        return True
+
+    return False
 
 
 ###########################################################################

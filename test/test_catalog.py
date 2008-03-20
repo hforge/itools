@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 # Copyright (C) 2004-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
-# Copyright (C) 2007 Henry Obein <henry@itaapy.com>
+# Copyright (C) 2007-2008 Henry Obein <henry@itaapy.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -134,6 +134,157 @@ class FieldsTestCase(TestCase):
         words = list(TextField.split(text))
         self.assertEqual(words, [(u'это', 0), (u'наш', 1),  (u'дом', 2)])
 
+
+    def test_text_cjk(self):
+        text = u'東京都ルパン上映時間'
+        expected = [u'東京', u'京都', u'都ル', u'ルパ', u'パン',
+                    u'ン上', u'上映', u'映時', u'時間']
+
+        words = list(TextField.split(text))
+        expected = [ (y, x) for x, y in enumerate(expected) ]
+        self.assertEqual(words, expected)
+
+        text = u'東京'
+        expected = [u'東京']
+
+        words = list(TextField.split(text))
+        expected = [ (y, x) for x, y in enumerate(expected) ]
+        self.assertEqual(words, expected)
+
+        text = u'東京      '
+        expected = [u'東京']
+
+        words = list(TextField.split(text))
+        expected = [ (y, x) for x, y in enumerate(expected) ]
+        self.assertEqual(words, expected)
+
+        text = u'会議室を出る時、エアコンを消しましたか。'
+        expected = [u'会議', u'議室', u'室を', u'を出', u'出る',
+                    u'る時', u'エア', u'アコ', u'コン',
+                    u'ンを', u'を消', u'消し', u'しま', u'まし',
+                    u'した', u'たか']
+
+        words = list(TextField.split(text))
+        expected = [ (y, x) for x, y in enumerate(expected) ]
+        self.assertEqual(words, expected)
+
+        text = (u'처음 계획에 의하면, 웸블리 스타디움은 '
+                u'2000년 크리스마스 ')
+        expected = [u'처음', u'계획', u'획에', u'의하', u'하면',
+                    u'웸블', u'블리', u'스타', u'타디', u'디움',
+                    u'움은', u'2000년', u'크리', u'리스',
+                    u'스마', u'마스']
+
+        words = list(TextField.split(text))
+        expected = [ (y, x) for x, y in enumerate(expected) ]
+        self.assertEqual(words, expected)
+
+        text = u'法国空中客车总部（A380，A330及A340）'
+        expected = [u'法国', u'国空', u'空中', u'中客', u'客车',
+                    u'车总', u'总部', u'a380', u'a330及a340']
+
+        words = list(TextField.split(text))
+        expected = [ (y, x) for x, y in enumerate(expected) ]
+        self.assertEqual(words, expected)
+
+
+    def test_text_cjk_english(self):
+        # japanese
+        text = (u'For example, "Can\'t Buy Me Love" becomes'
+                u'「キャント・バイ・ミー・ラヴ」 (Kyanto·bai·mī·ravu).')
+        expected = [u'for', u'example', u'can', u't', u'buy', u'me', u'love',
+                    u'becomes', u'キャ', u'ャン', u'ント', u'バイ', u'ミー',
+                    u'ラヴ', u'kyanto', u'bai', u'mī', u'ravu']
+
+        words = list(TextField.split(text))
+        expected = [ (y, x) for x, y in enumerate(expected) ]
+        self.assertEqual(words, expected)
+
+        text = (u'that "東" means "East" and "北" means "North", '
+                u'"南" means "South" and "西" "West"')
+        expected = [u'that', u'東', u'means', u'east', u'and', u'北',
+                    u'means', u'north', u'南', u'means', u'south',
+                    u'and', u'西', u'west']
+
+        words = list(TextField.split(text))
+        expected = [ (y, x) for x, y in enumerate(expected) ]
+        self.assertEqual(words, expected)
+
+        text = u'East equals 東'
+        expected = [u'east', u'equals', u'東']
+
+        words = list(TextField.split(text))
+        expected = [ (y, x) for x, y in enumerate(expected) ]
+        self.assertEqual(words, expected)
+
+        text = u'East equals 東.'
+        expected = [u'east', u'equals', u'東']
+
+        words = list(TextField.split(text))
+        expected = [ (y, x) for x, y in enumerate(expected) ]
+        self.assertEqual(words, expected)
+
+        text = u'East equals 東。'
+        expected = [u'east', u'equals', u'東']
+
+        words = list(TextField.split(text))
+        expected = [ (y, x) for x, y in enumerate(expected) ]
+        self.assertEqual(words, expected)
+
+        # hangul
+        text = u'웸블리 경기장(영어: Wembley Stadium)은 영국 런던 웸블리에'
+        expected = [u'웸블', u'블리', u'경기', u'기장', u'영어',
+                    u'wembley', u'stadium', u'은', u'영국', u'런던',
+                    u'웸블', u'블리', u'리에']
+
+        words = list(TextField.split(text))
+        expected = [ (y, x) for x, y in enumerate(expected) ]
+        self.assertEqual(words, expected)
+
+        text = (u'예를 들면 Paris-Roubaix, Tour of Flanders, '
+                u'Liege Bastogne-Liege 등이다.')
+        expected = [u'예를', u'들면', u'paris', u'roubaix', u'tour',
+                    u'of', u'flanders', u'liege', u'bastogne',
+                    u'liege', u'등이', u'이다']
+
+        words = list(TextField.split(text))
+        expected = [ (y, x) for x, y in enumerate(expected) ]
+        self.assertEqual(words, expected)
+
+        # chinese
+        text = (u'首頁 arrow English Version .... 2008 '
+                u'東吳大學GIS技術支援中心.')
+        expected = [u'首頁', u'arrow', u'english', u'version', u'2008',
+                    u'東吳', u'吳大', u'大學', u'學g', u'gi', u'is', u's技',
+                    u'技術', u'術支', u'支援', u'援中', u'中心']
+
+        words = list(TextField.split(text))
+        expected = [ (y, x) for x, y in enumerate(expected) ]
+        self.assertEqual(words, expected)
+
+
+    def test_text_cjk_stop_words(self):
+        text = (u'파리〃(프랑스어: Paris, 문〈화어: 빠리)는 프랑스「의 '
+                u'수도로, 프랑스 북부 일』드 프랑스 지방의 중〒앙에 있다. '
+                u'센 강 중류〰에 있으며, 면적은 105㎢. 인구〤는 1999년 '
+                u'기준〴으로 213만 명이다. 파리？시의 행정 구역》은 '
+                u'1~20구로 나뉘어〇있다.')
+
+        expected = [u'파리', u'프랑', u'랑스', u'스어', u'paris',
+                    u'문', u'화어', u'빠리', u'는', u'프랑',
+                    u'랑스', u'의', u'수도', u'도로', u'프랑',
+                    u'랑스', u'북부', u'일', u'드', u'프랑',
+                    u'랑스', u'지방', u'방의', u'중', u'앙에',
+                    u'있다', u'센', u'강', u'중류', u'에', u'있으',
+                    u'으며', u'면적', u'적은', u'105', u'인구',
+                    u'는', u'1999년', u'기준', u'으로', u'213만',
+                    u'명이', u'이다', u'파리', u'시의', u'행정',
+                    u'구역', u'은', u'1', u'20구로', u'나뉘',
+                    u'뉘어', u'있다']
+
+        words = list(TextField.split(text))
+        expected = [ (y, x) for x, y in enumerate(expected) ]
+        self.assertEqual(words, expected)
 
 
 class CatalogTestCase(TestCase):

@@ -164,13 +164,9 @@ class Context(BaseContext):
         return value
 
 
-    def hex_val(self, start, end, *args):
+    def hex_val_1(self, start, end, *args):
         value = self.data[start+1:end]
-        if '-' in value:
-            # Range: %x30-39
-            a, b = [ eval('0x%s' % x) for x in value.split('-') ]
-            return frozenset([ chr(x) for x in range(a, b+1) ])
-        elif '.' in value:
+        if '.' in value:
             # Concatenation: %x0D.0A
             value = [ eval('0x%s' % x) for x in value.split('.') ]
             return [ frozenset(chr(x)) for x in value ]
@@ -180,12 +176,16 @@ class Context(BaseContext):
             return frozenset(chr(value))
 
 
-    def dec_val(self, start, end, *args):
+    def hex_val_2(self, start, end, left, right):
         value = self.data[start+1:end]
-        if '-' in value:
-            # Range: %x30-39
-            raise NotImplementedError
-        elif '.' in value:
+        # Range: %x30-39
+        a, b = [ eval('0x%s' % x) for x in value.split('-') ]
+        return frozenset([ chr(x) for x in range(a, b+1) ])
+
+
+    def dec_val_1(self, start, end, *args):
+        value = self.data[start+1:end]
+        if '.' in value:
             # Concatenation: %x0D.0A
             raise NotImplementedError
         else:
@@ -194,30 +194,40 @@ class Context(BaseContext):
             return frozenset(chr(value))
 
 
+    def dec_val_2(self, start, end, left, right):
+        value = self.data[start+1:end]
+        # Range: %x30-39
+        raise NotImplementedError
+
+
     def prose_val(self, start, end, *args):
         return []
 
 
+    def element_1(self, start, end, rulename):
+        # element = rulename
+        return core_rules.get(rulename, [rulename])
+
+
     def element(self, start, end, value):
-        # rulename
-        if isinstance(value, str):
-            return core_rules.get(value, [value])
-        elif isinstance(value, frozenset):
+        if isinstance(value, frozenset):
             return [value]
         return value
 
 
-    def repeat(self, start, end, *args):
+    def repeat_1(self, start, end, value):
         value = self.data[start:end]
-        if '*' in value:
-            # repeat = *digit "*" *digit
-            min, max = value.split('*')
-            min = min and int(min) or 0
-            max = max and int(max) or None
-            return min, max
-        else:
-            # repeat = 1*digit
-            return int(value)
+        # repeat = 1*digit
+        return int(value)
+
+
+    def repeat_2(self, start, end, left, right):
+        value = self.data[start:end]
+        # repeat = *digit "*" *digit
+        min, max = value.split('*')
+        min = min and int(min) or 0
+        max = max and int(max) or None
+        return min, max
 
 
     def repetition(self, start, end, *args):

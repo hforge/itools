@@ -47,6 +47,18 @@ def merge_item_sets(a, b):
     return frozenset(c)
 
 
+
+def is_item_in_item_set(item_set, item):
+    name, i, j, look_ahead = item
+    for b_item in item_set:
+        b_name, b_i, b_j, b_look_ahead = b_item
+        if b_name == name and b_i == i and b_j == j:
+            if look_ahead.issubset(b_look_ahead):
+                return True
+    return False
+
+
+
 def add_item_to_item_set(item_set, item):
     """Insert the given item into the given item-set, where an item is
     identified by the tuple (name, i, j), the look-ahead is merged.
@@ -140,7 +152,8 @@ class Grammar(object):
             # Expand
             for i in range(len(rules[name])):
                 new_item = (name, i, 0, look_ahead)
-                add_item_to_item_set(item_set, new_item)
+                if not is_item_in_item_set(new_item_set, new_item):
+                    add_item_to_item_set(item_set, new_item)
 
         return frozenset(new_item_set)
 
@@ -488,8 +501,15 @@ class Grammar(object):
         map = {}
         if context_class is not None:
             for name in symbols:
+                map[name] = False
                 method_name = name.replace('-', '_').replace("'", '_')
-                map[name] = getattr(context_class, method_name, None)
+                default = getattr(context_class, method_name, None)
+                for i in range(len(rules[name])):
+                    aux = '%s_%s' % (method_name, i + 1)
+                    method = getattr(context_class, aux, default)
+                    map[(name, i)] = method
+                    if method is not None:
+                        map[name] = True
 
         # Optimize the grammar, reduce rules that are just a frozenset (and
         # not used by the semantic layer).
@@ -514,7 +534,7 @@ class Grammar(object):
             # and that are not used by the semantic layer.
             reducible = {}
             for symbol in symbols:
-                if map.get(symbol) is not None:
+                if map.get(symbol):
                     continue
                 if len(rules[symbol]) == 1:
                     rule = rules[symbol][0]
@@ -533,6 +553,7 @@ class Grammar(object):
 
         # First table
         first = self.get_first_table()
+#        self.pprint_grammar()
 
         # Build the initial set (s0)
         s0 = set()
@@ -595,7 +616,6 @@ class Grammar(object):
                 symbol_table[(src_state, symbol)] = dst_state
 
         # Debug
-#        self.pprint_grammar()
 #        self.build_graph(reduce_table, token_table, symbol_table)
 
         # Finish the reduce-table
@@ -609,7 +629,7 @@ class Grammar(object):
             #
             #  rulename, stack-elements-to-pop, look-ahead, semantic-method
             #
-            handles = [ (x, 2 * len(rules[x][y]), z, map.get(x))
+            handles = [ (x, 2 * len(rules[x][y]), z, map.get((x, y)))
                         for x, y, z in handles ]
             aux.append((state, (shift, handles)))
         aux.sort()
@@ -678,12 +698,6 @@ class Grammar(object):
                 # Shift
                 if shift:
                     i += 1
-                elif state == 0 and len(stack) == 3:
-                    # Stop condition
-                    last_symbol = stack[1]
-                    if isinstance(last_symbol, tuple):
-                        if last_symbol[0] == start_symbol:
-                            return last_symbol[1]
                 else:
                     paths.pop(i)
                 # Reduce
@@ -707,8 +721,12 @@ class Grammar(object):
                         value = values
                     else:
                         value = method(context, last[1], data_idx, *values)
-                    #
+                    # Next state
                     next_state = symbol_table.get((last[0], name), 0)
+                    # Stop Condition
+                    if name == start_symbol and token == 0:
+                        if len(stack2) == 1:
+                            return value
                     stack2.append((name, value))
                     stack2.append((next_state, data_idx))
                     paths.append(stack2)

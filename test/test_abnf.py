@@ -33,7 +33,9 @@ lr1_grammar = build_grammar(
     'B = "x"\r\n')
 
 
-integer_grammar = build_grammar(
+expression_grammar = build_grammar(
+    'E = E "+" E\r\n'
+    'E = I\r\n'
     'I = 1*DIGIT\r\n')
 
 
@@ -71,12 +73,15 @@ class SyntaxTestCase(TestCase):
         self.assertEqual(is_valid('S', 'aaaaxbbb'), False)
 
 
-    def test_integer(self):
-        is_valid = integer_grammar.is_valid
-        self.assertEqual(is_valid('I', '32'), True)
-        self.assertEqual(is_valid('I', '14342523543365634'), True)
-        self.assertEqual(is_valid('I', '1434252x5435634'), False)
-        self.assertEqual(is_valid('I', ''), False)
+    def test_expression(self):
+        is_valid = expression_grammar.is_valid
+        self.assertEqual(is_valid('E', '32'), True)
+        self.assertEqual(is_valid('E', '14342523543365634'), True)
+        self.assertEqual(is_valid('E', '1434252x5435634'), False)
+        self.assertEqual(is_valid('E', ''), False)
+        self.assertEqual(is_valid('E', '32+7'), True)
+        self.assertEqual(is_valid('E', '32 + 7'), False)
+        self.assertEqual(is_valid('E', '32+'), False)
 
 
     def test_ipv4address(self):
@@ -97,10 +102,18 @@ class SyntaxTestCase(TestCase):
 ###########################################################################
 # Semantic
 ###########################################################################
-class IntegerContext(BaseContext):
+class ExpressionContext(BaseContext):
 
     def I(self, start, end, *args):
         return int(self.data[start:end])
+
+
+    def E_1(self, start, end, left, right):
+        return left + right
+
+
+    def E_2(self, start, end, value):
+        return value
 
 
 
@@ -115,18 +128,20 @@ class IPv4Context(BaseContext):
 
 
 
-parse_integer = Parser(integer_grammar, IntegerContext, 'I')
+parse_expression = Parser(expression_grammar, ExpressionContext, 'E')
 parse_ipv4address = Parser(ip_grammar, IPv4Context, 'IPv4address')
 
 
 
 class SemanticTestCase(TestCase):
 
-    def test_integer(self):
-        self.assertEqual(parse_integer('32'), 32)
-        self.assertEqual(parse_integer('1434252354335436'), 1434252354335436)
-        self.assertRaises(ValueError, parse_integer, '1434252x5435634')
-        self.assertRaises(ValueError, parse_integer, '')
+    def test_expression(self):
+        self.assertEqual(parse_expression('32'), 32)
+        self.assertEqual(parse_expression('14342523543354'), 14342523543354)
+        self.assertRaises(ValueError, parse_expression, '1434252x5435634')
+        self.assertRaises(ValueError, parse_expression, '')
+        self.assertEqual(parse_expression('32+7'), 39)
+        self.assertEqual(parse_expression('32+7+2'), 41)
 
 
     def test_ipv4address(self):

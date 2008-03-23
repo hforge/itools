@@ -44,4 +44,4 @@ def bench():
 
 if __name__ == '__main__':
     bench()
-    profile('parse_uri("http://example.com/")')
+#    profile('parse_uri("http://example.com/")')

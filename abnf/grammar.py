@@ -99,13 +99,13 @@ class Grammar(object):
         else:
             # Used to expand repetition and optionality rules.
             n = len(name)
-            prefixes = [ x[:-n] for x in symbols if x[-n:] == name ]
-            prefixes = [ x for x in prefixes if x == len(x) * "_" ]
-            if prefixes:
-                prefixes.sort()
-                name = '_' + prefixes[-1] + name
+            suffixes = [ x[n:] for x in symbols if x.startswith(name) ]
+            suffixes = [ x for x in suffixes if x == len(x) * "'" ]
+            if suffixes:
+                suffixes.sort()
+                name = name + suffixes[-1] + "'"
             else:
-                name = '_' + name
+                name = name + "'"
 
         symbols.add(name)
         return name

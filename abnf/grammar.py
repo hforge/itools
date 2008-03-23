@@ -377,12 +377,9 @@ class Grammar(object):
         if file is None:
             file = sys.stdout
 
-        i = 0
-        while i < len(paths):
-            stack, data_idx = paths[i]
+        for stack in paths:
             line = self.pformat_stack(stack, data)
-            file.write('(%s) %s\n' % (i, line))
-            i += 1
+            file.write('%s\n' % line)
         file.write('\n')
 
 
@@ -636,81 +633,85 @@ class Grammar(object):
         #
         # The "start" field is a reference to the input stream.
         stack = [(1, 0)]
-        paths = deque()
-        paths.append((stack, 0))
+        paths = [stack]
 
-#        file = open('/tmp/trace.txt', 'w')
         rules = self.rules
-#        loops = reduces = conflicts = 0
-        while paths:
-#            loops += 1
-#            self.pprint_paths(paths, data, file)
-            stack, data_idx = paths.pop()
-            # Stop condition
-            state, start = stack[-1]
-            if state == 0 and len(stack) == 3:
-                last_symbol = stack[1]
-                if isinstance(last_symbol, tuple):
-                    if last_symbol[0] == start_symbol:
-#                        print loops, reduces, conflicts
-                        return last_symbol[1]
+        data_len = len(data)
+        # Read the first token
+        if data_len == 0:
+            token = EOI
+        else:
+            char = data[0]
+            token = lexical_table[ord(char)]
+            if token is None:
+                msg = 'lexical error, unexpected character "%s"'
+                raise ValueError, msg % char
 
+        data_idx = 0
+        while data_idx < data_len:
+#            print '===== %s: %s (%s) =====' % (data_idx, token, repr(char))
+            data_idx += 1
+            # Shift on all the parsing paths
+            for stack in paths:
+                state, start = stack[-1]
+                next_state = token_table.get((state, token), 0)
+                stack.append(token)
+                stack.append((next_state, data_idx))
+
+#            self.pprint_paths(paths, data)
             # Next token
-            if data_idx == len(data):
+            if data_idx >= data_len:
                 token = EOI
             else:
                 char = data[data_idx]
-                n = ord(char)
-                token = lexical_table[n]
+                token = lexical_table[ord(char)]
                 if token is None:
                     msg = 'lexical error, unexpected character "%s"'
                     raise ValueError, msg % char
 
-            # Find handles
-            shift, handles = reduce_table[state]
-
-#            aux = 0
             # Reduce
-            for name, n, look_ahead, method in handles:
-                # LR(1): reduce only if next token in look-ahead
-                if token not in look_ahead:
-                    continue
-#                aux += 1
-                # Fork the stack
-                if n == 0:
-                    alt_stack = stack[:]
-                    values = []
+            i = 0
+            while i < len(paths):
+                stack = paths[i]
+                state, start = stack[-1]
+                shift, handles = reduce_table[state]
+                # Shift
+                if shift:
+                    i += 1
+                elif state == 0 and len(stack) == 3:
+                    # Stop condition
+                    last_symbol = stack[1]
+                    if isinstance(last_symbol, tuple):
+                        if last_symbol[0] == start_symbol:
+                            return last_symbol[1]
                 else:
-                    values = [ stack[x][1] for x in range(-n, 0, 2)
-                               if isinstance(stack[x], tuple) ]
-                    alt_stack = stack[:-n]
-                # Callback (the semantic level)
-                last_state, last_state_start = alt_stack[-1]
-                if context is None:
-                    value = None
-                elif method is None:
-                    value = values
-                else:
-                    value = method(context, last_state_start, data_idx,
-                                   *values)
+                    paths.pop(i)
                 # Reduce
-                alt_stack.append((name, value))
-                next_state = symbol_table.get((last_state, name), 0)
-                alt_stack.append((next_state, data_idx))
-                paths.append((alt_stack, data_idx))
-
-#            reduces += aux
-#            if shift and aux or aux > 1:
-#                conflicts += 1
-
-            # Shift
-            if shift:
-                if token != EOI:
-                    data_idx += 1
-                stack.append(token)
-                state = token_table.get((state, token), 0)
-                stack.append((state, data_idx))
-                paths.append((stack, data_idx))
+                for name, n, look_ahead, method in handles:
+                    # Look-Ahead
+                    if token not in look_ahead:
+                        continue
+                    # Fork the stack
+                    if n == 0:
+                        stack2 = stack[:]
+                        values = []
+                    else:
+                        values = [ stack[x][1] for x in range(-n, 0, 2)
+                                   if isinstance(stack[x], tuple) ]
+                        stack2 = stack[:-n]
+                    # Semantic action
+                    last = stack2[-1]
+                    if context is None:
+                        value = None
+                    elif method is None:
+                        value = values
+                    else:
+                        value = method(context, last[1], data_idx, *values)
+                    #
+                    next_state = symbol_table.get((last[0], name), 0)
+                    stack2.append((name, value))
+                    stack2.append((next_state, data_idx))
+                    paths.append(stack2)
 
         raise ValueError, 'grammar error'
 

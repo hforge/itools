@@ -47,52 +47,41 @@ SLASH = frozenset('/')
 abnf_grammar = Grammar()
 add_rule = abnf_grammar.add_rule
 # rulelist
-add_rule("rulelist", "rulelist'", (None, "rulelist'"))
-add_rule("rulelist'", "rule")
-add_rule("rulelist'", "*c-wsp", "c-nl")
+add_rule("rulelist", "rulelist-item", (None, "rulelist-item"))
+add_rule("rulelist-item", "rule")
+add_rule("rulelist-item", "c-wsp*", "c-nl")
 # rule
-add_rule("rule", "rulename", "defined-as", "elements", "c-nl")
+add_rule("rule", "rulename", "defined-as", "alternation", "c-wsp*", "c-nl")
 # rulename
-add_rule("rulename", ALPHA, (None, "rulename'"))
-add_rule("rulename'", ALPHA)
-add_rule("rulename'", DIGIT)
-add_rule("rulename'", DASH)
+add_rule("rulename", ALPHA, (None, ALPHA | DIGIT | DASH))
 # defined-as
-add_rule("defined-as", "*c-wsp", "defined-as'", "*c-wsp")
-add_rule("defined-as'", EQUAL)
-#add_rule("defined-as'", EQUAL, SLASH)
-# elements
-add_rule("elements", "alternation", "*c-wsp")
+add_rule("defined-as", "c-wsp*", EQUAL, "c-wsp*")
+#add_rule("defined-as", "c-wsp*", EQUAL, SLASH, "c-wsp*")
 # c-wsp
 add_rule("c-wsp", WSP)
 add_rule("c-wsp", "c-nl", WSP)
-add_rule("*c-wsp", (None, "c-wsp"))
-add_rule("+c-wsp", "c-wsp", "*c-wsp")
+add_rule("c-wsp+", "c-wsp", "c-wsp*")
+add_rule("c-wsp*", (None, "c-wsp"))
 # c-nl
 add_rule("c-nl", "comment")
 add_rule("c-nl", "crlf")
 # comment
-add_rule("comment", frozenset(';'), (None, "comment'"), "crlf")
-add_rule("comment'", WSP)
-add_rule("comment'", VCHAR)
+add_rule("comment", frozenset(';'), (None, WSP | VCHAR), "crlf")
 # alternation
-add_rule("alternation", "concatenation", "alternation'")
-add_rule("alternation'",
-    "*c-wsp", SLASH, "*c-wsp", "concatenation", "alternation'")
-add_rule("alternation'")
-#add_rule("alternation",
-#    "concatenation", (None, "*c-wsp", SLASH, "*c-wsp", "concatenation"))
+add_rule("alternation", "concatenation", "alternation-tail")
+add_rule("alternation-tail", "c-wsp*", SLASH, "c-wsp*", "concatenation",
+    "alternation-tail")
+add_rule("alternation-tail")
 # concatenation
-add_rule("concatenation", "repetition", "concatenation'")
-add_rule("concatenation'", "+c-wsp", "repetition", "concatenation'")
-add_rule("concatenation'")
-#add_rule("concatenation", "repetition", (None, "+c-wsp", "repetition"))
+add_rule("concatenation", "repetition", "concatenation-tail")
+add_rule("concatenation-tail", "c-wsp+", "repetition", "concatenation-tail")
+add_rule("concatenation-tail")
 # repetition
 add_rule("repetition", (1, "repeat"), "element")
 # repeat
-add_rule("repeat", "+digit")
-add_rule("repeat", "*digit", frozenset('*'), "*digit")
-add_rule("*digit", (None, DIGIT))
+add_rule("repeat", "digit+")
+add_rule("repeat", "digit*", frozenset('*'), "digit*")
+add_rule("digit*", (None, DIGIT))
 # element
 add_rule("element", "rulename")
 add_rule("element", "group")
@@ -102,33 +91,29 @@ add_rule("element", "num-val")
 add_rule("element", "prose-val")
 # group
 add_rule("group",
-    frozenset('('), "*c-wsp", "alternation", "*c-wsp", frozenset(')'))
+    frozenset('('), "c-wsp*", "alternation", "c-wsp*", frozenset(')'))
 # option
 add_rule("option",
-    frozenset('['), "*c-wsp", "alternation", "*c-wsp", frozenset(']'))
+    frozenset('['), "c-wsp*", "alternation", "c-wsp*", frozenset(']'))
 # char-val
 aux = frozenset([ chr(x) for x in [32, 33] + range(35, 127) ])
 add_rule("char-val", DQUOTE, (None, aux), DQUOTE)
 # num-val
-add_rule("num-val", frozenset('%'), "num-val'")
-#add_rule("num-val'", "bin-val")
-add_rule("num-val'", "dec-val")
-add_rule("num-val'", "hex-val")
+#add_rule("num-val", frozenset('%'), "bin-val")
+add_rule("num-val", frozenset('%'), "dec-val")
+add_rule("num-val", frozenset('%'), "hex-val")
 # bin-val
-#add_rule("bin-val", frozenset('b'), "+bit", (1, "bin-val'"))
-#add_rule("bin-val'", DOT, "+bit", (None, DOT, "+bit"))
-#add_rule("bin-val'", DASH, "+bit")
-#add_rule("+bit", BIT, (None, BIT))
+#add_rule("bin-val", frozenset('b'), "bit+", (None, DOT, "bit+"))
+#add_rule("bin-val", frozenset('b'), "bit+", DASH, "bit+")
+#add_rule("bit+", BIT, (None, BIT))
 # dec-val
-add_rule("dec-val", frozenset('d'), "+digit", (1, "dec-val'"))
-add_rule("dec-val'", DOT, "+digit", (None, DOT, "+digit"))
-add_rule("dec-val'", DASH, "+digit")
-add_rule("+digit", DIGIT, (None, DIGIT))
+add_rule("dec-val", frozenset('d'), "digit+", (None, DOT, "digit+"))
+add_rule("dec-val", frozenset('d'), "digit+", DASH, "digit+")
+add_rule("digit+", DIGIT, (None, DIGIT))
 # hex-val
-add_rule("hex-val", frozenset('x'), "+hexdig", (1, "hex-val'"))
-add_rule("hex-val'", DOT, "+hexdig", (None, DOT, "+hexdig"))
-add_rule("hex-val'", DASH, "+hexdig")
-add_rule("+hexdig", HEXDIG, (None, HEXDIG))
+add_rule("hex-val", frozenset('x'), "hexdig+", (None, DOT, "hexdig+"))
+add_rule("hex-val", frozenset('x'), "hexdig+", DASH, "hexdig+")
+add_rule("hexdig+", HEXDIG, (None, HEXDIG))
 # prose-val
 aux = frozenset([ chr(x) for x in range(32, 62) + range(63, 127) ])
 add_rule("prose-val", frozenset('<'), (None, aux), frozenset('>'))
@@ -256,7 +241,7 @@ class Context(BaseContext):
         return first + rest
 
 
-    def concatenation_(self, start, end, *args):
+    def concatenation_tail(self, start, end, *args):
         if len(args) == 0:
             return None
         space, first, rest = args
@@ -280,7 +265,7 @@ class Context(BaseContext):
         return [first] + rest
 
 
-    def alternation_(self, start, end, *args):
+    def alternation_tail(self, start, end, *args):
         if len(args) == 0:
             return None
         space, space, first, rest = args
@@ -314,14 +299,10 @@ class Context(BaseContext):
         raise NotImplementedError
 
 
-    def elements(self, start, end, alternation, space):
-        return alternation
-
-
-    def rule(self, start, end, rulename, defined_as, elements, tail):
+    def rule(self, start, end, rulename, defined_as, alternation, *args):
         if rulename in core_rules:
             raise ValueError, 'the "%s" rule is reserved' % value
-        for elements in elements:
+        for elements in alternation:
             self.grammar.add_rule(rulename, *elements)
 
 

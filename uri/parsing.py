@@ -122,8 +122,20 @@ class URIContext(BaseContext):
         return authority, path
 
 
+    def relative_part(self, start, end, authority, path):
+        return authority, path
+
+
     def URI(self, start, end, scheme, hier_part, query, fragment):
+        query = query and query[0] or ''
+        fragment = fragment and fragment[0] or ''
         return scheme, hier_part[0], hier_part[1], query, fragment
+
+
+    def relative_ref(self, start, end, relative_part, query, fragment):
+        query = query and query[0] or ''
+        fragment = fragment and fragment[0] or ''
+        return ('', relative_part[0], relative_part[1], query, fragment)
 
 
     def URI_reference(self, start, end, uri):
@@ -131,8 +143,6 @@ class URIContext(BaseContext):
 
 
 parse_uri = Parser(grammar, URIContext, 'URI-reference')
-
-
 
 
 

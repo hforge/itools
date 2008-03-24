@@ -34,8 +34,9 @@ lr1_grammar = build_grammar(
 
 
 expression_grammar = build_grammar(
-    'E = E "+" E\r\n'
     'E = I\r\n'
+    'E = E "+" E\r\n'
+    'E = E "*" E\r\n'
     'I = 1*DIGIT\r\n')
 
 
@@ -108,12 +109,16 @@ class ExpressionContext(BaseContext):
         return int(self.data[start:end])
 
 
-    def E_1(self, start, end, left, right):
+    def E_1(self, start, end, value):
+        return value
+
+
+    def E_2(self, start, end, left, right):
         return left + right
 
 
-    def E_2(self, start, end, value):
-        return value
+    def E_3(self, start, end, left, right):
+        return left * right
 
 
 
@@ -142,6 +147,8 @@ class SemanticTestCase(TestCase):
         self.assertRaises(ValueError, parse_expression, '')
         self.assertEqual(parse_expression('32+7'), 39)
         self.assertEqual(parse_expression('32+7+2'), 41)
+        self.assertEqual(parse_expression('3+2*5'), 13)
+        self.assertEqual(parse_expression('3*2+5'), 11)
 
 
     def test_ipv4address(self):

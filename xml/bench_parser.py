@@ -15,32 +15,20 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-import profile
-from time import time
+import time
 
 # Import from itools
-import itools
-from itools.xml import XMLFile, XMLParser
-
-
-
-# itools.xml.parser: 0.0062
-##data = open('bench_parser.xml').read()
-##t0 = time()
-##for event, value, line_number in XMLParser(data):
-##    pass
-##print time() - t0
-
+from itools.xml import XMLParser
 
 if __name__ == '__main__':
-    if 1:
-        # The old parser: 0.0234 (reference time)
-        # The new parser: 0.0309
-        doc = XMLFile('bench_parser.xml')
-        t0 = time()
-        doc.load_state()
-        t1 = time()
-        print itools.__version__, t1 - t0
-    else:
-        data = open('bench_parser.xml').read()
-        profile.run('list(XMLParser(data))')
+
+    data = open('bench_parser.xml').read()
+    while 1:
+        rounds = 100000
+        r = range(rounds)
+        t0 = time.clock()
+        for i in r:
+            for event, value, line_number in XMLParser(data):
+                pass
+        t1 = time.clock()
+        print "Average time : %f ms" % ((t1 - t0) * (1000. / float(rounds)))

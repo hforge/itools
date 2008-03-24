@@ -365,34 +365,22 @@ class Grammar(object):
         return lines
 
 
-    def pformat_stack(self, stack, data):
-        line = []
-        for x in stack:
-            # Tokens
-            if isinstance(x, int):
-                if x == 0:
-                    line.append('$')
-                    continue
-                line.append(str(x))
-                continue
-            # Non-Terminals
-            if isinstance(x[0], str):
-                symbol, value = x
-                line.append(symbol)
-                continue
-            # State
-            state, start = x
-            line.append('S%d' % state)
-        return ' '.join(line)
-
-
-    def pprint_paths(self, paths, data, file=None):
+    def pprint_stack(self, stack, active_nodes, data, file=None):
         if file is None:
             file = sys.stdout
 
-        for stack in paths:
-            line = self.pformat_stack(stack, data)
-            file.write('%s\n' % line)
+        lines = []
+        for node_idx in active_nodes:
+            last_node, symbol, state, start, value = stack[node_idx]
+            line = []
+            while last_node is not None:
+                if symbol == 0:
+                    line.insert(0, '$ S%s' % state)
+                else:
+                    line.insert(0, '%s S%s' % (symbol, state))
+                last_node, symbol, state, start, value = stack[last_node]
+            line = ' '.join(line)
+            file.write('S1 %s\n' % line)
         file.write('\n')
 
 
@@ -629,7 +617,7 @@ class Grammar(object):
             #
             #  rulename, stack-elements-to-pop, look-ahead, semantic-method
             #
-            handles = [ (x, 2 * len(rules[x][y]), z, map.get((x, y)))
+            handles = [ (x, len(rules[x][y]), z, map.get((x, y)))
                         for x, y, z in handles ]
             aux.append((state, (shift, handles)))
         aux.sort()
@@ -649,11 +637,12 @@ class Grammar(object):
         lexical_table = self.lexical_table
         # Initialize the stack, where the stack is a list of tuples:
         #
-        #   [(state, start), ...]
+        #   [(last_node, symbol, state, start, value), ...]
         #
         # The "start" field is a reference to the input stream.
-        stack = [(1, 0)]
-        paths = [stack]
+        stack = deque()
+        stack.append((None, None, 1, 0, None))
+        active_nodes = [0]
 
         rules = self.rules
         data_len = len(data)
@@ -669,16 +658,16 @@ class Grammar(object):
 
         data_idx = 0
         while data_idx < data_len:
-#            print '===== %s: %s (%s) =====' % (data_idx, token, repr(char))
             data_idx += 1
             # Shift on all the parsing paths
-            for stack in paths:
-                state, start = stack[-1]
+            new_active_nodes = []
+            for node_idx in active_nodes:
+                last_node, symbol, state, start, value = stack[node_idx]
                 next_state = token_table.get((state, token), 0)
-                stack.append(token)
-                stack.append((next_state, data_idx))
+                new_active_nodes.append(len(stack))
+                stack.append((node_idx, token, next_state, data_idx, None))
+            active_nodes = new_active_nodes
 
-#            self.pprint_paths(paths, data)
             # Next token
             if data_idx >= data_len:
                 token = EOI
@@ -691,45 +680,44 @@ class Grammar(object):
 
             # Reduce
             i = 0
-            while i < len(paths):
-                stack = paths[i]
-                state, start = stack[-1]
+            while i < len(active_nodes):
+                node_idx = active_nodes[i]
+                kk, kk, state, kk, kk = stack[node_idx]
                 shift, handles = reduce_table[state]
                 # Shift
                 if shift:
                     i += 1
                 else:
-                    paths.pop(i)
+                    active_nodes.pop(i)
                 # Reduce
                 for name, n, look_ahead, method in handles:
                     # Look-Ahead
                     if token not in look_ahead:
                         continue
                     # Fork the stack
-                    if n == 0:
-                        stack2 = stack[:]
-                        values = []
-                    else:
-                        values = [ stack[x][1] for x in range(-n, 0, 2)
-                                   if isinstance(stack[x], tuple) ]
-                        stack2 = stack[:-n]
+                    values = []
+                    last_node = node_idx
+                    while n > 0:
+                        last_node, symbol, kk, kk, value = stack[last_node]
+                        if isinstance(symbol, str):
+                            values.insert(0, value)
+                        n -= 1
+                    kk, symbol, state, start, value = stack[last_node]
                     # Semantic action
-                    last = stack2[-1]
                     if context is None:
                         value = None
                     elif method is None:
                         value = values
                     else:
-                        value = method(context, last[1], data_idx, *values)
+                        value = method(context, start, data_idx, *values)
                     # Next state
-                    next_state = symbol_table.get((last[0], name), 0)
+                    next_state = symbol_table.get((state, name), 0)
                     # Stop Condition
-                    if name == start_symbol and token == 0:
-                        if len(stack2) == 1:
-                            return value
-                    stack2.append((name, value))
-                    stack2.append((next_state, data_idx))
-                    paths.append(stack2)
+                    if last_node == 0 and name == start_symbol and token == 0:
+                        return value
+                    active_nodes.append(len(stack))
+                    stack.append(
+                        (last_node, name, next_state, data_idx, value))
 
         raise ValueError, 'grammar error'
 

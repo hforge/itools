@@ -230,10 +230,10 @@ class Context(BaseContext):
         return min, max
 
 
-    def repetition(self, start, end, *args):
-        if len(args) == 1:
-            return args[0]
-        repeat, element = args
+    def repetition(self, start, end, repeat, element):
+        if len(repeat) == 0:
+            return element
+        repeat = repeat[0]
         if isinstance(repeat, int):
             # <n>element
             return repeat * element

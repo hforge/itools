@@ -18,8 +18,12 @@
 Parsing primitives.
 """
 
+# Import from the Standard Library
+from urllib import unquote
+
 # Import from itools
 from itools.abnf import build_grammar, BaseContext, Parser
+from generic import Authority, EmptyReference, Path, Reference, decode_query
 
 
 ###########################################################################
@@ -94,43 +98,93 @@ grammar = build_grammar(
 ###########################################################################
 class URIContext(BaseContext):
 
-    def __init__(self, data):
-        BaseContext.__init__(self, data)
-        self.x_scheme = ''
-        self.x_authority = ''
-        self.x_path = ''
-        self.x_query = ''
-        self.x_fragment = ''
-
-
     def scheme(self, start, end, *args):
-        self.x_scheme = self.data[start:end]
         return self.data[start:end]
 
 
     def authority(self, start, end, *args):
-        self.x_authority = self.data[start:end]
         return self.data[start:end]
 
 
     def path_abempty(self, start, end, *args):
-        self.x_path = self.data[start:end]
         return self.data[start:end]
 
 
     def query(self, start, end, *args):
-        self.x_query = self.data[start:end]
         return self.data[start:end]
 
 
     def fragment(self, start, end, *args):
-        self.x_fragment = self.data[start:end]
         return self.data[start:end]
 
 
-    def URI_reference(self, start, end, *args):
-        return (self.x_scheme, self.x_authority, self.x_path, self.x_query,
-                self.x_fragment)
+    def hier_part(self, start, end, authority, path):
+        return authority, path
+
+
+    def URI(self, start, end, scheme, hier_part, query, fragment):
+        return scheme, hier_part[0], hier_part[1], query, fragment
+
+
+    def URI_reference(self, start, end, uri):
+        return uri
 
 
 parse_uri = Parser(grammar, URIContext, 'URI-reference')
+
+
+
+
+
+class GenericDataType2(object):
+
+    @staticmethod
+    def decode(data):
+        if isinstance(data, Path):
+            return Reference('', Authority(''), data, {}, None)
+
+        if not isinstance(data, (str, unicode)):
+            raise TypeError, 'unexpected %s' % type(data)
+
+        # Special case, the empty reference
+        if data == '':
+            return EmptyReference()
+
+        # Special case, the empty fragment
+        if data == '#':
+            return Reference('', Authority(''), Path(''), {}, '')
+
+        # All other cases, split the reference in its components
+        scheme, authority, path, query, fragment = parse_uri(data)
+
+        # Some special cases for Windows paths
+        if len(scheme) == 1:
+            # found a windows drive name instead of path, because urlsplit
+            # thinks the scheme is "c" for Windows paths like "c:/a/b"
+            path = "%s:%s" % (scheme, path)
+            scheme = "file"
+        elif len(path) > 3 and path[0] == '/' and path[2] == ':':
+            # urlsplit also doesn't correctly handle windows path in url
+            # form like "file:///c:/a/b" -- it thinks the path is "/c:/a/b",
+            # which to be correct requires removing the leading slash.  Also
+            # normalize the drive letter to lower case
+            path = "%s:%s" % (path[1].lower(), path[3:])
+
+        # The path
+        if path:
+            path = unquote(path)
+        elif authority:
+            path = '/'
+        # The authority
+        authority = unquote(authority)
+        authority = Authority(authority)
+        # The query
+        try:
+            query = decode_query(query)
+        except ValueError:
+            pass
+        # The fragment
+        if fragment == '':
+            fragment = None
+
+        return Reference(scheme, authority, Path(path), query, fragment)

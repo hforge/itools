@@ -446,31 +446,24 @@ class Grammar(object):
         self.symbols.add(name)
         rules = self.rules.setdefault(name, [])
 
-        stack = [elements]
-        while stack:
-            elements = stack.pop()
-            for index, element in enumerate(elements):
-                # Expand
-                if isinstance(element, tuple):
-                    left = tuple(elements[:index])
-                    right = tuple(elements[index+1:])
-                    max = element[0]
-                    rest = element[1:]
-                    if max is None:
-                        # Case 1: max = infinitum
-                        rest = tuple(rest)
-                        aux = self.get_internal_rulename(name)
-                        stack.append(left + (aux,) + right)
-                        self.add_rule(aux, *(rest + (aux,)))
-                        self.add_rule(aux)
-                    else:
-                        # Case 2: max = n
-                        for i in range(max+1):
-                            stack.append(left + (i * rest) + right)
-                    break
+        elements = list(elements)
+        for index, element in enumerate(elements):
+            if not isinstance(element, tuple):
+                continue
+            # Expand
+            aux = self.get_internal_rulename(name)
+            elements[index] = aux
+            # New productions
+            max, rest = element[0], element[1:]
+            if max is None:
+                # Case 1: max = infinitum
+                self.add_rule(aux, *(rest + (aux,)))
+                self.add_rule(aux)
             else:
-                elements = list(elements)
-                rules.append(elements)
+                # Case 2: max = n
+                for i in range(max+1):
+                    self.add_rule(aux, *(i * rest))
+        rules.append(elements)
 
 
     def get_table(self, start_symbol, context_class=None):

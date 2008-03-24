@@ -19,7 +19,10 @@ from profile import run as profile
 from timeit import Timer
 
 # Import from itools
-from itools.uri.parsing import parse_uri
+from itools.uri.parsing import parse_uri, GenericDataType2
+
+
+test_string = 'http://example.com/a/b/c?id=5#top'
 
 
 def bench():
@@ -27,21 +30,52 @@ def bench():
     reference.
     """
     # itools
-    timer = Timer("parse_uri('http://example.com/')",
-                  "from itools.uri.parsing import parse_uri")
+    timer = Timer(
+        "parse_uri('%s')" % test_string,
+        "from itools.uri.parsing import parse_uri")
     a = timer.timeit(1)
     # stdlib
-    timer = Timer("urlsplit('http://example.com/')",
-                  "from urlparse import urlsplit")
+    timer = Timer(
+        "urlsplit('%s')" % test_string,
+        "from urlparse import urlsplit")
     b = timer.timeit(1)
 
+    print '=== urlsplit ==='
     print 'itools:', a
     print 'stdlib:', b
     print
     print 'itools %d times slower than stdlib' % (a/b)
+    print
+
+
+
+def bench2():
+    """Benchmark the speed of itools.abnf using "urlparse.urlsplit" as
+    reference.
+    """
+    # itools
+    timer = Timer(
+        "GenericDataType2.decode('%s')" % test_string,
+        "from itools.uri.parsing import GenericDataType2")
+    a = timer.timeit(1)
+    # stdlib
+    timer = Timer(
+        "GenericDataType.decode('%s')" % test_string,
+         "from itools.uri.generic import GenericDataType")
+    b = timer.timeit(1)
+
+    print '=== GenericDataType ==='
+    print 'itools:', a
+    print 'stdlib:', b
+    print
+    print 'itools %d times slower than stdlib' % (a/b)
+    print
 
 
 
 if __name__ == '__main__':
-    bench()
-#    profile('parse_uri("http://example.com/")')
+#    bench()
+#    bench2()
+    profile('parse_uri("%s")' % test_string)
+#    profile('GenericDataType2.decode("%s")' % test_string)
+

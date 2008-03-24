@@ -642,7 +642,8 @@ class Grammar(object):
         # The "start" field is a reference to the input stream.
         stack = deque()
         stack.append((None, None, 1, 0, None))
-        active_nodes = [0]
+        active_nodes = deque()
+        active_nodes.append(0)
 
         rules = self.rules
         data_len = len(data)
@@ -660,7 +661,7 @@ class Grammar(object):
         while data_idx < data_len:
             data_idx += 1
             # Shift on all the parsing paths
-            new_active_nodes = []
+            new_active_nodes = deque()
             for node_idx in active_nodes:
                 last_node, symbol, state, start, value = stack[node_idx]
                 next_state = token_table.get((state, token), 0)
@@ -679,16 +680,14 @@ class Grammar(object):
                     raise ValueError, msg % char
 
             # Reduce
-            i = 0
-            while i < len(active_nodes):
-                node_idx = active_nodes[i]
+            new_active_nodes = deque()
+            while active_nodes:
+                node_idx = active_nodes.pop()
                 kk, kk, state, kk, kk = stack[node_idx]
                 shift, handles = reduce_table[state]
                 # Shift
                 if shift:
-                    i += 1
-                else:
-                    active_nodes.pop(i)
+                    new_active_nodes.append(node_idx)
                 # Reduce
                 for name, n, look_ahead, method in handles:
                     # Look-Ahead
@@ -718,6 +717,7 @@ class Grammar(object):
                     active_nodes.append(len(stack))
                     stack.append(
                         (last_node, name, next_state, data_idx, value))
+            active_nodes = new_active_nodes
 
         raise ValueError, 'grammar error'
 

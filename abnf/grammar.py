@@ -650,8 +650,12 @@ class Grammar(object):
                 msg = 'lexical error, unexpected character "%s"'
                 raise ValueError, msg % char
 
+#        trace = open('/tmp/trace.txt', 'w')
         data_idx = 0
         while data_idx < data_len:
+#            trace.write('=== %s: %s ===\n' % (data_idx, token))
+#            self.pprint_stack(stack, active_nodes, data, trace)
+
             data_idx += 1
             # Shift on all the parsing paths
             new_active_nodes = deque()
@@ -691,7 +695,7 @@ class Grammar(object):
                     last_node = node_idx
                     while n > 0:
                         last_node, symbol, kk, kk, value = stack[last_node]
-                        if isinstance(symbol, str):
+                        if type(symbol) is str:
                             values.insert(0, value)
                         n -= 1
                     kk, symbol, state, start, value = stack[last_node]

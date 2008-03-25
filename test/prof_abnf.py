@@ -22,7 +22,8 @@ from timeit import Timer
 from itools.uri.parsing import parse_uri, GenericDataType2
 
 
-test_string = 'http://example.com/a/b/c?id=5#top'
+test_string = 'http://www.winehq.org/?issue=343#Translations%20within%20WINE'
+#test_string = 'http://example.com/'
 
 
 def bench():
@@ -74,8 +75,11 @@ def bench2():
 
 
 if __name__ == '__main__':
-#    bench()
+    # Just "parse_uri"
+    bench()
+#    profile('parse_uri("%s")' % test_string)
+
+    # The new GenericDataType
 #    bench2()
-    profile('parse_uri("%s")' % test_string)
 #    profile('GenericDataType2.decode("%s")' % test_string)
 

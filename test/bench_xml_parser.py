@@ -15,20 +15,29 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-import time
+from timeit import Timer
 
-# Import from itools
+
+test = "for event in XMLParser(data): pass"
+setup = """
 from itools.xml import XMLParser
+data = open('bench_xml_parser.xml').read()
+"""
+
 
 if __name__ == '__main__':
+    timer = Timer(test, setup)
+    rounds = 10000
 
-    data = open('bench_parser.xml').read()
-    while 1:
-        rounds = 100000
-        r = range(rounds)
-        t0 = time.clock()
-        for i in r:
-            for event, value, line_number in XMLParser(data):
-                pass
-        t1 = time.clock()
-        print "Average time : %f ms" % ((t1 - t0) * (1000. / float(rounds)))
+    best = 3600.0
+    for i in range(5):
+        t = timer.timeit(rounds)
+        # In miliseconds
+        t = 1000 * (t / rounds)
+        print "Loop %s: %0.3f ms" % (i, t)
+        if t < best:
+            best = t
+
+    # Best time in miliseconds
+    print
+    print "Best time: %0.3f ms" % best

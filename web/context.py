@@ -213,10 +213,10 @@ class Context(object):
         # We consider a blank string to be a missing value (FIXME not
         # reliable).
         is_blank = isinstance(value, (str, unicode)) and not value.strip()
-        if is_mandatory and is_blank:
-            raise FormError(missing=[name])
-
-        if not type.is_valid(value):
+        if is_blank:
+            if is_mandatory:
+               raise FormError(missing=[name])
+        elif not type.is_valid(value):
             raise FormError(invalid=[name])
         return value
 

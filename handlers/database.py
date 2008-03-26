@@ -134,7 +134,7 @@ class Database(object):
             if handler.timestamp == mtime:
                 return handler
             # Conflict, file modified both in filesystem and memory
-            if handler.dirty is True:
+            if handler.dirty is not None:
                 raise RuntimeError, MSG_CONFLICT
             # Remove from cache
             del cache[reference]
@@ -243,12 +243,12 @@ class Database(object):
                 self.move_handler(source.resolve2(name), target.resolve2(name))
         else:
             # Load if needed
-            if handler.timestamp is None and handler.dirty is False:
+            if handler.timestamp is None and handler.dirty is None:
                 handler.load_state()
             # File
             handler.uri = target
             handler.timestamp = None
-            handler.dirty = True
+            handler.dirty = datetime.now()
             self.cache[target] = handler
             del self.cache[source]
             # Add to target
@@ -308,7 +308,7 @@ class Database(object):
                 handler.save_state()
                 # Update timestamp
                 handler.timestamp = vfs.get_mtime(uri)
-                handler.dirty = False
+                handler.dirty = None
             # Remove handlers
             for uri in self.removed:
                 self.safe_remove(uri)
@@ -318,7 +318,7 @@ class Database(object):
                 handler.save_state_to(uri)
                 # Update timestamp
                 handler.timestamp = vfs.get_mtime(uri)
-                handler.dirty = False
+                handler.dirty = None
         except:
             # Rollback
             self.abort_changes()
@@ -509,11 +509,11 @@ class SafeDatabase(Database):
         for uri in changed:
             handler = cache[uri]
             handler.timestamp = vfs.get_mtime(uri)
-            handler.dirty = False
+            handler.dirty = None
         for uri in added:
             handler = cache[uri]
             handler.timestamp = vfs.get_mtime(uri)
-            handler.dirty = False
+            handler.dirty = None
 
         # 4. Log
         self.log_event('Transaction done.')

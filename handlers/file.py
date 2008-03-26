@@ -17,6 +17,7 @@
 # Import from the Standard Library
 from copy import deepcopy
 from cStringIO import StringIO
+from datetime import datetime
 
 # Import from itools
 from itools.uri import get_absolute_reference
@@ -36,21 +37,21 @@ class File(Handler):
 
        timestamp/dirty => means...
        -------------------------------------
-       None/False => not loaded (yet)
-       None/True  => new
-       <dt>/False => loaded, but not changed
-       <dt>/True  => loaded, and changed
+       None/None => not loaded (yet)
+       None/<dt> => new
+       <dt>/None => loaded, but not changed
+       <dt>/<dt> => loaded, and changed
 
     """
 
     # By default handlers are not loaded
     timestamp = None
-    dirty = False
+    dirty = None
 
 
     def __init__(self, ref=None, string=None, **kw):
         if ref is None:
-            self.dirty = True
+            self.dirty = datetime.now()
             if string is not None:
                 # A handler from a byte string
                 self.load_state_from_string(string)
@@ -95,7 +96,7 @@ class File(Handler):
         finally:
             file.close()
         self.timestamp = vfs.get_mtime(self.uri)
-        self.dirty = False
+        self.dirty = None
 
 
     def load_state_from(self, uri):
@@ -124,7 +125,7 @@ class File(Handler):
             file.close()
         # Update the timestamp
         self.timestamp = vfs.get_mtime(self.uri)
-        self.dirty = False
+        self.dirty = None
 
 
     def save_state_to(self, uri):
@@ -158,7 +159,7 @@ class File(Handler):
             raise ValueError, msg
 
         # Load first, if needed
-        if self.dirty is False:
+        if self.dirty is None:
             if self.uri is not None and self.timestamp is None:
                 self.load_state()
 
@@ -170,7 +171,7 @@ class File(Handler):
                 value = getattr(self, name)
                 value = deepcopy(value)
                 setattr(copy, name, value)
-        copy.dirty = True
+        copy.dirty = datetime.now()
         return copy
 
 
@@ -198,7 +199,7 @@ class File(Handler):
         # Not attached to a database
         database = self.database
         if database is None:
-            self.dirty = True
+            self.dirty = datetime.now()
             return
 
         # Check the handler is in the cache
@@ -208,10 +209,10 @@ class File(Handler):
             raise RuntimeError, 'cannot change an orphaned file handler'
 
         # Update database state
-        if self.timestamp is None and self.dirty is True:
+        if self.timestamp is None and self.dirty is not None:
             database.added.add(self.uri)
         else:
-            self.dirty = True
+            self.dirty = datetime.now()
             database.changed.add(self.uri)
 
 
@@ -220,7 +221,7 @@ class File(Handler):
         if self.uri is None:
             return
         # Not changed
-        if self.dirty is False:
+        if self.dirty is None:
             return
         # Abort
         names = [ x for x in self.__dict__ if x not in ('database', 'uri') ]
@@ -234,15 +235,16 @@ class File(Handler):
     def get_mtime(self):
         """Returns the last modification time.
         """
-        if self.timestamp is None:
-            # FIXME We don't know the modification time of new handlers
-            if self.dirty is True:
-                return None
-            # Not yet loaded, check the VFS
-            return vfs.get_mtime(self.uri)
+        # Modified or new handler
+        if self.dirty is not None:
+            return self.dirty
 
-        # FIXME If the handlers has been modified, the mtime will be wrong
-        return self.timestamp
+        # Loaded but not modified
+        if self.timestamp is not None:
+            return self.timestamp
+
+        # Not yet loaded, check the VFS
+        return vfs.get_mtime(self.uri)
 
 
     def to_str(self):

@@ -515,7 +515,7 @@ class Table(File):
 
         # Update the timestamp
         self.timestamp = vfs.get_mtime(self.uri)
-        self.dirty = False
+        self.dirty = None
 
 
     #######################################################################

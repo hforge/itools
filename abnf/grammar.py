@@ -445,24 +445,7 @@ class Grammar(object):
         """
         self.symbols.add(name)
         rules = self.rules.setdefault(name, [])
-
         elements = list(elements)
-        for index, element in enumerate(elements):
-            if not isinstance(element, tuple):
-                continue
-            # Expand
-            aux = self.get_internal_rulename(name)
-            elements[index] = aux
-            # New productions
-            max, rest = element[0], element[1:]
-            if max is None:
-                # Case 1: max = infinitum
-                self.add_rule(aux, *(rest + (aux,)))
-                self.add_rule(aux)
-            else:
-                # Case 2: max = n
-                for i in range(max+1):
-                    self.add_rule(aux, *(i * rest))
         rules.append(elements)
 
 
@@ -472,13 +455,10 @@ class Grammar(object):
         if start_symbol in self.tables:
             return self.tables[start_symbol]
 
-        # Build the lexical table
-        if self.lexical_table is None:
-            self.build_lexical_table()
-
-        # The semantic side of things
         rules = self.rules
         symbols = rules.keys()
+
+        # The semantic side of things
         map = {}
         if context_class is not None:
             for name in symbols:
@@ -491,6 +471,45 @@ class Grammar(object):
                     map[(name, i)] = method
                     if method is not None:
                         map[name] = True
+
+        # Expand
+        changed = True
+        while changed:
+            changed = False
+            symbols = rules.keys()
+            for name in symbols:
+                for rule_index, rule in enumerate(rules[name]):
+                    for element_index, element in enumerate(rule):
+                        if not isinstance(element, tuple):
+                            continue
+                        changed = True
+                        # Expand
+                        aux = self.get_internal_rulename(name)
+                        self.symbols.add(aux)
+                        rule[element_index] = aux
+                        # New productions
+                        max, rest = element[0], element[1:]
+                        if max is None:
+                            # Case 1: max = infinitum
+                            rules[aux] = [[], list(rest + (aux,))]
+                        else:
+                            # Case 2: max = n
+                            if map.get(name):
+                                rules[aux] = []
+                                for i in range(max+1):
+                                    rules[aux].append(list(i * rest))
+                            else:
+                                left = tuple(rule[:element_index])
+                                right = tuple(rule[element_index+1:])
+                                for i in range(max+1):
+                                    rules[name].append(
+                                        list(left + (i * rest) + right))
+                                rules[name][rule_index] = None
+                rules[name] = [ x for x in rules[name] if x is not None ]
+
+        # Build the lexical table
+        if self.lexical_table is None:
+            self.build_lexical_table()
 
         # Optimize the grammar, reduce rules that are just a frozenset (and
         # not used by the semantic layer).

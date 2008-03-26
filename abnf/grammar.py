@@ -498,18 +498,22 @@ class Grammar(object):
                         if not isinstance(element, tuple):
                             continue
                         changed = True
-                        # Expand
-                        aux = self.get_internal_rulename(name)
-                        self.symbols.add(aux)
-                        rule[element_index] = aux
                         # New productions
                         max, rest = element[0], element[1:]
                         if max is None:
+                            # Expand
+                            aux = self.get_internal_rulename(name)
+                            self.symbols.add(aux)
+                            rule[element_index] = aux
                             # Case 1: max = infinitum
                             rules[aux] = [[], list(rest + (aux,))]
                         else:
                             # Case 2: max = n
                             if map.get(name):
+                                # Expand
+                                aux = self.get_internal_rulename(name)
+                                self.symbols.add(aux)
+                                rule[element_index] = aux
                                 rules[aux] = []
                                 for i in range(max+1):
                                     rules[aux].append(list(i * rest))

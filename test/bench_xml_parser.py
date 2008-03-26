@@ -27,17 +27,11 @@ data = open('bench_xml_parser.xml').read()
 
 if __name__ == '__main__':
     timer = Timer(test, setup)
-    rounds = 10000
+    magnify_factor = 1000
 
-    best = 3600.0
-    for i in range(5):
-        t = timer.timeit(rounds)
-        # In miliseconds
-        t = 1000 * (t / rounds)
-        print "Loop %s: %0.3f ms" % (i, t)
-        if t < best:
-            best = t
-
-    # Best time in miliseconds
-    print
-    print "Best time: %0.3f ms" % best
+    # Best time out of 3
+    t = timer.repeat(number=magnify_factor)
+    t = min(t)
+    # In miliseconds
+    t = t * (1000.0 / magnify_factor)
+    print "Best time: %0.3f ms" % t

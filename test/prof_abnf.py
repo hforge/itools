@@ -34,16 +34,19 @@ def bench():
     timer = Timer(
         "parse_uri('%s')" % test_string,
         "from itools.uri.parsing import parse_uri")
-    a = timer.timeit(1)
+    a = timer.repeat(5, number=1)
+    a = min(a) * 1000
+
     # stdlib
     timer = Timer(
         "urlsplit('%s')" % test_string,
         "from urlparse import urlsplit")
     b = timer.timeit(1)
+    b = b * 1000
 
     print '=== urlsplit ==='
-    print 'itools:', a
-    print 'stdlib:', b
+    print 'itools: %0.3f ms' % a
+    print 'stdlib: %0.3f ms' % b
     print
     print 'itools %d times slower than stdlib' % (a/b)
     print

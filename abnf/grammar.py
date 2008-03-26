@@ -369,19 +369,34 @@ class Grammar(object):
         if file is None:
             file = sys.stdout
 
-        lines = []
+        in_paths = []
         for node_idx in active_nodes:
-            last_node, symbol, state, start, value = stack[node_idx]
+            in_paths.append([node_idx])
+
+        paths = []
+        while in_paths:
+            path = in_paths.pop()
+            node_idx = path[0]
+            last_nodes = stack[node_idx][0]
+            if len(last_nodes) == 0:
+                paths.append(path)
+                continue
+            for last_node in last_nodes:
+                in_paths.append([last_node] + path)
+
+        lines = []
+        for path in paths:
             line = []
-            while last_node is not None:
-                if symbol == 0:
-                    line.insert(0, '$ S%s' % state)
+            for node_idx in path:
+                kk, symbol, state, start, value = stack[node_idx]
+                if state == 1:
+                    line.append('S1')
+                elif symbol == 0:
+                    line.append('$ S%s' % state)
                 else:
-                    line.insert(0, '%s S%s' % (symbol, state))
-                last_node, symbol, state, start, value = stack[last_node]
+                    line.append('%s S%s' % (symbol, state))
             line = ' '.join(line)
-            file.write('S1 %s\n' % line)
-        file.write('\n')
+            file.write('%s\n' % line)
 
 
     def build_graph(self, map, token_table, symbol_table):
@@ -649,11 +664,13 @@ class Grammar(object):
         lexical_table = self.lexical_table
         # Initialize the stack, where the stack is a list of tuples:
         #
-        #   [(last_node, symbol, state, start, value), ...]
+        #   [...
+        #    ([last_nodes], symbol, state, start, value),
+        #    ...]
         #
         # The "start" field is a reference to the input stream.
         stack = deque()
-        stack.append((None, None, 1, 0, None))
+        stack.append(([], None, 1, 0, None))
         active_nodes = deque()
         active_nodes.append(0)
 
@@ -669,21 +686,42 @@ class Grammar(object):
                 msg = 'lexical error, unexpected character "%s"'
                 raise ValueError, msg % char
 
+        # Debug
+#        debug = (start_symbol == 'IPv4address')
 #        trace = open('/tmp/trace.txt', 'w')
+#        trace = sys.stdout
+
         data_idx = 0
         while data_idx < data_len:
-#            trace.write('=== %s: %s ===\n' % (data_idx, token))
-#            self.pprint_stack(stack, active_nodes, data, trace)
+            # Debug
+#            if debug:
+#                trace.write('=== shift %s: %s (%s) ===\n'
+#                            % (token, data_idx, repr(char)))
 
             data_idx += 1
             # Shift on all the parsing paths
+            map = {}
             new_active_nodes = deque()
             for node_idx in active_nodes:
-                last_node, symbol, state, start, value = stack[node_idx]
+                state = stack[node_idx][2]
                 next_state = token_table.get((state, token), 0)
-                new_active_nodes.append(len(stack))
-                stack.append((node_idx, token, next_state, data_idx, None))
+                if next_state == 0:
+                    continue
+                if next_state in map:
+                    n = map[next_state]
+                    stack[n][0].append(node_idx)
+                else:
+                    n = len(stack)
+                    map[next_state] = n
+                    new_active_nodes.append(n)
+                    stack.append(
+                        ([node_idx], token, next_state, data_idx, None))
             active_nodes = new_active_nodes
+
+            # Debug
+#            if debug:
+#                self.pprint_stack(stack, active_nodes, data, trace)
+#                trace.write('=== reduce ===\n')
 
             # Next token
             if data_idx >= data_len:
@@ -710,30 +748,41 @@ class Grammar(object):
                     if token not in look_ahead:
                         continue
                     # Fork the stack
-                    values = []
-                    last_node = node_idx
+                    pointers = [[node_idx, []]]
                     while n > 0:
-                        last_node, symbol, kk, kk, value = stack[last_node]
-                        if type(symbol) is str:
-                            values.insert(0, value)
                         n -= 1
-                    kk, symbol, state, start, value = stack[last_node]
-                    # Semantic action
-                    if context is None:
-                        value = None
-                    elif method is None:
-                        value = values
-                    else:
-                        value = method(context, start, data_idx, *values)
-                    # Next state
-                    next_state = symbol_table.get((state, name), 0)
-                    # Stop Condition
-                    if last_node == 0 and name == start_symbol and token == 0:
-                        return value
-                    active_nodes.append(len(stack))
-                    stack.append(
-                        (last_node, name, next_state, data_idx, value))
+                        new_pointers = []
+                        while pointers:
+                            node_idx, values = pointers.pop()
+                            last_nodes, symbol, kk, kk, value = stack[node_idx]
+                            if type(symbol) is str:
+                                values.insert(0, value)
+                            for last_node in last_nodes:
+                                new_pointers.append([last_node, values[:]])
+                        pointers = new_pointers
+
+                    for last_node, values in pointers:
+                        kk, symbol, state, start, value = stack[last_node]
+                        # Semantic action
+                        if context is None:
+                            value = None
+                        elif method is None:
+                            value = values
+                        else:
+                            value = method(context, start, data_idx, *values)
+                        # Next state
+                        next_state = symbol_table.get((state, name), 0)
+                        # Stop Condition
+                        if last_node==0 and name==start_symbol and token==0:
+                            return value
+                        active_nodes.append(len(stack))
+                        stack.append(
+                            ([last_node], name, next_state, data_idx, value))
             active_nodes = new_active_nodes
+            # Debug
+#            if debug:
+#                self.pprint_stack(stack, active_nodes, data, trace)
+#                trace.write('\n')
 
         raise ValueError, 'grammar error'
 

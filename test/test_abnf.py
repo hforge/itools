@@ -19,11 +19,11 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.abnf import build_grammar, Parser, BaseContext
+from itools.abnf import build_grammar, get_parser, BaseContext
 
 
 ###########################################################################
-# Syntax
+# Grammar / LR(1)
 ###########################################################################
 lr1_grammar = build_grammar(
     'S = A\r\n'
@@ -32,15 +32,45 @@ lr1_grammar = build_grammar(
     'A = B\r\n'
     'B = "x"\r\n')
 
+lr1_parser = get_parser(lr1_grammar, 'S')
 
-expression_grammar = build_grammar(
+
+###########################################################################
+# Grammar / Expressions
+###########################################################################
+expression_grammar = (
     'E = I\r\n'
     'E = E "+" E\r\n'
     'E = E "*" E\r\n'
     'I = 1*DIGIT\r\n')
 
 
-ip_grammar = build_grammar(
+class ExpressionContext(BaseContext):
+
+    def I(self, start, end, *args):
+        return int(self.data[start:end])
+
+
+    def E_1(self, start, end, value):
+        return value
+
+
+    def E_2(self, start, end, left, right):
+        return left + right
+
+
+    def E_3(self, start, end, left, right):
+        return left * right
+
+
+expression_grammar = build_grammar(expression_grammar, ExpressionContext)
+expression_parser = get_parser(expression_grammar, 'E')
+
+
+###########################################################################
+# Grammar / IP
+###########################################################################
+ip_grammar = (
     # IPv4
     'IPv4address = dec-octet "." dec-octet "." dec-octet "." dec-octet\r\n'
     'dec-octet = DIGIT\r\n'
@@ -63,65 +93,6 @@ ip_grammar = build_grammar(
     )
 
 
-
-class SyntaxTestCase(TestCase):
-
-    def test_lr1(self):
-        is_valid = lr1_grammar.is_valid
-        self.assertEqual(is_valid('S', 'xb'), True)
-        self.assertEqual(is_valid('S', 'aaaxbbb'), True)
-        self.assertEqual(is_valid('S', 'aaabbb'), False)
-        self.assertEqual(is_valid('S', 'aaaaxbbb'), False)
-
-
-    def test_expression(self):
-        is_valid = expression_grammar.is_valid
-        self.assertEqual(is_valid('E', '32'), True)
-        self.assertEqual(is_valid('E', '14342523543365634'), True)
-        self.assertEqual(is_valid('E', '1434252x5435634'), False)
-        self.assertEqual(is_valid('E', ''), False)
-        self.assertEqual(is_valid('E', '32+7'), True)
-        self.assertEqual(is_valid('E', '32 + 7'), False)
-        self.assertEqual(is_valid('E', '32+'), False)
-
-
-    def test_ipv4address(self):
-        is_valid = ip_grammar.is_valid
-        self.assertEqual(is_valid('IPv4address', '192.168.0.1'), True)
-        self.assertEqual(is_valid('IPv4address', '192.168.00.1'), False)
-        self.assertEqual(is_valid('IPv4address', '192.168.1'), False)
-        self.assertEqual(is_valid('IPv4address', '192.168.256.1'), False)
-
-
-    def test_ipv6address(self):
-        is_valid = ip_grammar.is_valid
-        self.assertEqual(is_valid('IPv6address', '2001:db8::7'), True)
-        self.assertEqual(is_valid('IPv6address', '2001:dg8::7'), False)
-
-
-
-###########################################################################
-# Semantic
-###########################################################################
-class ExpressionContext(BaseContext):
-
-    def I(self, start, end, *args):
-        return int(self.data[start:end])
-
-
-    def E_1(self, start, end, value):
-        return value
-
-
-    def E_2(self, start, end, left, right):
-        return left + right
-
-
-    def E_3(self, start, end, left, right):
-        return left * right
-
-
-
 class IPv4Context(BaseContext):
 
     def dec_octet(self, start, end, *args):
@@ -133,8 +104,62 @@ class IPv4Context(BaseContext):
 
 
 
-parse_expression = Parser(expression_grammar, ExpressionContext, 'E')
-parse_ipv4address = Parser(ip_grammar, IPv4Context, 'IPv4address')
+ip_grammar = build_grammar(ip_grammar, IPv4Context)
+ipv4_parser = get_parser(ip_grammar, 'IPv4address')
+ipv6_parser = get_parser(ip_grammar, 'IPv6address')
+
+
+
+###########################################################################
+# Tests
+###########################################################################
+class SyntaxTestCase(TestCase):
+
+    def test_lr1(self):
+        is_valid = lr1_parser.is_valid
+        self.assertEqual(is_valid('xb'), True)
+        self.assertEqual(is_valid('aaaxbbb'), True)
+        self.assertEqual(is_valid('aaabbb'), False)
+        self.assertEqual(is_valid('aaaaxbbb'), False)
+
+
+    def test_expression(self):
+        is_valid = expression_parser.is_valid
+        self.assertEqual(is_valid('32'), True)
+        self.assertEqual(is_valid('14342523543365634'), True)
+        self.assertEqual(is_valid('1434252x5435634'), False)
+        self.assertEqual(is_valid(''), False)
+        self.assertEqual(is_valid('32+7'), True)
+        self.assertEqual(is_valid('32 + 7'), False)
+        self.assertEqual(is_valid('32+'), False)
+
+
+    def test_ipv4address(self):
+        is_valid = ipv4_parser.is_valid
+        self.assertEqual(is_valid('192.168.0.1'), True)
+        self.assertEqual(is_valid('192.168.00.1'), False)
+        self.assertEqual(is_valid('192.168.1'), False)
+        self.assertEqual(is_valid('192.168.256.1'), False)
+
+
+    def test_ipv6address(self):
+        is_valid = ipv6_parser.is_valid
+        self.assertEqual(is_valid('2001:db8::7'), True)
+        self.assertEqual(is_valid('2001:dg8::7'), False)
+
+
+
+###########################################################################
+# Semantic
+###########################################################################
+def parse_expression(data):
+    context = ExpressionContext(data)
+    return expression_parser.run(data, context)
+
+
+def parse_ipv4address(data):
+    context = IPv4Context(data)
+    return ipv4_parser.run(data, context)
 
 
 
@@ -152,7 +177,6 @@ class SemanticTestCase(TestCase):
 
 
     def test_ipv4address(self):
-        run = ip_grammar.run
         self.assertEqual(parse_ipv4address('192.168.0.1'), (192, 168, 0, 1))
         self.assertRaises(ValueError, parse_ipv4address, '192.168.00.1')
 

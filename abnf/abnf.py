@@ -19,6 +19,7 @@ from string import ascii_letters, digits, hexdigits
 
 # Import from itools
 from grammar import Grammar, BaseContext
+from parser import get_parser
 
 
 # Constants (core rules)
@@ -321,18 +322,15 @@ class Context(BaseContext):
 
 
 
-class Parser(object):
-
-    def __init__(self, grammar, context_class, start_symbol):
-        self.grammar = grammar
-        self.context_class = context_class
-        self.start_symbol = start_symbol
-        grammar.get_table(start_symbol, context_class)
+# Compile the grammar
+abnf_grammar.compile_grammar(Context)
+abnf_parser = get_parser(abnf_grammar, 'rulelist')
 
 
-    def __call__(self, data):
-        context = self.context_class(data)
-        return self.grammar.run(self.start_symbol, data, context)
 
+def build_grammar(data, context_class=None):
+    context = Context(data)
+    grammar = abnf_parser.run(data, context)
+    grammar.compile_grammar(context_class)
+    return grammar
 
-build_grammar = Parser(abnf_grammar, Context, 'rulelist')

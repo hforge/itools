@@ -15,13 +15,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from abnf import build_grammar, Parser
+from abnf import build_grammar
 from grammar import BaseContext
+from parser import get_parser
 
 
 __all__ = [
     'build_grammar',
+    'get_parser',
     'BaseContext',
-    'Parser',
     ]
 

@@ -44,7 +44,9 @@ EQUAL = frozenset('=')
 SLASH = frozenset('/')
 
 
-# Grammar
+###########################################################################
+# The ABNF grammar description, using the internal API
+###########################################################################
 abnf_grammar = Grammar()
 add_rule = abnf_grammar.add_rule
 # rulelist
@@ -104,16 +106,16 @@ add_rule("char-val", DQUOTE, (None, aux), DQUOTE)
 add_rule("num-val", frozenset('%'), "dec-val")
 add_rule("num-val", frozenset('%'), "hex-val")
 # bin-val
-#add_rule("bin-val", frozenset('b'), "bit+", (None, DOT, "bit+"))
-#add_rule("bin-val", frozenset('b'), "bit+", DASH, "bit+")
+#add_rule("bin-val", frozenset('bB'), "bit+", (None, DOT, "bit+"))
+#add_rule("bin-val", frozenset('bB'), "bit+", DASH, "bit+")
 #add_rule("bit+", BIT, (None, BIT))
 # dec-val
-add_rule("dec-val", frozenset('d'), "digit+", (None, DOT, "digit+"))
-add_rule("dec-val", frozenset('d'), "digit+", DASH, "digit+")
+add_rule("dec-val", frozenset('dD'), "digit+", (None, DOT, "digit+"))
+add_rule("dec-val", frozenset('dD'), "digit+", DASH, "digit+")
 add_rule("digit+", DIGIT, (None, DIGIT))
 # hex-val
-add_rule("hex-val", frozenset('x'), "hexdig+", (None, DOT, "hexdig+"))
-add_rule("hex-val", frozenset('x'), "hexdig+", DASH, "hexdig+")
+add_rule("hex-val", frozenset('xX'), "hexdig+", (None, DOT, "hexdig+"))
+add_rule("hex-val", frozenset('xX'), "hexdig+", DASH, "hexdig+")
 add_rule("hexdig+", HEXDIG, (None, HEXDIG))
 # prose-val
 aux = frozenset([ chr(x) for x in range(32, 62) + range(63, 127) ])
@@ -122,6 +124,9 @@ add_rule("prose-val", frozenset('<'), (None, aux), frozenset('>'))
 add_rule("crlf", CR, LF)
 
 
+###########################################################################
+# The Semantic layer
+###########################################################################
 #abnf_grammar.pprint_grammar()
 core_rules = {
     'ALPHA': [ALPHA],
@@ -322,15 +327,19 @@ class Context(BaseContext):
 
 
 
-# Compile the grammar
+# (1) Get the tokenizer (2) Compile the grammar (3) Build the parser
+abnf_grammar.get_tokenizer()
 abnf_grammar.compile_grammar(Context)
 abnf_parser = get_parser(abnf_grammar, 'rulelist')
 
 
-
+###########################################################################
+# The Public API
+###########################################################################
 def build_grammar(data, context_class=None):
     context = Context(data)
     grammar = abnf_parser.run(data, context)
+    grammar.get_tokenizer()
     grammar.compile_grammar(context_class)
     return grammar
 

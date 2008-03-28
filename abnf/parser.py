@@ -34,7 +34,7 @@ class Parser(object):
 
 
     def run(self, data, context=None):
-        lexical_table = self.grammar.lexical_table
+        tokenizer = self.grammar.tokenizer
         start_symbol = self.start_symbol
         token_table = self.token_table
         symbol_table = self.symbol_table
@@ -52,30 +52,21 @@ class Parser(object):
         active_nodes = deque()
         active_nodes.append(0)
 
-        data_len = len(data)
-        # Read the first token
-        if data_len == 0:
-            token = EOI
-        else:
-            char = data[0]
-            token = lexical_table[ord(char)]
-            if token is None:
-                msg = 'lexical error, unexpected character "%s"'
-                raise ValueError, msg % char
-
         # Debug
-#        debug = (start_symbol == 'IPv4address')
-#        trace = open('/tmp/trace.txt', 'w')
+        debug = False
+#        debug = (start_symbol == 'rulelist')
+        trace = open('/tmp/trace.txt', 'w')
 #        trace = sys.stdout
 
-        data_idx = 0
-        while data_idx < data_len:
-            # Debug
-#            if debug:
-#                trace.write('=== shift %s: %s (%s) ===\n'
-#                            % (token, data_idx, repr(char)))
+        get_token = tokenizer.get_token(data).next
+        token, data_idx = get_token()
 
-            data_idx += 1
+        while token != EOI:
+            # Debug
+            if debug:
+                trace.write('=== shift %s: %s (%s) ===\n'
+                            % (token, data_idx, repr(data[data_idx])))
+
             # Shift on all the parsing paths
             map = {}
             new_active_nodes = deque()
@@ -96,19 +87,12 @@ class Parser(object):
             active_nodes = new_active_nodes
 
             # Debug
-#            if debug:
-#                pprint_stack(stack, active_nodes, data, trace)
-#                trace.write('=== reduce ===\n')
+            if debug:
+                pprint_stack(stack, active_nodes, data, trace)
+                trace.write('=== reduce ===\n')
 
             # Next token
-            if data_idx >= data_len:
-                token = EOI
-            else:
-                char = data[data_idx]
-                token = lexical_table[ord(char)]
-                if token is None:
-                    msg = 'lexical error, unexpected character "%s"'
-                    raise ValueError, msg % char
+            token, data_idx = get_token()
 
             # Reduce
             new_active_nodes = deque()
@@ -157,9 +141,9 @@ class Parser(object):
                             ([last_node], name, next_state, data_idx, value))
             active_nodes = new_active_nodes
             # Debug
-#            if debug:
-#                pprint_stack(stack, active_nodes, data, trace)
-#                trace.write('\n')
+            if debug:
+                pprint_stack(stack, active_nodes, data, trace)
+                trace.write('\n')
 
         raise ValueError, 'grammar error'
 
@@ -236,7 +220,7 @@ def add_item_to_item_set(item_set, item):
 def get_first_table(grammar):
     symbols = grammar.symbols
     rules = grammar.rules
-    lexical_table = grammar.lexical_table
+    lexical_table = grammar.tokenizer.lexical_table
 
     first = {}
     # Initialize
@@ -286,7 +270,7 @@ def get_first_table(grammar):
 
 
 
-def _expand(grammar, item_set, first_table):
+def expand_itemset(grammar, item_set, first_table):
     rules = grammar.rules
 
     new_item_set = set()
@@ -321,7 +305,7 @@ def _expand(grammar, item_set, first_table):
     return frozenset(new_item_set)
 
 
-def _move_symbol(grammar, item_set, symbol, first_table):
+def move_symbol(grammar, item_set, symbol, first_table):
     """In the context of this method, by a symbol we understand both
     non-terminals and terminals (including the End-Of-Input).
     """
@@ -346,11 +330,11 @@ def _move_symbol(grammar, item_set, symbol, first_table):
         if symbol in element:
             next_item_set.add((name, i, j+1, look_ahead))
 
-    return _expand(grammar, next_item_set, first_table)
+    return expand_itemset(grammar, next_item_set, first_table)
 
 
 
-def _find_handles(grammar, item_set):
+def find_handles(grammar, item_set):
     rules = grammar.rules
 
     handles = set()
@@ -381,7 +365,7 @@ def get_parser(grammar, start_symbol):
     s0 = set()
     for i in range(len(rules[start_symbol])):
         s0.add((start_symbol, i, 0, frozenset([EOI])))
-    s0 = _expand(grammar, s0, first)
+    s0 = expand_itemset(grammar, s0, first)
     # Initialize
     token_table = {}
     symbol_table = {}
@@ -402,7 +386,7 @@ def get_parser(grammar, start_symbol):
         reduce_table[src_state] = merge_item_sets(a, src_item_set)
         # Chars
         for token in tokens:
-            dst_item_set = _move_symbol(grammar, src_item_set, token, first)
+            dst_item_set = move_symbol(grammar, src_item_set, token, first)
             if not dst_item_set:
                 continue
             # Find out the destination state
@@ -420,7 +404,7 @@ def get_parser(grammar, start_symbol):
             token_table[(src_state, token)] = dst_state
         # Symbols
         for symbol in symbols:
-            dst_item_set = _move_symbol(grammar, src_item_set, symbol, first)
+            dst_item_set = move_symbol(grammar, src_item_set, symbol, first)
             if not dst_item_set:
                 continue
             # Find out the destination state
@@ -446,7 +430,7 @@ def get_parser(grammar, start_symbol):
     aux = []
     for state in reduce_table:
         item_set = reduce_table[state]
-        shift, handles = _find_handles(grammar, item_set)
+        shift, handles = find_handles(grammar, item_set)
         # A handle is a 4 elements tuple:
         #
         #  rulename, stack-elements-to-pop, look-ahead, semantic-method

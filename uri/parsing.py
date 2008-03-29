@@ -22,14 +22,14 @@ Parsing primitives.
 from urllib import unquote
 
 # Import from itools
-from itools.abnf import build_grammar, BaseContext, Parser
+from itools.abnf import build_grammar, get_parser, BaseContext
 from generic import Authority, EmptyReference, Path, Reference, decode_query
 
 
 ###########################################################################
 # ABNF Syntax (RFC 3986, Appendix A)
 ###########################################################################
-grammar = build_grammar(
+uri_grammar = (
     'URI = scheme ":" hier-part [ "?" query ] [ "#" fragment ]\r\n'
     'hier-part = "//" authority path-abempty\r\n'
     '          / path-absolute\r\n'
@@ -142,7 +142,9 @@ class URIContext(BaseContext):
         return uri
 
 
-parse_uri = Parser(grammar, URIContext, 'URI-reference')
+uri_grammar = build_grammar(uri_grammar, URIContext)
+uri_parser = get_parser(uri_grammar, 'URI-reference')
+parse_uri = uri_parser.run
 
 
 

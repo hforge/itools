@@ -151,11 +151,6 @@ core_rules = {
 
 class Context(BaseContext):
 
-    def __init__(self, data):
-        BaseContext.__init__(self, data)
-        self.grammar = Grammar()
-
-
     def rulename(self, start, end, *args):
         # FIXME The RFC says rulenames are case-insensitive
         return self.data[start:end]
@@ -302,11 +297,12 @@ class Context(BaseContext):
         if len(alternation) == 1:
             return alternation[0]
 
-        grammar = self.grammar
-        rulename = grammar.get_internal_rulename()
-        for elements in alternation:
-            grammar.add_rule(rulename, *elements)
-        return [rulename]
+        raise NotImplementedError
+#       grammar = self.grammar
+#       rulename = grammar.get_internal_rulename()
+#       for elements in alternation:
+#           grammar.add_rule(rulename, *elements)
+#       return [rulename]
 
 
     def option(self, start, end, space1, alternation, space2):
@@ -318,12 +314,24 @@ class Context(BaseContext):
     def rule(self, start, end, rulename, defined_as, alternation, *args):
         if rulename in core_rules:
             raise ValueError, 'the "%s" rule is reserved' % value
+        return rulename, alternation
+
+
+    def rulelist_item_1(self, start, end, rule):
+        return rule
+
+
+    def rulelist(self, start, end, item, tail):
+        grammar = Grammar()
+        rulename, alternation = item
         for elements in alternation:
-            self.grammar.add_rule(rulename, *elements)
-
-
-    def rulelist(self, start, end, *args):
-        return self.grammar
+            grammar.add_rule(rulename, *elements)
+        while tail:
+            item, tail = tail
+            rulename, alternation = item
+            for elements in alternation:
+                grammar.add_rule(rulename, *elements)
+        return grammar
 
 
 

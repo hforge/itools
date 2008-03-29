@@ -22,7 +22,7 @@ from unittest import TestCase
 
 # Import from itools
 from itools.uri import get_reference, Path, Reference
-from itools.uri.parsing import grammar as uri_grammar, parse_uri
+from itools.uri.parsing import uri_parser, parse_uri
 from itools.uri.generic import normalize_path, GenericDataType
 from itools.uri.mailto import Mailto, MailtoDataType
 
@@ -32,19 +32,19 @@ class ParsingTestCase(TestCase):
     def test_is_valid(self):
         """Test the examples from RFC 3986, Section 1.1.2
         """
-        is_valid = uri_grammar.is_valid
+        is_valid = uri_parser.is_valid
         a = 'ldap://[2001:db8::7]/c=GB?objectClass?one'
-        self.assertEqual(is_valid('URI-reference', a), True)
+        self.assertEqual(is_valid(a), True)
         a = 'mailto:John.Doe@example.com'
-        self.assertEqual(is_valid('URI-reference', a), True)
+        self.assertEqual(is_valid(a), True)
         a = 'news:comp.infosystems.www.servers.unix'
-        self.assertEqual(is_valid('URI-reference', a), True)
+        self.assertEqual(is_valid(a), True)
         a = 'tel:+1-816-555-1212'
-        self.assertEqual(is_valid('URI-reference', a), True)
+        self.assertEqual(is_valid(a), True)
         a = 'telnet://192.0.2.16:80/'
-        self.assertEqual(is_valid('URI-reference', a), True)
+        self.assertEqual(is_valid(a), True)
         a = 'urn:oasis:names:specification:docbook:dtd:xml:4.1.2'
-        self.assertEqual(is_valid('URI-reference', a), True)
+        self.assertEqual(is_valid(a), True)
 
 
     def test_urlsplit_section_1_1_2(self):

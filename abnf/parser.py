@@ -22,6 +22,11 @@ import sys
 from grammar import pformat_element, EOI
 
 
+# Don't debug by default
+debug = False
+
+
+
 class Parser(object):
 
     def __init__(self, grammar, start_symbol, token_table, symbol_table,
@@ -53,10 +58,11 @@ class Parser(object):
         active_nodes.append(0)
 
         # Debug
-        debug = False
 #        debug = (start_symbol == 'rulelist')
-        trace = open('/tmp/trace.txt', 'w')
-#        trace = sys.stdout
+#        debug = (start_symbol == 'IPv4address')
+        if debug:
+#            trace = open('/tmp/trace.txt', 'w')
+            trace = sys.stdout
 
         get_token = tokenizer.get_token(data).next
         token, data_idx = get_token()
@@ -83,7 +89,7 @@ class Parser(object):
                     map[next_state] = n
                     new_active_nodes.append(n)
                     stack.append(
-                        ([node_idx], token, next_state, data_idx, None))
+                        ([node_idx], token, next_state, data_idx+1, None))
             active_nodes = new_active_nodes
 
             # Debug
@@ -353,6 +359,8 @@ def find_handles(grammar, item_set):
 def get_parser(grammar, start_symbol):
     """Build the parsing tables.
     """
+#    debug = (start_symbol == 'rulelist')
+
     tokens = grammar.tokens
     rules = grammar.rules
     map = grammar.semantic_map
@@ -422,7 +430,8 @@ def get_parser(grammar, start_symbol):
             symbol_table[(src_state, symbol)] = dst_state
 
     # Debug
-#    build_graph(grammar, reduce_table, token_table, symbol_table)
+    if debug:
+        build_graph(grammar, reduce_table, token_table, symbol_table)
 
     # Finish the reduce-table
     reduce_table[0] = frozenset()
@@ -538,6 +547,8 @@ def pprint_stack(stack, active_nodes, data, file=None):
                 line.append('S1')
             elif symbol == 0:
                 line.append('$ S%s' % state)
+            elif type(symbol) is str:
+                line.append('%s(%s) S%s' % (symbol, value, state))
             else:
                 line.append('%s S%s' % (symbol, state))
         line = ' '.join(line)

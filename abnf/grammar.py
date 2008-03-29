@@ -54,6 +54,35 @@ def pformat_rule(name, rule):
     return ' '.join(line)
 
 
+def replace_charsets_by_tokens(elements, lexical_table):
+    """This helper function receives a sequence of elements with terminals
+    expressed as sets of characters (charsets).  Returns the same sequence
+    with these charsets replaced by sets-of-tokens, as defined by the given
+    "lexical_table".
+
+    Used by the "Grammar.get_tokenizer" method.
+    """
+    # Charset to token set function
+    cs2ts = lambda cs: frozenset([ lexical_table[ord(c)] for c in cs ])
+
+    new_elements = []
+    for element in elements:
+        element_type = type(element)
+        if element_type is frozenset:
+            # Charset
+            element = cs2ts(element)
+        elif element_type is tuple:
+            # Repetition
+            max, rest = element[0], element[1:]
+            element = (max,) + replace_charsets_by_tokens(rest, lexical_table)
+        new_elements.append(element)
+
+    if type(elements) is tuple:
+        return tuple(new_elements)
+
+    return new_elements
+
+
 
 class BaseContext(object):
 
@@ -193,28 +222,13 @@ class Grammar(object):
         self.tokens = range(token)
         self.tokenizer = Tokenizer(lexical_table)
 
-        # Charset to token set function
-        cs2ts = lambda cs: frozenset([ lexical_table[ord(c)] for c in cs ])
-
         # Update the grammar, replace the sets-of-characters by sets-of-tokens
         self.charsets = None
         rules = self.rules
         for rulename in rules:
-            for rule in rules[rulename]:
-                for i, element in enumerate(rule):
-                    element_type = type(element)
-                    # Grammar symbol
-                    if element_type is str:
-                        continue
-                    # Charset
-                    if element_type is frozenset:
-                        rule[i] = cs2ts(element)
-                        continue
-                    # Repetition
-                    max = element[0]
-                    rest = [ type(x) is str and x or cs2ts(x)
-                             for x in element[1:] ]
-                    rule[i] = (max,) + tuple(rest)
+            for i, rule in enumerate(rules[rulename]):
+                rule = replace_charsets_by_tokens(rule, lexical_table)
+                rules[rulename][i] = rule
 
         return self.tokenizer
 

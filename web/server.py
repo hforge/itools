@@ -180,7 +180,7 @@ class Server(object):
 
 
     def __init__(self, root, address=None, port=None, access_log=None,
-                 error_log=sys.stderr, debug_log=None, pid_file=None):
+                 error_log=None, debug_log=None, pid_file=None):
         if address is None:
             address = ''
         if port is None:
@@ -195,7 +195,10 @@ class Server(object):
             self.access_log_path = access_log
             self.access_log = open(access_log, 'a+')
         # Error log
-        if error_log is not None:
+        if error_log is None:
+            self.error_log_path = None
+            self.error_log = sys.stderr
+        else:
             self.error_log_path = error_log
             self.error_log = open(error_log, 'a+')
         # Debug log

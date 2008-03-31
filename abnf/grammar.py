@@ -30,6 +30,8 @@ def pformat_element(element):
         rest = ' '.join([ pformat_element(x) for x in element[1:] ])
         if max is None:
             return '*(%s)' % rest
+        elif max == 1:
+            return '[%s]' % rest
         return '*%s(%s)' % (max, rest)
     # Terminal
     if element_type is frozenset:

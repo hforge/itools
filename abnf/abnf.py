@@ -127,24 +127,30 @@ add_rule("crlf", CR, LF)
 ###########################################################################
 # The Semantic layer
 ###########################################################################
-#abnf_grammar.pprint_grammar()
+class Alternation(list):
+
+    def __init__(self, *args):
+        list.__init__(self, args)
+
+
+
 core_rules = {
-    'ALPHA': [ALPHA],
-    'BIT': [BIT],
-    'CHAR': [CHAR],
-    'CR': [CR],
+    'ALPHA': ALPHA,
+    'BIT': BIT,
+    'CHAR': CHAR,
+    'CR': CR,
     'CRLF': [CR, LF],
-    'CTL': [CTL],
-    'DIGIT': [DIGIT],
-    'DQUOTE': [DQUOTE],
-    'HEXDIG': [HEXDIG],
-    'HTAB': [HTAB],
-    'LF': [LF],
-#    'LWSP': ,
-    'OCTET': [OCTET],
-    'SP': [SP],
-    'VCHAR': [VCHAR],
-    'WSP': [WSP],
+    'CTL': CTL,
+    'DIGIT': DIGIT,
+    'DQUOTE': DQUOTE,
+    'HEXDIG': HEXDIG,
+    'HTAB': HTAB,
+    'LF': LF,
+#    'LWSP': (0, None, Alternation([WSP], [CR, LF, WSP])),
+    'OCTET': OCTET,
+    'SP': SP,
+    'VCHAR': VCHAR,
+    'WSP': WSP,
     }
 
 
@@ -207,12 +213,10 @@ class Context(BaseContext):
 
     def element_1(self, start, end, rulename):
         # element = rulename
-        return core_rules.get(rulename, [rulename])
+        return core_rules.get(rulename, rulename)
 
 
     def element(self, start, end, value):
-        if isinstance(value, frozenset):
-            return [value]
         return value
 
 
@@ -232,31 +236,30 @@ class Context(BaseContext):
 
 
     def repetition(self, start, end, repeat, element):
-        if len(repeat) == 0:
+        if repeat is None:
             return element
         repeat = repeat[0]
         if isinstance(repeat, int):
             # <n>element
-            return repeat * element
+            min = max = repeat
         else:
             # <a>*<b>element
             min, max = repeat
-            if max is not None:
-                max = max - min
-            return (min * element) + [tuple([max] + element)]
+        if type(element) is list:
+            return (min, max) + tuple(element)
+        return (min, max, element)
 
 
     def concatenation(self, start, end, first, rest):
+        if type(first) is not list:
+            first = [first]
         if rest is None:
             return first
         return first + rest
 
 
-    def concatenation_tail(self, start, end, *args):
-        if len(args) == 0:
-            return None
-        space, first, rest = args
-        if isinstance(first, tuple):
+    def concatenation_tail_1(self, start, end, space, first, rest):
+        if type(first) is not list:
             first = [first]
         if rest is None:
             return first
@@ -265,7 +268,7 @@ class Context(BaseContext):
 
     def alternation(self, start, end, first, rest):
         if rest is None:
-            return [first]
+            return Alternation(first)
         # Optimize, compact structures of the form: "a" / "b"
         if len(first) == 1 and isinstance(first[0], frozenset):
             for i, conc in enumerate(rest):
@@ -273,13 +276,10 @@ class Context(BaseContext):
                     rest[i] = [first[0] | conc[0]]
                     return rest
 
-        return [first] + rest
+        return Alternation(first, *rest)
 
 
-    def alternation_tail(self, start, end, *args):
-        if len(args) == 0:
-            return None
-        space, space, first, rest = args
+    def alternation_tail_1(self, start, end, space1, space2, first, rest):
         if rest is None:
             return [first]
         # Optimize, compact structures of the form: "a" / "b"
@@ -297,18 +297,13 @@ class Context(BaseContext):
         if len(alternation) == 1:
             return alternation[0]
 
-        raise NotImplementedError
-#       grammar = self.grammar
-#       rulename = grammar.get_internal_rulename()
-#       for elements in alternation:
-#           grammar.add_rule(rulename, *elements)
-#       return [rulename]
+        return alternation
 
 
     def option(self, start, end, space1, alternation, space2):
         if len(alternation) == 1:
-            return [tuple([1] + alternation[0])]
-        raise NotImplementedError
+            return (0, 1) + tuple(alternation[0])
+        return (0, 1, alternation)
 
 
     def rule(self, start, end, rulename, defined_as, alternation, *args):
@@ -322,14 +317,45 @@ class Context(BaseContext):
 
 
     def rulelist(self, start, end, item, tail):
+        # Helper function
+        def process_elements(grammar, rulename, elements):
+            new_elements = []
+            for element in elements:
+                element_type = type(element)
+                if element_type is tuple:
+                    min, max = element[0], element[1]
+                    rest = process_elements(grammar, rulename, element[2:])
+                    new_elements.extend(min * rest)
+                    if max is None:
+                        new_elements.append((None,) + rest)
+                    else:
+                        max = max - min
+                        if max > 0:
+                            new_elements.append((max,) + rest)
+                elif element_type is Alternation:
+                    aux = grammar.get_internal_rulename(rulename)
+                    for alt in element:
+                        grammar.add_rule(aux, *alt)
+                    new_elements.append(aux)
+                else:
+                    new_elements.append(element)
+            if type(elements) is tuple:
+                return tuple(new_elements)
+            return new_elements
+
+        # Go
         grammar = Grammar()
         rulename, alternation = item
         for elements in alternation:
+            elements = process_elements(grammar, rulename, elements)
             grammar.add_rule(rulename, *elements)
         while tail:
             item, tail = tail
+            if item is None:
+                continue
             rulename, alternation = item
             for elements in alternation:
+                elements = process_elements(grammar, rulename, elements)
                 grammar.add_rule(rulename, *elements)
         return grammar
 

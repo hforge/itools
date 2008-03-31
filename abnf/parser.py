@@ -134,7 +134,11 @@ class Parser(object):
                         if context is None:
                             value = None
                         elif method is None:
-                            value = values
+                            aux = [ x for x in values if x is not None ]
+                            if len(aux) == 0:
+                                value = None
+                            else:
+                                value = values
                         else:
                             value = method(context, start, data_idx, *values)
                         # Next state
@@ -547,10 +551,10 @@ def pprint_stack(stack, active_nodes, data, file=None):
                 line.append('S1')
             elif symbol == 0:
                 line.append('$ S%s' % state)
-            elif type(symbol) is str:
-                line.append('%s(%s) S%s' % (symbol, value, state))
-            else:
+            elif value is None:
                 line.append('%s S%s' % (symbol, state))
+            else:
+                line.append('%s(%s) S%s' % (symbol, value, state))
         line = ' '.join(line)
         file.write('%s\n' % line)
 

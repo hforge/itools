@@ -144,7 +144,11 @@ class URIContext(BaseContext):
 
 uri_grammar = build_grammar(uri_grammar, URIContext)
 uri_parser = get_parser(uri_grammar, 'URI-reference')
-parse_uri = uri_parser.run
+
+
+def parse_uri(data):
+    context = URIContext(data)
+    return uri_parser.run(data, context)
 
 
 

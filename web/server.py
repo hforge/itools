@@ -20,7 +20,7 @@
 from base64 import decodestring
 from copy import copy
 from datetime import datetime
-from os import getpid, remove as remove_file
+from os import fstat, getpid, remove as remove_file
 from select import error as SelectError
 from signal import signal, SIGINT
 from socket import (socket as Socket, error as SocketError, AF_INET,
@@ -174,6 +174,11 @@ class SocketWrapper(object):
 ###########################################################################
 class Server(object):
 
+    access_log = None
+    error_log = None
+    debug_log = None
+
+
     def __init__(self, root, address=None, port=None, access_log=None,
                  error_log=sys.stderr, debug_log=None, pid_file=None):
         if address is None:
@@ -186,17 +191,17 @@ class Server(object):
         self.address = address
         self.port = port
         # Access log
-        if isinstance(access_log, str):
-            access_log = open(access_log, 'a+')
-        self.access_log = access_log
+        if access_log is not None:
+            self.access_log_path = access_log
+            self.access_log = open(access_log, 'a+')
         # Error log
-        if isinstance(error_log, str):
-            error_log = open(error_log, 'a+')
-        self.error_log = error_log
+        if error_log is not None:
+            self.error_log_path = error_log
+            self.error_log = open(error_log, 'a+')
         # Debug log
-        if isinstance(debug_log, str):
-            debug_log = open(debug_log, 'a+')
-        self.debug_log = debug_log
+        if debug_log is not None:
+            self.debug_log_path = debug_log
+            self.debug_log = open(debug_log, 'a+')
         # The pid file
         self.pid_file = pid_file
 
@@ -633,12 +638,20 @@ class Server(object):
         if log is None:
             return
 
-        # Log
+        # The data to write
         host, port = conn.getpeername()
         namespace = (host, strftime('%d/%b/%Y:%H:%M:%S %Z'),
                      request.request_line, response.status,
                      response.get_content_length())
-        log.write('%s - - [%s] "%s" %s %s\n' % namespace)
+        data = '%s - - [%s] "%s" %s %s\n' % namespace
+
+        # Check the file has not been removed
+        if fstat(log.fileno())[3] == 0:
+            log = open(self.access_log_path, 'a+')
+            self.access_log = log
+
+        # Write
+        log.write(data)
         log.flush()
 
 
@@ -648,25 +661,34 @@ class Server(object):
             return
 
         # The separator
-        log.write('\n')
-        log.write('%s\n' % ('*' * 78))
+        lines = []
+        lines.append('\n')
+        lines.append('%s\n' % ('*' * 78))
         # The date
-        log.write('DATE: %s\n' % datetime.now())
+        lines.append('DATE: %s\n' % datetime.now())
         # The request data
         if context is not None:
             # The URI and user
             user = context.user
-            log.write('URI : %s\n' % str(context.uri))
-            log.write('USER: %s\n' % (user and user.name or None))
-            log.write('\n')
+            lines.append('URI : %s\n' % str(context.uri))
+            lines.append('USER: %s\n' % (user and user.name or None))
+            lines.append('\n')
             # The request
             request = context.request
-            log.write(request.request_line_to_str())
-            log.write(request.headers_to_str())
+            lines.append(request.request_line_to_str())
+            lines.append(request.headers_to_str())
+        lines.append('\n')
+        data = ''.join(lines)
 
-        # The traceback
-        log.write('\n')
-        print_exc(file=log)
+        # Check the file has not been removed
+        if fstat(log.fileno())[3] == 0:
+            log = open(self.error_log_path, 'a+')
+            self.error_log = log
+
+        # Write
+        log.write(data)
+        print_exc(file=log) # FIXME Should be done before to reduce the risk
+                            # of the log file being removed.
         log.flush()
 
 
@@ -675,7 +697,16 @@ class Server(object):
         if log is None:
             return
 
-        log.write('%s %s\n' % (datetime.now(), message))
+        # The data to write
+        data = '%s %s\n' % (datetime.now(), message)
+
+        # Check the file has not been removed
+        if fstat(log.fileno())[3] == 0:
+            log = open(self.debug_log_path, 'a+')
+            self.debug_log = log
+
+        # Write
+        log.write(data)
         log.flush()
 
 

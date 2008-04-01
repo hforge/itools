@@ -25,7 +25,7 @@ from thread import get_ident, allocate_lock
 from time import strptime
 
 # Import from itools
-from itools.datatypes import String
+from itools.datatypes import String, Enumerate
 from itools.http import Response
 from itools.i18n import AcceptLanguageType
 from itools.uri import get_reference
@@ -267,7 +267,11 @@ class Context(object):
                 cls.append('field_required')
             if submit:
                 try:
-                    value = self.get_form_value(name, type=datatype)
+                    if isinstance(datatype, Enumerate):
+                        field_value = self.get_form_value(name, type=datatype)
+                        value = datatype.get_namespace(field_value)
+                    else:
+                        value = self.get_form_value(name, type=datatype)
                 except FormError:
                     value = self.get_form_value(name)
                     cls.append('missing')

@@ -55,8 +55,8 @@ typedef struct {
  *************************************************************************/
 
 /* Import from Python */
-PyObject* p_htmlentitydefs;
-PyObject* p_name2codepoint;
+PyObject* py_htmlentitydefs;
+PyObject* py_name2codepoint;
 
 
 /* Exceptions */
@@ -64,10 +64,10 @@ static PyObject* XMLError;
 
 
 /* Constants */
-PyObject* xml_prefix;
-PyObject* xml_ns;
-PyObject* xmlns_prefix;
-PyObject* xmlns_uri;
+PyObject* py_xml_prefix;
+PyObject* py_xml_ns;
+PyObject* py_xmlns_prefix;
+PyObject* py_xmlns_uri;
 
 
 
@@ -467,7 +467,7 @@ PyObject* xml_entity_reference(Parser* self) {
     /* FIXME Specific to HTML */
     /* htmlentitydefs.name2unicodepoint[value] */
     value = Py_BuildValue("s#", name.base, name.size);
-    cp = PyDict_GetItem(p_name2codepoint, value);
+    cp = PyDict_GetItem(py_name2codepoint, value);
     Py_DECREF(value);
     if (cp == NULL)
         return NULL;
@@ -496,7 +496,7 @@ PyObject* xml_char_reference(Parser* self) {
         /* Read "x" */
         self->cursor++;
         self->column++;
-        /* Check there is ate least one digit */
+        /* Check there is at least one digit */
         c = *(self->cursor);
         if (!isxdigit(c))
             return NULL;
@@ -1024,7 +1024,7 @@ static PyObject* Parser_iternext(Parser* self) {
                     PyDict_SetItem(py_namespace_decls, py_attr_name,
                                    py_attr_value);
                     /* Set the attribute */
-                    py_attr = Py_BuildValue("((OO)N)", xmlns_prefix,
+                    py_attr = Py_BuildValue("((OO)N)", py_xmlns_prefix,
                               py_attr_name, py_attr_value);
                     PyList_Append(py_attributes_list, py_attr);
                     /* Decref */
@@ -1058,8 +1058,8 @@ static PyObject* Parser_iternext(Parser* self) {
                     /* Set the default namespace */
                     PyDict_SetItem(py_namespace_decls, Py_None, py_attr_value);
                     /* Set the attribute */
-                    py_attr = Py_BuildValue("((OO)N)", xmlns_prefix, Py_None,
-                              py_attr_value);
+                    py_attr = Py_BuildValue("((OO)N)", py_xmlns_prefix,
+                              Py_None, py_attr_value);
                     PyList_Append(py_attributes_list, py_attr);
                     /* Decref */
                     Py_DECREF(py_attr);
@@ -1121,10 +1121,10 @@ static PyObject* Parser_iternext(Parser* self) {
                 /* Find out the attribute URI */
                 py_attr_name = PyTuple_GetItem(py_attr, 0);
                 py_attr_prefix = PyTuple_GetItem(py_attr_name, 0);
-                if (PyObject_Compare(py_attr_prefix, xml_prefix) == 0)
-                    py_attr_uri = xml_ns;
-                else if (PyObject_Compare(py_attr_prefix, xmlns_prefix) == 0)
-                    py_attr_uri = xmlns_uri;
+                if (PyObject_Compare(py_attr_prefix, py_xml_prefix) == 0)
+                    py_attr_uri = py_xml_ns;
+                else if (PyObject_Compare(py_attr_prefix, py_xmlns_prefix) == 0)
+                    py_attr_uri = py_xmlns_uri;
                 else if (py_namespaces == NULL)
                     py_attr_uri = Py_None;
                 else {
@@ -1279,14 +1279,15 @@ initparser(void) {
 
     /* Import from Python */
     /* from htmlentitydefs import name2codepoint */
-    p_htmlentitydefs = PyImport_ImportModule("htmlentitydefs");
-    p_name2codepoint = PyObject_GetAttrString(p_htmlentitydefs, "name2codepoint");
+    py_htmlentitydefs = PyImport_ImportModule("htmlentitydefs");
+    py_name2codepoint = PyObject_GetAttrString(py_htmlentitydefs,
+                                               "name2codepoint");
 
     /* Constants */
-    xml_prefix = PyString_FromString("xml");
-    xml_ns = PyString_FromString("http://www.w3.org/XML/1998/namespace");
-    xmlns_prefix = PyString_FromString("xmlns");
-    xmlns_uri = PyString_FromString("http://www.w3.org/2000/xmlns/");
+    py_xml_prefix = PyString_FromString("xml");
+    py_xml_ns = PyString_FromString("http://www.w3.org/XML/1998/namespace");
+    py_xmlns_prefix = PyString_FromString("xmlns");
+    py_xmlns_uri = PyString_FromString("http://www.w3.org/2000/xmlns/");
 
     /* Initialize the module */
     module = Py_InitModule3("parser", module_methods, "Low-level XML parser");

@@ -118,6 +118,10 @@ class TextField(BaseField):
         if value is None:
             return
 
+        # FIXME value should be an unicode object
+        if isinstance(value, (unicode, str)) is False:
+            raise TypeError, 'unexpected %s' % type(value)
+
         position = state = 0
         lexeme = previous_cjk = u''
         mode_cjk = None

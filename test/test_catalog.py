@@ -24,7 +24,8 @@ from unittest import TestCase
 # Import from itools
 from itools import vfs
 from itools.catalog import (make_catalog, Catalog, CatalogAware, BoolField,
-    KeywordField, TextField, IntegerField, RangeQuery, EqQuery, NotQuery)
+    KeywordField, TextField, IntegerField, AndQuery, RangeQuery, EqQuery,
+    NotQuery)
 from itools.catalog import io
 
 
@@ -328,10 +329,16 @@ class CatalogTestCase(TestCase):
         query = RangeQuery('data', 'home', 'horse')
         results = catalog.search(query)
         self.assertEqual(results.get_n_documents(), 12)
-        # Not Query
+        # Not Query (1/2)
         query = NotQuery(EqQuery('data', 'lion'))
         results = catalog.search(query)
         self.assertEqual(results.get_n_documents(), 27)
+        # Not Query (1/2)
+        query1 = EqQuery('data', 'mouse')
+        query2 = NotQuery(EqQuery('data', 'lion'))
+        query = AndQuery(query1, query2)
+        results = catalog.search(query)
+        self.assertEqual(results.get_n_documents(), 2)
 
 
     def test_unique_values(self):

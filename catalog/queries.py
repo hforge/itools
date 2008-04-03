@@ -185,10 +185,10 @@ class NotQuery(object):
         if isinstance(catalog, Catalog):
             for d in all_documents.get_documents():
                 if not_documents.has_key(d.__number__) is False:
-                    sub_results[d.__number__] = d
+                    sub_results[d.__number__] = 1
         else:
             for d in all_documents:
                 if (d.__number__ in not_documents) is False:
-                    sub_results[d.__number__] = d
+                    sub_results[d.__number__] = 1
 
         return sub_results

@@ -20,7 +20,7 @@ from cStringIO import StringIO
 from os.path import dirname, join as join_path
 
 # Import from itools
-from itools.datatypes import Unicode, XML
+from itools.datatypes import Unicode, XMLContent
 from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, TEXT, CDATA
 from itools.stl import stl
 
@@ -375,7 +375,7 @@ class iPageGraphics(object):
                     if prev_elt[0] in ['drawString', 'drawRightString',
                                        'drawCentredString',
                                        'drawCenteredString']:
-                        content.append(XML.encode(value))
+                        content.append(XMLContent.encode(value))
                     elif prev_elt[0] in ['lines', 'curves', 'transform']:
                         content = value
 
@@ -873,7 +873,7 @@ def story_stream(stream, _tag_uri, _tag_name, _attributes, pdf_stylesheet,
                 if prev_elt[0] == _tag_name:
                     value = normalize(Unicode.decode(value, encoding), True)
                     if len(value) > 0 and value != ' ':
-                        value = XML.encode(value) # entities
+                        value = XMLContent.encode(value) # entities
                         story.append(value)
 
 
@@ -963,7 +963,7 @@ def keepinframe_stream(stream, _tag_uri, _tag_name, _attributes,
                 if prev_elt[0] == _tag_name:
                     value = normalize(Unicode.decode(value, encoding), True)
                     if len(value) > 0 and value != ' ':
-                        value = XML.encode(value) # entities
+                        value = XMLContent.encode(value) # entities
                         story.append(value)
 
 
@@ -1004,7 +1004,7 @@ def heading_stream(stream, _tag_uri, _tag_name, _attributes, pdf_stylesheet,
             if stack:
                 value = normalize(Unicode.decode(value, encoding), True)
                 if len(value) > 0 and value != ' ':
-                    value = XML.encode(value) # entities
+                    value = XMLContent.encode(value) # entities
                     content.append(value)
 
 
@@ -1080,7 +1080,7 @@ def paragraph_stream(stream, _tag_uri, _tag_name, _attributes, pdf_stylesheet,
                 if len(value) > 0:
                     # alow to write :
                     # <para><u><i>foo</i> </u></para>
-                    value = XML.encode(value) # entities
+                    value = XMLContent.encode(value) # entities
                     if has_content and content[-1] == '</br>':
                         value = value.lstrip()
                     content.append(value)
@@ -1124,7 +1124,7 @@ def preformatted_stream(stream, _tag_uri, _tag_name, _attributes,
         elif event == TEXT:
             if stack:
                 # we dont strip the string --> preformatted widget
-                value = XML.encode(Unicode.decode(value, encoding)) # entities
+                value = XMLContent.encode(Unicode.decode(value, encoding)) # entities
                 content.append(value)
 
 
@@ -1403,7 +1403,7 @@ def table_stream(stream, _tag_uri, _tag_name, _attributes, pdf_stylesheet,
                     # we dont normalize the td content
                     value = Unicode.decode(value, encoding).strip()
                     if len(value) > 0:
-                        value = XML.encode(value) # entities
+                        value = XMLContent.encode(value) # entities
                         table_td.append(value)
             else:
                 pass

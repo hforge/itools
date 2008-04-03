@@ -22,7 +22,7 @@ from cStringIO import StringIO
 
 # Import from itools
 from itools.datatypes import (Boolean, Integer, Unicode, String, URI,
-    XML as XMLContent, XMLAttribute)
+    XMLContent, XMLAttribute)
 from itools.handlers import register_handler_class
 from itools.xml import (XMLParser, XMLFile, XML_DECL, DOCUMENT_TYPE,
     START_ELEMENT, END_ELEMENT, TEXT, COMMENT, AbstractNamespace,

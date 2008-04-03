@@ -29,7 +29,7 @@ from itools.datatypes import (ISOTime, ISOCalendarDate, ISODateTime,
                               Unicode, URI, Email,
                               FileName, QName, Tokens,
                               Enumerate,
-                              XML,
+                              XMLContent,
                               XMLAttribute,
                               HTTPDate)
 
@@ -235,11 +235,11 @@ class XMLTestCase(TestCase):
               """1.1/&quot;>Astérix le Gaulois&lt;/dc:title>"""
 
     def test_encode(self):
-        self.assertEqual(XML.encode(self.data), self.result1)
+        self.assertEqual(XMLContent.encode(self.data), self.result1)
         self.assertEqual(XMLAttribute.encode(self.data), self.result2)
 
     def test_decode(self):
-        self.assertEqual(XML.decode(self.result1), self.data)
+        self.assertEqual(XMLContent.decode(self.result1), self.data)
         self.assertEqual(XMLAttribute.decode(self.result2), self.data)
 
 

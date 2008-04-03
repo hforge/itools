@@ -280,7 +280,7 @@ class Enumerate(String):
 ############################################################################
 # Medium decoder/encoders (not for values)
 
-class XML(object):
+class XMLContent(object):
 
     @staticmethod
     def encode(value):

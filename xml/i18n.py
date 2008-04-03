@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.datatypes import XML as XMLContent
+from itools.datatypes import XMLContent
 from itools.i18n import Message
 from namespaces import get_namespace, get_element_schema, XMLNSNamespace
 from parser import XMLParser, START_ELEMENT, END_ELEMENT, TEXT

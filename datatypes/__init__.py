@@ -17,8 +17,10 @@
 # Import from itools
 from base import DataType
 from primitive import (Integer, Decimal, Unicode, String, Boolean, Email, URI,
-                       FileName, QName, Tokens, Enumerate, XML, XMLAttribute,
-                       is_datatype)
+                       FileName, QName, Tokens, Enumerate, XMLContent,
+                       XMLAttribute, is_datatype,
+                       # TODO Remove in itools 0.21
+                       XMLContent as XML)
 from datetime_ import ISOCalendarDate, ISOTime, ISODateTime, HTTPDate
 from languages import LanguageTag
 # Define alias Date, Time and DateTime (use ISO standard)
@@ -41,6 +43,8 @@ __all__ = [
     'QName',
     'Tokens',
     'Enumerate',
+    'XMLContent',
+    # TODO Remove in itools 0.21
     'XML',
     'XMLAttribute',
     'ISOCalendarDate',

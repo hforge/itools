@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.datatypes import XMLAttribute, XML as XMLContent
+from itools.datatypes import XMLAttribute, XMLContent
 from itools.handlers import TextFile, register_handler_class
 from i18n import get_messages, translate
 from namespaces import get_namespace, is_empty, XMLNSNamespace

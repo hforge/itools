@@ -207,6 +207,9 @@ GHashTable* builtin_entities;
     g_hash_table_insert(builtin_entities, str, GUINT_TO_POINTER(codepoint))
 
 
+/*
+http://en.wikipedia.org/wiki/List_of_XML_and_HTML_character_entity_references
+*/
 void init_builtin_entities(void) {
     builtin_entities = g_hash_table_new(g_str_hash, g_str_equal);
     /* XML */
@@ -215,10 +218,74 @@ void init_builtin_entities(void) {
     SET_ENTITY("apos", 39);
     SET_ENTITY("lt", 60);
     SET_ENTITY("gt", 62);
-    /* HTML (TODO Finish) */
+    /* HTML 2.0 */
+    SET_ENTITY("Agrave", 192);
+    SET_ENTITY("Aacute", 193);
+    SET_ENTITY("Acirc", 194);
+    SET_ENTITY("Atilde", 195);
+    SET_ENTITY("Auml", 196);
+    SET_ENTITY("Aring", 197);
+    SET_ENTITY("AElig", 198);
+    SET_ENTITY("Ccedil", 199);
+    SET_ENTITY("Egrave", 200);
+    SET_ENTITY("Eacute", 201);
+    SET_ENTITY("Ecirc", 202);
+    SET_ENTITY("Euml", 203);
+    SET_ENTITY("Igrave", 204);
+    SET_ENTITY("Iacute", 205);
+    SET_ENTITY("Icirc", 206);
+    SET_ENTITY("Iuml", 207);
+    SET_ENTITY("ETH", 208);
+    SET_ENTITY("Ntilde", 209);
+    SET_ENTITY("Ograve", 210);
+    SET_ENTITY("Oacute", 211);
+    SET_ENTITY("Ocirc", 212);
+    SET_ENTITY("Otilde", 213);
+    SET_ENTITY("Ouml", 214);
+    SET_ENTITY("Oslash", 216);
+    SET_ENTITY("Ugrave", 217);
+    SET_ENTITY("Uacute", 218);
+    SET_ENTITY("Ucirc", 219);
+    SET_ENTITY("Uuml", 220);
+    SET_ENTITY("Yacute", 221);
+    SET_ENTITY("THORN", 222);
+    SET_ENTITY("szlig", 223);
+    SET_ENTITY("agrave", 224);
+    SET_ENTITY("aacute", 225);
+    SET_ENTITY("acirc", 226);
+    SET_ENTITY("atilde", 227);
+    SET_ENTITY("auml", 228);
+    SET_ENTITY("aring", 229);
+    SET_ENTITY("aelig", 230);
+    SET_ENTITY("ccedil", 231);
+    SET_ENTITY("egrave", 232);
+    SET_ENTITY("eacute", 233);
+    SET_ENTITY("ecirc", 234);
+    SET_ENTITY("euml", 235);
+    SET_ENTITY("igrave", 236);
+    SET_ENTITY("iacute", 237);
+    SET_ENTITY("icirc", 238);
+    SET_ENTITY("iuml", 239);
+    SET_ENTITY("eth", 240);
+    SET_ENTITY("ntilde", 241);
+    SET_ENTITY("ograve", 242);
+    SET_ENTITY("oacute", 243);
+    SET_ENTITY("ocirc", 244);
+    SET_ENTITY("otilde", 245);
+    SET_ENTITY("ouml", 246);
+    SET_ENTITY("oslash", 248);
+    SET_ENTITY("ugrave", 249);
+    SET_ENTITY("uacute", 250);
+    SET_ENTITY("ucirc", 251);
+    SET_ENTITY("uuml", 252);
+    SET_ENTITY("yacute", 253);
+    SET_ENTITY("thorn", 254);
+    SET_ENTITY("yuml", 255);
+    /* HTML 3.2 (TODO Finish) */
     SET_ENTITY("nbsp", 160);
     SET_ENTITY("laquo", 171);
     SET_ENTITY("raquo", 187);
+    /* HTML 4.0 (TODO Finish) */
     SET_ENTITY("rArr", 8658);
 }
 

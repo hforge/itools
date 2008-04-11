@@ -98,8 +98,8 @@ typedef struct {
     char (*read_char)(gpointer); /* Function to read the next char. */
     char next_char;
     /* Where we are. */
-    unsigned int line_no;
-    unsigned int column;
+    guint line_no;
+    guint column;
     /* The stack and namespaces. */
     GArray* tag_stack;           /* The stack of open tags not yet closed. */
     GArray* ns_stack;            /* The stack of XML namespaces. */
@@ -796,20 +796,142 @@ PyObject* pop_tag(Parser* self, gchar* prefix, GString* name) {
 }
 
 
+/* Processing Instruction or XML Declaration.
+ *
+ * Input State: "<?" * "...?>"
+ */
+PyObject* read_pi(Parser* self) {
+    PyObject* py_version;
+    PyObject* py_encoding;
+    PyObject* py_standalone;
+    PyObject* py_value;
+    char c;
+    int error;
+    guint line, column;
+
+    line = self->line_no;
+    column = self->column;
+
+    /* Target */
+    xml_name(self, self->buffer);
+    if (self->buffer->len == 0)
+        return ERROR(INVALID_TOKEN, line, column);
+    /* White Space */
+    xml_space(self);
+
+    /* Processing Instruction (http://www.w3.org/TR/REC-xml/#dt-pi) */
+    if (strcmp(self->buffer->str, "xml")) {
+        py_value = PyString_FromString(self->buffer->str);
+        g_string_set_size(self->buffer, 0);
+        /* Value */
+        c = self->next_char;
+        while (c != '\0') {
+            /* Stop condition: "?>" */
+            if (c == '?') {
+                c = move_cursor(self);
+                if (c == '>')
+                    return Py_BuildValue("(i(Ns)i)", PI, py_value,
+                           self->buffer->str, line);
+                g_string_append_c(self->buffer, '?');
+            }
+            g_string_append_c(self->buffer, c);
+            c = move_cursor(self);
+        }
+        Py_DECREF(py_value);
+        return ERROR(INVALID_TOKEN, line, column);
+    }
+    /* XML decl (http://www.w3.org/TR/REC-xml/#NT-XMLDecl) */
+    /* Read the version. */
+    g_string_set_size(self->buffer, 0);
+    if (read_string(self, "version") == -1)
+        return ERROR(BAD_XML_DECL, line, column);
+    if (xml_equal(self) == -1)
+        return ERROR(BAD_XML_DECL, line, column);
+    error = read_quoted_string(self, self->buffer);
+    if (error)
+        return ERROR(BAD_XML_DECL, line, column);
+    py_version = PyString_FromString(self->buffer->str);
+    xml_space(self);
+    /* Read the encoding. */
+    g_string_set_size(self->buffer, 0);
+    c = self->next_char;
+    if (c == 'e') {
+        if (read_string(self, "encoding") == -1) {
+            Py_DECREF(py_version);
+            return ERROR(BAD_XML_DECL, line, column);
+        }
+        if (xml_equal(self) == -1) {
+            Py_DECREF(py_version);
+            return ERROR(BAD_XML_DECL, line, column);
+        }
+        error = read_quoted_string(self, self->buffer);
+        if (error) {
+            Py_DECREF(py_version);
+            return ERROR(BAD_XML_DECL, line, column);
+        }
+        py_encoding = PyString_FromString(self->buffer->str);
+        xml_space(self);
+    } else
+        py_encoding = PyString_FromString("utf-8");
+    /* Read "standalone". */
+    g_string_set_size(self->buffer, 0);
+    c = self->next_char;
+    if (c == 's') {
+        if (read_string(self, "standalone") == -1) {
+            Py_DECREF(py_version);
+            Py_DECREF(py_encoding);
+            return ERROR(BAD_XML_DECL, line, column);
+        }
+        if (xml_equal(self) == -1) {
+            Py_DECREF(py_version);
+            Py_DECREF(py_encoding);
+            return ERROR(BAD_XML_DECL, line, column);
+        }
+        error = read_quoted_string(self, self->buffer);
+        if (error) {
+            Py_DECREF(py_version);
+            Py_DECREF(py_encoding);
+            return ERROR(BAD_XML_DECL, line, column);
+        }
+        py_standalone = PyString_FromString(self->buffer->str);
+        xml_space(self);
+    } else {
+        py_standalone = Py_None;
+        Py_INCREF(py_standalone);
+    }
+    /* Stop condition: "?>". */
+    c = self->next_char;
+    if (c == '?') {
+        c = move_cursor(self);
+        if (c == '>') {
+            move_cursor(self);
+            return Py_BuildValue("(i(NNN)i)", XML_DECL, py_version,
+                   py_encoding, py_standalone, line);
+        }
+    }
+    return ERROR(BAD_XML_DECL, line, column);
+}
+
+
 /* Document Type (http://www.w3.org/TR/REC-xml/#sec-prolog-dtd)
  *
- * Return a new reference. */
-PyObject* parse_document_type(Parser* self) {
+ * Input State: "<!D" * "OCTYPE..."
+ */
+PyObject* read_document_type(Parser* self) {
+    PyObject* py_public_id;
+    PyObject* py_system_id;
+    PyObject* py_value;
     GString* name;
     GString* public_id;
     GString* system_id;
     int error;
-    PyObject* py_public_id;
-    PyObject* py_system_id;
-    PyObject* py_value;
+    guint line, column;
 
-    if (read_string(self, "DOCTYPE"))
-        return NULL;
+    line = self->line_no;
+    column = self->column;
+
+    if (read_string(self, "OCTYPE"))
+        return ERROR(INVALID_TOKEN, line, column);
     xml_space(self);
 
     /* Name */
@@ -817,7 +939,7 @@ PyObject* parse_document_type(Parser* self) {
     xml_name(self, name);
     if (name->len == 0) {
         g_string_free(name, TRUE);
-        return NULL;
+        return ERROR(INVALID_TOKEN, line, column);
     }
     xml_space(self);
 
@@ -826,7 +948,7 @@ PyObject* parse_document_type(Parser* self) {
         case 'S':
             if (read_string(self, "SYSTEM")) {
                 g_string_free(name, TRUE);
-                return NULL;
+                return ERROR(INVALID_TOKEN, line, column);
             }
             /* PUBLIC ID */
             py_public_id = Py_None;
@@ -835,7 +957,7 @@ PyObject* parse_document_type(Parser* self) {
         case 'P':
             if (read_string(self, "PUBLIC")) {
                 g_string_free(name, TRUE);
-                return NULL;
+                return ERROR(INVALID_TOKEN, line, column);
             }
             /* PUBLIC ID */
             xml_space(self);
@@ -844,14 +966,14 @@ PyObject* parse_document_type(Parser* self) {
             if (error) {
                 g_string_free(name, TRUE);
                 g_string_free(public_id, TRUE);
-                return NULL;
+                return ERROR(INVALID_TOKEN, line, column);
             }
             py_public_id = PyString_FromString(public_id->str);
             g_string_free(public_id, TRUE);
             break;
         default:
             g_string_free(name, TRUE);
-            return NULL;
+            return ERROR(INVALID_TOKEN, line, column);
     }
 
     /* SYSTEM ID */
@@ -862,7 +984,7 @@ PyObject* parse_document_type(Parser* self) {
         g_string_free(name, TRUE);
         g_string_free(system_id, TRUE);
         Py_DECREF(py_public_id);
-        return NULL;
+        return ERROR(INVALID_TOKEN, line, column);
     }
     py_system_id = PyString_FromString(system_id->str);
     g_string_free(system_id, TRUE);
@@ -878,7 +1000,7 @@ PyObject* parse_document_type(Parser* self) {
         Py_DECREF(py_system_id);
         PyErr_SetString(PyExc_NotImplementedError,
                         "internal subset not yet supported");
-        return NULL;
+        return ERROR(INVALID_TOKEN, line, column);
     }
 
     /* End doctype declaration */
@@ -886,45 +1008,288 @@ PyObject* parse_document_type(Parser* self) {
         g_string_free(name, TRUE);
         Py_DECREF(py_public_id);
         Py_DECREF(py_system_id);
-        return NULL;
+        return ERROR(INVALID_TOKEN, line, column);
     }
     move_cursor(self);
 
     /* Build the Python value. */
-    py_value = Py_BuildValue("(sNNO)", name->str, py_system_id, py_public_id,
-                             Py_None);
+    py_value = Py_BuildValue("(i(sNNO)i)", DOCUMENT_TYPE, name->str,
+               py_system_id, py_public_id, Py_None, line);
     g_string_free(name, TRUE);
     return py_value;
 }
 
 
-/* Returns a new reference */
-static PyObject* Parser_iternext(Parser* self) {
-    int error;
-    gchar* tag_prefix;
-    gchar* tag_uri;
+/* CData Section
+ *
+ * Input State: "<![" * "CDATA[...]]>"
+ */
+PyObject* read_cdata(Parser* self) {
+    char c;
+    guint line, column;
+
+    line = self->line_no;
+    column = self->column;
+
+    if (read_string(self, "CDATA["))
+        return ERROR(INVALID_TOKEN, line, column);
+    c = self->next_char;
+    while (c != '\0') {
+        /* Stop condition: "]]>" */
+        if (c == ']') {
+            c = move_cursor(self);
+            if (c == ']') {
+                c = move_cursor(self);
+                if (c == '>')
+                    return Py_BuildValue("isi", CDATA, self->buffer->str,
+                                         line);
+                g_string_append_c(self->buffer, ']');
+            }
+            g_string_append_c(self->buffer, ']');
+        }
+        /* Something else. */
+        g_string_append_c(self->buffer, c);
+        c = move_cursor(self);
+    }
+    return ERROR(INVALID_TOKEN, line, column);
+}
+
+
+/* Comment.
+ *
+ * Input State: "<!-" * "-...-->"
+ */
+PyObject* read_comment(Parser* self) {
+    char c;
+    guint line, column;
+
+    line = self->line_no;
+    column = self->column;
+
+    c = self->next_char;
+    if (c != '-')
+        return ERROR(INVALID_TOKEN, line, column);
+    c = move_cursor(self);
+
+    /* Comment (http://www.w3.org/TR/REC-xml/#dt-comment) */
+    while (1) {
+        /* Stop condition: "-->" */
+        if (c == '-') {
+            c = move_cursor(self);
+            if (c == '-') {
+                c = move_cursor(self);
+                if (c != '>')
+                    return ERROR(INVALID_TOKEN, line, column);
+                move_cursor(self);
+                return Py_BuildValue("(isi)", COMMENT, self->buffer->str,
+                                     line);
+            } else
+                g_string_append_c(self->buffer, '-');
+        }
+        /* Something else. */
+        g_string_append_c(self->buffer, c);
+        c = move_cursor(self);
+    }
+}
+
+
+/* Start Element. */
+PyObject* read_start_tag(Parser* self) {
     PyObject* py_tag_name;
-    PyObject* py_value;
-    gboolean end_tag;
-    /* Attributes */
-    Attribute* attribute;
-    gchar* attr_uri;
-    gchar* key;
-    gchar* value;
+    PyObject* py_attributes;
     PyObject* py_attr_name;
     PyObject* py_attr_value;
-    PyObject* py_attributes;
-    /* XML Namespaces */
     GHashTable* namespaces;
-    /* XML declaration */
-    PyObject* py_version;
-    PyObject* py_encoding;
-    PyObject* py_standalone;
-    /* Common */
+    gchar* tag_prefix;
+    gchar* tag_uri;
+    gchar* key;
+    gchar* value;
+    gchar* attr_uri;
+    gboolean end_tag;
+    Attribute* attribute;
     char c;
-    int line;
-    int column;
+    guint line, column;
+    int error;
     int idx;
+
+    line = self->line_no;
+    column = self->column;
+
+    /* Read tag (prefix & name). */
+    tag_prefix = xml_prefix_name(self, self->buffer);
+    if (tag_prefix == NULL)
+        return ERROR(INVALID_TOKEN, line, column);
+    /* Attributes */
+    reset_attributes(self->attributes);
+    g_hash_table_steal_all(self->ns_buffer);
+    while (1) {
+        xml_space(self);
+        c = self->next_char;
+        if (c == '>') {
+            move_cursor(self);
+            /* Add to the stack */
+            push_tag(self, tag_prefix, self->buffer->str);
+            end_tag = FALSE;
+            namespaces = self->ns_current;
+            break;
+        } else if (c == '/') {
+            c = move_cursor(self);
+            if (c != '>')
+                return ERROR(INVALID_TOKEN, line, column);
+            move_cursor(self);
+
+            end_tag = TRUE;
+            if (g_hash_table_size(self->ns_buffer))
+                namespaces = merge_dicts(self->ns_current, self->ns_buffer);
+            else
+                namespaces = self->ns_current;
+
+            break;
+        }
+        /* Attributes */
+        attribute = new_attribute();
+        g_ptr_array_add(self->attributes, attribute);
+        /* Prefix & Name */
+        attribute->prefix = xml_prefix_name(self, attribute->name);
+        if (attribute->prefix == NULL)
+            return ERROR(INVALID_TOKEN, line, column);
+        /* Eq */
+        if (xml_equal(self) == -1)
+            return ERROR(INVALID_TOKEN, line, column);
+        /* Value */
+        error = xml_attr_value(self, attribute->value);
+        if (error)
+            return ERROR(INVALID_TOKEN, line, column);
+
+        if (strcmp(attribute->prefix, "") == 0) {
+            /* Default namespace declaration */
+            if (strcmp(attribute->name->str, "xmlns") == 0) {
+                /* Keep the value (uri). */
+                value = g_string_chunk_insert_const(self->ns_uris,
+                        attribute->value->str);
+                /* Check for duplicates */
+                if (g_hash_table_lookup(self->ns_buffer, ""))
+                    return ERROR(DUP_ATTR, line, column);
+                /* Set the default namespace */
+                g_hash_table_insert(self->ns_buffer, "", value);
+            /* Attribute without a prefix (use tag's prefix). */
+            } else if (strcmp(attribute->prefix, "") == 0) {
+                attribute->prefix = tag_prefix;
+            }
+        /* Namespace declaration */
+        } else if (strcmp(attribute->prefix, "xmlns") == 0) {
+            /* Keep the namespace prefix (key). */
+            key = g_string_chunk_insert_const(self->ns_prefixes,
+                  attribute->name->str);
+            /* Keep the namespace URI (value). */
+            value = g_string_chunk_insert_const(self->ns_uris,
+                    attribute->value->str);
+            /* Check for duplicates */
+            if (g_hash_table_lookup(self->ns_buffer, key))
+                return ERROR(DUP_ATTR, line, column);
+            /* Set the namespace */
+            g_hash_table_insert(self->ns_buffer, key, value);
+        }
+    }
+
+    /* Tag */
+    tag_uri = g_hash_table_lookup(namespaces, tag_prefix);
+
+    /* The END_ELEMENT token will be sent later */
+    py_tag_name = PyString_FromString(self->buffer->str);
+    if (end_tag)
+        self->py_left_token = Py_BuildValue("(i(sO)i)", END_ELEMENT, tag_uri,
+                              py_tag_name, line);
+
+    /* Attributes */
+    py_attributes = PyDict_New();
+    for (idx=0; idx < self->attributes->len; idx++) {
+        attribute = g_ptr_array_index(self->attributes, idx);
+        /* Find out the attribute URI */
+        attr_uri = g_hash_table_lookup(namespaces, attribute->prefix);
+        /* Build the attribute name. */
+        py_attr_name = Py_BuildValue("(ss)", attr_uri, attribute->name->str);
+
+        /* Check for duplicates */
+        if (PyDict_Contains(py_attributes, py_attr_name)) {
+            Py_DECREF(py_attr_name);
+            Py_DECREF(py_attributes);
+            Py_DECREF(py_tag_name);
+            return ERROR(DUP_ATTR, line, column);
+        }
+
+        /* Find out the attribute value */
+        py_attr_value = PyString_FromString(attribute->value->str);
+        /* Update the dict */
+        PyDict_SetItem(py_attributes, py_attr_name, py_attr_value);
+        Py_DECREF(py_attr_name);
+    }
+
+    return Py_BuildValue("(i(sNN)i)", START_ELEMENT, tag_uri, py_tag_name,
+                         py_attributes, line);
+}
+
+
+/* End Element (http://www.w3.org/TR/REC-xml/#NT-ETag)
+ *
+ * Input State: "</" * "...>"
+ */
+PyObject* read_end_tag(Parser* self) {
+    PyObject* py_value;
+    gchar* tag_prefix;
+    guint line, column;
+
+    line = self->line_no;
+    column = self->column;
+
+    /* Name */
+    tag_prefix = xml_prefix_name(self, self->buffer);
+    if (tag_prefix == NULL)
+        return ERROR(INVALID_TOKEN, line, column);
+    /* White Space */
+    xml_space(self);
+    /* Close */
+    if (self->next_char != '>')
+        return ERROR(INVALID_TOKEN, line, column);
+    move_cursor(self);
+    /* Remove from the stack */
+    py_value = pop_tag(self, tag_prefix, self->buffer);
+    if (py_value == NULL)
+        return ERROR(MISSING, line, column);
+
+    return Py_BuildValue("(iNi)", END_ELEMENT, py_value, line);
+}
+
+
+/* Character or Entity Reference. */
+PyObject* read_reference(Parser* self) {
+    guint line, column;
+    int error;
+
+    line = self->line_no;
+    column = self->column;
+
+    /* Character reference */
+    if (self->next_char == '#') {
+        move_cursor(self);
+        error = xml_char_reference(self, self->buffer);
+        if (error)
+            return ERROR(BAD_CHAR_REF, line, column);
+        return Py_BuildValue("(isi)", TEXT, self->buffer->str, line);
+    }
+    /* Entity reference */
+    error = xml_entity_reference(self, self->buffer);
+    if (error)
+        return ERROR(BAD_ENTITY_REF, line, column);
+    return Py_BuildValue("(isi)", TEXT, self->buffer->str, line);
+}
+
+
+/* Returns a new reference */
+static PyObject* Parser_iternext(Parser* self) {
+    PyObject* py_value;
+    guint line, column;
+    char c;
 
     /* There are tokens waiting */
     if (self->py_left_token) {
@@ -936,344 +1301,62 @@ static PyObject* Parser_iternext(Parser* self) {
     line = self->line_no;
     column = self->column;
 
-    /* Check for EOF */
-    /* FIXME, there are many places else we must check for EOF */
-    c = self->next_char;
-    if (c == '\0') {
-        /* Check the open tags are closed. */
-        if (self->tag_stack->len > 0)
-            return ERROR(MISSING, line, column);
-        return NULL;
-    }
-
-    /* Reset */
+    /* Reset buffer. */
     g_string_set_size(self->buffer, 0);
 
-    if (c == '<') {
-        c = move_cursor(self);
-        if (c == '/') {
-            /* End Element (http://www.w3.org/TR/REC-xml/#NT-ETag) */
-            move_cursor(self);
-            /* Name */
-            tag_prefix = xml_prefix_name(self, self->buffer);
-            if (tag_prefix == NULL)
-                return ERROR(INVALID_TOKEN, line, column);
-            /* White Space */
-            xml_space(self);
-            /* Close */
-            if (self->next_char != '>')
-                return ERROR(INVALID_TOKEN, line, column);
-            move_cursor(self);
-            /* Remove from the stack */
-            py_value = pop_tag(self, tag_prefix, self->buffer);
-            if (py_value == NULL)
+    switch (self->next_char) {
+        case '\0':
+            /* End Of File. (FIXME, there're other places to check for EOF) */
+            /* The open tags must be closed. */
+            if (self->tag_stack->len > 0)
                 return ERROR(MISSING, line, column);
- 
-            return Py_BuildValue("(iNi)", END_ELEMENT, py_value, line);
-        } else if (c == '!') {
-            /* "<!" */
+            return NULL;
+        case '<':
             c = move_cursor(self);
-            if (c == '-') {
-                /* "<!-" */
-                c = move_cursor(self);
-                if (c != '-')
-                    return ERROR(INVALID_TOKEN, line, column);
-                c = move_cursor(self);
-
-                /* Comment (http://www.w3.org/TR/REC-xml/#dt-comment) */
-                while (1) {
-                    /* Stop condition: "-->" */
-                    if (c == '-') {
-                        c = move_cursor(self);
-                        if (c == '-') {
-                            c = move_cursor(self);
-                            if (c == '>') {
-                                move_cursor(self);
-                                py_value = Py_BuildValue("(isi)", COMMENT,
-                                           self->buffer->str, line);
-                            } else
-                                py_value = ERROR(INVALID_TOKEN, line, column);
-                            return py_value;
-                        } else
-                            g_string_append_c(self->buffer, '-');
-                    }
-                    /* Something else. */
-                    g_string_append_c(self->buffer, c);
+            switch (c) {
+                case '/':
+                    move_cursor(self);
+                    /* "</" */
+                    return read_end_tag(self);
+                case '!':
                     c = move_cursor(self);
-                }
-            } else if (c == 'D') {
-                /* Document Type */
-                py_value = parse_document_type(self);
-                if (py_value == NULL)
-                    return ERROR(INVALID_TOKEN, line, column);
-                return Py_BuildValue("(iNi)", DOCUMENT_TYPE, py_value, line);
-            } else if (c == '[') {
-                /* CData section */
-                if (read_string(self, "[CDATA["))
-                    return ERROR(INVALID_TOKEN, line, column);
-                c = self->next_char;
-                while (c != '\0') {
-                    /* Stop condition: "]]>" */
-                    if (c == ']') {
-                        c = move_cursor(self);
-                        if (c == ']') {
-                            c = move_cursor(self);
-                            if (c == '>') {
-                                py_value = Py_BuildValue("isi", CDATA,
-                                           self->buffer->str, line);
-                                return py_value;
-                            }
-                            g_string_append_c(self->buffer, ']');
-                        }
-                        g_string_append_c(self->buffer, ']');
+                    /* "<!" */
+                    switch (c) {
+                        case '-':
+                            move_cursor(self);
+                            /* "<!-" */
+                            return read_comment(self);
+                        case 'D':
+                            move_cursor(self);
+                            /* "<!D" */
+                            return read_document_type(self);
+                        case '[':
+                            move_cursor(self);
+                            /* "<![" */
+                            return read_cdata(self);
+                        default:
+                            return ERROR(INVALID_TOKEN, line, column);
                     }
-                    /* Something else. */
-                    g_string_append_c(self->buffer, c);
-                    c = move_cursor(self);
-                }
-                return ERROR(INVALID_TOKEN, line, column);
-            } else
-                return ERROR(INVALID_TOKEN, line, column);
-        } else if (c == '?') {
-            /* Processing Instruction or XML Declaration */
+                case '?':
+                    move_cursor(self);
+                    /* "<?" */
+                    return read_pi(self);
+                default:
+                    /* Start Element */
+                    return read_start_tag(self);
+            }
+        case '&':
             move_cursor(self);
-            /* Target */
-            xml_name(self, self->buffer);
-            if (self->buffer->len == 0)
-                return ERROR(INVALID_TOKEN, line, column);
-            /* White Space */
-            xml_space(self);
-
-            /* Processing Instruction (http://www.w3.org/TR/REC-xml/#dt-pi) */
-            if (strcmp(self->buffer->str, "xml")) {
-                py_value = PyString_FromString(self->buffer->str);
-                g_string_set_size(self->buffer, 0);
-                /* Value */
-                c = self->next_char;
-                while (c != '\0') {
-                    /* Stop condition: "?>" */
-                    if (c == '?') {
-                        c = move_cursor(self);
-                        if (c == '>')
-                            return Py_BuildValue("(i(Ns)i)", PI, py_value,
-                                   self->buffer->str, line);
-                        g_string_append_c(self->buffer, '?');
-                    }
-                    g_string_append_c(self->buffer, c);
-                    c = move_cursor(self);
-                }
-                Py_DECREF(py_value);
-                return ERROR(INVALID_TOKEN, line, column);
-            }
-            /* XML decl (http://www.w3.org/TR/REC-xml/#NT-XMLDecl) */
-            /* Read the version. */
-            g_string_set_size(self->buffer, 0);
-            if (read_string(self, "version") == -1)
-                return ERROR(BAD_XML_DECL, line, column);
-            if (xml_equal(self) == -1)
-                return ERROR(BAD_XML_DECL, line, column);
-            error = read_quoted_string(self, self->buffer);
-            if (error)
-                return ERROR(BAD_XML_DECL, line, column);
-            py_version = PyString_FromString(self->buffer->str);
-            xml_space(self);
-            /* Read the encoding. */
-            g_string_set_size(self->buffer, 0);
-            c = self->next_char;
-            if (c == 'e') {
-                if (read_string(self, "encoding") == -1) {
-                    Py_DECREF(py_version);
-                    return ERROR(BAD_XML_DECL, line, column);
-                }
-                if (xml_equal(self) == -1) {
-                    Py_DECREF(py_version);
-                    return ERROR(BAD_XML_DECL, line, column);
-                }
-                error = read_quoted_string(self, self->buffer);
-                if (error) {
-                    Py_DECREF(py_version);
-                    return ERROR(BAD_XML_DECL, line, column);
-                }
-                py_encoding = PyString_FromString(self->buffer->str);
-                xml_space(self);
-            } else
-                py_encoding = PyString_FromString("utf-8");
-            /* Read "standalone". */
-            g_string_set_size(self->buffer, 0);
-            c = self->next_char;
-            if (c == 's') {
-                if (read_string(self, "standalone") == -1) {
-                    Py_DECREF(py_version);
-                    Py_DECREF(py_encoding);
-                    return ERROR(BAD_XML_DECL, line, column);
-                }
-                if (xml_equal(self) == -1) {
-                    Py_DECREF(py_version);
-                    Py_DECREF(py_encoding);
-                    return ERROR(BAD_XML_DECL, line, column);
-                }
-                error = read_quoted_string(self, self->buffer);
-                if (error) {
-                    Py_DECREF(py_version);
-                    Py_DECREF(py_encoding);
-                    return ERROR(BAD_XML_DECL, line, column);
-                }
-                py_standalone = PyString_FromString(self->buffer->str);
-                xml_space(self);
-            } else {
-                py_standalone = Py_None;
-                Py_INCREF(py_standalone);
-            }
-            /* Stop condition: "?>". */
-            c = self->next_char;
-            if (c == '?') {
+            return read_reference(self);
+        default:
+            /* Text */
+            g_string_append_c(self->buffer, self->next_char);
+            c = move_cursor(self);
+            while ((c != '<') && (c != '&') && (c != '\0')) {
+                g_string_append_c(self->buffer, c);
                 c = move_cursor(self);
-                if (c == '>') {
-                    move_cursor(self);
-                    return Py_BuildValue("(i(NNN)i)", XML_DECL,
-                           py_version, py_encoding, py_standalone, line);
-                }
             }
-            return ERROR(BAD_XML_DECL, line, column);
-        } else {
-            /* Start Element */
-            tag_prefix = xml_prefix_name(self, self->buffer);
-            if (tag_prefix == NULL)
-                return ERROR(INVALID_TOKEN, line, column);
-            /* Attributes */
-            reset_attributes(self->attributes);
-            g_hash_table_steal_all(self->ns_buffer);
-            while (1) {
-                xml_space(self);
-                c = self->next_char;
-                if (c == '>') {
-                    move_cursor(self);
-                    /* Add to the stack */
-                    push_tag(self, tag_prefix, self->buffer->str);
-                    end_tag = FALSE;
-                    namespaces = self->ns_current;
-                    break;
-                } else if (c == '/') {
-                    c = move_cursor(self);
-                    if (c != '>')
-                        return ERROR(INVALID_TOKEN, line, column);
-                    move_cursor(self);
-
-                    end_tag = TRUE;
-                    if (g_hash_table_size(self->ns_buffer))
-                        namespaces = merge_dicts(self->ns_current,
-                                     self->ns_buffer);
-                    else
-                        namespaces = self->ns_current;
-
-                    break;
-                }
-                /* Attributes */
-                attribute = new_attribute();
-                g_ptr_array_add(self->attributes, attribute);
-                /* Prefix & Name */
-                attribute->prefix = xml_prefix_name(self, attribute->name);
-                if (attribute->prefix == NULL)
-                    return ERROR(INVALID_TOKEN, line, column);
-                /* Eq */
-                if (xml_equal(self) == -1)
-                    return ERROR(INVALID_TOKEN, line, column);
-                /* Value */
-                error = xml_attr_value(self, attribute->value);
-                if (error)
-                    return ERROR(INVALID_TOKEN, line, column);
-
-                if (strcmp(attribute->prefix, "") == 0) {
-                    /* Default namespace declaration */
-                    if (strcmp(attribute->name->str, "xmlns") == 0) {
-                        /* Keep the value (uri). */
-                        value = g_string_chunk_insert_const(self->ns_uris,
-                                attribute->value->str);
-                        /* Check for duplicates */
-                        if (g_hash_table_lookup(self->ns_buffer, ""))
-                            return ERROR(DUP_ATTR, line, column);
-                        /* Set the default namespace */
-                        g_hash_table_insert(self->ns_buffer, "", value);
-                    /* Attribute without a prefix (use tag's prefix). */
-                    } else if (strcmp(attribute->prefix, "") == 0) {
-                        attribute->prefix = tag_prefix;
-                    }
-                /* Namespace declaration */
-                } else if (strcmp(attribute->prefix, "xmlns") == 0) {
-                    /* Keep the namespace prefix (key). */
-                    key = g_string_chunk_insert_const(self->ns_prefixes,
-                          attribute->name->str);
-                    /* Keep the namespace URI (value). */
-                    value = g_string_chunk_insert_const(self->ns_uris,
-                            attribute->value->str);
-                    /* Check for duplicates */
-                    if (g_hash_table_lookup(self->ns_buffer, key))
-                        return ERROR(DUP_ATTR, line, column);
-                    /* Set the namespace */
-                    g_hash_table_insert(self->ns_buffer, key, value);
-                }
-            }
-
-            /* Tag */
-            tag_uri = g_hash_table_lookup(namespaces, tag_prefix);
-
-            /* The END_ELEMENT token will be sent later */
-            py_tag_name = PyString_FromString(self->buffer->str);
-            if (end_tag)
-                self->py_left_token = Py_BuildValue("(i(sO)i)", END_ELEMENT,
-                                      tag_uri, py_tag_name, line);
-
-            /* Attributes */
-            py_attributes = PyDict_New();
-            for (idx=0; idx < self->attributes->len; idx++) {
-                attribute = g_ptr_array_index(self->attributes, idx);
-                /* Find out the attribute URI */
-                attr_uri = g_hash_table_lookup(namespaces, attribute->prefix);
-                /* Build the attribute name. */
-                py_attr_name = Py_BuildValue("(ss)", attr_uri,
-                               attribute->name->str);
-
-                /* Check for duplicates */
-                if (PyDict_Contains(py_attributes, py_attr_name)) {
-                    Py_DECREF(py_attr_name);
-                    Py_DECREF(py_attributes);
-                    Py_DECREF(py_tag_name);
-                    return ERROR(DUP_ATTR, line, column);
-                }
-
-                /* Find out the attribute value */
-                py_attr_value = PyString_FromString(attribute->value->str);
-                /* Update the dict */
-                PyDict_SetItem(py_attributes, py_attr_name, py_attr_value);
-                Py_DECREF(py_attr_name);
-            }
-
-            return Py_BuildValue("(i(sNN)i)", START_ELEMENT, tag_uri,
-                   py_tag_name, py_attributes, line);
-        }
-    } else if (c == '&') {
-        c = move_cursor(self);
-        /* Character reference */
-        if (c == '#') {
-            move_cursor(self);
-            error = xml_char_reference(self, self->buffer);
-            if (error)
-                return ERROR(BAD_CHAR_REF, line, column);
             return Py_BuildValue("(isi)", TEXT, self->buffer->str, line);
-        }
-        /* Entity reference */
-        error = xml_entity_reference(self, self->buffer);
-        if (error)
-            return ERROR(BAD_ENTITY_REF, line, column);
-        return Py_BuildValue("(isi)", TEXT, self->buffer->str, line);
-    } else {
-        /* Text */
-        c = self->next_char;
-        while ((c != '<') && (c != '&') && (c != '\0')) {
-            g_string_append_c(self->buffer, c);
-            c = move_cursor(self);
-        }
-        return Py_BuildValue("(isi)", TEXT, self->buffer->str, line);
     }
 
     /* Return None (just to avoid the compiler to complain) */

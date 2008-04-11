@@ -217,7 +217,9 @@ void init_builtin_entities(void) {
     SET_ENTITY("gt", 62);
     /* HTML (TODO Finish) */
     SET_ENTITY("nbsp", 160);
+    SET_ENTITY("laquo", 171);
     SET_ENTITY("raquo", 187);
+    SET_ENTITY("rArr", 8658);
 }
 
 

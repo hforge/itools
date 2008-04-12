@@ -918,12 +918,9 @@ PyObject* read_pi(Parser* self) {
  * Input State: "<!D" * "OCTYPE..."
  */
 PyObject* read_document_type(Parser* self) {
+    PyObject* py_name;
     PyObject* py_public_id;
     PyObject* py_system_id;
-    PyObject* py_value;
-    GString* name;
-    GString* public_id;
-    GString* system_id;
     int error;
     guint line, column;
 
@@ -935,19 +932,17 @@ PyObject* read_document_type(Parser* self) {
     xml_space(self);
 
     /* Name */
-    name = g_string_sized_new(10);
-    xml_name(self, name);
-    if (name->len == 0) {
-        g_string_free(name, TRUE);
+    xml_name(self, self->buffer);
+    if (self->buffer->len == 0)
         return ERROR(INVALID_TOKEN, line, column);
-    }
+    py_name = PyString_FromString(self->buffer->str);
     xml_space(self);
 
     /* External ID */
     switch (self->next_char) {
         case 'S':
             if (read_string(self, "SYSTEM")) {
-                g_string_free(name, TRUE);
+                Py_DECREF(py_name);
                 return ERROR(INVALID_TOKEN, line, column);
             }
             /* PUBLIC ID */
@@ -956,38 +951,34 @@ PyObject* read_document_type(Parser* self) {
             break;
         case 'P':
             if (read_string(self, "PUBLIC")) {
-                g_string_free(name, TRUE);
+                Py_DECREF(py_name);
                 return ERROR(INVALID_TOKEN, line, column);
             }
             /* PUBLIC ID */
             xml_space(self);
-            public_id = g_string_sized_new(32);
-            error = read_quoted_string(self, public_id);
+            g_string_set_size(self->buffer, 0);
+            error = read_quoted_string(self, self->buffer);
             if (error) {
-                g_string_free(name, TRUE);
-                g_string_free(public_id, TRUE);
+                Py_DECREF(py_name);
                 return ERROR(INVALID_TOKEN, line, column);
             }
-            py_public_id = PyString_FromString(public_id->str);
-            g_string_free(public_id, TRUE);
+            py_public_id = PyString_FromString(self->buffer->str);
             break;
         default:
-            g_string_free(name, TRUE);
+            Py_DECREF(py_name);
             return ERROR(INVALID_TOKEN, line, column);
     }
 
     /* SYSTEM ID */
     xml_space(self);
-    system_id = g_string_sized_new(64);
-    error = read_quoted_string(self, system_id);
+    g_string_set_size(self->buffer, 0);
+    error = read_quoted_string(self, self->buffer);
     if (error) {
-        g_string_free(name, TRUE);
-        g_string_free(system_id, TRUE);
+        Py_DECREF(py_name);
         Py_DECREF(py_public_id);
         return ERROR(INVALID_TOKEN, line, column);
     }
-    py_system_id = PyString_FromString(system_id->str);
-    g_string_free(system_id, TRUE);
+    py_system_id = PyString_FromString(self->buffer->str);
 
     /* White Space */
     xml_space(self);
@@ -995,7 +986,7 @@ PyObject* read_document_type(Parser* self) {
     /* Internal subset */
     if (self->next_char == '[') {
         /* TODO NOT IMPLEMENTED*/
-        g_string_free(name, TRUE);
+        Py_DECREF(py_name);
         Py_DECREF(py_public_id);
         Py_DECREF(py_system_id);
         PyErr_SetString(PyExc_NotImplementedError,
@@ -1005,7 +996,6 @@ PyObject* read_document_type(Parser* self) {
 
     /* End doctype declaration */
     if (self->next_char != '>') {
-        g_string_free(name, TRUE);
         Py_DECREF(py_public_id);
         Py_DECREF(py_system_id);
         return ERROR(INVALID_TOKEN, line, column);
@@ -1013,10 +1003,8 @@ PyObject* read_document_type(Parser* self) {
     move_cursor(self);
 
     /* Build the Python value. */
-    py_value = Py_BuildValue("(i(sNNO)i)", DOCUMENT_TYPE, name->str,
-               py_system_id, py_public_id, Py_None, line);
-    g_string_free(name, TRUE);
-    return py_value;
+    return Py_BuildValue("(i(NNNO)i)", DOCUMENT_TYPE, py_name, py_system_id,
+           py_public_id, Py_None, line);
 }
 
 

@@ -76,6 +76,7 @@ class ParserTestCase(TestCase):
     #######################################################################
     # Character References
     def test_entity_references(self):
+        self.assertEqual(XMLParser("&laquo;").next()[1], "«")
         self.assertEqual(XMLParser("&fnof;").next()[1], "ƒ")
         self.assertEqual(XMLParser("&Xi;").next()[1], "Ξ")
         self.assertEqual(XMLParser("&psi;").next()[1], "ψ")

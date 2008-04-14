@@ -48,6 +48,8 @@
 
 /* Other Constants and Macros */
 #define BUFFER_SIZE 512
+#define GUNICHAR_TO_POINTER(u) ((gpointer) (gulong) (u))
+#define GPOINTER_TO_UNICHAR(u) ((gunichar) (gulong) (u))
 #define IS_NC_NAME_CHAR(c) \
     (isalnum(c) || (c == '.') || (c == '-') || (c == '_'))
 #define IS_NAME_CHAR(c) \
@@ -204,14 +206,14 @@ void reset_attributes(GPtrArray* attributes) {
 GHashTable* builtin_entities;
 
 #define SET_ENTITY(str, codepoint) \
-    g_hash_table_insert(builtin_entities, str, GUINT_TO_POINTER(codepoint))
+    g_hash_table_insert(builtin_entities, str, GUNICHAR_TO_POINTER(codepoint))
 
 
 /*
 http://en.wikipedia.org/wiki/List_of_XML_and_HTML_character_entity_references
 */
 void init_builtin_entities(void) {
-    guint index;
+    gunichar index;
     gchar* str;
     gchar* html_20_32[] = {
         "nbsp", "iexcl", "cent", "pound", "curren", "yen", "brvbar", "sect",
@@ -252,11 +254,12 @@ void init_builtin_entities(void) {
         "and", "or", "cap", "cup", "int", NULL, NULL, NULL, NULL, NULL, NULL,
         NULL, NULL, "there4", NULL, NULL, NULL, NULL, NULL, NULL, NULL, "sim",
         NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, "cong", NULL, NULL,
-        "asymp", NULL, NULL, NULL, "ne", "equiv", NULL, NULL, "le", "ge",
+        "asymp", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+        NULL, NULL, "ne", "equiv", NULL, NULL, "le", "ge", NULL, NULL, NULL,
         NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
         NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-        NULL, NULL, NULL, NULL, NULL, NULL, NULL, "sub", "sup", "nsub", NULL,
-        "sube", "supe"};
+        NULL, NULL, NULL, "sub", "sup", "nsub", NULL, "sube", "supe"};
 
     builtin_entities = g_hash_table_new(g_str_hash, g_str_equal);
     /* XML */
@@ -523,7 +526,7 @@ int xml_entity_reference(Parser* self, GString* buffer) {
     g_string_free(name, TRUE);
     if (aux == NULL)
         return 1;
-    codepoint = (gunichar)GPOINTER_TO_UINT(aux);
+    codepoint = GPOINTER_TO_UNICHAR(aux);
 
     /* From codepoint to str (UTF-8). */
     g_string_append_unichar(buffer, codepoint);

@@ -24,11 +24,21 @@ from itools.stl import stl
 from itools.html import XHTMLFile
 
 
+# Template to display full day events
+template_string = """
+  <td class="color${event/cal}">
+    <a href="${event/url}" class="${event/STATUS}">${event/SUMMARY}</a>
+  </td>
+"""
+default_template_fd = XHTMLFile()
+default_template_fd.load_state_from_string(template_string)
+
+# Template to display events with timetables
 template_string = """
   <td colspan="${cell/colspan}" rowspan="${cell/rowspan}"
     valign="top" class="color${cell/content/cal}">
-      <a stl:if="cell/newurl" class="add_event"
-         href="${cell/newurl}">
+      <a xmlns:stl="http://xml.itools.org/namespaces/stl"
+        stl:if="cell/newurl" class="add_event" href="${cell/newurl}">
         <img width="16" height="16" src="${add_icon}" />
       </a><br/>
       <a href="${cell/content/url}" class="${cell/content/STATUS}">
@@ -36,10 +46,8 @@ template_string = """
       </a>
   </td>
 """
-
-
-template = XHTMLFile()
-template.load_state_from_string(template_string)
+default_template = XHTMLFile()
+default_template.load_state_from_string(template_string)
 icon_path = '/ui/images/button_add.png'
 
 
@@ -161,7 +169,7 @@ def insert_item(items, start, end, item, cal):
     items.insert(index, (start, end, item, cal))
 
 
-def render_namespace(items, times):
+def render_namespace(items, times, with_new_url):
     nitems, iitems = len(items), 0
     # blocks = [(nrows, ncols), ..]
     blocks, table, state = [], [], []
@@ -329,25 +337,31 @@ def render_namespace(items, times):
             if cell.type == Cell.busy:
                 continue
             ns_cell = cell.to_dict()
-            # Add start time to url used to add events
             new_url = None
-            if cell.start:
-                new_url = '%sstart_time=%s' % (url, Time.encode(cell.start))
-            if cell.end:
-                new_url = '%s&end_time=%s' % (new_url, Time.encode(cell.end))
+            if with_new_url is True:
+                # Add start time to url used to add events
+                if cell.start:
+                    new_url = '%sstart_time=%s' % (url, Time.encode(cell.start))
+                if cell.end:
+                    new_url = '%s&end_time=%s' %(new_url, Time.encode(cell.end))
             ns_cell['newurl'] = new_url
             ns_cells.append(ns_cell)
-
         ns_rows.append({'cells': ns_cells})
 
     return ns_rows, total_ncols
 
 
-def get_grid_data(data, grid, start_date=None):
+def get_grid_data(data, grid, start_date=None, templates=(None, None),
+                  with_new_url=True):
     """
     Build final namespace from data and grid to be used in gridlayout
     templates.
     """
+    template, template_fd = templates
+    if template is None:
+        template = default_template
+    if template_fd is None:
+        template_fd = default_template_fd
     # Build grid with Time objects
     grid = [ Time.decode(x) for x in grid ]
 
@@ -363,6 +377,7 @@ def get_grid_data(data, grid, start_date=None):
             start, end = event['start'], event['end']
             # Put the event in the right place
             if not event['TIME']:
+                event['ns'] = stl(template_fd, event)
                 full_day.append(event)
             else:
                 start, end = Time.decode(start), Time.decode(end)
@@ -396,7 +411,7 @@ def get_grid_data(data, grid, start_date=None):
 
     cols = []
     for i in range(len(events_with_time)):
-        table, ncols = render_namespace(events_with_time[i], grid)
+        table, ncols = render_namespace(events_with_time[i], grid, with_new_url)
         if headers is not None:
             if current_date == today:
                 h_class = 'cal_day_selected'
@@ -414,7 +429,7 @@ def get_grid_data(data, grid, start_date=None):
             str_date = Date.encode(current_date)
             for column in table:
                 for cell in column['cells']:
-                    if 'newurl' in cell:
+                    if cell['newurl'] is not None:
                         url = '%s&date=%s' % (cell['newurl'], str_date)
                         cell['newurl'] = url
                     if cell['new']:

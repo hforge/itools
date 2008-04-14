@@ -74,6 +74,19 @@ class ParserTestCase(TestCase):
 
 
     #######################################################################
+    # Character References
+    def test_entity_references(self):
+        self.assertEqual(XMLParser("&fnof;").next()[1], "ƒ")
+        self.assertEqual(XMLParser("&Xi;").next()[1], "Ξ")
+        self.assertEqual(XMLParser("&psi;").next()[1], "ψ")
+        self.assertEqual(XMLParser("&permil;").next()[1], "‰")
+        self.assertEqual(XMLParser("&real;").next()[1], "ℜ")
+        self.assertEqual(XMLParser("&infin;").next()[1], "∞")
+        self.assertEqual(XMLParser("&there4;").next()[1], "∴")
+        self.assertEqual(XMLParser("&clubs;").next()[1], "♣")
+
+
+    #######################################################################
     # Start Element
     def test_element(self):
         data = '<a>'

@@ -212,7 +212,8 @@ http://en.wikipedia.org/wiki/List_of_XML_and_HTML_character_entity_references
 */
 void init_builtin_entities(void) {
     int index;
-    char* html_entities[] = {
+    gchar* str;
+    gchar* html_20_32[] = {
         "nbsp", "iexcl", "cent", "pound", "curren", "yen", "brvbar", "sect",
         "uml", "copy", "ordf", "laquo", "not", "shy", "reg", "macr", "deg",
         "plusmn", "sup2", "sup3", "acute", "micro", "para", "middot", "cedil",
@@ -226,6 +227,36 @@ void init_builtin_entities(void) {
         "ecirc", "euml", "igrave", "iacute", "icirc", "iuml", "eth", "ntilde",
         "ograve", "oacute", "ocirc", "otilde", "ouml", "divide", "oslash",
         "ugrave", "uacute", "ucirc", "uuml", "yacute", "thorn", "yuml"};
+    gchar* greek_letters[] = {
+        "Alpha", "Beta", "Gamma", "Delta", "Epsilon", "Zeta", "Eta", "Theta",
+        "Iota", "Kappa", "Lambda", "Mu", "Nu", "Xi", "Omicron", "Pi", "Rho",
+        NULL, "Sigma", "Tau", "Upsilon", "Phi", "Chi", "Psi", "Omega", NULL,
+        NULL, NULL, NULL, NULL, NULL, NULL, "alpha", "beta", "gamma", "delta",
+        "epsilon", "zeta", "eta", "theta", "iota", "kappa", "lambda", "mu",
+        "nu", "xi", "omicron", "pi", "rho", "sigmaf", "sigma", "tau",
+        "upsilon", "phi", "chi", "psi", "omega", NULL, NULL, NULL, NULL, NULL,
+        NULL, NULL, "thetasym", "upsih", NULL, NULL, NULL, "piv"};
+    gchar* range_8194_8260[] = {
+        "ensp", "emsp", NULL, NULL, NULL, NULL, NULL, "thinsp", NULL, NULL,
+        "zwnj", "zwj", "lrm", "rlm", NULL, NULL, NULL, "ndash", "mdash", NULL,
+        NULL, NULL, "lsquo", "rsquo", "sbquo", NULL, "ldquo", "rdquo",
+        "bdquo", NULL, "dagger", "Dagger", "bull", NULL, NULL, NULL, "hellip",
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, "permil", NULL,
+        "prime", "Prime", NULL, NULL, NULL, NULL, NULL, "lsaquo", "rsaquo",
+        NULL, NULL, NULL, "oline", NULL, NULL, NULL, NULL, NULL, "frasl"};
+    gchar* math_symbols[] = {
+        "forall", NULL, "part", "exist", NULL, "empty", NULL, "nabla", "isin",
+        "notin", NULL, "ni", NULL, NULL, NULL, "prod", NULL, "sum", "minus",
+        NULL, NULL, NULL, NULL, "lowast", NULL, NULL, "radic", NULL, NULL,
+        "prop", "infin", NULL, "ang", NULL, NULL, NULL, NULL, NULL, NULL,
+        "and", "or", "cap", "cup", "int", NULL, NULL, NULL, NULL, NULL, NULL,
+        NULL, NULL, "there4", NULL, NULL, NULL, NULL, NULL, NULL, NULL, "sim",
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, "cong", NULL, NULL,
+        "asymp", NULL, NULL, NULL, "ne", "equiv", NULL, NULL, "le", "ge",
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, "sub", "sup", "nsub", NULL,
+        "sube", "supe"};
 
     builtin_entities = g_hash_table_new(g_str_hash, g_str_equal);
     /* XML */
@@ -236,11 +267,63 @@ void init_builtin_entities(void) {
     SET_ENTITY("gt", 62);
     /* HTML 2.0 & 3.2 */
     for (index=160; index <= 255; index++)
-        SET_ENTITY(html_entities[index-160], index);
-    /* HTML 4.0 (TODO Finish) */
-    SET_ENTITY("lsaquo", 8249);
-    SET_ENTITY("rsaquo", 8250);
+        SET_ENTITY(html_20_32[index-160], index);
+    /* HTML 4.0 */
+    SET_ENTITY("OElig", 338);
+    SET_ENTITY("oelig", 339);
+    SET_ENTITY("Scaron", 352);
+    SET_ENTITY("scaron", 353);
+    SET_ENTITY("Yuml", 376);
+    SET_ENTITY("fnof", 402);
+    SET_ENTITY("circ", 710);
+    SET_ENTITY("tilde", 732);
+    for (index=913; index <= 982; index++) {
+        str = greek_letters[index-913];
+        if (str != NULL)
+            SET_ENTITY(str, index);
+    }
+    for (index=8194; index <= 8260; index++) {
+        str = range_8194_8260[index-8194];
+        if (str != NULL)
+            SET_ENTITY(str, index);
+    }
+    SET_ENTITY("euro", 8364);
+    SET_ENTITY("image", 8465);
+    SET_ENTITY("weierp", 8472);
+    SET_ENTITY("real", 8476);
+    SET_ENTITY("trade", 8482);
+    SET_ENTITY("alefsym", 8501);
+    SET_ENTITY("larr", 8592);
+    SET_ENTITY("uarr", 8593);
+    SET_ENTITY("rarr", 8594);
+    SET_ENTITY("darr", 8595);
+    SET_ENTITY("harr", 8596);
+    SET_ENTITY("crarr", 8629);
+    SET_ENTITY("lArr", 8656);
+    SET_ENTITY("uArr", 8657);
     SET_ENTITY("rArr", 8658);
+    SET_ENTITY("dArr", 8659);
+    SET_ENTITY("hArr", 8660);
+    for (index=8704; index <= 8839; index++) {
+        str = math_symbols[index-8704];
+        if (str != NULL)
+            SET_ENTITY(str, index);
+    }
+    SET_ENTITY("oplus", 8853);
+    SET_ENTITY("otimes", 8855);
+    SET_ENTITY("perp", 8869);
+    SET_ENTITY("sdot", 8901);
+    SET_ENTITY("lceil", 8968);
+    SET_ENTITY("rceil", 8969);
+    SET_ENTITY("lfloor", 8970);
+    SET_ENTITY("rfloor", 8971);
+    SET_ENTITY("lang", 9001);
+    SET_ENTITY("rang", 9002);
+    SET_ENTITY("loz", 9674);
+    SET_ENTITY("spades", 9824);
+    SET_ENTITY("clubs", 9827);
+    SET_ENTITY("hearts", 9829);
+    SET_ENTITY("diams", 9830);
 }
 
 

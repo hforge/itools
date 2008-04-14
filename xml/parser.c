@@ -238,6 +238,8 @@ void init_builtin_entities(void) {
     for (index=160; index <= 255; index++)
         SET_ENTITY(html_entities[index-160], index);
     /* HTML 4.0 (TODO Finish) */
+    SET_ENTITY("lsaquo", 8249);
+    SET_ENTITY("rsaquo", 8250);
     SET_ENTITY("rArr", 8658);
 }
 

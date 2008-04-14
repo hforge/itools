@@ -108,7 +108,7 @@ typedef struct {
     GHashTable* ns_buffer;
     /* Interned strings. */
     GStringChunk* ns_prefixes;   /* Keep the namespace prefixes. */
-    GStringChunk* ns_uris;       /* Keep the namespace URIs. */
+    GPtrArray* ns_uris;          /* Keep the namespace URIs. */
     /* Other variables. */
     PyObject* py_left_token;     /* The end tag of an empty element. */
     GPtrArray* attributes;       /* Keep the attributes of an element. */
@@ -601,7 +601,7 @@ static PyObject* Parser_new(PyTypeObject* type, PyObject* args, PyObject* kw) {
     self->ns_current = NULL;
     self->ns_buffer = g_hash_table_new(g_str_hash, g_str_equal);
     self->ns_prefixes = g_string_chunk_new(64);
-    self->ns_uris = g_string_chunk_new(256);
+    self->ns_uris = g_ptr_array_sized_new(10);
     self->py_left_token = NULL;
     self->attributes = g_ptr_array_sized_new(10);
     self->buffer = g_string_sized_new(256);
@@ -613,6 +613,7 @@ static PyObject* Parser_new(PyTypeObject* type, PyObject* args, PyObject* kw) {
  * "Parser_init".
  */
 void Parser_reset(Parser* self) {
+    gpointer pointer;
     guint index;
     StartTag* tag;
     GHashTable* xmlns;
@@ -641,7 +642,12 @@ void Parser_reset(Parser* self) {
     g_hash_table_steal_all(self->ns_default);
     g_hash_table_steal_all(self->ns_buffer);
     g_string_chunk_clear(self->ns_prefixes);
-    g_string_chunk_clear(self->ns_uris);
+    /* URIs. */
+    for (index=0; index < self->ns_uris->len; index++) {
+        pointer = g_ptr_array_index(self->ns_uris, index);
+        Py_DECREF((PyObject*)pointer);
+    }
+    g_ptr_array_set_size(self->ns_uris, 0);
     /* Attributes. */
     reset_attributes(self->attributes);
 }
@@ -657,7 +663,7 @@ static void Parser_dealloc(Parser* self) {
     g_hash_table_destroy(self->ns_default);
     g_hash_table_destroy(self->ns_buffer);
     g_string_chunk_free(self->ns_prefixes);
-    g_string_chunk_free(self->ns_uris);
+    g_ptr_array_free(self->ns_uris, TRUE);
     g_ptr_array_free(self->attributes, TRUE);
     g_string_free(self->buffer, TRUE);
 
@@ -671,10 +677,9 @@ static int Parser_init(Parser* self, PyObject* args, PyObject* kw) {
     PyObject* py_source;
     PyObject* py_namespaces;
     PyObject* py_key;
-    PyObject* py_value;
+    PyObject* py_uri;
     Py_ssize_t py_pos;
     gchar* key;
-    gchar* value;
 
     /* Reset the parser's state. */
     Parser_reset(self);
@@ -708,29 +713,31 @@ static int Parser_init(Parser* self, PyObject* args, PyObject* kw) {
 
     /* Set built-in namespace: xml */
     key = g_string_chunk_insert_const(self->ns_prefixes, "xml");
-    value = g_string_chunk_insert_const(self->ns_uris,
-            "http://www.w3.org/XML/1998/namespace");
-    g_hash_table_insert(self->ns_default, (gpointer*)key, (gpointer*)value);
+    py_uri = PyString_InternFromString("http://www.w3.org/XML/1998/namespace");
+    g_ptr_array_add(self->ns_uris, (gpointer)py_uri);
+    g_hash_table_insert(self->ns_default, (gpointer)key, (gpointer)py_uri);
     /* Set built-in namespace: xmlns */
     key = g_string_chunk_insert_const(self->ns_prefixes, "xmlns");
-    value = g_string_chunk_insert_const(self->ns_uris,
-            "http://www.w3.org/2000/xmlns/");
-    g_hash_table_insert(self->ns_default, (gpointer*)key, (gpointer*)value);
+    py_uri = PyString_InternFromString("http://www.w3.org/2000/xmlns/");
+    g_hash_table_insert(self->ns_default, (gpointer)key, (gpointer)py_uri);
 
     /* Initialize the default namespaces. */
     self->ns_current = self->ns_default;
     if (py_namespaces != NULL) {
         py_pos = 0;
-        while (PyDict_Next(py_namespaces, &py_pos, &py_key, &py_value)) {
+        while (PyDict_Next(py_namespaces, &py_pos, &py_key, &py_uri)) {
+            /* Keep the prefix. */
             if (py_key == Py_None)
                 key = (gchar*)"";
             else
                 key = (gchar*)PyString_AsString(py_key);
-            value = (gchar*)PyString_AsString(py_value);
             g_string_chunk_insert_const(self->ns_prefixes, key);
-            g_string_chunk_insert_const(self->ns_uris, value);
+            /* Keept the URI. */
+            g_ptr_array_add(self->ns_uris, (gpointer)py_uri);
+            Py_INCREF(py_uri);
+            /* The map from prefix to URI. */
             g_hash_table_insert(self->ns_default, (gpointer*)key,
-                                (gpointer*)value);
+                                (gpointer*)py_uri);
         }
     }
 
@@ -750,10 +757,10 @@ static int Parser_init(Parser* self, PyObject* args, PyObject* kw) {
  * with the tag expressed as a tuple of two elements, the tag uri and name.
  */
 PyObject* pop_tag(Parser* self, gchar* prefix, GString* name) {
+    PyObject* py_uri;
     guint index;
     StartTag* tag;
     int cmp;
-    gchar* uri;
     GHashTable* xmlns;
 
     /* Check the stack is not empty */
@@ -770,7 +777,9 @@ PyObject* pop_tag(Parser* self, gchar* prefix, GString* name) {
         return NULL;
 
     /* Find out the URI from the prefix */
-    uri = g_hash_table_lookup(self->ns_current, prefix);
+    py_uri = (PyObject*)g_hash_table_lookup(self->ns_current, prefix);
+    if (py_uri == NULL)
+        py_uri = Py_None;
 
     /* Pop from the tag stack. */
     free(tag->name);
@@ -794,7 +803,7 @@ PyObject* pop_tag(Parser* self, gchar* prefix, GString* name) {
     }
 
     /* Build the return value */
-    return Py_BuildValue("(ss)", uri, name->str);
+    return Py_BuildValue("(Os)", py_uri, name->str);
 }
 
 
@@ -1086,15 +1095,15 @@ PyObject* read_comment(Parser* self) {
 /* Start Element. */
 PyObject* read_start_tag(Parser* self) {
     PyObject* py_tag_name;
+    PyObject* py_tag_uri;
     PyObject* py_attributes;
     PyObject* py_attr_name;
     PyObject* py_attr_value;
+    PyObject* py_uri;
+    PyObject* py_attr_uri;
     GHashTable* namespaces;
     gchar* tag_prefix;
-    gchar* tag_uri;
     gchar* key;
-    gchar* value;
-    gchar* attr_uri;
     gboolean end_tag;
     Attribute* attribute;
     char c;
@@ -1154,16 +1163,16 @@ PyObject* read_start_tag(Parser* self) {
         if (strcmp(attribute->prefix, "") == 0) {
             /* Default namespace declaration */
             if (strcmp(attribute->name->str, "xmlns") == 0) {
-                /* Keep the value (uri). */
-                value = g_string_chunk_insert_const(self->ns_uris,
-                        attribute->value->str);
                 /* Check for duplicates */
                 if (g_hash_table_lookup(self->ns_buffer, ""))
                     return ERROR(DUP_ATTR, line, column);
+                /* Keep the value (uri). */
+                py_uri = PyString_InternFromString(attribute->value->str);
+                g_ptr_array_add(self->ns_uris, (gpointer)py_uri);
                 /* Set the default namespace */
-                g_hash_table_insert(self->ns_buffer, "", value);
+                g_hash_table_insert(self->ns_buffer, "", (gpointer)py_uri);
             /* Attribute without a prefix (use tag's prefix). */
-            } else if (strcmp(attribute->prefix, "") == 0) {
+            } else {
                 attribute->prefix = tag_prefix;
             }
         /* Namespace declaration */
@@ -1171,34 +1180,40 @@ PyObject* read_start_tag(Parser* self) {
             /* Keep the namespace prefix (key). */
             key = g_string_chunk_insert_const(self->ns_prefixes,
                   attribute->name->str);
-            /* Keep the namespace URI (value). */
-            value = g_string_chunk_insert_const(self->ns_uris,
-                    attribute->value->str);
             /* Check for duplicates */
             if (g_hash_table_lookup(self->ns_buffer, key))
                 return ERROR(DUP_ATTR, line, column);
+            /* Keep the value (uri). */
+            py_uri = PyString_InternFromString(attribute->value->str);
+            g_ptr_array_add(self->ns_uris, (gpointer)py_uri);
             /* Set the namespace */
-            g_hash_table_insert(self->ns_buffer, key, value);
+            g_hash_table_insert(self->ns_buffer, key, (gpointer)py_uri);
         }
     }
 
     /* Tag */
-    tag_uri = g_hash_table_lookup(namespaces, tag_prefix);
+    py_tag_uri = (PyObject*)g_hash_table_lookup(namespaces, tag_prefix);
+    if (py_tag_uri == NULL)
+        py_tag_uri = Py_None;
 
     /* The END_ELEMENT token will be sent later */
     py_tag_name = PyString_FromString(self->buffer->str);
     if (end_tag)
-        self->py_left_token = Py_BuildValue("(i(sO)i)", END_ELEMENT, tag_uri,
-                              py_tag_name, line);
+        self->py_left_token = Py_BuildValue("(i(OO)i)", END_ELEMENT,
+                              py_tag_uri, py_tag_name, line);
 
     /* Attributes */
     py_attributes = PyDict_New();
     for (idx=0; idx < self->attributes->len; idx++) {
         attribute = g_ptr_array_index(self->attributes, idx);
         /* Find out the attribute URI */
-        attr_uri = g_hash_table_lookup(namespaces, attribute->prefix);
+        py_attr_uri = (PyObject*)g_hash_table_lookup(namespaces,
+                      attribute->prefix);
+        if (py_attr_uri == NULL)
+            py_attr_uri = Py_None;
         /* Build the attribute name. */
-        py_attr_name = Py_BuildValue("(ss)", attr_uri, attribute->name->str);
+        py_attr_name = Py_BuildValue("(Os)", py_attr_uri,
+                       attribute->name->str);
 
         /* Check for duplicates */
         if (PyDict_Contains(py_attributes, py_attr_name)) {
@@ -1215,7 +1230,7 @@ PyObject* read_start_tag(Parser* self) {
         Py_DECREF(py_attr_name);
     }
 
-    return Py_BuildValue("(i(sNN)i)", START_ELEMENT, tag_uri, py_tag_name,
+    return Py_BuildValue("(i(ONN)i)", START_ELEMENT, py_tag_uri, py_tag_name,
                          py_attributes, line);
 }
 

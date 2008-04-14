@@ -211,7 +211,7 @@ GHashTable* builtin_entities;
 http://en.wikipedia.org/wiki/List_of_XML_and_HTML_character_entity_references
 */
 void init_builtin_entities(void) {
-    int index;
+    guint index;
     gchar* str;
     gchar* html_20_32[] = {
         "nbsp", "iexcl", "cent", "pound", "curren", "yen", "brvbar", "sect",

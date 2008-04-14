@@ -208,6 +208,8 @@ class Context(object):
         # We consider that if the type deserializes the value to None, then
         # we must use the default.
         if value is None:
+            if is_mandatory:
+                raise FormError(missing=[name])
             return default
 
         # We consider a blank string to be a missing value (FIXME not
@@ -267,11 +269,7 @@ class Context(object):
                 cls.append('field_required')
             if submit:
                 try:
-                    if isinstance(datatype, Enumerate):
-                        field_value = self.get_form_value(name, type=datatype)
-                        value = datatype.get_namespace(field_value)
-                    else:
-                        value = self.get_form_value(name, type=datatype)
+                    value = self.get_form_value(name, type=datatype)
                 except FormError:
                     value = self.get_form_value(name)
                     cls.append('missing')
@@ -280,6 +278,8 @@ class Context(object):
                     value = method(name)
                 else:
                     value = datatype.default
+            if isinstance(datatype, Enumerate):
+                value = datatype.get_namespace(value)
             cls = ' '.join(cls) or None
             namespace[name] = {'name': name, 'value': value, 'class': cls}
         return namespace

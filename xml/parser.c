@@ -201,8 +201,10 @@ typedef struct {
     char (*read_char)(gpointer); /* Function to read the next char. */
     char next_char;
     /* Where we are. */
-    guint line_no;
-    guint column;
+    guint cursor_row;
+    guint cursor_col;
+    guint event_row;
+    guint event_col;
     /* The stack and namespaces. */
     GArray* tag_stack;           /* The stack of open tags not yet closed. */
     GArray* ns_stack;            /* The stack of XML namespaces. */
@@ -257,18 +259,15 @@ char read_char_from_string(gpointer parser) {
 
 
 char move_cursor(Parser* self) {
-    char c;
-
-    c = (*(self->read_char))(self);
-
-    /* Check newline. */
-    if (c == '\n') {
-        self->line_no++;
-        self->column = 1;
+    /* Consume the last char. */
+    if (self->next_char == '\n') {
+        self->cursor_row++;
+        self->cursor_col = 1;
     } else
-        self->column++;
+        self->cursor_col++;
 
-    return c;
+    /* Read the next char. */
+    return (*(self->read_char))(self);;
 }
 
 
@@ -502,9 +501,7 @@ void push_tag(Parser* self, gchar* prefix, gchar* name) {
 
 
 /* Tests wether the following data matches the "expected" string, and moves
- * the cursor forward if that is the case (updates the "column" index). The
- * variable "expected" must not contain new lines, the "line_no" index is
- * not updated. */
+ * the cursor forward if that is the case (updates the "column" index). */
 int read_string(Parser* self, char* expected) {
     char* cursor;
     char c;
@@ -807,8 +804,6 @@ static PyObject* Parser_new(PyTypeObject* type, PyObject* args, PyObject* kw) {
     self->file = NULL;
     self->read_char = NULL;
     self->next_char = '\0';
-    self->line_no = 0;
-    self->column = 0;
     self->tag_stack = g_array_sized_new(FALSE, FALSE, sizeof(StartTag), 20);
     self->ns_stack = g_array_sized_new(FALSE, FALSE, sizeof(GHashTable*), 5);
     self->ns_default = g_hash_table_new(g_str_hash, g_str_equal);
@@ -917,8 +912,10 @@ static int Parser_init(Parser* self, PyObject* args, PyObject* kw) {
     }
 
     /* Keep the Python string to parse. */
-    self->line_no = 1;
-    self->column = 1;
+    self->cursor_row = 1;
+    self->cursor_col = 1;
+    self->event_row = 1;
+    self->event_col = 1;
 
     /* Set built-in namespace: xml */
     G_LOCK(interned_strings);
@@ -1029,8 +1026,8 @@ PyObject* read_pi(Parser* self) {
     int error;
     guint line, column;
 
-    line = self->line_no;
-    column = self->column;
+    line = self->event_row;
+    column = self->event_col;
 
     /* Target */
     xml_name(self, self->buffer);
@@ -1144,8 +1141,8 @@ PyObject* read_document_type(Parser* self) {
     int error;
     guint line, column;
 
-    line = self->line_no;
-    column = self->column;
+    line = self->event_row;
+    column = self->event_col;
 
     if (read_string(self, "OCTYPE"))
         return ERROR(INVALID_TOKEN, line, column);
@@ -1236,8 +1233,8 @@ PyObject* read_cdata(Parser* self) {
     char c;
     guint line, column;
 
-    line = self->line_no;
-    column = self->column;
+    line = self->event_row;
+    column = self->event_col;
 
     if (read_string(self, "CDATA["))
         return ERROR(INVALID_TOKEN, line, column);
@@ -1271,8 +1268,8 @@ PyObject* read_comment(Parser* self) {
     char c;
     guint line, column;
 
-    line = self->line_no;
-    column = self->column;
+    line = self->event_row;
+    column = self->event_col;
 
     c = self->next_char;
     if (c != '-')
@@ -1322,8 +1319,8 @@ PyObject* read_start_tag(Parser* self) {
     gboolean error;
     int idx;
 
-    line = self->line_no;
-    column = self->column;
+    line = self->event_row;
+    column = self->event_col;
 
     /* Read tag (prefix & name). */
     error = xml_prefix_name(self, &tag_prefix, &tag_name);
@@ -1336,7 +1333,6 @@ PyObject* read_start_tag(Parser* self) {
         xml_space(self);
         c = self->next_char;
         if (c == '>') {
-            move_cursor(self);
             /* Add to the stack */
             push_tag(self, tag_prefix, tag_name);
             end_tag = FALSE;
@@ -1346,7 +1342,6 @@ PyObject* read_start_tag(Parser* self) {
             c = move_cursor(self);
             if (c != '>')
                 return ERROR(INVALID_TOKEN, line, column);
-            move_cursor(self);
 
             end_tag = TRUE;
             if (g_hash_table_size(self->ns_buffer))
@@ -1402,6 +1397,9 @@ PyObject* read_start_tag(Parser* self) {
         }
     }
 
+    /* Read the ">". */
+    move_cursor(self);
+
     /* Tag */
     py_tag_uri = (PyObject*)g_hash_table_lookup(namespaces, tag_prefix);
     if (py_tag_uri == NULL)
@@ -1456,8 +1454,8 @@ PyObject* read_end_tag(Parser* self) {
     guint line, column;
     gboolean error;
 
-    line = self->line_no;
-    column = self->column;
+    line = self->event_row;
+    column = self->event_col;
 
     /* Name */
     error = xml_prefix_name(self, &tag_prefix, &tag_name);
@@ -1483,8 +1481,8 @@ PyObject* read_reference(Parser* self) {
     guint line, column;
     int error;
 
-    line = self->line_no;
-    column = self->column;
+    line = self->event_row;
+    column = self->event_col;
 
     /* Character reference */
     if (self->next_char == '#') {
@@ -1515,8 +1513,8 @@ static PyObject* Parser_iternext(Parser* self) {
         return py_value;
     }
 
-    line = self->line_no;
-    column = self->column;
+    line = self->event_row;
+    column = self->event_col;
 
     /* Reset buffer. */
     g_string_set_size(self->buffer, 0);
@@ -1534,7 +1532,8 @@ static PyObject* Parser_iternext(Parser* self) {
                 case '/':
                     move_cursor(self);
                     /* "</" */
-                    return read_end_tag(self);
+                    py_value = read_end_tag(self);
+                    break;
                 case '!':
                     c = move_cursor(self);
                     /* "<!" */
@@ -1542,29 +1541,37 @@ static PyObject* Parser_iternext(Parser* self) {
                         case '-':
                             move_cursor(self);
                             /* "<!-" */
-                            return read_comment(self);
+                            py_value = read_comment(self);
+                            break;
                         case 'D':
                             move_cursor(self);
                             /* "<!D" */
-                            return read_document_type(self);
+                            py_value = read_document_type(self);
+                            break;
                         case '[':
                             move_cursor(self);
                             /* "<![" */
-                            return read_cdata(self);
+                            py_value = read_cdata(self);
+                            break;
                         default:
                             return ERROR(INVALID_TOKEN, line, column);
                     }
+                    break;
                 case '?':
                     move_cursor(self);
                     /* "<?" */
-                    return read_pi(self);
+                    py_value = read_pi(self);
+                    break;
                 default:
                     /* Start Element */
-                    return read_start_tag(self);
+                    py_value = read_start_tag(self);
+                    break;
             }
+            break;
         case '&':
             move_cursor(self);
-            return read_reference(self);
+            py_value = read_reference(self);
+            break;
         default:
             /* Text */
             g_string_append_c(self->buffer, self->next_char);
@@ -1573,11 +1580,13 @@ static PyObject* Parser_iternext(Parser* self) {
                 g_string_append_c(self->buffer, c);
                 c = move_cursor(self);
             }
-            return Py_BuildValue("(isi)", TEXT, self->buffer->str, line);
+            py_value = Py_BuildValue("(isi)", TEXT, self->buffer->str, line);
+            break;
     }
 
-    /* Return None (just to avoid the compiler to complain) */
-    return NULL;
+    self->event_row = self->cursor_row;
+    self->event_col = self->cursor_col;
+    return py_value;
 }
 
 
@@ -1588,8 +1597,8 @@ static PyObject* Parser_iternext(Parser* self) {
 
 /* The XMLParser object: members. */
 static PyMemberDef Parser_members[] = {
-    {"line_no", T_INT, offsetof(Parser, line_no), 0, "Line number"},
-    {"column", T_INT, offsetof(Parser, column), 0, "Column"},
+    {"line_no", T_INT, offsetof(Parser, event_row), 0, "Line number"},
+    {"column", T_INT, offsetof(Parser, event_col), 0, "Column"},
     {NULL}
 };
 

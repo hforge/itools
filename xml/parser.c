@@ -87,7 +87,6 @@ struct _HStrTree {
 };
 
 
-
 HStrTree* h_str_tree_new(gpointer data) {
     HStrTree* tree;
     gushort idx;
@@ -133,20 +132,39 @@ HStrTree* h_str_tree_traverse(HStrTree* tree, gchar chr) {
 }
 
 
-void h_str_tree_insert(HStrTree* tree, gchar* key, gpointer value) {
+/**************************************************************************
+ * Interned strings. */
+
+G_LOCK_DEFINE_STATIC(interned_strings);
+HStrTree* interned_strings_tree = NULL;
+GStringChunk* interned_strings = NULL;
+
+
+gchar* intern_string(gchar* str) {
+    HStrTree* node;
     gchar* cursor;
     gchar chr;
 
-    cursor = key;
+    node = interned_strings_tree;
+
+    /* Get the node. */
+    cursor = str;
     chr = *cursor;
     while (chr != '\0') {
-        tree = h_str_tree_traverse(tree, chr);
+        node = h_str_tree_traverse(node, chr);
         cursor++;
         chr = *cursor;
     }
 
-    tree->data = value;
+    /* New string. */
+    if (node->data == NULL) {
+        str = g_string_chunk_insert_const(interned_strings, str);
+        node->data = str;
+    }
+
+    return node->data;
 }
+
 
 
 /**************************************************************************
@@ -157,16 +175,16 @@ void h_str_tree_insert(HStrTree* tree, gchar* key, gpointer value) {
  * that says whether the tag includes XML namespace declarations (true) or not
  * (false). */
 typedef struct {
-    gchar* prefix;       /* Stored in "self->strings". */
-    gchar* name;         /* Stored apart (malloc/free). */
+    gchar* prefix;       /* Stored in "interned_strings". */
+    gchar* name;         /* Stored in "interned_strings". */
     gboolean has_xmlns;
 } StartTag;
 
 
 /* This type represents an attribute. */
 typedef struct {
-    gchar* prefix;  /* The prefix is stored in "self->strings". */
-    gchar* name;    /* The name is kept apart. */
+    gchar* prefix;  /* Stored in "interned_strings". */
+    gchar* name;    /* Stored in "interned_strings". */
     GString* value; /* The value is kept apart. */
 } Attribute;
 
@@ -191,9 +209,6 @@ typedef struct {
     GHashTable* ns_default;      /* The default namespace (from Python). */
     GHashTable* ns_current;      /* A pointer to the current namespace. */
     GHashTable* ns_buffer;
-    /* Interned strings. */
-    HStrTree* strings_tree;
-    GStringChunk* strings;
     /* Cache the namespace URIs. */
     GPtrArray* ns_uris;
     /* Other variables. */
@@ -518,23 +533,25 @@ void xml_name(Parser* self, GString* name) {
 /* Prefix + Name (http://www.w3.org/TR/REC-xml-names/#ns-decl)
  *
  * On success, returns a pointer to the prefix string stored in the
- * "self->strings" variable.  On error returns NULL.
+ * "interned_strings" variable.  On error returns NULL.
  */
 gboolean xml_prefix_name(Parser* self, gchar** prefix, gchar** name) {
     HStrTree* tree;
     HStrTree* parent;
     gchar* str;
-    GString* buffer;
 
     /* Read the prefix. */
-    tree = self->strings_tree;
+    G_LOCK(interned_strings);
+    tree = interned_strings_tree;
     while (IS_NC_NAME_CHAR(self->next_char)) {
         tree = h_str_tree_traverse(tree, self->next_char);
         move_cursor(self);
     }
     /* Test the string is not missing. */
-    if (tree == self->strings_tree)
+    if (tree == interned_strings_tree) {
+        G_UNLOCK(interned_strings);
         return TRUE;
+    }
     /* Get the value. */
     if (tree->data == NULL) {
         g_string_set_size(self->buffer, 0);
@@ -543,7 +560,7 @@ gboolean xml_prefix_name(Parser* self, gchar** prefix, gchar** name) {
             g_string_prepend_c(self->buffer, parent->chr);
             parent = parent->parent;
         }
-        str = g_string_chunk_insert(self->strings, self->buffer->str);
+        str = g_string_chunk_insert(interned_strings, self->buffer->str);
         tree->data = (gpointer)str;
     } else {
         str = (gchar*)tree->data;
@@ -551,8 +568,9 @@ gboolean xml_prefix_name(Parser* self, gchar** prefix, gchar** name) {
 
     /* Just the name. */
     if (self->next_char != ':') {
-        *prefix = self->strings_tree->data;  /* The empty string. */
+        *prefix = interned_strings_tree->data;  /* The empty string. */
         *name = str;
+        G_UNLOCK(interned_strings);
         return FALSE;
     }
 
@@ -560,14 +578,16 @@ gboolean xml_prefix_name(Parser* self, gchar** prefix, gchar** name) {
     *prefix = str;
     move_cursor(self);
     /* Read the name */
-    tree = self->strings_tree;
+    tree = interned_strings_tree;
     while (IS_NAME_CHAR(self->next_char)) {
         tree = h_str_tree_traverse(tree, self->next_char);
         move_cursor(self);
     }
     /* Test the string is not missing. */
-    if (tree == self->strings_tree)
+    if (tree == interned_strings_tree) {
+        G_UNLOCK(interned_strings);
         return TRUE;
+    }
     /* Get the value. */
     if (tree->data == NULL) {
         g_string_set_size(self->buffer, 0);
@@ -576,13 +596,14 @@ gboolean xml_prefix_name(Parser* self, gchar** prefix, gchar** name) {
             g_string_prepend_c(self->buffer, parent->chr);
             parent = parent->parent;
         }
-        str = g_string_chunk_insert(self->strings, self->buffer->str);
+        str = g_string_chunk_insert(interned_strings, self->buffer->str);
         tree->data = (gpointer)str;
     } else {
         str = (gchar*)tree->data;
     }
 
     *name = str;
+    G_UNLOCK(interned_strings);
     return FALSE;
 }
 
@@ -793,8 +814,6 @@ static PyObject* Parser_new(PyTypeObject* type, PyObject* args, PyObject* kw) {
     self->ns_default = g_hash_table_new(g_str_hash, g_str_equal);
     self->ns_current = NULL;
     self->ns_buffer = g_hash_table_new(g_str_hash, g_str_equal);
-    self->strings_tree = h_str_tree_new(NULL);
-    self->strings = g_string_chunk_new(64);
     self->ns_uris = g_ptr_array_sized_new(10);
     self->py_left_token = NULL;
     self->attributes = g_ptr_array_sized_new(10);
@@ -853,8 +872,6 @@ static void Parser_dealloc(Parser* self) {
     g_array_free(self->ns_stack, TRUE);
     g_hash_table_destroy(self->ns_default);
     g_hash_table_destroy(self->ns_buffer);
-    h_str_tree_free(self->strings_tree);
-    g_string_chunk_free(self->strings);
     g_ptr_array_free(self->ns_uris, TRUE);
     g_ptr_array_free(self->attributes, TRUE);
     g_string_free(self->buffer, TRUE);
@@ -903,19 +920,15 @@ static int Parser_init(Parser* self, PyObject* args, PyObject* kw) {
     self->line_no = 1;
     self->column = 1;
 
-    /* Keep the empty string.  */
-    key = g_string_chunk_insert_const(self->strings, "");
-    h_str_tree_insert(self->strings_tree, key, key);
     /* Set built-in namespace: xml */
-    key = g_string_chunk_insert_const(self->strings, "xml");
-    h_str_tree_insert(self->strings_tree, key, key);
+    G_LOCK(interned_strings);
     py_uri = PyString_InternFromString("http://www.w3.org/XML/1998/namespace");
     g_ptr_array_add(self->ns_uris, (gpointer)py_uri);
-    g_hash_table_insert(self->ns_default, (gpointer)key, (gpointer)py_uri);
+    key = intern_string("xml");
+    g_hash_table_insert(self->ns_default, key, (gpointer)py_uri);
     /* Set built-in namespace: xmlns */
-    key = g_string_chunk_insert_const(self->strings, "xmlns");
-    h_str_tree_insert(self->strings_tree, key, key);
     py_uri = PyString_InternFromString("http://www.w3.org/2000/xmlns/");
+    key = intern_string("xmlns");
     g_hash_table_insert(self->ns_default, (gpointer)key, (gpointer)py_uri);
 
     /* Initialize the default namespaces. */
@@ -925,11 +938,11 @@ static int Parser_init(Parser* self, PyObject* args, PyObject* kw) {
         while (PyDict_Next(py_namespaces, &py_pos, &py_key, &py_uri)) {
             /* Keep the prefix. */
             if (py_key == Py_None)
-                key = (gchar*)"";
-            else
+                key = intern_string("");
+            else {
                 key = (gchar*)PyString_AsString(py_key);
-            g_string_chunk_insert_const(self->strings, key);
-            h_str_tree_insert(self->strings_tree, key, key);
+                key = intern_string(key);
+            }
             /* Keept the URI. */
             g_ptr_array_add(self->ns_uris, (gpointer)py_uri);
             Py_INCREF(py_uri);
@@ -938,6 +951,7 @@ static int Parser_init(Parser* self, PyObject* args, PyObject* kw) {
                                 (gpointer*)py_uri);
         }
     }
+    G_UNLOCK(interned_strings);
 
     /* Read the first char. */
     move_cursor(self);
@@ -1653,6 +1667,15 @@ initparser(void) {
 
     if (PyType_Ready(&ParserType) < 0)
         return;
+
+    /* Initialize interned strings (prefix & name). */
+    G_LOCK(interned_strings);
+    interned_strings_tree = h_str_tree_new(NULL);
+    interned_strings = g_string_chunk_new(64);
+    intern_string("");
+    intern_string("xml");
+    intern_string("xmlns");
+    G_UNLOCK(interned_strings);
 
     /* Initialize the built-in entity references. */
     init_builtin_entities();

@@ -67,6 +67,89 @@ static PyObject* XMLError;
 
 
 /**************************************************************************
+ * Abstract Data Types and their API
+ *************************************************************************/
+
+/* The String Tree is a data structure that allows to store compactly a set
+ * of strings.  The lookup or insertion of a string is O(n) where "n" is the
+ * lenght of the string.
+ */
+
+
+typedef struct _HStrTree HStrTree;
+
+struct _HStrTree {
+    gpointer data;
+    HStrTree* children[256];
+    /* Needed to rebuild the string. */
+    HStrTree* parent;
+    gchar chr;
+};
+
+
+
+HStrTree* h_str_tree_new(gpointer data) {
+    HStrTree* tree;
+    gushort idx;
+
+    tree = malloc(sizeof(HStrTree));
+    tree->data = data;
+    tree->parent = NULL;
+    for (idx=0; idx < 256; idx++) {
+        tree->children[idx] = NULL;
+    }
+
+    return tree;
+}
+
+
+void h_str_tree_free(HStrTree* tree) {
+    HStrTree* child;
+    gushort idx;
+
+    for (idx=0; idx < 256; idx++) {
+        child = tree->children[idx];
+        if (child != NULL)
+            h_str_tree_free(child);
+    }
+    free(tree);
+}
+
+
+HStrTree* h_str_tree_traverse(HStrTree* tree, gchar chr) {
+    HStrTree* child;
+    gushort idx;
+
+    idx = (gushort)chr;
+    child = tree->children[idx];
+    if (child == NULL) {
+        child = h_str_tree_new(NULL);
+        child->parent = tree;
+        child->chr = chr;
+        tree->children[idx] = child;
+    }
+
+    return child;
+}
+
+
+void h_str_tree_insert(HStrTree* tree, gchar* key, gpointer value) {
+    gchar* cursor;
+    gchar chr;
+
+    cursor = key;
+    chr = *cursor;
+    while (chr != '\0') {
+        tree = h_str_tree_traverse(tree, chr);
+        cursor++;
+        chr = *cursor;
+    }
+
+    tree->data = value;
+}
+
+
+/**************************************************************************
  * Data Types
  *************************************************************************/
 
@@ -74,7 +157,7 @@ static PyObject* XMLError;
  * that says whether the tag includes XML namespace declarations (true) or not
  * (false). */
 typedef struct {
-    gchar* prefix;       /* Stored in "self->ns_prefixes". */
+    gchar* prefix;       /* Stored in "self->strings". */
     gchar* name;         /* Stored apart (malloc/free). */
     gboolean has_xmlns;
 } StartTag;
@@ -82,8 +165,8 @@ typedef struct {
 
 /* This type represents an attribute. */
 typedef struct {
-    gchar* prefix;  /* The prefix is stored in "self->ns_prefixes". */
-    GString* name;  /* The name is kept apart. */
+    gchar* prefix;  /* The prefix is stored in "self->strings". */
+    gchar* name;    /* The name is kept apart. */
     GString* value; /* The value is kept apart. */
 } Attribute;
 
@@ -109,8 +192,10 @@ typedef struct {
     GHashTable* ns_current;      /* A pointer to the current namespace. */
     GHashTable* ns_buffer;
     /* Interned strings. */
-    GStringChunk* ns_prefixes;   /* Keep the namespace prefixes. */
-    GPtrArray* ns_uris;          /* Keep the namespace URIs. */
+    HStrTree* strings_tree;
+    GStringChunk* strings;
+    /* Cache the namespace URIs. */
+    GPtrArray* ns_uris;
     /* Other variables. */
     PyObject* py_left_token;     /* The end tag of an empty element. */
     GPtrArray* attributes;       /* Keep the attributes of an element. */
@@ -176,15 +261,12 @@ Attribute* new_attribute(void) {
     Attribute* attribute;
 
     attribute = malloc(sizeof(Attribute));
-    attribute->name = g_string_sized_new(10);
     attribute->value = g_string_sized_new(64);
-
     return attribute;
 }
 
 
 void free_attribute(Attribute* attribute) {
-    g_string_free(attribute->name, TRUE);
     g_string_free(attribute->value, TRUE);
     free(attribute);
 }
@@ -399,7 +481,7 @@ void push_tag(Parser* self, gchar* prefix, gchar* name) {
 
     /* Push the new item into the stack. */
     tag.prefix = prefix;
-    tag.name = g_strdup(name);
+    tag.name = name;
     g_array_append_val(self->tag_stack, tag);
 }
 
@@ -436,47 +518,72 @@ void xml_name(Parser* self, GString* name) {
 /* Prefix + Name (http://www.w3.org/TR/REC-xml-names/#ns-decl)
  *
  * On success, returns a pointer to the prefix string stored in the
- * "self->ns_prefixes" variable.  On error returns NULL.
+ * "self->strings" variable.  On error returns NULL.
  */
-gchar* xml_prefix_name(Parser* self, GString* name) {
-    GString* prefix;
-    gchar* result;
+gboolean xml_prefix_name(Parser* self, gchar** prefix, gchar** name) {
+    HStrTree* tree;
+    HStrTree* parent;
+    gchar* str;
+    GString* buffer;
 
-    /* Initialize the prefix */
-    prefix = g_string_sized_new(10);
-
-    /* Read as much as possible */
+    /* Read the prefix. */
+    tree = self->strings_tree;
     while (IS_NC_NAME_CHAR(self->next_char)) {
-        g_string_append_c(prefix, self->next_char);
+        tree = h_str_tree_traverse(tree, self->next_char);
         move_cursor(self);
     }
-
-    /* Test the prefix is not missing. */
-    if (prefix->len == 0) {
-        g_string_free(prefix, TRUE);
-        return NULL;
-    }
-
-    if (self->next_char == ':') {
-        /* With prefix */
-        move_cursor(self);
-        /* Read the name */
-        xml_name(self, name);
-        if (name->len == 0) {
-            g_string_free(prefix, TRUE);
-            return NULL;
+    /* Test the string is not missing. */
+    if (tree == self->strings_tree)
+        return TRUE;
+    /* Get the value. */
+    if (tree->data == NULL) {
+        g_string_set_size(self->buffer, 0);
+        parent = tree;
+        while (parent->parent != NULL) {
+            g_string_prepend_c(self->buffer, parent->chr);
+            parent = parent->parent;
         }
+        str = g_string_chunk_insert(self->strings, self->buffer->str);
+        tree->data = (gpointer)str;
     } else {
-        /* No Prefix */
-        g_string_assign(name, prefix->str);
-        g_string_set_size(prefix, 0); /* The empty string. */
+        str = (gchar*)tree->data;
     }
 
-    /* Keep the prefix. */
-    result = g_string_chunk_insert_const(self->ns_prefixes, prefix->str);
-    g_string_free(prefix, TRUE);
+    /* Just the name. */
+    if (self->next_char != ':') {
+        *prefix = self->strings_tree->data;  /* The empty string. */
+        *name = str;
+        return FALSE;
+    }
 
-    return result;
+    /* Prefix & Name. */
+    *prefix = str;
+    move_cursor(self);
+    /* Read the name */
+    tree = self->strings_tree;
+    while (IS_NAME_CHAR(self->next_char)) {
+        tree = h_str_tree_traverse(tree, self->next_char);
+        move_cursor(self);
+    }
+    /* Test the string is not missing. */
+    if (tree == self->strings_tree)
+        return TRUE;
+    /* Get the value. */
+    if (tree->data == NULL) {
+        g_string_set_size(self->buffer, 0);
+        parent = tree;
+        while (parent->parent != NULL) {
+            g_string_prepend_c(self->buffer, parent->chr);
+            parent = parent->parent;
+        }
+        str = g_string_chunk_insert(self->strings, self->buffer->str);
+        tree->data = (gpointer)str;
+    } else {
+        str = (gchar*)tree->data;
+    }
+
+    *name = str;
+    return FALSE;
 }
 
 
@@ -686,7 +793,8 @@ static PyObject* Parser_new(PyTypeObject* type, PyObject* args, PyObject* kw) {
     self->ns_default = g_hash_table_new(g_str_hash, g_str_equal);
     self->ns_current = NULL;
     self->ns_buffer = g_hash_table_new(g_str_hash, g_str_equal);
-    self->ns_prefixes = g_string_chunk_new(64);
+    self->strings_tree = h_str_tree_new(NULL);
+    self->strings = g_string_chunk_new(64);
     self->ns_uris = g_ptr_array_sized_new(10);
     self->py_left_token = NULL;
     self->attributes = g_ptr_array_sized_new(10);
@@ -711,10 +819,8 @@ void Parser_reset(Parser* self) {
     self->py_left_token = NULL;
 
     /* Free the tag stack. */
-    for (index=0; index < self->tag_stack->len; index++) {
+    for (index=0; index < self->tag_stack->len; index++)
         tag = &g_array_index(self->tag_stack, StartTag, index);
-        free(tag->name);
-    }
     g_array_set_size(self->tag_stack, 0);
 
     /* Free the namespace stack. */
@@ -727,7 +833,6 @@ void Parser_reset(Parser* self) {
     /* The dafault namespace and the stored strings. */
     g_hash_table_steal_all(self->ns_default);
     g_hash_table_steal_all(self->ns_buffer);
-    g_string_chunk_clear(self->ns_prefixes);
     /* URIs. */
     for (index=0; index < self->ns_uris->len; index++) {
         pointer = g_ptr_array_index(self->ns_uris, index);
@@ -748,7 +853,8 @@ static void Parser_dealloc(Parser* self) {
     g_array_free(self->ns_stack, TRUE);
     g_hash_table_destroy(self->ns_default);
     g_hash_table_destroy(self->ns_buffer);
-    g_string_chunk_free(self->ns_prefixes);
+    h_str_tree_free(self->strings_tree);
+    g_string_chunk_free(self->strings);
     g_ptr_array_free(self->ns_uris, TRUE);
     g_ptr_array_free(self->attributes, TRUE);
     g_string_free(self->buffer, TRUE);
@@ -797,13 +903,18 @@ static int Parser_init(Parser* self, PyObject* args, PyObject* kw) {
     self->line_no = 1;
     self->column = 1;
 
+    /* Keep the empty string.  */
+    key = g_string_chunk_insert_const(self->strings, "");
+    h_str_tree_insert(self->strings_tree, key, key);
     /* Set built-in namespace: xml */
-    key = g_string_chunk_insert_const(self->ns_prefixes, "xml");
+    key = g_string_chunk_insert_const(self->strings, "xml");
+    h_str_tree_insert(self->strings_tree, key, key);
     py_uri = PyString_InternFromString("http://www.w3.org/XML/1998/namespace");
     g_ptr_array_add(self->ns_uris, (gpointer)py_uri);
     g_hash_table_insert(self->ns_default, (gpointer)key, (gpointer)py_uri);
     /* Set built-in namespace: xmlns */
-    key = g_string_chunk_insert_const(self->ns_prefixes, "xmlns");
+    key = g_string_chunk_insert_const(self->strings, "xmlns");
+    h_str_tree_insert(self->strings_tree, key, key);
     py_uri = PyString_InternFromString("http://www.w3.org/2000/xmlns/");
     g_hash_table_insert(self->ns_default, (gpointer)key, (gpointer)py_uri);
 
@@ -817,7 +928,8 @@ static int Parser_init(Parser* self, PyObject* args, PyObject* kw) {
                 key = (gchar*)"";
             else
                 key = (gchar*)PyString_AsString(py_key);
-            g_string_chunk_insert_const(self->ns_prefixes, key);
+            g_string_chunk_insert_const(self->strings, key);
+            h_str_tree_insert(self->strings_tree, key, key);
             /* Keept the URI. */
             g_ptr_array_add(self->ns_uris, (gpointer)py_uri);
             Py_INCREF(py_uri);
@@ -842,11 +954,10 @@ static int Parser_init(Parser* self, PyObject* args, PyObject* kw) {
  * On error returns a NULL pointer.  On success returns a new Python value,
  * with the tag expressed as a tuple of two elements, the tag uri and name.
  */
-PyObject* pop_tag(Parser* self, gchar* prefix, GString* name) {
+PyObject* pop_tag(Parser* self, gchar* prefix, gchar* name) {
     PyObject* py_uri;
     guint index;
     StartTag* tag;
-    int cmp;
     GHashTable* xmlns;
 
     /* Check the stack is not empty */
@@ -858,8 +969,7 @@ PyObject* pop_tag(Parser* self, gchar* prefix, GString* name) {
     tag = &g_array_index(self->tag_stack, StartTag, index);
     if (prefix != tag->prefix)
         return NULL;
-    cmp = strcmp(tag->name, name->str);
-    if (cmp != 0)
+    if (name != tag->name)
         return NULL;
 
     /* Find out the URI from the prefix */
@@ -868,7 +978,6 @@ PyObject* pop_tag(Parser* self, gchar* prefix, GString* name) {
         py_uri = Py_None;
 
     /* Pop from the tag stack. */
-    free(tag->name);
     g_array_set_size(self->tag_stack, index);
 
     /* Pop from the namespace stack, if needed. */
@@ -889,7 +998,7 @@ PyObject* pop_tag(Parser* self, gchar* prefix, GString* name) {
     }
 
     /* Build the return value */
-    return Py_BuildValue("(Os)", py_uri, name->str);
+    return Py_BuildValue("(Os)", py_uri, name);
 }
 
 
@@ -1189,20 +1298,22 @@ PyObject* read_start_tag(Parser* self) {
     PyObject* py_attr_uri;
     GHashTable* namespaces;
     gchar* tag_prefix;
-    gchar* key;
+    gchar* tag_name;
+    gchar* attr_prefix;
+    gchar* attr_name;
     gboolean end_tag;
     Attribute* attribute;
     char c;
     guint line, column;
-    int error;
+    gboolean error;
     int idx;
 
     line = self->line_no;
     column = self->column;
 
     /* Read tag (prefix & name). */
-    tag_prefix = xml_prefix_name(self, self->buffer);
-    if (tag_prefix == NULL)
+    error = xml_prefix_name(self, &tag_prefix, &tag_name);
+    if (error)
         return ERROR(INVALID_TOKEN, line, column);
     /* Attributes */
     reset_attributes(self->attributes);
@@ -1213,7 +1324,7 @@ PyObject* read_start_tag(Parser* self) {
         if (c == '>') {
             move_cursor(self);
             /* Add to the stack */
-            push_tag(self, tag_prefix, self->buffer->str);
+            push_tag(self, tag_prefix, tag_name);
             end_tag = FALSE;
             namespaces = self->ns_current;
             break;
@@ -1235,9 +1346,11 @@ PyObject* read_start_tag(Parser* self) {
         attribute = new_attribute();
         g_ptr_array_add(self->attributes, attribute);
         /* Prefix & Name */
-        attribute->prefix = xml_prefix_name(self, attribute->name);
-        if (attribute->prefix == NULL)
+        error = xml_prefix_name(self, &attr_prefix, &attr_name);
+        if (error)
             return ERROR(INVALID_TOKEN, line, column);
+        attribute->prefix = attr_prefix;
+        attribute->name = attr_name;
         /* Eq */
         if (xml_equal(self) == -1)
             return ERROR(INVALID_TOKEN, line, column);
@@ -1248,7 +1361,7 @@ PyObject* read_start_tag(Parser* self) {
 
         if (strcmp(attribute->prefix, "") == 0) {
             /* Default namespace declaration */
-            if (strcmp(attribute->name->str, "xmlns") == 0) {
+            if (strcmp(attribute->name, "xmlns") == 0) {
                 /* Check for duplicates */
                 if (g_hash_table_lookup(self->ns_buffer, ""))
                     return ERROR(DUP_ATTR, line, column);
@@ -1263,17 +1376,15 @@ PyObject* read_start_tag(Parser* self) {
             }
         /* Namespace declaration */
         } else if (strcmp(attribute->prefix, "xmlns") == 0) {
-            /* Keep the namespace prefix (key). */
-            key = g_string_chunk_insert_const(self->ns_prefixes,
-                  attribute->name->str);
             /* Check for duplicates */
-            if (g_hash_table_lookup(self->ns_buffer, key))
+            if (g_hash_table_lookup(self->ns_buffer, attribute->name))
                 return ERROR(DUP_ATTR, line, column);
             /* Keep the value (uri). */
             py_uri = PyString_InternFromString(attribute->value->str);
             g_ptr_array_add(self->ns_uris, (gpointer)py_uri);
             /* Set the namespace */
-            g_hash_table_insert(self->ns_buffer, key, (gpointer)py_uri);
+            g_hash_table_insert(self->ns_buffer, attribute->name,
+                                (gpointer)py_uri);
         }
     }
 
@@ -1283,7 +1394,7 @@ PyObject* read_start_tag(Parser* self) {
         py_tag_uri = Py_None;
 
     /* The END_ELEMENT token will be sent later */
-    py_tag_name = PyString_FromString(self->buffer->str);
+    py_tag_name = PyString_FromString(tag_name);
     if (end_tag)
         self->py_left_token = Py_BuildValue("(i(OO)i)", END_ELEMENT,
                               py_tag_uri, py_tag_name, line);
@@ -1298,8 +1409,7 @@ PyObject* read_start_tag(Parser* self) {
         if (py_attr_uri == NULL)
             py_attr_uri = Py_None;
         /* Build the attribute name. */
-        py_attr_name = Py_BuildValue("(Os)", py_attr_uri,
-                       attribute->name->str);
+        py_attr_name = Py_BuildValue("(Os)", py_attr_uri, attribute->name);
 
         /* Check for duplicates */
         if (PyDict_Contains(py_attributes, py_attr_name)) {
@@ -1328,14 +1438,16 @@ PyObject* read_start_tag(Parser* self) {
 PyObject* read_end_tag(Parser* self) {
     PyObject* py_value;
     gchar* tag_prefix;
+    gchar* tag_name;
     guint line, column;
+    gboolean error;
 
     line = self->line_no;
     column = self->column;
 
     /* Name */
-    tag_prefix = xml_prefix_name(self, self->buffer);
-    if (tag_prefix == NULL)
+    error = xml_prefix_name(self, &tag_prefix, &tag_name);
+    if (error)
         return ERROR(INVALID_TOKEN, line, column);
     /* White Space */
     xml_space(self);
@@ -1344,7 +1456,7 @@ PyObject* read_end_tag(Parser* self) {
         return ERROR(INVALID_TOKEN, line, column);
     move_cursor(self);
     /* Remove from the stack */
-    py_value = pop_tag(self, tag_prefix, self->buffer);
+    py_value = pop_tag(self, tag_prefix, tag_name);
     if (py_value == NULL)
         return ERROR(MISSING, line, column);
 

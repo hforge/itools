@@ -4,6 +4,7 @@ meta-package for easier development and deployment.
 
 The packages included are:
 
+  itools.abnf             itools.http             itools.tmx
   itools.catalog          itools.i18n             itools.uri
   itools.csv              itools.ical             itools.vfs
   itools.datatypes        itools.odf              itools.web
@@ -11,7 +12,6 @@ The packages included are:
   itools.git              itools.rest             itools.xliff
   itools.handlers         itools.rss              itools.xml
   itools.html             itools.stl
-  itools.http             itools.tmx
 
 The scripts included are:
 
@@ -23,12 +23,14 @@ The scripts included are:
 Requirements
 ------------
 
-Python 2.4 or later is required.
+Python 2.4 or later is required.  The GLib [1] library version 2.14 or
+later is required.
 
-For the implementation of RML (itools.pdf) to work the package reportlab [1]
+For the implementation of RML (itools.pdf) to work the package reportlab [2]
 must be installed.
 
-[1] http://www.reportlab.org/
+[1] http://www.gtk.org/
+[2] http://www.reportlab.org/
 
 
 Install
@@ -89,10 +91,10 @@ http://bugs.ikaaro.org
 Copyright
 ---------
 
-Copyright (C) 2002-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
-Copyright (C) 2005-2007 Luis Arturo Belmar-Letelier <luis@itaapy.com>
-Copyright (C) 2005-2007 Hervé Cauwelier <herve@itaapy.com>
-Copyright (C) 2005-2007 Nicolas Deram <nicolas@itaapy.com>
+Copyright (C) 2002-2008 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+Copyright (C) 2005-2008 Luis Arturo Belmar-Letelier <luis@itaapy.com>
+Copyright (C) 2005-2008 Hervé Cauwelier <herve@itaapy.com>
+Copyright (C) 2005-2008 Nicolas Deram <nicolas@itaapy.com>
 
 And others. Check the CREDITS file for complete list.
 

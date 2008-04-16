@@ -1,0 +1,55 @@
+
+itools 0.20.5 (2008/04/16)
+==========================
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.abnf             itools.http             itools.tmx
+  itools.catalog          itools.i18n             itools.uri
+  itools.csv              itools.ical             itools.vfs
+  itools.datatypes        itools.odf              itools.web
+  itools.gettext          itools.pdf              itools.workflow
+  itools.git              itools.rest             itools.xliff
+  itools.handlers         itools.rss              itools.xml
+  itools.html             itools.stl
+
+This release includes a new proof-of-concept package, itools.abnf
+implements RFC 4234, the "Augmented Backus-Naur Form"; it uses a
+Scannerless Generalized-LR algorithm (see Eelco Visser et al).  It
+is not yet ready for production use, but taking shape.  See bug #263
+[1] for further details.
+
+There has been lots of work on the XML parser, most notably, now it
+accepts an open file as the input parameter.  See bug #285 [2] for
+further details.
+
+There is also a new dependency, now itools (in particular the XML
+parser) requires the GLib library [3], version 2.14 or later.
+
+Many other issues have been addressed, among them now the catalog
+is able to index CJK text strings.
+
+
+[1] http://bugs.ikaaro.org/show_bug.cgi?id=263
+[2] http://bugs.ikaaro.org/show_bug.cgi?id=285
+[3] http://www.gtk.org/
+
+
+Resources
+---------
+
+Download
+http://download.ikaaro.org/itools/itools-0.20.5.tar.gz
+http://download.ikaaro.org/itools/itools-0.20.5.win32-py2.5.exe
+http://download.ikaaro.org/itools/itools-0.20.5.win32-py2.4.exe
+
+Home
+http://www.ikaaro.org/itools
+
+Mailing list
+http://mail.ikaaro.org/mailman/listinfo/itools
+
+Bug Tracker
+http://bugs.ikaaro.org/
+

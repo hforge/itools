@@ -15,11 +15,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from collections import deque
 import sys
 
 # Import from itools
 from grammar import pformat_element, EOI
+from gss import GSS
 
 
 # Don't debug by default
@@ -45,17 +45,12 @@ class Parser(object):
         symbol_table = self.symbol_table
         reduce_table = self.reduce_table
 
-        # Initialize the stack, where the stack is a list of tuples:
+        # Initialize the stack, where each node contains a tuple:
         #
-        #   [...
-        #    ([last_nodes], symbol, state, start, value),
-        #    ...]
+        #    (symbol, start, value)
         #
-        # The "start" field is a reference to the input stream.
-        stack = deque()
-        stack.append(([], None, 1, 0, None))
-        active_nodes = deque()
-        active_nodes.append(0)
+        # The state is implicitly set to "1" (in the C code).
+        gss = GSS(1, (None, 0, None))
 
         # Debug
 #        debug = (start_symbol == 'rulelist')
@@ -74,63 +69,33 @@ class Parser(object):
                             % (token, data_idx, repr(data[data_idx])))
 
             # Shift on all the parsing paths
-            map = {}
-            new_active_nodes = deque()
-            for node_idx in active_nodes:
-                state = stack[node_idx][2]
-                next_state = token_table.get((state, token), 0)
-                if next_state == 0:
-                    continue
-                if next_state in map:
-                    n = map[next_state]
-                    stack[n][0].append(node_idx)
-                else:
-                    n = len(stack)
-                    map[next_state] = n
-                    new_active_nodes.append(n)
-                    stack.append(
-                        ([node_idx], token, next_state, data_idx+1, None))
-            active_nodes = new_active_nodes
+            value = (token, data_idx+1, None)
+            gss.shift_token(token, token_table, value)
 
             # Debug
             if debug:
-                pprint_stack(stack, active_nodes, data, trace)
+                pprint_stack(gss, data, trace)
                 trace.write('=== reduce ===\n')
 
             # Next token
             token, data_idx = get_token()
 
-            # Reduce
-            new_active_nodes = deque()
-            while active_nodes:
-                node_idx = active_nodes.pop()
-                kk, kk, state, kk, kk = stack[node_idx]
+            # Make all the possible reduces
+            idx = 0
+            node = gss.get_top_node(idx)
+            while node is not None:
+                node_id, state = node
                 shift, handles = reduce_table[state]
-                # Shift
-                if shift:
-                    new_active_nodes.append(node_idx)
-                # Reduce
+                # Try every handle
                 for name, n, look_ahead, method in handles:
                     # Look-Ahead
                     if token not in look_ahead:
                         continue
-                    # Fork the stack
-                    pointers = [[node_idx, []]]
-                    while n > 0:
-                        n -= 1
-                        new_pointers = []
-                        while pointers:
-                            node_idx, values = pointers.pop()
-                            last_nodes, symbol, kk, kk, value = stack[node_idx]
-                            if type(symbol) is str:
-                                values.insert(0, value)
-                            for last_node in last_nodes:
-                                new_pointers.append([last_node, values[:]])
-                        pointers = new_pointers
-
-                    for last_node, values in pointers:
-                        kk, symbol, state, start, value = stack[last_node]
+                    # Reduce
+                    for id, state, values in gss.reduce(node_id, n):
                         # Semantic action
+                        values = [ value for symbol, start, value in values
+                                   if type(symbol) is str ]
                         if context is None:
                             value = None
                         elif method is None:
@@ -144,15 +109,25 @@ class Parser(object):
                         # Next state
                         next_state = symbol_table.get((state, name), 0)
                         # Stop Condition
-                        if last_node==0 and name == start_symbol and token==0:
+                        if state == 1 and name == start_symbol and token == 0:
                             return value
-                        active_nodes.append(len(stack))
-                        stack.append(
-                            ([last_node], name, next_state, data_idx, value))
-            active_nodes = new_active_nodes
+                        # Add a new node
+                        data = (name, data_idx, value)
+                        gss.add_new_node(id, next_state, data)
+
+                # Next
+                idx += 1
+                node = gss.get_top_node(idx)
+
+            # Remove branches we cannot shift
+            for node_id in gss.get_top_node_ids():
+                shift, handles = reduce_table[state]
+                if not shift:
+                    gss.free_node(node_id)
+
             # Debug
             if debug:
-                pprint_stack(stack, active_nodes, data, trace)
+                pprint_stack(gss, data, trace)
                 trace.write('\n')
 
         raise ValueError, 'grammar error'
@@ -523,19 +498,19 @@ def build_graph(grammar, map, token_table, symbol_table):
 
 
 
-def pprint_stack(stack, active_nodes, data, file=None):
+def pprint_stack(gss, data, file=None):
     if file is None:
         file = sys.stdout
 
     in_paths = []
-    for node_idx in active_nodes:
-        in_paths.append([node_idx])
+    for node_id in gss.get_top_node_ids():
+        in_paths.append([node_id])
 
     paths = []
     while in_paths:
         path = in_paths.pop()
-        node_idx = path[0]
-        last_nodes = stack[node_idx][0]
+        node_id = path[0]
+        last_nodes = gss.get_prev_node_ids(node_id)
         if len(last_nodes) == 0:
             paths.append(path)
             continue
@@ -545,8 +520,8 @@ def pprint_stack(stack, active_nodes, data, file=None):
     lines = []
     for path in paths:
         line = []
-        for node_idx in path:
-            kk, symbol, state, start, value = stack[node_idx]
+        for node_id in path:
+            symbol, state, start, value = gss.get_node_data(node_id)
             if state == 1:
                 line.append('S1')
             elif symbol == 0:

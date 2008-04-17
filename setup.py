@@ -23,9 +23,18 @@ from utils import setup
 
 
 if __name__ == '__main__':
-    cparser = Extension('itools.xml.parser',
-                        sources=['xml/parser.c', 'xml/doctype.c',
-                                 'xml/arp.c', 'xml/pyparser.c'],
-                        libraries=['glib-2.0'])
+    libs = ['glib-2.0']
+    extensions = [
+        # The Graph Structured Stack
+        ('itools.abnf.gss', ['abnf/gss.c']),
+        # The XML Parser
+        ('itools.xml.parser',
+         ['xml/parser.c', 'xml/doctype.c', 'xml/arp.c', 'xml/pyparser.c']),
+        ]
 
-    setup(ext_modules=[cparser])
+    extensions = [
+        Extension(name, sources=sources, libraries=libs)
+        for name, sources in extensions ]
+
+    # Setup
+    setup(ext_modules=extensions)

@@ -646,6 +646,8 @@ class Table(File):
         else if name is define in the schema
         return [] is name is a multiple, the default value otherwise.
         """
+        if name == 'id':
+            return record.id
         try:
             return getattr(record, name)
         except AttributeError:

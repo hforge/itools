@@ -20,6 +20,7 @@ from datetime import date
 from random import sample
 import unittest
 from unittest import TestCase
+import re
 
 # Import from itools
 from itools import vfs
@@ -322,6 +323,15 @@ class CatalogTestCase(TestCase):
         self.assertEqual(catalog.search(data=u'lion').get_n_documents(), 3)
         catalog.abort_changes()
         self.assertEqual(catalog.search(data=u'lion').get_n_documents(), 4)
+        # Query on indexed boolean
+        self.assertEqual(catalog.search(about_wolf='1').get_n_documents(), 5)
+        # Query on stored boolean
+        results = catalog.search(about_wolf='1')
+        longer_stories = 0
+        for result in results.get_documents():
+            if result.is_long:
+                longer_stories += 1
+        self.assertEqual(longer_stories, 0)
         # Phrase Query
         results = catalog.search(data=u'this is a double death')
         self.assertEqual(results.get_n_documents(), 1)
@@ -360,7 +370,9 @@ class Document(CatalogAware):
             KeywordField('name', is_stored=True),
             TextField('title', is_indexed=False, is_stored=True),
             TextField('data'),
-            IntegerField('size')]
+            IntegerField('size'),
+            BoolField('about_wolf'),
+            BoolField('is_long', is_indexed=False, is_stored=True)]
 
 
     def get_catalog_values(self):
@@ -371,6 +383,8 @@ class Document(CatalogAware):
         indexes['title'] = data.splitlines()[0]
         indexes['data'] = data
         indexes['size'] = len(data)
+        indexes['about_wolf'] = re.search('wolf', data, re.I) is not None
+        indexes['is_long'] = len(data) > 1024
         return indexes
 
 

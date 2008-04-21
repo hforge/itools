@@ -164,6 +164,8 @@ class Catalog(object):
         data = {}
         for field in fields:
             name = field.name
+            if name not in values:
+                continue
 
             # New field ?
             if name not in xfields:

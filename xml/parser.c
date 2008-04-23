@@ -20,6 +20,7 @@
  * The Prolog
  *************************************************************************/
 
+#include <stdarg.h>
 /* The GLib */
 #include <glib.h>
 /* Python */
@@ -64,6 +65,20 @@ typedef int Py_ssize_t;
 
 /* Errors */
 static PyObject* XMLError;
+
+
+/* This function is to be used instead of the Py_DECREF macro whenever we
+ * want to decrement two or more objects.
+ */
+inline void py_decref(PyObject* v0, ...) {
+    va_list vars;
+    PyObject* var;
+
+    va_start(vars, v0);
+    for (var = v0; var != NULL; var = va_arg(vars, PyObject*))
+        Py_DECREF(var);
+    va_end(vars);
+}
 
 
 /**************************************************************************
@@ -1095,19 +1110,16 @@ PyObject* read_pi(Parser* self) {
     c = self->next_char;
     if (c == 's') {
         if (read_string(self, "standalone") == -1) {
-            Py_DECREF(py_version);
-            Py_DECREF(py_encoding);
+            py_decref(py_version, py_encoding, NULL);
             return ERROR(BAD_XML_DECL, line, column);
         }
         if (xml_equal(self) == -1) {
-            Py_DECREF(py_version);
-            Py_DECREF(py_encoding);
+            py_decref(py_version, py_encoding, NULL);
             return ERROR(BAD_XML_DECL, line, column);
         }
         error = read_quoted_string(self, self->buffer);
         if (error) {
-            Py_DECREF(py_version);
-            Py_DECREF(py_encoding);
+            py_decref(py_version, py_encoding, NULL);
             return ERROR(BAD_XML_DECL, line, column);
         }
         py_standalone = PyString_FromString(self->buffer->str);
@@ -1191,8 +1203,7 @@ PyObject* read_document_type(Parser* self) {
     g_string_set_size(self->buffer, 0);
     error = read_quoted_string(self, self->buffer);
     if (error) {
-        Py_DECREF(py_name);
-        Py_DECREF(py_public_id);
+        py_decref(py_name, py_public_id, NULL);
         return ERROR(INVALID_TOKEN, line, column);
     }
     py_system_id = PyString_FromString(self->buffer->str);
@@ -1203,9 +1214,7 @@ PyObject* read_document_type(Parser* self) {
     /* Internal subset */
     if (self->next_char == '[') {
         /* TODO NOT IMPLEMENTED*/
-        Py_DECREF(py_name);
-        Py_DECREF(py_public_id);
-        Py_DECREF(py_system_id);
+        py_decref(py_name, py_public_id, py_system_id, NULL);
         PyErr_SetString(PyExc_NotImplementedError,
                         "internal subset not yet supported");
         return ERROR(INVALID_TOKEN, line, column);
@@ -1213,8 +1222,7 @@ PyObject* read_document_type(Parser* self) {
 
     /* End doctype declaration */
     if (self->next_char != '>') {
-        Py_DECREF(py_public_id);
-        Py_DECREF(py_system_id);
+        py_decref(py_public_id, py_system_id, NULL);
         return ERROR(INVALID_TOKEN, line, column);
     }
     move_cursor(self);
@@ -1425,9 +1433,7 @@ PyObject* read_start_tag(Parser* self) {
 
         /* Check for duplicates */
         if (PyDict_Contains(py_attributes, py_attr_name)) {
-            Py_DECREF(py_attr_name);
-            Py_DECREF(py_attributes);
-            Py_DECREF(py_tag_name);
+            py_decref(py_attr_name, py_attributes, py_tag_name, NULL);
             return ERROR(DUP_ATTR, line, column);
         }
 

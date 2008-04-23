@@ -25,31 +25,70 @@ from itools.catalog import (CatalogAware, get_field, EqQuery, RangeQuery,
 
 # Import from Xapian
 from xapian import (WritableDatabase, DB_CREATE, DB_OPEN, Document, Enquire,
-                    Query)
+                    Query, sortable_serialise, sortable_unserialise,
+                    MultiValueSorter)
 # Import from the standard library
 from marshal import dumps, loads
 
 
-class Result(object):
-    def __init__(self, xfields, xdoc):
-        self._xfields = xfields
-        self._data = loads(xdoc.get_data())
+
+# We must overload the normal behaviour (range + optimization)
+def _encode(field_type, value):
+    # integer
+    # XXX warning: this doesn't work with the big integers!
+    if field_type == 'integer':
+        return sortable_serialise(value)
+    # A common field or a new field ?
+    else:
+        field = get_field(field_type)
+        return field.encode(value)
+
+def _decode(field_type, data):
+    # integer
+    if field_type == 'integer':
+        return int(sortable_unserialise(data))
+    # A common field or a new field ?
+    else:
+        field = get_field(field_type)
+        return field.decode(data)
+
+
+def _index(xdoc, field_type, value, prefix):
+    # TODO make better implementation with xapian
+    field = get_field(field_type)
+    for term in field.split(value):
+        xdoc.add_posting(prefix+term[0], term[1])
+
+def make_PhraseQuery(field_type, value, prefix):
+    # TODO make better implementation with xapian
+    field = get_field(field_type)
+    words = []
+    for word in field.split(value):
+        words.append(prefix+word[0])
+    return Query(Query.OP_PHRASE, words)
+
+
+
+
+class Doc(object):
+    def __init__(self, xdoc, fields):
+        self._xdoc = xdoc
+        self._fields = fields
 
 
     def __getattr__(self, name):
-        data = self._data
-        if name in data:
-            field = get_field(self._xfields[name]['type'])
-            return field.decode(data[name])
-        else:
-            raise AttributeError, "the field '%s' is not defined" % name
+        info = self._fields[name]
+        data = self._xdoc.get_value(info['value'])
+        return _decode(info['type'], data)
+
 
 
 class SearchResults(object):
-    def __init__(self, xfields, enquire):
-        self._xfields = xfields
+    def __init__(self, enquire, fields):
         self._enquire = enquire
+        self._fields = fields
         self._max = enquire.get_mset(0,0).get_matches_upper_bound()
+
 
     def get_n_documents(self):
         """Returns the number of documents found."""
@@ -83,16 +122,42 @@ class SearchResults(object):
 
         By default all the documents are returned.
         """
-        # XXX finish me
+        enquire = self._enquire
+        fields = self._fields
+
+        # sort_by != None
+        if sort_by is not None:
+            if isinstance(sort_by, list):
+                sorter = MultiValueSorter()
+                for name in sort_by:
+                    sorter.add(fields[name]['value'])
+                enquire.set_sort_by_key(sorter, reverse)
+            else:
+                enquire.set_sort_by_value(fields[sort_by]['value'], reverse)
+        else:
+            enquire.set_sort_by_relevance()
+
+
+        # start/size
+        if size == 0:
+            size = self._max
+
+        # Construction of the results
         results = []
-        for doc in self._enquire.get_mset(0, self._max):
-            results.append(Result(self._xfields, doc.get_document()))
+        for doc in enquire.get_mset(start, size):
+            results.append(Doc(doc.get_document(), fields))
+
+        # sort_by=None/reverse=True
+        if sort_by is None and reverse:
+            results.reverse()
+
         return results
 
 
 
 class Catalog(object):
     def __init__(self, ref):
+        # Load the database
         if isinstance(ref, WritableDatabase):
             self._db = ref
         else:
@@ -108,9 +173,11 @@ class Catalog(object):
         db.begin_transaction(False)
 
         # Load the xfields from the database
-        self._xfields = {}
+        self._fields = {}
         self._key_field = None
-        self._load_xfields()
+        self._value_nb = 0
+        self._prefix_nb = 0
+        self._load_all_internal()
 
 
     #######################################################################
@@ -130,9 +197,8 @@ class Catalog(object):
         """
         db = self._db
         db.cancel_transaction()
-        self._load_xfields()
+        self._load_all_internal()
         db.begin_transaction(False)
-
 
 
     #######################################################################
@@ -142,7 +208,7 @@ class Catalog(object):
         """Add a new document.
         """
         db = self._db
-        xfields = self._xfields
+        fields = self._fields
 
         # Check the input
         if not isinstance(document, CatalogAware):
@@ -150,69 +216,77 @@ class Catalog(object):
 
         # Extract the definition and values (do it first, because it may
         # fail).
-        fields = document.get_catalog_fields()
-        values = document.get_catalog_values()
+        doc_fields = document.get_catalog_fields()
+        doc_values = document.get_catalog_values()
 
         # A least one field !
-        if len(fields) == 0:
+        if len(doc_fields) == 0:
             raise ValueError, 'the document must have at least one field'
 
         # Make the xapian document
-        magic_letters = 'ABCDEFGHIJKLMNOPQRSTUWY'
-        xfields_modified = False
+        magic_letters = 'ABCDEFGHIJLMNOPQRSTUVWY'
+        fields_modified = False
         xdoc = Document()
-        data = {}
-        for field in fields:
+        for position, field in enumerate(doc_fields):
             name = field.name
-            if name not in values:
-                continue
 
             # New field ?
-            if name not in xfields:
-                if len(xfields) >= len(magic_letters):
-                    raise (IndexError, 'You have too many different fields '
-                                       'in your database')
-                prefix =  magic_letters[len(xfields)]
-                xfields[name] = {'prefix':prefix, 'type':field.type}
-                xfields_modified = True
-                # First field => it's the key!
-                if prefix == 'A':
+            if name not in fields:
+                info = {}
+                # Type
+                info['type'] = field.type
+                # Stored ?
+                if field.is_stored:
+                    info['is_stored'] = True
+                    info['value'] = self._value_nb
+                    self._value_nb += 1
+                # Indexed ?
+                if field.is_indexed:
+                    if self._prefix_nb >= len(magic_letters):
+                        raise IndexError, ('you have too many different '
+                               'indexed fields in your database')
+                    info['is_indexed'] = True
+                    info['prefix'] = magic_letters[self._prefix_nb]
+                    self._prefix_nb += 1
+                # The first, so the key field?
+                if position == 0:
+                    info['is_key_field'] = True
                     self._key_field = name
-            # Verification
-            else:
-                # TODO: 'type' must be the same
-                pass
+                fields[name] = info
+                fields_modified = True
+            # Verifications
+            #else:
+            # XXX Question: must we verify if the informations are the same?
 
-            # Indexed ?
-            if field.is_indexed:
-                prefix = xfields[name]['prefix']
-                for term in field.split(values[name]):
-                    xdoc.add_posting(prefix+term[0], term[1])
+            # doc_fields can be greater than doc_values
+            if name not in doc_values:
+                if name != self._key_field:
+                    continue
+                else:
+                    raise IndexError, 'the first value is compulsory'
 
-            # Stored ?
+            info = fields[name]
+
+            # Is stored ?
             if field.is_stored:
-                data[name] = field.encode(values[name])
-            else:
-                data[name] = None
+                xdoc.add_value(info['value'], _encode(field.type,
+                                                      doc_values[name]))
+            # Is indexed ?
+            if field.is_indexed:
+                _index(xdoc, field.type, doc_values[name], info['prefix'])
 
-        # Store the first value with the prefix 'V'
-        # XXX: the first field is stored 2 times!
-        xdoc.add_term('V'+fields[0].encode(values[fields[0].name]))
+        # Store the first value with the prefix 'K'
+        xdoc.add_term('K'+_encode(fields[self._key_field]['type'],
+                                  doc_values[self._key_field]))
 
         # TODO: Don't store two documents with the same key field!
 
         # Save the doc
-        xdoc.set_data(dumps(data))
         db.add_document(xdoc)
 
-        # Store xfields ?
-        if xfields_modified:
-            db.set_metadata('xfields', dumps(xfields))
-
-        # XXX TEST
-        #for t in xdoc.termlist():
-        #    print t.term
-        #print xfields
+        # Store fields ?
+        if fields_modified:
+            db.set_metadata('fields', dumps(fields))
 
 
     def unindex_document(self, value):
@@ -221,8 +295,8 @@ class Catalog(object):
         """
         key_field = self._key_field
         if key_field is not None:
-            field = self._name2field(key_field)
-            self._db.delete_document('V'+field.encode(value))
+            data = _encode(self._fields[key_field]['type'], value)
+            self._db.delete_document('K'+data)
 
 
     #######################################################################
@@ -231,17 +305,16 @@ class Catalog(object):
     def search(self, query=None, **kw):
         """Launch a search in the catalog.
         """
+        fields = self._fields
         # Build the query if it is passed through keyword parameters
         if query is None:
             if kw:
                 xqueries = []
-                for key, value in kw.items():
-                    prefix = self._xfields[key]['prefix']
-                    field = self._name2field(key)
-                    words = []
-                    for word in field.split(value):
-                        words.append(prefix+word[0])
-                    xqueries.append(Query(Query.OP_PHRASE, words))
+                # name must be indexed
+                for name, value in kw.items():
+                    info = fields[name]
+                    xqueries.append(make_PhraseQuery(info['type'], value,
+                                                     info['prefix']))
                 xquery = Query(Query.OP_AND, xqueries)
             else:
                 xquery = Query('')
@@ -250,67 +323,67 @@ class Catalog(object):
 
         enquire = Enquire(self._db)
         enquire.set_query(xquery)
-        return SearchResults(self._xfields, enquire)
+        return SearchResults(enquire, self._fields)
 
 
     def get_unique_values(self, name):
-        """Return all the terms of a given field ???
+        """Return all the terms of a given indexed field
         """
-        prefix = self._xfields[name]['prefix']
+        prefix = self._fields[name]['prefix']
         return set([t.term[1:] for t in self._db.allterms(prefix)])
 
 
     #######################################################################
     # API / Private
     #######################################################################
-    def _load_xfields(self):
+    def _load_all_internal(self):
         """Load the "fields" informations form the database
         """
-        xfields = self._db.get_metadata('xfields')
+        fields = self._db.get_metadata('fields')
         self._key_field = None
-        if xfields == '':
-            self._xfields = {}
+        self._value_nb = 0
+        self._prefix_nb = 0
+        if fields == '':
+            self._fields = {}
         else:
-            self._xfields = loads(xfields)
-            for name, info in self._xfields.iteritems():
-                if info['prefix'] == 'A':
+            self._fields = loads(fields)
+            for name, info in self._fields.iteritems():
+                if 'is_stored' in info:
+                    self._value_nb += 1
+                if 'is_indexed' in info:
+                    self._prefix_nb += 1
+                if 'is_key_field' in info:
                     self._key_field = name
-                    return
 
 
-    def _name2field(self, name):
-        """Return a field class
-        """
-        return get_field(self._xfields[name]['type'])
-
-
-    def _query2xquery(self, iquery):
+    def _query2xquery(self, query):
         """take a "itools" query and return a "xapian" query
         """
-        xfields = self._xfields
+        fields = self._fields
         i2x = self._query2xquery
 
-        test = lambda c: isinstance(iquery, c)
-        # XXX: the difference between EqQuery and PhraseQuery is
-        #      that the value is not "splited". Is this the good behaviour?
+        test = lambda c: isinstance(query, c)
+        # EqQuery = PhraseQuery, the field must be indexed
         if test(EqQuery):
-            prefix = xfields[iquery.name]['prefix']
-            return Query(prefix+iquery.value)
+            info = fields[query.name]
+            return make_PhraseQuery(info['type'], query.value, info['prefix'])
+        # RangeQuery, the field must be stored
         elif test(RangeQuery):
-            raise NotImplementedError
+            info = fields[query.name]
+            field_type = info['type']
+            return Query(Query.OP_VALUE_RANGE, info['value'],
+                             _encode(field_type, query.left),
+                             _encode(field_type, query.right))
+        # EqQuery = PhraseQuery, the field must be indexed
         elif test(PhraseQuery):
-            prefix = xfields[iquery.name]['prefix']
-            field = self._name2field(iquery.name)
-            words = []
-            for word in field.split(iquery.value):
-                words.append(prefix+word[0])
-            return Query(Query.OP_PHRASE, words)
+            info = fields[query.name]
+            return make_PhraseQuery(info['type'], query.value, info['prefix'])
         elif test(AndQuery):
-            return Query(Query.OP_AND, [i2x(q) for q in iquery.atoms])
+            return Query(Query.OP_AND, [i2x(q) for q in query.atoms])
         elif test(OrQuery):
-            return Query(Query.OP_OR, [i2x(q) for q in iquery.atoms])
+            return Query(Query.OP_OR, [i2x(q) for q in query.atoms])
         elif test(NotQuery):
-            return Query(Query.OP_AND_NOT, Query(''), i2x(iquery.query))
+            return Query(Query.OP_AND_NOT, Query(''), i2x(query.query))
 
 
 

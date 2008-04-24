@@ -26,7 +26,7 @@ from itools.catalog import (CatalogAware, get_field, EqQuery, RangeQuery,
 # Import from Xapian
 from xapian import (WritableDatabase, DB_CREATE, DB_OPEN, Document, Enquire,
                     Query, sortable_serialise, sortable_unserialise,
-                    MultiValueSorter)
+                    MultiValueSorter, TermGenerator, QueryParser)
 # Import from the standard library
 from marshal import dumps, loads
 
@@ -38,7 +38,7 @@ def _encode(field_type, value):
     # XXX warning: this doesn't work with the big integers!
     if field_type == 'integer':
         return sortable_serialise(value)
-    # A common field or a new field ?
+    # A common field or a new field
     else:
         field = get_field(field_type)
         return field.encode(value)
@@ -47,20 +47,26 @@ def _decode(field_type, data):
     # integer
     if field_type == 'integer':
         return int(sortable_unserialise(data))
-    # A common field or a new field ?
+    # A common field or a new field
     else:
         field = get_field(field_type)
         return field.decode(data)
 
 
 def _index(xdoc, field_type, value, prefix):
-    # TODO make better implementation with xapian
-    field = get_field(field_type)
-    for term in field.split(value):
-        xdoc.add_posting(prefix+term[0], term[1])
+    # text
+    if field_type == 'text':
+        indexer = TermGenerator()
+        indexer.set_document(xdoc)
+        indexer.index_text(value, 1, prefix)
+    # A common field or a new field
+    else:
+        field = get_field(field_type)
+        for term in field.split(value):
+            xdoc.add_posting(prefix+term[0], term[1])
 
-def make_PhraseQuery(field_type, value, prefix):
-    # TODO make better implementation with xapian
+def _make_PhraseQuery(field_type, value, prefix):
+    # XXX: question: can we do a better implementation for 'text'?
     field = get_field(field_type)
     words = []
     for word in field.split(value):
@@ -131,9 +137,10 @@ class SearchResults(object):
                 sorter = MultiValueSorter()
                 for name in sort_by:
                     sorter.add(fields[name]['value'])
-                enquire.set_sort_by_key(sorter, reverse)
+                enquire.set_sort_by_key_then_relevance(sorter, reverse)
             else:
-                enquire.set_sort_by_value(fields[sort_by]['value'], reverse)
+                enquire.set_sort_by_value_then_relevance(
+                                            fields[sort_by]['value'], reverse)
         else:
             enquire.set_sort_by_relevance()
 
@@ -313,7 +320,7 @@ class Catalog(object):
                 # name must be indexed
                 for name, value in kw.items():
                     info = fields[name]
-                    xqueries.append(make_PhraseQuery(info['type'], value,
+                    xqueries.append(_make_PhraseQuery(info['type'], value,
                                                      info['prefix']))
                 xquery = Query(Query.OP_AND, xqueries)
             else:
@@ -366,7 +373,8 @@ class Catalog(object):
         # EqQuery = PhraseQuery, the field must be indexed
         if test(EqQuery):
             info = fields[query.name]
-            return make_PhraseQuery(info['type'], query.value, info['prefix'])
+            return _make_PhraseQuery(info['type'], query.value,
+                                                   info['prefix'])
         # RangeQuery, the field must be stored
         elif test(RangeQuery):
             info = fields[query.name]
@@ -377,7 +385,8 @@ class Catalog(object):
         # EqQuery = PhraseQuery, the field must be indexed
         elif test(PhraseQuery):
             info = fields[query.name]
-            return make_PhraseQuery(info['type'], query.value, info['prefix'])
+            return _make_PhraseQuery(info['type'], query.value,
+                                                   info['prefix'])
         elif test(AndQuery):
             return Query(Query.OP_AND, [i2x(q) for q in query.atoms])
         elif test(OrQuery):

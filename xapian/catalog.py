@@ -259,7 +259,7 @@ class Catalog(object):
             # XXX Question: must we verify if the informations are the same?
 
             # doc_fields can be greater than doc_values
-            if name not in doc_values:
+            if doc_values.get(name) is None:
                 if name != self._key_field:
                     continue
                 else:

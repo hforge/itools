@@ -42,6 +42,9 @@ def pformat_element(element):
             else:
                 tokens.append(repr(token))
         return "{%s}" % ','.join(tokens)
+    if element_type is int:
+        if element == 0:
+            return '#'
     # ?
     raise ValueError, 'XXX'
 

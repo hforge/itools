@@ -19,65 +19,7 @@ from grammar import pformat_element
 from tokenizer import EOI
 
 
-# Epsilon (the empty alternative)
-EPSILON = None
-EPSILON_SET = frozenset([EPSILON])
-
-
-def get_first_table(grammar):
-    symbols = grammar.symbols
-    rules = grammar.rules
-    lexical_table = grammar.tokenizer.lexical_table
-
-    first = {}
-    # Initialize
-    for symbol in symbols:
-        first[symbol] = frozenset([symbol])
-        for rule in rules[symbol]:
-            for i in range(len(rule)):
-                alternative = tuple(rule[i:])
-                element = rule[i]
-                if isinstance(element, frozenset):
-                    first[element] = element
-                    first[alternative] = element
-                else:
-                    first[alternative] = frozenset()
-    first[()] = EPSILON_SET
-    # Closure
-    changed = True
-    while changed:
-        changed = False
-        for symbol in symbols:
-            for rule in rules[symbol]:
-                # Inference rule 1: for each rule "N -> x", "first[N]" must
-                # contain "first[x]"
-                alternative = tuple(rule)
-                if not first[alternative].issubset(first[symbol]):
-                    first[symbol] |= first[alternative]
-                    changed = True
-                # Inference rules 2 and 3
-                for i in range(len(rule)):
-                    # Inference rule 2: for each alternative "Ax", "first[Ax]"
-                    # must contain "first[A]" (excluding epsilon).
-                    alternative = tuple(rule[i:])
-                    aux = first[alternative[0]] - EPSILON_SET
-                    if not aux.issubset(first[alternative]):
-                        first[alternative] |= aux
-                        changed = True
-                    # Inference rule 3: for each alternative "Ax" where
-                    # "first[A]" contains epsilon, "first[Ax]" must contain
-                    # "first[x]"
-                    if EPSILON in first[alternative[0]]:
-                        aux = first[alternative[1:]]
-                        if not aux.issubset(first[alternative]):
-                            first[alternative] |= aux
-                            changed = True
-
-    return first
-
-
-
-def expand_itemset(grammar, itemset, first):
+def expand_itemset(grammar, itemset):
     """Expand the given item-set.
     """
     rules = grammar.rules
@@ -90,27 +32,37 @@ def expand_itemset(grammar, itemset, first):
         name, i, j, look_ahead = item
         rule = rules[name][i]
 
-        # Nothing to expand (reduce rule or terminal)
-        if j == len(rule) or type(rule[j]) is not str:
-            continue
+        n = len(rule)
+        m = len(look_ahead)
 
-        # Non Terminal.  Find out the look-ahead.
-        tail = tuple(rule[j+1:])
-        tail_first = first[tail]
-        if EPSILON in tail_first:
-            look_ahead = (tail_first - EPSILON_SET) | look_ahead
-        else:
-            look_ahead = tail_first
-        # Expand
-        name = rule[j]
-        for i in range(len(rules[name])):
-            itemset.add((name, i, 0, look_ahead))
+        if j < n:
+            # Within the rule
+            element = rule[j]
+            if type(element) is str:
+                # Non Terminal.  Find out the look-ahead.
+                look_ahead = tuple(rule[j+1:]) + look_ahead
+                # Expand
+                for i in range(len(rules[element])):
+                    itemset.add((element, i, 0, look_ahead))
+        elif j < n + m:
+            # Within the look-ahead
+            k = j - n
+            element = look_ahead[k]
+            if type(element) is str:
+                left = look_ahead[:k]
+                right = look_ahead[k+1:]
+                # Expand
+                for rule in rules[element]:
+                    if element == 'c-wsp*' and len(rule) == 0:
+                        print name, i, j, left + tuple(rule) + right
+                        continue
+                    itemset.add((name, i, j, left + tuple(rule) + right))
 
     return frozenset(new_itemset)
 
 
 
-def move_token(grammar, itemset, token, first):
+def move_token(grammar, itemset, token):
     """Return the item-set obtained by shifting the given terminal over the
     given item-set.
     """
@@ -118,19 +70,29 @@ def move_token(grammar, itemset, token, first):
     for item in itemset:
         name, i, j, look_ahead = item
         rule = grammar.rules[name][i]
-        # End of rule
-        if j == len(rule):
-            continue
-        # Shift
-        element = rule[j]
-        if type(element) is frozenset and token in element:
-            next_itemset.add((name, i, j+1, look_ahead))
 
-    return expand_itemset(grammar, next_itemset, first)
+        n = len(rule)
+        m = len(look_ahead)
+
+        if j < n:
+            # Within the rule
+            element = rule[j]
+            if type(element) is frozenset and token in element:
+                next_itemset.add((name, i, j+1, look_ahead))
+        elif j < n + m:
+            # Within the look-ahead
+            element = look_ahead[j - n]
+            if type(element) is frozenset and token in element:
+                next_itemset.add((name, i, j+1, look_ahead))
+
+#   if token == 1:
+#       return frozenset(next_itemset)
+
+    return expand_itemset(grammar, next_itemset)
 
 
 
-def move_symbol(grammar, itemset, symbol, first):
+def move_symbol(grammar, itemset, symbol):
     """Return the item-set obtained by shifting the given non-terminal over
     the given item-set.
     """
@@ -138,16 +100,51 @@ def move_symbol(grammar, itemset, symbol, first):
     for item in itemset:
         name, i, j, look_ahead = item
         rule = grammar.rules[name][i]
-        # End of rule
-        if j == len(rule):
-            continue
-        # Shift
-        element = rule[j]
-        if type(element) is str and symbol == element:
-            next_itemset.add((name, i, j+1, look_ahead))
 
-    return expand_itemset(grammar, next_itemset, first)
+        n = len(rule)
+        m = len(look_ahead)
 
+        # Within the rule
+        n = len(rule)
+        if j < n:
+            element = rule[j]
+            if type(element) is str and symbol == element:
+                next_itemset.add((name, i, j+1, look_ahead))
+        elif j < n + m:
+            # Within the look-ahead
+            element = look_ahead[j - n]
+            if type(element) is str and symbol == element:
+                next_itemset.add((name, i, j+1, look_ahead))
+
+    return expand_itemset(grammar, next_itemset)
+
+
+
+def itemset_is_leaf(grammar, itemset):
+    """Return True if the item-set is made up only of reduces, each with a
+    distinct look-ahead.
+    """
+    # Check the itemset is made up of reduces only
+    for name, i, j, look_ahead in itemset:
+        rule = grammar.rules[name][i]
+        if j < len(rule):
+            return False
+    # Check there is only one reduce
+    if len(itemset) == 1:
+        return True
+    # Check if there are terminal reduces
+    aux = set()
+    for name, i, j, look_ahead in itemset:
+        rule = grammar.rules[name][i]
+        k = j - len(rule)
+        if k < len(look_ahead):
+            if look_ahead[k] in aux:
+                return False
+            aux.add(look_ahead[k])
+        else:
+            print 'WARNING: reduce/reduce conflict'
+
+    return True
 
 
 def get_nlr_table(grammar, start_symbol):
@@ -163,15 +160,12 @@ def get_nlr_table(grammar, start_symbol):
     tokens = grammar.tokens
     symbols = rules.keys()
 
-    # The "first" set
-    first = get_first_table(grammar)
-
     # Build the initial item-set
-    eoi_look_ahead = frozenset([EOI])
+    eoi_look_ahead = (EOI,)
     init_itemset = set()
     for i, rule in enumerate(rules[start_symbol]):
         init_itemset.add((start_symbol, i, 0, eoi_look_ahead))
-    init_itemset = expand_itemset(grammar, init_itemset, first)
+    init_itemset = expand_itemset(grammar, init_itemset)
     states[init_itemset] = 1
 
     # Build the shift-tables
@@ -182,9 +176,14 @@ def get_nlr_table(grammar, start_symbol):
         src_itemset = stack.pop()
         done.add(src_itemset)
         src_state = states[src_itemset]
+
+        # Check the itemset really needs to be shifted
+        if itemset_is_leaf(grammar, src_itemset):
+            continue
+
         # Tokens
         for token in tokens:
-            dst_itemset = move_token(grammar, src_itemset, token, first)
+            dst_itemset = move_token(grammar, src_itemset, token)
             if not dst_itemset:
                 continue
             # Find out the destination state
@@ -200,7 +199,7 @@ def get_nlr_table(grammar, start_symbol):
             lr_table[(src_state, token)] = dst_state
         # Symbols
         for symbol in symbols:
-            dst_itemset = move_symbol(grammar, src_itemset, symbol, first)
+            dst_itemset = move_symbol(grammar, src_itemset, symbol)
             if not dst_itemset:
                 continue
             # Find out the destination state
@@ -230,17 +229,28 @@ def pformat_item(grammar, item):
     rule = grammar.rules[name][i]
 
     line = [name, '=']
+    # The rule
+    n = len(rule)
     for element in rule[:j]:
         line.append(pformat_element(element))
-    line.append('•')
-    for element in rule[j:]:
-        line.append(pformat_element(element))
+    if j <= n:
+        line.append('•')
+        for element in rule[j:]:
+            line.append(pformat_element(element))
+    # The look-ahead
+    line.append(' : ')
+    if j <= n:
+        for element in look_ahead:
+            line.append(pformat_element(element))
+    else:
+        k = j - n
+        for element in look_ahead[:k]:
+            line.append(pformat_element(element))
+        line.append('•')
+        for element in look_ahead[k:]:
+            line.append(pformat_element(element))
 
-    if look_ahead is not None:
-        look_ahead = list(look_ahead)
-        look_ahead.sort()
-        look_ahead = [ (x == 0 and '#') or str(x) for x in look_ahead ]
-        line.append('[%s]' % ','.join(look_ahead))
+
     return ' '.join(line)
 
 
@@ -259,29 +269,29 @@ def build_graph(grammar, shift_table, states):
     for itemset in states:
         state = states[itemset]
         # Find out conflicts
-        reduce_reduce = False
-        reduce_look_aheads = set()
-        shift_look_aheads = set()
-        n_reduces = 0
-        for item in itemset:
-            name, i, j, look_ahead = item
-            rule = grammar.rules[name][i]
-            if j == len(rule):
-                n_reduces += 1
-                if reduce_look_aheads & look_ahead:
-                    reduce_reduce = True
-                reduce_look_aheads |= look_ahead
-            elif type(rule[j]) is str:
-                shift_look_aheads.add(rule[j])
-            else:
-                shift_look_aheads |= rule[j]
+#       reduce_reduce = False
+#       reduce_look_aheads = set()
+#       shift_look_aheads = set()
+#       n_reduces = 0
+#       for item in itemset:
+#           name, i, j, look_ahead = item
+#           rule = grammar.rules[name][i]
+#           if j == len(rule):
+#               n_reduces += 1
+#               if reduce_look_aheads & look_ahead:
+#                   reduce_reduce = True
+#               reduce_look_aheads |= look_ahead
+#           elif type(rule[j]) is str:
+#               shift_look_aheads.add(rule[j])
+#           else:
+#               shift_look_aheads |= rule[j]
         color = None
-        if reduce_reduce:
-            # Reduce/Reduce
-            color = 'red'
-        elif n_reduces >= 1 and (reduce_look_aheads & shift_look_aheads):
-            # Shift/Reduce
-            color = 'red'
+#       if reduce_reduce:
+#           # Reduce/Reduce
+#           color = 'red'
+#       elif n_reduces >= 1 and (reduce_look_aheads & shift_look_aheads):
+#           # Shift/Reduce
+#           color = 'red'
 
         itemset = pformat_item_set(grammar, itemset)
         itemset = '\\l'.join(itemset)

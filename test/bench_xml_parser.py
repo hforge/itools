@@ -17,37 +17,34 @@
 
 # Import from the Standard Library
 import gc
-import gzip
+from gzip import GzipFile
 from math import log as math_log
-from os.path import join
 from optparse import OptionParser
-import string
-import tarfile
+from os.path import join
+from string import center, ljust, rjust
+from tarfile import open as open_tar
 from time import clock
-import timeit
-
-# Import from expat
-from xml.parsers import expat
+from xml.parsers.expat import ParserCreate, ExpatError
 
 # Import from itools
 import itools
 import itools.http
 from itools.utils import vmsize
-from itools.xml import XMLParser, XMLError, START_ELEMENT, END_ELEMENT
 from itools.vfs import vfs
+from itools.xml import XMLParser, XMLError, START_ELEMENT, END_ELEMENT
 
 #####################################################################
 # UTILS
 #####################################################################
 def get_string_size(bytes):
-    units = [' B','KB','MB','GB','TB']
+    units = [' b','Kb','Mb','Gb','Tb']
     if not bytes:
-        return '0  B'
+        return '0  b'
     exponent = int(math_log(bytes, 1024))
     if exponent > 4:
-        return '%d  B' % bytes
+        return '%d  b' % bytes
     value = bytes / 1024.0 ** exponent, units[exponent]
-    return '%7.3f %s' % value
+    return '%6.2f %s' % value
 
 
 def get_string_time(s):
@@ -61,22 +58,22 @@ def get_string_time(s):
 
     if d:
         # days
-        return u'%7.3f  d' % (d + h / 24.0)
+        return u'%6.2f d ' % (d + h / 24.0)
     elif h:
         # hours
-        return u'%7.3f  h' % (h + m / 60.0)
+        return u'%6.2f h ' % (h + m / 60.0)
     elif m:
         # minutes
-        return u'%7.3f mn' % (m + s / 60.0)
+        return u'%6.2f mn' % (m + s / 60.0)
     elif s:
         # seconds
-        return u'%7.3f  s' % (s + ms / 1000.0)
+        return u'%6.2f s ' % (s + ms / 1000.0)
     elif ms:
         # milliseconds
-        return u'%7.3f ms' % (ms + micro_s / 1000.0)
+        return u'%6.2f ms' % (ms + micro_s / 1000.0)
     else:
         # microseconds
-        return u'%7.3f µs' % (micro_s + ms / 1000.0)
+        return u'%6.2f µs' % (micro_s + ms / 1000.0)
 
 
 def get_clock_nb_pass(size):
@@ -158,7 +155,7 @@ def get_test_filenames(test_path, force_download):
             # Uncompressed File Path
             if name == 'xmlts20080205':
                 # uncompress onky xmlconf.xml file
-                tar = tarfile.open(compressed_dest)
+                tar = open_tar(compressed_dest)
                 xmlconf_file = tar.extractfile('xmlconf/xmlconf.xml')
                 ucf_path = join(test_path, name)
                 ucf_file = vfs.make_file(ucf_path)
@@ -167,7 +164,7 @@ def get_test_filenames(test_path, force_download):
             else:
                 # untar Gzip file
                 compressed_dest_file = vfs.open(compressed_dest)
-                gzip_file = gzip.GzipFile(compressed_dest)
+                gzip_file = GzipFile(compressed_dest)
                 ucf_path = join(test_path, name)
                 ucf_file = vfs.make_file(ucf_path)
                 ucf_file.write(gzip_file.read())
@@ -207,7 +204,7 @@ def expat_parser_file_mode(xml, nb_repeat):
     for i in nb_repeat:
         # Raise MemoryError after calling seek(0)
         # if we don't create a new parser
-        p = expat.ParserCreate()
+        p = ParserCreate()
         p.StartElementHandler = start_element
         p.EndElementHandler = end_element
         p.ParseFile(xml)
@@ -278,7 +275,7 @@ def bench_expat_parser(filename, nb_repeat):
     try:
         time_spent, memory = expat_parser_file_mode(xml, nb_repeat)
         success = True
-    except expat.ExpatError, e:
+    except ExpatError, e:
         str_error = str(e)
     except Exception, e2:
         str_error = str(e2)
@@ -292,34 +289,28 @@ def bench_expat_parser(filename, nb_repeat):
 #####################################################################
 def output_init(parsers_name):
     """
-23c | 23c | 29c -> 79c
+30c | 23c | 23c -> 78c
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
           itools        |         expat         |             file
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  ___.___ ms / ___.___ KB|___.___ ms / ___.___ KB|qualitywiki-late (___.___ KB)
                         |                       |
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     """
 
-    print u'+' * 79
-    print u' %s|%s|%s ' % (string.center(parser_names[0], 23),
-                           string.center(parser_names[1], 23),
-                           string.center(u'file', 29))
-    print u'+' * 79
+    print u'-' * 78
+    print u' %s|%s|%s' % (center(u'file', 30), center(parser_names[0], 23),
+                          center(parser_names[1], 23))
+    print u'-' * 78
 
-
-def output_end():
-    print u'+' * 79
 
 
 def output_result(results, file):
-
     # file output
     filename, file_size = file
-    filename = string.ljust(filename[:16], 16)
+    filename = ljust(filename[:19], 19)
     file_size = get_string_size(file_size)
-    file_size = string.rjust(file_size[:10], 10)
-    file_string = u'%s (%s)' % (filename, file_size)
+    file_size = rjust(file_size[:9], 9)
+    file_string = u'%s  %s' % (filename, file_size)
 
     parser_output = u''
     # output 1
@@ -328,9 +319,9 @@ def output_result(results, file):
     memory = get_string_size(memory)
     if success1:
         # time_spent ok already like ___.___ ms or s or mn
-        output1 = string.rjust(u'%s / %s' % (memory, time_spent), 23)
+        output1 = rjust(u'%s / %s' % (time_spent, memory), 21)
     else:
-        output1 = string.center(u'FAILED',  23)
+        output1 = center(u'FAILED',  21)
 
     # output 2
     parser_name, result = results[1]
@@ -338,11 +329,11 @@ def output_result(results, file):
     memory = get_string_size(memory)
     if success2:
         # time_spent ok already like ___.___ ms or s or mn
-        output2 = string.rjust(u'%s / %s' % (memory, time_spent), 23)
+        output2 = rjust(u'%s / %s' % (time_spent, memory), 21)
     else:
-        output2 = string.center(u'FAILED',  23)
+        output2 = center(u'FAILED',  21)
 
-    print ' %s|%s|%s ' % (output1, output2, file_string)
+    print '%s | %s | %s ' % (file_string, output1, output2)
 
 
 #####################################################################
@@ -409,4 +400,4 @@ if __name__ == '__main__':
 
                 test_results.append((parser_name, results))
             output_result(test_results, (filename, file_bytes))
-        output_end();
+        print

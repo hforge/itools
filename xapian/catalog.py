@@ -74,6 +74,17 @@ def _make_PhraseQuery(field_type, value, prefix):
     return Query(Query.OP_PHRASE, words)
 
 
+def _get_prefix(number):
+    """By convention:
+    Q is used for the unique Id of a document
+    X for a long prefix
+    Z for a stemmed word
+    """
+    magic_letters = 'ABCDEFGHIJKLMNOPRSTUVWY'
+    size = len(magic_letters)
+    result = 'X'*(number/size)
+    return result+magic_letters[number%size]
+
 
 
 class Doc(object):
@@ -239,7 +250,6 @@ class Catalog(object):
             raise ValueError, 'the document must have at least one field'
 
         # Make the xapian document
-        magic_letters = 'ABCDEFGHIJLMNOPQRSTUVWY'
         fields_modified = False
         xdoc = Document()
         for position, field in enumerate(doc_fields):
@@ -257,11 +267,8 @@ class Catalog(object):
                     self._value_nb += 1
                 # Indexed ?
                 if field.is_indexed:
-                    if self._prefix_nb >= len(magic_letters):
-                        raise IndexError, ('you have too many different '
-                               'indexed fields in your database')
                     info['is_indexed'] = True
-                    info['prefix'] = magic_letters[self._prefix_nb]
+                    info['prefix'] = _get_prefix(self._prefix_nb)
                     self._prefix_nb += 1
                 # The first, so the key field?
                 if position == 0:
@@ -290,8 +297,8 @@ class Catalog(object):
             if field.is_indexed:
                 _index(xdoc, field.type, doc_values[name], info['prefix'])
 
-        # Store the first value with the prefix 'K'
-        xdoc.add_term('K'+_encode(fields[self._key_field]['type'],
+        # Store the first value with the prefix 'Q'
+        xdoc.add_term('Q'+_encode(fields[self._key_field]['type'],
                                   doc_values[self._key_field]))
 
         # TODO: Don't store two documents with the same key field!
@@ -311,7 +318,7 @@ class Catalog(object):
         key_field = self._key_field
         if key_field is not None:
             data = _encode(self._fields[key_field]['type'], value)
-            self._db.delete_document('K'+data)
+            self._db.delete_document('Q'+data)
 
 
     #######################################################################

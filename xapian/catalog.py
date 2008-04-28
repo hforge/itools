@@ -90,15 +90,22 @@ class Doc(object):
 
 
 class SearchResults(object):
-    def __init__(self, enquire, fields):
-        self._enquire = enquire
+    def __init__(self, query, db, fields):
+        self._query = query
+        self._db = db
         self._fields = fields
+
+        # Compute max
+        enquire = Enquire(db)
+        enquire.set_query(query)
         self._max = enquire.get_mset(0,0).get_matches_upper_bound()
 
 
     def get_n_documents(self):
         """Returns the number of documents found."""
-        return self._enquire.get_mset(0, self._max).size()
+        enquire = Enquire(self._db)
+        enquire.set_query(self._query)
+        return enquire.get_mset(0, self._max).size()
 
 
     def get_documents(self, sort_by=None, reverse=False, start=0, size=0):
@@ -128,7 +135,8 @@ class SearchResults(object):
 
         By default all the documents are returned.
         """
-        enquire = self._enquire
+        enquire = Enquire(self._db)
+        enquire.set_query(self._query)
         fields = self._fields
 
         # sort_by != None
@@ -328,9 +336,7 @@ class Catalog(object):
         else:
             xquery = self._query2xquery(query)
 
-        enquire = Enquire(self._db)
-        enquire.set_query(xquery)
-        return SearchResults(enquire, self._fields)
+        return SearchResults(xquery, self._db, self._fields)
 
 
     def get_unique_values(self, name):

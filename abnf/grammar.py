@@ -14,364 +14,238 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from itools
-from tokenizer import Tokenizer, EOI
-
-
-
-def pformat_element(element):
-    element_type = type(element)
-    # Grammar symbol
-    if element_type is str:
-        return element
-    # Repetition
-    if element_type is tuple:
-        max = element[0]
-        rest = ' '.join([ pformat_element(x) for x in element[1:] ])
-        if max is None:
-            return '*(%s)' % rest
-        elif max == 1:
-            return '[%s]' % rest
-        return '*%s(%s)' % (max, rest)
-    # Terminal
-    if element_type is frozenset:
-        tokens = []
-        for token in element:
-            if token == EOI:
-                tokens.append('$')
-            else:
-                tokens.append(repr(token))
-        return "{%s}" % ','.join(tokens)
-    # ?
-    raise ValueError, 'XXX'
-
-
-def pformat_rule(name, rule):
-    line = [name, '=']
-    if len(rule) == 0:
-        line.append("ε")
-    else:
-        for element in rule:
-            line.append(pformat_element(element))
-    return ' '.join(line)
-
-
-def replace_charsets_by_tokens(elements, lexical_table):
-    """This helper function receives a sequence of elements with terminals
-    expressed as sets of characters (charsets).  Returns the same sequence
-    with these charsets replaced by sets-of-tokens, as defined by the given
-    "lexical_table".
-
-    Used by the "Grammar.get_tokenizer" method.
-    """
-    # Charset to token set function
-    cs2ts = lambda cs: frozenset([ lexical_table[ord(c)] for c in cs ])
-
-    new_elements = []
-    for element in elements:
-        element_type = type(element)
-        if element_type is frozenset:
-            # Charset
-            element = cs2ts(element)
-        elif element_type is tuple:
-            # Repetition
-            max, rest = element[0], element[1:]
-            element = (max,) + replace_charsets_by_tokens(rest, lexical_table)
-        new_elements.append(element)
-
-    if type(elements) is tuple:
-        return tuple(new_elements)
-
-    return new_elements
-
-
-
-class BaseContext(object):
-
-    def __init__(self, data):
-        self.data = data
-
+"""This module defines the Grammar class, used to keep the description
+of a context-free grammar.  And the function 'compile_grammar', which
+splits a grammar description at the character level in two: a regular
+and a context-free grammar.
+"""
 
 
 ###########################################################################
-# The grammar description
+# Base
 ###########################################################################
 class Grammar(object):
-    """This class keeps the description of the grammar, defined by a set of
-    rules of the form:
+    """A grammar is defined by a set of rules of the form:
 
-      grammar-symbol = elements
+      A = X1, ... Xn-1
 
-    Where a grammar symbol is defined by a byte string, and elements is a
-    sequence of:
+    Where "A" is a non-terminal symbol, and "Xi" is either a terminal or a
+    non-terminal.
 
-      - grammar symbols (a byte string)
-
-      - character sets (a frozenset of characters)
-
-      - repetitions (tuples of 2 or more elements, where the first element
-        is an integer expressing the maximum number of repetitions allowed,
-        or None for infinitum)
-
-    For example (TODO make a better example):
-
-      ABNF         elements
-      ===========  ==============================
-      4 hexdig     hexdig, hexdig, hexdig, hexdig
-      1*4 hexdig   hexdig, (3, hexdig)
+    Internally a non-terminal is idenfied by a number, but we keep its name
+    for debugging purposes.
     """
 
     def __init__(self):
-        self.symbols = set()
         self.rules = {}
-        # The lexical layer
-        self.charsets = []
-        self.tokenizer = None
-        self.tokens = None
-        # The semantic layer
-        self.context_class = None
-        self.semantic_map = {}
 
 
-    #######################################################################
-    # Stage 0: Add rules one by one
-    #######################################################################
     def add_rule(self, name, *elements):
-        """Add the given rule to the set of rules (and update the list of
-        character sets).
-        """
-        # Check the grammar has already been tokenized
-        if self.charsets is None:
-            msg = 'cannot add any more rules, grammar already tokenized'
-            raise ValueError, msg
-
-        # Add the new rule
-        self.symbols.add(name)
-        rules = self.rules.setdefault(name, [])
         elements = list(elements)
-        rules.append(elements)
-
-        # Update the character sets
-        elements = set(elements)
-        charsets = self.charsets
-        while elements:
-            element = elements.pop()
-            element_type = type(element)
-            # Grammar symbol
-            if element_type is str:
-                continue
-            # Repetition
-            if element_type is tuple:
-                for x in element[1:]:
-                    elements.add(x)
-                continue
-            # Character set
-            i = 0
-            while i < len(charsets):
-                charset = charsets[i]
-                # Already included: stop
-                if element == charset:
-                    break
-                # Nothing in common: continue
-                intersection = charset & element
-                if not intersection:
-                    i += 1
-                    continue
-                # Update charsets
-                charsets.remove(charset)
-                charsets.append(intersection)
-                difference = charset - element
-                if difference:
-                    charsets.append(difference)
-                # Done?
-                element = element - charset
-                if not element:
-                    break
-            else:
-                # Loop exhausted
-                charsets.append(element)
+        self.rules.setdefault(name, []).append(elements)
 
 
-    #######################################################################
-    # Pretty Print
-    #######################################################################
-    def pprint_grammar(self):
-        symbols = list(self.symbols)
-        symbols.sort()
-        for name in symbols:
+    def get_rules(self):
+        for name in self.rules:
             for rule in self.rules[name]:
-                print pformat_rule(name, rule)
+                yield name, rule
 
 
-    #######################################################################
-    # Stage 1: infer the lexical analyser (tokenizer) from the grammar
-    # description, and update the grammar.
-    #######################################################################
-    def get_tokenizer(self):
-        """Infere a lexical layer from the grammar.
-        """
-        # Initialize the lexical table, a table from character to token id, or
-        # None if the character is not allowed in the grammar.
-        lexical_table = 256 * [None]
+#######################################################################
+# Expand repetition rules (only used by the regular and context-free
+# grammars).
+def get_internal_rulename(rules, name):
+    """Given a set of rulenames and a rulename within that set, return
+    a new rulename this way:
 
-        # Build the lexical table, and the tokenizer.
-        # Start at 1, the 0 is for End-Of-Input.
-        token = 1
-        for charset in self.charsets:
-            for char in charset:
-                lexical_table[ord(char)] = token
-            token += 1
-        self.tokens = range(token)
-        self.tokenizer = Tokenizer(lexical_table)
+      - If the name is P, return P' on the first call, P'' on the second
+        call, and so on.
+    """
+    # Used to expand repetition and optionality rules.
+    n = len(name)
+    suffixes = [ x[n:] for x in rules if x[:n] == name ]
+    suffixes = [ x for x in suffixes if x and x == len(x) * "'" ]
+    if suffixes:
+        suffixes.sort()
+        return name + suffixes[-1] + "'"
 
-        # Update the grammar, replace the sets-of-characters by sets-of-tokens
-        self.charsets = None
-        rules = self.rules
-        for rulename in rules:
-            for i, rule in enumerate(rules[rulename]):
-                rule = replace_charsets_by_tokens(rule, lexical_table)
-                rules[rulename][i] = rule
-
-        return self.tokenizer
+    return name + "'"
 
 
-    #######################################################################
-    # Stage 2: Compile and Optimize the grammar taking into account the
-    # semantic layer.
-    #######################################################################
-    def get_internal_rulename(self, name=None):
-        symbols = self.symbols
-        if name is None:
-            # Used to expand terminal rules (produced while infering the
-            # lexical analyser).
-            suffixes = [ x[1:] for x in symbols if x[0] == '_']
-            suffixes = [ int(x) for x in suffixes if x.isdigit() ]
-            suffixes.sort()
-            if suffixes:
-                name = "_%s" % (suffixes[-1] + 1)
-            else:
-                name = "_0"
+
+def expand_re_grammar(grammar):
+    """Expand repetition rules using these patterns:
+
+      (1) P = (n, body) tail    =>  P = tail               (0)
+                                    P = body tail          (1)
+                                    ...
+                                    P = body .. body tail  (n)
+
+      (2) P = (*, body) tail    =>  P = tail               (0)
+                                    P = body P             (*)
+
+      (3) P = head (body) tail  =>  P = head P'
+                                    P' = (..) tail
+    """
+    new_grammar = Grammar()
+    names = set(grammar.rules.keys())
+    rules = grammar.get_rules()
+    rules = list(rules)
+
+    while rules:
+        name, rule = rules.pop()
+        # Stop condition: no repetitions
+        for i, element in enumerate(rule):
+            if type(element) is tuple:
+                break
         else:
-            # Used to expand repetition and optionality rules.
-            n = len(name)
-            suffixes = [ x[n:] for x in symbols if x.startswith(name) ]
-            suffixes = [ x for x in suffixes if x == len(x) * "'" ]
-            if suffixes:
-                suffixes.sort()
-                name = name + suffixes[-1] + "'"
+            new_grammar.add_rule(name, *rule)
+            continue
+
+        # P = (x, body) tail
+        if i == 0:
+            first, tail = rule[0], rule[1:]
+            max, body = first[0], first[1:]
+            body = list(body)
+            if max is None:
+                # P = (*, body) tail
+                rules.append((name, tail))
+                rules.append((name, body + [name]))
             else:
-                name = name + "'"
+                # P = (n, body) tail
+                for i in range(0, max+1):
+                    rules.append((name, body*i + tail))
+            continue
 
-        symbols.add(name)
-        return name
+        # P = head (..) tail
+        head, body, tail = rule[:i], rule[i], rule[i+1:]
+        aux = get_internal_rulename(names, name)
+        names.add(aux)
+        rules.append((name, head + [aux]))
+        rules.append((aux, [body] + tail))
+
+    return new_grammar
 
 
-    def compile_grammar(self, context_class=None):
-        self.context_class = context_class
 
-        rules = self.rules
-        symbols = self.symbols
-
-        # The semantic side of things
-        map = self.semantic_map
-        if context_class is not None:
-            for name in symbols:
-                map[name] = False
-                method_name = name.replace('-', '_').replace("'", '_')
-                default = getattr(context_class, method_name, None)
-                for i in range(len(rules[name])):
-                    aux = '%s_%s' % (method_name, i + 1)
-                    method = getattr(context_class, aux, default)
-                    map[(name, i)] = method
-                    if method is not None:
-                        map[name] = True
-
-        # Expand
-        changed = True
-        while changed:
-            changed = False
-            symbols = list(self.symbols)
-            for name in symbols:
-                action = map.get(name)
-                # Expand rules of the form "A = *(...)"
-                if not action and len(rules[name]) == 1:
-                    rule = rules[name][0]
-                    if len(rule) == 1:
-                        element = rule[0]
-                        if type(element) is tuple and element[0] is None:
-                            changed = True
-                            rest = element[1:]
-                            rules[name] = [[], list(rest + (name,))]
-                            continue
-                # Other expansions
-                for rule_index, rule in enumerate(rules[name]):
-                    for element_index, element in enumerate(rule):
-                        if not isinstance(element, tuple):
-                            continue
-                        changed = True
-                        # New productions
-                        max, rest = element[0], element[1:]
-                        if max is None:
-                            # Expand
-                            aux = self.get_internal_rulename(name)
-                            rule[element_index] = aux
-                            # Case 1: max = infinitum
-                            rules[aux] = [[], list(rest + (aux,))]
-                        else:
-                            # Case 2: max = n
-                            if action:
-                                # Expand
-                                aux = self.get_internal_rulename(name)
-                                rule[element_index] = aux
-                                rules[aux] = []
-                                for i in range(max+1):
-                                    rules[aux].append(list(i * rest))
-                            else:
-                                left = tuple(rule[:element_index])
-                                right = tuple(rule[element_index+1:])
-                                for i in range(max+1):
-                                    rules[name].append(
-                                        list(left + (i * rest) + right))
-                                rules[name][rule_index] = None
-                rules[name] = [ x for x in rules[name] if x is not None ]
-
-        # Optimize the grammar, reduce rules that are just a frozenset (and
-        # not used by the semantic layer).
-        changed = True
-        while changed:
-            changed = False
-            # Merge rules of the kind: A = {tokens}
-            for symbol in symbols:
-                terminal_rules = []
-                for i, rule in enumerate(rules[symbol]):
-                    if len(rule) == 1 and isinstance(rule[0], frozenset):
-                        terminal_rules.append(i)
-                if len(terminal_rules) > 1:
-                    terminal_rules.reverse()
-                    aux = frozenset()
-                    for i in terminal_rules:
-                        aux |= rules[symbol][i][0]
-                        del rules[symbol][i]
-                    rules[symbol].append([aux])
-
-            # Inline symbols that only have one rule of the form: A = {tokens}
-            # and that are not used by the semantic layer.
-            reducible = {}
-            for symbol in symbols:
-                if map.get(symbol):
+def expand_cf_grammar(grammar):
+    """Replace repetition patterns by non-terminals.
+    """
+    changed = True
+    while changed:
+        changed = False
+        rules = grammar.get_rules()
+        rules = list(rules)
+        for name, rule in rules:
+            for element_index, element in enumerate(rule):
+                if type(element) is not tuple:
                     continue
-                if len(rules[symbol]) == 1:
-                    rule = rules[symbol][0]
-                    if len(rule) == 1 and isinstance(rule[0], frozenset):
-                        reducible[symbol] = rule[0]
-                        del rules[symbol]
-                        changed = True
-            self.symbols = set(rules.keys())
-            symbols = self.symbols
-            # Reduce
-            for symbol in symbols:
-                for rule in rules[symbol]:
-                    for i, element in enumerate(rule):
-                        if isinstance(element, str) and element in reducible:
-                            rule[i] = reducible[element]
+                changed = True
+                # Insert new symbol
+                max, rest = element[0], element[1:]
+                aux = get_internal_rulename(grammar.rules, name)
+                rule[element_index] = aux
+                # Add the new rules
+                if max is None:
+                    # Case 1: max = infinitum
+                    grammar.add_rule(aux, *(rest + (aux,)))
+                    grammar.add_rule(aux)
+                else:
+                    # Case 2: max = n
+                    for i in range(max+1):
+                        grammar.add_rule(aux, *(i * rest))
+
+
+
+###########################################################################
+# Logic to derive a context-free and a regular grammar from the input
+# (character) grammar.
+###########################################################################
+def repetition_is_regular(repetition):
+    n = len(repetition)
+    i = 1
+    while i < n:
+        element = repetition[i]
+        element_type = type(element)
+        if element_type is str:
+            return False
+        if element_type is tuple:
+            if repetition_is_regular(element) is False:
+                return False
+        i += 1
+
+    return True
+
+
+def process_elements(elements, tokens):
+    reg_expr = []
+    new_elements = []
+
+    for element in elements:
+        # Check whether the next element is regular.
+        element_type = type(element)
+        if element_type is str:
+            is_regular = False
+        elif element_type is frozenset:
+            is_regular = True
+        elif element_type is tuple:
+            is_regular = repetition_is_regular(element)
+            if is_regular is False:
+                element = (element[0],) + process_elements(element[1:], tokens)
+
+        if is_regular:
+            # Regular
+            reg_expr.append(element)
+        else:
+            # Not-Regular
+            if reg_expr:
+                reg_expr = tuple(reg_expr)
+                if reg_expr in tokens:
+                    token = tokens[reg_expr]
+                else:
+                    token = '%s' % len(tokens)
+                    tokens[reg_expr] = token
+                new_elements.append(token)
+                # Reset
+                reg_expr = []
+            new_elements.append(element)
+
+    # Tail
+    if reg_expr:
+        reg_expr = tuple(reg_expr)
+        if reg_expr in tokens:
+            token = tokens[reg_expr]
+        else:
+            token = '%s' % len(tokens)
+            tokens[reg_expr] = token
+        # Build the new-elements
+        new_elements.append(token)
+
+    return tuple(new_elements)
+
+
+
+def compile_grammar(ch_grammar):
+    """Produce a regular and a context-free grammar.
+    """
+    tokens = {}
+
+    # Build the context-free grammar
+    cf_grammar = Grammar()
+    for name, rule in ch_grammar.get_rules():
+        cf_rule = process_elements(rule, tokens)
+        cf_grammar.add_rule(name, *cf_rule)
+
+    # Build the regular grammar
+    re_grammar = Grammar()
+    for reg_expr in tokens:
+        token = tokens[reg_expr]
+        re_grammar.add_rule(token, *reg_expr)
+
+    # Expand both grammars
+    re_grammar = expand_re_grammar(re_grammar)
+    expand_cf_grammar(cf_grammar)
+
+    # Return
+    return re_grammar, cf_grammar
 

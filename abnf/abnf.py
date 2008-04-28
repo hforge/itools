@@ -19,7 +19,7 @@ from string import ascii_letters, digits, hexdigits
 
 # Import from itools
 from grammar import Grammar, BaseContext
-from parser import get_parser
+from runtime import get_parser
 
 
 # Constants (core rules)
@@ -80,7 +80,8 @@ add_rule("concatenation", "repetition", "concatenation-tail")
 add_rule("concatenation-tail", "c-wsp+", "repetition", "concatenation-tail")
 add_rule("concatenation-tail")
 # repetition
-add_rule("repetition", (1, "repeat"), "element")
+add_rule("repetition", "element")
+add_rule("repetition", "repeat", "element")
 # repeat
 add_rule("repeat", "digit+")
 add_rule("repeat", "digit*", frozenset('*'), "digit*")

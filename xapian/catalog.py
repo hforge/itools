@@ -26,7 +26,7 @@ from itools.catalog import (CatalogAware, get_field, EqQuery, RangeQuery,
 # Import from Xapian
 from xapian import (WritableDatabase, DB_CREATE, DB_OPEN, Document, Enquire,
                     Query, sortable_serialise, sortable_unserialise,
-                    MultiValueSorter, TermGenerator, QueryParser)
+                    MultiValueSorter, TermGenerator, QueryParser, Stem)
 # Import from the standard library
 from marshal import dumps, loads
 
@@ -56,9 +56,14 @@ def _decode(field_type, data):
 def _index(xdoc, field_type, value, prefix):
     # text
     if field_type == 'text':
-        indexer = TermGenerator()
-        indexer.set_document(xdoc)
-        indexer.index_text(value, 1, prefix)
+        # XXX TEST: we use an english stemmer in all cases
+        field = get_field('text')
+        stemmer = Stem('en')
+        for term in field.split(value):
+            xdoc.add_posting(prefix+stemmer(term[0]), term[1])
+        #indexer = TermGenerator()
+        #indexer.set_document(xdoc)
+        #indexer.index_text(value, 1, prefix)
     # A common field or a new field
     else:
         field = get_field(field_type)
@@ -66,12 +71,21 @@ def _index(xdoc, field_type, value, prefix):
             xdoc.add_posting(prefix+term[0], term[1])
 
 def _make_PhraseQuery(field_type, value, prefix):
-    # XXX: question: can we do a better implementation for 'text'?
-    field = get_field(field_type)
-    words = []
-    for word in field.split(value):
-        words.append(prefix+word[0])
-    return Query(Query.OP_PHRASE, words)
+    if field_type == 'text':
+        # XXX TEST
+        field = get_field('text')
+        words = []
+        stemmer = Stem('en')
+        for word in field.split(value):
+            words.append(prefix+stemmer(word[0]))
+        return Query(Query.OP_PHRASE, words)
+    # A common field or a new field
+    else:
+        field = get_field(field_type)
+        words = []
+        for word in field.split(value):
+            words.append(prefix+word[0])
+        return Query(Query.OP_PHRASE, words)
 
 
 def _get_prefix(number):

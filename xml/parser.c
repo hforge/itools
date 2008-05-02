@@ -45,8 +45,6 @@
 #define BAD_CHAR_REF "error parsing character reference: line %d, column %d"
 #define DUP_ATTR "duplicate attribute: line %d, column %d"
 
-#define ERROR(msg, line, column) PyErr_Format(XMLError, msg, line, column)
-
 /* Other Constants and Macros */
 #define BUFFER_SIZE 512
 #define GUNICHAR_TO_POINTER(u) ((gpointer) (gulong) (u))
@@ -65,20 +63,6 @@ typedef int Py_ssize_t;
 
 /* Errors */
 static PyObject* XMLError;
-
-
-/* This function is to be used instead of the Py_DECREF macro whenever we
- * want to decrement two or more objects.
- */
-inline void py_decref(PyObject* v0, ...) {
-    va_list vars;
-    PyObject* var;
-
-    va_start(vars, v0);
-    for (var = v0; var != NULL; var = va_arg(vars, PyObject*))
-        Py_DECREF(var);
-    va_end(vars);
-}
 
 
 /**************************************************************************
@@ -804,6 +788,25 @@ int xml_attr_value(Parser* self, GString* buffer) {
  * Mix Python/C: TODO separate.
  *************************************************************************/
 
+/* This function will first release (decref) the python values passed,
+ * and then return an error.
+ */
+PyObject*
+Parser_error(Parser* self, const char* msg, PyObject* v0, ...) {
+    va_list vars;
+    PyObject* var;
+
+    /* Decref Python values. */
+    va_start(vars, v0);
+    for (var = v0; var != NULL; var = va_arg(vars, PyObject*))
+        Py_DECREF(var);
+    va_end(vars);
+
+    /* Set and return error. */
+    return PyErr_Format(XMLError, msg, self->event_row, self->event_col);
+}
+
+
 /* Called when a parser object is created. */
 static PyObject* Parser_new(PyTypeObject* type, PyObject* args, PyObject* kw) {
     Parser* self;
@@ -1039,15 +1042,11 @@ PyObject* read_pi(Parser* self) {
     PyObject* py_value;
     char c;
     int error;
-    guint line, column;
-
-    line = self->event_row;
-    column = self->event_col;
 
     /* Target */
     xml_name(self, self->buffer);
     if (self->buffer->len == 0)
-        return ERROR(INVALID_TOKEN, line, column);
+        return Parser_error(self, INVALID_TOKEN, NULL);
     /* White Space */
     xml_space(self);
 
@@ -1063,44 +1062,37 @@ PyObject* read_pi(Parser* self) {
                 c = move_cursor(self);
                 if (c == '>')
                     return Py_BuildValue("(i(Ns)i)", PI, py_value,
-                           self->buffer->str, line);
+                           self->buffer->str, self->event_row);
                 g_string_append_c(self->buffer, '?');
             }
             g_string_append_c(self->buffer, c);
             c = move_cursor(self);
         }
-        Py_DECREF(py_value);
-        return ERROR(INVALID_TOKEN, line, column);
+        return Parser_error(self, INVALID_TOKEN, py_value, NULL);
     }
     /* XML decl (http://www.w3.org/TR/REC-xml/#NT-XMLDecl) */
     /* Read the version. */
     g_string_set_size(self->buffer, 0);
     if (read_string(self, "version") == -1)
-        return ERROR(BAD_XML_DECL, line, column);
+        return Parser_error(self, BAD_XML_DECL, NULL);
     if (xml_equal(self) == -1)
-        return ERROR(BAD_XML_DECL, line, column);
+        return Parser_error(self, BAD_XML_DECL, NULL);
     error = read_quoted_string(self, self->buffer);
     if (error)
-        return ERROR(BAD_XML_DECL, line, column);
+        return Parser_error(self, BAD_XML_DECL, NULL);
     py_version = PyString_FromString(self->buffer->str);
     xml_space(self);
     /* Read the encoding. */
     g_string_set_size(self->buffer, 0);
     c = self->next_char;
     if (c == 'e') {
-        if (read_string(self, "encoding") == -1) {
-            Py_DECREF(py_version);
-            return ERROR(BAD_XML_DECL, line, column);
-        }
-        if (xml_equal(self) == -1) {
-            Py_DECREF(py_version);
-            return ERROR(BAD_XML_DECL, line, column);
-        }
+        if (read_string(self, "encoding") == -1)
+            return Parser_error(self, BAD_XML_DECL, py_version, NULL);
+        if (xml_equal(self) == -1)
+            return Parser_error(self, BAD_XML_DECL, py_version, NULL);
         error = read_quoted_string(self, self->buffer);
-        if (error) {
-            Py_DECREF(py_version);
-            return ERROR(BAD_XML_DECL, line, column);
-        }
+        if (error)
+            return Parser_error(self, BAD_XML_DECL, py_version, NULL);
         py_encoding = PyString_FromString(self->buffer->str);
         xml_space(self);
     } else
@@ -1109,19 +1101,16 @@ PyObject* read_pi(Parser* self) {
     g_string_set_size(self->buffer, 0);
     c = self->next_char;
     if (c == 's') {
-        if (read_string(self, "standalone") == -1) {
-            py_decref(py_version, py_encoding, NULL);
-            return ERROR(BAD_XML_DECL, line, column);
-        }
-        if (xml_equal(self) == -1) {
-            py_decref(py_version, py_encoding, NULL);
-            return ERROR(BAD_XML_DECL, line, column);
-        }
+        if (read_string(self, "standalone") == -1)
+            return Parser_error(self, BAD_XML_DECL, py_version, py_encoding,
+                   NULL);
+        if (xml_equal(self) == -1)
+            return Parser_error(self, BAD_XML_DECL, py_version, py_encoding,
+                   NULL);
         error = read_quoted_string(self, self->buffer);
-        if (error) {
-            py_decref(py_version, py_encoding, NULL);
-            return ERROR(BAD_XML_DECL, line, column);
-        }
+        if (error)
+            return Parser_error(self, BAD_XML_DECL, py_version, py_encoding,
+                   NULL);
         py_standalone = PyString_FromString(self->buffer->str);
         xml_space(self);
     } else {
@@ -1135,10 +1124,10 @@ PyObject* read_pi(Parser* self) {
         if (c == '>') {
             move_cursor(self);
             return Py_BuildValue("(i(NNN)i)", XML_DECL, py_version,
-                   py_encoding, py_standalone, line);
+                   py_encoding, py_standalone, self->event_row);
         }
     }
-    return ERROR(BAD_XML_DECL, line, column);
+    return Parser_error(self, BAD_XML_DECL, NULL);
 }
 
 
@@ -1151,85 +1140,68 @@ PyObject* read_document_type(Parser* self) {
     PyObject* py_public_id;
     PyObject* py_system_id;
     int error;
-    guint line, column;
-
-    line = self->event_row;
-    column = self->event_col;
 
     if (read_string(self, "OCTYPE"))
-        return ERROR(INVALID_TOKEN, line, column);
+        return Parser_error(self, INVALID_TOKEN, NULL);
     xml_space(self);
 
     /* Name */
     xml_name(self, self->buffer);
     if (self->buffer->len == 0)
-        return ERROR(INVALID_TOKEN, line, column);
+        return Parser_error(self, INVALID_TOKEN, NULL);
     py_name = PyString_FromString(self->buffer->str);
     xml_space(self);
 
     /* External ID */
     switch (self->next_char) {
         case 'S':
-            if (read_string(self, "SYSTEM")) {
-                Py_DECREF(py_name);
-                return ERROR(INVALID_TOKEN, line, column);
-            }
+            if (read_string(self, "SYSTEM"))
+                return Parser_error(self, INVALID_TOKEN, py_name, NULL);
             /* PUBLIC ID */
             py_public_id = Py_None;
             Py_INCREF(py_public_id);
             break;
         case 'P':
-            if (read_string(self, "PUBLIC")) {
-                Py_DECREF(py_name);
-                return ERROR(INVALID_TOKEN, line, column);
-            }
+            if (read_string(self, "PUBLIC"))
+                return Parser_error(self, INVALID_TOKEN, py_name, NULL);
             /* PUBLIC ID */
             xml_space(self);
             g_string_set_size(self->buffer, 0);
             error = read_quoted_string(self, self->buffer);
-            if (error) {
-                Py_DECREF(py_name);
-                return ERROR(INVALID_TOKEN, line, column);
-            }
+            if (error)
+                return Parser_error(self, INVALID_TOKEN, py_name, NULL);
             py_public_id = PyString_FromString(self->buffer->str);
             break;
         default:
-            Py_DECREF(py_name);
-            return ERROR(INVALID_TOKEN, line, column);
+            return Parser_error(self, INVALID_TOKEN, py_name, NULL);
     }
 
     /* SYSTEM ID */
     xml_space(self);
     g_string_set_size(self->buffer, 0);
     error = read_quoted_string(self, self->buffer);
-    if (error) {
-        py_decref(py_name, py_public_id, NULL);
-        return ERROR(INVALID_TOKEN, line, column);
-    }
+    if (error)
+        return Parser_error(self, INVALID_TOKEN, py_name, py_public_id, NULL);
     py_system_id = PyString_FromString(self->buffer->str);
 
     /* White Space */
     xml_space(self);
 
-    /* Internal subset */
-    if (self->next_char == '[') {
-        /* TODO NOT IMPLEMENTED*/
-        py_decref(py_name, py_public_id, py_system_id, NULL);
-        PyErr_SetString(PyExc_NotImplementedError,
-                        "internal subset not yet supported");
-        return ERROR(INVALID_TOKEN, line, column);
-    }
+    /* Internal subset (TODO) */
+    if (self->next_char == '[')
+        /* FIXME Should raise PyExc_NotImplementedError */
+        return Parser_error(self, INVALID_TOKEN, py_name, py_public_id,
+               py_system_id, NULL);
 
     /* End doctype declaration */
-    if (self->next_char != '>') {
-        py_decref(py_public_id, py_system_id, NULL);
-        return ERROR(INVALID_TOKEN, line, column);
-    }
+    if (self->next_char != '>')
+        return Parser_error(self, INVALID_TOKEN, py_name, py_public_id,
+               py_system_id, NULL);
     move_cursor(self);
 
     /* Build the Python value. */
     return Py_BuildValue("(i(NNNO)i)", DOCUMENT_TYPE, py_name, py_system_id,
-           py_public_id, Py_None, line);
+           py_public_id, Py_None, self->event_row);
 }
 
 
@@ -1239,13 +1211,9 @@ PyObject* read_document_type(Parser* self) {
  */
 PyObject* read_cdata(Parser* self) {
     char c;
-    guint line, column;
-
-    line = self->event_row;
-    column = self->event_col;
 
     if (read_string(self, "CDATA["))
-        return ERROR(INVALID_TOKEN, line, column);
+        return Parser_error(self, INVALID_TOKEN, NULL);
     c = self->next_char;
     while (c != '\0') {
         /* Stop condition: "]]>" */
@@ -1255,7 +1223,7 @@ PyObject* read_cdata(Parser* self) {
                 c = move_cursor(self);
                 if (c == '>')
                     return Py_BuildValue("isi", CDATA, self->buffer->str,
-                                         line);
+                           self->event_row);
                 g_string_append_c(self->buffer, ']');
             }
             g_string_append_c(self->buffer, ']');
@@ -1264,7 +1232,7 @@ PyObject* read_cdata(Parser* self) {
         g_string_append_c(self->buffer, c);
         c = move_cursor(self);
     }
-    return ERROR(INVALID_TOKEN, line, column);
+    return Parser_error(self, INVALID_TOKEN, NULL);
 }
 
 
@@ -1274,14 +1242,10 @@ PyObject* read_cdata(Parser* self) {
  */
 PyObject* read_comment(Parser* self) {
     char c;
-    guint line, column;
-
-    line = self->event_row;
-    column = self->event_col;
 
     c = self->next_char;
     if (c != '-')
-        return ERROR(INVALID_TOKEN, line, column);
+        return Parser_error(self, INVALID_TOKEN, NULL);
     c = move_cursor(self);
 
     /* Comment (http://www.w3.org/TR/REC-xml/#dt-comment) */
@@ -1292,10 +1256,10 @@ PyObject* read_comment(Parser* self) {
             if (c == '-') {
                 c = move_cursor(self);
                 if (c != '>')
-                    return ERROR(INVALID_TOKEN, line, column);
+                    return Parser_error(self, INVALID_TOKEN, NULL);
                 move_cursor(self);
                 return Py_BuildValue("(isi)", COMMENT, self->buffer->str,
-                                     line);
+                       self->event_row);
             } else
                 g_string_append_c(self->buffer, '-');
         }
@@ -1323,17 +1287,13 @@ PyObject* read_start_tag(Parser* self) {
     gboolean end_tag;
     Attribute* attribute;
     char c;
-    guint line, column;
     gboolean error;
     int idx;
-
-    line = self->event_row;
-    column = self->event_col;
 
     /* Read tag (prefix & name). */
     error = xml_prefix_name(self, &tag_prefix, &tag_name);
     if (error)
-        return ERROR(INVALID_TOKEN, line, column);
+        return Parser_error(self, INVALID_TOKEN, NULL);
     /* Attributes */
     reset_attributes(self->attributes);
     g_hash_table_steal_all(self->ns_buffer);
@@ -1349,7 +1309,7 @@ PyObject* read_start_tag(Parser* self) {
         } else if (c == '/') {
             c = move_cursor(self);
             if (c != '>')
-                return ERROR(INVALID_TOKEN, line, column);
+                return Parser_error(self, INVALID_TOKEN, NULL);
 
             end_tag = TRUE;
             if (g_hash_table_size(self->ns_buffer))
@@ -1365,23 +1325,23 @@ PyObject* read_start_tag(Parser* self) {
         /* Prefix & Name */
         error = xml_prefix_name(self, &attr_prefix, &attr_name);
         if (error)
-            return ERROR(INVALID_TOKEN, line, column);
+            return Parser_error(self, INVALID_TOKEN, NULL);
         attribute->prefix = attr_prefix;
         attribute->name = attr_name;
         /* Eq */
         if (xml_equal(self) == -1)
-            return ERROR(INVALID_TOKEN, line, column);
+            return Parser_error(self, INVALID_TOKEN, NULL);
         /* Value */
         error = xml_attr_value(self, attribute->value);
         if (error)
-            return ERROR(INVALID_TOKEN, line, column);
+            return Parser_error(self, INVALID_TOKEN, NULL);
 
         if (strcmp(attribute->prefix, "") == 0) {
             /* Default namespace declaration */
             if (strcmp(attribute->name, "xmlns") == 0) {
                 /* Check for duplicates */
                 if (g_hash_table_lookup(self->ns_buffer, ""))
-                    return ERROR(DUP_ATTR, line, column);
+                    return Parser_error(self, DUP_ATTR, NULL);
                 /* Keep the value (uri). */
                 py_uri = PyString_InternFromString(attribute->value->str);
                 g_ptr_array_add(self->ns_uris, (gpointer)py_uri);
@@ -1395,7 +1355,7 @@ PyObject* read_start_tag(Parser* self) {
         } else if (strcmp(attribute->prefix, "xmlns") == 0) {
             /* Check for duplicates */
             if (g_hash_table_lookup(self->ns_buffer, attribute->name))
-                return ERROR(DUP_ATTR, line, column);
+                return Parser_error(self, DUP_ATTR, NULL);
             /* Keep the value (uri). */
             py_uri = PyString_InternFromString(attribute->value->str);
             g_ptr_array_add(self->ns_uris, (gpointer)py_uri);
@@ -1417,7 +1377,7 @@ PyObject* read_start_tag(Parser* self) {
     py_tag_name = PyString_FromString(tag_name);
     if (end_tag)
         self->py_left_token = Py_BuildValue("(i(OO)i)", END_ELEMENT,
-                              py_tag_uri, py_tag_name, line);
+                              py_tag_uri, py_tag_name, self->event_row);
 
     /* Attributes */
     py_attributes = PyDict_New();
@@ -1432,10 +1392,9 @@ PyObject* read_start_tag(Parser* self) {
         py_attr_name = Py_BuildValue("(Os)", py_attr_uri, attribute->name);
 
         /* Check for duplicates */
-        if (PyDict_Contains(py_attributes, py_attr_name)) {
-            py_decref(py_attr_name, py_attributes, py_tag_name, NULL);
-            return ERROR(DUP_ATTR, line, column);
-        }
+        if (PyDict_Contains(py_attributes, py_attr_name))
+            return Parser_error(self, DUP_ATTR, py_attr_name, py_attributes,
+                   py_tag_name, NULL);
 
         /* Find out the attribute value */
         py_attr_value = PyString_FromString(attribute->value->str);
@@ -1445,7 +1404,7 @@ PyObject* read_start_tag(Parser* self) {
     }
 
     return Py_BuildValue("(i(ONN)i)", START_ELEMENT, py_tag_uri, py_tag_name,
-                         py_attributes, line);
+           py_attributes, self->event_row);
 }
 
 
@@ -1457,59 +1416,51 @@ PyObject* read_end_tag(Parser* self) {
     PyObject* py_value;
     gchar* tag_prefix;
     gchar* tag_name;
-    guint line, column;
     gboolean error;
-
-    line = self->event_row;
-    column = self->event_col;
 
     /* Name */
     error = xml_prefix_name(self, &tag_prefix, &tag_name);
     if (error)
-        return ERROR(INVALID_TOKEN, line, column);
+        return Parser_error(self, INVALID_TOKEN, NULL);
     /* White Space */
     xml_space(self);
     /* Close */
     if (self->next_char != '>')
-        return ERROR(INVALID_TOKEN, line, column);
+        return Parser_error(self, INVALID_TOKEN, NULL);
     move_cursor(self);
     /* Remove from the stack */
     py_value = pop_tag(self, tag_prefix, tag_name);
     if (py_value == NULL)
-        return ERROR(MISSING, line, column);
+        return Parser_error(self, INVALID_TOKEN, NULL);
 
-    return Py_BuildValue("(iNi)", END_ELEMENT, py_value, line);
+    return Py_BuildValue("(iNi)", END_ELEMENT, py_value, self->event_row);
 }
 
 
 /* Character or Entity Reference. */
 PyObject* read_reference(Parser* self) {
-    guint line, column;
     int error;
-
-    line = self->event_row;
-    column = self->event_col;
 
     /* Character reference */
     if (self->next_char == '#') {
         move_cursor(self);
         error = xml_char_reference(self, self->buffer);
         if (error)
-            return ERROR(BAD_CHAR_REF, line, column);
-        return Py_BuildValue("(isi)", TEXT, self->buffer->str, line);
+            return Parser_error(self, BAD_CHAR_REF, NULL);
+        return Py_BuildValue("(isi)", TEXT, self->buffer->str,
+               self->event_row);
     }
     /* Entity reference */
     error = xml_entity_reference(self, self->buffer);
     if (error)
-        return ERROR(BAD_ENTITY_REF, line, column);
-    return Py_BuildValue("(isi)", TEXT, self->buffer->str, line);
+        return Parser_error(self, BAD_ENTITY_REF, NULL);
+    return Py_BuildValue("(isi)", TEXT, self->buffer->str, self->event_row);
 }
 
 
 /* Returns a new reference */
 static PyObject* Parser_iternext(Parser* self) {
     PyObject* py_value;
-    guint line, column;
     char c;
 
     /* There are tokens waiting */
@@ -1519,9 +1470,6 @@ static PyObject* Parser_iternext(Parser* self) {
         return py_value;
     }
 
-    line = self->event_row;
-    column = self->event_col;
-
     /* Reset buffer. */
     g_string_set_size(self->buffer, 0);
 
@@ -1530,7 +1478,7 @@ static PyObject* Parser_iternext(Parser* self) {
             /* End Of File. (FIXME, there're other places to check for EOF) */
             /* The open tags must be closed. */
             if (self->tag_stack->len > 0)
-                return ERROR(MISSING, line, column);
+                return Parser_error(self, MISSING, NULL);
             return NULL;
         case '<':
             c = move_cursor(self);
@@ -1560,7 +1508,7 @@ static PyObject* Parser_iternext(Parser* self) {
                             py_value = read_cdata(self);
                             break;
                         default:
-                            return ERROR(INVALID_TOKEN, line, column);
+                            return Parser_error(self, INVALID_TOKEN, NULL);
                     }
                     break;
                 case '?':
@@ -1586,7 +1534,8 @@ static PyObject* Parser_iternext(Parser* self) {
                 g_string_append_c(self->buffer, c);
                 c = move_cursor(self);
             }
-            py_value = Py_BuildValue("(isi)", TEXT, self->buffer->str, line);
+            py_value = Py_BuildValue("(isi)", TEXT, self->buffer->str,
+                       self->event_row);
             break;
     }
 

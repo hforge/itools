@@ -16,19 +16,18 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from the standard library
+from marshal import dumps, loads
 
+# Import from xapian
+from xapian import (WritableDatabase, DB_CREATE, DB_OPEN, Document, Enquire,
+                    Query, sortable_serialise, sortable_unserialise,
+                    MultiValueSorter, TermGenerator, QueryParser, Stem)
 
 # Import from itools
 from itools.uri import get_absolute_reference
 from itools.catalog import (CatalogAware, get_field, EqQuery, RangeQuery,
                             PhraseQuery, AndQuery, OrQuery, NotQuery)
-
-# Import from Xapian
-from xapian import (WritableDatabase, DB_CREATE, DB_OPEN, Document, Enquire,
-                    Query, sortable_serialise, sortable_unserialise,
-                    MultiValueSorter, TermGenerator, QueryParser, Stem)
-# Import from the standard library
-from marshal import dumps, loads
 
 
 
@@ -39,18 +38,19 @@ def _encode(field_type, value):
     if field_type == 'integer':
         return sortable_serialise(value)
     # A common field or a new field
-    else:
-        field = get_field(field_type)
-        return field.encode(value)
+    field = get_field(field_type)
+    return field.encode(value)
+
+
 
 def _decode(field_type, data):
     # integer
     if field_type == 'integer':
         return int(sortable_unserialise(data))
     # A common field or a new field
-    else:
-        field = get_field(field_type)
-        return field.decode(data)
+    field = get_field(field_type)
+    return field.decode(data)
+
 
 
 def _index(xdoc, field_type, value, prefix):
@@ -70,6 +70,8 @@ def _index(xdoc, field_type, value, prefix):
         for term in field.split(value):
             xdoc.add_posting(prefix+term[0], term[1])
 
+
+
 def _make_PhraseQuery(field_type, value, prefix):
     if field_type == 'text':
         # XXX TEST
@@ -79,13 +81,14 @@ def _make_PhraseQuery(field_type, value, prefix):
         for word in field.split(value):
             words.append(prefix+stemmer(word[0]))
         return Query(Query.OP_PHRASE, words)
+
     # A common field or a new field
-    else:
-        field = get_field(field_type)
-        words = []
-        for word in field.split(value):
-            words.append(prefix+word[0])
-        return Query(Query.OP_PHRASE, words)
+    field = get_field(field_type)
+    words = []
+    for word in field.split(value):
+        words.append(prefix+word[0])
+    return Query(Query.OP_PHRASE, words)
+
 
 
 def _get_prefix(number):
@@ -102,6 +105,7 @@ def _get_prefix(number):
 
 
 class Doc(object):
+
     def __init__(self, xdoc, fields):
         self._xdoc = xdoc
         self._fields = fields
@@ -115,6 +119,7 @@ class Doc(object):
 
 
 class SearchResults(object):
+
     def __init__(self, query, db, fields):
         self._query = query
         self._db = db
@@ -177,7 +182,6 @@ class SearchResults(object):
         else:
             enquire.set_sort_by_relevance()
 
-
         # start/size
         if size == 0:
             size = self._max
@@ -196,6 +200,7 @@ class SearchResults(object):
 
 
 class Catalog(object):
+
     def __init__(self, ref):
         # Load the database
         if isinstance(ref, WritableDatabase):
@@ -350,7 +355,7 @@ class Catalog(object):
                 for name, value in kw.items():
                     info = fields[name]
                     xqueries.append(_make_PhraseQuery(info['type'], value,
-                                                     info['prefix']))
+                                                      info['prefix']))
                 xquery = Query(Query.OP_AND, xqueries)
             else:
                 xquery = Query('')
@@ -393,34 +398,27 @@ class Catalog(object):
     def _query2xquery(self, query):
         """take a "itools" query and return a "xapian" query
         """
-        fields = self._fields
-        i2x = self._query2xquery
-
-        test = lambda c: isinstance(query, c)
-        # EqQuery = PhraseQuery, the field must be indexed
-        if test(EqQuery):
-            info = fields[query.name]
-            return _make_PhraseQuery(info['type'], query.value,
-                                                   info['prefix'])
-        # RangeQuery, the field must be stored
-        elif test(RangeQuery):
-            info = fields[query.name]
+        query_class = query.__class__
+        if query_class is EqQuery or query_class is PhraseQuery:
+            # EqQuery = PhraseQuery, the field must be indexed
+            info = self.fields[query.name]
+            return _make_PhraseQuery(info['type'], query.value, info['prefix'])
+        elif query_class is RangeQuery:
+            # RangeQuery, the field must be stored
+            info = self.fields[query.name]
             field_type = info['type']
             return Query(Query.OP_VALUE_RANGE, info['value'],
-                             _encode(field_type, query.left),
-                             _encode(field_type, query.right))
-        # EqQuery = PhraseQuery, the field must be indexed
-        elif test(PhraseQuery):
-            info = fields[query.name]
-            return _make_PhraseQuery(info['type'], query.value,
-                                                   info['prefix'])
-        elif test(AndQuery):
-            return Query(Query.OP_AND, [i2x(q) for q in query.atoms])
-        elif test(OrQuery):
-            return Query(Query.OP_OR, [i2x(q) for q in query.atoms])
-        elif test(NotQuery):
-            return Query(Query.OP_AND_NOT, Query(''), i2x(query.query))
+                         _encode(field_type, query.left),
+                         _encode(field_type, query.right))
 
+        # And, Or, Not
+        i2x = self._query2xquery
+        if query_class is AndQuery:
+            return Query(Query.OP_AND, [i2x(q) for q in query.atoms])
+        elif query_class is OrQuery:
+            return Query(Query.OP_OR, [i2x(q) for q in query.atoms])
+        elif query_class is NotQuery:
+            return Query(Query.OP_AND_NOT, Query(''), i2x(query.query))
 
 
 

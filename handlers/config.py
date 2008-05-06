@@ -245,6 +245,7 @@ class ConfigFile(TextFile):
     """
 
     class_extension = None
+    schema = None
 
 
     def new(self, **kw):
@@ -299,8 +300,12 @@ class ConfigFile(TextFile):
         """
         if isinstance(comment, str):
             comment = wrap(comment)
-        if isinstance(value, str) is False:
-            raise TypeError, 'the value must be a string.'
+
+        if value is not None:
+            if self.schema is not None and name in self.schema:
+                value = self.schema[name].encode(value)
+            if not isinstance(value, str):
+                raise TypeError, 'the value must be a string.'
 
         self.set_changed()
         if name in self.values:
@@ -339,13 +344,20 @@ class ConfigFile(TextFile):
 
     def get_value(self, name, type=None, default=None):
         if name not in self.values:
-            return default
+            if default is not None:
+                return default
+            elif self.schema is not None and name in self.schema:
+                return self.schema[name].default
+            else:
+                return None
         # Get the line
         n = self.values[name]
         line = self.lines[n]
         # Return the variable value
         value = line[1][1]
         if type is None:
+            if self.schema is not None and name in self.schema:
+                return self.schema[name].decode(value)
             return value
         return type.decode(value)
 

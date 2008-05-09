@@ -401,11 +401,11 @@ class Catalog(object):
         query_class = query.__class__
         if query_class is EqQuery or query_class is PhraseQuery:
             # EqQuery = PhraseQuery, the field must be indexed
-            info = self.fields[query.name]
+            info = self._fields[query.name]
             return _make_PhraseQuery(info['type'], query.value, info['prefix'])
         elif query_class is RangeQuery:
             # RangeQuery, the field must be stored
-            info = self.fields[query.name]
+            info = self._fields[query.name]
             field_type = info['type']
             return Query(Query.OP_VALUE_RANGE, info['value'],
                          _encode(field_type, query.left),

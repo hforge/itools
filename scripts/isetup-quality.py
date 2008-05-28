@@ -21,25 +21,64 @@ isetup-quality.py is a small tool to do some measurements on Python files
 """
 
 # Import from the Standard Library
+import sys
+from datetime import date
+from os import popen, getcwd, chdir
 from glob import glob
 from optparse import OptionParser
-from subprocess import call
 from tempfile import TemporaryFile
 from token import tok_name
 from tokenize import generate_tokens, TokenError
 from types import ListType
+from tempfile import mkdtemp
+from time import time
+
+# Import from Matplotlib
+create_graph_is_available = True
+try:
+    from matplotlib.figure import Figure
+    from matplotlib.backends.backend_agg import FigureCanvasAgg
+    from matplotlib.dates import DateFormatter
+    from matplotlib.ticker import FormatStrFormatter
+except ImportError:
+    create_graph_is_available = False
 
 # Import from itools
 import itools
+from itools.utils import get_abspath
 from itools import git, vfs
+from itools.datatypes import Unicode, Integer, DateTime
 
 
-problems = {'tabs': u'with tabulators',
-            'bad_indentation': u'bad indented',
-            'bad_length': u'longer than 79 characters',
-            'bad_end' : u'with trailing whitespaces',
-            'string_exception': u'string exceptions are used',
-            'except_all': u'all exceptions are catched'}
+# Define list of problems
+code_length = {'title': u'Code length',
+               'keys':
+                  {'lines': u'Number of lines',
+                   'tokens': u'Number of tokens'},
+                'pourcent': False}
+
+aesthetics_problems = {'title': u'Aesthetics (and readibility)',
+                       'keys':
+                           {'tabs':  u'with tabulators',
+                           'bad_indentation': u'bad indented',
+                           'bad_length': u'longer than 79 characters',
+                           'bad_end': u'with trailing whitespaces'},
+                        'pourcent': True}
+
+exception_problems = {'title': u'Exception handling',
+                      'keys':
+                          {'string_exception': u'string exceptions are used',
+                           'except_all': u'all exceptions are catched'},
+                        'pourcent': False}
+
+import_problems = {'title': u'Import problems',
+                   'keys': {'bad_import': 'misplaced imports'},
+                   'pourcent': False}
+
+problems = {}
+problems.update(aesthetics_problems['keys'])
+problems.update(exception_problems['keys'])
+problems.update(import_problems['keys'])
 
 
 def analyse_file_pass1(filename):
@@ -195,9 +234,8 @@ def print_worses(db, worse, criteria):
             print
 
 
-def analyse(filenames, worse, show_lines):
-    """Analyse a list of files
-    """
+def analyse(filenames):
+    """Analyse a list of files"""
     stats = {
         'lines': 0,
         'bad_length': 0,
@@ -221,62 +259,162 @@ def analyse(filenames, worse, show_lines):
                     stats[key] += value
             f_stats['filename'] = filename
             files_db.append(f_stats)
+    return stats, files_db
 
+
+def show_lines(filenames):
+    """Show number lines of errors"""
+    # We get statistics
+    stats, files_db = analyse(filenames)
+    # We show lines
+    print
+    comments = []
+    infos = files_db[0]
+    for problem in problems.keys():
+        lines = infos[problem]
+        if lines:
+            comments.append('Lines %s:\n' % problems[problem])
+            for line in lines:
+                comments.append('%s +%d' % (filenames[0], line))
+            comments.append('\n')
+    if comments:
+        print '\n'.join(comments)
+    else:
+        print u'This file is perfect !'
+
+
+def show_stats(filenames, worse):
+    """Show general statistics"""
+    # We get statistics
+    stats, files_db = analyse(filenames)
     # Show quality summary
     print
     print 'Code length: %d lines, %d tokens' % (stats['lines'],
                                                 stats['tokens'])
     print
 
-    # Show number lines
-    if show_lines:
-        comments = []
-        infos = files_db[0]
-        for problem in problems.keys():
-            lines = infos[problem]
-            if lines:
-                comments.append('Lines %s:\n' % problems[problem])
-                for line in lines:
-                    comments.append('%s +%d' % (filename, line))
-                comments.append('\n')
-        if comments:
-            print '\n'.join(comments)
-        else:
-            print u'This file is perfect !'
-        return
-
     # Aesthetics (and readibility)
     show_comments = []
-    aesthetics_problems = ['tabs', 'bad_indentation', 'bad_length', 'bad_end']
-    for problem in aesthetics_problems:
+    for problem in aesthetics_problems['keys']:
         stat = stats[problem]
         if stat != 0:
             pourcent = (stats[problem] * 100.0)/stats['lines']
             show_comments.append('%5.02f%% lines %s' % (pourcent,
-                                                        problems[problem]))
-    print_list('Aesthetics (and readibility)', show_comments)
-    print_worses(files_db, worse, aesthetics_problems)
+                                    aesthetics_problems['keys'][problem]))
+    print_list(aesthetics_problems['title'], show_comments)
+    print_worses(files_db, worse, aesthetics_problems['keys'])
 
     # Exception handling
     show_comments = []
-    exception_problems = ['string_exception', 'except_all']
-    for problem in exception_problems:
+    for problem in exception_problems['keys']:
         stat = stats[problem]
         if stat != 0:
-            show_comments.append('%d times %s' % (stat, problems[problem]))
-    print_list('Exception handling', show_comments)
-    print_worses(files_db, worse, exception_problems)
+            show_comments.append('%d times %s' % (stat,
+                                    exception_problems['keys'][problem]))
+    print_list(exception_problems['title'], show_comments)
+    print_worses(files_db, worse, exception_problems['keys'])
 
     # Imports
     if stats['bad_import'] != 0:
-        show_comments = ['%d misplaced imports' % stats['bad_import']]
+        show_comments = ['%d %s' % (stats['bad_import'],
+                                    import_problems['keys']['bad_import'])]
     else:
         show_comments = []
     print_list('Imports', show_comments)
     print_worses(files_db, worse, ['bad_import'])
 
 
+def _getcommit_ids():
+    ids = []
+    for line in popen('git log --pretty=oneline').readlines():
+        ids.append(line.split()[0])
+    ids.reverse()
+    return ids
+
+
+def create_graph():
+    """ Create graph of code quality evolution"""
+    t0 = time()
+    project_name = getcwd().split('/')[-1]
+    # We copy project to tmp (for security)
+    current_directory = getcwd()
+    tmp_directory = '%s/isetup_quality.git/' % mkdtemp()
+    popen('git clone %s %s' % (current_directory, tmp_directory))
+    chdir(tmp_directory)
+    # First step: we create a list of statistics
+    statistics = {}
+    commit_ids = _getcommit_ids()
+    print 'Script will analyse %s commits.' % len(commit_ids)
+    for commit_id in commit_ids:
+        # We move to a given commit
+        popen('git reset --hard %s' % commit_id)
+        # Print script evolution
+        sys.stdout.write('.')
+        sys.stdout.flush()
+        # We list files
+        filenames = git.get_filenames()
+        filenames = [ x for x in filenames if x.endswith('.py') ]
+        # We get code quality for this files
+        stats, files_db = analyse(filenames)
+        commitid, date_time = git.get_metadata()
+        commit_date = date(date_time.year, date_time.month, date_time.day)
+        if not statistics.has_key(commit_date):
+            statistics[commit_date] = stats
+        else:
+            # Same day => Avg
+            for key in statistics[commit_date]:
+                avg = (statistics[commit_date][key] + stats[key])/2
+                statistics[commit_date][key] = avg
+    print
+    # Get dates
+    values = []
+    dates = statistics.keys()
+    dates.sort()
+    for a_date in dates:
+        values.append(statistics[a_date])
+    # Base graph informations
+    base_title = '[%s %s]' % (project_name, git.get_branch_name())
+    # We generate graphs
+    chdir(current_directory)
+    for problem_dict in ['code_length', 'aesthetics_problems',
+                         'exception_problems', 'import_problems']:
+        current_problems = eval(problem_dict)
+        graph_title = '%s %s' % (base_title, current_problems['title'])
+        lines = []
+        labels = []
+        fig = Figure()
+        graph = fig.add_subplot(111)
+        for key in current_problems['keys']:
+            if current_problems['pourcent']:
+                problem_values = [((x[key]*100.0)/x['lines']) for x in values]
+            else:
+                problem_values = [x[key] for x in values]
+            lines.append(graph.plot_date(dates, problem_values, '-'))
+            labels.append(current_problems['keys'][key])
+        graph.set_title(graph_title)
+        graph.xaxis.set_major_formatter(DateFormatter("%b '%y'"))
+        if current_problems['pourcent']:
+            graph.set_ylabel('Pourcent')
+            graph.yaxis.set_major_formatter(FormatStrFormatter("%5.02f %%"))
+        else:
+            graph.set_ylabel('Quantity')
+        graph.set_xlabel('')
+        graph.autoscale_view()
+        graph.grid(True)
+        fig.autofmt_xdate()
+        fig.set_figheight(fig.get_figheight()+5)
+        legend = fig.legend(lines, labels, loc=8, axespad=0.0)
+        legend.get_frame().set_linewidth(0)
+        canvas = FigureCanvasAgg(fig)
+        destination = 'graph_%s.png' % problem_dict
+        canvas.print_figure(destination, dpi=80)
+        print '%s -> %s ' % (graph_title, destination)
+    t1 = time()
+    print 'Generation time: %d minutes.' % ((t1 - t0)/60)
+
+
 def fix(filenames):
+    """Clean files: We remove trailing spaces & tabulators"""
     for filename in filenames:
         lines = []
         for line in open(filename).readlines():
@@ -321,6 +459,11 @@ if __name__ == '__main__':
                       dest='show_lines', default=False,
                       help='give the line of each problem found')
 
+    # Show graph
+    parser.add_option('-g', '--graph', action="store_true", dest='graph',
+                      default=False,
+                      help='create graphs of code quality evolution.')
+
     options, args = parser.parse_args()
 
     # Filenames
@@ -345,12 +488,28 @@ if __name__ == '__main__':
     if options.worse>0 and options.show_lines==True:
         parser.error(u'Options --worse and --show-lines are mutually exclusive.')
 
+    # Export graph
+    if options.graph:
+        # Check if GIT is available
+        if not git.is_available():
+            parser.error(u'Error, your project must be versioned with GIT.')
+        # Check if create_graph is available
+        if not create_graph_is_available:
+            parser.error(u'Please install matplotlib.')
+        create_graph()
+        sys.exit()
+
+    # Show Lines
+    if options.show_lines:
+        show_lines(filenames)
+        sys.exit()
+
     # Analyse
-    analyse(filenames, options.worse, options.show_lines)
+    show_stats(filenames, options.worse)
 
     # Fix
     if options.fix is True:
         print 'FIXING...'
         fix(filenames)
         print 'DONE'
-        analyse(filenames, options.worse, options.show_lines)
+        show_stats(filenames, options.worse)

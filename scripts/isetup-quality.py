@@ -487,6 +487,8 @@ if __name__ == '__main__':
         parser.error(u'Please give at least one file to analyse.')
     if options.worse>0 and options.show_lines==True:
         parser.error(u'Options --worse and --show-lines are mutually exclusive.')
+    if options.show_lines==True and len(filenames)!=1:
+        parser.error(u'The option --show-lines takes one file in parameter.')
 
     # Export graph
     if options.graph:

@@ -66,6 +66,13 @@ class HTTPFS(BaseFS):
         return ctype.split(';')[0]
 
 
+    @classmethod
+    def get_size(cls, reference):
+        response = HTTPFS._head(reference)
+        size = response.getheader('content-length')
+        return long(size)
+
+
     @staticmethod
     def open(reference, mode=None):
         reference = str(reference)

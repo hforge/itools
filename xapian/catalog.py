@@ -20,8 +20,8 @@
 from marshal import dumps, loads
 
 # Import from xapian
-from xapian import (WritableDatabase, DB_CREATE, DB_OPEN, Document, Enquire,
-                    Query, sortable_serialise, sortable_unserialise,
+from xapian import (Database, WritableDatabase, DB_CREATE, DB_OPEN, Document,
+                    Enquire, Query, sortable_serialise, sortable_unserialise,
                     MultiValueSorter, TermGenerator, QueryParser, Stem)
 
 # Import from itools
@@ -201,9 +201,9 @@ class SearchResults(object):
 
 class Catalog(object):
 
-    def __init__(self, ref):
+    def __init__(self, ref, read_only=False):
         # Load the database
-        if isinstance(ref, WritableDatabase):
+        if isinstance(ref, Database) or isinstance(ref, WritableDatabase):
             self._db = ref
         else:
             uri = get_absolute_reference(ref)
@@ -211,11 +211,17 @@ class Catalog(object):
                 raise IOError, ('The file system supported with catalog is '
                                 'only "file"')
             path = str(uri.path)
-            self._db = WritableDatabase(path, DB_OPEN)
+
+            if read_only:
+                self._db = Database(path)
+            else:
+                self._db = WritableDatabase(path, DB_OPEN)
+
         db = self._db
 
         # Asynchronous mode
-        db.begin_transaction(False)
+        if not read_only:
+            db.begin_transaction(False)
 
         # Load the xfields from the database
         self._fields = {}
@@ -402,7 +408,8 @@ class Catalog(object):
         if query_class is EqQuery or query_class is PhraseQuery:
             # EqQuery = PhraseQuery, the field must be indexed
             info = self._fields[query.name]
-            return _make_PhraseQuery(info['type'], query.value, info['prefix'])
+            return _make_PhraseQuery(info['type'], query.value,
+                                     info['prefix'])
         elif query_class is RangeQuery:
             # RangeQuery, the field must be stored
             info = self._fields[query.name]

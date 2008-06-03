@@ -414,10 +414,22 @@ class Catalog(object):
             # RangeQuery, the field must be stored
             info = self._fields[query.name]
             field_type = info['type']
-            return Query(Query.OP_VALUE_RANGE, info['value'],
-                         _encode(field_type, query.left),
-                         _encode(field_type, query.right))
+            value = info['value']
 
+            left = query.left
+            right = query.right
+            if left is not None and right is not None:
+                return Query(Query.OP_VALUE_RANGE, value,
+                             _encode(field_type, query.left),
+                             _encode(field_type, query.right))
+            elif left is not None and right is None:
+                return Query(Query.OP_VALUE_GE, value,
+                             _encode(field_type, query.left))
+            elif left is None and right is not None:
+                return Query(Query.OP_VALUE_LE, value,
+                             _encode(field_type, query.right))
+            else:
+                return Query('')
         # And, Or, Not
         i2x = self._query2xquery
         if query_class is AndQuery:

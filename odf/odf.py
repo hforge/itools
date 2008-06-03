@@ -35,7 +35,6 @@ def stl_to_odt(model_odt, namespace):
     events = list(model_odt.get_events('content.xml'))
     # Apply the stl
     xml_content = stl(namespace=namespace, events=events, mode='xml')
-    print xml_content
     # Reconstruct an Odt
     file = StringIO()
     outzip = ZipFile(file, 'w')
@@ -150,8 +149,6 @@ class ODPFile(ODFFile):
 
 
 # Register handler and mimetypes
-handlers = [ODTFile, ODSFile, ODPFile]
-for handler in handlers:
-    add_type(handler.class_mimetypes[0], '.%s' %handler.class_extension)
+for handler in [ODTFile, ODSFile, ODPFile]:
+    add_type(handler.class_mimetypes[0], '.%s' % handler.class_extension)
     register_handler_class(handler)
-

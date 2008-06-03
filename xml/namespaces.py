@@ -132,11 +132,15 @@ class AbstractNamespace(object):
     class_uri = None
     class_prefix = None
 
+    elements_schema = {}
     datatypes = {}
 
 
-    @staticmethod
-    def get_element_schema(name):
+    @classmethod
+    def get_element_schema(cls, name):
+        if name in cls.elements_schema:
+            return cls.elements_schema[name]
+
         raise XMLError, 'undefined element "%s"' % name
 
 
@@ -174,8 +178,8 @@ class DefaultNamespace(AbstractNamespace):
     class_prefix = None
 
 
-    @staticmethod
-    def get_element_schema(name):
+    @classmethod
+    def get_element_schema(cls, name):
         return {'is_empty': False}
 
 

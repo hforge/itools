@@ -29,33 +29,15 @@ class XlinkNamespace(AbstractNamespace):
     class_uri = "http://www.w3.org/1999/xlink"
     class_prefix = 'xlink'
 
-    @staticmethod
-    def get_element_schema(name):
-        elements_schema = {}
-
-        if name not in elements_schema:
-            raise XMLError, 'unknown property "%s"' % name
-
-        return elements_schema.get(name)
-
-
 
 class MathMlNamespace(AbstractNamespace):
 
     class_uri = "http://www.w3.org/1998/Math/MathML"
     class_prefix = 'math'
 
-    @staticmethod
-    def get_element_schema(name):
-        elements_schema = {
-            'math': {'is_inline': False, 'is_empty': False}
-        }
-
-        if name not in elements_schema:
-            raise XMLError, 'unknown property "%s"' % name
-
-        return elements_schema.get(name)
-
+    elements_schema = {
+        'math': {'is_inline': False, 'is_empty': False}
+    }
 
 
 class EventsNamespace(AbstractNamespace):
@@ -63,32 +45,15 @@ class EventsNamespace(AbstractNamespace):
     class_uri = "http://www.w3.org/2001/xml-events"
     class_prefix = 'dom'
 
-    @staticmethod
-    def get_element_schema(name):
-        elements_schema = {}
-
-        if name not in elements_schema:
-            raise XMLError, 'unknown property "%s"' % name
-
-        return elements_schema.get(name)
-
-
 
 class XformsNamespace(AbstractNamespace):
 
     class_uri = "http://www.w3.org/2002/xforms"
     class_prefix = 'xforms'
 
-    @staticmethod
-    def get_element_schema(name):
-        elements_schema = {
-            'model': {'is_inline': False, 'is_empty': False}
-        }
-        if name not in elements_schema:
-            raise XMLError, 'unknown property "%s"' % name
-
-        return elements_schema.get(name)
-
+    elements_schema = {
+        'model': {'is_inline': False, 'is_empty': False}
+    }
 
 
 class XsdNamespace(AbstractNamespace):
@@ -96,33 +61,16 @@ class XsdNamespace(AbstractNamespace):
     class_uri = "http://www.w3.org/2001/XMLSchema"
     class_prefix = 'xsd'
 
-    @staticmethod
-    def get_element_schema(name):
-        elements_schema = {}
-        if name not in elements_schema:
-            raise XMLError, 'unknown property "%s"' % name
-
-
 
 class XsiNamespace(AbstractNamespace):
 
     class_uri = "http://www.w3.org/2001/XMLSchema-instance"
     class_prefix = 'xsi'
 
-    @staticmethod
-    def get_element_schema(name):
-        elements_schema = {}
-        if name not in elements_schema:
-            raise XMLError, 'unknown property "%s"' % name
-
-
 
 ###########################################################################
 # Register
 ###########################################################################
-set_namespace(XlinkNamespace)
-set_namespace(MathMlNamespace)
-set_namespace(EventsNamespace)
-set_namespace(XformsNamespace)
-set_namespace(XsdNamespace)
-set_namespace(XsiNamespace)
+for namespace in [XlinkNamespace, MathMlNamespace, EventsNamespace,
+                  XformsNamespace, XsdNamespace, XsiNamespace]:
+    set_namespace(namespace)

@@ -70,9 +70,9 @@ if __name__ == '__main__':
         if path.endswith('.py') and path != 'utils.py':
             write('.')
             handler = Python(path)
-            for msgid, line_number in handler.get_messages():
-                if len(msgid) > 2:
-                    po.set_message(msgid, references={path: [line_number]})
+            for message in handler.get_messages():
+                if len(message.msgid[0]) > 2:
+                    po.set_message(message)
     print
 
     # Process XHTML files
@@ -96,9 +96,9 @@ if __name__ == '__main__':
                 print '* Error:', path
                 print '*'
                 raise
-            for msgid, line_number in messages:
-                if len(msgid) > 1:
-                    po.set_message(msgid, references={path: [line_number]})
+            for message in messages:
+                if len(message.msgid[0]) > 1:
+                    po.set_message(message)
         print
 
     # Update locale.pot

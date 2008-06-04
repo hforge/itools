@@ -21,7 +21,7 @@ from mimetypes import add_type
 # Import from itools
 from domains import DomainAware, register_domain, get_domain
 from mo import MOFile
-from po import POFile
+from po import POFile, Message
 
 
 __all__ = [
@@ -29,7 +29,8 @@ __all__ = [
     'register_domain',
     'get_domain',
     'MOFile',
-    'POFile']
+    'POFile',
+    'Message']
 
 
 add_type('text/x-po', '.po')

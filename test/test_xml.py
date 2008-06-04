@@ -22,7 +22,7 @@ from unittest import TestCase
 from itools.xml import (XMLFile, XMLParser, XMLError, XML_DECL, DOCUMENT_TYPE,
     START_ELEMENT, END_ELEMENT, TEXT, COMMENT, PI, CDATA, stream_to_str)
 from itools.xml.i18n import get_messages
-
+from itools.gettext import Message
 
 
 class ParserTestCase(TestCase):
@@ -190,10 +190,9 @@ class TranslatableTestCase(TestCase):
     def test_surrounding(self):
         text = '<em>Hello World</em>'
         parser = XMLParser(text)
-        messages = get_messages(parser)
-        messages = list(messages)
+        messages = list(get_messages(parser))
 
-        self.assertEqual(messages, [(u'Hello World', 0)])
+        self.assertEqual(messages, [Message([], [u'Hello World'], [u''])])
 
 
 

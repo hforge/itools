@@ -21,7 +21,7 @@ from unittest import TestCase
 
 # Import from itools
 from itools.odf import ODTFile, ODPFile, ODSFile
-from itools.gettext import POFile
+from itools.gettext import POFile, Message
 from itools import vfs
 from itools.xml import XMLParser
 from itools.xml.i18n import get_messages, translate
@@ -38,7 +38,7 @@ class Test_ODT_File(TestCase):
     def test_get_msg(self):
         messages = list(self.doc.get_messages())
         txt = u'Hello <text:span text:style-name="T1">world</text:span> !'
-        expected = [(txt, 0)]
+        expected = [Message([], [txt], [u''])]
         self.assertEqual(messages, expected)
 
 
@@ -53,8 +53,8 @@ class Test_ODT_File(TestCase):
         doc2.load_state_from_string(translate_odt_document)
         messages = list(doc2.get_messages())
         # Check if allright
-        txt = 'Hola <text:span text:style-name="T1">mundo</text:span> !'
-        expected = [(txt, 0)]
+        txt = u'Hola <text:span text:style-name="T1">mundo</text:span> !'
+        expected = [Message([], [txt], [u''])]
         self.assertEqual(messages, expected)
 
 
@@ -84,7 +84,8 @@ class Test_ODP_File(TestCase):
 
     def test_get_msg(self):
         messages = list(self.doc.get_messages())
-        expected = [(u'<text:span text:style-name="T1">Hello </text:span><text:span text:style-name="T2">World</text:span><text:span text:style-name="T1"> !</text:span>', 0), (u'Welcome', 0)]
+        expected = [Message([], [u'<text:span text:style-name="T1">Hello </text:span><text:span text:style-name="T2">World</text:span><text:span text:style-name="T1"> !</text:span>'], [u'']),
+                    Message([], [u'Welcome'], [u''])]
         self.assertEqual(messages, expected)
 
 
@@ -99,10 +100,14 @@ class Test_ODS_File(TestCase):
 
     def test_get_msg(self):
         messages = list(self.doc.get_messages())
-        expected = [(u'Chocolate', 0), (u'Coffee', 0), (u'Tea', 0),
-                    (u'Price', 0), (u'80', 0), (u'20', 0),(u'40', 0),
-                    (u'Quantity', 0), (u'20', 0), (u'30', 0), (u'20', 0),
-                    (u'Quality', 0), (u'0', 0), (u'50', 0), (u'40', 0)]
+        expected = [Message([], [u'Chocolate'], [u'']),
+                    Message([], [u'Coffee'], [u'']), Message([], [u'Tea'], [u'']),
+                    Message([], [u'Price'], [u'']), Message([], [u'80'], [u'']),
+                    Message([], [u'20'], [u'']), Message([], [u'40'], [u'']),
+                    Message([], [u'Quantity'], [u'']), Message([], [u'20'], [u'']),
+                    Message([], [u'30'], [u'']), Message([], [u'20'], [u'']),
+                    Message([], [u'Quality'], [u'']), Message([], [u'0'], [u'']),
+                    Message([], [u'50'], [u'']), Message([], [u'40'], [u''])]
         self.assertEqual(messages, expected)
 
 
@@ -153,7 +158,7 @@ class Test_ODT_Parser(TestCase):
         content = self.template % content
         events = XMLParser(content)
         messages = list(get_messages(events))
-        expected = [(u'hello world', 0)]
+        expected = [Message([], [u'hello world'], [u''])]
         self.assertEqual(messages, expected)
 
     def test_table(self):
@@ -191,8 +196,9 @@ class Test_ODT_Parser(TestCase):
         content = self.template % content
         events = XMLParser(content)
         messages = list(get_messages(events))
-        expected= [(u'A', 0), (u'B', 0), (u'C', 0),
-                   (u'D', 0), (u'E', 0), (u'F', 0)]
+        expected= [Message([], [u'A'], [u'']), Message([], [u'B'], [u'']),
+                   Message([], [u'C'], [u'']), Message([], [u'D'], [u'']),
+                   Message([], [u'E'], [u'']), Message([], [u'F'], [u''])]
         self.assertEqual(messages, expected)
 
 
@@ -211,7 +217,7 @@ class Test_ODT_Parser(TestCase):
         events = XMLParser(content)
         string = translate(events, po)
         messages = list(get_messages(string))
-        self.assertEqual(messages, [(u'hola mundo', 0)])
+        self.assertEqual(messages, [Message([], [u'hola mundo'], [u''])])
 
 
 if __name__ == '__main__':

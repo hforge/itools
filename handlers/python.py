@@ -25,13 +25,17 @@ from registry import register_handler_class
 
 class VisitorUnicode(object):
 
-    def __init__(self):
+    def __init__(self, filename):
         self.messages = []
+        self.filename = filename
 
 
     def visitConst(self, const):
+        from itools.gettext.po import Message # XXX
         if isinstance(const.value, unicode):
-            self.messages.append((const.value, const.lineno))
+            msg = Message([], [const.value], [u''],
+                          references={self.filename: [const.lineno]})
+            self.messages.append(msg)
 
 
 
@@ -48,7 +52,7 @@ class Python(TextFile):
         data = ''.join([ x + '\n' for x in data.splitlines() ])
         # Parse and Walk
         ast = parse(data)
-        visitor = VisitorUnicode()
+        visitor = VisitorUnicode(self.uri.path.get_name())
         walk(ast, visitor)
 
         return visitor.messages

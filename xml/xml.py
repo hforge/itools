@@ -251,7 +251,10 @@ class XMLFile(TextFile):
     # API / Internationalization - Localization
     #######################################################################
     def get_messages(self):
-        return get_messages(self.events)
+        filename = None
+        if self.uri:
+            filename = self.uri.path.get_name()
+        return get_messages(self.events, filename)
 
 
     def translate(self, catalog):

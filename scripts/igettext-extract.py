@@ -62,8 +62,7 @@ if __name__ == '__main__':
                 sys.stderr.write(message % filename)
                 continue
             # Extract the messages
-            for msgid, line_number in get_messages():
-                po.set_message(msgid, references={filename: [line_number]})
+            po.set_messages(get_messages())
 
         # XXX Should omit the header?
         output.write(po.to_str())

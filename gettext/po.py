@@ -187,6 +187,16 @@ class Message(object):
         return ''.join(s)
 
 
+    def __repr__(self):
+        msg = "<MESSAGE object msgid=%s msgstr=%s (%s)>"
+        return msg % (self.msgid, self.msgstr, self.references)
+
+
+    def __eq__(self, other):
+        return (other.msgid==self.msgid) and (other.msgstr==self.msgstr)
+
+
+
 skeleton = """# SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
@@ -412,17 +422,16 @@ class POFile(TextFile):
         return msgid
 
 
-    def set_message(self, msgid, msgstr=[u''], comments=[], references={},
-                    fuzzy=False):
-        """Adds the given message id to the catalog.
+    def set_messages(self, messages):
+        for message in messages:
+            self.set_message(message)
 
-        Initialize it with the given, and optional, information: message
-        string, comments, references and fuzzy.
-        """
-        if msgid:
+
+    def set_message(self, message):
+        if message.msgid:
             self.set_changed()
-            self._set_message(msgid, msgstr, comments, references, fuzzy)
-
+            id = ''.join(message.msgid)
+            self.messages[id] = message
 
 
 register_handler_class(POFile)

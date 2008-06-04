@@ -100,7 +100,7 @@ class ODFFile(OOFile):
 
 
     def get_messages(self):
-        return get_messages(self.get_events('content.xml'))
+        return get_messages(self.get_events('content.xml'), 'content.xml')
 
 
     def translate(self, catalog):

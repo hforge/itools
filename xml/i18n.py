@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
+from itools.gettext import Message as gettextMessage
 from itools.datatypes import XMLContent
 from itools.i18n import Message
 from namespaces import get_namespace, get_element_schema, XMLNSNamespace
@@ -72,6 +73,9 @@ def process_buffer(buffer, hit, encoding):
             buffer[i] = type, value[:-1], line
 
     # Build message
+    first_line = None
+    if buffer:
+        type, value, first_line = buffer[0]
     message = Message()
     for type, value, line in buffer:
         if type == TEXT:
@@ -84,7 +88,7 @@ def process_buffer(buffer, hit, encoding):
             message.append_end_format(get_end_tag(*value))
 
     # Return message
-    yield MESSAGE, message, None
+    yield MESSAGE, message, first_line
 
     # Return tail
     for x in tail:
@@ -187,7 +191,7 @@ def get_translatable_blocks(events):
 ###########################################################################
 # Get Messages
 ###########################################################################
-def get_messages(events):
+def get_messages(events, filename=None):
     keep_spaces = False
     for type, value, line in get_translatable_blocks(events):
         if type == START_ELEMENT:
@@ -198,7 +202,7 @@ def get_messages(events):
                 is_translatable = get_namespace(attr_uri).is_translatable
                 if is_translatable(tag_uri, tag_name, attributes, attr_name):
                     if value.strip():
-                        yield value, 0
+                        yield gettextMessage([], [value], [u''], {filename: [line]})
             # Keep spaces
             if tag_name in elements_to_keep_spaces:
                 keep_spaces = True
@@ -210,7 +214,7 @@ def get_messages(events):
         elif type == MESSAGE:
             # Segmentation
             for segment in value.get_segments(keep_spaces):
-                yield segment, 0
+                yield gettextMessage([], [segment], [u''], {filename: [line]})
 
 
 

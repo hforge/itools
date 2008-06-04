@@ -21,7 +21,7 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.gettext import POFile
+from itools.gettext import POFile, Message
 from itools.xml import (XMLParser, XMLError, START_ELEMENT, END_ELEMENT, TEXT,
     stream_to_str)
 from itools.html import HTMLFile, XHTMLFile, HTMLParser, sanitize_str
@@ -96,7 +96,7 @@ class i18nTestCase(TestCase):
             '<p>hello world</p>')
 
         messages = list(doc.get_messages())
-        self.assertEqual(messages, [(u'hello world', 0)])
+        self.assertEqual(messages, [Message([], [u'hello world'], [u''])])
 
 
     def test_case2(self):
@@ -105,7 +105,7 @@ class i18nTestCase(TestCase):
             '<img alt="The beach" src="beach.jpg">')
 
         messages = list(doc.get_messages())
-        self.assertEqual(messages, [(u'The beach', 0)])
+        self.assertEqual(messages, [Message([], [u'The beach'], [u''])])
 
 
     def test_case3(self):
@@ -117,7 +117,7 @@ class i18nTestCase(TestCase):
             '</html>')
 
         messages = list(doc.get_messages())
-        self.assertEqual(messages, [(u'Change', 0)])
+        self.assertEqual(messages, [Message([], [u'Change'], [u''])])
 
 
     def test_case4(self):
@@ -204,10 +204,11 @@ class SegmentationTestCase(TestCase):
             '</p>')
 
         messages = list(doc.get_messages())
-        expected = [(u'The Mozilla project maintains <em>choice</em> and'
-                     u' <em>innovation</em> on the Internet.', 0),
-                    (u'Developing the acclaimed, <em>open source</em>,'
-                     u' <b>Mozilla 1.6</b>.', 0)]
+        msg1 = (u'The Mozilla project maintains <em>choice</em> and'
+                u' <em>innovation</em> on the Internet.')
+        msg2 = (u'Developing the acclaimed, <em>open source</em>,'
+                u' <b>Mozilla 1.6</b>.')
+        expected = [Message([], [msg1], [u'']), Message([], [msg2], [u''])]
         self.assertEqual(messages, expected)
 
 
@@ -229,12 +230,12 @@ class SegmentationTestCase(TestCase):
             '</table>')
 
         messages = list(doc.get_messages())
-        expected = [(u'Title', 0),
-                    (u'Size', 0),
-                    (u'The good, the bad and the ugly', 0),
-                    (u'looong', 0),
-                    (u'Love story', 0),
-                    (u'even longer', 0)]
+        expected = [Message([], [u'Title'], [u'']),
+                    Message([], [u'Size'], [u'']),
+                    Message([], [u'The good, the bad and the ugly'], [u'']),
+                    Message([], [u'looong'], [u'']),
+                    Message([], [u'Love story'], [u'']),
+                    Message([], [u'even longer'], [u''])]
         self.assertEqual(messages, expected)
 
 
@@ -250,9 +251,9 @@ class SegmentationTestCase(TestCase):
             '</body>')
 
         messages = list(doc.get_messages())
-        expected = [(u'this <em>word</em> is nice', 0),
-                    (u'hello world', 0),
-                    (u'<br/> bye <em>J. David Ibanez Palomar</em>', 0)]
+        expected = [Message([], [u'this <em>word</em> is nice'], [u'']),
+                    Message([], [u'hello world'], [u'']),
+                    Message([], [u'<br/> bye <em>J. David Ibanez Palomar</em>'], [u''])]
         self.assertEqual(messages, expected)
 
 
@@ -266,7 +267,7 @@ class SegmentationTestCase(TestCase):
             '</form>')
 
         messages = list(doc.get_messages())
-        self.assertEqual(messages, [(u'Change', 0)])
+        self.assertEqual(messages, [Message([], [u'Change'], [u''])])
 
 
     def test_inline(self):
@@ -278,7 +279,7 @@ class SegmentationTestCase(TestCase):
         messages = doc.get_messages()
         messages = list(messages)
 
-        expected = [(u'Hi <b>everybody, </b><i>how are you ? </i>', 0)]
+        expected = [Message([], [u'Hi <b>everybody, </b><i>how are you ? </i>'], [u''])]
         self.assertEqual(messages, expected)
 
 
@@ -302,7 +303,7 @@ class TranslationTestCase(TestCase):
         doc = XHTMLFile(string=data)
         messages = list(doc.get_messages())
 
-        self.assertEqual(messages, [(u'hello litle world', 0)])
+        self.assertEqual(messages, [Message([], [u'hello litle world'], [u''])])
 
 
     def test_case2(self):
@@ -311,7 +312,7 @@ class TranslationTestCase(TestCase):
         doc = XHTMLFile(string=data)
         messages = list(doc.get_messages())
 
-        self.assertEqual(messages, [(u'The beach', 0)])
+        self.assertEqual(messages, [Message([], [u'The beach'], [u''])])
 
 
     def test_case3(self):
@@ -321,7 +322,7 @@ class TranslationTestCase(TestCase):
         doc = XHTMLFile(string=data)
         messages = list(doc.get_messages())
 
-        self.assertEqual(messages, [(u'Change', 0)])
+        self.assertEqual(messages, [Message([], [u'Change'], [u''])])
 
 
     def test_case4(self):
@@ -338,7 +339,7 @@ class TranslationTestCase(TestCase):
         xhtml = XHTMLFile(string=string)
 
         messages = list(xhtml.get_messages())
-        self.assertEqual(messages, [(u'hola mundo', 0)])
+        self.assertEqual(messages, [Message([], [u'hola mundo'], [u''])])
 
 
     def test_case5(self):
@@ -353,7 +354,7 @@ class TranslationTestCase(TestCase):
         xhtml = XHTMLFile(string=html)
 
         messages = list(xhtml.get_messages())
-        self.assertEqual(messages, [(u'La playa', 0)])
+        self.assertEqual(messages, [Message([], [u'La playa'], [u''])])
 
 
 class SanitizerTestCase(TestCase):

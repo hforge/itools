@@ -429,7 +429,10 @@ def fix(filenames):
                 else:
                     break
             # Remove trailing spaces & remove tabulators used for indentation
-            line = ' ' * indent + line.strip() + '\n'
+            if line.strip()=='':
+                line = '\n'
+            else:
+                line = ' ' * indent + line.strip() + '\n'
             # Append
             lines.append(line)
 

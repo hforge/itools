@@ -21,6 +21,7 @@ from base64 import decodestring
 from copy import copy
 from datetime import datetime
 from os import fstat, getpid, remove as remove_file
+from types import FunctionType, MethodType
 from select import error as SelectError
 from signal import signal, SIGINT
 from socket import (socket as Socket, error as SocketError, AF_INET,
@@ -28,12 +29,14 @@ from socket import (socket as Socket, error as SocketError, AF_INET,
 import sys
 from time import strftime
 from traceback import print_exc
+from types import GeneratorType
 from urllib import unquote
 
 # Import from itools
 from itools.uri import Reference, Path
 from itools.http import (HTTPError, BadRequest, Forbidden, NotFound,
     Unauthorized, Request, Response)
+from itools.xml import XMLParser
 from base import Node
 from context import Context, get_context, set_context
 
@@ -400,12 +403,7 @@ class Server(object):
         # Redirection
         if isinstance(body, Reference):
             return 302, body
-        # XXX
-        if body is None:
-            return status, body
 
-        # Post-process (used to wrap the body in a skin)
-        body = context.root.after_traverse(context, body)
         return status, body
 
 
@@ -414,15 +412,7 @@ class Server(object):
         if context.method == 'HEAD':
             context.method = 'GET'
         # Do a GET
-        status, body = self.GET(context)
-        # Set the content length, and body is None
-        # XXX This may not work correctly if body is not a string
-        if isinstance(body, str):
-            response = context.response
-            response.set_header('content-length', len(body))
-            body = None
-
-        return status, body
+        return self.GET(context)
 
 
     def POST(self, context):
@@ -445,12 +435,7 @@ class Server(object):
         # Redirection
         if isinstance(body, Reference):
             return 302, body
-        # XXX
-        if body is None:
-            return status, body
 
-        # Post-process (used to wrap the body in a skin)
-        body = context.root.after_traverse(context, body)
         return status, body
 
 
@@ -488,40 +473,66 @@ class Server(object):
     def handle_request(self, request):
         context = Context(request)
         response = context.response
-        # Initialize the context
+        # (1) Initialize the context
         context.init()
         context.server = self
-        context.root = self.root
+        root = self.root
+        context.root = root
         set_context(context)
 
-        # Get and call the method
+        # (2) Perform the request method (GET, POST, ...)
         method = getattr(self, request.method)
         try:
             status, body = method(context)
         except:
             self.log_error(context)
             status = 500
-            body = self.root.internal_server_error(context)
+            body = root.internal_server_error(context)
 
-        # Be sure not to commit on errors
-        if status >= 400:
-            context.commit = False
+        # (3) Close the transaction (commit or abort)
+        if status < 400 and context.commit is True:
+            try:
+                self.commit_transaction(context)
+            except:
+                self.log_error(context)
+                status = 500
+                body = root.internal_server_error(context)
+        else:
+            self.abort_transaction(context)
 
-        # Commit
-        try:
-            self.commit_transaction(context)
-        except:
-            self.log_error(context)
-            status = 500
-            body = self.root.internal_server_error(context)
+        # (4) Build response, when postponed (useful for POST methods)
+        if isinstance(body, (FunctionType, MethodType)):
+            try:
+                body = body(context)
+            except:
+                self.log_error(context)
+                status = 500
+                body = root.internal_server_error(context)
+            self.abort_transaction(context)
 
-        # Set body
-        if isinstance(body, str):
+        # (5) Post-process (useful to wrap the body in a skin)
+        if isinstance(body, (str, list, GeneratorType, XMLParser)):
+            try:
+                body = root.after_traverse(context, body)
+            except:
+                self.log_error(context)
+                status = 500
+                body = root.internal_server_error(context)
+
+        # (6) If request is HEAD, do not return an entity
+        if request.method == 'HEAD':
+            if isinstance(body, str):
+                # Set the content length, and body is None
+                response.set_header('content-length', len(body))
+                body = None
+
+        # (7) Build and return the response
+        if body is None:
+            response.set_body(body)
+        elif isinstance(body, str):
             response.set_body(body)
         elif isinstance(body, Reference):
             context.redirect(body)
-
-        # Set status
         response.set_status(status)
         return response
 
@@ -608,12 +619,6 @@ class Server(object):
 
 
     def commit_transaction(self, context):
-        # Don't commit
-        if context.commit is False:
-            self.abort_transaction(context)
-            return
-
-        # Commit
         try:
             self.before_commit()
         except:

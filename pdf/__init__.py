@@ -22,7 +22,7 @@ from itools.xml import register_dtd
 # Import from reportlab
 try:
     from rml import rmltopdf, stl_rmltopdf
-    from rml2 import *
+    from rml2 import rml2topdf, rml2topdf_test, normalize
 except ImportError:
     print 'You need to install the package "reportlab" to get RML working.'
     def rmltopdf(*args, **kw):
@@ -30,7 +30,8 @@ except ImportError:
     stl_rmltopdf = rmltopdf
 
 
-__all__ = ['PDFFile', 'rmltopdf', 'stl_rmltopdf']
+__all__ = ['PDFFile', 'rmltopdf', 'stl_rmltopdf',
+           'rml2topdf', 'rml2topdf_test', 'normalize']
 
 
 # Register "rml.dtd"

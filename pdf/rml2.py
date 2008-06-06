@@ -29,7 +29,7 @@ from reportlab.pdfgen.canvas import Canvas
 from reportlab.lib.units import inch, cm, mm, pica
 from reportlab.lib.pagesizes import (letter, legal, elevenSeventeen, A0, A1,
     A2, A3, A4, A5, A6, B0, B1, B2, B3, B4, B5, B6, landscape, portrait)
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.styles import getSampleStyleSheet as getBaseSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT, TA_JUSTIFY
 from reportlab.platypus import (Paragraph, SimpleDocTemplate, Preformatted)
 from reportlab.platypus.flowables import Flowable, HRFlowable
@@ -46,7 +46,37 @@ WARNING_DTD = '%s: line %s tag "%s" is unapproprieted here.'
 encoding = 'UTF-8'
 
 
-def rmltopdf(filename):
+def getSampleStyleSheet():
+    stylesheet = getBaseSampleStyleSheet()
+
+    # Add heading level 4, 5 and 6 like in html
+    stylesheet.add(ParagraphStyle(name='Heading4',
+                                  parent=stylesheet['h3'],
+                                  fontSize=11),
+                   alias='h4')
+    stylesheet.add(ParagraphStyle(name='Heading5',
+                                  parent=stylesheet['h4'],
+                                  fontSize=10),
+                   alias='h5')
+    stylesheet.add(ParagraphStyle(name='Heading6',
+                                  parent=stylesheet['h5'],
+                                  fontSize=9),
+                   alias='h6')
+
+    return stylesheet
+
+
+def rml2topdf_test(data):
+    """
+      Main function: produces a pdf file from a html-like xml
+      document represented by a string
+    """
+
+    stream = XMLParser(data)
+    return document_stream(stream, StringIO(), 'test', True)
+
+
+def rml2topdf(filename):
     """
       Main function: produces a pdf file from a html-like xml document
 
@@ -55,7 +85,9 @@ def rmltopdf(filename):
 
     file = open(filename, 'r')
     stream = XMLParser(file.read())
-    return document_stream(stream, StringIO(), filename, False)
+    iostream = StringIO()
+    document_stream(stream, iostream, filename, False)
+    return iostream.getvalue()
 
 
 def document_stream(stream, pdf_stream, document_name, is_test=False):
@@ -103,11 +135,11 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
         _story = list(story)
 
 
-    doc = SimpleDocTemplate(document_name + ".pdf", pagesize = letter)
+    doc = SimpleDocTemplate(pdf_stream, pagesize = letter)
     doc.build(story)
 
     if is_test == True:
-        return (_story, pdf_stylesheet)
+        return _story
 
 
 def body_stream(stream, _tag_name, _attributes, alias_style):
@@ -132,7 +164,7 @@ def body_stream(stream, _tag_name, _attributes, alias_style):
                 story.append(p_stream(stream, tag_name, attributes, pdf_stylesheet))
             elif tag_name == 'pre':
                 story.append(pre_stream(stream, tag_name, attributes, pdf_stylesheet))
-            elif tag_name in ('h1','h2','h3', 'h4', 'h5', 'h6'):
+            elif tag_name in ('h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
                 story.append(heading_stream(stream, tag_name,
                              attributes, pdf_stylesheet, alias_style))
             elif tag_name == 'hr':
@@ -255,7 +287,7 @@ def pre_stream(stream , tag_name, attributes, pdf_stylesheet):
         elif event == TEXT:
             if stack:
                 # we dont strip the string --> preformatted widget
-                value = XML.encode(normalize(value)) # entities
+                value = XML.encode(value) # entities
                 content.append(value)
 
 
@@ -282,6 +314,9 @@ def heading_stream(stream,  _tag_name, _attributes, pdf_stylesheet,
             tag_uri, tag_name, attributes = value
             if tag_name in ('i', 'em', 'b', 'strong', 'u', 'sup', 'sub'):
                 content.append(build_start_tag(p_format_map.get(tag_name, 'b')))
+            elif tag_name == 'a':
+                content += link_stream(stream, tag_name, attributes)
+                print content
             else:
                 print WARNING_DTD % ('document', line_number, tag_name)
                 stack.append((tag_name, attributes, None))

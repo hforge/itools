@@ -53,7 +53,5 @@ add_type('application/vnd.sun.xml.writer', '.sxw')
 add_type('application/vnd.sun.xml.calc', '.sxc')
 add_type('application/vnd.sun.xml.impress', '.sxi')
 
-register_handler_class(SXWFile)
-register_handler_class(SXCFile)
-register_handler_class(SXIFile)
-
+for handler in [SXWFile, SXCFile, SXIFile]:
+    register_handler_class(handler)

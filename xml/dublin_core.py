@@ -66,19 +66,11 @@ class Namespace(AbstractNamespace):
                  'type': None,
                  }
 
-
-    @staticmethod
-    def get_element_schema(name):
-        elements_schema = {
-            'creator': {'is_empty': False, 'is_inline': False},
-            'date': {'is_empty': False, 'is_inline': False},
-            'language': {'is_empty': False, 'is_inline': False}
-            }
-
-        if name not in elements_schema:
-            raise XMLError, 'unknown property "%s"' % name
-
-        return elements_schema.get(name)
+    elements_schema = {
+        'creator': {'is_empty': False, 'is_inline': False},
+        'date': {'is_empty': False, 'is_inline': False},
+        'language': {'is_empty': False, 'is_inline': False}
+        }
 
 
 # FIXME Register the schema also with the old and wrong uri (introduced in

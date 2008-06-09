@@ -429,7 +429,10 @@ def fix(filenames):
                 else:
                     break
             # Remove trailing spaces & remove tabulators used for indentation
-            line = ' ' * indent + line.strip() + '\n'
+            if line.strip()=='':
+                line = '\n'
+            else:
+                line = ' ' * indent + line.strip() + '\n'
             # Append
             lines.append(line)
 
@@ -487,6 +490,8 @@ if __name__ == '__main__':
         parser.error(u'Please give at least one file to analyse.')
     if options.worse>0 and options.show_lines==True:
         parser.error(u'Options --worse and --show-lines are mutually exclusive.')
+    if options.show_lines==True and len(filenames)!=1:
+        parser.error(u'The option --show-lines takes one file in parameter.')
 
     # Export graph
     if options.graph:

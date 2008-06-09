@@ -471,12 +471,6 @@ def resolve_pointer(value, offset):
 # The XML namespace handler
 ########################################################################
 
-elements_schema = {
-    'block': {'is_inline': False},
-    'inline': {'is_inline': True}
-    }
-
-
 class Namespace(AbstractNamespace):
 
     class_uri = 'http://xml.itools.org/namespaces/stl'
@@ -484,12 +478,16 @@ class Namespace(AbstractNamespace):
 
     datatypes = {'repeat': String, 'if': String}
 
-    @staticmethod
-    def get_element_schema(name):
+    elements_schema = {
+        'block': {'is_inline': False},
+        'inline': {'is_inline': True}
+    }
+
+    @classmethod
+    def get_element_schema(cls, name):
         try:
-            return elements_schema[name]
+            return cls.elements_schema[name]
         except KeyError:
             raise STLSyntaxError, 'unexpected element name: %s' % name
 
 set_namespace(Namespace)
-

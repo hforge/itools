@@ -424,30 +424,20 @@ void init_builtin_entities(void) {
     SET_ENTITY("diams", 9830);
 }
 
-
+void set_value(gpointer key, gpointer value, gpointer user_data) {
+    GHashTable* a = (GHashTable*) user_data;
+    g_hash_table_insert(a, key, value);
+}
 
 /* Updates a given hash table with the contents of another hash table.
  * The second hash table may be NULL, then the first hash table remains
  * untouched.
  */
 void update_dict(GHashTable* a, GHashTable* b) {
-    GList* keys;
-    GList* item;
-    gchar* key;
-    gchar* value;
-
     if (b == NULL)
         return;
 
-    keys = g_hash_table_get_keys(b);
-    item = keys;
-    while (item != NULL) {
-        key = (gchar*)item->data;
-        value = g_hash_table_lookup(b, key);
-        g_hash_table_insert(a, key, value);
-        item = g_list_next(item);
-    }
-    g_list_free(keys);
+    g_hash_table_foreach(b, set_value, a);
 }
 
 

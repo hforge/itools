@@ -21,7 +21,7 @@ from mimetypes import add_type
 from html import HTMLFile
 from parser import HTMLParser
 from xhtml import (xhtml_uri, XHTMLFile, stream_to_str_as_html,
-    stream_to_str_as_xhtml, elements_schema, sanitize_stream, sanitize_str)
+    stream_to_str_as_xhtml, sanitize_stream, sanitize_str)
 
 
 # Public API
@@ -38,7 +38,6 @@ __all__ = [
     'sanitize_str',
     # Constants
     'xhtml_uri',
-    'elements_schema',
     ]
 
 

@@ -42,7 +42,8 @@ classifiers = ['Development Status :: 3 - Alpha',
 
 
 if __name__ == '__main__':
-    cparser = Extension('itools.xml.parser', sources=['xml/parser.c'],
+    cparser = Extension('itools.xml.parser',
+                        sources=['xml/parser.c', 'xml/pyparser.c'],
                         include_dirs=['/usr/include/glib-2.0',
                                       '/usr/lib/glib-2.0/include/'],
                         libraries=['glib-2.0'])

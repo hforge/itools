@@ -34,24 +34,6 @@ class ParserTestCase(TestCase):
         self.assertEqual(XMLParser(data).next(), (token, value, 1))
 
 
-    def test_doctype_public(self):
-        data = ('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"\n'
-                '  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">')
-        token = DOCUMENT_TYPE
-        value = ('html', 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd',
-                 '-//W3C//DTD XHTML 1.0 Strict//EN', None)
-        self.assertEqual(XMLParser(data).next(), (token, value, 1))
-
-
-    def test_doctype_system(self):
-        data = ('<!DOCTYPE html SYSTEM'
-                ' "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">')
-        token = DOCUMENT_TYPE
-        value = ('html', 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd',
-                 None, None)
-        self.assertEqual(XMLParser(data).next(), (token, value, 1))
-
-
     #######################################################################
     # Character References
     def test_char_ref(self):
@@ -138,7 +120,6 @@ class ParserTestCase(TestCase):
 
     #######################################################################
     # Broken XML
-    #######################################################################
     def test_missing_end_element(self):
         data = '<div><span></div>'
         parser = XMLParser(data)
@@ -151,9 +132,10 @@ class ParserTestCase(TestCase):
         self.assertRaises(XMLError, list, parser)
 
 
-
 class XMLTestCase(TestCase):
 
+    #######################################################################
+    # Identity
     def test_identity(self):
         """
         Tests wether the input and the output match.
@@ -170,18 +152,38 @@ class XMLTestCase(TestCase):
         self.assertEqual(h1, h2)
 
 
-    def test_doctype_public(self):
-        data = ('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"\n'
-                '  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">')
-        stream = XMLParser(data)
-        self.assertEqual(stream_to_str(stream), data)
+    #######################################################################
+    # Entities: http://www.w3.org/TR/REC-xml/#sec-entexpand
+    def test_1(self):
+        data = ('<?xml version="1.0"?>\n'
+                '<!DOCTYPE test\n'
+                '[\n'
+                '<!ENTITY example "<p>An ampersand (&#38;#38;) may be '
+                'escaped numerically (&#38;#38;#38;) or with a general '
+                ' entity (&amp;amp;).</p>" >\n'
+                ']>\n'
+                '<test>&example;</test>\n')
 
+        parser = XMLParser(data)
+        self.assertEqual(list(parser)[5:8], [
+                  (2, (None, 'p', {}), 6),
+                  (4, 'An ampersand (&) may be escaped numerically (&#38;) '
+                      'or with a general  entity (&amp;).', 6),
+                  (3, (None, 'p'), 6)])
 
-    def test_doctype_system(self):
-        data = ('<!DOCTYPE html SYSTEM'
-                ' "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">')
-        stream = XMLParser(data)
-        self.assertEqual(stream_to_str(stream), data)
+    def test_2(self):
+        data = ('<?xml version="1.0"?>\n'
+                '<!DOCTYPE test [\n'
+                '<!ELEMENT test (#PCDATA) >\n'
+                "<!ENTITY % xx '&#37;zz;'>\n"
+                """<!ENTITY % zz '&#60;!ENTITY tricky "error-prone" >' >\n"""
+                '%xx;\n'
+                ']>\n'
+                '<test>This sample shows a &tricky; method.</test>')
+
+        parser = XMLParser(data)
+        self.assertEqual(list(parser)[4], (4,
+                         'This sample shows a error-prone method.', 8))
 
 
 

@@ -149,10 +149,12 @@ class XLIFF(TextFile):
     # Load
     def _load_state_from_file(self, file):
         self.files = []
+        self.document_type = (
+            'xliff',
+            'http://www.oasis-open.org/committees/xliff/documents/xliff.dtd',
+            None, False)
         for event, value, line_number in XMLParser(file.read()):
-            if event == DOCUMENT_TYPE:
-                self.document_type = value
-            elif event == START_ELEMENT:
+            if event == START_ELEMENT:
                 namespace, local_name, attributes = value
                 # Attributes, get rid of the namespace uri (XXX bad)
                 aux = {}

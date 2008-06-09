@@ -60,7 +60,7 @@ class Test_ODT_File(TestCase):
 
     def test_meta(self):
         expected_meta = {'initial-creator': u'sylvain',
-                         'description': u"it\n'\ns a very good document",
+                         'description': u"it's a very good document",
                          'keyword': u'itools\nodt\nodf',
                          'creator': u'sylvain',
                          'title': u'Hello world Document',

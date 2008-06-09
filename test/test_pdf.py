@@ -16,16 +16,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-import os
-import sys
 import unittest
 
 # Import from itools
 from itools.pdf import rmltopdf
 from itools.pdf.rml import (rmltopdf_test, normalize, stream_next,
     get_color, get_page_size_orientation)
-from itools.pdf.rml2 import (create_pdf, close_pdf)
-from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, TEXT
+from itools.xml import XMLParser, START_ELEMENT, TEXT
 
 # Import from the reportlab library
 from reportlab.lib.units import inch, cm

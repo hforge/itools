@@ -23,8 +23,8 @@ from time import time
 from itools import vfs
 from itools.xml import get_element, TEXT
 from itools.html import HTMLFile
-from itools.catalog import Catalog, CatalogAware, make_catalog, TextField
 from itools.utils import vmsize
+from itools.xapian import Catalog, make_catalog, CatalogAware, TextField
 
 
 

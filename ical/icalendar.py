@@ -23,12 +23,12 @@ from datetime import datetime, timedelta
 from operator import itemgetter
 
 # Import from itools
-from itools.catalog import (PhraseQuery, EqQuery, RangeQuery, OrQuery,
-    AndQuery, KeywordField, MemoryCatalog)
-from itools.csv import (escape_data, fold_line, parse_table, Property,
-    Record as TableRecord, Table)
+from itools.csv import MemoryCatalog, Property, Record as TableRecord, Table
+from itools.csv import escape_data, fold_line, parse_table
 from itools.datatypes import Integer, String, Unicode, URI
 from itools.handlers import guess_encoding, TextFile
+from itools.xapian import PhraseQuery, EqQuery, RangeQuery, OrQuery, AndQuery
+from itools.xapian import KeywordField
 from types import data_properties, DateTime, Time
 
 

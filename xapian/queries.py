@@ -18,7 +18,7 @@
 """
 To build a query:
 
-  from itools.catalog import EqQuery, AndQuery
+  from itools.xapian import EqQuery, AndQuery
   s1 = EqQuery('format', 'Actu')
   s2 = EqQuery('archive', True)
   s3 = EqQuery('workflow_state', 'public')

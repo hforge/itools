@@ -21,11 +21,11 @@
 from datetime import datetime
 
 # Import from itools
-from itools.catalog import (get_field, PhraseQuery, EqQuery, AndQuery,
-    MemoryCatalog)
 from itools.datatypes import DateTime, String, Integer
 from itools.handlers import File
 from itools import vfs
+from itools.xapian import AndQuery, EqQuery, PhraseQuery, get_field
+from memory import MemoryCatalog
 from parser import parse
 
 
@@ -353,7 +353,7 @@ class Table(File):
     # To index some fields the schema should be declared as:
     # schema = {'firstname': Unicode, 'lastname': Unicode,
     #           'age': Integer(index='<analyser>')}
-    # where <analyser> is an itools.catalog analyser or derivate: keyword,
+    # where <analyser> is an itools.xapian analyser or derivate: keyword,
     # book, text, path.
     #######################################################################
     schema = {}

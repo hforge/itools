@@ -17,9 +17,30 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
+from base import CatalogAware
 from catalog import Catalog, make_catalog
+from fields import (BaseField, TextField, KeywordField, IntegerField,
+                    BoolField, register_field, get_field)
+from queries import (EqQuery, RangeQuery, PhraseQuery, AndQuery, OrQuery,
+                     NotQuery)
 
 __all__ = [
     'make_catalog',
-    'Catalog']
+    'Catalog',
+    'CatalogAware',
+    # Fields
+    'BaseField',
+    'TextField',
+    'KeywordField',
+    'IntegerField',
+    'BoolField',
+    'register_field',
+    'get_field',
+    # Queries
+    'EqQuery',
+    'RangeQuery',
+    'PhraseQuery',
+    'AndQuery',
+    'OrQuery',
+    'NotQuery']
 

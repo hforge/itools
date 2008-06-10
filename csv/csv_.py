@@ -19,9 +19,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.catalog import PhraseQuery, AndQuery, get_field, MemoryCatalog
 from itools.datatypes import String, Integer, is_datatype
 from itools.handlers import TextFile, guess_encoding, register_handler_class
+from itools.xapian import AndQuery, PhraseQuery, get_field
+from memory import MemoryCatalog
 from parser import parse
 
 
@@ -56,7 +57,7 @@ class CSVFile(TextFile):
     # To index some columns the schema should be declared as:
     # schema = {'firstname': Unicode, 'lastname': Unicode,
     #           'age': Integer(index='<analyser>')}
-    # where <analyser> is an itools.catalog analyser or derivate: keyword,
+    # where <analyser> is an itools.xapian analyser or derivate: keyword,
     # book, text, path.
     schema = None
 

@@ -22,10 +22,10 @@ from unittest import TestCase
 
 # Import from itools
 from itools.datatypes import Boolean, Date, Integer, Unicode, URI
-from itools.catalog import AndQuery, OrQuery, EqQuery
 from itools.csv import CSVFile, Table
 from itools.csv.table import unfold_lines
 from itools import vfs
+from itools.xapian import AndQuery, OrQuery, EqQuery
 
 
 TEST_DATA_1 = """python,http://python.org/,52343,2003-10-23

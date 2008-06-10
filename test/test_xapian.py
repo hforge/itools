@@ -24,10 +24,9 @@ import re
 
 # Import from itools
 from itools import vfs
-from itools.catalog import (CatalogAware, BoolField, KeywordField, TextField,
-                            IntegerField, AndQuery, RangeQuery, EqQuery,
-                            NotQuery)
-from itools.xapian import make_catalog, Catalog
+from itools.xapian import make_catalog, Catalog, CatalogAware
+from itools.xapian import AndQuery, RangeQuery, EqQuery, NotQuery
+from itools.xapian import BoolField, KeywordField, TextField, IntegerField
 
 
 class FieldsTestCase(TestCase):

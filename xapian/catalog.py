@@ -20,14 +20,16 @@
 from marshal import dumps, loads
 
 # Import from xapian
-from xapian import (Database, WritableDatabase, DB_CREATE, DB_OPEN, Document,
-                    Enquire, Query, sortable_serialise, sortable_unserialise,
-                    MultiValueSorter, TermGenerator, QueryParser, Stem)
+from xapian import Database, WritableDatabase, DB_CREATE, DB_OPEN
+from xapian import Document, Enquire, Query, TermGenerator, QueryParser, Stem
+from xapian import MultiValueSorter, sortable_serialise, sortable_unserialise
 
 # Import from itools
 from itools.uri import get_absolute_reference
-from itools.catalog import (CatalogAware, get_field, EqQuery, RangeQuery,
-                            PhraseQuery, AndQuery, OrQuery, NotQuery)
+from base import CatalogAware
+from fields import get_field
+from queries import (EqQuery, RangeQuery, PhraseQuery, AndQuery, OrQuery,
+                     NotQuery)
 
 
 

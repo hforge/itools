@@ -19,7 +19,7 @@ Implements a catalog in memory.
 """
 
 
-# TODO Refactor this code with the rest of itools.catalog
+# TODO Refactor this code with the rest of itools.xapian
 
 
 class Index(dict):

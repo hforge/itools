@@ -20,7 +20,6 @@ from unittest import TestCase, TestLoader, TestSuite, TextTestRunner
 
 # Import tests
 import test_abnf
-import test_catalog
 import test_csv
 import test_datatypes
 import test_gettext
@@ -40,12 +39,13 @@ import test_vfs
 import test_web
 import test_workflow
 import test_xliff
+import test_xapian
 import test_xml
 
-test_modules = [test_abnf, test_catalog, test_csv, test_datatypes,
-    test_gettext, test_handlers, test_html, test_http, test_i18n, test_ical,
-    test_odf, test_pdf, test_rest, test_rss, test_stl, test_tmx, test_uri,
-    test_vfs, test_web, test_workflow, test_xliff, test_xml]
+test_modules = [test_abnf, test_csv, test_datatypes, test_gettext,
+    test_handlers, test_html, test_http, test_i18n, test_ical, test_odf,
+    test_pdf, test_rest, test_rss, test_stl, test_tmx, test_uri, test_vfs,
+    test_web, test_workflow, test_xliff, test_xapian, test_xml]
 
 
 loader = TestLoader()

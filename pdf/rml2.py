@@ -21,18 +21,19 @@
 from cStringIO import StringIO
 
 # Import from itools
-from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, TEXT
 from itools.datatypes import Unicode, XML
+from itools.vfs import vfs
+
+from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, TEXT
 
 #Import from the reportlab Library
-#from reportlab.pdfgen.canvas import Canvas
-from reportlab.lib.units import inch, cm, mm, pica
+from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT, TA_JUSTIFY
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import(getSampleStyleSheet as getBaseStyleSheet,
                                  ParagraphStyle)
-from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT, TA_JUSTIFY
-from reportlab.platypus import (Paragraph, SimpleDocTemplate, Preformatted)
+from reportlab.lib.units import inch, cm, mm, pica
 from reportlab.platypus.flowables import HRFlowable
+from reportlab.platypus import (Paragraph, SimpleDocTemplate, Preformatted)
 
 
 # Mapping HTML -> REPORTLAB
@@ -44,6 +45,36 @@ __tab_para_alignment = {'LEFT': TA_LEFT, 'RIGHT': TA_RIGHT,
 TAG_NOT_SUPPORTED = '%s: line %s tag "%s" is currently not supported.'
 WARNING_DTD = '%s: line %s tag "%s" is unapproprieted here.'
 encoding = 'UTF-8'
+
+
+def rml2topdf_test(value, raw=False):
+    """
+      If raw is False, value is the test file path
+      otherwise it is the string representation of a xml document
+    """
+
+    if raw is False:
+        input = vfs.open(value)
+        data = input.read()
+        input.close()
+    else:
+        data = value
+    stream = XMLParser(data)
+    return document_stream(stream, StringIO(), 'test', True)
+
+
+def rml2topdf(filename):
+    """
+      Main function: produces a pdf file from a html-like xml document
+
+      filename: source file
+    """
+
+    file = open(filename, 'r')
+    stream = XMLParser(file.read())
+    iostream = StringIO()
+    document_stream(stream, iostream, filename, False)
+    return iostream.getvalue()
 
 
 def getSampleStyleSheet():
@@ -63,30 +94,6 @@ def getSampleStyleSheet():
                                   fontSize=9),
                    alias='h6')
     return stylesheet
-
-
-def rml2topdf_test(data):
-    """
-      Main function: produces a pdf file from a html-like xml
-      document represented by a string
-    """
-
-    stream = XMLParser(data)
-    return document_stream(stream, StringIO(), 'test', True)
-
-
-def rml2topdf(filename):
-    """
-      Main function: produces a pdf file from a html-like xml document
-
-      filename: source file
-    """
-
-    file = open(filename, 'r')
-    stream = XMLParser(file.read())
-    iostream = StringIO()
-    document_stream(stream, iostream, filename, False)
-    return iostream.getvalue()
 
 
 def document_stream(stream, pdf_stream, document_name, is_test=False):
@@ -140,7 +147,7 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
 
     #### BUILD PDF ####
     if is_test == True:
-        _story = list(story)
+        _story = list(story), pdf_stylesheet
 
 
     doc = SimpleDocTemplate(pdf_stream, pagesize = letter)
@@ -173,6 +180,8 @@ def body_stream(stream, _tag_name, _attributes, pdf_stylesheet):
                                         pdf_stylesheet))
             elif tag_name == 'hr':
                 story.append(hr_stream(stream, tag_name, attributes))
+            elif tag_name == 'img'
+                story.append(img_stream(stream, tag_name, attributes))
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
@@ -309,8 +318,6 @@ def hr_stream(stream, _tag_name, _attributes):
         stream : parser stream
     """
 
-    stack = []
-    stack.append((_tag_name, _attributes))
     while True:
         event, value, line_number = stream_next(stream)
         if event == None:
@@ -318,19 +325,40 @@ def hr_stream(stream, _tag_name, _attributes):
         #### START ELEMENT ####
         if event == START_ELEMENT:
             tag_uri, tag_name, attributes = value
-            stack.append((tag_name, attributes))
+            print WARNING_DTD % ('document', line_number, tag_name)
         #### END ELEMENT ####
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
             if tag_name == _tag_name:
                 widget = create_hr(_attributes)
                 return widget
-            else:
-                element = stack.pop()
         #### TEXT ELEMENT ####
         elif event == TEXT:
             pass
+        else:
+            print WARNING_DTD % ('document', line_number, tag_name)
 
+
+def img_stream(stream , tag_name, attributes, pdf_stylesheet):
+    while True:
+        event, value, line_number = stream_next(stream)
+        if event == None:
+            break
+        #### START ELEMENT ####
+        if event == START_ELEMENT:
+            tag_uri, tag_name, attributes = value
+            print WARNING_DTD % ('document', line_number, tag_name)
+        #### END ELEMENT ####
+        elif event == END_ELEMENT:
+            tag_uri, tag_name = value
+            if tag_name == _tag_name:
+                widget = create_img(_attributes)
+                return widget
+        #### TEXT ELEMENT ####
+        elif event == TEXT:
+            pass
+        else:
+            print WARNING_DTD % ('document', line_number, tag_name)
 
 def ol_stream(stream , tag_name, attributes):
     """

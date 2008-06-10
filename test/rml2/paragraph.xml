@@ -1,0 +1,78 @@
+<html>
+  <body>
+    <h1>first title : paragraph</h1>
+    <!--<h1>first title : paragraph</h1>--> 
+    <p>
+      This paragraph
+      contains a lot of lines
+    </p>
+    <!--<p>This paragraph contains a lot of lines</p>-->
+    <p>
+      This paragraph
+      contains      a lot of spaces
+      in this xml source.
+    </p>
+    <!--<p>This paragraph contains a lot of spaces in this xml source.</p>-->
+    <p>
+      toto<br />tata<br />
+      titi
+    </p>
+
+    <!--<p>toto<br/>tata<br/>titi</p>-->
+    <p>
+      toto          <br />
+      tata   <br />     titi
+    </p>
+    <!--<p>toto<br/>tata<br/>titi</p>-->
+    <p><u><i>foo</i> </u></p>
+    <!-- <p><u><i>foo</i> </u></p>-->
+    <h2>first subtitle : formatting</h2>
+    <!--<p><u><i>foo</i> </u></p>-->
+    <p>
+      <tt>Teletype text</tt><br />
+      <i>Italic text</i><br />
+      <b>Bold text</b><br />
+      <big>Big text</big><br />
+      <small>Small text</small><br /> 
+      super<sup>text</sup><br /> 
+      sub<sub>text</sub><br /> 
+    </p>
+    <!--<p>
+      <tt>Teletype text</tt>
+      <br/>
+      <i>Italic text</i>
+      <br/>
+      <b>Bold text</b>
+      <br/>
+      <big>Big text</big>
+      <br/>
+      <small>Small text</small>
+      <br/>
+      super
+      <sup>text</sup>
+      <br/>
+      sub
+      <sub>text</sub>
+      <br/>
+    </p>-->
+
+    <h2>second subtitle : <i>&lt;pre></i></h2>
+    <pre>
+      This text is
+      in a fixed-pitch
+      font, and it preserves
+      both      spaces and
+      line breaks
+    </pre>
+    <!--
+    <h2>second subtitle : <i>&lt;pre></i></h2>
+    <pre>
+      This text is
+      in a fixed-pitch
+      font, and it preserves
+      both      spaces and
+      line breaks
+    </pre>
+    -->
+  </body>
+</html>

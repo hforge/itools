@@ -1,0 +1,84 @@
+<html>
+  <body>
+    <h1>Ordered lists</h1>
+    <h4>Numbered list:</h4>
+    <p>
+      <ol>
+        <li>Apples</li>
+        <li>Bananas</li>
+        <li>Lemons</li>
+        <li>Oranges</li>
+      </ol>  
+    </p>
+
+    <h4>Letters list:</h4>
+    <p>
+      <ol type="A">
+        <li>Apples</li>
+        <li>Bananas</li>
+        <li>Lemons</li>
+        <li>Oranges</li>
+      </ol>  
+    </p>
+
+    <h4>Lowercase letters list:</h4>
+    <p>
+      <ol type="a">
+        <li>Apples</li>
+        <li>Bananas</li>
+        <li>Lemons</li>
+        <li>Oranges</li>
+      </ol>  
+    </p>
+
+    <h4>Roman numbers list:</h4>
+    <p>
+      <ol type="I">
+        <li>Apples</li>
+        <li>Bananas</li>
+        <li>Lemons</li>
+        <li>Oranges</li>
+      </ol>  
+    </p>
+
+    <h4>Lowercase Roman numbers list:</h4>
+    <p>
+      <ol type="i">
+        <li>Apples</li>
+        <li>Bananas</li>
+        <li>Lemons</li>
+        <li>Oranges</li>
+      </ol>  
+    </p>
+
+    <h1>Unordered list</h1>
+    <h4>Disc bullets list:</h4>
+    <p>
+      <ul type="disc">
+        <li>Apples</li>
+        <li>Bananas</li>
+        <li>Lemons</li>
+        <li>Oranges</li>
+      </ul>  
+    </p>
+    <h4>Circle bullets list:</h4>
+    <p>
+      <ul type="circle">
+        <li>Apples</li>
+        <li>Bananas</li>
+        <li>Lemons</li>
+        <li>Oranges</li>
+      </ul>  
+    </p>
+
+    <h4>Square bullets list:</h4>
+    <p>
+      <ul type="square">
+        <li>Apples</li>
+        <li>Bananas</li>
+        <li>Lemons</li>
+        <li>Oranges</li>
+      </ul>  
+    </p>
+  </body>
+</html>

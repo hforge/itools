@@ -23,6 +23,7 @@ from cStringIO import StringIO
 # Import from itools
 from itools.datatypes import Unicode, XML
 from itools.vfs import vfs
+import itools.http
 
 from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, TEXT
 
@@ -33,7 +34,8 @@ from reportlab.lib.styles import(getSampleStyleSheet as getBaseStyleSheet,
                                  ParagraphStyle)
 from reportlab.lib.units import inch, cm, mm, pica
 from reportlab.platypus.flowables import HRFlowable
-from reportlab.platypus import (Paragraph, SimpleDocTemplate, Preformatted)
+from reportlab.platypus import (Paragraph, SimpleDocTemplate, Preformatted,
+                                Image)
 
 
 # Mapping HTML -> REPORTLAB
@@ -180,8 +182,10 @@ def body_stream(stream, _tag_name, _attributes, pdf_stylesheet):
                                         pdf_stylesheet))
             elif tag_name == 'hr':
                 story.append(hr_stream(stream, tag_name, attributes))
-            elif tag_name == 'img'
-                story.append(img_stream(stream, tag_name, attributes))
+            elif tag_name == 'img':
+                widget = img_stream(stream, tag_name, attributes)
+                if widget:
+                    story.append(widget)
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
@@ -339,7 +343,8 @@ def hr_stream(stream, _tag_name, _attributes):
             print WARNING_DTD % ('document', line_number, tag_name)
 
 
-def img_stream(stream , tag_name, attributes, pdf_stylesheet):
+def img_stream(stream , _tag_name, _attributes):
+
     while True:
         event, value, line_number = stream_next(stream)
         if event == None:
@@ -359,6 +364,7 @@ def img_stream(stream , tag_name, attributes, pdf_stylesheet):
             pass
         else:
             print WARNING_DTD % ('document', line_number, tag_name)
+
 
 def ol_stream(stream , tag_name, attributes):
     """
@@ -543,37 +549,8 @@ def link_stream(stream , tag_name, attributes):
 
 
 ##############################################################################
-# Internal Functions                                                         #
+# Reportlab widget                                                           #
 ##############################################################################
-def stream_next(stream):
-    """
-        return the next value of the stream
-        (event, value, line_number)
-        or
-        (None, None, None) if StopIteration exception is raised
-    """
-
-    try:
-        event, value, line_number = stream.next()
-        return (event, value, line_number)
-    except StopIteration:
-        return (None, None, None)
-
-
-def normalize(data):
-    """
-        Normalize data
-
-        http://www.w3.org/TR/html401/struct/text.html#h-9.1
-        collapse input white space sequences when producing output inter-word
-        space.
-    """
-
-    # decode the data
-    data = Unicode.decode(data, encoding)
-    return ' '.join(data.split())
-
-
 def create_paragraph(pdf_stylesheet, element, content):
     """
         Create a reportlab paragraph widget.
@@ -632,24 +609,6 @@ def create_preformatted(pdf_stylesheet, element, content):
     return widget
 
 
-def build_start_tag(tag_name, attributes={}):
-    """
-        Create the XML start tag from his name and his attributes
-    """
-
-    attr_str = ''.join([' %s="%s"' % (key[1], attributes[key])
-                        for key in attributes.keys()])
-    return '<%s%s>' % (tag_name, attr_str)
-
-
-def build_end_tag(tag_name):
-    """
-        Create the XML end tag from his name.
-    """
-
-    return '</%s>' % tag_name
-
-
 def create_hr(attributes):
     """
         Create a reportlab hr widget
@@ -676,6 +635,106 @@ def create_hr(attributes):
         if vAlign in ['TOP', 'MIDDLE', 'BOTTOM']:
             attrs['vAlign'] = vAlign
     return HRFlowable(**attrs)
+
+
+def create_img(attributes, check_dimension=False):
+    """
+        Create a reportlab image widget.
+        If check_dimension is true and the width and the height attributes
+        are not set we return None
+    """
+
+    width, height = None, None
+    filename = None
+
+    for key, attr_value in attributes.iteritems():
+        key = key[1]
+        if key == 'src':
+            filename = attr_value
+        elif key == 'width':
+            width = rml_value(attr_value)
+        elif key == 'height':
+            height = rml_value(attr_value)
+
+    if filename is None:
+        print u'/!\ Filename is None'
+        return None
+
+    if check_dimension and width == None and height == None:
+        print u'/!\ Cannot add an image inside a td without predefined size'
+        return None
+
+    if vfs.exists(filename) is False:
+        print u"/!\ The filename doesn't exist"
+        return None
+
+    # Remote file
+    if filename.startswith('http://'):
+        filename = StringIO(vfs.open(filename))
+
+    try:
+        I = Image(filename)
+        if height is not None:
+            I.drawHeight = height
+        if width is not None:
+            I.drawWidth = width
+        return I
+    except IOError, msg:
+        print msg
+        return None
+    except Exception, msg:
+        print msg
+        return None
+
+
+##############################################################################
+# Internal Functions                                                         #
+##############################################################################
+def stream_next(stream):
+    """
+        return the next value of the stream
+        (event, value, line_number)
+        or
+        (None, None, None) if StopIteration exception is raised
+    """
+
+    try:
+        event, value, line_number = stream.next()
+        return (event, value, line_number)
+    except StopIteration:
+        return (None, None, None)
+
+
+def normalize(data):
+    """
+        Normalize data
+
+        http://www.w3.org/TR/html401/struct/text.html#h-9.1
+        collapse input white space sequences when producing output inter-word
+        space.
+    """
+
+    # decode the data
+    data = Unicode.decode(data, encoding)
+    return ' '.join(data.split())
+
+
+def build_start_tag(tag_name, attributes={}):
+    """
+        Create the XML start tag from his name and his attributes
+    """
+
+    attr_str = ''.join([' %s="%s"' % (key[1], attributes[key])
+                        for key in attributes.keys()])
+    return '<%s%s>' % (tag_name, attr_str)
+
+
+def build_end_tag(tag_name):
+    """
+        Create the XML end tag from his name.
+    """
+
+    return '</%s>' % tag_name
 
 
 def get_color(value):

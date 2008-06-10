@@ -23,12 +23,11 @@ from time import time
 from itools import vfs
 from itools.xml import get_element, TEXT
 from itools.html import HTMLFile
-from itools.utils import vmsize
 from itools.xapian import Catalog, make_catalog, CatalogAware, TextField
 
 
 
-docs_path = '/usr/share/doc/python-docs-2.4.4/html/lib'
+docs_path = '/usr/share/doc/python-docs-2.5.1/html/lib'
 
 
 class Document(CatalogAware, HTMLFile):
@@ -107,7 +106,6 @@ def search_documents():
 if __name__ == '__main__':
     # Check input
     options = ('bench-index', 'bench-search',
-               'bench-memory',
                'profile-index', 'profile-search')
     usage = "This script expects one of the following options:\n\n"
     for option in options:
@@ -141,14 +139,3 @@ if __name__ == '__main__':
         t0 = time()
         search_documents()
         print time() - t0
-    elif option == 'bench-memory':
-        load_catalog()
-        index = catalog.get_index('body')
-        tree_file = vfs.open(index.uri.resolve2('%d_tree' % index.n))
-        m0 = vmsize()
-        try:
-            index.root._load_children_deep(tree_file)
-        finally:
-            tree_file.close()
-        m1 = vmsize()
-        print '%s - %s = %s' % (m1, m0, m1-m0)

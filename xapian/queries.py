@@ -176,7 +176,7 @@ class NotQuery(object):
 
 
     def search(self, catalog):
-        from itools.catalog import Catalog
+        from itools.xapian import Catalog
 
         all_documents = catalog.search()
         not_documents = self.query.search(catalog)

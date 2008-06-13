@@ -35,7 +35,7 @@ from reportlab.lib.styles import(getSampleStyleSheet as getBaseStyleSheet,
 from reportlab.lib.units import inch, cm, mm, pica
 from reportlab.platypus.flowables import HRFlowable
 from reportlab.platypus import (Paragraph, SimpleDocTemplate, Preformatted,
-                                Image)
+                                Image, Indenter)
 
 
 # Mapping HTML -> REPORTLAB
@@ -186,6 +186,11 @@ def body_stream(stream, _tag_name, _attributes, pdf_stylesheet):
                 widget = img_stream(stream, tag_name, attributes)
                 if widget:
                     story.append(widget)
+            elif tag_name == 'ol':
+                story.extend(ol_stream(stream, tag_name, attributes,
+                    pdf_stylesheet))
+            elif tag_name == 'ul':
+                story.extend(ul_stream(stream, tag_name, attributes, pdf_stylesheet))
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
@@ -207,7 +212,7 @@ def paragraph_stream(stream , elt_tag_name, elt_attributes, pdf_stylesheet):
     """
         stream : parser stream
     """
-
+    tag_ok=('i', 'em', 'b', 'strong', 'u', 'sup', 'sub','br','small','big','tt')
     stack = []
     story = []
     content = []
@@ -220,23 +225,20 @@ def paragraph_stream(stream , elt_tag_name, elt_attributes, pdf_stylesheet):
         #### START ELEMENT ####
         if event == START_ELEMENT:
             tag_uri, tag_name, attributes = value
-            if tag_name in ('p','h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
-                print WARNING_DTD % ('document', line_number, tag_name)
-            elif tag_name in ('i', 'em', 'b', 'strong', 'u', 'sup', 'sub'):
-                content.append(build_start_tag(p_format_map.get(tag_name,
-                                                                'b')))
-            elif tag_name == 'br':
-                continue
-            elif tag_name == 'ol':
-                content += ol_stream(stream, tag_name, attributes)
-            elif tag_name == 'ul':
-                content += ul_stream(stream, tag_name, attributes)
-            elif tag_name == 'a':
-                content += link_stream(stream, tag_name, attributes)
+            if tag_name in tag_ok:
+                if tag_name in ('i', 'em', 'b', 'strong', 'u', 'sup', 'sub'):
+                    content.append(build_start_tag(p_format_map.get(tag_name,
+                                                                    'b')))
+                elif tag_name == 'br':
+                    continue
+                elif tag_name == 'a':
+                    content += link_stream(stream, tag_name, attributes)
+                else:
+                    print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
+                    # unknown tag
+                    stack.append((tag_name, attributes))
             else:
-                print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
-                # unknown tag
-                stack.append((tag_name, attributes))
+                print WARNING_DTD % ('document', line_number, tag_name)
 
         #### END ELEMENT ####
         elif event == END_ELEMENT:
@@ -291,6 +293,7 @@ def pre_stream(stream , tag_name, attributes, pdf_stylesheet):
         event, value, line_number = stream_next(stream)
         if event == None:
             break
+
         #### START ELEMENT ####
         if event == START_ELEMENT:
             print WARNING_DTD % ('document', line_number, tag_name)
@@ -366,30 +369,26 @@ def img_stream(stream , _tag_name, _attributes):
             print WARNING_DTD % ('document', line_number, tag_name)
 
 
-def ol_stream(stream , tag_name, attributes):
+def ol_stream(stream , tag_name, attributes, pdf_stylesheet, id = 0):
     """
         stream : parser stream
     """
-
+    print "ol_stream"
     stack = []
-    content = []
+    INDENT_VALUE = 1 * cm
+    story = [Indenter(left=INDENT_VALUE)]
+    strid = str(id)
+    content = ["<seqReset id='" + strid + "'/>"]
+    #content = ['<seqReset id='" + strid + "'/>']
     has_content = False
     stack.append((tag_name, attributes))
+    liopenstate = 0
     attrs = {}
     if exist_attribute(attributes, ['type']):
-        attrs['type'] = attributes.get((None,'type')).lower()
-        if attrs['type'] == 'upper roman':
-            content.append("<seqFormat value='I'></seq>")
-        if attrs['type'] == 'lower roman':
-            content.append("<seqFormat value='i'></seq>")
-        if attrs['type'] == 'lower alpha':
-            content.append("<seqFormat value='a'></seq>")
-        if attrs['type'] == 'upper alpha':
-            content.append("<seqFormat value='A'></seq>")
-        else:
-            content.append("<seqFormat value='1'></seq>")
+        attrs['type'] = attributes.get((None,'type'))
+        content.append("<seqFormat id='" + strid + "' value='" + attrs['type'] + "'/>")
     else:
-        content.append("<seqFormat value='1'></seq>")
+        content.append("<seqFormat id='" + strid + "' value='1'/>")
 
     while True:
         event, value, line_number = stream_next(stream)
@@ -398,13 +397,22 @@ def ol_stream(stream , tag_name, attributes):
         #### START ELEMENT ####
         if event == START_ELEMENT:
             tag_uri, tag_name, attributes = value
+            print '<%s>' % tag_name
             if tag_name == 'ol':
-                print WARNING_DTD % ('document', line_number, tag_name)
+                if liopenstate:
+                    print "content: ", content
+                    story.append(create_paragraph(pdf_stylesheet, stack[0], content))
+                    content = ["<seqDefault id='" + strid + "'/>"]
+                    story += ol_stream(stream, tag_name, attributes,
+                                       pdf_stylesheet, id+1)
+                else:
+                    print WARNING_DTD % ('document', line_number, tag_name)
             elif tag_name in ('i', 'em', 'b', 'strong', 'u', 'sup', 'sub'):
                 content.append(build_start_tag(p_format_map.get(tag_name,
                                                                 'b')))
             elif tag_name == 'li':
-                content.append("<seq> ")
+                liopenstate=1
+                content.append("<seq id='" + strid + "'/> ")
             elif tag_name == 'a':
                 content += link_stream(stream, tag_name, attributes)
             else:
@@ -415,13 +423,17 @@ def ol_stream(stream , tag_name, attributes):
         #### END ELEMENT ####
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
+            print '</%s>' % tag_name
             if tag_name == 'ol':
-                content.append("<seqReset/>")
-                return content
+                story.append(create_paragraph(pdf_stylesheet, stack.pop(), content))
+                story.append(Indenter(left=-INDENT_VALUE))
+                return story
+
             elif tag_name in ('i', 'em', 'b', 'strong', 'u', 'sup', 'sub'):
                 content.append(build_end_tag(p_format_map.get(tag_name, 'b')))
             elif tag_name == 'li':
-                content.append("</seq><br/>")
+                content.append("<br/>")
+                liopenstate = 0
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
@@ -430,7 +442,7 @@ def ol_stream(stream , tag_name, attributes):
 
         #### TEXT ELEMENT ####
         elif event == TEXT:
-            if len(value) > 0:
+            if liopenstate:
                 # alow to write :
                 # <para><u><i>foo</i> </u></para>
                 value = XML.encode(value) # entities
@@ -438,13 +450,14 @@ def ol_stream(stream , tag_name, attributes):
                 has_content = True
 
 
-def ul_stream(stream , tag_name, attributes):
+def ul_stream(stream , tag_name, attributes, pdf_stylesheet):
     """
         stream : parser stream
     """
 
     stack = []
-    story = []
+    INDENT_VALUE=1 * cm
+    story = [Indenter(left=INDENT_VALUE)]
     content = []
     has_content = False
     stack.append((tag_name, attributes))
@@ -475,7 +488,9 @@ def ul_stream(stream , tag_name, attributes):
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
             if tag_name == 'ul':
-                return content
+                story.append(create_paragraph(pdf_stylesheet, stack.pop(), content))
+                story.append(Indenter(left=-INDENT_VALUE))
+                return story
             elif tag_name in ('i', 'em', 'b', 'strong', 'u', 'sup', 'sub'):
                 content.append(build_end_tag(p_format_map.get(tag_name, 'b')))
             elif tag_name == 'li':
@@ -561,11 +576,14 @@ def create_paragraph(pdf_stylesheet, element, content):
     # Another choice is to strip the content (1 time) here
     # content = ['  Hello\t\', '\t<i>how are</i>', '\tyou?']
     content = normalize(' '.join(content))
-    style = build_style(pdf_stylesheet,element) 
-    #return Paragraph(content, style, bulletText)
-    return Paragraph(content, style, None)
+    print '-- <p>','-' * 77
+    print content
+    print '$$ </p>','$' * 76
+    style, bulletText = build_style(pdf_stylesheet, element)
+    return Paragraph(content, style, bulletText)
 
-def build_style(pdf_stylesheet,element):
+
+def build_style(pdf_stylesheet, element):
     style_attr = {}
     # The default style is Normal
     parent_style_name = 'Normal'
@@ -590,12 +608,9 @@ def build_style(pdf_stylesheet,element):
     if element[0] in ('h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
         parent_style_name = element[0]
     parent_style = get_style(pdf_stylesheet, parent_style_name)
-    return ParagraphStyle(style_name, parent=parent_style, **style_attr)
+    return (ParagraphStyle(style_name, parent=parent_style, **style_attr), bulletText)
 
     
-
-    
-
 def create_preformatted(pdf_stylesheet, element, content):
     """
         Create a reportlab preformatted widget.
@@ -830,4 +845,3 @@ def is_str(str, check_is_unicode=True):
             return False
         return type(str) == type(u'')
     return True
-

@@ -556,14 +556,19 @@ def create_paragraph(pdf_stylesheet, element, content):
         Create a reportlab paragraph widget.
     """
 
-    # The default style is Normal
-    parent_style_name = 'Normal'
-    style_attr = {}
     # Now, we strip each value in content before call create_paragraph
     # content = ['Hello', '<i>how are</i>', 'you?']
     # Another choice is to strip the content (1 time) here
     # content = ['  Hello\t\', '\t<i>how are</i>', '\tyou?']
     content = normalize(' '.join(content))
+    style = build_style(pdf_stylesheet,element) 
+    #return Paragraph(content, style, bulletText)
+    return Paragraph(content, style, None)
+
+def build_style(pdf_stylesheet,element):
+    style_attr = {}
+    # The default style is Normal
+    parent_style_name = 'Normal'
     bulletText = None
 
     # Overload the attributes values
@@ -585,9 +590,11 @@ def create_paragraph(pdf_stylesheet, element, content):
     if element[0] in ('h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
         parent_style_name = element[0]
     parent_style = get_style(pdf_stylesheet, parent_style_name)
-    style = ParagraphStyle(style_name, parent=parent_style, **style_attr)
-    return Paragraph(content, style, bulletText)
+    return ParagraphStyle(style_name, parent=parent_style, **style_attr)
 
+    
+
+    
 
 def create_preformatted(pdf_stylesheet, element, content):
     """

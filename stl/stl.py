@@ -23,12 +23,13 @@ language I could imagine.
 """
 
 # Import from the Standard Library
+from copy import copy
 from re import compile
 from types import GeneratorType
 
 # Import from itools
 from itools.datatypes import Boolean, String, URI
-from itools.uri import Path
+from itools.uri import Path, Reference
 from itools.xml import (XMLError, XMLNSNamespace, set_namespace,
     get_namespace, AbstractNamespace, XMLParser, START_ELEMENT, END_ELEMENT,
     TEXT, COMMENT, find_end, stream_to_str)
@@ -460,8 +461,9 @@ def resolve_pointer(value, offset):
     if not uri.scheme and not uri.authority:
         if uri.path.is_relative():
             if uri.path or str(uri) == '.':
-                # XXX Here we loss the query and fragment.
-                value = offset.resolve(uri.path)
+                new_path = offset.resolve(uri.path)
+                value = Reference("", copy(uri.authority), new_path,
+                                  uri.query.copy(), uri.fragment)
                 return str(value)
 
     return value

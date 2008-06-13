@@ -533,6 +533,15 @@ class Table(File):
         self.dirty = None
 
 
+    def save_state_to(self, uri):
+        # TODO: this is a hack, for 0.30 this case should be covered by the
+        # handler's protocol
+        File.save_state_to(self, uri)
+        if uri == self.uri:
+            self.added_records = []
+            self.removed_records = []
+
+
     #######################################################################
     # API / Private
     #######################################################################

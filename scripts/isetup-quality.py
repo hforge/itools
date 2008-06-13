@@ -93,8 +93,9 @@ def analyse_file_pass1(filename):
 
     current_line = -1
     for current_line, line in enumerate(file(filename)):
-        # Bad length
-        if len(line) > 79:
+        # Bad length (the end-of-line is included)
+        # FIXME: 80 is good for '\n' or '\r' ended files, not for '\r\n'
+        if len(line) > 80:
             stats['bad_length'].append(current_line+1)
 
         # Bad end

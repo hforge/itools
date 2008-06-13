@@ -1,14 +1,6 @@
 <html>
   <body>
     <h1>Ordered lists</h1>
-    <h4>Numbered list:</h4>
-    <ol>
-      <li>Apples</li>
-      <li>Bananas</li>
-      <li>Lemons</li>
-      <li>Oranges</li>
-    </ol>  
-
     <h4>Letters list:</h4>
     <ol type="A">
       <li>Apples</li>
@@ -58,7 +50,6 @@
       <li>Oranges</li>
     </ul>  
 
-
     <h4>Square bullets list:</h4>
     <ul type="square">
       <li>Apples</li>
@@ -67,5 +58,129 @@
       <li>Oranges</li>
     </ul>  
 
+    <h1>Mix</h1>
+    <h4>ol in ol</h4>
+    <ol>
+      <li>Apples</li>
+      <li>Bananas</li>
+      <li>Lemons</li>
+      <li>Oranges</li>
+      <li>ITEM
+        <ol>
+          <li>Apples1</li>
+          <li>Bananas1</li>
+          <li>Lemons1</li>
+          <li>Oranges1</li>
+        </ol>
+        END ITEM
+      </li>
+      <li>Apples2</li>
+      <li>Bananas2</li>
+      <li>Lemons2</li>
+      <li>Oranges2</li>
+    </ol>
+
+    <h4>ul in ol</h4>
+    <ol>
+      <li>Apples</li>
+      <li>Bananas</li>
+      <li>Lemons</li>
+      <li>Oranges</li>
+      <li>ITEM
+        <ul>
+          <li>Apples1</li>
+          <li>Bananas1</li>
+          <li>Lemons1</li>
+          <li>Oranges1</li>
+        </ul>
+        END ITEM
+      </li>
+      <li>Apples2</li>
+      <li>Bananas2</li>
+      <li>Lemons2</li>
+      <li>Oranges2</li>
+    </ol>  
+
+    <h4>ul in ul</h4>
+    <ul>
+      <li>Apples</li>
+      <li>Bananas</li>
+      <li>Lemons</li>
+      <li>Oranges</li>
+      <li>ITEM
+        <ul>
+          <li>Apples1</li>
+          <li>Bananas1</li>
+          <li>Lemons1</li>
+          <li>Oranges1</li>
+        </ul>
+        END ITEM
+      </li>
+      <li>Apples2</li>
+      <li>Bananas2</li>
+      <li>Lemons2</li>
+      <li>Oranges2</li>
+    </ul>  
+
+
+    <h4>ol in ul</h4>
+    <ul>
+      <li>Apples</li>
+      <li>Bananas</li>
+      <li>Lemons</li>
+      <li>Oranges</li>
+      <li>ITEM
+        <ol>
+          <li>Apples1</li>
+          <li>Bananas1</li>
+          <li>Lemons1</li>
+          <li>Oranges1</li>
+        </ol>
+        END ITEM
+      </li>
+      <li>Apples2</li>
+      <li>Bananas2</li>
+      <li>Lemons2</li>
+      <li>Oranges2</li>
+    </ul>
+
+    <h4>ol in ul</h4>
+    <ul>
+      <li>Apples</li>
+      <li>Bananas</li>
+      <li>Lemons</li>
+      <li>Oranges</li>
+      <li>ITEM
+        <ol>
+          <li>
+            <ul>
+              <li>Apples</li>
+              <li>Bananas</li>
+              <li>Lemons</li>
+              <li>Oranges</li>
+              <li>
+                <ol>
+                  <li>Apples1</li>
+                  <li>Bananas1</li>
+                  <li>Lemons1</li>
+                  <li>Oranges1</li>
+                </ol>
+              </li>
+            </ul>
+          </li>
+          <li>Bananas2</li>
+          <li>Lemons2</li>
+          <li>Oranges2</li>
+          <li>Bananas1</li>
+          <li>Lemons1</li>
+          <li>Oranges1</li>
+        </ol>
+        END ITEM
+      </li>
+      <li>Apples2</li>
+      <li>Bananas2</li>
+      <li>Lemons2</li>
+      <li>Oranges2</li>
+    </ul> 
   </body>
 </html>

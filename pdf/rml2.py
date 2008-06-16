@@ -479,6 +479,10 @@ def ul_stream(stream , tag_name, attributes, pdf_stylesheet, id = 0):
     stack.append((tag_name, attributes))
     liopenstate = 0
     strid = str(id)
+
+    bullet = get_bullet(attributes.get((None, 'type'), 'disc'))
+    #if exist_attribute(attributes, ['type']):
+    #    attrs['type'] = attributes.get((None,'type'))
     while True:
         event, value, line_number = stream_next(stream)
         if event == None:
@@ -505,9 +509,10 @@ def ul_stream(stream , tag_name, attributes, pdf_stylesheet, id = 0):
                 else:
                     print WARNING_DTD % ('document', line_number, tag_name)
             elif tag_name == 'li':
-                liopenstate=1
-                content.append("<bullet bulletIndent='-0.4cm'"
-                               " font='Symbol'>\xe2\x80\xa2</bullet>")
+                liopenstate = 1
+                content.append(bullet)
+                #content.append("<bullet bulletIndent='-0.4cm'"
+                #               " font='Symbol'>\xe2\x80\xa2</bullet>")
             elif tag_name in ('i', 'em', 'b', 'strong', 'u', 'sup', 'sub'):
                 content.append(build_start_tag(p_format_map.get(tag_name,
                                                                 'b')))
@@ -803,6 +808,19 @@ def get_style(stylesheet, name):
     if stylesheet.has_key(name):
         return stylesheet[name]
     return stylesheet['Normal']
+
+
+def get_bullet(type, indent='-0.4cm'):
+
+    types = {'disc': '\xe2\x80\xa2',
+             'square': '\xe2\x80\xa2',
+             'circle': '\xe2\x80\xa2'}
+
+    s = '<bullet bulletIndent="%s" font="Symbol">%s</bullet>'
+    print 'get_bullet(type=%s)' % type
+    bullet = s % (indent, types.get(type, types['disc']))
+    print bullet
+    return bullet
 
 
 def exist_attribute(attrs, keys, at_least=False):

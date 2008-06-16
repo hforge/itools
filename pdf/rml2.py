@@ -219,7 +219,10 @@ def paragraph_stream(stream , elt_tag_name, elt_attributes, pdf_stylesheet):
     story = []
     content = []
     stack.append((elt_tag_name, elt_attributes))
+    cpt = 0
+    end_tag = False
     has_content = False
+
     while True:
         event, value, line_number = stream_next(stream)
         if event == None:
@@ -229,8 +232,13 @@ def paragraph_stream(stream , elt_tag_name, elt_attributes, pdf_stylesheet):
             tag_uri, tag_name, attributes = value
             if tag_name in tag_ok:
                 if tag_name in ('i', 'em', 'b', 'strong', 'u', 'sup', 'sub'):
-                    content.append(build_start_tag(p_format_map.get(tag_name,
-                                                                    'b')))
+                    # FIXME
+                    tag = p_format_map.get(tag_name, 'b')
+                    if cpt or has_content:
+                        content[-1] += build_start_tag(tag)
+                    else:
+                        content.append(build_start_tag(tag))
+                    cpt += 1
                 elif tag_name == 'br':
                     continue
                 elif tag_name == 'a':
@@ -250,9 +258,10 @@ def paragraph_stream(stream , elt_tag_name, elt_attributes, pdf_stylesheet):
                 # stack.pop --> stack[0]
                 return create_paragraph(pdf_stylesheet, stack.pop(), content)
             elif tag_name in ('i', 'em', 'b', 'strong', 'u', 'sup', 'sub'):
+                cpt -= 1
+                end_tag = True
                 # Must be upgrade (too slow)
-                content.append(build_end_tag(p_format_map.get(tag_name, 'b')))
-                content = [''.join(content)]
+                content[-1] += build_end_tag(p_format_map.get(tag_name, 'b'))
             elif tag_name == 'br':
                 content.append("<br/>")
             else:
@@ -267,7 +276,7 @@ def paragraph_stream(stream , elt_tag_name, elt_attributes, pdf_stylesheet):
                 # <para><u><i>foo</i> </u></para>
                 value = XML.encode(value) # entities
                 # FIXME
-                if has_content and content[-1].endswith('<br/>'):
+                if (has_content and content[-1].endswith('<br/>') or cpt):
                     # <p>
                     #   foo          <br />
                     #     bar   <br />     team
@@ -277,8 +286,12 @@ def paragraph_stream(stream , elt_tag_name, elt_attributes, pdf_stylesheet):
                     value = value.lstrip()
                     content[-1] += value
                 else:
-                    has_content = True
-                    content.append(value)
+                    if end_tag:
+                        content[-1] += value
+                        end_tag = False
+                    else:
+                        has_content = True
+                        content.append(value)
 
 
 def pre_stream(stream , tag_name, attributes, pdf_stylesheet):
@@ -618,6 +631,7 @@ def create_paragraph(pdf_stylesheet, element, content):
     # content = ['Hello', '<i>how are</i>', 'you?']
     # Another choice is to strip the content (1 time) here
     # content = ['  Hello\t\', '\t<i>how are</i>', '\tyou?']
+
     content = normalize(' '.join(content))
     style, bulletText = build_style(pdf_stylesheet, element)
     return Paragraph(content, style, bulletText)
@@ -817,9 +831,7 @@ def get_bullet(type, indent='-0.4cm'):
              'circle': '\xe2\x80\xa2'}
 
     s = '<bullet bulletIndent="%s" font="Symbol">%s</bullet>'
-    print 'get_bullet(type=%s)' % type
     bullet = s % (indent, types.get(type, types['disc']))
-    print bullet
     return bullet
 
 

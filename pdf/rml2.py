@@ -247,7 +247,9 @@ def paragraph_stream(stream , elt_tag_name, elt_attributes, pdf_stylesheet):
                 # stack.pop --> stack[0]
                 return create_paragraph(pdf_stylesheet, stack.pop(), content)
             elif tag_name in ('i', 'em', 'b', 'strong', 'u', 'sup', 'sub'):
+                # Must be upgrade (too slow)
                 content.append(build_end_tag(p_format_map.get(tag_name, 'b')))
+                content = [''.join(content)]
             elif tag_name == 'br':
                 content.append("<br/>")
             else:

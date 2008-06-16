@@ -19,7 +19,8 @@
 import unittest
 
 # Import from itools
-from itools.pdf import rml2topdf_test, normalize, paragraph_stream, getSampleStyleSheet
+from itools.pdf import (rml2topdf_test, normalize, paragraph_stream,
+                        getSampleStyleSheet)
 from itools.xml import XMLParser
 
 
@@ -43,24 +44,74 @@ class FunctionTestCase(unittest.TestCase):
         self.assertEqual(_s, u'Hello &nbsp; Jo')
 
 
-    def test_xxx(self):
+    def test_formatting(self):
         data = '<p>TXT <i>TEXT<u>TEXT</u></i></p>'
         stream = XMLParser(data)
         stream.next()
         p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
-
         self.assertEqual(p.text, 'TXT <i>TEXT<u>TEXT</u></i>')
 
-        data = 'TXT <i>TEXT<u>TEXT</u>TEXT</i>'
-        data = 'TXT <i>TEXT<u>TEXT</u></i>TEXT'
-        data = 'TXT <i>TEXT<u>TEXT</u>TEXT</i>TEXT'
-        data = 'TXT <i><u>TXT</u></i>'
+        data = '<p>TXT <i>TEXT<u>TEXT</u>TEXT</i></p>'
+        stream = XMLParser(data)
+        stream.next()
+        p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
+        self.assertEqual(p.text, 'TXT <i>TEXT<u>TEXT</u>TEXT</i>')
 
-        data = '<i>TEXT<u>TEXT</u></i>'
-        data = '<i>TEXT<u>TEXT</u>TEXT</i>'
-        data = '<i>TEXT<u>TEXT</u></i>TEXT'
-        data = '<i>TEXT<u>TEXT</u>TEXT</i>TEXT'
-        data = '<i><u>TXT</u></i>'
+        data = '<p>TXT <i>TEXT<u>TEXT</u></i>TEXT</p>'
+        stream = XMLParser(data)
+        stream.next()
+        p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
+        self.assertEqual(p.text, 'TXT <i>TEXT<u>TEXT</u></i>TEXT')
+
+        data = '<p>TXT <i>TEXT<u>TEXT</u>TEXT</i>TEXT</p>'
+        stream = XMLParser(data)
+        stream.next()
+        p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
+        self.assertEqual(p.text, 'TXT <i>TEXT<u>TEXT</u>TEXT</i>TEXT')
+
+        data = '<p>TXT <i><u>TXT</u></i></p>'
+        stream = XMLParser(data)
+        stream.next()
+        p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
+        self.assertEqual(p.text, 'TXT <i><u>TXT</u></i>')
+
+        data = '<p><i>TEXT<u>TEXT</u></i></p>'
+        stream = XMLParser(data)
+        stream.next()
+        p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
+        self.assertEqual(p.text, '<i>TEXT<u>TEXT</u></i>')
+
+        data = '<p><i>TEXT<u>TEXT</u>TEXT</i></p>'
+        stream = XMLParser(data)
+        stream.next()
+        p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
+        self.assertEqual(p.text, '<i>TEXT<u>TEXT</u>TEXT</i>')
+
+        data = '<p><i>TEXT<u>TEXT</u></i>TEXT</p>'
+        stream = XMLParser(data)
+        stream.next()
+        p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
+        self.assertEqual(p.text, '<i>TEXT<u>TEXT</u></i>TEXT')
+
+        data = '<p><i>TEXT<u>TEXT</u>TEXT</i>TEXT</p>'
+        stream = XMLParser(data)
+        stream.next()
+        p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
+        self.assertEqual(p.text, '<i>TEXT<u>TEXT</u>TEXT</i>TEXT')
+
+        data = '<p><i><u>TXT</u></i></p>'
+        stream = XMLParser(data)
+        stream.next()
+        p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
+        self.assertEqual(p.text, '<i><u>TXT</u></i>')
+
+
+        data = '<p>TEXT<sup>TEXT</sup></p>'
+        stream = XMLParser(data)
+        stream.next()
+        p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
+        self.assertEqual(p.text, 'TEXT<super>TEXT</super>')
+
 
 
 class HtmlTestCase(unittest.TestCase):
@@ -76,7 +127,9 @@ class HtmlTestCase(unittest.TestCase):
         self.assertEqual(len(story), 1)
 
     def test_paragraph2(self):
-        data = '<html><body><h1>title</h1><p>hello  world</p><h2>subtitle 1</h2><p>Hello</p><h2>subtitle 2</h2><p>WORLD     <br/> </p>;)</body></html>'
+        data = '<html><body><h1>title</h1><p>hello  world</p>'
+        data += '<h2>subtitle1</h2><p>Hello</p><h2>subtitle 2</h2>'
+        data += '<p>WORLD     <br/>       </p>;)</body></html>'
         story, stylesheet = rml2topdf_test(data, raw=True)
         self.assertEqual(len(story), 6)
 
@@ -86,17 +139,17 @@ class HtmlTestCase(unittest.TestCase):
 
     def test_list(self):
         story, stylesheet = rml2topdf_test('rml2/list.xml')
-        self.assertEqual(len(story), 18)
+        self.assertEqual(len(story), 184)
 
     def test_image(self):
         data = """
-<html>
-    <body>
-        <p>hello  world <img src="pdf/itaapy.gif" alt="itaapy" /></p>
-        <img src="pdf/itaapy.jpeg" alt="itaapy" />
-        <p><img src="pdf/itaapy.png" alt="itaapy" /></p>
-    </body>
-</html>"""
+        <html>
+            <body>
+                <p>hello  world <img src="pdf/itaapy.gif" alt="itaapy" /></p>
+                <img src="pdf/itaapy.jpeg" alt="itaapy" />
+                <p><img src="pdf/itaapy.png" alt="itaapy" /></p>
+            </body>
+        </html>"""
         story, stylesheet = rml2topdf_test(data, raw=True)
         self.assertEqual(len(story), 5)
 

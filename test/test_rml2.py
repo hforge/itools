@@ -19,7 +19,8 @@
 import unittest
 
 # Import from itools
-from itools.pdf import rml2topdf_test, normalize
+from itools.pdf import rml2topdf_test, normalize, paragraph_stream, getSampleStyleSheet
+from itools.xml import XMLParser
 
 
 class FunctionTestCase(unittest.TestCase):
@@ -40,6 +41,26 @@ class FunctionTestCase(unittest.TestCase):
         s = 'Hello \t &nbsp; \t Jo'
         _s = normalize(s)
         self.assertEqual(_s, u'Hello &nbsp; Jo')
+
+
+    def test_xxx(self):
+        data = '<p>TXT <i>TEXT<u>TEXT</u></i></p>'
+        stream = XMLParser(data)
+        stream.next()
+        p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
+
+        self.assertEqual(p.text, 'TXT <i>TEXT<u>TEXT</u></i>')
+
+        data = 'TXT <i>TEXT<u>TEXT</u>TEXT</i>'
+        data = 'TXT <i>TEXT<u>TEXT</u></i>TEXT'
+        data = 'TXT <i>TEXT<u>TEXT</u>TEXT</i>TEXT'
+        data = 'TXT <i><u>TXT</u></i>'
+
+        data = '<i>TEXT<u>TEXT</u></i>'
+        data = '<i>TEXT<u>TEXT</u>TEXT</i>'
+        data = '<i>TEXT<u>TEXT</u></i>TEXT'
+        data = '<i>TEXT<u>TEXT</u>TEXT</i>TEXT'
+        data = '<i><u>TXT</u></i>'
 
 
 class HtmlTestCase(unittest.TestCase):

@@ -22,7 +22,8 @@ from itools.xml import register_dtd
 # Import from reportlab
 try:
     from rml import rmltopdf, stl_rmltopdf
-    from rml2 import rml2topdf, rml2topdf_test, normalize
+    from rml2 import (rml2topdf, rml2topdf_test, normalize, paragraph_stream,
+                      getSampleStyleSheet)
 except ImportError:
     print 'You need to install the package "reportlab" to get RML working.'
     def rmltopdf(*args, **kw):
@@ -31,7 +32,8 @@ except ImportError:
 
 
 __all__ = ['PDFFile', 'rmltopdf', 'stl_rmltopdf',
-           'rml2topdf', 'rml2topdf_test', 'normalize']
+           'rml2topdf', 'rml2topdf_test', 'normalize', 'paragraph_stream',
+           'getSampleStyleSheet']
 
 
 # Register "rml.dtd"

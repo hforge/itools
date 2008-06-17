@@ -23,7 +23,7 @@ The scripts included are:
 Requirements
 ------------
 
-Python 2.4 or later is required.  The GLib [1] library version 2.14 or
+Python 2.4 or later is required.  The GLib [1] library version 2.12 or
 later is required.
 
 For the implementation of RML (itools.pdf) to work the package reportlab [2]

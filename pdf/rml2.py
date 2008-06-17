@@ -21,10 +21,9 @@
 from cStringIO import StringIO
 
 # Import from itools
-from itools.datatypes import Unicode, XML
+from itools.datatypes import Unicode, XMLContent
 from itools.vfs import vfs
 import itools.http
-
 from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, TEXT
 
 #Import from the reportlab Library
@@ -41,6 +40,10 @@ from reportlab.platypus import (Paragraph, SimpleDocTemplate, Preformatted,
 # Mapping HTML -> REPORTLAB
 p_format_map = {'i': 'i', 'em': 'i', 'b': 'b', 'strong': 'b', 'u': 'u',
                 'sup': 'super', 'sub': 'sub'}
+
+
+tag_ok = ('a', 'b', 'big', 'br', 'em', 'i', 'img', 'small', 'strong', 'sub',
+          'sup', 'tt', 'u')
 
 __tab_para_alignment = {'LEFT': TA_LEFT, 'RIGHT': TA_RIGHT,
                         'CENTER': TA_CENTER, 'JUSTIFY': TA_JUSTIFY}
@@ -213,8 +216,6 @@ def paragraph_stream(stream , elt_tag_name, elt_attributes, pdf_stylesheet):
     """
         stream : parser stream
     """
-    tag_ok=('i', 'em', 'b', 'strong', 'u', 'sup',
-            'sub','br','small','big','tt')
     stack = []
     story = []
     content = []
@@ -242,10 +243,14 @@ def paragraph_stream(stream , elt_tag_name, elt_attributes, pdf_stylesheet):
                 elif tag_name == 'br':
                     continue
                 elif tag_name == 'a':
-                    content += link_stream(stream, tag_name, attributes)
+                    if cpt or has_content:
+                        content[-1] += link_stream(stream, tag_name, attributes)
+                    else:
+                        content.append(link_stream(stream, tag_name, attributes))
+                    cpt += 1
                 else:
                     print TAG_NOT_SUPPORTED % ('document', line_number,
-                            tag_name)
+                                               tag_name)
                     # unknown tag
                     stack.append((tag_name, attributes))
             else:
@@ -257,10 +262,9 @@ def paragraph_stream(stream , elt_tag_name, elt_attributes, pdf_stylesheet):
             if tag_name == elt_tag_name:
                 # stack.pop --> stack[0]
                 return create_paragraph(pdf_stylesheet, stack.pop(), content)
-            elif tag_name in ('i', 'em', 'b', 'strong', 'u', 'sup', 'sub'):
+            elif tag_name in ('i', 'em', 'b', 'strong', 'u', 'sup', 'sub', 'a'):
                 cpt -= 1
                 end_tag = True
-                # Must be upgrade (too slow)
                 content[-1] += build_end_tag(p_format_map.get(tag_name, 'b'))
             elif tag_name == 'br':
                 content.append("<br/>")
@@ -274,7 +278,7 @@ def paragraph_stream(stream , elt_tag_name, elt_attributes, pdf_stylesheet):
             if len(value) > 0:
                 # alow to write :
                 # <para><u><i>foo</i> </u></para>
-                value = XML.encode(value) # entities
+                value = XMLContent.encode(value) # entities
                 # FIXME
                 if (has_content and content[-1].endswith('<br/>') or cpt):
                     # <p>
@@ -332,7 +336,7 @@ def pre_stream(stream , tag_name, attributes, pdf_stylesheet):
         elif event == TEXT:
             if stack:
                 # we dont strip the string --> preformatted widget
-                value = XML.encode(value) # entities
+                value = XMLContent.encode(value) # entities
                 content.append(value)
 
 
@@ -387,7 +391,7 @@ def img_stream(stream , _tag_name, _attributes):
             print WARNING_DTD % ('document', line_number, tag_name)
 
 
-def ol_stream(stream , tag_name, attributes, pdf_stylesheet, id = 0):
+def ol_stream(stream , _tag_name, attributes, pdf_stylesheet, id = 0):
     """
         stream : parser stream
     """
@@ -398,7 +402,7 @@ def ol_stream(stream , tag_name, attributes, pdf_stylesheet, id = 0):
     content = ["<seqDefault id='" + strid + "'/><seqReset id='" + strid +
             "'/>"]
     has_content = False
-    stack.append((tag_name, attributes))
+    stack.append((_tag_name, attributes))
     liopenstate = 0
     attrs = {}
     if exist_attribute(attributes, ['type']):
@@ -474,12 +478,12 @@ def ol_stream(stream , tag_name, attributes, pdf_stylesheet, id = 0):
             if liopenstate:
                 # alow to write :
                 # <para><u><i>foo</i> </u></para>
-                value = XML.encode(value) # entities
+                value = XMLContent.encode(value) # entities
                 content.append(value)
                 has_content = True
 
 
-def ul_stream(stream , tag_name, attributes, pdf_stylesheet, id = 0):
+def ul_stream(stream , _tag_name, attributes, pdf_stylesheet, id = 0):
     """
         stream : parser stream
     """
@@ -489,13 +493,11 @@ def ul_stream(stream , tag_name, attributes, pdf_stylesheet, id = 0):
     story = [Indenter(left=INDENT_VALUE)]
     content = []
     has_content = False
-    stack.append((tag_name, attributes))
+    stack.append((_tag_name, attributes))
     liopenstate = 0
     strid = str(id)
 
     bullet = get_bullet(attributes.get((None, 'type'), 'disc'))
-    #if exist_attribute(attributes, ['type']):
-    #    attrs['type'] = attributes.get((None,'type'))
     while True:
         event, value, line_number = stream_next(stream)
         if event == None:
@@ -524,8 +526,6 @@ def ul_stream(stream , tag_name, attributes, pdf_stylesheet, id = 0):
             elif tag_name == 'li':
                 liopenstate = 1
                 content.append(bullet)
-                #content.append("<bullet bulletIndent='-0.4cm'"
-                #               " font='Symbol'>\xe2\x80\xa2</bullet>")
             elif tag_name in ('i', 'em', 'b', 'strong', 'u', 'sup', 'sub'):
                 content.append(build_start_tag(p_format_map.get(tag_name,
                                                                 'b')))
@@ -561,12 +561,12 @@ def ul_stream(stream , tag_name, attributes, pdf_stylesheet, id = 0):
             if liopenstate:
                 # alow to write :
                 # <para><u><i>foo</i> </u></para>
-                value = XML.encode(value) # entities
+                value = XMLContent.encode(value) # entities
                 content.append(value)
                 has_content = True
 
 
-def link_stream(stream , tag_name, attributes):
+def link_stream(stream , _tag_name, attributes):
     """
         stream : parser stream
     """
@@ -575,11 +575,14 @@ def link_stream(stream , tag_name, attributes):
     story = []
     content = []
     has_content = False
-    stack.append((tag_name, attributes))
+    stack.append((_tag_name, attributes))
     attrs = {}
     if exist_attribute(attributes, ['href']):
-        attrs['href'] = attributes.get((None,'href')).lower()
-        content.append("<a href=\"%s\">" % attrs['href'] )
+        attrs['href'] = attributes.get((None,'href'))
+        # Reencode the entities because the a tags
+        # are decoded again by the reportlab para parser.
+        href = XMLContent.encode(attrs['href'])
+        content.append("<a href=\"%s\">" % href)
     elif exist_attribute(attributes, ['id', 'name'], at_least=True):
         name = attributes.get((None, 'id'), attributes.get((None, 'name')))
         content.append("<a name=\"%s\">" % name)
@@ -603,7 +606,9 @@ def link_stream(stream , tag_name, attributes):
             tag_uri, tag_name = value
             if tag_name == 'a':
                 content.append("</a>")
-                return content
+                print ':<:<:<:<:<:<:<::<:<:<:<:<:<:<:<:<:<:<:<:<:<:<:<:<:<:<:<:<:<:<:<:<:content<:<:<:<:<'
+                print ''.join(content)
+                return ''.join(content)
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
@@ -614,7 +619,7 @@ def link_stream(stream , tag_name, attributes):
             if len(value) > 0:
                 # alow to write :
                 # <para><u><i>foo</i> </u></para>
-                value = XML.encode(value) # entities
+                value = XMLContent.encode(value) # entities
                 content.append(value)
                 has_content = True
 
@@ -632,7 +637,11 @@ def create_paragraph(pdf_stylesheet, element, content):
     # Another choice is to strip the content (1 time) here
     # content = ['  Hello\t\', '\t<i>how are</i>', '\tyou?']
 
+    # DEBUG
+    print 0, content
     content = normalize(' '.join(content))
+    print 1, content
+    print '-' * 80
     style, bulletText = build_style(pdf_stylesheet, element)
     return Paragraph(content, style, bulletText)
 

@@ -176,11 +176,19 @@ class SearchResults(object):
             if isinstance(sort_by, list):
                 sorter = MultiValueSorter()
                 for name in sort_by:
-                    sorter.add(fields[name]['value'])
+                    if name in fields:
+                        sorter.add(fields[name]['value'])
+                    else:
+                        # If there is a problem => an empty result
+                        return []
                 enquire.set_sort_by_key_then_relevance(sorter, reverse)
             else:
-                enquire.set_sort_by_value_then_relevance(
+                if sort_by in fields:
+                    enquire.set_sort_by_value_then_relevance(
                                             fields[sort_by]['value'], reverse)
+                else:
+                    # If there is a problem => an empty result
+                    return []
         else:
             enquire.set_sort_by_relevance()
 
@@ -361,24 +369,32 @@ class Catalog(object):
                 xqueries = []
                 # name must be indexed
                 for name, value in kw.items():
-                    info = fields[name]
-                    xqueries.append(_make_PhraseQuery(info['type'], value,
-                                                      info['prefix']))
+                    if name in fields:
+                        info = fields[name]
+                        xqueries.append(_make_PhraseQuery(info['type'], value,
+                                                          info['prefix']))
+                    else:
+                        # If there is a problem => an empty result
+                        return SearchResults(Query(), self._db, fields)
                 xquery = Query(Query.OP_AND, xqueries)
             else:
                 xquery = Query('')
         else:
             xquery = self._query2xquery(query)
 
-        return SearchResults(xquery, self._db, self._fields)
+        return SearchResults(xquery, self._db, fields)
 
 
     def get_unique_values(self, name):
         """Return all the terms of a given indexed field
         """
-        prefix = self._fields[name]['prefix']
-        return set([t.term[1:] for t in self._db.allterms(prefix)])
-
+        fields = self._fields
+        if name in fields:
+            prefix = fields[name]['prefix']
+            return set([t.term[1:] for t in self._db.allterms(prefix)])
+        else:
+            # If there is a problem => an empty result
+            return set()
 
     #######################################################################
     # API / Private
@@ -407,31 +423,42 @@ class Catalog(object):
         """take a "itools" query and return a "xapian" query
         """
         query_class = query.__class__
+        fields = self._fields
         if query_class is EqQuery or query_class is PhraseQuery:
             # EqQuery = PhraseQuery, the field must be indexed
-            info = self._fields[query.name]
-            return _make_PhraseQuery(info['type'], query.value,
-                                     info['prefix'])
+            name = query.name
+            if name in fields:
+                info = fields[name]
+                return _make_PhraseQuery(info['type'], query.value,
+                                         info['prefix'])
+            else:
+                # If there is a problem => an empty result
+                return Query()
         elif query_class is RangeQuery:
             # RangeQuery, the field must be stored
-            info = self._fields[query.name]
-            field_type = info['type']
-            value = info['value']
+            name = query.name
+            if name in fields:
+                info = fields[name]
+                field_type = info['type']
+                value = info['value']
 
-            left = query.left
-            right = query.right
-            if left is not None and right is not None:
-                return Query(Query.OP_VALUE_RANGE, value,
-                             _encode(field_type, query.left),
-                             _encode(field_type, query.right))
-            elif left is not None and right is None:
-                return Query(Query.OP_VALUE_GE, value,
-                             _encode(field_type, query.left))
-            elif left is None and right is not None:
-                return Query(Query.OP_VALUE_LE, value,
-                             _encode(field_type, query.right))
+                left = query.left
+                right = query.right
+                if left is not None and right is not None:
+                    return Query(Query.OP_VALUE_RANGE, value,
+                                 _encode(field_type, query.left),
+                                 _encode(field_type, query.right))
+                elif left is not None and right is None:
+                    return Query(Query.OP_VALUE_GE, value,
+                                 _encode(field_type, query.left))
+                elif left is None and right is not None:
+                    return Query(Query.OP_VALUE_LE, value,
+                                 _encode(field_type, query.right))
+                else:
+                    return Query('')
             else:
-                return Query('')
+                # If there is a problem => an empty result
+                return Query()
         # And, Or, Not
         i2x = self._query2xquery
         if query_class is AndQuery:

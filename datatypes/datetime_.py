@@ -183,12 +183,7 @@ class ISODateTime(DataType):
     def decode(value):
         if not value:
             return None
-        # FIXME try/except block introduced in 0.20.0 for backwards
-        # compatibility, to be removed by 0.30.0
-        try:
-            date, time = value.split('T')
-        except ValueError:
-            date, time = value.split(' ')
+        date, time = value.split('T')
         date = ISOCalendarDate.decode(date)
         time = ISOTime.decode(time)
 

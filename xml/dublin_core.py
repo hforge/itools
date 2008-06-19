@@ -19,29 +19,9 @@
 from datetime import datetime
 
 # Import from itools
-from itools.datatypes import (Unicode, String, ISODateTime, ISOCalendarDate,
-                              ISOTime)
+from itools.datatypes import Unicode, String, ISODateTime
 from namespaces import AbstractNamespace, set_namespace
 from parser import XMLError
-
-
-# FIXME For backwards compatibility with old ikaaro's metadata files (to
-# remove by 0.30)
-class DateTime(ISODateTime):
-
-    @staticmethod
-    def decode(value):
-        if not value:
-            return None
-        if ' ' in value:
-            date, time = value.split()
-        else:
-            date, time = value.split('T')
-        date = ISOCalendarDate.decode(date)
-        time = ISOTime.decode(time)
-
-        return datetime.combine(date, time)
-
 
 
 class Namespace(AbstractNamespace):
@@ -52,7 +32,7 @@ class Namespace(AbstractNamespace):
     datatypes = {'contributor': None,
                  'coverage': None,
                  'creator': String,
-                 'date': DateTime,
+                 'date': ISODateTime,
                  'description': Unicode,
                  'format': None,
                  'identifier': String,
@@ -77,8 +57,3 @@ class Namespace(AbstractNamespace):
         'title': {'is_empty': False, 'is_inline': False}
         }
 
-
-# FIXME Register the schema also with the old and wrong uri (introduced in
-# 0.15.1).  For backwards compatibility with old ikaaro's metadata files
-# (to remove by 0.30)
-set_namespace(Namespace, 'http://purl.org/dc/elements/1.1')

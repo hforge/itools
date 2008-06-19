@@ -718,21 +718,38 @@ def normalize(data):
     return ' '.join(data.split())
 
 
-def span_create(_attributes):
+def font_value(str_value):
+    DEFAULT_VALUE = 12  # TO DO : replace default_value by current stylesheet
+                        # size
+    if str_value[-1] == '%':
+        value = (int(str_value.rstrip('%')) * DEFAULT_VALUE) / 100
+        print value
+    else:
+        try:
+            value = int(str_value)
+        except ValueError:
+            value = default_value
+    return value
+
+
+def span_create_attr(_attributes):
     map_font = {'monospace': 'courier', 'times-new-roman': 'times-roman',
                 'arial': 'helvetica', 'serif': 'times',
                 'sans-serif': 'helvetica', 'helvetica': 'helvetica',
                 'symbol': 'symbol'}
     attributes = deepcopy(_attributes)
     if exist_attribute(attributes, ['style']):
-        style = ''.join(attributes.pop((URI,'style')).split()).rstrip(';')
+        style = ''.join(attributes.pop((URI, 'style')).split()).rstrip(';')
         stylelist = style.split(';')
         for element in stylelist:
             element_list = element.split(':')
             attributes[(URI, element_list[0])] = element_list[1].lower()
         if attributes.has_key((URI, 'font-family')):
-            x = attributes.pop((URI,'font-family'))
-            attributes[(URI, 'fontname')] = map_font.get(x,'helvetica')
+            x = attributes.pop((URI, 'font-family'))
+            attributes[(URI, 'fontname')] = map_font.get(x, 'helvetica')
+        if attributes.has_key((URI, 'font-size')):
+            x = attributes.pop((URI, 'font-size'))
+            attributes[(URI, 'fontsize')] = font_value(x)
     return attributes
 
 
@@ -741,7 +758,7 @@ def build_start_tag(tag_name, attributes={}):
         Create the XML start tag from his name and his attributes
         span => font (map)
     """
-    attributes = span_create(attributes)
+    attributes = span_create_attr(attributes)
     attr_str = ''.join([' %s="%s"' % (key[1], attributes[key])
                         for key in attributes.keys()])
     return '<%s%s>' % (tag_name, attr_str)

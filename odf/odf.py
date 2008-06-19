@@ -99,17 +99,9 @@ class ODFFile(OOFile):
 
 
     def get_messages(self):
-        for message in get_messages(self.get_events('content.xml'),
-                                    'content.xml'):
-            yield message
-
-        for message in get_messages(self.get_events('meta.xml'),
-                                    'meta.xml'):
-            yield message
-
-        for message in get_messages(self.get_events('styles.xml'),
-                                    'styles.xml'):
-            yield message
+        for filename in ['content.xml', 'meta.xml', 'styles.xml']:
+            for message in get_messages(self.get_events(filename), filename):
+                yield message
 
 
     def translate(self, catalog):

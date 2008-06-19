@@ -69,8 +69,10 @@ class Namespace(AbstractNamespace):
     elements_schema = {
         'creator': {'is_empty': False, 'is_inline': False},
         'description': {'is_empty': False, 'is_inline': False},
-        'date': {'is_empty': False, 'is_inline': False},
-        'language': {'is_empty': False, 'is_inline': False},
+        'date': {'is_empty': False, 'is_inline': False,
+                 'translate_content': False},
+        'language': {'is_empty': False, 'is_inline': False,
+                          'translate_content': False},
         'subject': {'is_empty': False, 'is_inline': False},
         'title': {'is_empty': False, 'is_inline': False}
         }

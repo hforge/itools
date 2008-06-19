@@ -90,10 +90,12 @@ class OdtTextNamespace(ODFNamespace):
         'change-start': {'is_inline': False, 'is_empty': True},
         'changed-region': {'is_inline': False, 'is_empty': False},
         'chapter': {'is_inline': False, 'is_empty': True},
-        #'character-count'
+        #'character-count' (FIXME Check whether creation-date is empty
+        # or not)
         'conditional-text': {'is_inline': False, 'is_empty': True},
         'creation-date': {'is_inline': False, 'is_empty': True},
-        'creation-time': {'is_inline': False, 'is_empty': True},
+        'creation-time': {'is_inline': False, 'is_empty': True,
+                          'translate_content': False},
         'creator': {'is_inline': False, 'is_empty': True},
         'database-display': {'is_inline': False, 'is_empty': False},
         'database-name': {'is_inline': False, 'is_empty': False},
@@ -174,7 +176,8 @@ class OdtTextNamespace(ODFNamespace):
         'page': {'is_inline': False, 'is_empty': True},
         'page-continuation': {'is_inline': False, 'is_empty': True},
         #'page-count'
-        'page-number': {'is_inline': False, 'is_empty': True},
+        'page-number': {'is_inline': False, 'is_empty': True,
+                          'translate_content': False},
         'page-sequence': {'is_inline': False, 'is_empty': False},
         'page-variable-get': {'is_inline': False, 'is_empty': True},
         'page-variable-set': {'is_inline': False, 'is_empty': True},
@@ -587,16 +590,21 @@ class OdtMetaNamespace(ODFNamespace):
 
     elements_schema = {
         'auto-reload': {'is_inline': False, 'is_empty': True},
-        'creation-date': {'is_inline': False, 'is_empty': True},
+        'creation-date': {'is_inline': False, 'is_empty': True,
+                          'translate_content': False},
         'date-string': {'is_inline': False, 'is_empty': True},
         'document-statistic': {'is_inline': False, 'is_empty': True},
-        'editing-cycles': {'is_inline': False, 'is_empty': True},
-        'editing-duration': {'is_inline': False, 'is_empty': True},
-        'generator': {'is_inline': False, 'is_empty': True},
+        'editing-cycles': {'is_inline': False, 'is_empty': True,
+                          'translate_content': False},
+        'editing-duration': {'is_inline': False, 'is_empy': True,
+                          'translate_content': False},
+        'generator': {'is_inline': False, 'is_empty': True,
+                          'translate_content': False},
         'hyperlink-behaviour': {'is_inline': False, 'is_empty': True},
         'initial-creator': {'is_inline': False, 'is_empty': True},
         'keyword': {'is_inline': False, 'is_empty': True},
-        'print-date': {'is_inline': False, 'is_empty': True},
+        'print-date': {'is_inline': False, 'is_empty': True,
+                          'translate_content': False},
         'printed-by': {'is_inline': False, 'is_empty': True},
         'template': {'is_inline': False, 'is_empty': True},
         'user-defined': {'is_inline': False, 'is_empty': True}

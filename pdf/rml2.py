@@ -35,15 +35,16 @@ from reportlab.lib.units import inch, cm, mm, pica
 from reportlab.platypus.flowables import HRFlowable
 from reportlab.platypus import (Paragraph, SimpleDocTemplate, Preformatted,
                                 Image, Indenter)
-
+from copy import deepcopy
 
 # Mapping HTML -> REPORTLAB
 p_format_map = {'i': 'i', 'em': 'i', 'b': 'b', 'strong': 'b', 'u': 'u',
-                'sup': 'super', 'sub': 'sub'}
+                'span': 'font', 'sup': 'super', 'sub': 'sub'}
 
+URI = None
 
-tag_ok = ('a', 'b', 'big', 'br', 'em', 'i', 'img', 'small', 'strong', 'sub',
-          'sup', 'tt', 'u')
+tag_ok = ('a', 'b', 'big', 'br', 'em', 'i', 'img', 'small', 'span', 'strong',
+          'sub', 'sup', 'tt', 'u')
 
 __tab_para_alignment = {'LEFT': TA_LEFT, 'RIGHT': TA_RIGHT,
                         'CENTER': TA_CENTER, 'JUSTIFY': TA_JUSTIFY}
@@ -237,13 +238,22 @@ def paragraph_stream(stream , elt_tag_name, elt_attributes, pdf_stylesheet):
                     else:
                         content.append(build_start_tag(tag))
                     cpt += 1
+                elif tag_name == 'span':
+                    tag = p_format_map.get(tag_name)
+                    if cpt or has_content:
+                        content[-1] += build_start_tag(tag, attributes)
+                    else:
+                        content.append(build_start_tag(tag, attributes))
+                    cpt += 1
                 elif tag_name == 'br':
                     continue
                 elif tag_name == 'a':
                     if cpt or has_content:
-                        content[-1] += link_stream(stream, tag_name, attributes)
+                        content[-1] += link_stream(stream, tag_name,
+                                                   attributes)
                     else:
-                        content.append(link_stream(stream, tag_name, attributes))
+                        content.append(link_stream(stream, tag_name,
+                                                   attributes))
                     cpt += 1
                 else:
                     print TAG_NOT_SUPPORTED % ('document', line_number,
@@ -259,7 +269,8 @@ def paragraph_stream(stream , elt_tag_name, elt_attributes, pdf_stylesheet):
             if tag_name == elt_tag_name:
                 # stack.pop --> stack[0]
                 return create_paragraph(pdf_stylesheet, stack.pop(), content)
-            elif tag_name in ('i', 'em', 'b', 'strong', 'u', 'sup', 'sub', 'a'):
+            elif tag_name in ('i', 'em', 'b', 'strong', 'u', 'sup', 'sub',
+                              'a', 'span'):
                 cpt -= 1
                 end_tag = True
                 content[-1] += build_end_tag(p_format_map.get(tag_name, 'b'))
@@ -396,20 +407,19 @@ def list_stream(stream , _tag_name, attributes, pdf_stylesheet, id = 0):
     INDENT_VALUE = 1 * cm
     story = [Indenter(left=INDENT_VALUE)]
     strid = str(id)
-    content = ["<seqDefault id='" + strid + "'/><seqReset id='" + strid +
-            "'/>"]
+    content = ["<seqDefault id='%s'/><seqReset id='%s'/>" % (strid, strid)]
     has_content = False
     stack.append((_tag_name, attributes))
     liopenstate = 0
     attrs = {}
     bullet = None
     if _tag_name == 'ul':
-        bullet = get_bullet(attributes.get((None, 'type'), 'disc'))
+        bullet = get_bullet(attributes.get((URI, 'type'), 'disc'))
     else:
         bullet = "<bullet bulletIndent='-0.4cm'><seq id='%s'>.</bullet>"
         bullet = bullet % strid
         if exist_attribute(attributes, ['type']):
-            attrs['type'] = attributes.get((None,'type'))
+            attrs['type'] = attributes.get((URI,'type'))
             seq = "<seqFormat id='%s' value='%s'/>" % (strid, attrs['type'])
             content.append(seq)
         else:
@@ -488,13 +498,13 @@ def link_stream(stream , _tag_name, attributes):
     stack.append((_tag_name, attributes))
     attrs = {}
     if exist_attribute(attributes, ['href']):
-        attrs['href'] = attributes.get((None,'href'))
+        attrs['href'] = attributes.get((URI,'href'))
         # Reencode the entities because the a tags
         # are decoded again by the reportlab para parser.
         href = XMLContent.encode(attrs['href'])
         content.append("<a href=\"%s\">" % href)
     elif exist_attribute(attributes, ['id', 'name'], at_least=True):
-        name = attributes.get((None, 'id'), attributes.get((None, 'name')))
+        name = attributes.get((URI, 'id'), attributes.get((URI, 'name')))
         content.append("<a name=\"%s\">" % name)
 
     while True:
@@ -606,20 +616,20 @@ def create_hr(attributes):
     attrs['width'] = "100%"
     for key in ['width', 'thickness', 'spaceBefore', 'spaceAfter']:
         if exist_attribute(attributes, [key]):
-            attrs[key] = rml_value(attributes.get((None, key)))
+            attrs[key] = rml_value(attributes.get((URI, key)))
     if exist_attribute(attributes, ['lineCap']):
-        line_cap = attributes.get((None,'lineCap'))
+        line_cap = attributes.get((URI,'lineCap'))
         if line_cap not in ['butt', 'round', 'square']:
             line_cap = 'butt'
         attrs['lineCap'] = line_cap
     if exist_attribute(attributes, ['color']):
-        attrs['color'] = get_color(attributes.get((None, 'color')))
+        attrs['color'] = get_color(attributes.get((URI, 'color')))
     if exist_attribute(attributes, ['align']):
-        hAlign = attributes.get((None, 'align'), '').upper()
+        hAlign = attributes.get((URI, 'align'), '').upper()
         if hAlign in ['LEFT', 'RIGHT', 'CENTER', 'CENTRE']:
             attrs['hAlign'] = hAlign
     if exist_attribute(attributes, ['vAlign']):
-        vAlign = attributes.get((None, 'vAlign'), '').upper()
+        vAlign = attributes.get((URI, 'vAlign'), '').upper()
         if vAlign in ['TOP', 'MIDDLE', 'BOTTOM']:
             attrs['vAlign'] = vAlign
     return HRFlowable(**attrs)
@@ -667,6 +677,7 @@ def create_img(attributes, check_dimension=False):
         if width is not None:
             I.drawWidth = width
         return I
+
     except IOError, msg:
         print msg
         return None
@@ -707,11 +718,30 @@ def normalize(data):
     return ' '.join(data.split())
 
 
+def span_create(_attributes):
+    map_font = {'monospace': 'courier', 'times-new-roman': 'times-roman',
+                'arial': 'helvetica', 'serif': 'times',
+                'sans-serif': 'helvetica', 'helvetica': 'helvetica',
+                'symbol': 'symbol'}
+    attributes = deepcopy(_attributes)
+    if exist_attribute(attributes, ['style']):
+        style = ''.join(attributes.pop((URI,'style')).split()).rstrip(';')
+        stylelist = style.split(';')
+        for element in stylelist:
+            element_list = element.split(':')
+            attributes[(URI, element_list[0])] = element_list[1].lower()
+        if attributes.has_key((URI, 'font-family')):
+            x = attributes.pop((URI,'font-family'))
+            attributes[(URI, 'fontname')] = map_font.get(x,'helvetica')
+    return attributes
+
+
 def build_start_tag(tag_name, attributes={}):
     """
         Create the XML start tag from his name and his attributes
+        span => font (map)
     """
-
+    attributes = span_create(attributes)
     attr_str = ''.join([' %s="%s"' % (key[1], attributes[key])
                         for key in attributes.keys()])
     return '<%s%s>' % (tag_name, attr_str)
@@ -734,7 +764,6 @@ def get_style(stylesheet, name):
        Return the style corresponding to name or the style normal if it does
        not exist.
     """
-
     if stylesheet.has_key(name):
         return stylesheet[name]
     return stylesheet['Normal']
@@ -760,12 +789,12 @@ def exist_attribute(attrs, keys, at_least=False):
 
     if at_least is False:
         for key in keys:
-            if attrs.has_key((None, key)) is False:
+            if attrs.has_key((URI, key)) is False:
                 return False
         return True
     else:
         for key in keys:
-            if attrs.has_key((None, key)) is True:
+            if attrs.has_key((URI, key)) is True:
                 return True
         return False
 

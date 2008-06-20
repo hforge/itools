@@ -23,44 +23,20 @@ The scripts included are:
 Requirements
 ------------
 
-Python 2.4 or later is required.  The GLib [1] library version 2.12 or
+Python 2.5 or later is required.  The GLib [1] library version 2.12 or
 later is required.
 
 For the implementation of RML (itools.pdf) to work the package reportlab [2]
 must be installed.
 
-For itools.xapian, you need the latest xapian-core package and its binding for
-python [3].
-  To make a local install:
-    Download the sources:
-      $ wget http://oligarchy.co.uk/xapian/1.0.6/xapian-core-1.0.6.tar.gz
-      $ wget http://oligarchy.co.uk/xapian/1.0.6/xapian-bindings-1.0.6.tar.gz
-    Untar:
-      $ tar xzf xapian-core-1.0.6.tar.gz
-      $ tar xzf xapian-bindings-1.0.6.tar.gz
-    Compile:
-      $ cd xapian-core-1.0.6/
-      $ ./configure --prefix=[the destination path]
-      $ make
-      $ make install
+For itools.xapian, you need the latest xapian-core and xapian-bindings
+packages [3].
 
-      $ cd xapian-bindings-1.0.6/
-      $ ./configure --with-python --prefix=[the destination path]
-      PYTHON_LIB=[your python modules path]
-      $ make
-      $ make install
-    [your python modules path] is a path that python can find when it tries to
-    load a module. To make the last "./configure", the "[the destination
-    path]/bin" path must be in your PATH. You can add it with:
-      $ PATH=[the destination path]/bin:$PATH
-    Test:
-      $ python
-      >>> from xapian import *
-      >>>
 
 [1] http://www.gtk.org/
 [2] http://www.reportlab.org/
 [3] http://www.xapian.org/
+
 
 Install
 -------

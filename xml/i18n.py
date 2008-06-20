@@ -97,24 +97,23 @@ def process_buffer(buffer, hit, encoding):
 
 
 def get_translatable_blocks(events):
-    """
-    This method is defined so it can be used by both "get_messages" and
-    "translate". Hence it contains the logic that is commont to both, to
-    avoid code duplication.
+    """This method is defined so it can be used by both "get_messages" and
+    "translate". Hence it contains the logic that is commont to both, to avoid
+    code duplication.
 
-    It returns back the events it receives, except that it finds out when
-    a sequence of events defines a translatable block. Then this block
-    sequence is returned, identified by an special event type (MESSAGE).
+    It returns back the events it receives, except that it finds out when a
+    sequence of events defines a translatable block. Then this block sequence
+    is returned, identified by an special event type (MESSAGE).
 
     A translatable block is one that:
 
       - contains at least one non-empty text node;
       - does not contain block-elements;
 
-    We also do not consider sourronding inline-elements. For example,
-    in "<em>Hello baby</em>" the translatable block is just the text
-    node "Hello baby". But in "Hello <em>baby</em>" the translatable
-    block is the whole sequence: "Hello <em>baby</em>".
+    We also do not consider sourronding inline-elements. For example, in
+    "<em>Hello baby</em>" the translatable block is just the text node "Hello
+    baby". But in "Hello <em>baby</em>" the translatable block is the whole
+    sequence: "Hello <em>baby</em>".
     """
     # Local variables
     encoding = 'utf-8' # FIXME hardcoded

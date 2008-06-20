@@ -18,14 +18,15 @@
 
 # Import from itools
 import dublin_core
-from namespaces import (XMLNamespace, XMLNSNamespace, AbstractNamespace,
-    get_namespace, set_namespace, get_element_schema, is_empty)
-from parser import (XMLParser, XML_DECL, DOCUMENT_TYPE, START_ELEMENT,
-    END_ELEMENT, TEXT, COMMENT, PI, CDATA, XMLError)
-from xml import (XMLFile, Element, stream_to_str, get_qname,
-    get_attribute_qname, get_start_tag, get_end_tag, find_end, get_element)
+from namespaces import XMLNamespace, XMLNSNamespace, AbstractNamespace
+from namespaces import get_namespace, set_namespace, get_element_schema
+from namespaces import is_empty
+from parser import XMLParser, XMLError, XML_DECL, DOCUMENT_TYPE
+from parser import START_ELEMENT, END_ELEMENT, TEXT, COMMENT, PI, CDATA
+from xml import XMLFile, Element, stream_to_str, get_element, find_end
+from xml import get_qname, get_attribute_qname, get_start_tag, get_end_tag
 from indexer import xml_to_text
-from office import (OfficeDocument, MSWord, MSExcel, MSPowerPoint, RTF)
+from office import OfficeDocument, MSWord, MSExcel, MSPowerPoint, RTF
 from i18n import translate
 
 

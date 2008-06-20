@@ -57,3 +57,6 @@ class Namespace(AbstractNamespace):
         'title': {'is_empty': False, 'is_inline': False}
         }
 
+
+# Register
+set_namespace(Namespace)

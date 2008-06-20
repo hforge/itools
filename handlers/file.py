@@ -256,4 +256,9 @@ class File(Handler):
         self.data = data
 
 
+    def to_text(self):
+        raise NotImplementedError
+
+
+
 register_handler_class(File)

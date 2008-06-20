@@ -102,12 +102,6 @@ class Handler(object):
         return self.database.get_handler(uri, cls=cls, cache=cache)
 
 
-    def to_text(self):
-        raise NotImplementedError
-
-
     def get_mimetype(self):
         return vfs.get_mimetype(self.uri)
-
-    mimetype = property(get_mimetype, None, None, '')
 

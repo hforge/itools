@@ -15,6 +15,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+def is_datatype(type, base_type):
+    """Returns True if 'type' is of 'base_type'.
+    """
+    try:
+        return issubclass(type, base_type)
+    except TypeError:
+        return isinstance(type, base_type)
+
+
+
 class DataType(object):
 
     default = None
@@ -27,13 +37,15 @@ class DataType(object):
 
     @staticmethod
     def decode(data):
-        """Deserializes the given byte string to a value with a type."""
+        """Deserializes the given byte string to a value with a type.
+        """
         raise NotImplementedError
 
 
     @staticmethod
     def encode(value):
-        """Serializes the given value to a byte string."""
+        """Serializes the given value to a byte string.
+        """
         raise NotImplementedError
 
 
@@ -41,7 +53,7 @@ class DataType(object):
     def is_valid(value):
         """Checks whether the given value is valid.
 
-        For example, for a natural number the value will be an integer,
-        and this method will check that it is not a negative number.
+        For example, for a natural number the value will be an integer, and
+        this method will check that it is not a negative number.
         """
         return True

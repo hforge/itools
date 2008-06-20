@@ -19,8 +19,8 @@
 # Import from itools
 from base import CatalogAware
 from catalog import Catalog, make_catalog
-from fields import (BaseField, TextField, KeywordField, IntegerField,
-                    BoolField, register_field, get_field)
+from fields import BaseField, register_field, get_field
+from fields import BoolField, KeywordField, IntegerField, TextField
 from queries import (EqQuery, RangeQuery, PhraseQuery, AndQuery, OrQuery,
                      NotQuery)
 

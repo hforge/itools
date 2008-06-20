@@ -30,20 +30,6 @@ from base import DataType
 
 
 
-def is_datatype(type, base_type):
-    """Returns True if 'type' is of 'base_type'.
-    """
-    try:
-        if issubclass(type, base_type):
-            return True
-    except TypeError:
-        pass
-    if isinstance(type, base_type):
-        return True
-    return False
-
-
-
 class Integer(DataType):
 
     @staticmethod

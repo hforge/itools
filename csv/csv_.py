@@ -66,6 +66,7 @@ class CSVFile(TextFile):
     columns = None
 
     # The class to use for each row (this allows easy specialization)
+    # TODO The ability to change the row class should be removed.
     row_class = Row
 
     # Parsing options

@@ -15,17 +15,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from base import DataType
-from primitive import (Integer, Decimal, Unicode, String, Boolean, Email, URI,
-                       FileName, QName, Tokens, Enumerate, XMLContent,
-                       XMLAttribute, is_datatype,
-                       # TODO Remove in itools 0.21
-                       XMLContent as XML)
+from base import DataType, is_datatype
+from primitive import Boolean, Decimal, Email, Integer, String, Unicode, URI
+from primitive import FileName, Tokens, Enumerate
+from primitive import QName, XMLAttribute, XMLContent
 from datetime_ import ISOCalendarDate, ISOTime, ISODateTime, HTTPDate
 from languages import LanguageTag
 # Define alias Date, Time and DateTime (use ISO standard)
-from datetime_ import (ISOCalendarDate as Date, ISOTime as Time,
-                       ISODateTime as DateTime)
+from datetime_ import ISOCalendarDate as Date, ISOTime as Time
+from datetime_ import ISODateTime as DateTime
 
 
 __all__ = [
@@ -44,8 +42,6 @@ __all__ = [
     'Tokens',
     'Enumerate',
     'XMLContent',
-    # TODO Remove in itools 0.21
-    'XML',
     'XMLAttribute',
     'ISOCalendarDate',
     'ISOTime',

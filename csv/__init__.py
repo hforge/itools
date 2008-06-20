@@ -22,8 +22,8 @@ from mimetypes import add_type
 from csv_ import CSVFile, Row
 from memory import MemoryCatalog
 from parser import parse
-from table import (Table, Record, Property, UniqueError, parse_table,
-                   fold_line, escape_data)
+from table import Table, Record, Property, UniqueError
+from table import parse_table, fold_line, escape_data
 
 
 __all__ = [

@@ -19,10 +19,10 @@ from base import BaseFS
 import file
 import memfs
 from registry import register_file_system, deregister_file_system
-from vfs import (cwd, exists, is_file, is_folder, can_read, can_write,
-                 get_ctime, get_mtime, get_atime, get_mimetype, get_size,
-                 make_file, make_folder, remove, open, copy, move, get_names,
-                 traverse, READ, WRITE, READ_WRITE, APPEND)
+from vfs import can_read, can_write, copy, cwd, exists, get_atime, get_ctime
+from vfs import get_mimetype, get_mtime, get_names, get_size, is_file
+from vfs import is_folder, make_file, make_folder, move, open, remove
+from vfs import traverse, READ, WRITE, READ_WRITE, APPEND
 
 
 __all__ = [

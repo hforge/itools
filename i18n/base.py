@@ -40,30 +40,27 @@ def has_language(code):
 
 
 def get_languages():
-    """
-    Returns a list of tuples with the code and the name of each language.
+    """Returns a list of tuples with the code and the name of each language.
     """
     return [ x.copy() for x in langs ]
 
 
 
 def get_language_name(code):
-    """
-    Returns the name of a language.
+    """Returns the name of a language.
     """
     return languages.get(code, '???')
 
 
 
+# FIXME This class is only used by Localizer, either refactor the code so
+# it is used too by ikaaro, or move this code to Localizer.
 class Multilingual(object):
-    """
-    Mixin class that defines multilingual objects.
+    """Mixin class that defines multilingual objects.
     """
 
-    # XXX The variable _languages should be a set, it is not because we want
-    # to keep compatibilty with Python 2.1; it could be a list too, but it
-    # is a tuple to avoid mistakes in multilingual persistent classes.
-
+    # TODO For backwards compatibility with Python 2.1 the variable
+    # _languages is a tuple.  Change it to a frozenset.
     _languages = ()
     _default_language = None
 
@@ -72,30 +69,26 @@ class Multilingual(object):
     # API
     ########################################################################
     def get_languages(self):
-        """
-        Returns all the object languages.
+        """Returns all the object languages.
         """
         return self._languages
 
 
     def set_languages(self, languages):
-        """
-        Sets the object languages.
+        """Sets the object languages.
         """
         self._languages = tuple(languages)
 
 
     def add_language(self, language):
-        """
-        Adds a new language.
+        """Adds a new language.
         """
         if language not in self._languages:
             self._languages = tuple(self._languages) + (language,)
 
 
     def del_language(self, language):
-        """
-        Removes a language.
+        """Removes a language.
         """
         if language in self._languages:
             self._languages = tuple([ x for x in self._languages
@@ -103,10 +96,9 @@ class Multilingual(object):
 
 
     def get_languages_mapping(self):
-        """
-        Returns a list of dictionary, one for each objects language. The
-        dictionary contains the language code, its name and a boolean
-        value that tells wether the language is the default one or not.
+        """Returns a list of dictionary, one for each objects language. The
+        dictionary contains the language code, its name and a boolean value
+        that tells wether the language is the default one or not.
         """
         return [ {'code': x,
                   'name': get_language_name(x),
@@ -115,27 +107,25 @@ class Multilingual(object):
 
 
     def get_available_languages(self, **kw):
-        """
-        Returns the langauges available. For example, a language could be
-        considered as available only if there is some data associated to
-        it.
+        """Returns the langauges available. For example, a language could be
+        considered as available only if there is some data associated to it.
 
         This method is used by the language negotiation code (see
-        'get_selected_language'), sometimes you will want to redefine
-        it in your classes.
+        'get_selected_language'), sometimes you will want to redefine it in
+        your classes.
         """
         return self._languages
 
 
     def get_default_language(self):
-        """
-        Returns the default language.
+        """Returns the default language.
 
         This method is used by the language negotiation code (see
-        'get_selected_language'), sometimes you will want to redefine
-        it in your classes.
+        'get_selected_language'), sometimes you will want to redefine it in
+        your classes.
 
-        For example, maybe you will want to define it to return always
-        a default language, even when internally it is None.
+        For example, maybe you will want to define it to return always a
+        default language, even when internally it is None.
         """
         return self._default_language
+

@@ -30,6 +30,8 @@ one = Decimal('1.0')
 
 
 
+# FIXME This class belongs to the public API, but it is not exposed since
+# we never create it directly (we use AcceptLanguageType).
 class AcceptLanguage(dict):
     """Implements the Accept-Language tree.
     """

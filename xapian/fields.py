@@ -24,8 +24,7 @@ from itools.i18n import is_asian_character, is_punctuation
 # Base class
 ###########################################################################
 class BaseField(object):
-    """
-    Abstract class, the base for every field class. To define a new field
+    """Abstract class, the base for every field class. To define a new field
     class these methods must be implemented:
 
     * split(value) -- returns a sequence of two-elements tuple, where the
@@ -55,22 +54,20 @@ class BaseField(object):
 
     @staticmethod
     def split(value):
-        """
-        To index a field it must be split in a sequence of words and
+        """To index a field it must be split in a sequence of words and
         positions:
 
           [(word, 0), (word, 1), (word, 2), ...]
 
-        Where <word> will be a unicode value. Usually this function will
-        be a generator.
+        Where <word> will be a unicode value. Usually this function will be a
+        generator.
         """
         raise NotImplementedError
 
 
     @staticmethod
     def decode(string):
-        """
-        When a field is stored, this function allows to deserialize the
+        """When a field is stored, this function allows to deserialize the
         unicode string to the right type.
         """
         raise NotImplementedError
@@ -78,9 +75,8 @@ class BaseField(object):
 
     @staticmethod
     def encode(value):
-        """
-        When a field is stored, this function allows to serialize the
-        value to a unicode string.
+        """When a field is stored, this function allows to serialize the value
+        to a unicode string.
         """
         raise NotImplementedError
 

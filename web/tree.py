@@ -18,6 +18,7 @@
 # Import from itools
 from itools.uri import Path
 from access import AccessControl
+from views import BaseView
 
 
 class Node(object):
@@ -160,8 +161,11 @@ class Node(object):
     #######################################################################
     # API / HTTP
     #######################################################################
-    def get_method(self, name):
-        return getattr(self, name, None)
+    def get_view(self, name, **kw):
+        view = getattr(self, name, None)
+        if view is None or not isinstance(view, BaseView):
+            return None
+        return view
 
 
     def GET(self, context):

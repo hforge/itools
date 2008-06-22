@@ -184,32 +184,31 @@ class Request(Message):
 
     ########################################################################
     # The Form
+    def get_form(self):
+        if self.method in ('GET', 'HEAD'):
+            return self.request_uri.query
+        # XXX What parameters with the fields defined in the query?
+        return self.body
+
+
     def get_parameter(self, name, default=None, type=None):
+        # Default type is String
         if type is None:
             type = String
 
-        form = self.form
+        # Return the value
+        form = self.get_form()
         if name in form:
             return type.decode(form[name])
 
+        # Default
         if default is None:
             return type.default
-
         return default
 
 
     def has_parameter(self, name):
-        return name in self.form
-
-
-    # XXX Remove? Use "get_parameter" instead?
-    def get_form(self):
-        if self.method in ('GET', 'HEAD'):
-                return self.request_uri.query
-        # XXX What parameters with the fields defined in the query?
-        return self.body
-
-    form = property(get_form, None, None, '')
+        return name in self.get_form()
 
 
     ########################################################################

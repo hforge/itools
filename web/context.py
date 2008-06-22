@@ -126,7 +126,7 @@ class Context(object):
             goto = get_reference(goto)
         # Preserve some form values
         form = {}
-        for key, value in self.request.form.items():
+        for key, value in self.request.get_form().items():
             # Be robust
             if not key:
                 continue
@@ -152,16 +152,19 @@ class Context(object):
     #######################################################################
     # API / Forms
     #######################################################################
+    def get_query_value(self, name):
+        """Returns the value for the given name from the query.  Useful for
+        POST requests.
+        """
+        query = self.uri.query
+        return query.get(name)
+
+
     def get_form_keys(self):
-        return self.request.form.keys()
+        return self.request.get_form().keys()
 
 
-    # TODO For the next major release, change the method signature, it
-    # should be:
-    #
-    #   get_form_value(name, type=None, default=None)
-    #
-    def get_form_value(self, name, default=None, type=String):
+    def get_form_value(self, name, type=String, default=None):
         request = self.request
 
         # Figure out the default value
@@ -283,33 +286,6 @@ class Context(object):
             cls = ' '.join(cls) or None
             namespace[name] = {'name': name, 'value': value, 'class': cls}
         return namespace
-
-
-    def check_form_input(self, schema):
-        """Form checks the request form and collect inputs consider the
-        schema.  This method also checks the request form and raise an
-        FormError if there is something wrong (a mandatory field is missing,
-        or a value is not valid) or None if everything is ok.
-
-        Its input data is a list (fields) that defines the form variables to
-          {'toto': Unicode(mandatory=True, multiple=False, default=u'toto'),
-           'tata': Unicode(mandatory=True, multiple=False, default=u'tata')}
-        """
-        values = {}
-        invalid = []
-        missing = []
-        for name in schema:
-            datatype = schema[name]
-            try:
-                value = self.get_form_value(name, type=datatype)
-            except FormError, error:
-                value = self.get_form_value(name)
-                missing.extend(error.missing)
-                invalid.extend(error.invalid)
-            values[name] = value
-        if missing or invalid:
-            raise FormError(missing, invalid)
-        return values
 
 
     #######################################################################

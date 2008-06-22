@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2005-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2008 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,31 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from itools
-from access import AccessControl
-from context import get_context, set_context, Context, FormError
-from messages import *
-from server import Server
-from tree import Root, Node
-from views import BaseView, BaseForm, STLView, STLForm
 
+MSG_MISSING_OR_INVALID = (
+    u'Some required fields are missing, or some values are not valid. '
+    u'Please correct them and continue.')
 
-__all__ = [
-    'Context',
-    'set_context',
-    'get_context',
-    'AccessControl',
-    'Server',
-    # Model
-    'Root',
-    'Node',
-    # View-Controller
-    'BaseView',
-    'BaseForm',
-    'STLView',
-    'STLForm',
-    # Exceptions
-    'FormError',
-    # Messages
-    'MSG_MISSING_OR_INVALID',
-    ]

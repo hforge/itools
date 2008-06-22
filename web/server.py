@@ -24,8 +24,8 @@ from os import fstat, getpid, remove as remove_file
 from types import FunctionType, MethodType
 from select import error as SelectError
 from signal import signal, SIGINT
-from socket import (socket as Socket, error as SocketError, AF_INET,
-    SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR)
+from socket import socket as Socket, error as SocketError
+from socket import AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR
 import sys
 from time import strftime
 from traceback import print_exc
@@ -34,11 +34,11 @@ from urllib import unquote
 
 # Import from itools
 from itools.uri import Reference, Path
-from itools.http import (HTTPError, BadRequest, Forbidden, NotFound,
-    Unauthorized, Request, Response)
+from itools.http import Request, Response, HTTPError
+from itools.http import BadRequest, Forbidden, NotFound, Unauthorized
 from itools.xml import XMLParser
-from base import Node
 from context import Context, get_context, set_context
+from views import BaseView
 
 
 # TODO Support multiple threads
@@ -376,13 +376,12 @@ class Server(object):
             goto.path.endswith_slash = False
             return 302, goto
         # Traverse
-        status, method = self.traverse(context)
+        status, here, view, method = self.traverse(context)
         if status == 200:
             # Check modification time
-            mtime = '%s__mtime__' % context.method
-            mtime = getattr(context.object, mtime, None)
+            mtime = view.get_mtime(here)
             if mtime is not None:
-                mtime = mtime().replace(microsecond=0)
+                mtime = mtime.replace(microsecond=0)
                 response.set_header('last-modified', mtime)
                 if request.method == 'GET':
                     if request.has_header('if-modified-since'):
@@ -391,7 +390,7 @@ class Server(object):
                             return 304, None
         # Call the method
         try:
-            body = method(context)
+            body = method(here, context)
         except Forbidden:
             if context.user is None:
                 status = 401
@@ -420,10 +419,10 @@ class Server(object):
         # Not a safe method
         context.commit = True
         # Traverse
-        status, method = self.traverse(context)
+        status, here, view, method = self.traverse(context)
         # Call the method
         try:
-            body = method(context)
+            body = method(here, context)
         except Forbidden:
             if context.user is None:
                 status = 401
@@ -442,7 +441,7 @@ class Server(object):
     def PUT(self, context):
         context.commit = True
         # Traverse
-        status, method = self.traverse(context)
+        status, here, view, method = self.traverse(context)
         # Call the method
         body = method(context)
         return 204, None
@@ -451,7 +450,7 @@ class Server(object):
     def LOCK(self, context):
         context.commit = True
         # Traverse
-        status, method = self.traverse(context)
+        status, here, view, method = self.traverse(context)
         # Call the method
         body = method(context)
         if isinstance(body, str):
@@ -464,7 +463,7 @@ class Server(object):
     def UNLOCK(self, context):
         context.commit = True
         # Traverse
-        status, method = self.traverse(context)
+        status, here, view, method = self.traverse(context)
         # Call the method
         body = method(context)
         return 204, None
@@ -503,7 +502,7 @@ class Server(object):
         # (4) Build response, when postponed (useful for POST methods)
         if isinstance(body, (FunctionType, MethodType)):
             try:
-                body = body(context)
+                body = body(context.object, context)
             except:
                 self.log_error(context)
                 status = 500
@@ -572,45 +571,64 @@ class Server(object):
         site_root = self.get_site_root(context.uri.authority.host)
         site_root.before_traverse(context)
         context.site_root = site_root
-        # Traverse
+
+        # Get the object
         path = str(context.path)
         if path[0] == '/':
             path = path[1:]
             if path == '':
                 path = '.'
         try:
-            handler = site_root.get_object(path)
+            here = site_root.get_object(path)
         except LookupError:
-            handler = None
-        context.object = handler
+            here = None
 
-        if handler is None:
+        if here is None:
             # Find an ancestor to render the page
             abspath = Path(path)
             for x in range(len(abspath) - 1, 0, -1):
                 path = abspath[:x]
                 try:
-                    object = site_root.get_object(path)
+                    here = site_root.get_object(path)
                 except LookupError:
                     continue
                 else:
-                    context.object = object
                     break
             else:
-                context.object = site_root
-            return 404, root.not_found
+                here = site_root
+            context.object = here
+            view = root.get_view('not_found')
+            return 404, here, view, view.GET
 
-        method = handler.get_method(context.method)
-        if method is None:
-            return 404, root.not_found
+        context.object = here
+
+        # Get the view
+        query = context.uri.query
+        view = here.get_view(context.method, **query)
+        if view is None:
+            view = root.get_view('not_found')
+            return 404, here, view, view.GET
+
         # Check security
-        ac = handler.get_access_control()
-        if ac.is_access_allowed(user, handler, context.method):
-            return 200, method
-        # Not allowed
-        if user is None:
-            return 401, site_root.unauthorized
-        return 403, root.forbidden
+        ac = here.get_access_control()
+        if not ac.is_access_allowed(user, here, view):
+            # Unauthorized
+            if user is None:
+                view = site_root.get_view('unauthorized')
+                return 401, here, view, view.GET
+            # Forbidden
+            view = site_root.get_view('forbidden')
+            return 403, here, view, view.GET
+
+        # Get the method
+        method = getattr(view, context.request.method, None)
+        if method is None:
+            # FIXME For HTTP 1.1 this should be "405 Method not Allowed"
+            view = site_root.get_view('forbidden')
+            return 403, here, view, view.GET
+
+        # OK
+        return 200, here, view, method
 
 
     def abort_transaction(self, context):

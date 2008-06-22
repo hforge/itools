@@ -16,18 +16,18 @@
 
 
 class AccessControl(object):
-    """
-    Base class to control access. Provides default implementation; maybe
+    """Base class to control access. Provides default implementation; maybe
     overriden.
     """
 
-    def is_access_allowed(self, user, object, method_name):
-        """
-        Returns True if the given user is allowed to access the given method
-        of the given object. False otherwise.
+    def is_access_allowed(self, user, object, view):
+        """Returns True if the given user is allowed to access the given
+        method of the given object. False otherwise.
         """
         # Get the access control definition (default to False)
-        access = getattr(object, '%s__access__' % method_name, False)
+        if view is None:
+            return False
+        access = view.access
 
         # Private (False) or Public (True)
         if isinstance(access, bool):

@@ -1551,6 +1551,69 @@ parser_read_intSubset (Parser * parser)
       }
 }
 
+void
+parser_compute_urn (gchar * source, GString * target)
+{
+  g_string_assign (target, "urn:publicid:");
+  for (; *source != '\0'; source++)
+    {
+      switch (*source)
+        {
+        case ' ':
+          if (*(source + 1) != ' ')
+            g_string_append_c (target, '+');
+          break;
+        case '/':
+          if (*(source + 1) == '/')
+            {
+              g_string_append_c (target, ':');
+              source++;
+            }
+          else
+            g_string_append (target, "%2F");
+          break;
+        case ':':
+          if (*(source + 1) == ':')
+            {
+              g_string_append_c (target, ';');
+              source++;
+            }
+          else
+            g_string_append (target, "%3A");
+          break;
+        case ';':
+          g_string_append (target, "%3B");
+          break;
+        case '\'':
+          g_string_append (target, "%27");
+          break;
+        case '?':
+          g_string_append (target, "%3F");
+          break;
+        case '#':
+          g_string_append (target, "%23");
+          break;
+        case '%':
+          g_string_append (target, "%25");
+          break;
+        default:
+          g_string_append_c (target, *source);
+          break;
+        }
+    }
+}
+
+
+gboolean
+parser_read_public_doctype (Parser * parser, gchar * public_id,
+                            gchar * system_id)
+{
+  parser_compute_urn (public_id, parser->buffer1);
+
+
+  return ALL_OK;
+}
+
 
 /* http://www.w3.org/TR/REC-xml/#NT-doctypedecl */
 gboolean
@@ -1565,7 +1628,7 @@ parser_read_doctypedecl (Parser * parser)
 
   parser_read_S (parser);
 
-  /* Read Name (in buffer1) */
+  /* Read Name (in buffer1 => not verified) */
   parser_read_Name (parser, parser->buffer1);
   parser_read_S (parser);
 
@@ -1608,7 +1671,9 @@ parser_read_doctypedecl (Parser * parser)
         return ERROR;
 
       /* Read the public doctype */
-      /* XXX: Finish me */
+      if (parser_read_public_doctype (parser, parser->buffer3->str,
+                                      parser->buffer2->str))
+        return ERROR;
 
       parser_read_S (parser);
     }
@@ -1636,6 +1701,17 @@ parser_read_doctypedecl (Parser * parser)
   return ALL_OK;
 }
 
+
+void
+parser_read_BOM (Parser * parser)
+{
+  /* XXX: We detect only the UTF-8 Byte Order Mark */
+  /* If an error occurs the bytes are not replaced in the stream */
+  if ((unsigned char) parser->cursor_char == 0xEF)
+    if ((unsigned char) move_cursor (parser) == 0xBB)
+      if ((unsigned char) move_cursor (parser) == 0xBF)
+        move_cursor (parser);
+}
 
 
 /**************************************************************************
@@ -1731,6 +1807,8 @@ parser_new (gchar * data, FILE * file)
   parser->source_col = 1;
   parser->cursor_char = (*(parser->get_char)) (parser);
 
+  /* And read the BOM */
+  parser_read_BOM (parser);
 
   return parser;
 }

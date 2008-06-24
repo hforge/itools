@@ -19,6 +19,7 @@
 from compiler import parse, walk
 
 # Import from itools
+from itools.uri import Path, get_absolute_reference2
 from text import TextFile
 from registry import register_handler_class
 
@@ -50,9 +51,13 @@ class Python(TextFile):
         # Make it work with Windows files (the parser expects '\n' ending
         # lines)
         data = ''.join([ x + '\n' for x in data.splitlines() ])
+        # XXX should be improved
+        locale_path = get_absolute_reference2('locale').path
+        module_path = self.uri.path
+        relative_path = locale_path.get_pathto(module_path)
         # Parse and Walk
         ast = parse(data)
-        visitor = VisitorUnicode(self.uri.path.get_name())
+        visitor = VisitorUnicode(relative_path)
         walk(ast, visitor)
 
         return visitor.messages

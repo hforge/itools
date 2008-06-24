@@ -18,8 +18,9 @@
 # Import from itools
 from itools.datatypes import XMLAttribute, XMLContent
 from itools.handlers import TextFile, register_handler_class
+from itools.uri import Path, get_absolute_reference2
 from i18n import get_messages, translate
-from namespaces import get_namespace, is_empty, XMLNSNamespace
+from namespaces import get_namespace, is_empty
 from parser import (XMLParser, XML_DECL, DOCUMENT_TYPE, START_ELEMENT,
                     END_ELEMENT, TEXT, COMMENT, CDATA)
 
@@ -251,10 +252,13 @@ class XMLFile(TextFile):
     # API / Internationalization - Localization
     #######################################################################
     def get_messages(self):
-        filename = None
+        relative_path = None
         if self.uri:
-            filename = self.uri.path.get_name()
-        return get_messages(self.events, filename)
+            # XXX should be improved
+            locale_path = get_absolute_reference2('locale').path
+            template_path = self.uri.path
+            relative_path = locale_path.get_pathto(template_path)
+        return get_messages(self.events, relative_path)
 
 
     def translate(self, catalog):

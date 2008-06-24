@@ -474,6 +474,5 @@ class SentenceTestCase(unittest.TestCase):
         self.assertEqual(list(segments), result)
 
 
-
 if __name__ == '__main__':
     unittest.main()

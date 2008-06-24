@@ -37,8 +37,15 @@ class Test_ODT_File(TestCase):
 
     def test_get_msg(self):
         messages = list(self.doc.get_messages())
-        txt = u'Hello <text:span text:style-name="T1">world</text:span> !'
-        expected = [Message([], [txt], [u''])]
+        expected_messages = [
+            # content.xml
+            u'Hello <text:span text:style-name="T1">world</text:span> !',
+            # meta.xml
+            u'Hello world Document', u'it\'s a very good document',
+            u'Itools test', u'sylvain', u'sylvain', u'itools', u'odt', u'odf']
+        expected = []
+        for msg in expected_messages:
+            expected.append(Message([], [msg], [u'']))
         self.assertEqual(messages, expected)
 
 
@@ -53,8 +60,15 @@ class Test_ODT_File(TestCase):
         doc2.load_state_from_string(translate_odt_document)
         messages = list(doc2.get_messages())
         # Check if allright
-        txt = u'Hola <text:span text:style-name="T1">mundo</text:span> !'
-        expected = [Message([], [txt], [u''])]
+        expected_messages = [
+            # content.xml
+            u'Hola <text:span text:style-name="T1">mundo</text:span> !',
+            # meta.xml
+            u'Hello world Document', u'it\'s a very good document',
+            u'Itools test', u'sylvain', u'sylvain', u'itools', u'odt', u'odf']
+        expected =  []
+        for msg in expected_messages:
+            expected.append(Message([], [msg], [u'']))
         self.assertEqual(messages, expected)
 
 
@@ -84,8 +98,19 @@ class Test_ODP_File(TestCase):
 
     def test_get_msg(self):
         messages = list(self.doc.get_messages())
-        expected = [Message([], [u'<text:span text:style-name="T1">Hello </text:span><text:span text:style-name="T2">World</text:span><text:span text:style-name="T1"> !</text:span>'], [u'']),
-                    Message([], [u'Welcome'], [u''])]
+        expected_messages = [
+            # content.xml
+            u'<text:span text:style-name="T1">Hello </text:span>'
+            '<text:span text:style-name="T2">World</text:span>'
+            '<text:span text:style-name="T1"> !</text:span>',
+            u'Welcome',
+            # meta.xml
+            u'sylvain', u'sylvain',
+            # styles
+            u'2', u'2', u'2']
+        expected = []
+        for msg in expected_messages:
+            expected.append(Message([],[msg], [u'']))
         self.assertEqual(messages, expected)
 
 
@@ -100,14 +125,21 @@ class Test_ODS_File(TestCase):
 
     def test_get_msg(self):
         messages = list(self.doc.get_messages())
-        expected = [Message([], [u'Chocolate'], [u'']),
-                    Message([], [u'Coffee'], [u'']), Message([], [u'Tea'], [u'']),
-                    Message([], [u'Price'], [u'']), Message([], [u'80'], [u'']),
-                    Message([], [u'20'], [u'']), Message([], [u'40'], [u'']),
-                    Message([], [u'Quantity'], [u'']), Message([], [u'20'], [u'']),
-                    Message([], [u'30'], [u'']), Message([], [u'20'], [u'']),
-                    Message([], [u'Quality'], [u'']), Message([], [u'0'], [u'']),
-                    Message([], [u'50'], [u'']), Message([], [u'40'], [u''])]
+        expected_messages = [# content.xml
+                             u'Chocolate', u'Coffee', u'Tea', u'Price', u'80',
+                             u'20', u'40', u'Quantity', u'20', u'30', u'20',
+                             u'Quality', u'0', u'50', u'40',
+                             # meta.xml
+                             u'sylvain', u'sylvain',
+                             # styles.xml
+                             u'-', u'-', u'???',
+                             u'Page <text:page-number>1</text:page-number>',
+                             u'???', u'(', u'???', u')', u',',
+                             u'Page <text:page-number>1</text:page-number> / '
+                             u'<text:page-count>99</text:page-count>']
+        expected = []
+        for msg in expected_messages:
+            expected.append(Message([],[msg], [u'']))
         self.assertEqual(messages, expected)
 
 

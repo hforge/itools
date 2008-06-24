@@ -102,7 +102,8 @@ class OdtTextNamespace(ODFNamespace):
         'database-next': {'is_inline': False, 'is_empty': False},
         'database-row-number': {'is_inline': False, 'is_empty': False},
         'database-row-select': {'is_inline': False, 'is_empty': False},
-        'date': {'is_inline': False, 'is_empty': True},
+        'date': {'is_inline': False, 'is_empty': True,
+                 'translate_content': False},
         #'date-value'
         'dde-connection': {'is_inline': False, 'is_empty': True},
         'dde-connection-decl': {'is_inline': False, 'is_empty': True},
@@ -141,7 +142,7 @@ class OdtTextNamespace(ODFNamespace):
         'insertion': {'is_inline': False, 'is_empty': False},
         'keywords': {'is_inline': False, 'is_empty': True},
         #'level'
-        'line-break': {'is_inline': False, 'is_empty': True},
+        'line-break': {'is_inline': True, 'is_empty': True},
         'linenumbering-configuration': {'is_inline': False, 'is_empty': False},
         'linenumbering-separator': {'is_inline': False, 'is_empty': True},
         'list': {'is_inline': False, 'is_empty': False},
@@ -175,8 +176,9 @@ class OdtTextNamespace(ODFNamespace):
         'p': {'is_inline': False, 'is_empty': False},
         'page': {'is_inline': False, 'is_empty': True},
         'page-continuation': {'is_inline': False, 'is_empty': True},
-        #'page-count'
-        'page-number': {'is_inline': False, 'is_empty': True,
+        'page-count': {'is_inline': True, 'is_empty': False,
+                       'translate_content': False},
+        'page-number': {'is_inline': True, 'is_empty': False,
                           'translate_content': False},
         'page-sequence': {'is_inline': False, 'is_empty': False},
         'page-variable-get': {'is_inline': False, 'is_empty': True},
@@ -193,7 +195,7 @@ class OdtTextNamespace(ODFNamespace):
         'ruby': {'is_inline': False, 'is_empty': False},
         'ruby-base': {'is_inline': False, 'is_empty': False},
         #'ruby-text':
-        's': {'is_inline': False, 'is_empty': True},
+        's': {'is_inline': True, 'is_empty': True},
         'script': {'is_inline': False, 'is_empty': True},
         'section': {'is_inline': False, 'is_empty': False},
         'section-source': {'is_inline': False, 'is_empty': True},
@@ -223,7 +225,7 @@ class OdtTextNamespace(ODFNamespace):
         'span': {'is_inline': True, 'is_empty': False},
         #'style-name'
         'subject': {'is_inline': False, 'is_empty': True},
-        'tab': {'is_inline': False, 'is_empty': True},
+        'tab': {'is_inline': True, 'is_empty': True},
         #'table-count'
         'table-formula': {'is_inline': False, 'is_empty': True},
         'table-index': {'is_inline': False, 'is_empty': False},
@@ -235,7 +237,8 @@ class OdtTextNamespace(ODFNamespace):
         'table-of-content-source': {'is_inline': False, 'is_empty': False},
         'template-name': {'is_inline': False, 'is_empty': True},
         'text-input': {'is_inline': False, 'is_empty': True},
-        'time': {'is_inline': False, 'is_empty': True},
+        'time': {'is_inline': False, 'is_empty': True,
+                 'translate_content': False},
         #'time-value'
         'title': {'is_inline': False, 'is_empty': False},
         'toc-mark': {'is_inline': False, 'is_empty': True},
@@ -751,7 +754,8 @@ class OdtDataStyleNamespace(ODFNamespace):
         'boolean': {'is_inline': False, 'is_empty': True},
         'boolean-style': {'is_inline': False, 'is_empty': False},
         'currency-style': {'is_inline': False, 'is_empty': False},
-        'currency-symbol': {'is_inline': False, 'is_empty': True},
+        'currency-symbol': {'is_inline': False, 'is_empty': True,
+                            'translate_content': False},
         'date-style': {'is_inline': False, 'is_empty': False},
         'day': {'is_inline': False, 'is_empty': True},
         'day-of-week': {'is_inline': False, 'is_empty': True},

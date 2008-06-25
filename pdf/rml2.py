@@ -23,8 +23,8 @@ from cStringIO import StringIO
 # Import from itools
 from itools.datatypes import Unicode, XMLContent
 from itools.vfs import vfs
-import itools.http
 from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, TEXT
+import itools.http
 
 #Import from the reportlab Library
 from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT, TA_JUSTIFY
@@ -36,11 +36,11 @@ from reportlab.platypus.flowables import HRFlowable
 from reportlab.platypus import (Paragraph, SimpleDocTemplate, Preformatted,
                                 Image, Indenter)
 
+encoding = 'UTF-8'
+URI = None
 # Mapping HTML -> REPORTLAB
 P_FORMAT = {'i': 'i', 'em': 'i', 'b': 'b', 'strong': 'b', 'u': 'u',
-                'span': 'font', 'sup': 'super', 'sub': 'sub'}
-
-URI = None
+            'span': 'font', 'sup': 'super', 'sub': 'sub'}
 
 TAG_OK = ('a', 'b', 'big', 'br', 'em', 'i', 'img', 'small', 'span', 'strong',
           'sub', 'sup', 'tt', 'u')
@@ -50,12 +50,12 @@ FONT = {'monospace': 'courier', 'times-new-roman': 'times-roman',
         'sans-serif': 'helvetica', 'helvetica': 'helvetica',
         'symbol': 'symbol'}
 
-#ALIGNMENT
-__TAB_PARA_ALIGNMENT = {'LEFT': TA_LEFT, 'RIGHT': TA_RIGHT,
-                        'CENTER': TA_CENTER, 'JUSTIFY': TA_JUSTIFY}
+# ALIGNMENT
+ALIGNMENTS = {'LEFT': TA_LEFT, 'RIGHT': TA_RIGHT, 'CENTER': TA_CENTER,
+              'JUSTIFY': TA_JUSTIFY}
+
 TAG_NOT_SUPPORTED = '%s: line %s tag "%s" is currently not supported.'
 WARNING_DTD = '%s: line %s tag "%s" is unapproprieted here.'
-encoding = 'UTF-8'
 
 
 def rml2topdf_test(value, raw=False):
@@ -158,14 +158,13 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
 
     #### BUILD PDF ####
     if is_test == True:
-        _story = list(story), pdf_stylesheet
-
+        test_data = list(story), pdf_stylesheet
 
     doc = SimpleDocTemplate(pdf_stream, pagesize = letter)
     doc.build(story)
 
     if is_test == True:
-        return _story
+        return test_data
 
 
 def body_stream(stream, _tag_name, _attributes, pdf_stylesheet):
@@ -183,7 +182,7 @@ def body_stream(stream, _tag_name, _attributes, pdf_stylesheet):
         #### START ELEMENT ####
         if event == START_ELEMENT:
             tag_uri, tag_name, attributes = value
-            if tag_name in ('p','h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
+            if tag_name in ('p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
                 story.append(paragraph_stream(stream, tag_name, attributes,
                                               pdf_stylesheet))
             elif tag_name == 'pre':
@@ -197,7 +196,7 @@ def body_stream(stream, _tag_name, _attributes, pdf_stylesheet):
                     story.append(widget)
             elif tag_name in ('ol', 'ul'):
                 story.extend(list_stream(stream, tag_name, attributes,
-                    pdf_stylesheet))
+                                         pdf_stylesheet))
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
@@ -219,6 +218,7 @@ def paragraph_stream(stream , elt_tag_name, elt_attributes, pdf_stylesheet):
     """
         stream : parser stream
     """
+
     stack = []
     story = []
     content = []
@@ -283,7 +283,7 @@ def paragraph_stream(stream , elt_tag_name, elt_attributes, pdf_stylesheet):
                 end_tag = True
                 content[-1] += build_end_tag(P_FORMAT.get(tag_name, 'b'))
             elif tag_name == 'br':
-                content.append("<br/>")
+                content.append('<br/>')
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
@@ -410,10 +410,11 @@ def img_stream(stream , _tag_name, _attributes):
             print WARNING_DTD % ('document', line_number, tag_name)
 
 
-def list_stream(stream , _tag_name, attributes, pdf_stylesheet, id = 0):
+def list_stream(stream , _tag_name, attributes, pdf_stylesheet, id=0):
     """
         stream : parser stream
     """
+
     stack = []
     INDENT_VALUE = 1 * cm
     story = [Indenter(left=INDENT_VALUE)]
@@ -421,7 +422,7 @@ def list_stream(stream , _tag_name, attributes, pdf_stylesheet, id = 0):
     content = ["<seqDefault id='%s'/><seqReset id='%s'/>" % (strid, strid)]
     has_content = False
     stack.append((_tag_name, attributes))
-    liopenstate = 0
+    li_state = 0 # 0 -> outside, 1 -> inside
     attrs = {}
     bullet = None
     if _tag_name == 'ul':
@@ -430,7 +431,7 @@ def list_stream(stream , _tag_name, attributes, pdf_stylesheet, id = 0):
         bullet = "<bullet bulletIndent='-0.4cm'><seq id='%s'>.</bullet>"
         bullet = bullet % strid
         if exist_attribute(attributes, ['type']):
-            attrs['type'] = attributes.get((URI,'type'))
+            attrs['type'] = attributes.get((URI, 'type'))
             seq = "<seqFormat id='%s' value='%s'/>" % (strid, attrs['type'])
             content.append(seq)
         else:
@@ -444,20 +445,19 @@ def list_stream(stream , _tag_name, attributes, pdf_stylesheet, id = 0):
         if event == START_ELEMENT:
             tag_uri, tag_name, attributes = value
             if tag_name in ('ul', 'ol'):
-                if liopenstate:
+                if li_state:
                     story.append(create_paragraph(pdf_stylesheet, stack[0],
-                        content))
+                                                  content))
                     content = ["<seqDefault id='%s'/>" % strid]
                     story += list_stream(stream, tag_name, attributes,
                                          pdf_stylesheet, id+1)
                 else:
                     print WARNING_DTD % ('document', line_number, tag_name)
             elif tag_name == 'li':
-                liopenstate = 1
+                li_state = 1
                 content.append(bullet)
             elif tag_name in ('i', 'em', 'b', 'strong', 'u', 'sup', 'sub'):
-                content.append(build_start_tag(P_FORMAT.get(tag_name,
-                                                                'b')))
+                content.append(build_start_tag(P_FORMAT.get(tag_name, 'b')))
             elif tag_name == 'a':
                 content += link_stream(stream, tag_name, attributes)
             else:
@@ -470,7 +470,7 @@ def list_stream(stream , _tag_name, attributes, pdf_stylesheet, id = 0):
             tag_uri, tag_name = value
             if tag_name in ('ul', 'ol'):
                 story.append(create_paragraph(pdf_stylesheet, stack.pop(),
-                    content))
+                             content))
                 content = []
                 story.append(Indenter(left=-INDENT_VALUE))
                 return story
@@ -478,18 +478,17 @@ def list_stream(stream , _tag_name, attributes, pdf_stylesheet, id = 0):
                 content.append(build_end_tag(P_FORMAT.get(tag_name, 'b')))
             elif tag_name == 'li':
                 story.append(create_paragraph(pdf_stylesheet, stack[0],
-                    content))
+                                              content))
                 content = []
-                liopenstate = 0
+                li_state = 0
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
-                # pop the unknown tag --> 1 push => 1 pop
                 stack.append((tag_name, attributes))
 
         #### TEXT ELEMENT ####
         elif event == TEXT:
-            if liopenstate:
+            if li_state:
                 # alow to write :
                 # <para><u><i>foo</i> </u></para>
                 value = XMLContent.encode(value) # entities
@@ -506,14 +505,14 @@ def link_stream(stream , _tag_name, attributes):
     has_content = False
     attrs = {}
     if exist_attribute(attributes, ['href']):
-        attrs['href'] = attributes.get((URI,'href'))
+        attrs['href'] = attributes.get((URI, 'href'))
         # Reencode the entities because the a tags
         # are decoded again by the reportlab para parser.
         href = XMLContent.encode(attrs['href'])
-        content.append("<a href=\"%s\">" % href)
+        content.append('<a href="%s">' % href)
     elif exist_attribute(attributes, ['id', 'name'], at_least=True):
         name = attributes.get((URI, 'id'), attributes.get((URI, 'name')))
-        content.append("<a name=\"%s\">" % name)
+        content.append('<a name="%s">' % name)
 
     while True:
         event, value, line_number = stream_next(stream)
@@ -532,7 +531,7 @@ def link_stream(stream , _tag_name, attributes):
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
             if tag_name == 'a':
-                content.append("</a>")
+                content.append('</a>')
                 return ''.join(content)
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
@@ -548,6 +547,7 @@ def link_stream(stream , _tag_name, attributes):
 
 
 def span_stream(stream , _tag_name, attributes):
+
     content = []
     tag_stack = []
     attrs = {}
@@ -580,14 +580,17 @@ def span_stream(stream , _tag_name, attributes):
                     tag_stack.append('i')
                 elif x != 'normal':
                     print 'Warning font-style not valid'
+
+    # Why not use build_start_tag ?
     attr_str = ''.join([' %s="%s"' % (key, attrs[key])
                         for key in attrs.keys()])
     if attr_str:
-        start_tag="<%s %s>" % (_tag_name, attr_str)
+        start_tag = '<%s %s>' % (_tag_name, attr_str)
     else:
-        start_tag="<%s>" % _tag_name
+        start_tag = '<%s>' % _tag_name
     if tag_stack:
-        start_tag="<%s>" % tag_stack
+        start_tag = '<%s>' % tag_stack
+
     while True:
         event, value, line_number = stream_next(stream)
         if event == None:
@@ -607,9 +610,9 @@ def span_stream(stream , _tag_name, attributes):
                 elif tag_name == 'span':
                     tag = P_FORMAT.get(tag_name)
                     if cpt or has_content:
-                        content[-1] += span_stream(stream , tag, attributes)
+                        content[-1] += span_stream(stream, tag, attributes)
                     else:
-                        content.append(span_stream(stream , tag, attributes))
+                        content.append(span_stream(stream, tag, attributes))
                     cpt += 1
                 elif tag_name == 'br':
                     continue
@@ -624,7 +627,6 @@ def span_stream(stream , _tag_name, attributes):
                 else:
                     print TAG_NOT_SUPPORTED % ('document', line_number,
                                                tag_name)
-                    # unknown tag
             else:
                 print WARNING_DTD % ('document', line_number, tag_name)
 
@@ -636,13 +638,13 @@ def span_stream(stream , _tag_name, attributes):
                 while tag_stack:
                     content[-1] += '<%s>' % tag_stack.pop()
                 content[-1] += '</font>'
-                return "%s%s" % (start_tag, ' '.join(content))
+                return '%s%s' % (start_tag, ' '.join(content))
             elif tag_name in TAG_OK:
                 cpt -= 1
                 end_tag = True
                 content[-1] += build_end_tag(P_FORMAT.get(tag_name, 'b'))
             elif tag_name == 'br':
-                content.append("<br/>")
+                content.append('<br/>')
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
 
@@ -705,7 +707,7 @@ def build_style(pdf_stylesheet, element):
             bulletText = attr_value
         else:
             if key == 'align':
-                attr_value = __TAB_PARA_ALIGNMENT.get(attr_value.upper())
+                attr_value = ALIGNMENTS.get(attr_value.upper())
             elif key in ['leftIndent', 'rightIndent']:
                 attr_value = rml_value(attr_value)
             style_attr[key] = attr_value
@@ -722,6 +724,7 @@ def create_preformatted(pdf_stylesheet, element, content):
     """
         Create a reportlab preformatted widget.
     """
+
     content = ''.join(content)
     style_name = 'Normal'
 
@@ -739,25 +742,26 @@ def create_hr(attributes):
     """
 
     attrs = {}
-    attrs['width'] = "100%"
-    for key in ['width', 'thickness', 'spaceBefore', 'spaceAfter']:
+    attrs['width'] = '100%'
+    for key in ('width', 'thickness', 'spaceBefore', 'spaceAfter'):
         if exist_attribute(attributes, [key]):
             attrs[key] = rml_value(attributes.get((URI, key)))
+
     if exist_attribute(attributes, ['lineCap']):
-        line_cap = attributes.get((URI,'lineCap'))
-        if line_cap not in ['butt', 'round', 'square']:
+        line_cap = attributes.get((URI, 'lineCap'))
+        if line_cap not in ('butt', 'round', 'square'):
             line_cap = 'butt'
         attrs['lineCap'] = line_cap
     if exist_attribute(attributes, ['color']):
         attrs['color'] = get_color(attributes.get((URI, 'color')))
     if exist_attribute(attributes, ['align']):
-        hAlign = attributes.get((URI, 'align'), '').upper()
-        if hAlign in ['LEFT', 'RIGHT', 'CENTER', 'CENTRE']:
-            attrs['hAlign'] = hAlign
+        h_align = attributes.get((URI, 'align'), '').upper()
+        if h_align in ('LEFT', 'RIGHT', 'CENTER', 'CENTRE'):
+            attrs['hAlign'] = h_align
     if exist_attribute(attributes, ['vAlign']):
-        vAlign = attributes.get((URI, 'vAlign'), '').upper()
-        if vAlign in ['TOP', 'MIDDLE', 'BOTTOM']:
-            attrs['vAlign'] = vAlign
+        v_align = attributes.get((URI, 'vAlign'), '').upper()
+        if v_align in ('TOP', 'MIDDLE', 'BOTTOM'):
+            attrs['vAlign'] = v_align
     return HRFlowable(**attrs)
 
 
@@ -845,7 +849,7 @@ def normalize(data):
 
 
 def font_value(str_value, style_size = 12):
-    style_size = 12  # TO DO : replace default_value by current stylesheet
+    style_size = 12  # TODO : replace default_value by current stylesheet
                      # size
     map_fontsize = {'xx-small': 20, 'x-small': 40, 'smaller': 60, 'small':80,
                     'medium':100, 'large': 120, 'larger': 140, 'x-large': 160,
@@ -870,13 +874,12 @@ def font_value(str_value, style_size = 12):
     return value
 
 
-
-
 def build_start_tag(tag_name, attributes={}):
     """
         Create the XML start tag from his name and his attributes
         span => font (map)
     """
+
     attr_str = ''.join([' %s="%s"' % (key[1], attributes[key])
                         for key in attributes.keys()])
     return '<%s%s>' % (tag_name, attr_str)
@@ -892,6 +895,7 @@ def build_end_tag(tag_name):
 
 def get_color(value):
     raise NotImplementedError
+
 
 def get_color_hexa(x):
     x = x.lstrip('#rgb(').rstrip(')').split(',')
@@ -913,6 +917,7 @@ def get_style(stylesheet, name):
        Return the style corresponding to name or the style normal if it does
        not exist.
     """
+
     if stylesheet.has_key(name):
         return stylesheet[name]
     return stylesheet['Normal']
@@ -958,6 +963,7 @@ def rml_value(value, default=None):
        '2in' -> 2 * pica
        '2%' -> '2%'
     """
+
     if value is None:
         return default
 
@@ -965,7 +971,7 @@ def rml_value(value, default=None):
     if not is_str(value):
         return value
 
-    if value == "None":
+    if value == 'None':
         return None
     if value[-2:] == 'in':
         coef = inch
@@ -990,13 +996,13 @@ def rml_value(value, default=None):
     return value
 
 
-def is_str(str, check_is_unicode=True):
+def is_str(s, check_is_unicode=True):
     """
         Check is str is a string.
     """
 
-    if type(str) != type(''):
+    if isinstance(s, str) is False:
         if not check_is_unicode:
             return False
-        return type(str) == type(u'')
+        return isinstance(s, unicode)
     return True

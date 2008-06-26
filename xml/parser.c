@@ -23,6 +23,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <stdio.h>
 
 #include "parser.h"
 
@@ -44,6 +45,7 @@
 #define INVALID_TOKEN     "not well-formed (invalid token)"
 #define MISSING           "expected end tag is missing"
 #define BAD_ENTITY        "error parsing entity reference"
+#define BAD_DTD           "error during parsing the DTD"
 #define DUP_ATTR          "duplicate attribute"
 #define INVALID_NAMESPACE "invalid namespace"
 
@@ -135,6 +137,48 @@ arp_free (Arp * arp)
 }
 
 
+/***************************
+ * A general stream object *
+ ***************************/
+
+#define STREAM_DATA 0
+#define STREAM_FILE 1
+
+typedef struct
+{
+  int type;
+  union
+  {
+    gchar *cursor;
+    FILE *file;
+  } source;
+} Stream;
+
+
+void
+stream_open (Stream * stream, gchar * data, FILE * file)
+{
+  if (data)
+    {
+      stream->source.cursor = data;
+      stream->type = STREAM_DATA;
+    }
+  else
+    {
+      stream->source.file = file;
+      stream->type = STREAM_FILE;
+    }
+}
+
+
+void
+stream_close (Stream * stream)
+{
+  if (stream->type)
+    fclose (stream->source.file);
+}
+
+
 /*********************
  * The parser type ! *
  *********************/
@@ -142,20 +186,17 @@ arp_free (Arp * arp)
 struct _Parser
 {
   /* Source */
-  union
-  {
-    gchar *cursor;
-    FILE *file;
-  } source;
-    gchar (*get_char) (struct _Parser *);
+  Stream source;
   gint source_row;
   gint source_col;
+  gboolean new_line;
 
   /* Streams management */
   gchar cursor_char;
   Arp *streams_stack;
   gint streams_stack_size;
   gboolean in_doctype;
+  gboolean external_dtd;
 
   /* Four buffers (to do everything) */
   GString *buffer1;
@@ -185,6 +226,83 @@ struct _Parser
   GHashTable *GE_table;
   GHashTable *PE_table;
 };
+
+
+/*********************
+ * Cursor management *
+ *********************/
+
+#define stream_getc(stream) ((gchar) ((stream)->type? \
+            ((output = fgetc((stream)->source.file)), \
+                        (output == EOF?'\0':output)): \
+                        *((stream)->source.cursor++)))
+gchar
+move_cursor (Parser * parser)
+{
+  gint output;
+  Stream *stream;
+  gchar next_char;
+  gint size;
+
+  /* Not currently in the source ? */
+  if (parser->streams_stack_size > 0)
+    {
+      for (;;)
+        {
+          stream = (Stream *) arp_get_index (parser->streams_stack,
+                                             parser->streams_stack_size - 1);
+          next_char = stream_getc (stream);
+
+          /* This stream is not empty */
+          if (next_char != '\0')
+            return parser->cursor_char = next_char;
+
+          /* It is empty, close and pop the stream */
+          stream_close (stream);
+          size = --(parser->streams_stack_size);
+
+          /* If the stream is a file return '\0' */
+          if (stream->type)
+            return parser->cursor_char = '\0';
+
+          /* No more stream ? */
+          if (!size)
+            break;
+        }
+    }
+
+  /* In the source ! */
+  if (parser->new_line)
+    {
+      parser->source_row++;
+      parser->source_col = 1;
+      parser->new_line = FALSE;
+    }
+  else
+    parser->source_col++;
+
+  next_char = stream_getc (&(parser->source));
+  if (next_char == '\n')
+    parser->new_line = TRUE;
+
+  return parser->cursor_char = next_char;
+}
+
+void
+stream_push (Parser * parser, gchar * data, FILE * file)
+{
+  Stream *stream;
+
+  /* A place */
+  stream = (Stream *) arp_get_index (parser->streams_stack,
+                                     (parser->streams_stack_size)++);
+
+  /* Prepare the stream */
+  stream_open (stream, data, file);
+
+  /* And prepare the first caracter */
+  move_cursor (parser);
+}
 
 
 /************
@@ -255,39 +373,6 @@ h_str_tree_traverse (HStrTree * tree, gchar chr)
 }
 
 
-/********************
- * Interned strings *
- ********************/
-
-G_LOCK_DEFINE_STATIC (interned_strings);
-HStrTree *interned_strings_tree = NULL;
-GStringChunk *interned_strings = NULL;
-
-/* Some values */
-gchar *intern_empty;
-gchar *intern_xmlns;
-
-
-gchar *
-intern_string (gchar * str)
-{
-  HStrTree *node;
-  gchar *cursor;
-
-  node = interned_strings_tree;
-
-  /* Get the node */
-  for (cursor = str; *cursor != '\0'; cursor++)
-    node = h_str_tree_traverse (node, *cursor);
-
-  /* New string? */
-  if (!(node->data))
-    node->data = g_string_chunk_insert (interned_strings, str);
-
-  return node->data;
-}
-
-
 /*************
  * Attribute *
  *************/
@@ -304,15 +389,6 @@ parser_attr_destructor (gpointer pointer)
 {
   g_string_free (((Attribute *) pointer)->value, TRUE);
 }
-
-/************
- * Stream   *
- ************/
-
-typedef struct
-{
-  gchar *cursor;
-} Stream;
 
 
 /*******
@@ -338,222 +414,71 @@ typedef struct
 } Namespace;
 
 
-/************
- * Entities *
- ************/
+/********************
+ * Global variables *
+ ********************/
 
-GHashTable *parser_builtin_entities;
+/* Initialised ? */
+gboolean parser_initialized = FALSE;
 
-#define SET_ENTITY(str, codepoint) \
-    g_hash_table_insert(parser_builtin_entities, str, \
-                        (gpointer)(gulong)(codepoint))
+/* A global strings storage place */
+G_LOCK_DEFINE_STATIC (parser_global_strings);
+GStringChunk *parser_global_strings = NULL;
 
-/*
-http://en.wikipedia.org/wiki/List_of_XML_and_HTML_character_entity_references
-*/
-void
-parser_init_builtin_entities (void)
-{
-  gunichar index;
-  gchar *str;
+/* Interned string */
+HStrTree *intern_strings_tree = NULL;
+gchar *intern_empty;
+gchar *intern_xmlns;
 
-  /* Some Definitions */
-  gchar *html_20_32[] = {
-    "nbsp", "iexcl", "cent", "pound", "curren", "yen", "brvbar", "sect",
-    "uml", "copy", "ordf", "laquo", "not", "shy", "reg", "macr", "deg",
-    "plusmn", "sup2", "sup3", "acute", "micro", "para", "middot", "cedil",
-    "sup1", "ordm", "raquo", "frac14", "frac12", "frac34", "iquest",
-    "Agrave", "Aacute", "Acirc", "Atilde", "Auml", "Aring", "AElig",
-    "Ccedil", "Egrave", "Eacute", "Ecirc", "Euml", "Igrave", "Iacute",
-    "Icirc", "Iuml", "ETH", "Ntilde", "Ograve", "Oacute", "Ocirc",
-    "Otilde", "Ouml", "times", "Oslash", "Ugrave", "Uacute", "Ucirc",
-    "Uuml", "Yacute", "THORN", "szlig", "agrave", "aacute", "acirc",
-    "atilde", "auml", "aring", "aelig", "ccedil", "egrave", "eacute",
-    "ecirc", "euml", "igrave", "iacute", "icirc", "iuml", "eth", "ntilde",
-    "ograve", "oacute", "ocirc", "otilde", "ouml", "divide", "oslash",
-    "ugrave", "uacute", "ucirc", "uuml", "yacute", "thorn", "yuml"
-  };
-  gchar *greek_letters[] = {
-    "Alpha", "Beta", "Gamma", "Delta", "Epsilon", "Zeta", "Eta", "Theta",
-    "Iota", "Kappa", "Lambda", "Mu", "Nu", "Xi", "Omicron", "Pi", "Rho",
-    NULL, "Sigma", "Tau", "Upsilon", "Phi", "Chi", "Psi", "Omega", NULL,
-    NULL, NULL, NULL, NULL, NULL, NULL, "alpha", "beta", "gamma", "delta",
-    "epsilon", "zeta", "eta", "theta", "iota", "kappa", "lambda", "mu",
-    "nu", "xi", "omicron", "pi", "rho", "sigmaf", "sigma", "tau",
-    "upsilon", "phi", "chi", "psi", "omega", NULL, NULL, NULL, NULL, NULL,
-    NULL, NULL, "thetasym", "upsih", NULL, NULL, NULL, "piv"
-  };
-  gchar *range_8194_8260[] = {
-    "ensp", "emsp", NULL, NULL, NULL, NULL, NULL, "thinsp", NULL, NULL,
-    "zwnj", "zwj", "lrm", "rlm", NULL, NULL, NULL, "ndash", "mdash", NULL,
-    NULL, NULL, "lsquo", "rsquo", "sbquo", NULL, "ldquo", "rdquo",
-    "bdquo", NULL, "dagger", "Dagger", "bull", NULL, NULL, NULL, "hellip",
-    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, "permil", NULL,
-    "prime", "Prime", NULL, NULL, NULL, NULL, NULL, "lsaquo", "rsaquo",
-    NULL, NULL, NULL, "oline", NULL, NULL, NULL, NULL, NULL, "frasl"
-  };
-  gchar *math_symbols[] = {
-    "forall", NULL, "part", "exist", NULL, "empty", NULL, "nabla", "isin",
-    "notin", NULL, "ni", NULL, NULL, NULL, "prod", NULL, "sum", "minus",
-    NULL, NULL, NULL, NULL, "lowast", NULL, NULL, "radic", NULL, NULL,
-    "prop", "infin", NULL, "ang", NULL, NULL, NULL, NULL, NULL, NULL,
-    "and", "or", "cap", "cup", "int", NULL, NULL, NULL, NULL, NULL, NULL,
-    NULL, NULL, "there4", NULL, NULL, NULL, NULL, NULL, NULL, NULL, "sim",
-    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, "cong", NULL, NULL,
-    "asymp", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-    NULL, NULL, "ne", "equiv", NULL, NULL, "le", "ge", NULL, NULL, NULL,
-    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-    NULL, NULL, NULL, "sub", "sup", "nsub", NULL, "sube", "supe"
-  };
-
-  /* Create the hash table */
-  parser_builtin_entities = g_hash_table_new (g_str_hash, g_str_equal);
-
-  /* And store the entities! */
-
-  /* XML */
-  SET_ENTITY ("quot", 34);
-  SET_ENTITY ("amp", 38);
-  SET_ENTITY ("apos", 39);
-  SET_ENTITY ("lt", 60);
-  SET_ENTITY ("gt", 62);
-
-  /* HTML 2.0 & 3.2 */
-  for (index = 160; index <= 255; index++)
-    SET_ENTITY (html_20_32[index - 160], index);
-
-  /* HTML 4.0 */
-  SET_ENTITY ("OElig", 338);
-  SET_ENTITY ("oelig", 339);
-  SET_ENTITY ("Scaron", 352);
-  SET_ENTITY ("scaron", 353);
-  SET_ENTITY ("Yuml", 376);
-  SET_ENTITY ("fnof", 402);
-  SET_ENTITY ("circ", 710);
-  SET_ENTITY ("tilde", 732);
-  for (index = 913; index <= 982; index++)
-    {
-      str = greek_letters[index - 913];
-      if (str != NULL)
-        SET_ENTITY (str, index);
-    }
-  for (index = 8194; index <= 8260; index++)
-    {
-      str = range_8194_8260[index - 8194];
-      if (str != NULL)
-        SET_ENTITY (str, index);
-    }
-  SET_ENTITY ("euro", 8364);
-  SET_ENTITY ("image", 8465);
-  SET_ENTITY ("weierp", 8472);
-  SET_ENTITY ("real", 8476);
-  SET_ENTITY ("trade", 8482);
-  SET_ENTITY ("alefsym", 8501);
-  SET_ENTITY ("larr", 8592);
-  SET_ENTITY ("uarr", 8593);
-  SET_ENTITY ("rarr", 8594);
-  SET_ENTITY ("darr", 8595);
-  SET_ENTITY ("harr", 8596);
-  SET_ENTITY ("crarr", 8629);
-  SET_ENTITY ("lArr", 8656);
-  SET_ENTITY ("uArr", 8657);
-  SET_ENTITY ("rArr", 8658);
-  SET_ENTITY ("dArr", 8659);
-  SET_ENTITY ("hArr", 8660);
-  for (index = 8704; index <= 8839; index++)
-    {
-      str = math_symbols[index - 8704];
-      if (str != NULL)
-        SET_ENTITY (str, index);
-    }
-  SET_ENTITY ("oplus", 8853);
-  SET_ENTITY ("otimes", 8855);
-  SET_ENTITY ("perp", 8869);
-  SET_ENTITY ("sdot", 8901);
-  SET_ENTITY ("lceil", 8968);
-  SET_ENTITY ("rceil", 8969);
-  SET_ENTITY ("lfloor", 8970);
-  SET_ENTITY ("rfloor", 8971);
-  SET_ENTITY ("lang", 9001);
-  SET_ENTITY ("rang", 9002);
-  SET_ENTITY ("loz", 9674);
-  SET_ENTITY ("spades", 9824);
-  SET_ENTITY ("clubs", 9827);
-  SET_ENTITY ("hearts", 9829);
-  SET_ENTITY ("diams", 9830);
-}
-
-
-/*********************
- * Cursor management *
- *********************/
-
-gchar
-get_char_from_data (Parser * parser)
-{
-  return (gchar) (*(parser->source.cursor++));
-}
-
-
-gchar
-get_char_from_file (Parser * parser)
-{
-  int c;
-
-  /* Error or End Of File =>  EOF */
-  c = fgetc (parser->source.file);
-  if (c == EOF)
-    c = '\0';
-
-  return (gchar) c;
-}
-
-gchar
-move_cursor (Parser * parser)
-{
-  Stream *stream;
-  gchar next_char;
-  gint size;
-
-  /* Not currently in the source ? */
-  if (parser->streams_stack_size > 0)
-    {
-      for (;;)
-        {
-          stream = (Stream *) arp_get_index (parser->streams_stack,
-                                             parser->streams_stack_size - 1);
-          next_char = *(++(stream->cursor));
-          /* This stream is not empty */
-          if (next_char != '\0')
-            return parser->cursor_char = next_char;
-
-          /* It is empty :-( */
-          size = --(parser->streams_stack_size);
-
-          /* No more stream ? */
-          if (!size)
-            break;
-        }
-    }
-
-  /* In the source ! */
-  if (parser->cursor_char == '\n')
-    {
-      parser->source_row++;
-      parser->source_col = 1;
-    }
-  else
-    parser->source_col++;
-
-  return parser->cursor_char = (*(parser->get_char)) (parser);
-}
+/* URN => file names table */
+GHashTable *parser_URN_table;
 
 
 /**********************
  * Internal functions *
  **********************/
+
+gchar *
+intern_string (gchar * str)
+{
+  HStrTree *node;
+  gchar *cursor;
+
+  node = intern_strings_tree;
+
+  /* Get the node */
+  for (cursor = str; *cursor != '\0'; cursor++)
+    node = h_str_tree_traverse (node, *cursor);
+
+  /* New string? */
+  if (!(node->data))
+    node->data = g_string_chunk_insert (parser_global_strings, str);
+
+  return node->data;
+}
+
+
+void
+parser_initialize (void)
+{
+  if (!parser_initialized)
+    {
+      /* Initialize interned strings (prefix & name). */
+      G_LOCK (parser_global_strings);
+      intern_strings_tree = h_str_tree_new ();
+      parser_global_strings = g_string_chunk_new (64);
+      intern_empty = intern_string ("");
+      intern_xmlns = intern_string ("xmlns");
+      intern_string ("xml");
+      G_UNLOCK (parser_global_strings);
+
+      /* Initialize the URN => file names table */
+      parser_URN_table = g_hash_table_new (g_str_hash, g_str_equal);
+
+      parser_initialized = TRUE;
+    }
+}
+
 
 gchar *
 parser_search_namespace (Parser * parser, gchar * prefix)
@@ -592,6 +517,17 @@ parser_push_namespace (Parser * parser, gchar * prefix, gchar * uri)
 }
 
 
+void
+parser_set_default_entities (Parser * parser)
+{
+  g_hash_table_insert (parser->GE_table, "lt", "&#60;");
+  g_hash_table_insert (parser->GE_table, "gt", ">");
+  g_hash_table_insert (parser->GE_table, "amp", "&#38;");
+  g_hash_table_insert (parser->GE_table, "apos", "'");
+  g_hash_table_insert (parser->GE_table, "quot", "\"");
+}
+
+
 /*********************
  * Parsing functions *
  *********************/
@@ -616,7 +552,6 @@ gboolean
 parser_read_parameter_entity (Parser * parser)
 {
   gpointer value;
-  Stream *stream;
 
   /* Read the '%' */
   move_cursor (parser);
@@ -642,10 +577,7 @@ for_end:
   value = g_hash_table_lookup (parser->PE_table, parser->buffer4->str);
   if (value)
     {
-      stream = (Stream *) arp_get_index (parser->streams_stack,
-                                         (parser->streams_stack_size)++);
-      stream->cursor = (gchar *) value;
-      parser->cursor_char = *((gchar *) value);
+      stream_push (parser, (gchar *) value, NULL);
       return ALL_OK;
     }
 
@@ -723,7 +655,6 @@ gboolean
 parser_read_entity (Parser * parser, GString * buffer)
 {
   gpointer value;
-  Stream *stream;
 
   /* By value ? */
   if (move_cursor (parser) == '#')
@@ -758,26 +689,11 @@ for_end:
       return ALL_OK;
     }
 
-  /* Looking for in the builtin entities */
-  value = g_hash_table_lookup (parser_builtin_entities, parser->buffer4->str);
-  if (value)
-    {
-      /* Yes */
-      g_string_append_unichar (buffer, (gunichar) (gulong) value);
-
-      /* Read the ';' */
-      move_cursor (parser);
-      return ALL_OK;
-    }
-
   /* We must find it in the GE_table ! */
   value = g_hash_table_lookup (parser->GE_table, parser->buffer4->str);
   if (value)
     {
-      stream = (Stream *) arp_get_index (parser->streams_stack,
-                                         (parser->streams_stack_size)++);
-      stream->cursor = (gchar *) value;
-      parser->cursor_char = *((gchar *) value);
+      stream_push (parser, (gchar *) value, NULL);
       return ALL_OK;
     }
 
@@ -953,7 +869,6 @@ parser_read_value (Parser * parser, GString * value)
 }
 
 
-
 /* The first character is under cursor_char
  * Warning: This function uses parser->buffer1
  */
@@ -964,10 +879,10 @@ parser_read_QName (Parser * parser, gchar ** prefix, gchar ** name)
   HStrTree *parent;
   gchar *str;
 
-  G_LOCK (interned_strings);
+  G_LOCK (parser_global_strings);
 
   /* Read the prefix. */
-  tree = interned_strings_tree;
+  tree = intern_strings_tree;
   while (IS_NC_NAME_CHAR (parser->cursor_char))
     {
       tree = h_str_tree_traverse (tree, parser->cursor_char);
@@ -975,9 +890,9 @@ parser_read_QName (Parser * parser, gchar ** prefix, gchar ** name)
     }
 
   /* Test the string is not missing. */
-  if (tree == interned_strings_tree)
+  if (tree == intern_strings_tree)
     {
-      G_UNLOCK (interned_strings);
+      G_UNLOCK (parser_global_strings);
       return ERROR;
     }
 
@@ -991,7 +906,8 @@ parser_read_QName (Parser * parser, gchar ** prefix, gchar ** name)
           g_string_prepend_c (parser->buffer1, parent->chr);
           parent = parent->parent;
         }
-      str = g_string_chunk_insert (interned_strings, parser->buffer1->str);
+      str =
+        g_string_chunk_insert (parser_global_strings, parser->buffer1->str);
       tree->data = str;
     }
   else
@@ -1004,7 +920,7 @@ parser_read_QName (Parser * parser, gchar ** prefix, gchar ** name)
     {
       *prefix = intern_empty;
       *name = str;
-      G_UNLOCK (interned_strings);
+      G_UNLOCK (parser_global_strings);
       return ALL_OK;
     }
 
@@ -1015,7 +931,7 @@ parser_read_QName (Parser * parser, gchar ** prefix, gchar ** name)
   move_cursor (parser);
 
   /* Read the name */
-  tree = interned_strings_tree;
+  tree = intern_strings_tree;
   while (IS_NAME_CHAR (parser->cursor_char))
     {
       tree = h_str_tree_traverse (tree, parser->cursor_char);
@@ -1023,9 +939,9 @@ parser_read_QName (Parser * parser, gchar ** prefix, gchar ** name)
     }
 
   /* Test the string is not missing. */
-  if (tree == interned_strings_tree)
+  if (tree == intern_strings_tree)
     {
-      G_UNLOCK (interned_strings);
+      G_UNLOCK (parser_global_strings);
       return ERROR;
     }
 
@@ -1039,7 +955,8 @@ parser_read_QName (Parser * parser, gchar ** prefix, gchar ** name)
           g_string_prepend_c (parser->buffer1, parent->chr);
           parent = parent->parent;
         }
-      str = g_string_chunk_insert (interned_strings, parser->buffer1->str);
+      str =
+        g_string_chunk_insert (parser_global_strings, parser->buffer1->str);
       tree->data = str;
     }
   else
@@ -1050,7 +967,7 @@ parser_read_QName (Parser * parser, gchar ** prefix, gchar ** name)
   /* Store the result */
   *name = str;
 
-  G_UNLOCK (interned_strings);
+  G_UNLOCK (parser_global_strings);
   return ALL_OK;
 }
 
@@ -1163,16 +1080,15 @@ for_end:
   /* Attributes URI */
   for (attribute = (Attribute *) parser->attr_storage->data, idx = 0;
        idx < attributes_number; attribute++, idx++)
-    {
-      if (attribute->uri == intern_empty)
-        attribute->uri = tag_uri;
-      else
-        {
-          attribute->uri = parser_search_namespace (parser, attribute->uri);
-          if (!(attribute->uri))
-            return PARSER_ERROR (INVALID_NAMESPACE);
-        }
-    }
+    if (attribute->uri != intern_empty)
+      {
+        attribute->uri = parser_search_namespace (parser, attribute->uri);
+        if (!(attribute->uri))
+          return PARSER_ERROR (INVALID_NAMESPACE);
+      }
+  /* XXX PATCH => empty => None */
+    else
+      attribute->uri = tag_uri;
 
   /* Prepare the EndTagEvent */
   if (end_tag)
@@ -1181,7 +1097,7 @@ for_end:
       if (ns_number > 0)
         {
           parser->ns_stack_size -= ns_number;
-          parser->default_ns = parser_search_namespace (parser, "");
+          parser->default_ns = parser_search_namespace (parser, intern_empty);
           if (!(parser->default_ns))
             parser->default_ns = intern_empty;
         }
@@ -1258,7 +1174,7 @@ parser_read_ETag (Parser * parser, EndTagEvent * event)
   if (tag->ns_number > 0)
     {
       parser->ns_stack_size -= tag->ns_number;
-      parser->default_ns = parser_search_namespace (parser, "");
+      parser->default_ns = parser_search_namespace (parser, intern_empty);
       if (!(parser->default_ns))
         parser->default_ns = intern_empty;
     }
@@ -1424,9 +1340,9 @@ parser_read_PI_or_XMLDecl (Parser * parser, Event * event)
 
 
 gboolean
-parser_goto_gt (Parser * parser)
+parser_ignore_element (Parser * parser)
 {
-  /* TODO: handle the string */
+  /* TODO: handle the string ! */
 
   /* Search for '>' */
   while (parser->cursor_char != '>' && parser->cursor_char != '\0')
@@ -1443,113 +1359,75 @@ parser_goto_gt (Parser * parser)
 
 
 gboolean
-parser_read_EntityDecl (Parser * parser)
+parser_ignore_comment (Parser * parser)
 {
-  gboolean PE = FALSE;
-  gchar *name, *value;
-
-  /* Read 'ENTITY' */
-  if (parser_read_string (parser, "TITY"))
+  if (move_cursor (parser) != '-')
     return ERROR;
-  move_cursor (parser);
 
-  parser_read_S (parser);
-
-  /* PE? */
-  if (parser->cursor_char == '%')
+  for (;;)
     {
-      move_cursor (parser);
-      parser_read_S (parser);
-      PE = TRUE;
-    }
+      /* Stop condition: "-->" */
+      if (move_cursor (parser) == '-')
+        {
+          if (move_cursor (parser) == '-')
+            {
+              if (move_cursor (parser) != '>')
+                return ERROR;
 
-  /* Name (in buffer1) */
-  parser_read_Name (parser, parser->buffer1);
+              /* Read '>' */
+              move_cursor (parser);
 
-  parser_read_S (parser);
+              return ALL_OK;
+            }
+        }
 
-  /* Read the value */
-  switch (parser->cursor_char)
-    {
-    case '\'':
-    case '"':
-      /* Read value (in buffer2) */
-      if (parser_read_value (parser, parser->buffer2))
+      /* Something else. */
+      if (parser->cursor_char == '\0')
         return ERROR;
-      break;
-    case 'S':
-    case 'P':
-      /* 'SYSTEM' or 'PUBLIC' => TODO */
-      return parser_goto_gt (parser);
-    default:
-      return ERROR;
     }
+}
 
-  parser_read_S (parser);
 
-  /* Read the '>' */
-  if (parser->cursor_char != '>')
+gboolean
+parser_read_SYSTEM (Parser * parser, GString * SystemLiteral)
+{
+  if (parser_read_string (parser, "YSTEM"))
     return ERROR;
   move_cursor (parser);
 
-  /* Save */
-  name =
-    g_string_chunk_insert (parser->strings_storage, parser->buffer1->str);
-  value =
-    g_string_chunk_insert (parser->strings_storage, parser->buffer2->str);
+  parser_read_S (parser);
 
-  if (PE)
-    g_hash_table_insert (parser->PE_table, (gpointer) name, (gpointer) value);
-  else
-    g_hash_table_insert (parser->GE_table, (gpointer) name, (gpointer) value);
+  /* Read SystemLiteral */
+  if (parser_read_value (parser, SystemLiteral))
+    return ERROR;
 
   return ALL_OK;
 }
 
 
 gboolean
-parser_read_intSubset (Parser * parser)
+parser_read_PUBLIC (Parser * parser, GString * PubidLiteral,
+                    GString * SystemLiteral)
 {
-  /* Read the '[' */
+  if (parser_read_string (parser, "UBLIC"))
+    return ERROR;
   move_cursor (parser);
 
-  for (;;)
-    switch (parser->cursor_char)
-      {
-      case '\0':
-        return ERROR;
-      case ']':
-        /* Read ']' */
-        move_cursor (parser);
-        return ALL_OK;
-      case '\n':
-      case '\r':
-      case ' ':
-      case '\t':
-        /* Read S */
-        move_cursor (parser);
-        continue;
-      case '%':
-        if (parser_read_parameter_entity (parser))
-          return ERROR;
-        continue;
-      case '<':
-        /* We parse only the ENTITIES */
-        if (move_cursor (parser) == '!')
-          if (move_cursor (parser) == 'E')
-            if (move_cursor (parser) == 'N')
-              {
-                if (parser_read_EntityDecl (parser))
-                  return ERROR;
-                continue;
-              }
-        if (parser_goto_gt (parser))
-          return ERROR;
-        continue;
-      default:
-        return ERROR;
-      }
+  parser_read_S (parser);
+
+  /* Read PubidLiteral */
+  if (parser_read_value (parser, PubidLiteral))
+    return ERROR;
+
+  parser_read_S (parser);
+
+  /* Read SystemLiteral */
+  if (parser_read_value (parser, SystemLiteral))
+    return ERROR;
+
+  return ALL_OK;
 }
+
 
 void
 parser_compute_urn (gchar * source, GString * target)
@@ -1560,7 +1438,8 @@ parser_compute_urn (gchar * source, GString * target)
       switch (*source)
         {
         case ' ':
-          if (*(source + 1) != ' ')
+        case '\t':
+          if (*(source + 1) != ' ' && *(source + 1) != '\t')
             g_string_append_c (target, '+');
           break;
         case '/':
@@ -1605,11 +1484,250 @@ parser_compute_urn (gchar * source, GString * target)
 
 
 gboolean
-parser_read_public_doctype (Parser * parser, gchar * public_id,
-                            gchar * system_id)
+parser_read_urn (Parser * parser, gchar * PubidLiteral, GString * target)
 {
+  gchar *dtd;
+  gchar buffer[256];
+  gint size;
+  FILE *file;
+
+  /* Compute the URN */
+  parser_compute_urn (PubidLiteral, parser->buffer4);
+
+  /* Search for the good file */
+  dtd = (gchar *) g_hash_table_lookup (parser_URN_table,
+                                       parser->buffer4->str);
+  if (!dtd)
+    return ERROR;
+
+  /* Open the file */
+  file = fopen (dtd, "r");
+  if (!file)
+    return ERROR;
+
+  /* And read it */
+  g_string_set_size (target, 0);
+  while ((size = fread (buffer, 1, 255, file)) != 0)
+    {
+      buffer[size] = '\0';
+      g_string_append (target, buffer);
+    }
+
+  return ALL_OK;
+}
+
+
+gboolean
+parser_read_EntityDecl (Parser * parser)
+{
+  gboolean PE = FALSE;
+  gchar *name, *value;
+
+  /* Read 'ENTITY' */
+  if (parser_read_string (parser, "TITY"))
+    return ERROR;
+  move_cursor (parser);
+
+  parser_read_S (parser);
+
+  /* PE? */
+  if (parser->cursor_char == '%')
+    {
+      move_cursor (parser);
+      parser_read_S (parser);
+      PE = TRUE;
+    }
+
+  /* Name (in buffer1) */
+  parser_read_Name (parser, parser->buffer1);
+
+  parser_read_S (parser);
+
+  /* Read the value */
+  switch (parser->cursor_char)
+    {
+    case '\'':
+    case '"':
+      /* Read value (in buffer2) */
+      if (parser_read_value (parser, parser->buffer2))
+        return ERROR;
+
+      parser_read_S (parser);
+
+      break;
+    case 'S':
+      /* SYSTEM => We ignore it */
+      if (parser_read_SYSTEM (parser, parser->buffer2))
+        return ERROR;
+
+      parser_read_S (parser);
+
+      /* NDATA (only with GE) ? */
+      /* We must ignore it ! */
+      if (!PE && parser->cursor_char == 'N')
+        {
+          if (parser_ignore_element (parser))
+            return ERROR;
+          return ALL_OK;
+        }
+
+      break;
+    case 'P':
+      /* PUBLIC => read it */
+      if (parser_read_PUBLIC (parser, parser->buffer3, parser->buffer2))
+        return ERROR;
+
+      parser_read_S (parser);
+
+      /* NDATA (only with GE) ? */
+      /* We must ignore it ! */
+      if (!PE && parser->cursor_char == 'N')
+        {
+          if (parser_ignore_element (parser))
+            return ERROR;
+          return ALL_OK;
+        }
+      /* And we load the entity */
+      if (parser_read_urn (parser, parser->buffer3->str, parser->buffer2))
+        return ERROR;
+      break;
+    default:
+      return ERROR;
+    }
+
+  /* Without NDATA, we must finish to read the '>' */
+  if (parser->cursor_char != '>')
+    return ERROR;
+  move_cursor (parser);
+
+  /* Save */
+  name =
+    g_string_chunk_insert (parser->strings_storage, parser->buffer1->str);
+  value =
+    g_string_chunk_insert (parser->strings_storage, parser->buffer2->str);
+
+  if (PE)
+    g_hash_table_insert (parser->PE_table, (gpointer) name, (gpointer) value);
+  else
+    g_hash_table_insert (parser->GE_table, (gpointer) name, (gpointer) value);
+
+  return ALL_OK;
+}
+
+
+gboolean
+parser_read_dtd (Parser * parser)
+{
+  for (;;)
+    {
+      /* Specific switch */
+      if (parser->external_dtd)
+        switch (parser->cursor_char)
+          {
+          case ']':
+            return ERROR;
+          case '\0':
+            return ALL_OK;
+          }
+      else
+        switch (parser->cursor_char)
+          {
+          case ']':
+            return ALL_OK;
+          case '\0':
+            return ERROR;
+          }
+
+      /* Common switch */
+      switch (parser->cursor_char)
+        {
+        case '\n':
+        case '\r':
+        case ' ':
+        case '\t':
+          /* Read S */
+          move_cursor (parser);
+          continue;
+        case '%':
+          if (parser_read_parameter_entity (parser))
+            return ERROR;
+          continue;
+        case '<':
+          if (move_cursor (parser) == '!')
+            /* '<!' */
+            switch (move_cursor (parser))
+              {
+              case '-':
+                /* '<!-' */
+                if (parser_ignore_comment (parser))
+                  return ERROR;
+                continue;
+              case 'E':
+                /* '<!E' */
+                if (move_cursor (parser) == 'N')
+                  {
+                    /* '<!EN' */
+                    if (parser_read_EntityDecl (parser))
+                      return ERROR;
+                    continue;
+                  }
+              }
+          /* The other cases => ignore it */
+          if (parser_ignore_element (parser))
+            return ERROR;
+          continue;
+        default:
+          return ERROR;
+        }
+    }
+}
+
+
+gboolean
+parser_read_external_dtd (Parser * parser, Event * event, gchar * public_id)
+{
+  gchar *dtd;
+  FILE *file;
+  gchar old_char;
+
+  /* Compute the URN */
   parser_compute_urn (public_id, parser->buffer1);
 
+  /* Search for the good file */
+  dtd = (gchar *) g_hash_table_lookup (parser_URN_table,
+                                       parser->buffer1->str);
+  if (!dtd)
+    {
+      g_string_set_size (parser->buffer4, 0);
+      g_string_append (parser->buffer4, "'");
+      g_string_append (parser->buffer4, public_id);
+      g_string_append (parser->buffer4, "' => '");
+      g_string_append (parser->buffer4, parser->buffer1->str);
+      g_string_append (parser->buffer4, "' not found");
+      return PARSER_ERROR (parser->buffer4->str);
+    }
+
+  /* Open the file */
+  file = fopen (dtd, "r");
+  if (!file)
+    {
+      g_string_set_size (parser->buffer4, 0);
+      g_string_append (parser->buffer4, "'");
+      g_string_append (parser->buffer4, dtd);
+      g_string_append (parser->buffer4, "' no such file");
+      return PARSER_ERROR (parser->buffer4->str);
+    }
+
+  /* Read it */
+  parser->external_dtd = TRUE;
+  old_char = parser->cursor_char;
+  stream_push (parser, NULL, file);
+
+  if (parser_read_dtd (parser))
+    return PARSER_ERROR (BAD_DTD);
+
+  parser->cursor_char = old_char;
+  parser->external_dtd = FALSE;
 
   return ALL_OK;
 }
@@ -1617,10 +1735,10 @@ parser_read_public_doctype (Parser * parser, gchar * public_id,
 
 /* http://www.w3.org/TR/REC-xml/#NT-doctypedecl */
 gboolean
-parser_read_doctypedecl (Parser * parser)
+parser_read_doctypedecl (Parser * parser, Event * event)
 {
   if (parser_read_string (parser, "OCTYPE"))
-    return ERROR;
+    return PARSER_ERROR (INVALID_TOKEN);
   move_cursor (parser);
 
   /* We are in the doctypes */
@@ -1635,18 +1753,9 @@ parser_read_doctypedecl (Parser * parser)
   /* ('SYSTEM' S  SystemLiteral) ? */
   if (parser->cursor_char == 'S')
     {
-      if (parser_read_string (parser, "YSTEM"))
-        return ERROR;
-      move_cursor (parser);
-
-      parser_read_S (parser);
-
-      /* Read SystemLiteral (in buffer2) */
-      if (parser_read_value (parser, parser->buffer2))
-        return ERROR;
-
-      /* Read the system doctype */
-      /* XXX: Finish me */
+      if (parser_read_SYSTEM (parser, parser->buffer2))
+        return PARSER_ERROR (INVALID_TOKEN);
+      /* And we ignore it! */
 
       parser_read_S (parser);
     }
@@ -1654,25 +1763,12 @@ parser_read_doctypedecl (Parser * parser)
     /* ('PUBLIC' S PubidLiteral S SystemLiteral) ? */
   if (parser->cursor_char == 'P')
     {
-      if (parser_read_string (parser, "UBLIC"))
-        return ERROR;
-      move_cursor (parser);
+      if (parser_read_PUBLIC (parser, parser->buffer2, parser->buffer3))
+        return PARSER_ERROR (INVALID_TOKEN);
 
-      parser_read_S (parser);
-
-      /* Read PubidLiteral (in buffer3) */
-      if (parser_read_value (parser, parser->buffer3))
-        return ERROR;
-
-      parser_read_S (parser);
-
-      /* Read SystemLiteral (in buffer2) */
-      if (parser_read_value (parser, parser->buffer2))
-        return ERROR;
-
-      /* Read the public doctype */
-      if (parser_read_public_doctype (parser, parser->buffer3->str,
-                                      parser->buffer2->str))
+      /* Read the public doctype thanks its URN */
+      /* we ignore its SystemLiteral */
+      if (parser_read_external_dtd (parser, event, parser->buffer2->str))
         return ERROR;
 
       parser_read_S (parser);
@@ -1681,19 +1777,22 @@ parser_read_doctypedecl (Parser * parser)
   /* intSubset ? */
   if (parser->cursor_char == '[')
     {
-      /* Read '[' */
+      /* Read the '[' */
       move_cursor (parser);
 
       /* Read the doctype */
-      if (parser_read_intSubset (parser))
-        return ERROR;
+      if (parser_read_dtd (parser))
+        return PARSER_ERROR (BAD_DTD);
+
+      /* Read the ']' */
+      move_cursor (parser);
 
       parser_read_S (parser);
     }
 
   /* Read '>' */
   if (parser->cursor_char != '>')
-    return ERROR;
+    return PARSER_ERROR (INVALID_TOKEN);
   move_cursor (parser);
 
   /* All OK */
@@ -1718,32 +1817,6 @@ parser_read_BOM (Parser * parser)
  * The API
  *************************************************************************/
 
-void
-parser_initialize (void)
-{
-  /* Initialize interned strings (prefix & name). */
-  G_LOCK (interned_strings);
-  interned_strings_tree = h_str_tree_new ();
-  interned_strings = g_string_chunk_new (64);
-  intern_empty = intern_string ("");
-  intern_xmlns = intern_string ("xmlns");
-  intern_string ("xml");
-  G_UNLOCK (interned_strings);
-
-  /* Initialize the built-in entity references. */
-  parser_init_builtin_entities ();
-}
-
-
-void
-parser_destroy (void)
-{
-  h_str_tree_free (interned_strings_tree);
-  g_string_chunk_free (interned_strings);
-  g_hash_table_destroy (parser_builtin_entities);
-}
-
-
 Parser *
 parser_new (gchar * data, FILE * file)
 {
@@ -1753,6 +1826,9 @@ parser_new (gchar * data, FILE * file)
   if ((data == NULL && file == NULL) || (data != NULL && file != NULL))
     return NULL;
 
+  /* Initialized ? */
+  if (!parser_initialized)
+    parser_initialize ();
 
   /* Memory allocation */
   parser = g_new (Parser, 1);
@@ -1770,6 +1846,7 @@ parser_new (gchar * data, FILE * file)
   parser->streams_stack = arp_new (sizeof (Stream), NULL, NULL);
   parser->streams_stack_size = 0;
   parser->in_doctype = FALSE;
+  parser->external_dtd = FALSE;
 
   /* Attributes */
   parser->attr_storage = arp_new (sizeof (Attribute), parser_attr_constructor,
@@ -1790,22 +1867,15 @@ parser_new (gchar * data, FILE * file)
                         "http://www.w3.org/XML/1998/namespace");
   parser_add_namespace (parser, "xmlns", "http://www.w3.org/2000/xmlns/");
 
-  /* Set the good handler */
-  if (data)
-    {
-      parser->source.cursor = data;
-      parser->get_char = &get_char_from_data;
-    }
-  else
-    {
-      parser->source.file = file;
-      parser->get_char = &get_char_from_file;
-    }
-
-  /* Prepare some variables */
+  /* Cursor management */
   parser->source_row = 1;
   parser->source_col = 1;
-  parser->cursor_char = (*(parser->get_char)) (parser);
+  parser->new_line = FALSE;
+  stream_open (&(parser->source), data, file);
+  move_cursor (parser);
+
+  /* Set the default entities */
+  parser_set_default_entities (parser);
 
   /* And read the BOM */
   parser_read_BOM (parser);
@@ -1841,6 +1911,20 @@ void
 parser_add_namespace (Parser * parser, gchar * prefix, gchar * uri)
 {
   parser_push_namespace (parser, intern_string (prefix), uri);
+}
+
+
+void
+parser_register_dtd (gchar * urn, gchar * filename)
+{
+  /* Initialized ? */
+  if (!parser_initialized)
+    parser_initialize ();
+
+  /* Append */
+  urn = g_string_chunk_insert (parser_global_strings, urn);
+  filename = g_string_chunk_insert (parser_global_strings, filename);
+  g_hash_table_insert (parser_URN_table, (gpointer) urn, (gpointer) filename);
 }
 
 
@@ -1890,8 +1974,8 @@ parser_next (Parser * parser, Event * event)
                   return parser_read_Comment (parser, (TextEvent *) event);
                 case 'D':
                   /* "<!D" => DOCTYPE */
-                  if (parser_read_doctypedecl (parser))
-                    return PARSER_ERROR (INVALID_TOKEN);
+                  if (parser_read_doctypedecl (parser, event))
+                    return ERROR;
                   continue;
                 case '[':
                   /* "<![" */
@@ -1911,5 +1995,19 @@ parser_next (Parser * parser, Event * event)
         default:
           return parser_read_content (parser, (TextEvent *) event);
         }
+    }
+}
+
+
+void
+parser_global_reset (void)
+{
+  if (parser_initialized)
+    {
+      parser_initialized = FALSE;
+
+      g_string_chunk_free (parser_global_strings);
+      h_str_tree_free (intern_strings_tree);
+      g_hash_table_destroy (parser_URN_table);
     }
 }

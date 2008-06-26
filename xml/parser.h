@@ -29,7 +29,7 @@
 
 /*******************
  * The parser type *
- *   opaque type   *
+ *  (opaque type)  *
  *******************/
 
 typedef struct _Parser Parser;
@@ -80,15 +80,6 @@ typedef struct
   EventHeader;
   gchar *text;
 } TextEvent;
-
-/* DOCUMENT_TYPE */
-typedef struct
-{
-  EventHeader;
-  gchar *name;
-  gchar *system_literal;
-  gchar *pub_id_literal;
-} DocTypeEvent;
 
 /* START_ELEMENT */
 typedef struct
@@ -141,7 +132,6 @@ typedef union
 
   CommonEvent common_event;
   TextEvent text_event;
-  DocTypeEvent doc_type_event;
   StartTagEvent start_tag_event;
   EndTagEvent end_tag_event;
   PIEvent pi_event;
@@ -155,15 +145,6 @@ typedef union
 
 #define ERROR TRUE
 #define ALL_OK FALSE
-
-/*************************
- * Initialize the parser *
- *************************/
-
-/* XXX An autoinitialization with parser_new ??? */
-void parser_initialize (void);
-void parser_destroy (void);
-
 
 /*******************
  * New/Free parser *
@@ -183,6 +164,13 @@ void parser_free (Parser * parser);
 void parser_add_namespace (Parser * parser, gchar * prefix, gchar * uri);
 
 
+/***********************************
+ * Add a urn/filename in URN table *
+ ***********************************/
+
+void parser_register_dtd (gchar * urn, gchar * filename);
+
+
 /*********************
  * The main function *
  *********************/
@@ -191,5 +179,11 @@ void parser_add_namespace (Parser * parser, gchar * prefix, gchar * uri);
  */
 gboolean parser_next (Parser * parser, Event * event);
 
+
+/**********************************************
+ * Destroy all data initialised by the parser *
+ **********************************************/
+
+void parser_global_reset (void);
 
 #endif

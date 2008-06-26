@@ -21,7 +21,7 @@ import dublin_core
 from namespaces import XMLNamespace, XMLNSNamespace, AbstractNamespace
 from namespaces import get_namespace, set_namespace, get_element_schema
 from namespaces import is_empty
-from parser import XMLParser, XMLError, XML_DECL, DOCUMENT_TYPE
+from parser import XMLParser, register_dtd, XMLError, XML_DECL, DOCUMENT_TYPE
 from parser import START_ELEMENT, END_ELEMENT, TEXT, COMMENT, PI, CDATA
 from xml import XMLFile, Element, stream_to_str, get_element, find_end
 from xml import get_qname, get_attribute_qname, get_start_tag, get_end_tag
@@ -70,6 +70,7 @@ __all__ = [
     'MSPowerPoint',
     'RTF',
     # Functions
+    'register_dtd',
     'xml_to_text',
     'translate',
 ]

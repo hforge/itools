@@ -19,6 +19,7 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
+from itools import html
 from itools.xml import (XMLFile, XMLParser, XMLError, XML_DECL, DOCUMENT_TYPE,
     START_ELEMENT, END_ELEMENT, TEXT, COMMENT, PI, CDATA, stream_to_str)
 from itools.xml.i18n import get_messages
@@ -53,20 +54,6 @@ class ParserTestCase(TestCase):
     def test_char_ref_empty(self):
         data = '&#;'
         self.assertRaises(XMLError, XMLParser(data).next)
-
-
-    #######################################################################
-    # Character References
-    def test_entity_references(self):
-        self.assertEqual(XMLParser("&laquo;").next()[1], "«")
-        self.assertEqual(XMLParser("&fnof;").next()[1], "ƒ")
-        self.assertEqual(XMLParser("&Xi;").next()[1], "Ξ")
-        self.assertEqual(XMLParser("&psi;").next()[1], "ψ")
-        self.assertEqual(XMLParser("&permil;").next()[1], "‰")
-        self.assertEqual(XMLParser("&real;").next()[1], "ℜ")
-        self.assertEqual(XMLParser("&infin;").next()[1], "∞")
-        self.assertEqual(XMLParser("&there4;").next()[1], "∴")
-        self.assertEqual(XMLParser("&clubs;").next()[1], "♣")
 
 
     #######################################################################
@@ -185,6 +172,16 @@ class XMLTestCase(TestCase):
         self.assertEqual(list(parser)[4], (4,
                          'This sample shows a error-prone method.', 8))
 
+    def test_3(self):
+        data = ('<?xml version="1.0"?>\n'
+                '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"\n'
+                '"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">\n'
+                '<html>&laquo; &fnof; &Xi; &psi; &permil; &real; &infin; '
+                '&there4; &clubs;</html>\n')
+        expected = '« ƒ Ξ ψ ‰ ℜ ∞ ∴ ♣'
+
+        parser = XMLParser(data)
+        self.assertEqual(list(parser)[4][1], expected)
 
 
 class TranslatableTestCase(TestCase):

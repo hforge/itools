@@ -27,9 +27,6 @@
 
 #include "parser.h"
 
-/* XXX TEST */
-#include <stdio.h>
-
 
 /*************
  * Constants *
@@ -75,7 +72,8 @@ static PyObject *XMLError;
 
 typedef struct
 {
-  PyObject_HEAD Parser * parser;
+  PyObject_HEAD
+  Parser * parser;
   PyObject *source;
   Event event;
 } XMLParser;
@@ -181,6 +179,7 @@ XMLParser_translate_STag (XMLParser * self)
   return result;
 }
 
+
 PyObject *
 XMLParser_translate_ETag (XMLParser * self)
 {
@@ -271,65 +270,6 @@ XMLParser_translate_Decl (XMLParser * self)
 }
 
 
-PyObject *
-XMLParser_translate_Doctype (XMLParser * self)
-{
-  DocTypeEvent *event = (DocTypeEvent *) & self->event;
-  PyObject *name, *system_literal, *pub_id_literal, *result;
-
-  /* Name */
-  name = PyString_FromString (event->name);
-  if (name == NULL)
-    return NULL;
-
-  /* SystemLiteral */
-  if (event->system_literal[0] == '\0')
-    {
-      Py_INCREF (Py_None);
-      system_literal = Py_None;
-    }
-  else
-    {
-      system_literal = PyString_FromString (event->system_literal);
-      if (system_literal == NULL)
-        {
-          Py_DECREF (name);
-          return NULL;
-        }
-    }
-
-  /* PubidLiteral */
-  if (event->pub_id_literal[0] == '\0')
-    {
-      Py_INCREF (Py_None);
-      pub_id_literal = Py_None;
-    }
-  else
-    {
-      pub_id_literal = PyString_FromString (event->pub_id_literal);
-      if (pub_id_literal == NULL)
-        {
-          Py_DECREF (name);
-          Py_DECREF (system_literal);
-          return NULL;
-        }
-    }
-
-  /* The result */
-  result = Py_BuildValue ("(NNNO)", name, system_literal, pub_id_literal,
-                          Py_None);
-  if (result == NULL)
-    {
-      Py_DECREF (name);
-      Py_DECREF (system_literal);
-      Py_DECREF (pub_id_literal);
-      return NULL;
-    }
-
-  return result;
-}
-
-
 /**************************************************************************
  * Methods of XMLParser
  *************************************************************************/
@@ -369,26 +309,31 @@ XMLParser_dealloc (XMLParser * self)
 
 static int
 XMLParser_init (XMLParser * self, PyObject * args, PyObject * kwds)
-/* __init__(source, namespaces=None)
+/* __init__(source, namespaces=None, cache=None)
  * source: is a string or a file
- * namespaces: a dictionnary
+ * namespaces: a dictionnary (prefix => uri)
+ * cache: name of file that makes the mapping: urn <-> dtd
  */
 {
   PyObject *source;
+  PyObject *namespaces = NULL;
+  static char *kwlist[] = { "source", "namespaces", NULL };
+
   Parser *parser;
 
-  PyObject *namespaces;
   PyObject *py_prefix, *py_uri;
   char *prefix, *uri;
   Py_ssize_t pos = 0;
+
 
   /* Reset, if not new */
   XMLParser_reset (self);
 
   /* Arguments */
-  namespaces = NULL;
-  if (!PyArg_ParseTuple (args, "O|O!", &source, &PyDict_Type, &namespaces))
+  if (!PyArg_ParseTupleAndKeywords (args, kwds, "O|O", kwlist, &source,
+                                    &namespaces))
     return -1;
+
 
   /* Check the source */
   if (PyString_CheckExact (source))
@@ -465,9 +410,6 @@ XMLParser_iternext (XMLParser * self)
         case XML_DECL:
           value = XMLParser_translate_Decl (self);
           break;
-        case DOCUMENT_TYPE:
-          value = XMLParser_translate_Doctype (self);
-          break;
         case START_ELEMENT:
           value = XMLParser_translate_STag (self);
           break;
@@ -511,8 +453,9 @@ XMLParser_iternext (XMLParser * self)
 
 /* The XMLParser object: type. */
 static PyTypeObject XMLParserType = {
-  PyObject_HEAD_INIT (NULL) 0,  /* ob_size */
-  "itools.xml.parser.XMLParser",        /* tp_name */
+  PyObject_HEAD_INIT
+  (NULL) 0,                     /* ob_size */
+  "itools.xml.parser.XMLParser",/* tp_name */
   sizeof (XMLParser),           /* tp_basicsize */
   0,                            /* tp_itemsize */
   (destructor) XMLParser_dealloc,       /* tp_dealloc */
@@ -552,10 +495,38 @@ static PyTypeObject XMLParserType = {
 };
 
 
+/**************************************************************************
+ * Module functions
+ *************************************************************************/
+
+static PyObject *
+pyparser_register_dtd (PyObject * trash, PyObject * args, PyObject * kwds)
+{
+  static char *kwlist[] = { "urn", "filename", NULL };
+  char *urn, *filename;
+
+  /* Arguments */
+  if (!PyArg_ParseTupleAndKeywords (args, kwds, "ss", kwlist, &urn,
+                                    &filename))
+    return NULL;
+
+  /* Register */
+  parser_register_dtd (urn, filename);
+
+  Py_RETURN_NONE;
+}
+
 
 /**************************************************************************
  * Declaration of the module
  *************************************************************************/
+
+static PyMethodDef module_methods[] = {
+  {"register_dtd", (PyCFunction) pyparser_register_dtd,
+   METH_VARARGS | METH_KEYWORDS, "Register a URN"},
+  {NULL}                        /* Sentinel */
+};
+
 
 /* declarations for DLL import/export */
 #ifndef PyMODINIT_FUNC
@@ -569,7 +540,8 @@ initparser (void)
   /* TODO Make verifications / destructions ... */
   PyObject *module;
 
-  module = Py_InitModule3 ("parser", NULL, "Low-level XML parser");
+  /* Register parser */
+  module = Py_InitModule3 ("parser", module_methods, "Low-level XML parser");
   if (module == NULL)
     return;
 
@@ -593,7 +565,4 @@ initparser (void)
   PyModule_AddIntConstant (module, "COMMENT", COMMENT);
   PyModule_AddIntConstant (module, "PI", PI);
   PyModule_AddIntConstant (module, "CDATA", CDATA);
-
-  /* Initialize the parser */
-  parser_initialize ();
 }

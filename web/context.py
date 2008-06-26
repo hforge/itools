@@ -194,7 +194,7 @@ class Context(object):
             for value in values:
                 if not type.is_valid(value):
                     raise FormError(invalid=[name])
-            return value
+            return values
 
         # Single value
         value = request.get_parameter(name)

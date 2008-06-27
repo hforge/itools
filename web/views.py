@@ -22,7 +22,11 @@ from messages import MSG_MISSING_OR_INVALID
 
 class BaseView(object):
 
+    # Access Control
     access = False
+
+    # Query Schema
+    query_schema = {}
 
 
     def __init__(self, **kw):
@@ -30,10 +34,28 @@ class BaseView(object):
             setattr(self, key, kw[key])
 
 
+    #######################################################################
+    # Query
+    def get_query(self, context):
+        get_value = context.get_form_value
+        schema = self.query_schema
+
+        query = {}
+        for name in schema:
+            datatype = schema[name]
+            query[name] = get_value(name, datatype)
+
+        return query
+
+
+    #######################################################################
+    # Caching
     def get_mtime(self, model):
         return None
 
 
+    #######################################################################
+    # Request methods
     def GET(self, model, context):
         raise NotImplementedError
 

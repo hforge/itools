@@ -368,3 +368,13 @@ def del_context():
         del contexts[ident]
     finally:
         contexts_lock.release()
+
+
+
+#######################################################################
+# Internationalization
+#######################################################################
+def select_language(languages):
+    accept = get_context().accept_language
+    return accept.select_language(languages)
+

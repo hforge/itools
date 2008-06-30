@@ -19,15 +19,15 @@
 from mimetypes import add_type
 
 # Import from itools
-from domains import DomainAware, register_domain, get_domain
+from domains import register_domain, get_domain, MSG
 from mo import MOFile
 from po import POFile, Message
 
 
 __all__ = [
-    'DomainAware',
     'register_domain',
     'get_domain',
+    'MSG',
     'MOFile',
     'POFile',
     'Message']

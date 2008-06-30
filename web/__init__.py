@@ -16,7 +16,8 @@
 
 # Import from itools
 from access import AccessControl
-from context import get_context, set_context, Context, FormError
+from context import Context, get_context, set_context, FormError
+from context import select_language
 from messages import *
 from server import Server
 from tree import Root, Node
@@ -24,11 +25,13 @@ from views import BaseView, BaseForm, STLView, STLForm
 
 
 __all__ = [
+    'AccessControl',
+    'Server',
+    # Context
     'Context',
     'set_context',
     'get_context',
-    'AccessControl',
-    'Server',
+    'select_language',
     # Model
     'Root',
     'Node',

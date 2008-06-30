@@ -14,9 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from the Standard Library
+from string import Template
+from types import ModuleType
+
 # Import from itools
 from itools.handlers import Folder, Database
-from itools.i18n import get_accept
 
 
 domains = {}
@@ -52,39 +55,58 @@ class Domain(Folder):
 
 
 
-class DomainAware(object):
+def gettext(domain_name, message, language=None, **kw):
+    # Source look-up
+    if type(message) is str:
+        domain_name, message = find_module_name(domain_name, message)
 
-    class_domain = None
+    # Get the domain
+    domain_name = domain_name.split('.', 1)[0]
+    domain = domains[domain_name]
+
+    # Find out the language (the 'select_language' function must be built-in)
+    if language is None:
+        languages = domain.get_languages()
+        language = select_language(languages)
+
+    # Look-up
+    if language is not None:
+        message = domain.gettext(message, language)
+
+    # Interpolation
+    if kw:
+        return Template(message).substitute(kw)
+
+    return message
 
 
-    @classmethod
-    def get_languages(cls):
-        return NotImplementedError
+
+class MSG(object):
+
+    __slots__ = ['message', 'domain']
+
+    def __init__(self, message, domain):
+        self.message = message
+        self.domain = domain.split('.', 1)[0]
 
 
-    @classmethod
-    def select_language(cls, languages=None):
-        if languages is None:
-            languages = cls.get_languages()
+    def gettext(self, language=None, **kw):
+        message = self.message
+        domain = domains[self.domain]
 
-        accept = get_accept()
-        return accept.select_language(languages)
-
-
-    @classmethod
-    def gettext(cls, message, language=None, domain=None):
-        if domain is None:
-            domain = cls.class_domain
-
-        if domain not in domains:
-            return message
-
-        domain = domains[domain]
+        # Find out the language (the 'select_language' function must be
+        # built-in)
         if language is None:
             languages = domain.get_languages()
-            language = cls.select_language(languages)
+            language = select_language(languages)
 
-        if language is None:
-            return message
+        # Look-up
+        if language is not None:
+            message = domain.gettext(message, language)
 
-        return domain.gettext(message, language)
+        # Interpolation
+        if kw:
+            return Template(message).substitute(kw)
+
+        return message
+

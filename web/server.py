@@ -33,11 +33,12 @@ from types import GeneratorType
 from urllib import unquote
 
 # Import from itools
-from itools.uri import Reference, Path
 from itools.http import Request, Response, HTTPError
 from itools.http import BadRequest, Forbidden, NotFound, Unauthorized
+from itools.i18n import init_language_selector
+from itools.uri import Reference, Path
 from itools.xml import XMLParser
-from context import Context, get_context, set_context
+from context import Context, get_context, set_context, select_language
 from views import BaseView
 
 
@@ -213,6 +214,10 @@ class Server(object):
 
 
     def start(self):
+        # Language negotiation
+        init_language_selector(select_language)
+
+        # PID file
         if self.pid_file is not None:
             pid = getpid()
             open(self.pid_file, 'w').write(str(pid))

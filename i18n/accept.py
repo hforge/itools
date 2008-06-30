@@ -20,6 +20,7 @@ protocol.
 """
 
 # Import from the Standard Library
+import __builtin__
 from decimal import Decimal
 from locale import getdefaultlocale
 
@@ -129,3 +130,14 @@ def get_accept():
         language = '%s, %s;q=0.5' % (language, language.split('-')[0])
 
     return AcceptLanguageType.decode(language)
+
+
+
+def select_language(languages=None):
+    return get_accept().select_language(languages)
+
+
+
+def init_language_selector(language_selector=select_language):
+    __builtin__.__dict__['select_language'] = language_selector
+

@@ -25,7 +25,7 @@ for line in open(filename).readlines():
     line = line.strip()
     if line and line[0] != '#':
         code, name = line.split(' ', 1)
-        languages[code] = name
+        languages[code] = MSG(name, __name__)
 
 # Builds a sorted list with the languages code and name
 language_codes = languages.keys()
@@ -49,7 +49,9 @@ def get_languages():
 def get_language_name(code):
     """Returns the name of a language.
     """
-    return languages.get(code, '???')
+    if code in languages:
+        return languages[code]
+    return MSG(u'???', __name__)
 
 
 

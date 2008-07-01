@@ -377,7 +377,7 @@ def get_grid_data(data, grid, start_date=None, templates=(None, None),
             start, end = event['start'], event['end']
             # Put the event in the right place
             if not event['TIME']:
-                event['ns'] = stl(template_fd, event)
+                event['ns'] = stl(template_fd, {'event': event})
                 full_day.append(event)
             else:
                 start, end = Time.decode(start), Time.decode(end)
@@ -388,7 +388,6 @@ def get_grid_data(data, grid, start_date=None, templates=(None, None),
                     grid.append(start)
                 if end not in grid:
                     grid.append(end)
-
         # Finalize
         headers.append(column.get('header'))
         events_with_time.append(time_grid)

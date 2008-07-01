@@ -29,12 +29,14 @@ from types import GeneratorType
 
 # Import from itools
 from itools.datatypes import Boolean, String, URI
+from itools.gettext import MSG
 from itools.uri import Path, Reference
-from itools.xml import (XMLError, XMLNSNamespace, set_namespace,
-    get_namespace, AbstractNamespace, XMLParser, START_ELEMENT, END_ELEMENT,
-    TEXT, COMMENT, find_end, stream_to_str)
-from itools.html import (xhtml_uri, stream_to_str_as_html,
-                         stream_to_str_as_xhtml)
+from itools.xml import XMLError, XMLParser, find_end, stream_to_str
+from itools.xml import START_ELEMENT, END_ELEMENT, TEXT, COMMENT
+from itools.xml import (XMLNSNamespace, set_namespace, get_namespace,
+     AbstractNamespace)
+from itools.html import xhtml_uri
+from itools.html import stream_to_str_as_html, stream_to_str_as_xhtml
 
 
 
@@ -253,10 +255,13 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
                 # Send back
                 if value is None:
                     continue
-                if isinstance(value, (list, GeneratorType, XMLParser)):
+                if isinstance(value, MSG):
+                    value = value.gettext()
+                    yield TEXT, value.encode(encoding), 0
+                elif isinstance(value, (list, GeneratorType, XMLParser)):
                     for x in value:
                         yield x
-                elif isinstance(value, unicode):
+                elif type(value) is unicode:
                     yield TEXT, value.encode(encoding), 0
                 else:
                     yield TEXT, str(value), 0

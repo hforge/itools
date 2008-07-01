@@ -20,7 +20,6 @@
 
 # Import from the Standard Library
 from datetime import datetime
-from string import Template
 from thread import get_ident, allocate_lock
 from time import strptime
 
@@ -143,8 +142,7 @@ class Context(object):
             goto = goto.replace(**form)
         # Translate the source message
         if message:
-            message = self.object.gettext(message)
-            message = Template(message).substitute(kw)
+            message = message.gettext(**kw)
             return goto.replace(message=message)
         return goto
 

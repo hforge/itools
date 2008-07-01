@@ -202,7 +202,9 @@ def substitute_attribute(data, stack, repeat_stack, encoding='utf-8'):
         if value is None:
             return None, 1
         # Send the string
-        if isinstance(value, unicode):
+        if isinstance(value, MSG):
+            return value.gettext().encode(encoding), 1
+        elif type(value) is unicode:
             return value.encode(encoding), 1
         return str(value), 1
     # A little more complex
@@ -213,7 +215,9 @@ def substitute_attribute(data, stack, repeat_stack, encoding='utf-8'):
         if value is None:
             return ''
         # Send the string
-        if isinstance(value, unicode):
+        if isinstance(value, MSG):
+            return value.gettext().encode(encoding)
+        elif type(value) is unicode:
             return value.encode(encoding)
         return str(value)
     return subs_expr.subn(repl, data)

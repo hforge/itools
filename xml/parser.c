@@ -1086,9 +1086,6 @@ for_end:
         if (!(attribute->uri))
           return PARSER_ERROR (INVALID_NAMESPACE);
       }
-  /* XXX PATCH => empty => None */
-    else
-      attribute->uri = tag_uri;
 
   /* Prepare the EndTagEvent */
   if (end_tag)

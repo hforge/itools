@@ -18,12 +18,14 @@
 from mimetypes import add_type
 
 # Import from itools
-from html import HTMLFile
-from parser import HTMLParser
 from itools.utils import get_abspath
 from itools.xml import register_dtd
-from xhtml import (xhtml_uri, XHTMLFile, stream_to_str_as_html,
-    stream_to_str_as_xhtml, sanitize_stream, sanitize_str)
+from html import HTMLFile
+from parser import HTMLParser
+from xhtml import XHTMLFile, xhtml_uri
+from xhtml import stream_to_str_as_html, stream_to_str_as_xhtml
+from xhtml import sanitize_stream, sanitize_str
+import schema
 
 
 # Public API

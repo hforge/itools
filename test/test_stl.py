@@ -72,7 +72,7 @@ class STLTestCase(unittest.TestCase):
         stream = stl(handler, namespace)
         # Assert
         events = list(stream)
-        value = events[0][1][2][('http://www.w3.org/1999/xhtml', 'border')]
+        value = events[0][1][2][(None, 'border')]
         self.assertEqual(value, '5')
 
 
@@ -83,7 +83,7 @@ class STLTestCase(unittest.TestCase):
         stream = stl(handler, namespace)
         # Assert
         events = list(stream)
-        value = events[0][1][2][('http://www.w3.org/1999/xhtml', 'value')]
+        value = events[0][1][2][(None, 'value')]
         self.assertEqual(value, 'étoile')
 
 

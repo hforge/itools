@@ -18,8 +18,8 @@
 
 # Import from itools
 import dublin_core
-from namespaces import XMLNamespace, XMLNSNamespace, AbstractNamespace
-from namespaces import get_namespace, set_namespace, get_element_schema
+from namespaces import XMLNamespace, register_namespace, get_namespace
+from namespaces import xml_uri, xmlns_uri, get_element_schema, ElementSchema
 from namespaces import is_empty
 from parser import XMLParser, register_dtd, XMLError, XML_DECL, DOCUMENT_TYPE
 from parser import START_ELEMENT, END_ELEMENT, TEXT, COMMENT, PI, CDATA
@@ -43,13 +43,14 @@ __all__ = [
     # Exceptions
     'XMLError',
     # Namespaces
+    'xml_uri',
+    'xmlns_uri',
     'XMLNamespace',
-    'XMLNSNamespace',
+    'register_namespace',
     'get_namespace',
     'get_element_schema',
     'is_empty',
-    'AbstractNamespace',
-    'set_namespace',
+    'ElementSchema',
     # Parsing
     'XMLParser',
     'XML_DECL',

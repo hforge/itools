@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.xml import AbstractNamespace, set_namespace, XMLError
+from itools.xml import XMLNamespace, register_namespace, XMLError
 
 
 # TODO
@@ -24,48 +24,48 @@ from itools.xml import AbstractNamespace, set_namespace, XMLError
 # For the future, we can move this class to the xml package for example
 
 
-class XlinkNamespace(AbstractNamespace):
+class XlinkNamespace(XMLNamespace):
 
-    class_uri = "http://www.w3.org/1999/xlink"
-    class_prefix = 'xlink'
+    uri = "http://www.w3.org/1999/xlink"
+    prefix = 'xlink'
 
 
-class MathMlNamespace(AbstractNamespace):
+class MathMlNamespace(XMLNamespace):
 
-    class_uri = "http://www.w3.org/1998/Math/MathML"
-    class_prefix = 'math'
+    uri = "http://www.w3.org/1998/Math/MathML"
+    prefix = 'math'
 
     elements_schema = {
         'math': {'is_inline': False, 'is_empty': False}
     }
 
 
-class EventsNamespace(AbstractNamespace):
+class EventsNamespace(XMLNamespace):
 
-    class_uri = "http://www.w3.org/2001/xml-events"
-    class_prefix = 'dom'
+    uri = "http://www.w3.org/2001/xml-events"
+    prefix = 'dom'
 
 
-class XformsNamespace(AbstractNamespace):
+class XformsNamespace(XMLNamespace):
 
-    class_uri = "http://www.w3.org/2002/xforms"
-    class_prefix = 'xforms'
+    uri = "http://www.w3.org/2002/xforms"
+    prefix = 'xforms'
 
     elements_schema = {
         'model': {'is_inline': False, 'is_empty': False}
     }
 
 
-class XsdNamespace(AbstractNamespace):
+class XsdNamespace(XMLNamespace):
 
-    class_uri = "http://www.w3.org/2001/XMLSchema"
-    class_prefix = 'xsd'
+    uri = "http://www.w3.org/2001/XMLSchema"
+    prefix = 'xsd'
 
 
-class XsiNamespace(AbstractNamespace):
+class XsiNamespace(XMLNamespace):
 
-    class_uri = "http://www.w3.org/2001/XMLSchema-instance"
-    class_prefix = 'xsi'
+    uri = "http://www.w3.org/2001/XMLSchema-instance"
+    prefix = 'xsi'
 
 
 ###########################################################################
@@ -73,4 +73,4 @@ class XsiNamespace(AbstractNamespace):
 ###########################################################################
 for namespace in [XlinkNamespace, MathMlNamespace, EventsNamespace,
                   XformsNamespace, XsdNamespace, XsiNamespace]:
-    set_namespace(namespace)
+    register_namespace(namespace)

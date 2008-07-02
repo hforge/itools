@@ -22,7 +22,6 @@ from itools.datatypes import String, Unicode
 from parser import XMLError
 
 
-
 """
 This module keeps a registry for namespaces and namespace handlers.
 
@@ -40,27 +39,31 @@ be used carefully, collisions
 """
 
 
+
+xml_uri = 'http://www.w3.org/XML/1998/namespace'
+xmlns_uri = 'http://www.w3.org/2000/xmlns/'
+
+
 ###########################################################################
 # The registry
 ###########################################################################
-
 namespaces = {}
 prefixes = {}
 
 
-def set_namespace(namespace, *args):
+def register_namespace(namespace, *args):
     """Associates a namespace handler to a namespace uri. It a prefix is
     given it also associates that that prefix to the given namespace.
     """
     # Register the URI
-    namespaces[namespace.class_uri] = namespace
+    namespaces[namespace.uri] = namespace
 
     # Register the prefix
-    prefix = namespace.class_prefix
+    prefix = namespace.prefix
     if prefix is not None:
         if prefix in prefixes:
             warn('The prefix "%s" is already registered.' % prefix)
-        prefixes[prefix] = namespace.class_uri
+        prefixes[prefix] = namespace.uri
 
     # Register additional URIs
     for uri in args:
@@ -101,61 +104,57 @@ def get_namespace_by_prefix(prefix):
 
 
 def get_element_schema(namespace, name):
-    return get_namespace(namespace).get_element_schema(name)
+    return get_namespace(namespace).get_element(name)
 
 
 def is_empty(namespace, name):
-    schema = get_namespace(namespace).get_element_schema(name)
-    return schema.get('is_empty', False)
+    schema = get_namespace(namespace).get_element(name)
+    return getattr(schema, 'is_empty', False)
 
 
 ###########################################################################
 # Namespaces
 ###########################################################################
 
-class AbstractNamespace(object):
-    """This class defines the default behaviour for namespaces, which is to
-    raise an error.
-
-    Subclasses should define:
-
-    class_uri
-    - The uri that uniquely identifies the namespace.
-
-    class_prefix
-    - The recommended prefix.
-
-    get_element_schema(name)
-    - Returns a dictionary that defines the schema for the given element.
-    """
+class ElementSchema(object):
 
     class_uri = None
-    class_prefix = None
+    attributes = {}
 
-    elements_schema = {}
-    datatypes = {}
-
-
-    @classmethod
-    def get_element_schema(cls, name):
-        if name in cls.elements_schema:
-            return cls.elements_schema[name]
-
-        raise XMLError, 'undefined element "%s"' % name
+    # Default Values
+    is_empty = False
+    translate_content = True
 
 
-    @classmethod
-    def get_datatype(cls, name):
-        if name in cls.datatypes:
-            return cls.datatypes[name]
+    def __init__(self, name, **kw):
+        self.name = name
+        for key in kw:
+            setattr(self, key, kw[key])
 
-        raise KeyError, '"%s" not defined' % name
+
+    def _get_attr_datatype(self, attr_name):
+        datatype = self.attributes.get(attr_name)
+        if datatype is None:
+            raise LookupError, '"%s" not defined' % attr_name
+
+        return datatype
+
+
+    def get_attr_datatype(self, attr_uri, attr_name):
+        if attr_uri is None:
+            if attr_name == 'xmlns':
+                return String
+
+        if attr_uri is None or attr_uri == self.class_uri:
+            return self._get_attr_datatype(attr_name)
+
+        # Foreign attribute
+        return get_namespace(attr_uri).get_free_attribute(attr_name)
 
 
     #######################################################################
     # Internationalization
-    @classmethod
-    def is_translatable(cls, tag_uri, tag_name, attributes, attribute_name):
+    def is_translatable(self, attributes, attribute_name):
         """Some elements may contain text addressed to users, that is, text
         that could be translated in different human languages, for example
         the 'p' element of XHTML. This method should return 'True' in that
@@ -169,55 +168,85 @@ class AbstractNamespace(object):
 
 
 
-class DefaultNamespace(AbstractNamespace):
+class XMLNamespace(object):
+
+    def __init__(self, uri, prefix, elements=None, free_attributes=None):
+        self.uri = uri
+        self.prefix = prefix
+        # Elements
+        self.elements = {}
+        if elements is not None:
+            for element in elements:
+                name = element.name
+                if name in self.elements:
+                    raise ValueError, 'element "%s" is defined twice' % name
+                self.elements[name] = element
+        # Free Attributes
+        if free_attributes is None:
+            self.free_attributes = {}
+        else:
+            self.free_attributes = free_attributes
+
+
+    def get_element(self, name):
+        """Returns a dictionary that defines the schema for the given element.
+        """
+        element = self.elements.get(name)
+        if element is None:
+            raise XMLError, 'unexpected element "%s"' % name
+
+        return element
+
+
+    def get_free_attribute(self, name):
+        datatype = self.free_attributes.get(name)
+        if datatype is None:
+            raise XMLError, 'unexpected attribute "%s"' % name
+
+        return datatype
+
+
+
+# The default namespace is used for free elements.
+
+class DefaultNamespace(XMLNamespace):
     """Default namespace handler for elements and attributes that are not
     bound to a particular namespace.
     """
 
-    class_uri = None
-    class_prefix = None
+    def get_element(self, name):
+        return ElementSchema(name)
 
 
-    @classmethod
-    def get_element_schema(cls, name):
-        return {'is_empty': False}
+default_namespace = DefaultNamespace(None, None)
 
 
-    @classmethod
-    def get_datatype(cls, name):
+
+# The builtin "xml:" namespace
+xml_namespace = XMLNamespace(
+    xml_uri, 'xml',
+    free_attributes={
+        'lang': String,
+        'space': String,
+        'base': String,
+        'id': String})
+
+
+# The builtin "xmlns:" namespace, for namespace declarations
+class XMLNSNamespace(XMLNamespace):
+
+    def get_free_datatype(self, name):
         return String
 
 
-
-class XMLNamespace(AbstractNamespace):
-
-    class_uri = 'http://www.w3.org/XML/1998/namespace'
-    class_prefix = 'xml'
-
-
-    @classmethod
-    def get_datatype(cls, name):
-        if name == 'lang':
-            return String
-        return Unicode
-
-
-
-class XMLNSNamespace(AbstractNamespace):
-
-    class_uri = 'http://www.w3.org/2000/xmlns/'
-    class_prefix = 'xmlns'
-
-
-    @classmethod
-    def get_datatype(cls, name):
-        return String
+xmlns_namespace = XMLNSNamespace(xmlns_uri, 'xmlns')
 
 
 
 ###########################################################################
 # Register
 ###########################################################################
-set_namespace(DefaultNamespace)
-set_namespace(XMLNamespace)
-set_namespace(XMLNSNamespace)
+register_namespace(xml_namespace)
+register_namespace(xmlns_namespace)
+register_namespace(default_namespace)
+

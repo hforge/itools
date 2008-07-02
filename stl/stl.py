@@ -33,17 +33,14 @@ from itools.gettext import MSG
 from itools.uri import Path, Reference
 from itools.xml import XMLError, XMLParser, find_end, stream_to_str
 from itools.xml import START_ELEMENT, END_ELEMENT, TEXT, COMMENT
-from itools.xml import (XMLNSNamespace, set_namespace, get_namespace,
-     AbstractNamespace)
+from itools.xml import xmlns_uri, XMLNamespace, ElementSchema
+from itools.xml import register_namespace, get_namespace, get_element_schema
 from itools.html import xhtml_uri
 from itools.html import stream_to_str_as_html, stream_to_str_as_xhtml
 
 
 
 stl_uri = 'http://xml.itools.org/namespaces/stl'
-
-xmlns_uri = XMLNSNamespace.class_uri
-
 
 
 ########################################################################
@@ -318,6 +315,9 @@ def process_start_tag(tag_uri, tag_name, attributes, stack, repeat, encoding):
     # Skip "stl:block" and "stl:inline"
     if tag_uri == stl_uri:
         return
+
+    element = get_element_schema(tag_uri, tag_name)
+
     # Process attributes
     aux = {}
     for attr_uri, attr_name in attributes:
@@ -330,7 +330,7 @@ def process_start_tag(tag_uri, tag_name, attributes, stack, repeat, encoding):
 
         value = attributes[(attr_uri, attr_name)]
         # Process "${...}" expressions
-        datatype = get_namespace(attr_uri).get_datatype(attr_name)
+        datatype = element.get_attr_datatype(attr_uri, attr_name)
         # Boolean attributes
         if issubclass(datatype, Boolean):
             value = substitute_boolean(value, stack, repeat, encoding)
@@ -482,23 +482,28 @@ def resolve_pointer(value, offset):
 # The XML namespace handler
 ########################################################################
 
-class Namespace(AbstractNamespace):
+stl_attributes = {'repeat': String, 'if': String}
 
-    class_uri = 'http://xml.itools.org/namespaces/stl'
-    class_prefix = 'stl'
 
-    datatypes = {'repeat': String, 'if': String}
+class STLElement(ElementSchema):
 
-    elements_schema = {
-        'block': {'is_inline': False},
-        'inline': {'is_inline': True}
-    }
+    datatypes = stl_attributes
 
-    @classmethod
-    def get_element_schema(cls, name):
-        try:
-            return cls.elements_schema[name]
-        except KeyError:
-            raise STLSyntaxError, 'unexpected element name: %s' % name
 
-set_namespace(Namespace)
+stl_elements = [
+    STLElement('block', is_inline=False),
+    STLElement('inline', is_inline=True)]
+
+
+
+stl_namespace = XMLNamespace(
+    'http://xml.itools.org/namespaces/stl', 'stl',
+    stl_elements,
+    stl_attributes)
+
+
+###########################################################################
+# Register
+###########################################################################
+register_namespace(stl_namespace)
+

@@ -44,7 +44,7 @@ def get_qname(ns_uri, name):
     """Returns the fully qualified name"""
     if ns_uri is None:
         return name
-    prefix = get_namespace(ns_uri).class_prefix
+    prefix = get_namespace(ns_uri).prefix
     if prefix is None:
         return name
     return '%s:%s' % (prefix, name)
@@ -55,7 +55,7 @@ def get_attribute_qname(namespace, local_name):
     if namespace is None:
         return local_name
 
-    prefix = get_namespace(namespace).class_prefix
+    prefix = get_namespace(namespace).prefix
     if prefix is None:
         return local_name
 

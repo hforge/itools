@@ -17,14 +17,14 @@
 
 # Import from itools
 from itools.datatypes import Unicode
-from itools.xml import AbstractNamespace, set_namespace
+from itools.xml import XMLNamespace, register_namespace
 
 
 ########################################################################
 ################### Base ODF Namespace #################################
 ########################################################################
 
-class ODFNamespace(AbstractNamespace):
+class ODFNamespace(XMLNamespace):
 
     datatypes = {}
     elements_schema = {}
@@ -47,8 +47,8 @@ class ODFNamespace(AbstractNamespace):
 
 class OdtTextNamespace(ODFNamespace):
 
-    class_uri = 'urn:oasis:names:tc:opendocument:xmlns:text:1.0'
-    class_prefix = 'text'
+    uri = 'urn:oasis:names:tc:opendocument:xmlns:text:1.0'
+    prefix = 'text'
 
     datatypes = {'style-name': Unicode}
 
@@ -271,8 +271,8 @@ class OdtTextNamespace(ODFNamespace):
 
 class OdtOfficeNamespace(ODFNamespace):
 
-    class_uri = 'urn:oasis:names:tc:opendocument:xmlns:office:1.0'
-    class_prefix = 'office'
+    uri = 'urn:oasis:names:tc:opendocument:xmlns:office:1.0'
+    prefix = 'office'
 
     datatypes = {'version': Unicode}
 
@@ -312,8 +312,8 @@ class OdtOfficeNamespace(ODFNamespace):
 
 class OdtStyleNamespace(ODFNamespace):
 
-    class_uri = 'urn:oasis:names:tc:opendocument:xmlns:style:1.0'
-    class_prefix = 'style'
+    uri = 'urn:oasis:names:tc:opendocument:xmlns:style:1.0'
+    prefix = 'style'
 
     datatypes = {'name': Unicode}
 
@@ -411,8 +411,8 @@ class OdtStyleNamespace(ODFNamespace):
 
 class OdtTableNamespace(ODFNamespace):
 
-    class_uri = "urn:oasis:names:tc:opendocument:xmlns:table:1.0"
-    class_prefix = 'table'
+    uri = "urn:oasis:names:tc:opendocument:xmlns:table:1.0"
+    prefix = 'table'
 
     elements_schema = {
         #'align'
@@ -521,8 +521,8 @@ class OdtTableNamespace(ODFNamespace):
 
 class OdtDrawingNamespace(ODFNamespace):
 
-    class_uri = "urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
-    class_prefix = 'draw'
+    uri = "urn:oasis:names:tc:opendocument:xmlns:drawing:1.0"
+    prefix = 'draw'
 
     elements_schema = {
         'a': {'is_inline': False, 'is_empty': False},
@@ -578,8 +578,8 @@ class OdtDrawingNamespace(ODFNamespace):
 
 class OdtFoNamespace(ODFNamespace):
 
-    class_uri = "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0"
-    class_prefix = 'fo'
+    uri = "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0"
+    prefix = 'fo'
 
 
 ###############################################################
@@ -588,8 +588,8 @@ class OdtFoNamespace(ODFNamespace):
 
 class OdtMetaNamespace(ODFNamespace):
 
-    class_uri = "urn:oasis:names:tc:opendocument:xmlns:meta:1.0"
-    class_prefix = 'meta'
+    uri = "urn:oasis:names:tc:opendocument:xmlns:meta:1.0"
+    prefix = 'meta'
 
     elements_schema = {
         'auto-reload': {'is_inline': False, 'is_empty': True},
@@ -621,8 +621,8 @@ class OdtMetaNamespace(ODFNamespace):
 
 class OdtSvgNamespace(ODFNamespace):
 
-    class_uri = "urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0"
-    class_prefix = 'svg'
+    uri = "urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0"
+    prefix = 'svg'
 
     elements_schema = {
         'definition-src': {'is_inline': False, 'is_empty': True},
@@ -643,8 +643,8 @@ class OdtSvgNamespace(ODFNamespace):
 
 class OdtDr3dNamespace(ODFNamespace):
 
-    class_uri = "urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0"
-    class_prefix = 'dr3d'
+    uri = "urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0"
+    prefix = 'dr3d'
 
     elements_schema = {
         'cube': {'is_inline': False, 'is_empty': False},
@@ -662,8 +662,8 @@ class OdtDr3dNamespace(ODFNamespace):
 
 class OdtFormNamespace(ODFNamespace):
 
-    class_uri = "urn:oasis:names:tc:opendocument:xmlns:form:1.0"
-    class_prefix = 'form'
+    uri = "urn:oasis:names:tc:opendocument:xmlns:form:1.0"
+    prefix = 'form'
 
     elements_schema = {
         'button': {'is_inline': False, 'is_empty': False},
@@ -704,8 +704,8 @@ class OdtFormNamespace(ODFNamespace):
 
 class OdtScriptNamespace(ODFNamespace):
 
-    class_uri = "urn:oasis:names:tc:opendocument:xmlns:script:1.0"
-    class_prefix = 'script'
+    uri = "urn:oasis:names:tc:opendocument:xmlns:script:1.0"
+    prefix = 'script'
 
     elements_schema = {
         'event-listener': {'is_inline': False, 'is_empty': True}
@@ -718,8 +718,8 @@ class OdtScriptNamespace(ODFNamespace):
 
 class OdtOooNamespace(ODFNamespace):
 
-    class_uri = "http://openoffice.org/2004/office"
-    class_prefix = 'ooo'
+    uri = "http://openoffice.org/2004/office"
+    prefix = 'ooo'
 
 
 ################################################
@@ -727,8 +727,8 @@ class OdtOooNamespace(ODFNamespace):
 ################################################
 
 class OdtWriterNamespace(ODFNamespace):
-    class_uri = "http://openoffice.org/2004/writer"
-    class_prefix = 'ooow'
+    uri = "http://openoffice.org/2004/writer"
+    prefix = 'ooow'
 
 
 ################################################
@@ -736,8 +736,8 @@ class OdtWriterNamespace(ODFNamespace):
 ################################################
 
 class OdtCalcNamespace(ODFNamespace):
-    class_uri = "http://openoffice.org/2004/calc"
-    class_prefix = 'oooc'
+    uri = "http://openoffice.org/2004/calc"
+    prefix = 'oooc'
 
 
 #######################################################################
@@ -746,8 +746,8 @@ class OdtCalcNamespace(ODFNamespace):
 
 class OdtDataStyleNamespace(ODFNamespace):
 
-    class_uri = "urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0"
-    class_prefix = 'number'
+    uri = "urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0"
+    prefix = 'number'
 
     elements_schema = {
         'am-pm': {'is_inline': False, 'is_empty': True},
@@ -787,8 +787,8 @@ class OdtDataStyleNamespace(ODFNamespace):
 
 class OdtAnimationNamespace(ODFNamespace):
 
-    class_uri = "urn:oasis:names:tc:opendocument:xmlns:animation:1.0"
-    class_prefix = 'anim'
+    uri = "urn:oasis:names:tc:opendocument:xmlns:animation:1.0"
+    prefix = 'anim'
 
     elements_schema = {
         'animate': {'is_inline': False, 'is_empty': True},
@@ -812,8 +812,8 @@ class OdtAnimationNamespace(ODFNamespace):
 
 class OdtChartNamespace(ODFNamespace):
 
-    class_uri = "urn:oasis:names:tc:opendocument:xmlns:chart:1.0"
-    class_prefix = 'chart'
+    uri = "urn:oasis:names:tc:opendocument:xmlns:chart:1.0"
+    prefix = 'chart'
 
     elements_schema = {
         'axis': {'is_inline': False, 'is_empty': False},
@@ -845,8 +845,8 @@ class OdtChartNamespace(ODFNamespace):
 
 class OdtConfigNamespace(ODFNamespace):
 
-    class_uri = "urn:oasis:names:tc:opendocument:xmlns:config:1.0"
-    class_prefix = 'config'
+    uri = "urn:oasis:names:tc:opendocument:xmlns:config:1.0"
+    prefix = 'config'
 
     elements_schema = {
         'config-item': {'is_inline': False, 'is_empty': True},
@@ -862,8 +862,8 @@ class OdtConfigNamespace(ODFNamespace):
 
 class OdtManifestNamespace(ODFNamespace):
 
-    class_uri = "urn:oasis:names:tc:opendocument:xmlns:manifest:1.0"
-    class_prefix = 'manifest'
+    uri = "urn:oasis:names:tc:opendocument:xmlns:manifest:1.0"
+    prefix = 'manifest'
 
     elements_schema = {
         'algorithm': {'is_inline': False, 'is_empty': True},
@@ -880,8 +880,8 @@ class OdtManifestNamespace(ODFNamespace):
 
 class OdtPresentationNamespace(ODFNamespace):
 
-    class_uri = "urn:oasis:names:tc:opendocument:xmlns:presentation:1.0"
-    class_prefix = 'presentation'
+    uri = "urn:oasis:names:tc:opendocument:xmlns:presentation:1.0"
+    prefix = 'presentation'
 
     elements_schema = {
         'animation-group': {'is_inline': False, 'is_empty': False},
@@ -913,8 +913,8 @@ class OdtPresentationNamespace(ODFNamespace):
 
 class OdtSmilNamespace(ODFNamespace):
 
-    class_uri = "urn:oasis:names:tc:opendocument:xmlns:smil-compatible:1.0"
-    class_prefix = 'smil'
+    uri = "urn:oasis:names:tc:opendocument:xmlns:smil-compatible:1.0"
+    prefix = 'smil'
 
 
 ###########################################################################
@@ -928,4 +928,4 @@ for namespace in [OdtTextNamespace, OdtOfficeNamespace, OdtStyleNamespace,
                   OdtAnimationNamespace, OdtChartNamespace, OdtConfigNamespace,
                   OdtManifestNamespace, OdtPresentationNamespace,
                   OdtSmilNamespace]:
-    set_namespace(namespace)
+    register_namespace(namespace)

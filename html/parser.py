@@ -20,8 +20,8 @@ from HTMLParser import HTMLParser as BaseParser, HTMLParseError
 from warnings import warn
 
 # Import from itools
-from itools.xml import (XMLError, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT,
-    COMMENT, TEXT)
+from itools.xml import DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, COMMENT, TEXT
+from itools.xml import XMLError
 from xhtml import xhtml_uri
 
 
@@ -259,7 +259,7 @@ class Parser(BaseParser, object):
                 else:
                     message = 'missing attribute value for "%s"'
                     raise XMLError, message % attribute_name
-            attributes[(xhtml_uri, attribute_name)] = attribute_value
+            attributes[(None, attribute_name)] = attribute_value
 
         # Start element
         events.append((START_ELEMENT, (xhtml_uri, name, attributes), line))

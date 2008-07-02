@@ -22,8 +22,8 @@ from unittest import TestCase
 
 # Import from itools
 from itools.gettext import POFile, Message
-from itools.xml import (XMLParser, XMLError, START_ELEMENT, END_ELEMENT, TEXT,
-    stream_to_str)
+from itools.xml import XMLParser, XMLError, START_ELEMENT, END_ELEMENT, TEXT
+from itools.xml import stream_to_str
 from itools.html import HTMLFile, XHTMLFile, HTMLParser, sanitize_str
 from itools.html.xhtml import stream_to_html
 

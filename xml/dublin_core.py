@@ -20,43 +20,53 @@ from datetime import datetime
 
 # Import from itools
 from itools.datatypes import Unicode, String, ISODateTime
-from namespaces import AbstractNamespace, set_namespace
+from namespaces import XMLNamespace, register_namespace, ElementSchema
 from parser import XMLError
 
 
-class Namespace(AbstractNamespace):
-
-    class_uri = 'http://purl.org/dc/elements/1.1/'
-    class_prefix = 'dc'
-
-    datatypes = {'contributor': None,
-                 'coverage': None,
-                 'creator': String,
-                 'date': ISODateTime,
-                 'description': Unicode,
-                 'format': None,
-                 'identifier': String,
-                 'language': String,
-                 'publisher': Unicode,
-                 'relation': None,
-                 'rights': None,
-                 'source': None,
-                 'subject': Unicode,
-                 'title': Unicode,
-                 'type': None,
-                 }
-
-    elements_schema = {
-        'creator': {'is_empty': False, 'is_inline': False},
-        'description': {'is_empty': False, 'is_inline': False},
-        'date': {'is_empty': False, 'is_inline': False,
-                 'translate_content': False},
-        'language': {'is_empty': False, 'is_inline': False,
-                          'translate_content': False},
-        'subject': {'is_empty': False, 'is_inline': False},
-        'title': {'is_empty': False, 'is_inline': False}
-        }
+dc_attributes = {
+    'contributor': None,
+    'coverage': None,
+    'creator': String,
+    'date': ISODateTime,
+    'description': Unicode,
+    'format': None,
+    'identifier': String,
+    'language': String,
+    'publisher': Unicode,
+    'relation': None,
+    'rights': None,
+    'source': None,
+    'subject': Unicode,
+    'title': Unicode,
+    'type': None}
 
 
+class DCElement(ElementSchema):
+    
+    is_empty = False
+    is_inline = False
+
+
+dc_elements = [
+    DCElement('creator'),
+    DCElement('description'),
+    DCElement('date', translate_content=False),
+    DCElement('language', translate_content=False),
+    DCElement('subject'),
+    DCElement('title'),
+    ]
+
+
+dc_namespace = XMLNamespace(
+    'http://purl.org/dc/elements/1.1/', 'dc',
+    dc_elements,
+    dc_attributes)
+
+
+
+###########################################################################
 # Register
-set_namespace(Namespace)
+###########################################################################
+register_namespace(dc_namespace)
+

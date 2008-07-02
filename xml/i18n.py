@@ -19,7 +19,7 @@
 from itools.gettext import Message as gettextMessage
 from itools.datatypes import XMLContent
 from itools.i18n import Message
-from namespaces import get_namespace, get_element_schema, XMLNSNamespace
+from namespaces import get_namespace, get_element_schema, xmlns_uri
 from parser import XMLParser, START_ELEMENT, END_ELEMENT, TEXT
 
 
@@ -152,20 +152,20 @@ def get_translatable_blocks(events):
         if type == START_ELEMENT:
             tag_uri, tag_name, attributes = value
             schema = get_element_schema(tag_uri, tag_name)
-            if schema.get('is_inline', False) or stack:
+            if getattr(schema, 'is_inline', False) or stack:
                 buffer.append((type, value + (id,), line))
                 stack.append(id)
                 id += 1
                 continue
             # Enter skip mode
-            if not schema.get('translate_content', True):
+            if not schema.translate_content:
                 skip = 1
 
         # Inline end element
         if type == END_ELEMENT:
             tag_uri, tag_name = value
             schema = get_element_schema(tag_uri, tag_name)
-            if schema.get('is_inline', False) or stack:
+            if getattr(schema, 'is_inline', False) or stack:
                 x = stack.pop()
                 buffer.append((type, value + (x,), line))
                 continue
@@ -195,13 +195,15 @@ def get_messages(events, filename=None):
     for type, value, line in get_translatable_blocks(events):
         if type == START_ELEMENT:
             tag_uri, tag_name, attributes = value
+            element = get_element_schema(tag_uri, tag_name)
             # Attributes
             for attr_uri, attr_name in attributes:
+                if not element.is_translatable(attributes, attr_name):
+                    continue
                 value = attributes[(attr_uri, attr_name)]
-                is_translatable = get_namespace(attr_uri).is_translatable
-                if is_translatable(tag_uri, tag_name, attributes, attr_name):
-                    if value.strip():
-                        yield gettextMessage([], [value], [u''], {filename: [line]})
+                if not value.strip():
+                    continue
+                yield gettextMessage([], [value], [u''], {filename: [line]})
             # Keep spaces
             if tag_name in elements_to_keep_spaces:
                 keep_spaces = True
@@ -228,12 +230,12 @@ def translate(events, catalog):
         type, value, line = event
         if type == START_ELEMENT:
             tag_uri, tag_name, attributes = value
+            element = get_element_schema(tag_uri, tag_name)
             # Attributes (translate)
             aux = {}
             for attr_uri, attr_name in attributes:
                 value = attributes[(attr_uri, attr_name)]
-                is_trans = get_namespace(attr_uri).is_translatable
-                if is_trans(tag_uri, tag_name, attributes, attr_name):
+                if element.is_translatable(attributes, attr_name):
                     value = value.strip()
                     if value:
                         value = catalog.gettext(value)
@@ -242,7 +244,7 @@ def translate(events, catalog):
                 # Namespaces
                 # FIXME We must support xmlns="...." too.
                 # FIXME We must consider the end of the declaration
-                if attr_uri == XMLNSNamespace.class_uri:
+                if attr_uri == xmlns_uri:
                     namespaces[attr_name] = value
             yield START_ELEMENT, (tag_uri, tag_name, aux), None
             # Keep spaces

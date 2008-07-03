@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+
 # Copyright (C) 2007 Henry Obein <henry@itaapy.com>
 # Copyright (C) 2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 # Copyright (C) 2008 Fabrice Decroix <fabrice.decroix@gmail.com>
@@ -21,7 +22,7 @@
 from cStringIO import StringIO
 
 # Import from itools
-from itools.datatypes import Unicode, XMLContent
+from itools.datatypes import Unicode, XMLContent, Integer
 from itools.vfs import vfs
 from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, TEXT
 import itools.http
@@ -34,7 +35,8 @@ from reportlab.lib.styles import(getSampleStyleSheet as getBaseStyleSheet,
 from reportlab.lib.units import inch, cm, mm, pica
 from reportlab.platypus.flowables import HRFlowable
 from reportlab.platypus import (Paragraph, SimpleDocTemplate, Preformatted,
-                                Image, Indenter)
+                                Image, Indenter, Table)
+from reportlab.lib import colors
 
 encoding = 'UTF-8'
 URI = None
@@ -197,6 +199,9 @@ def body_stream(stream, _tag_name, _attributes, pdf_stylesheet):
             elif tag_name in ('ol', 'ul'):
                 story.extend(list_stream(stream, tag_name, attributes,
                                          pdf_stylesheet))
+            elif tag_name == 'table':
+                story.append(table_stream(stream, tag_name, attributes,
+                                          pdf_stylesheet))
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
@@ -205,7 +210,7 @@ def body_stream(stream, _tag_name, _attributes, pdf_stylesheet):
         #### END ELEMENT ####
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
-            if tag_name == 'body':
+            if tag_name == _tag_name:
                 break
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
@@ -410,7 +415,7 @@ def img_stream(stream , _tag_name, _attributes):
             print WARNING_DTD % ('document', line_number, tag_name)
 
 
-def list_stream(stream , _tag_name, attributes, pdf_stylesheet, id=0):
+def list_stream(stream, _tag_name, attributes, pdf_stylesheet, id=0):
     """
         stream : parser stream
     """
@@ -471,7 +476,6 @@ def list_stream(stream , _tag_name, attributes, pdf_stylesheet, id=0):
             if tag_name in ('ul', 'ol'):
                 story.append(create_paragraph(pdf_stylesheet, stack.pop(),
                              content))
-                content = []
                 story.append(Indenter(left=-INDENT_VALUE))
                 return story
             elif tag_name in ('i', 'em', 'b', 'strong', 'u', 'sup', 'sub'):
@@ -494,6 +498,244 @@ def list_stream(stream , _tag_name, attributes, pdf_stylesheet, id=0):
                 value = XMLContent.encode(value) # entities
                 content.append(value)
                 has_content = True
+
+
+def table_stream(stream, _tag_name, attributes, pdf_stylesheet):
+    content = Table_Content()
+    start = (0, 0)
+    stop = (-1, -1)
+    tablestyle = []
+    if exist_attribute(attributes, ['border']):
+        border = get_int_value(attributes.get((URI, 'border')))
+        tablestyle.append(('GRID', start, stop, border, colors.grey))
+    if exist_attribute(attributes, ['align']):
+        hAlign = attributes.get((URI, 'align')).upper()
+        if hAlign in ['LEFT', 'RIGHT', 'CENTER', 'CENTRE']:
+            content.add_attributes('hAlign', hAlign)
+    content.add_style(tablestyle)
+
+    while True:
+        event, value, line_number = stream_next(stream)
+        if event == None:
+            break
+        #### START ELEMENT ####
+        if event == START_ELEMENT:
+            tag_uri, tag_name, attributes = value
+            if tag_name == 'tr':
+                content = tr_stream(stream, tag_name, attributes,
+                                    content)
+                content.next_line()
+            else:
+                print WARNING_DTD % ('document', line_number, tag_name)
+
+        #### END ELEMENT ####
+        elif event == END_ELEMENT:
+            tag_uri, tag_name = value
+            if tag_name == _tag_name:
+                return content.create()
+            else:
+                print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
+
+
+
+class Table_Content(object):
+
+
+    def __init__(self, parent_style=None):
+        self.content = []
+        """
+        [['foo'], ['bar']] => size[1,2]
+        [['foo', 'bar']] => size[2,1]
+        """
+        self.size = [0, 0]
+        self.attrs = {}
+        # Cell vertical alignment
+        self.style = [('VALIGN', (0, 0), (-1, -1), 'MIDDLE')]
+        # Span in first line are stocked in stack
+        self.span_stack = []
+        # current cell
+        self.current_x = 0
+        self.current_y = 0
+        
+
+    def add_attributes(self, name, value):
+        self.attrs[name] = value
+
+
+    def next_line(self):
+        # Add span if first line
+        if not self.current_y:
+            while self.span_stack:
+                start, stop = self.span_stack.pop()
+                self.add_span(start, stop)
+        # Next line
+        self.current_x = 0
+        self.current_y += 1
+
+
+    def next_cell(self):
+        self.current_x += 1
+
+
+    def push_content(self, value, x=None, y=None):
+        # if x or y is undefineted, x and y are set to default value
+        if x == None or y == None:
+            x = self.current_x
+            y = self.current_y
+        if y:
+            if x > self.size[0]:
+                return
+            elif y >= self.size[1]:
+                self.create_table_line()
+            if self.content[y][x] == None:
+                self.next_cell()
+                self.push_content(value, x+1, y)
+                return
+            self.content[y][x] = value
+        else:
+            if self.size[0]:
+                if x < self.size[0] and self.content[y][x] == None:
+                    x += 1
+                    self.push_content(value, x, y)
+                    return
+            else:
+                self.content.append([])
+                # increment the line number
+                self.size[1] += 1
+            self.content[0].append(value)
+            self.size[0] += 1
+
+
+    def add_style(self, style):
+        self.style.extend(style)
+
+
+    def process_span(self, rowspan, colspan):
+        rtmp = get_int_value(rowspan) - 1
+        ctmp = get_int_value(colspan) - 1
+        col = self.current_x
+        row = self.current_y
+        stop = None
+        if rtmp > 0:
+            row += rtmp
+        if ctmp > 0:
+            col += ctmp
+        if not self.current_y:
+            if ctmp > 0:
+                self.span_stack.append(((self.current_x, self.current_y),
+                                        (col, row)))
+                self.content[0].extend([ None for x in xrange(ctmp) ])
+                self.size[0] += ctmp
+                self.current_x += ctmp - 1
+                return (col, row)
+            if rtmp > 0:
+                self.span_stack.append(((self.current_x, self.current_y),
+                                        (col, row)))
+                return (col, row)
+        self.add_span((self.current_x, self.current_y), (col, row))
+        return (col, row)
+
+
+    def get_current(self):
+        return (self.current_x, self.current_y)
+
+
+    def create(self):
+        return Table(self.content, style=self.style, **self.attrs)
+
+
+    def create_table_line(self):
+        line = []
+        line.extend([ 0 for x in xrange(self.size[0]) ])
+        self.content.append(line)
+        self.size[1] += 1
+
+
+    def add_span(self, start, stop):
+        self.style.append(('SPAN', start, stop))
+        st = start[1]
+        if not st:
+            if st >= start[1]:
+                st += 1
+            else:
+                return
+        for y in xrange(st, stop[1] + 1):
+            for x in xrange(start[0], stop[0] + 1):
+                if x != start[0] or y != start[1]:
+                    self.push_content(None, x, y)
+
+
+
+def tr_stream(stream, _tag_name, attributes, table):
+    stack = []
+    stop = None
+    while True:
+        event, value, line_number = stream_next(stream)
+        if event == None:
+            break
+        #### START ELEMENT ####
+        if event == START_ELEMENT:
+            tag_uri, tag_name, attributes = value
+            if tag_name in ('td', 'th'):
+                cont = td_stream(stream , tag_name, attributes)
+                table.push_content(cont)
+                if exist_attribute(attributes, ['colspan', 'rowspan'],
+                                   at_least=True):
+                    rowspan = attributes.get((URI, 'rowspan'))
+                    colspan = attributes.get((URI, 'colspan'))
+                    stop = table.process_span(rowspan, colspan)
+                else:
+                    stop = table.get_current()
+                for i in ('align', 'valign'):
+                    if exist_attribute(attributes, [i]):
+                        val = attributes.get((URI, i))
+                        table.add_style([(i.upper(),
+                                         (table.current_x, table.current_y),
+                                         stop,
+                                         val.upper())])
+
+                table.next_cell()
+            else:
+                print WARNING_DTD % ('document', line_number, tag_name)
+
+        #### END ELEMENT ####
+        elif event == END_ELEMENT:
+            tag_uri, tag_name = value
+            if tag_name == _tag_name:
+                return table
+            else:
+                print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
+
+
+def td_stream(stream, _tag_name, attributes):
+    stack = []
+    content = []
+    while True:
+        event, value, line_number = stream_next(stream)
+        if event == None:
+            break
+        #### START ELEMENT ####
+        if event == START_ELEMENT:
+            tag_uri, tag_name, attributes = value
+            if tag_name in TAG_OK:
+                content.append('<%s>' % tag_name)
+            else:
+                print WARNING_DTD % ('document', line_number, tag_name)
+
+        #### END ELEMENT ####
+        elif event == END_ELEMENT:
+            tag_uri, tag_name = value
+            if tag_name in TAG_OK:
+                content.append('</%s>' % tag_name)
+            elif tag_name == _tag_name:
+                return ' '.join(content)
+            else:
+                print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
+
+        #### TEXT ELEMENT ####
+        elif event == TEXT:
+            value = XMLContent.encode(value)
+            content.append(value)
 
 
 def link_stream(stream , _tag_name, attributes):
@@ -523,6 +765,7 @@ def link_stream(stream , _tag_name, attributes):
             tag_uri, tag_name, attributes = value
             if tag_name == 'a':
                 print WARNING_DTD % ('document', line_number, tag_name)
+            #if tag_name in TAG_OK:
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
@@ -554,7 +797,6 @@ def span_stream(stream , _tag_name, attributes):
     cpt = 0
     end_tag = False
     has_content = False
-
     if exist_attribute(attributes, ['style']):
         style = ''.join(attributes.pop((URI, 'style')).split()).rstrip(';')
         if style:
@@ -711,6 +953,7 @@ def build_style(pdf_stylesheet, element):
             elif key in ['leftIndent', 'rightIndent']:
                 attr_value = rml_value(attr_value)
             style_attr[key] = attr_value
+            style_attr['autoLeading'] = 'max'
 
     style_name = parent_style_name
     if element[0] in ('h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
@@ -910,6 +1153,19 @@ def get_color_hexa(x):
                 print 'Warning color error'
                 return None
     return '#%s' % ''.join(tmp)
+
+
+def get_int_value(value, default=0):
+    """
+    Return the interger representation of value is his decoding succeed
+    otherwise the default value
+    """
+    if not value:
+        return default
+    try:
+        return Integer.decode(value)
+    except ValueError:
+        return default
 
 
 def get_style(stylesheet, name):

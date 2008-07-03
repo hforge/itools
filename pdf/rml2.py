@@ -26,6 +26,7 @@ from itools.datatypes import Unicode, XMLContent, Integer
 from itools.vfs import vfs
 from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, TEXT
 import itools.http
+from itools import get_abspath
 
 #Import from the reportlab Library
 from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT, TA_JUSTIFY
@@ -1035,13 +1036,13 @@ def create_img(attributes, check_dimension=False):
         print u'/!\ Cannot add an image inside a td without predefined size'
         return None
 
-    if vfs.exists(filename) is False:
-        print u"/!\ The filename doesn't exist"
-        return None
-
     # Remote file
     if filename.startswith('http://'):
         filename = StringIO(vfs.open(filename))
+
+    if vfs.exists(filename) is False:
+        print u"/!\ The filename doesn't exist"
+        filename = get_abspath(globals(), 'not_found.png')
 
     try:
         I = Image(filename)

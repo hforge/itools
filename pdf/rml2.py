@@ -769,8 +769,7 @@ def link_stream(stream , _tag_name, attributes):
             tag_uri, tag_name, attributes = value
             if tag_name == 'a':
                 print WARNING_DTD % ('document', line_number, tag_name)
-            #if tag_name in TAG_OK:
-            else:
+            elif tag_name not in TAG_OK:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
 
@@ -780,7 +779,7 @@ def link_stream(stream , _tag_name, attributes):
             if tag_name == 'a':
                 content.append('</a>')
                 return ''.join(content)
-            else:
+            elif tag_name not in TAG_OK:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
 
         #### TEXT ELEMENT ####
@@ -1039,13 +1038,14 @@ def create_img(attributes, check_dimension=False):
         print u'/!\ Cannot add an image inside a td without predefined size'
         return None
 
-    # Remote file
-    if filename.startswith('http://'):
-        filename = StringIO(vfs.open(filename))
-
     if vfs.exists(filename) is False:
-        print u"/!\ The filename doesn't exist"
+        print u"/!\ The filename '%s' doesn't exist" % filename
         filename = get_abspath(globals(), 'not_found.png')
+    elif filename.startswith('http://'):
+        # Remote file
+        # If the image is a remote file, we create a StringIO
+        # object contains the image data to avoid reportlab problems ...
+        filename = StringIO(vfs.open(filename).read())
 
     try:
         I = Image(filename)
@@ -1054,7 +1054,6 @@ def create_img(attributes, check_dimension=False):
         if width is not None:
             I.drawWidth = width
         return I
-
     except IOError, msg:
         print msg
         return None

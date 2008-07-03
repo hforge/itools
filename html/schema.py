@@ -337,6 +337,9 @@ html_elements = [
         'onchange']),
     BlockElement('th', common_attrs + cellhalign_attrs + cellvalign_attrs +
         ['abbr', 'axis', 'headers', 'scope', 'rowspan', 'colspan']),
+    BlockElement('tbody', common_attrs + cellhalign_attrs + cellvalign_attrs),
+    BlockElement('tfoot', common_attrs + cellhalign_attrs + cellvalign_attrs),
+    BlockElement('thead', common_attrs + cellhalign_attrs + cellvalign_attrs),
     BlockElement('title', i18n_attrs),
     BlockElement('tr', common_attrs + cellhalign_attrs + cellvalign_attrs),
     Element('tt', common_attrs),

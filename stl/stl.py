@@ -487,7 +487,7 @@ stl_attributes = {'repeat': String, 'if': String}
 
 class STLElement(ElementSchema):
 
-    datatypes = stl_attributes
+    attributes = stl_attributes
 
 
 stl_elements = [

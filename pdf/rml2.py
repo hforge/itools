@@ -753,9 +753,12 @@ def link_stream(stream , _tag_name, attributes):
         # are decoded again by the reportlab para parser.
         href = XMLContent.encode(attrs['href'])
         content.append('<a href="%s">' % href)
-    elif exist_attribute(attributes, ['id', 'name'], at_least=True):
+    if exist_attribute(attributes, ['id', 'name'], at_least=True):
         name = attributes.get((URI, 'id'), attributes.get((URI, 'name')))
-        content.append('<a name="%s">' % name)
+        if len(content):
+            content[0] += '<a name="%s"/>' % name
+        else:
+            content.append('<a name="%s">' % name)
 
     while True:
         event, value, line_number = stream_next(stream)

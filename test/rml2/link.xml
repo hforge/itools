@@ -2,29 +2,28 @@
   <body>
     <h1>table of content<a name="toc"/></h1>
     <p></p>
-    <!--
     <p>- <a href="#C1">part 1 : link to website</a><br />
       - <a href="#C2">part 2 : link to send mail</a><br />
       - <a href="#bottom">link to bottom</a><br /></p>
-    -->
-    <h1><a href="http://www.google.com">C1</a></h1>
+    <h1><a name="C1"/>C1</h1>
+    <p><a href="#linktogoogle">link</a> to google in this page</p>
     <p>link to <a href="http://ikaaro.org/itools">itools website</a></p>
     <h1><a name="C2"/>C2</h1>
-    <!--
     <p>
       This is a mail link:
       <a href="mailto:sebastien.dumont@itaapy.com?Subject=mailto%20successful">
         Send Mail</a>
     </p>
-
     <p>
       This is another mailto link:
       <a href="mailto:someone@itaapy.com?cc=someoneelse@itaapy.com&amp;bcc=andsomeoneelse2@itaapy.com&amp;subject=my%20subject&amp;body=My%20content%20is%20here!">Send mail!</a>
     </p>
-
     <p><a id="bottom"/></p>
-    -->
-
+    <img src="http://www.google.fr/intl/fr_fr/images/logo.gif" alt="google image" />
+    <img src="http://www.google.fr/intl/fr_fr/images/logo.gif2" alt="google image" />
+    <img src="/tmp/pouetpouet" alt="google image" />-->
+    <p><a href="http://www.google.com"><img src="http://www.google.fr/intl/fr_fr/images/logo.gif" alt="google image" /></a></p>
+    <p><a name="linktogoogle" href="http://www.google.com">link to GooGle</a></p>
     <p><a href="#toc">TOC</a></p>
   </body>
 </html>

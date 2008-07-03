@@ -175,7 +175,6 @@ def body_stream(stream, _tag_name, _attributes, pdf_stylesheet):
         stream : parser stream
     """
 
-    stack = []
     story = []
     while True:
         event, value, line_number = stream_next(stream)
@@ -206,7 +205,6 @@ def body_stream(stream, _tag_name, _attributes, pdf_stylesheet):
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
-                stack.append((tag_name, attributes))
 
         #### END ELEMENT ####
         elif event == END_ELEMENT:
@@ -216,114 +214,21 @@ def body_stream(stream, _tag_name, _attributes, pdf_stylesheet):
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
-                stack.append((tag_name, attributes))
     return story
 
 
-def paragraph_stream(stream , elt_tag_name, elt_attributes, pdf_stylesheet):
+def paragraph_stream(stream, elt_tag_name, elt_attributes, pdf_stylesheet):
     """
         stream : parser stream
     """
-
-    stack = []
-    story = []
-    content = []
-    stack.append((elt_tag_name, elt_attributes))
-    cpt = 0
-    end_tag = False
-    has_content = False
-
-    while True:
-        event, value, line_number = stream_next(stream)
-        if event == None:
-            break
-        #### START ELEMENT ####
-        if event == START_ELEMENT:
-            tag_uri, tag_name, attributes = value
-            if tag_name in TAG_OK:
-                if tag_name in ('i', 'em', 'b', 'strong', 'u', 'sup', 'sub'):
-                    # FIXME
-                    tag = P_FORMAT.get(tag_name, 'b')
-                    if cpt or has_content:
-                        content[-1] += build_start_tag(tag)
-                    else:
-                        content.append(build_start_tag(tag))
-                    cpt += 1
-                elif tag_name == 'span':
-                    tag = P_FORMAT.get(tag_name)
-                    if cpt or has_content:
-                        content[-1] += span_stream(stream , tag, attributes)
-                    else:
-                        content.append(span_stream(stream , tag, attributes))
-                    cpt += 1
-                elif tag_name == 'br':
-                    continue
-                elif tag_name == 'a':
-                    if cpt or has_content:
-                        content[-1] += link_stream(stream, tag_name,
-                                                   attributes)
-                    else:
-                        content.append(link_stream(stream, tag_name,
-                                                   attributes))
-                    cpt += 1
-                else:
-                    print TAG_NOT_SUPPORTED % ('document', line_number,
-                                               tag_name)
-                    # unknown tag
-                    stack.append((tag_name, attributes))
-            else:
-                print WARNING_DTD % ('document', line_number, tag_name)
-
-        #### END ELEMENT ####
-        elif event == END_ELEMENT:
-            tag_uri, tag_name = value
-            if tag_name == elt_tag_name:
-                # stack.pop --> stack[0]
-                return create_paragraph(pdf_stylesheet, stack.pop(), content)
-            elif tag_name == 'span':
-                cpt -= 1
-                end_tag = True
-                content[-1] += build_end_tag(P_FORMAT.get(tag_name, 'b'))
-            elif tag_name in TAG_OK:
-                cpt -= 1
-                end_tag = True
-                content[-1] += build_end_tag(P_FORMAT.get(tag_name, 'b'))
-            elif tag_name == 'br':
-                content.append('<br/>')
-            else:
-                print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
-                # unknown tag
-                stack.append((tag_name, attributes))
-
-        #### TEXT ELEMENT ####
-        elif event == TEXT:
-            if len(value) > 0:
-                # alow to write :
-                # <para><u><i>foo</i> </u></para>
-                value = XMLContent.encode(value) # entities
-                # FIXME
-                if has_content and content[-1].endswith('<br/>') :
-                    # <p>
-                    #   foo          <br />
-                    #     bar   <br />     team
-                    # </p>
-                    # equal
-                    # <p>foo <br />bar <br />team</p>
-                    value = value.lstrip()
-                    content[-1] += value
-                    end_tag = False
-                elif has_content and content[-1].endswith('</span>'):
-                    content[-1] += value
-                    end_tag = False
-                elif end_tag or cpt:
-                    content[-1] += value
-                    end_tag = False
-                else:
-                    has_content = True
-                    content.append(value)
+    content = compute_paragraph(stream, elt_tag_name, elt_attributes,
+                           pdf_stylesheet)
+    return create_paragraph(pdf_stylesheet, (elt_tag_name, elt_attributes), content)
 
 
-def pre_stream(stream , tag_name, attributes, pdf_stylesheet):
+
+
+def pre_stream(stream, tag_name, attributes, pdf_stylesheet):
     """
         stream : parser stream
     """
@@ -384,8 +289,7 @@ def hr_stream(stream, _tag_name, _attributes):
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
             if tag_name == _tag_name:
-                widget = create_hr(_attributes)
-                return widget
+                return create_hr(_attributes)
         #### TEXT ELEMENT ####
         elif event == TEXT:
             pass
@@ -393,27 +297,9 @@ def hr_stream(stream, _tag_name, _attributes):
             print WARNING_DTD % ('document', line_number, tag_name)
 
 
-def img_stream(stream , _tag_name, _attributes):
-
-    while True:
-        event, value, line_number = stream_next(stream)
-        if event == None:
-            break
-        #### START ELEMENT ####
-        if event == START_ELEMENT:
-            tag_uri, tag_name, attributes = value
-            print WARNING_DTD % ('document', line_number, tag_name)
-        #### END ELEMENT ####
-        elif event == END_ELEMENT:
-            tag_uri, tag_name = value
-            if tag_name == _tag_name:
-                widget = create_img(_attributes)
-                return widget
-        #### TEXT ELEMENT ####
-        elif event == TEXT:
-            pass
-        else:
-            print WARNING_DTD % ('document', line_number, tag_name)
+def img_stream(stream, _tag_name, _attributes):
+    attrs = compute_image_attrs(stream, _tag_name, _attributes)
+    return create_img(attrs)
 
 
 def list_stream(stream, _tag_name, attributes, pdf_stylesheet, id=0):
@@ -465,7 +351,7 @@ def list_stream(stream, _tag_name, attributes, pdf_stylesheet, id=0):
             elif tag_name in ('i', 'em', 'b', 'strong', 'u', 'sup', 'sub'):
                 content.append(build_start_tag(P_FORMAT.get(tag_name, 'b')))
             elif tag_name == 'a':
-                content += link_stream(stream, tag_name, attributes)
+                content += compute_link(stream, tag_name, attributes)
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
@@ -523,7 +409,7 @@ def table_stream(stream, _tag_name, attributes, pdf_stylesheet):
         if event == START_ELEMENT:
             tag_uri, tag_name, attributes = value
             if tag_name == 'tr':
-                content = tr_stream(stream, tag_name, attributes,
+                content = compute_tr(stream, tag_name, attributes,
                                     content)
                 content.next_line()
             else:
@@ -536,6 +422,497 @@ def table_stream(stream, _tag_name, attributes, pdf_stylesheet):
                 return content.create()
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
+
+
+
+
+def compute_paragraph(stream, elt_tag_name, elt_attributes, pdf_stylesheet):
+    content = []
+    cpt = 0
+    end_tag = False
+    has_content = False
+
+    while True:
+        event, value, line_number = stream_next(stream)
+        if event == None:
+            break
+        #### START ELEMENT ####
+        if event == START_ELEMENT:
+            tag_uri, tag_name, attributes = value
+            if tag_name in TAG_OK:
+                if tag_name in ('i', 'em', 'b', 'strong', 'u', 'sup', 'sub'):
+                    # FIXME
+                    tag = P_FORMAT.get(tag_name, 'b')
+                    if cpt or has_content:
+                        content[-1] += build_start_tag(tag)
+                    else:
+                        content.append(build_start_tag(tag))
+                    cpt += 1
+                elif tag_name == 'span':
+                    tag = P_FORMAT.get(tag_name)
+                    if cpt or has_content:
+                        content[-1] += compute_span(stream, tag, attributes)
+                    else:
+                        content.append(compute_span(stream, tag, attributes))
+                    cpt += 1
+                elif tag_name == 'br':
+                    continue
+                elif tag_name == 'a':
+                    if cpt or has_content:
+                        content[-1] += compute_link(stream, tag_name,
+                                                   attributes)
+                    else:
+                        content.append(compute_link(stream, tag_name,
+                                                   attributes))
+                    cpt += 1
+                elif tag_name == 'img':
+                    img_attrs = compute_image_attrs(stream, tag_name, attributes)
+                    content.append(build_start_tag(tag_name, img_attrs))
+                    content[-1] = content[-1].rstrip('>')
+                    content[-1] += ' valign="middle"/>'
+                else:
+                    print TAG_NOT_SUPPORTED % ('document', line_number,
+                                               tag_name)
+                    # unknown tag
+            else:
+                print WARNING_DTD % ('document', line_number, tag_name)
+
+        #### END ELEMENT ####
+        elif event == END_ELEMENT:
+            tag_uri, tag_name = value
+            if tag_name == elt_tag_name:
+                return content
+            elif tag_name == 'span':
+                cpt -= 1
+                end_tag = True
+                content[-1] += build_end_tag(P_FORMAT.get(tag_name, 'b'))
+            elif tag_name == 'br':
+                content.append('<br/>')
+            elif tag_name in TAG_OK:
+                cpt -= 1
+                end_tag = True
+                content[-1] += build_end_tag(P_FORMAT.get(tag_name, 'b'))
+            else:
+                print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
+                # unknown tag
+
+        #### TEXT ELEMENT ####
+        elif event == TEXT:
+            if len(value) > 0:
+                # alow to write :
+                # <para><u><i>foo</i> </u></para>
+                value = XMLContent.encode(value) # entities
+                # FIXME
+                if has_content and content[-1].endswith('<br/>') :
+                    # <p>
+                    #   foo          <br />
+                    #     bar   <br />     team
+                    # </p>
+                    # equal
+                    # <p>foo <br />bar <br />team</p>
+                    value = value.lstrip()
+                    content[-1] += value
+                    end_tag = False
+                elif has_content and content[-1].endswith('</span>'):
+                    content[-1] += value
+                    end_tag = False
+                elif end_tag or cpt:
+                    content[-1] += value
+                    end_tag = False
+                else:
+                    has_content = True
+                    content.append(value)
+
+
+def compute_image_attrs(stream, _tag_name, _attributes):
+    attrs = {}
+    for key, attr_value in _attributes.iteritems():
+        key = key[1]
+        if key == 'src':
+            attrs[(URI, 'src')] = attr_value
+        elif key == 'width':
+            attrs[(URI, 'width')] = rml_value(attr_value)
+        elif key == 'height':
+            attrs[(URI, 'height')] = rml_value(attr_value)
+
+    while True:
+        event, value, line_number = stream_next(stream)
+        if event == None:
+            break
+        #### START ELEMENT ####
+        if event == START_ELEMENT:
+            tag_uri, tag_name, attributes = value
+            print WARNING_DTD % ('document', line_number, tag_name)
+        #### END ELEMENT ####
+        elif event == END_ELEMENT:
+            tag_uri, tag_name = value
+            if tag_name == _tag_name:
+                return attrs
+        #### TEXT ELEMENT ####
+        elif event == TEXT:
+            pass
+        else:
+            print WARNING_DTD % ('document', line_number, tag_name)
+
+
+def compute_tr(stream, _tag_name, attributes, table):
+    stop = None
+
+    while True:
+        event, value, line_number = stream_next(stream)
+        if event == None:
+            break
+        #### START ELEMENT ####
+        if event == START_ELEMENT:
+            tag_uri, tag_name, attributes = value
+            if tag_name in ('td', 'th'):
+                cont = compute_td(stream, tag_name, attributes)
+                table.push_content(cont)
+                if exist_attribute(attributes, ['colspan', 'rowspan'],
+                                   at_least=True):
+                    rowspan = attributes.get((URI, 'rowspan'))
+                    colspan = attributes.get((URI, 'colspan'))
+                    stop = table.process_span(rowspan, colspan)
+                else:
+                    stop = table.get_current()
+                for i in ('align', 'valign'):
+                    if exist_attribute(attributes, [i]):
+                        val = attributes.get((URI, i))
+                        table.add_style([(i.upper(),
+                                         (table.current_x, table.current_y),
+                                         stop,
+                                         val.upper())])
+
+                table.next_cell()
+            else:
+                print WARNING_DTD % ('document', line_number, tag_name)
+
+        #### END ELEMENT ####
+        elif event == END_ELEMENT:
+            tag_uri, tag_name = value
+            if tag_name == _tag_name:
+                return table
+            else:
+                print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
+
+
+def compute_td(stream, _tag_name, attributes):
+    content = []
+
+    while True:
+        event, value, line_number = stream_next(stream)
+        if event == None:
+            break
+        #### START ELEMENT ####
+        if event == START_ELEMENT:
+            tag_uri, tag_name, attributes = value
+            if tag_name in TAG_OK:
+                content.append('<%s>' % tag_name)
+            else:
+                print WARNING_DTD % ('document', line_number, tag_name)
+
+        #### END ELEMENT ####
+        elif event == END_ELEMENT:
+            tag_uri, tag_name = value
+            if tag_name in TAG_OK:
+                content.append('</%s>' % tag_name)
+            elif tag_name == _tag_name:
+                return ' '.join(content)
+            else:
+                print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
+
+        #### TEXT ELEMENT ####
+        elif event == TEXT:
+            value = XMLContent.encode(value)
+            content.append(value)
+
+
+def compute_link(stream, _tag_name, attributes):
+    """
+        stream : parser stream
+    """
+
+    content = []
+    has_content = False
+    attrs = {}
+    if exist_attribute(attributes, ['href']):
+        attrs['href'] = attributes.get((URI, 'href'))
+        # Reencode the entities because the a tags
+        # are decoded again by the reportlab para parser.
+        href = XMLContent.encode(attrs['href'])
+        content.append('<a href="%s">' % href)
+    if exist_attribute(attributes, ['id', 'name'], at_least=True):
+        name = attributes.get((URI, 'id'), attributes.get((URI, 'name')))
+        if len(content):
+            content[0] += '<a name="%s"/>' % name
+        else:
+            content.append('<a name="%s">' % name)
+    cont = compute_paragraph(stream, _tag_name, attributes, None)
+    content.extend(cont)
+    content[-1] += (build_end_tag(_tag_name))
+    return ' '.join(content)
+
+
+def compute_span(stream, _tag_name, attributes):
+
+    content = []
+    tag_stack = []
+    attrs = {}
+    cpt = 0
+    end_tag = False
+    has_content = False
+    if exist_attribute(attributes, ['style']):
+        style = ''.join(attributes.pop((URI, 'style')).split()).rstrip(';')
+        if style:
+            stylelist = style.split(';')
+            for element in stylelist:
+                element_list = element.split(':')
+                attrs[element_list[0].lower()] = element_list[1].lower()
+            if attrs.has_key('color'):
+                x = attrs['color']
+                if x[0:3] == 'rgb':
+                    attrs['color'] = get_color_hexa(x)
+                    if attrs['color'] is None:
+                        del attrs['color']
+            if attrs.has_key('font-family'):
+                x = attrs.pop('font-family')
+                attrs['face'] = FONT.get(x, 'helvetica')
+            if attrs.has_key('font-size'):
+                x = attrs.pop('font-size')
+                attrs['size'] = font_value(x)
+            if attrs.has_key('font-style'):
+                x = attrs.pop('font-style')
+                if x in ('italic', 'oblique'):
+                    tag_stack.append('i')
+                elif x != 'normal':
+                    print 'Warning font-style not valid'
+
+    # Why not use build_start_tag ?
+    attr_str = ''.join([' %s="%s"' % (key, attrs[key])
+                        for key in attrs.keys()])
+    if attr_str:
+        start_tag = '<%s %s>' % (_tag_name, attr_str)
+    else:
+        start_tag = '<%s>' % _tag_name
+    if tag_stack:
+        start_tag = '<%s>' % tag_stack
+
+    while True:
+        event, value, line_number = stream_next(stream)
+        if event == None:
+            break
+        #### START ELEMENT ####
+        if event == START_ELEMENT:
+            tag_uri, tag_name, attributes = value
+            if tag_name in TAG_OK:
+                if tag_name in ('i', 'em', 'b', 'strong', 'u', 'sup', 'sub'):
+                    # FIXME
+                    tag = P_FORMAT.get(tag_name, 'b')
+                    if cpt or has_content:
+                        content[-1] += build_start_tag(tag)
+                    else:
+                        content.append(build_start_tag(tag))
+                    cpt += 1
+                elif tag_name == 'span':
+                    tag = P_FORMAT.get(tag_name)
+                    if cpt or has_content:
+                        content[-1] += compute_span(stream, tag, attributes)
+                    else:
+                        content.append(compute_span(stream, tag, attributes))
+                    cpt += 1
+                elif tag_name == 'br':
+                    continue
+                elif tag_name == 'a':
+                    if cpt or has_content:
+                        content[-1] += compute_link(stream, tag_name,
+                                                   attributes)
+                    else:
+                        content.append(compute_link(stream, tag_name,
+                                                   attributes))
+                    cpt += 1
+                else:
+                    print TAG_NOT_SUPPORTED % ('document', line_number,
+                                               tag_name)
+            else:
+                print WARNING_DTD % ('document', line_number, tag_name)
+
+
+        #### END ELEMENT ####
+        elif event == END_ELEMENT:
+            tag_uri, tag_name = value
+            if tag_name == 'span':
+                while tag_stack:
+                    content[-1] += '<%s>' % tag_stack.pop()
+                content[-1] += '</font>'
+                return '%s%s' % (start_tag, ' '.join(content))
+            elif tag_name in TAG_OK:
+                cpt -= 1
+                end_tag = True
+                content[-1] += build_end_tag(P_FORMAT.get(tag_name, 'b'))
+            elif tag_name == 'br':
+                content.append('<br/>')
+            else:
+                print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
+
+        #### TEXT ELEMENT ####
+        elif event == TEXT:
+            if len(value) > 0:
+                value = XMLContent.encode(value) # entities
+                # FIXME
+                if has_content and content[-1].endswith('<br/>') :
+                    value = value.lstrip()
+                    content[-1] += value
+                    end_tag = False
+                elif not (len(value.strip()) or has_content):
+                    has_content = False
+                elif has_content and content[-1].endswith('</span>'):
+                    content[-1] += value
+                    end_tag = False
+                elif end_tag or cpt:
+                    content[-1] += value
+                    end_tag = False
+                else:
+                    has_content = True
+                    content.append(value)
+
+
+##############################################################################
+# Reportlab widget                                                           #
+##############################################################################
+def create_paragraph(pdf_stylesheet, element, content):
+    """
+        Create a reportlab paragraph widget.
+    """
+
+    # Now, we strip each value in content before call create_paragraph
+    # content = ['Hello', '<i>how are</i>', 'you?']
+    # Another choice is to strip the content (1 time) here
+    # content = ['  Hello\t\', '\t<i>how are</i>', '\tyou?']
+
+    # DEBUG
+    #print 0, content
+    content = normalize(' '.join(content))
+    content = '<para>%s</para>' % content
+    #print 1, content
+    style, bulletText = build_style(pdf_stylesheet, element)
+    return Paragraph(content, style, bulletText)
+
+
+def build_style(pdf_stylesheet, element):
+    style_attr = {}
+    # The default style is Normal
+    parent_style_name = 'Normal'
+    bulletText = None
+
+    # Overload the attributes values
+    for key, attr_value in element[1].iteritems():
+        key = key[1] # (None, key)
+        if key == 'style':
+            # Set the parent style for inheritance
+            parent_style_name = attr_value
+        elif key == 'bulletText':
+            bulletText = attr_value
+        else:
+            if key == 'align':
+                attr_value = ALIGNMENTS.get(attr_value.upper())
+            elif key in ['leftIndent', 'rightIndent']:
+                attr_value = rml_value(attr_value)
+            style_attr[key] = attr_value
+    style_attr['autoLeading'] = 'max'
+
+    style_name = parent_style_name
+    if element[0] in ('h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
+        parent_style_name = element[0]
+    parent_style = get_style(pdf_stylesheet, parent_style_name)
+    return (ParagraphStyle(style_name, parent=parent_style, **style_attr),
+            bulletText)
+
+
+def create_preformatted(pdf_stylesheet, element, content):
+    """
+        Create a reportlab preformatted widget.
+    """
+
+    content = ''.join(content)
+    style_name = 'Normal'
+
+    for key, attr_value in element[1].iteritems():
+        if key[1] == 'style':
+            style_name = attr_value
+    style = get_style(pdf_stylesheet, style_name)
+    widget = Preformatted(content, style)
+    return widget
+
+
+def create_hr(attributes):
+    """
+        Create a reportlab hr widget
+    """
+
+    attrs = {}
+    attrs['width'] = '100%'
+    for key in ('width', 'thickness', 'spaceBefore', 'spaceAfter'):
+        if exist_attribute(attributes, [key]):
+            attrs[key] = rml_value(attributes.get((URI, key)))
+
+    if exist_attribute(attributes, ['lineCap']):
+        line_cap = attributes.get((URI, 'lineCap'))
+        if line_cap not in ('butt', 'round', 'square'):
+            line_cap = 'butt'
+        attrs['lineCap'] = line_cap
+    if exist_attribute(attributes, ['color']):
+        attrs['color'] = get_color(attributes.get((URI, 'color')))
+    if exist_attribute(attributes, ['align']):
+        h_align = attributes.get((URI, 'align'), '').upper()
+        if h_align in ('LEFT', 'RIGHT', 'CENTER', 'CENTRE'):
+            attrs['hAlign'] = h_align
+    if exist_attribute(attributes, ['vAlign']):
+        v_align = attributes.get((URI, 'vAlign'), '').upper()
+        if v_align in ('TOP', 'MIDDLE', 'BOTTOM'):
+            attrs['vAlign'] = v_align
+    return HRFlowable(**attrs)
+
+
+def create_img(attributes, check_dimension=False):
+    """
+        Create a reportlab image widget.
+        If check_dimension is true and the width and the height attributes
+        are not set we return None
+    """
+    filename = attributes.get((URI, 'src'), None)
+    width = attributes.get((URI, 'width'), None)
+    height =  attributes.get((URI, 'height'), None)
+
+    if filename is None:
+        print u'/!\ Filename is None'
+        return None
+
+    if check_dimension and width == None and height == None:
+        print u'/!\ Cannot add an image inside a td without predefined size'
+        return None
+
+    if vfs.exists(filename) is False:
+        print u"/!\ The filename '%s' doesn't exist" % filename
+        filename = get_abspath(globals(), 'not_found.png')
+    elif filename.startswith('http://'):
+        # Remote file
+        # If the image is a remote file, we create a StringIO
+        # object contains the image data to avoid reportlab problems ...
+        filename = StringIO(vfs.open(filename).read())
+
+    try:
+        I = Image(filename)
+        if height is not None:
+            I.drawHeight = height
+        if width is not None:
+            I.drawWidth = width
+        return I
+    except IOError, msg:
+        print msg
+        return None
+    except Exception, msg:
+        print msg
+        return None
 
 
 
@@ -557,7 +934,7 @@ class Table_Content(object):
         # current cell
         self.current_x = 0
         self.current_y = 0
-        
+
 
     def add_attributes(self, name, value):
         self.attrs[name] = value
@@ -665,401 +1042,6 @@ class Table_Content(object):
                 if x != start[0] or y != start[1]:
                     self.push_content(None, x, y)
 
-
-
-def tr_stream(stream, _tag_name, attributes, table):
-    stack = []
-    stop = None
-    while True:
-        event, value, line_number = stream_next(stream)
-        if event == None:
-            break
-        #### START ELEMENT ####
-        if event == START_ELEMENT:
-            tag_uri, tag_name, attributes = value
-            if tag_name in ('td', 'th'):
-                cont = td_stream(stream , tag_name, attributes)
-                table.push_content(cont)
-                if exist_attribute(attributes, ['colspan', 'rowspan'],
-                                   at_least=True):
-                    rowspan = attributes.get((URI, 'rowspan'))
-                    colspan = attributes.get((URI, 'colspan'))
-                    stop = table.process_span(rowspan, colspan)
-                else:
-                    stop = table.get_current()
-                for i in ('align', 'valign'):
-                    if exist_attribute(attributes, [i]):
-                        val = attributes.get((URI, i))
-                        table.add_style([(i.upper(),
-                                         (table.current_x, table.current_y),
-                                         stop,
-                                         val.upper())])
-
-                table.next_cell()
-            else:
-                print WARNING_DTD % ('document', line_number, tag_name)
-
-        #### END ELEMENT ####
-        elif event == END_ELEMENT:
-            tag_uri, tag_name = value
-            if tag_name == _tag_name:
-                return table
-            else:
-                print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
-
-
-def td_stream(stream, _tag_name, attributes):
-    stack = []
-    content = []
-    while True:
-        event, value, line_number = stream_next(stream)
-        if event == None:
-            break
-        #### START ELEMENT ####
-        if event == START_ELEMENT:
-            tag_uri, tag_name, attributes = value
-            if tag_name in TAG_OK:
-                content.append('<%s>' % tag_name)
-            else:
-                print WARNING_DTD % ('document', line_number, tag_name)
-
-        #### END ELEMENT ####
-        elif event == END_ELEMENT:
-            tag_uri, tag_name = value
-            if tag_name in TAG_OK:
-                content.append('</%s>' % tag_name)
-            elif tag_name == _tag_name:
-                return ' '.join(content)
-            else:
-                print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
-
-        #### TEXT ELEMENT ####
-        elif event == TEXT:
-            value = XMLContent.encode(value)
-            content.append(value)
-
-
-def link_stream(stream , _tag_name, attributes):
-    """
-        stream : parser stream
-    """
-
-    content = []
-    has_content = False
-    attrs = {}
-    if exist_attribute(attributes, ['href']):
-        attrs['href'] = attributes.get((URI, 'href'))
-        # Reencode the entities because the a tags
-        # are decoded again by the reportlab para parser.
-        href = XMLContent.encode(attrs['href'])
-        content.append('<a href="%s">' % href)
-    if exist_attribute(attributes, ['id', 'name'], at_least=True):
-        name = attributes.get((URI, 'id'), attributes.get((URI, 'name')))
-        if len(content):
-            content[0] += '<a name="%s"/>' % name
-        else:
-            content.append('<a name="%s">' % name)
-
-    while True:
-        event, value, line_number = stream_next(stream)
-        if event == None:
-            break
-        #### START ELEMENT ####
-        if event == START_ELEMENT:
-            tag_uri, tag_name, attributes = value
-            if tag_name == 'a':
-                print WARNING_DTD % ('document', line_number, tag_name)
-            elif tag_name not in TAG_OK:
-                print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
-                # unknown tag
-
-        #### END ELEMENT ####
-        elif event == END_ELEMENT:
-            tag_uri, tag_name = value
-            if tag_name == 'a':
-                content.append('</a>')
-                return ''.join(content)
-            elif tag_name not in TAG_OK:
-                print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
-
-        #### TEXT ELEMENT ####
-        elif event == TEXT:
-            if len(value) > 0:
-                # alow to write :
-                # <para><u><i>foo</i> </u></para>
-                value = XMLContent.encode(value) # entities
-                content.append(value)
-                has_content = True
-
-
-def span_stream(stream , _tag_name, attributes):
-
-    content = []
-    tag_stack = []
-    attrs = {}
-    cpt = 0
-    end_tag = False
-    has_content = False
-    if exist_attribute(attributes, ['style']):
-        style = ''.join(attributes.pop((URI, 'style')).split()).rstrip(';')
-        if style:
-            stylelist = style.split(';')
-            for element in stylelist:
-                element_list = element.split(':')
-                attrs[element_list[0].lower()] = element_list[1].lower()
-            if attrs.has_key('color'):
-                x = attrs['color']
-                if x[0:3] == 'rgb':
-                    attrs['color'] = get_color_hexa(x)
-                    if attrs['color'] is None:
-                        del attrs['color']
-            if attrs.has_key('font-family'):
-                x = attrs.pop('font-family')
-                attrs['face'] = FONT.get(x, 'helvetica')
-            if attrs.has_key('font-size'):
-                x = attrs.pop('font-size')
-                attrs['size'] = font_value(x)
-            if attrs.has_key('font-style'):
-                x = attrs.pop('font-style')
-                if x in ('italic', 'oblique'):
-                    tag_stack.append('i')
-                elif x != 'normal':
-                    print 'Warning font-style not valid'
-
-    # Why not use build_start_tag ?
-    attr_str = ''.join([' %s="%s"' % (key, attrs[key])
-                        for key in attrs.keys()])
-    if attr_str:
-        start_tag = '<%s %s>' % (_tag_name, attr_str)
-    else:
-        start_tag = '<%s>' % _tag_name
-    if tag_stack:
-        start_tag = '<%s>' % tag_stack
-
-    while True:
-        event, value, line_number = stream_next(stream)
-        if event == None:
-            break
-        #### START ELEMENT ####
-        if event == START_ELEMENT:
-            tag_uri, tag_name, attributes = value
-            if tag_name in TAG_OK:
-                if tag_name in ('i', 'em', 'b', 'strong', 'u', 'sup', 'sub'):
-                    # FIXME
-                    tag = P_FORMAT.get(tag_name, 'b')
-                    if cpt or has_content:
-                        content[-1] += build_start_tag(tag)
-                    else:
-                        content.append(build_start_tag(tag))
-                    cpt += 1
-                elif tag_name == 'span':
-                    tag = P_FORMAT.get(tag_name)
-                    if cpt or has_content:
-                        content[-1] += span_stream(stream, tag, attributes)
-                    else:
-                        content.append(span_stream(stream, tag, attributes))
-                    cpt += 1
-                elif tag_name == 'br':
-                    continue
-                elif tag_name == 'a':
-                    if cpt or has_content:
-                        content[-1] += link_stream(stream, tag_name,
-                                                   attributes)
-                    else:
-                        content.append(link_stream(stream, tag_name,
-                                                   attributes))
-                    cpt += 1
-                else:
-                    print TAG_NOT_SUPPORTED % ('document', line_number,
-                                               tag_name)
-            else:
-                print WARNING_DTD % ('document', line_number, tag_name)
-
-
-        #### END ELEMENT ####
-        elif event == END_ELEMENT:
-            tag_uri, tag_name = value
-            if tag_name == 'span':
-                while tag_stack:
-                    content[-1] += '<%s>' % tag_stack.pop()
-                content[-1] += '</font>'
-                return '%s%s' % (start_tag, ' '.join(content))
-            elif tag_name in TAG_OK:
-                cpt -= 1
-                end_tag = True
-                content[-1] += build_end_tag(P_FORMAT.get(tag_name, 'b'))
-            elif tag_name == 'br':
-                content.append('<br/>')
-            else:
-                print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
-
-        #### TEXT ELEMENT ####
-        elif event == TEXT:
-            if len(value) > 0:
-                value = XMLContent.encode(value) # entities
-                # FIXME
-                if has_content and content[-1].endswith('<br/>') :
-                    value = value.lstrip()
-                    content[-1] += value
-                    end_tag = False
-                elif not (len(value.strip()) or has_content):
-                    has_content = False
-                elif has_content and content[-1].endswith('</span>'):
-                    content[-1] += value
-                    end_tag = False
-                elif end_tag or cpt:
-                    content[-1] += value
-                    end_tag = False
-                else:
-                    has_content = True
-                    content.append(value)
-
-
-##############################################################################
-# Reportlab widget                                                           #
-##############################################################################
-def create_paragraph(pdf_stylesheet, element, content):
-    """
-        Create a reportlab paragraph widget.
-    """
-
-    # Now, we strip each value in content before call create_paragraph
-    # content = ['Hello', '<i>how are</i>', 'you?']
-    # Another choice is to strip the content (1 time) here
-    # content = ['  Hello\t\', '\t<i>how are</i>', '\tyou?']
-
-    # DEBUG
-    #print 0, content
-    content = normalize(' '.join(content))
-    #print 1, content
-    style, bulletText = build_style(pdf_stylesheet, element)
-    return Paragraph(content, style, bulletText)
-
-
-def build_style(pdf_stylesheet, element):
-    style_attr = {}
-    # The default style is Normal
-    parent_style_name = 'Normal'
-    bulletText = None
-
-    # Overload the attributes values
-    for key, attr_value in element[1].iteritems():
-        key = key[1] # (None, key)
-        if key == 'style':
-            # Set the parent style for inheritance
-            parent_style_name = attr_value
-        elif key == 'bulletText':
-            bulletText = attr_value
-        else:
-            if key == 'align':
-                attr_value = ALIGNMENTS.get(attr_value.upper())
-            elif key in ['leftIndent', 'rightIndent']:
-                attr_value = rml_value(attr_value)
-            style_attr[key] = attr_value
-            style_attr['autoLeading'] = 'max'
-
-    style_name = parent_style_name
-    if element[0] in ('h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
-        parent_style_name = element[0]
-    parent_style = get_style(pdf_stylesheet, parent_style_name)
-    return (ParagraphStyle(style_name, parent=parent_style, **style_attr),
-            bulletText)
-
-
-def create_preformatted(pdf_stylesheet, element, content):
-    """
-        Create a reportlab preformatted widget.
-    """
-
-    content = ''.join(content)
-    style_name = 'Normal'
-
-    for key, attr_value in element[1].iteritems():
-        if key[1] == 'style':
-            style_name = attr_value
-    style = get_style(pdf_stylesheet, style_name)
-    widget = Preformatted(content, style)
-    return widget
-
-
-def create_hr(attributes):
-    """
-        Create a reportlab hr widget
-    """
-
-    attrs = {}
-    attrs['width'] = '100%'
-    for key in ('width', 'thickness', 'spaceBefore', 'spaceAfter'):
-        if exist_attribute(attributes, [key]):
-            attrs[key] = rml_value(attributes.get((URI, key)))
-
-    if exist_attribute(attributes, ['lineCap']):
-        line_cap = attributes.get((URI, 'lineCap'))
-        if line_cap not in ('butt', 'round', 'square'):
-            line_cap = 'butt'
-        attrs['lineCap'] = line_cap
-    if exist_attribute(attributes, ['color']):
-        attrs['color'] = get_color(attributes.get((URI, 'color')))
-    if exist_attribute(attributes, ['align']):
-        h_align = attributes.get((URI, 'align'), '').upper()
-        if h_align in ('LEFT', 'RIGHT', 'CENTER', 'CENTRE'):
-            attrs['hAlign'] = h_align
-    if exist_attribute(attributes, ['vAlign']):
-        v_align = attributes.get((URI, 'vAlign'), '').upper()
-        if v_align in ('TOP', 'MIDDLE', 'BOTTOM'):
-            attrs['vAlign'] = v_align
-    return HRFlowable(**attrs)
-
-
-def create_img(attributes, check_dimension=False):
-    """
-        Create a reportlab image widget.
-        If check_dimension is true and the width and the height attributes
-        are not set we return None
-    """
-
-    width, height = None, None
-    filename = None
-
-    for key, attr_value in attributes.iteritems():
-        key = key[1]
-        if key == 'src':
-            filename = attr_value
-        elif key == 'width':
-            width = rml_value(attr_value)
-        elif key == 'height':
-            height = rml_value(attr_value)
-
-    if filename is None:
-        print u'/!\ Filename is None'
-        return None
-
-    if check_dimension and width == None and height == None:
-        print u'/!\ Cannot add an image inside a td without predefined size'
-        return None
-
-    if vfs.exists(filename) is False:
-        print u"/!\ The filename '%s' doesn't exist" % filename
-        filename = get_abspath(globals(), 'not_found.png')
-    elif filename.startswith('http://'):
-        # Remote file
-        # If the image is a remote file, we create a StringIO
-        # object contains the image data to avoid reportlab problems ...
-        filename = StringIO(vfs.open(filename).read())
-
-    try:
-        I = Image(filename)
-        if height is not None:
-            I.drawHeight = height
-        if width is not None:
-            I.drawWidth = width
-        return I
-    except IOError, msg:
-        print msg
-        return None
-    except Exception, msg:
-        print msg
-        return None
 
 
 ##############################################################################

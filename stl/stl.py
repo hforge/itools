@@ -487,7 +487,7 @@ stl_attributes = {'repeat': String, 'if': String}
 
 class STLElement(ElementSchema):
 
-    attributes = stl_attributes
+    class_uri = stl_uri
 
 
 stl_elements = [
@@ -497,7 +497,7 @@ stl_elements = [
 
 
 stl_namespace = XMLNamespace(
-    'http://xml.itools.org/namespaces/stl', 'stl',
+    stl_uri, 'stl',
     stl_elements,
     stl_attributes)
 

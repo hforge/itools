@@ -96,6 +96,7 @@ html_attributes = {
     'longdesc': Unicode,
     'marginheight': Unicode,
     'marginwidth': Unicode,
+    'maxlength': Unicode,
     'media': Unicode,
     'method': Unicode,
     'multiple': Boolean,
@@ -336,12 +337,16 @@ html_elements = [
     BlockElement('table', common_attrs + ['summary', 'width', 'border',
         'frame', 'rules', 'cellspacing', 'cellpadding', 'align', 'bgcolor']),
     BlockElement('td', common_attrs + cellhalign_attrs + cellvalign_attrs +
-        ['abbr', 'axis', 'headers', 'scope', 'rowspan', 'colspan']),
+        ['abbr', 'axis', 'headers', 'scope', 'rowspan', 'colspan', 'nowrap',
+            'bgcolor', 'width', 'height']),
     Element('textarea', common_attrs + ['name', 'rows', 'cols', 'disabled',
         'readonly', 'tabindex', 'accesskey', 'onfocus', 'onblur', 'onselect',
         'onchange']),
     BlockElement('th', common_attrs + cellhalign_attrs + cellvalign_attrs +
-        ['abbr', 'axis', 'headers', 'scope', 'rowspan', 'colspan']),
+        ['abbr', 'axis', 'headers', 'scope', 'rowspan', 'colspan', 'nowrap',
+            'bgcolor', 'width', 'height']),
+    BlockElement('colgroup', common_attrs + cellhalign_attrs + cellvalign_attrs
+            + ['span', 'width']),
     BlockElement('tbody', common_attrs + cellhalign_attrs + cellvalign_attrs),
     BlockElement('tfoot', common_attrs + cellhalign_attrs + cellvalign_attrs),
     BlockElement('thead', common_attrs + cellhalign_attrs + cellvalign_attrs),

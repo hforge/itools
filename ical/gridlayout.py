@@ -26,7 +26,7 @@ from itools.html import XHTMLFile
 
 # Template to display full day events
 template_string = """
-  <td class="color${event/cal}">
+  <td class="color${event/cal}" xmlns="http://www.w3.org/1999/xhtml">
     <a href="${event/url}" class="${event/STATUS}">${event/SUMMARY}</a>
   </td>
 """
@@ -35,10 +35,11 @@ default_template_fd.load_state_from_string(template_string)
 
 # Template to display events with timetables
 template_string = """
-  <td colspan="${cell/colspan}" rowspan="${cell/rowspan}"
+  <td xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:stl="http://xml.itools.org/namespaces/stl"
+    colspan="${cell/colspan}" rowspan="${cell/rowspan}"
     valign="top" class="color${cell/content/cal}">
-      <a xmlns:stl="http://xml.itools.org/namespaces/stl"
-        stl:if="cell/newurl" class="add_event" href="${cell/newurl}">
+      <a stl:if="cell/newurl" class="add_event" href="${cell/newurl}">
         <img width="16" height="16" src="${add_icon}" />
       </a><br/>
       <a href="${cell/content/url}" class="${cell/content/STATUS}">

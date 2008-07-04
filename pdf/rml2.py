@@ -352,7 +352,7 @@ def list_stream(stream, _tag_name, attributes, pdf_stylesheet, id=0):
             elif tag_name in ('i', 'em', 'b', 'strong', 'u', 'sup', 'sub'):
                 content.append(build_start_tag(P_FORMAT.get(tag_name, 'b')))
             elif tag_name == 'a':
-                content += build_start_tag_link(stream, tag_name, attributes)
+                content += build_start_tag(tag_name, attributes)
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
@@ -680,26 +680,6 @@ def compute_td(stream, _tag_name, attributes):
         elif event == TEXT:
             value = XMLContent.encode(value)
             content.append(value)
-
-
-#TODO must be merge with build_start_tag
-def build_start_tag_link(stream, _tag_name, attributes):
-
-    content = []
-    attrs = {}
-    if exist_attribute(attributes, ['href']):
-        attrs['href'] = attributes.get((URI, 'href'))
-        # Reencode the entities because the a tags
-        # are decoded again by the reportlab para parser.
-        href = XMLContent.encode(attrs['href'])
-        content.append('<a href="%s">' % href)
-    if exist_attribute(attributes, ['id', 'name'], at_least=True):
-        name = attributes.get((URI, 'id'), attributes.get((URI, 'name')))
-        if len(content):
-            content[0] += '<a name="%s"/>' % name
-        else:
-            content.append('<a name="%s">' % name)
-    return ' '.join(content)
 
 
 #TODO must be merge with compute paragraph
@@ -1164,8 +1144,14 @@ def build_start_tag(tag_name, attributes={}):
         span => font (map)
     """
 
+    if tag_name == 'a':
+        if exist_attribute(attributes, ['href']):
+            href = attributes.get((URI, 'href'))
+            # Reencode the entities because the a tags
+            # are decoded again by the reportlab para parser.
+            attrs[(URI, 'href')]= XMLContent.encode(href)
     attr_str = ''.join([' %s="%s"' % (key[1], attributes[key])
-                        for key in attributes.keys()])
+                            for key in attributes.keys()])
     return '<%s%s>' % (tag_name, attr_str)
 
 

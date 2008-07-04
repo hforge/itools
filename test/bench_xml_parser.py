@@ -33,6 +33,7 @@ from itools.utils import vmsize
 from itools.vfs import vfs
 from itools.xml import XMLParser, XMLError, START_ELEMENT, END_ELEMENT
 
+
 #####################################################################
 # UTILS
 #####################################################################
@@ -185,119 +186,86 @@ def get_test_filenames(test_path, force_download):
     return tests
 
 
-#####################################################################
+###########################################################################
+# Benchmark code
+###########################################################################
+
+
+###########################################################################
 # EXPAT
-#####################################################################
-# Expat call back
 def start_element(name, attrs):
     pass
+
 def end_element(name):
     pass
+
 def char_data(data):
     pass
 
 
-def expat_parser_file_mode(xml, nb_repeat):
-    """xml is an open file object"""
+def expat_parser_file_mode(test_file, nb_repeat):
+    """The 'test_file' parameter is an open file object.
+    """
     v0 = vmsize()
     t0 = clock()
-    for i in nb_repeat:
+
+    # Loop
+    i = 0
+    while i < nb_repeat:
+        i += 1
         # Raise MemoryError after calling seek(0)
         # if we don't create a new parser
         p = ParserCreate()
         p.StartElementHandler = start_element
         p.EndElementHandler = end_element
-        p.ParseFile(xml)
-        xml.seek(0)
+        p.ParseFile(test_file)
+        test_file.seek(0)
+
+    # Ok
     t1 = clock()
     v1 = vmsize()
-
-    time_spent = get_string_time((t1-t0) / float(len(nb_repeat)))
-    memo = v1 -v0
-
-    return time_spent, memo
+    return t1-t0, v1-v0
 
 
-#####################################################################
-# ITOOLS
-#####################################################################
-def itools_parser_file_mode(xml, nb_repeat):
+
+###########################################################################
+# itools
+def itools_parser_file_mode(test_file, nb_repeat):
     v0 = vmsize()
     t0 = clock()
-    for i in nb_repeat:
-        parser = XMLParser(xml)
+
+    # Loop
+    i = 0
+    while i < nb_repeat:
+        i += 1
+        parser = XMLParser(test_file)
         for type, value, line in parser:
             if type == START_ELEMENT:
                 pass
             elif type == END_ELEMENT:
                 pass
-        xml.seek(0)
+        test_file.seek(0)
+
+    # Ok
     t1 = clock()
     v1 = vmsize()
-
-    time_spent = get_string_time((t1-t0) / float(len(nb_repeat)))
-    memo = v1 -v0
-
-    return time_spent, memo
+    return t1-t0, v1-v0
 
 
-#####################################################################
-# BENCHMARK
-#####################################################################
-def bench_itools_parser(filename, nb_repeat):
-    xml = open(filename)
 
-    success = False
-    time_spent = 0.0
-    memory = 0.0
-    str_error = u''
-
-    try:
-        time_spent, memory = itools_parser_file_mode(xml, nb_repeat)
-        success = True
-    except XMLError, e:
-        str_error = str(e)
-    except Exception, e2:
-        str_error = str(e2)
-    xml.close()
-
-    return success, time_spent, memory, str_error
+parser_functions = {
+    'expat': expat_parser_file_mode,
+    'itools': itools_parser_file_mode,
+    }
 
 
-def bench_expat_parser(filename, nb_repeat):
-    xml = open(filename)
-
-    success = False
-    time_spent = 0.0
-    memory = 0.0
-    str_error = u''
-
-    try:
-        time_spent, memory = expat_parser_file_mode(xml, nb_repeat)
-        success = True
-    except ExpatError, e:
-        str_error = str(e)
-    except Exception, e2:
-        str_error = str(e2)
-    xml.close()
-
-    return success, time_spent, memory, str_error
-
-
-#####################################################################
+###########################################################################
 # OUPUT
-#####################################################################
-def output_init(parsers_name):
-    """
-30c | 23c | 23c -> 78c
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-          itools        |         expat         |             file
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- ___.___ ms / ___.___ KB|___.___ ms / ___.___ KB|qualitywiki-late (___.___ KB)
-                        |                       |
-    """
+###########################################################################
 
+def output_init(parsers_name):
     print u'-' * 78
+    # 30c | 23c | 23c -> 78c
     print u' %s|%s|%s' % (center(u'file', 30), center(parser_names[0], 23),
                           center(parser_names[1], 23))
     print u'-' * 78
@@ -315,23 +283,23 @@ def output_result(results, file):
     parser_output = u''
     # output 1
     parser_name, result = results[0]
-    success1, time_spent, memory, err1 = result
-    memory = get_string_size(memory)
-    if success1:
+    if result is None:
+        output1 = center(u'FAILED',  21)
+    else:
+        time_spent, memory = result
+        memory = get_string_size(memory)
         # time_spent ok already like ___.___ ms or s or mn
         output1 = rjust(u'%s / %s' % (time_spent, memory), 21)
-    else:
-        output1 = center(u'FAILED',  21)
 
     # output 2
     parser_name, result = results[1]
-    success2, time_spent, memory, err2 = result
-    memory = get_string_size(memory)
-    if success2:
+    if result is None:
+        output2 = center(u'FAILED',  21)
+    else:
+        time_spent, memory = result
+        memory = get_string_size(memory)
         # time_spent ok already like ___.___ ms or s or mn
         output2 = rjust(u'%s / %s' % (time_spent, memory), 21)
-    else:
-        output2 = center(u'FAILED',  21)
 
     print '%s | %s | %s ' % (file_string, output1, output2)
 
@@ -344,60 +312,56 @@ if __name__ == '__main__':
     version = 'itools %s' % itools.__version__
     description = ('XML Parser benchmark')
     parser = OptionParser(usage, version=version, description=description)
-    parser.add_option('', '--expat-before',
-                      help='Call Expat parser before itools parser',
-                      default=False, dest='expat_before', action="store_true")
-    parser.add_option('', '--no-gc',
-                      help='Disable automatic garbage collection.',
-                      default=False, dest='no_gc', action="store_true")
-    parser.add_option('-p', '--nb-pass', help='Number of pass',
-                      default=1, type='int', dest='nb_pass')
-    parser.add_option('-d', '--directory',
-                      help=('An optional  directory  to  which  to'
-                             'extract  files.'),
-                      default='/tmp/itools_bench', dest='test_dir')
-    parser.add_option('', '--force-download',
-                      help='Force the test files download.',
-                      default=False, dest='force_download', action="store_true")
+    parser.add_option(
+        '', '--expat-before',
+        help='Call Expat parser before itools parser',
+        default=False, dest='expat_before', action="store_true")
+    parser.add_option(
+        '', '--no-gc',
+        help='Disable automatic garbage collection.',
+        default=False, dest='no_gc', action="store_true")
+    parser.add_option(
+        '-d', '--directory',
+        help=('An optional  directory  to  which  to extract  files.'),
+        default='/tmp/itools_bench', dest='test_dir')
+    parser.add_option(
+        '', '--force-download',
+        help='Force the test files download.',
+        default=False, dest='force_download', action="store_true")
 
     options, args = parser.parse_args()
-    nb_pass  = options.nb_pass
-    # garbage collector
+    # Garbage collector
     if options.no_gc is True:
         print u'DISABLE GARBAGE COLLECTOR'
         gc.disable()
 
-    # get test files
+    # Get test files
     filenames = get_test_filenames(options.test_dir, options.force_download)
-    test_length = len(filenames)
 
-    expat_before = options.expat_before
-    print u'NB TEST', test_length
+    # Order
+    if options.expat_before is True:
+        parser_names = ['expat', 'itools']
+    else:
+        parser_names = ['itools', 'expat']
+    output_init(parser_names);
 
-    parser_functions = {'expat': bench_expat_parser,
-                        'itools': bench_itools_parser}
+    # Go
+    for real_path, filename, file_bytes, file_size in filenames:
+        nb_repeat = get_clock_nb_pass(file_bytes)
+        nb_repeat_float = float(nb_repeat)
+        test_results = []
+        for parser_name in parser_names:
+            fn = parser_functions[parser_name]
+            xml = open(real_path)
+            try:
+                time_spent, memo = fn(xml, nb_repeat)
+            except:
+                test_results.append((parser_name, None))
+            else:
+                time_spent = get_string_time(time_spent / nb_repeat_float)
+                test_results.append((parser_name, (time_spent, memo)))
+            finally:
+                xml.close()
+        output_result(test_results, (filename, file_bytes))
+    print
 
-    for pass_id in range(0, options.nb_pass):
-        print u'PASS %s / %s' % ((pass_id + 1), nb_pass)
-        if expat_before is True:
-            parser_names = ['expat', 'itools']
-        else:
-            parser_names = ['itools', 'expat']
-        expat_before = not expat_before
-
-        output_init(parser_names);
-        for index, data in enumerate(filenames):
-            # init pass result
-            pass_results = {'itools': None, 'expat': None}
-            # get data
-            real_path, filename, file_bytes, file_size = data
-            nb_repeat = get_clock_nb_pass(file_bytes)
-            test_results = []
-            for parser_name in parser_names:
-                fn = parser_functions[parser_name]
-                results = fn(real_path, range(0, nb_repeat))
-                success, time_spent, memory, err = results
-
-                test_results.append((parser_name, results))
-            output_result(test_results, (filename, file_bytes))
-        print

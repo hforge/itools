@@ -45,8 +45,11 @@ URI = None
 P_FORMAT = {'a': 'a', 'i': 'i', 'em': 'i', 'b': 'b', 'strong': 'b', 'u': 'u',
             'span': 'font', 'sup': 'super', 'sub': 'sub'}
 
-TAG_OK = ('a', 'b', 'big', 'br', 'em', 'i', 'img', 'small', 'span', 'strong',
-          'sub', 'sup', 'tt', 'u')
+SPECIAL = ('a', 'br', 'img', 'span', 'sub', 'sup')
+PHRASE = ('em', 'strong')
+FONT_STYLE = ('b', 'big', 'i', 'small', 'tt')
+DEPRECATED = ('u',)
+INLINE = FONT_STYLE + PHRASE + SPECIAL + DEPRECATED
 
 FONT = {'monospace': 'courier', 'times-new-roman': 'times-roman',
         'arial': 'helvetica', 'serif': 'times',
@@ -390,15 +393,13 @@ def table_stream(stream, _tag_name, attributes, pdf_stylesheet):
     content = Table_Content()
     start = (0, 0)
     stop = (-1, -1)
-    tablestyle = []
     if exist_attribute(attributes, ['border']):
         border = get_int_value(attributes.get((URI, 'border')))
-        tablestyle.append(('GRID', start, stop, border, colors.grey))
+        content.add_style(('GRID', start, stop, border, colors.grey))
     if exist_attribute(attributes, ['align']):
         hAlign = attributes.get((URI, 'align')).upper()
         if hAlign in ['LEFT', 'RIGHT', 'CENTER', 'CENTRE']:
             content.add_attributes('hAlign', hAlign)
-    content.add_style(tablestyle)
 
     while True:
         event, value, line_number = stream_next(stream)
@@ -438,7 +439,7 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, pdf_stylesheet):
         #### START ELEMENT ####
         if event == START_ELEMENT:
             tag_uri, tag_name, attributes = value
-            if tag_name in TAG_OK:
+            if tag_name in INLINE:
                 if tag_name in ('i', 'em', 'b', 'strong', 'u', 'sup', 'sub'):
                     # FIXME
                     tag = P_FORMAT.get(tag_name, 'b')
@@ -488,7 +489,7 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, pdf_stylesheet):
                 content[-1] += build_end_tag(P_FORMAT.get(tag_name, 'b'))
             elif tag_name == 'br':
                 content.append('<br/>')
-            elif tag_name in TAG_OK:
+            elif tag_name in INLINE:
                 cpt -= 1
                 end_tag = True
                 content[-1] += build_end_tag(P_FORMAT.get(tag_name, 'b'))
@@ -583,13 +584,21 @@ def compute_tr(stream, _tag_name, attributes, table):
                     stop = table.process_span(rowspan, colspan)
                 else:
                     stop = table.get_current()
+                # DEPRECATED
+                if exist_attribute(attributes, ['bgcolor']):
+                    val = attributes.get((URI,'bgcolor'))
+                    if val:
+                        if val[0:3] == 'rgb':
+                            val = get_color_hexa(val)
+                        table.add_style(('BACKGROUND', (table.current_x, table.current_y), stop,  colors.toColor(val, colors.black)))
+                #ALIGNMENT
                 for i in ('align', 'valign'):
                     if exist_attribute(attributes, [i]):
                         val = attributes.get((URI, i))
-                        table.add_style([(i.upper(),
-                                         (table.current_x, table.current_y),
-                                         stop,
-                                         val.upper())])
+                        table.add_style((i.upper(),
+                                        (table.current_x, table.current_y),
+                                        stop,
+                                        val.upper()))
 
                 table.next_cell()
             else:
@@ -614,7 +623,7 @@ def compute_td(stream, _tag_name, attributes):
         #### START ELEMENT ####
         if event == START_ELEMENT:
             tag_uri, tag_name, attributes = value
-            if tag_name in TAG_OK:
+            if tag_name in INLINE:
                 content.append('<%s>' % tag_name)
             else:
                 print WARNING_DTD % ('document', line_number, tag_name)
@@ -622,7 +631,7 @@ def compute_td(stream, _tag_name, attributes):
         #### END ELEMENT ####
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
-            if tag_name in TAG_OK:
+            if tag_name in INLINE:
                 content.append('</%s>' % tag_name)
             elif tag_name == _tag_name:
                 return ' '.join(content)
@@ -707,7 +716,7 @@ def compute_span(stream, _tag_name, attributes):
         #### START ELEMENT ####
         if event == START_ELEMENT:
             tag_uri, tag_name, attributes = value
-            if tag_name in TAG_OK:
+            if tag_name in INLINE:
                 if tag_name in ('i', 'em', 'b', 'strong', 'u', 'sup', 'sub'):
                     # FIXME
                     tag = P_FORMAT.get(tag_name, 'b')
@@ -755,7 +764,7 @@ def compute_span(stream, _tag_name, attributes):
                 return '%s%s' % (start_tag, ' '.join(content))
             elif tag_name == 'br':
                 content.append('<br/>')
-            elif tag_name in TAG_OK:
+            elif tag_name in INLINE:
                 cpt -= 1
                 end_tag = True
                 content[-1] += build_end_tag(P_FORMAT.get(tag_name, 'b'))
@@ -994,7 +1003,7 @@ class Table_Content(object):
 
 
     def add_style(self, style):
-        self.style.extend(style)
+        self.style.append(style)
 
 
     def process_span(self, rowspan, colspan):
@@ -1028,6 +1037,7 @@ class Table_Content(object):
 
 
     def create(self):
+        print self.style
         return Table(self.content, style=self.style, **self.attrs)
 
 

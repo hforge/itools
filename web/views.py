@@ -137,7 +137,7 @@ class STLView(BaseView):
     template = None
 
 
-    def get_namespace(self, model, context):
+    def get_namespace(self, model, context, query=None):
         return {}
 
 
@@ -145,7 +145,12 @@ class STLView(BaseView):
         if self.template is None:
             raise NotImplementedError
 
-        namespace = self.get_namespace(model, context)
+        # XXX Some subclasses do not have a query parameter on get_namespace
+        query = self.get_query(context)
+        if query:
+            namespace = self.get_namespace(model, context, query)
+        else:
+            namespace = self.get_namespace(model, context)
         handler = model.get_object(self.template)
         return stl(handler, namespace)
 

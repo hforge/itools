@@ -23,13 +23,12 @@ from optparse import OptionParser
 from os.path import join
 from string import center, ljust, rjust
 from tarfile import open as open_tar
-from time import clock
 from xml.parsers.expat import ParserCreate, ExpatError
 
 # Import from itools
 import itools
 import itools.http
-from itools.utils import vmsize
+from itools.utils import vmsize, get_time_spent
 from itools.vfs import vfs
 from itools.xml import XMLParser, XMLError, START_ELEMENT, END_ELEMENT
 
@@ -200,7 +199,7 @@ def char_data(data):
 def expat_parser_file_mode(xml, nb_repeat):
     """xml is an open file object"""
     v0 = vmsize()
-    t0 = clock()
+    t0 = get_time_spent(mode='both')
     for i in nb_repeat:
         # Raise MemoryError after calling seek(0)
         # if we don't create a new parser
@@ -209,10 +208,10 @@ def expat_parser_file_mode(xml, nb_repeat):
         p.EndElementHandler = end_element
         p.ParseFile(xml)
         xml.seek(0)
-    t1 = clock()
+    t1 = get_time_spent(mode='both', since=t0)
     v1 = vmsize()
 
-    time_spent = get_string_time((t1-t0) / float(len(nb_repeat)))
+    time_spent = get_string_time(t1 / float(len(nb_repeat)))
     memo = v1 -v0
 
     return time_spent, memo
@@ -223,7 +222,7 @@ def expat_parser_file_mode(xml, nb_repeat):
 #####################################################################
 def itools_parser_file_mode(xml, nb_repeat):
     v0 = vmsize()
-    t0 = clock()
+    t0 = get_time_spent(mode='both')
     for i in nb_repeat:
         parser = XMLParser(xml)
         for type, value, line in parser:
@@ -232,7 +231,7 @@ def itools_parser_file_mode(xml, nb_repeat):
             elif type == END_ELEMENT:
                 pass
         xml.seek(0)
-    t1 = clock()
+    t1 = get_time_spent(mode='both', since=t0)
     v1 = vmsize()
 
     time_spent = get_string_time((t1-t0) / float(len(nb_repeat)))

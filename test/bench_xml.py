@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 # Copyright (C) 2005-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
-# Copyright (C) 2008      Henry Obein <henry@itaapy.com>
+# Copyright (C) 2008 Henry Obein <henry@itaapy.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,9 +22,9 @@ from math import log as math_log
 from optparse import OptionParser
 from os.path import join
 from string import center, ljust, rjust
+from subprocess import call
 from tarfile import open as open_tar
-from time import clock
-from xml.parsers.expat import ParserCreate, ExpatError
+from time import time as clock
 
 # Import from itools
 import itools
@@ -187,79 +187,6 @@ def get_test_filenames(test_path, force_download):
 
 
 ###########################################################################
-# Benchmark code
-###########################################################################
-
-
-###########################################################################
-# EXPAT
-def start_element(name, attrs):
-    pass
-
-def end_element(name):
-    pass
-
-def char_data(data):
-    pass
-
-
-def expat_parser_file_mode(test_file, nb_repeat):
-    """The 'test_file' parameter is an open file object.
-    """
-    v0 = vmsize()
-    t0 = clock()
-
-    # Loop
-    i = 0
-    while i < nb_repeat:
-        i += 1
-        # Raise MemoryError after calling seek(0)
-        # if we don't create a new parser
-        p = ParserCreate()
-        p.StartElementHandler = start_element
-        p.EndElementHandler = end_element
-        p.ParseFile(test_file)
-        test_file.seek(0)
-
-    # Ok
-    t1 = clock()
-    v1 = vmsize()
-    return t1-t0, v1-v0
-
-
-
-###########################################################################
-# itools
-def itools_parser_file_mode(test_file, nb_repeat):
-    v0 = vmsize()
-    t0 = clock()
-
-    # Loop
-    i = 0
-    while i < nb_repeat:
-        i += 1
-        parser = XMLParser(test_file)
-        for type, value, line in parser:
-            if type == START_ELEMENT:
-                pass
-            elif type == END_ELEMENT:
-                pass
-        test_file.seek(0)
-
-    # Ok
-    t1 = clock()
-    v1 = vmsize()
-    return t1-t0, v1-v0
-
-
-
-parser_functions = {
-    'expat': expat_parser_file_mode,
-    'itools': itools_parser_file_mode,
-    }
-
-
-###########################################################################
 # OUPUT
 ###########################################################################
 
@@ -349,19 +276,24 @@ if __name__ == '__main__':
     for real_path, filename, file_bytes, file_size in filenames:
         nb_repeat = get_clock_nb_pass(file_bytes)
         nb_repeat_float = float(nb_repeat)
+        nb_repeat = str(nb_repeat)
         test_results = []
         for parser_name in parser_names:
-            fn = parser_functions[parser_name]
-            xml = open(real_path)
-            try:
-                time_spent, memo = fn(xml, nb_repeat)
-            except:
-                test_results.append((parser_name, None))
-            else:
+            # Run
+            script = './bench_xml_%s.py' % parser_name
+            v0 = vmsize()
+            t0 = clock()
+            return_code = call([script, real_path, nb_repeat])
+            t1 = clock()
+            v1 = vmsize()
+            # Append
+            if return_code == 0:
+                time_spent = t1 - t0
+                memo = v1 - v0
                 time_spent = get_string_time(time_spent / nb_repeat_float)
                 test_results.append((parser_name, (time_spent, memo)))
-            finally:
-                xml.close()
+            else:
+                test_results.append((parser_name, None))
         output_result(test_results, (filename, file_bytes))
     print
 

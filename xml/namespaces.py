@@ -132,10 +132,11 @@ class ElementSchema(object):
             setattr(self, key, kw[key])
 
 
-    def _get_attr_datatype(self, attr_name):
-        datatype = self.attributes.get(attr_name)
+    def _get_attr_datatype(self, name):
+        datatype = self.attributes.get(name)
         if datatype is None:
-            raise LookupError, '"%s" not defined' % attr_name
+            message = 'unexpected "%s" attribute for "%s" element'
+            raise XMLError, message % (name, self.name)
 
         return datatype
 

@@ -43,7 +43,7 @@ encoding = 'UTF-8'
 URI = None
 # Mapping HTML -> REPORTLAB
 P_FORMAT = {'a': 'a', 'i': 'i', 'em': 'i', 'b': 'b', 'strong': 'b', 'u': 'u',
-            'span': 'font', 'sup': 'super', 'sub': 'sub'}
+            'span': 'font', 'sup': 'super', 'sub': 'sub', 'p': 'para'}
 
 SPECIAL = ('a', 'br', 'img', 'span', 'sub', 'sup')
 PHRASE = ('em', 'strong')
@@ -224,8 +224,7 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, pdf_stylesheet):
     """
         stream : parser stream
     """
-    content = compute_paragraph(stream, elt_tag_name, elt_attributes,
-                                pdf_stylesheet)
+    content = compute_paragraph(stream, elt_tag_name, elt_attributes)
     return create_paragraph(pdf_stylesheet, (elt_tag_name, elt_attributes),
                             content)
 
@@ -410,7 +409,7 @@ def table_stream(stream, _tag_name, attributes, pdf_stylesheet):
             tag_uri, tag_name, attributes = value
             if tag_name == 'tr':
                 content = compute_tr(stream, tag_name, attributes,
-                                    content)
+                                    content, pdf_stylesheet)
                 content.next_line()
             else:
                 print WARNING_DTD % ('document', line_number, tag_name)
@@ -424,13 +423,13 @@ def table_stream(stream, _tag_name, attributes, pdf_stylesheet):
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
 
 
-
-
-def compute_paragraph(stream, elt_tag_name, elt_attributes, pdf_stylesheet):
+def compute_paragraph(stream, elt_tag_name, elt_attributes, pdf_stylesheet=None):
     content = []
     cpt = 0
     end_tag = False
     has_content = False
+    is_table = elt_tag_name in ('td', 'th')
+    story = []
 
     while True:
         event, value, line_number = stream_next(stream)
@@ -439,6 +438,31 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, pdf_stylesheet):
         #### START ELEMENT ####
         if event == START_ELEMENT:
             tag_uri, tag_name, attributes = value
+            if is_table:
+                skip = True
+                # TODO ? Merge with body_stream?
+                if tag_name in ('p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
+                    story.append(paragraph_stream(stream, tag_name, attributes,
+                                                  pdf_stylesheet))
+                elif tag_name == 'pre':
+                    story.append(pre_stream(stream, tag_name, attributes,
+                                            pdf_stylesheet))
+                elif tag_name == 'hr':
+                    story.append(hr_stream(stream, tag_name, attributes))
+                elif tag_name == 'img':
+                    widget = img_stream(stream, tag_name, attributes)
+                    if widget:
+                        story.append(widget)
+                elif tag_name in ('ol', 'ul'):
+                    story.extend(list_stream(stream, tag_name, attributes,
+                                             pdf_stylesheet))
+                elif tag_name == 'table':
+                    story.append(table_stream(stream, tag_name, attributes,
+                                              pdf_stylesheet))
+                else:
+                    skip = False
+                if skip:
+                    continue
             if tag_name in INLINE:
                 if tag_name in ('i', 'em', 'b', 'strong', 'u', 'sup', 'sub'):
                     # FIXME
@@ -482,6 +506,18 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, pdf_stylesheet):
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
             if tag_name == elt_tag_name:
+                # FIXME
+                # if compute_paragraph is called by tr_stream
+                # then this function return
+                #   # either a platypus object list if it exist at least
+                #     one platypus object, ignore text out of paragraph
+                #   # either a str object in other case
+                # else this function is called by paragraph stream which
+                #     want a str list to build the platypus object
+                if is_table:
+                    if len(story) > 0:
+                        return story
+                    return ' '.join(content)
                 return content
             elif tag_name == 'span':
                 cpt -= 1
@@ -510,8 +546,10 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, pdf_stylesheet):
                     if not len(value):
                         continue
                 # spaces must be ignore if character before it is '\n'
-                if value.rstrip()[-1] == '\n':
-                    value = value.rstrip(['\n', '\t', ' '])
+                tmp = value.rstrip(' \t')
+                if len(tmp):
+                    if tmp[-1] == '\n':
+                        value = tmp.rstrip('\n')
                 if has_content and content[-1].endswith('<br/>'):
                     # <p>
                     #   foo          <br />
@@ -564,7 +602,7 @@ def compute_image_attrs(stream, _tag_name, _attributes):
             print WARNING_DTD % ('document', line_number, tag_name)
 
 
-def compute_tr(stream, _tag_name, attributes, table):
+def compute_tr(stream, _tag_name, attributes, table, pdf_stylesheet):
     stop = None
 
     while True:
@@ -575,7 +613,7 @@ def compute_tr(stream, _tag_name, attributes, table):
         if event == START_ELEMENT:
             tag_uri, tag_name, attributes = value
             if tag_name in ('td', 'th'):
-                cont = compute_td(stream, tag_name, attributes)
+                cont = compute_paragraph(stream, tag_name, attributes, pdf_stylesheet)
                 table.push_content(cont)
                 if exist_attribute(attributes, ['colspan', 'rowspan'],
                                    at_least=True):
@@ -1037,7 +1075,6 @@ class Table_Content(object):
 
 
     def create(self):
-        print self.style
         return Table(self.content, style=self.style, **self.attrs)
 
 

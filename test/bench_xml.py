@@ -234,6 +234,13 @@ def output_result(results, file):
 #####################################################################
 # MAIN
 #####################################################################
+parser_scripts = {
+    'expat': './bench_xml_expat.py',
+    'itools': './bench_xml_itools.py',
+    'itools_c': './a.out',
+}
+
+
 if __name__ == '__main__':
     usage = '%prog [OPTIONS]'
     version = 'itools %s' % itools.__version__
@@ -270,6 +277,7 @@ if __name__ == '__main__':
         parser_names = ['expat', 'itools']
     else:
         parser_names = ['itools', 'expat']
+#    parser_names = ['itools_c', 'itools']
     output_init(parser_names);
 
     # Go
@@ -280,7 +288,7 @@ if __name__ == '__main__':
         test_results = []
         for parser_name in parser_names:
             # Run
-            script = './bench_xml_%s.py' % parser_name
+            script = parser_scripts[parser_name]
             v0 = vmsize()
             t0 = clock()
             return_code = call([script, real_path, nb_repeat])

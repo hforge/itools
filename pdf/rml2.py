@@ -42,7 +42,7 @@ from reportlab.lib import colors
 encoding = 'UTF-8'
 URI = None
 # Mapping HTML -> REPORTLAB
-P_FORMAT = {'i': 'i', 'em': 'i', 'b': 'b', 'strong': 'b', 'u': 'u',
+P_FORMAT = {'a': 'a', 'i': 'i', 'em': 'i', 'b': 'b', 'strong': 'b', 'u': 'u',
             'span': 'font', 'sup': 'super', 'sub': 'sub'}
 
 TAG_OK = ('a', 'b', 'big', 'br', 'em', 'i', 'img', 'small', 'span', 'strong',
@@ -222,10 +222,9 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, pdf_stylesheet):
         stream : parser stream
     """
     content = compute_paragraph(stream, elt_tag_name, elt_attributes,
-                           pdf_stylesheet)
-    return create_paragraph(pdf_stylesheet, (elt_tag_name, elt_attributes), content)
-
-
+                                pdf_stylesheet)
+    return create_paragraph(pdf_stylesheet, (elt_tag_name, elt_attributes),
+                            content)
 
 
 def pre_stream(stream, tag_name, attributes, pdf_stylesheet):
@@ -351,7 +350,7 @@ def list_stream(stream, _tag_name, attributes, pdf_stylesheet, id=0):
             elif tag_name in ('i', 'em', 'b', 'strong', 'u', 'sup', 'sub'):
                 content.append(build_start_tag(P_FORMAT.get(tag_name, 'b')))
             elif tag_name == 'a':
-                content += compute_link(stream, tag_name, attributes)
+                content += build_start_tag_link(stream, tag_name, attributes)
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
@@ -459,14 +458,15 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, pdf_stylesheet):
                     continue
                 elif tag_name == 'a':
                     if cpt or has_content:
-                        content[-1] += compute_link(stream, tag_name,
-                                                   attributes)
+                        content[-1] += build_start_tag_link(stream, tag_name,
+                                                            attributes)
                     else:
-                        content.append(compute_link(stream, tag_name,
-                                                   attributes))
+                        content.append(build_start_tag_link(stream, tag_name,
+                                                            attributes))
                     cpt += 1
                 elif tag_name == 'img':
-                    img_attrs = compute_image_attrs(stream, tag_name, attributes)
+                    img_attrs = compute_image_attrs(stream, tag_name,
+                                                    attributes)
                     content.append(build_start_tag(tag_name, img_attrs))
                     content[-1] = content[-1].rstrip('>')
                     content[-1] += ' valign="middle"/>'
@@ -502,8 +502,16 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, pdf_stylesheet):
                 # alow to write :
                 # <para><u><i>foo</i> </u></para>
                 value = XMLContent.encode(value) # entities
-                # FIXME
-                if has_content and content[-1].endswith('<br/>') :
+                # spaces must be ignore after a start tag if the next
+                # character is '\n'
+                if value[0] == '\n':
+                    value = value.lstrip('\n\t ')
+                    if not len(value):
+                        continue
+                # spaces must be ignore if character before it is '\n'
+                if value.rstrip()[-1] == '\n':
+                    value = value.rstrip(['\n', '\t', ' '])
+                if has_content and content[-1].endswith('<br/>'):
                     # <p>
                     #   foo          <br />
                     #     bar   <br />     team
@@ -627,13 +635,10 @@ def compute_td(stream, _tag_name, attributes):
             content.append(value)
 
 
-def compute_link(stream, _tag_name, attributes):
-    """
-        stream : parser stream
-    """
+#TODO must be merge with build_start_tag
+def build_start_tag_link(stream, _tag_name, attributes):
 
     content = []
-    has_content = False
     attrs = {}
     if exist_attribute(attributes, ['href']):
         attrs['href'] = attributes.get((URI, 'href'))
@@ -647,12 +652,10 @@ def compute_link(stream, _tag_name, attributes):
             content[0] += '<a name="%s"/>' % name
         else:
             content.append('<a name="%s">' % name)
-    cont = compute_paragraph(stream, _tag_name, attributes, None)
-    content.extend(cont)
-    content[-1] += (build_end_tag(_tag_name))
     return ' '.join(content)
 
 
+#TODO must be merge with compute paragraph
 def compute_span(stream, _tag_name, attributes):
 
     content = []
@@ -724,18 +727,23 @@ def compute_span(stream, _tag_name, attributes):
                     continue
                 elif tag_name == 'a':
                     if cpt or has_content:
-                        content[-1] += compute_link(stream, tag_name,
+                        content[-1] += build_start_tag_link(stream, tag_name,
                                                    attributes)
                     else:
-                        content.append(compute_link(stream, tag_name,
+                        content.append(build_start_tag_link(stream, tag_name,
                                                    attributes))
                     cpt += 1
+                elif tag_name == 'img':
+                    img_attrs = compute_image_attrs(stream, tag_name,
+                                                    attributes)
+                    content.append(build_start_tag(tag_name, img_attrs))
+                    content[-1] = content[-1].rstrip('>')
+                    content[-1] += ' valign="middle"/>'
                 else:
                     print TAG_NOT_SUPPORTED % ('document', line_number,
                                                tag_name)
             else:
                 print WARNING_DTD % ('document', line_number, tag_name)
-
 
         #### END ELEMENT ####
         elif event == END_ELEMENT:
@@ -745,14 +753,15 @@ def compute_span(stream, _tag_name, attributes):
                     content[-1] += '<%s>' % tag_stack.pop()
                 content[-1] += '</font>'
                 return '%s%s' % (start_tag, ' '.join(content))
+            elif tag_name == 'br':
+                content.append('<br/>')
             elif tag_name in TAG_OK:
                 cpt -= 1
                 end_tag = True
                 content[-1] += build_end_tag(P_FORMAT.get(tag_name, 'b'))
-            elif tag_name == 'br':
-                content.append('<br/>')
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
+                # unknown tag
 
         #### TEXT ELEMENT ####
         elif event == TEXT:

@@ -24,12 +24,11 @@ from os.path import join
 from string import center, ljust, rjust
 from subprocess import call
 from tarfile import open as open_tar
-from time import time as clock
 
 # Import from itools
 import itools
 import itools.http
-from itools.utils import vmsize
+from itools.utils import vmsize, get_time_spent
 from itools.vfs import vfs
 from itools.xml import XMLParser, XMLError, START_ELEMENT, END_ELEMENT
 
@@ -290,9 +289,9 @@ if __name__ == '__main__':
             # Run
             script = parser_scripts[parser_name]
             v0 = vmsize()
-            t0 = clock()
+            t0 = get_time_spent(mode='both')
             return_code = call([script, real_path, nb_repeat])
-            t1 = clock()
+            t1 = get_time_spent(mode='both', since=t0)
             v1 = vmsize()
             # Append
             if return_code == 0:

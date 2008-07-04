@@ -24,6 +24,11 @@ import sys
 # Import from itools
 import git
 
+if sys.platform[:3] == 'win':
+    from utils_win import vmsize, get_time_spent
+else:
+    from utils_unix import vmsize, get_time_spent
+
 
 
 def get_abspath(globals_namespace, local_path):
@@ -201,16 +206,4 @@ def start_local_import():
 def end_local_import():
     __builtins__['__import__'] = pythons_import
 
-
-###########################################################################
-# Benchmarking
-###########################################################################
-def vmsize(scale={'kB': 1024.0, 'mB': 1024.0*1024.0,
-                  'KB': 1024.0, 'MB': 1024.0*1024.0}):
-    status = '/proc/%d/status' % getpid()
-    status = open(status).read()
-    i = status.index('VmSize:')
-    status = status[i:].split(None, 3)  # whitespace
-    # convert Vm value to bytes
-    return float(status[1]) * scale[status[2]]
 

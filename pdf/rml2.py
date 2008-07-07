@@ -430,7 +430,7 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, pdf_stylesheet=None)
     has_content = False
     is_table = elt_tag_name in ('td', 'th')
     story = []
-
+    tag_stack = []
     while True:
         event, value, line_number = stream_next(stream)
         if event == None:
@@ -473,11 +473,14 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, pdf_stylesheet=None)
                         content.append(build_start_tag(tag))
                     cpt += 1
                 elif tag_name == 'span':
-                    tag = P_FORMAT.get(tag_name)
+                    tag = P_FORMAT.get(tag_name, 'b')
+                    attrs, tag_stack = build_span_attributes(attributes)
                     if cpt or has_content:
-                        content[-1] += compute_span(stream, tag, attributes)
+                        content[-1] += build_start_tag(tag, attrs)
                     else:
-                        content.append(compute_span(stream, tag, attributes))
+                        content.append(build_start_tag(tag, attrs))
+                    for i in tag_stack:
+                        content[-1] += '<%s>' % i
                     cpt += 1
                 elif tag_name == 'br':
                     continue
@@ -522,6 +525,8 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, pdf_stylesheet=None)
             elif tag_name == 'span':
                 cpt -= 1
                 end_tag = True
+                while tag_stack:
+                    content[-1] += '</%s>' % tag_stack.pop()
                 content[-1] += build_end_tag(P_FORMAT.get(tag_name, 'b'))
             elif tag_name == 'br':
                 content.append('<br/>')
@@ -682,6 +687,39 @@ def compute_td(stream, _tag_name, attributes):
             content.append(value)
 
 
+def build_span_attributes(attributes):
+    tag_stack = []
+    attrs = {}
+    attrib = {}
+    if exist_attribute(attributes, ['style']):
+        style = ''.join(attributes.pop((URI, 'style')).split()).rstrip(';')
+        if style:
+            stylelist = style.split(';')
+            for element in stylelist:
+                element_list = element.split(':')
+                attrs[element_list[0].lower()] = element_list[1].lower()
+            if attrs.has_key('color'):
+                x = attrs['color']
+                if x is not None:
+                    if x[0:3] == 'rgb':
+                        attrib[(URI, 'color')] = get_color_hexa(x)
+                    else:
+                        attrib[(URI, 'color')] = x
+            if attrs.has_key('font-family'):
+                x = attrs.pop('font-family')
+                attrib[(URI, 'face')] = FONT.get(x, 'helvetica')
+            if attrs.has_key('font-size'):
+                x = attrs.pop('font-size')
+                attrib[(URI, 'size')] = font_value(x)
+            if attrs.has_key('font-style'):
+                x = attrs.pop('font-style')
+                if x in ('italic', 'oblique'):
+                    tag_stack.append('i')
+                elif x != 'normal':
+                    print 'Warning font-style not valid'
+    return attrib, tag_stack
+
+
 #TODO must be merge with compute paragraph
 def compute_span(stream, _tag_name, attributes):
 
@@ -826,10 +864,10 @@ def create_paragraph(pdf_stylesheet, element, content):
     # content = ['  Hello\t\', '\t<i>how are</i>', '\tyou?']
 
     # DEBUG
-    #print 0, content
+    print 0, content
     content = normalize(' '.join(content))
     content = '<para>%s</para>' % content
-    #print 1, content
+    print 1, content
     style, bulletText = build_style(pdf_stylesheet, element)
     return Paragraph(content, style, bulletText)
 

@@ -431,6 +431,7 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, pdf_stylesheet=None)
     is_table = elt_tag_name in ('td', 'th')
     story = []
     tag_stack = []
+    start_tag = True
     while True:
         event, value, line_number = stream_next(stream)
         if event == None:
@@ -464,6 +465,7 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, pdf_stylesheet=None)
                 if skip:
                     continue
             if tag_name in INLINE:
+                start_tag = True
                 if tag_name in ('i', 'em', 'b', 'strong', 'u', 'sup', 'sub'):
                     # FIXME
                     tag = P_FORMAT.get(tag_name, 'b')
@@ -506,6 +508,12 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, pdf_stylesheet=None)
         #### END ELEMENT ####
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
+            if len(content):
+                # spaces must be ignore if character before it is '\n'
+                tmp = content[-1].rstrip(' \t')
+                if len(tmp):
+                    if tmp[-1] == '\n':
+                        content[-1] = tmp.rstrip('\n')
             if tag_name == elt_tag_name:
                 # FIXME
                 # if compute_paragraph is called by tr_stream
@@ -528,7 +536,7 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, pdf_stylesheet=None)
                 content[-1] += build_end_tag(P_FORMAT.get(tag_name, 'b'))
             elif tag_name == 'br':
                 content.append('<br/>')
-            elif tag_name in INLINE:
+            elif tag_name in P_FORMAT.keys():
                 cpt -= 1
                 end_tag = True
                 content[-1] += build_end_tag(P_FORMAT.get(tag_name, 'b'))
@@ -544,15 +552,12 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, pdf_stylesheet=None)
                 value = XMLContent.encode(value) # entities
                 # spaces must be ignore after a start tag if the next
                 # character is '\n'
-                if value[0] == '\n':
-                    value = value.lstrip('\n\t ')
-                    if not len(value):
-                        continue
-                # spaces must be ignore if character before it is '\n'
-                tmp = value.rstrip(' \t')
-                if len(tmp):
-                    if tmp[-1] == '\n':
-                        value = tmp.rstrip('\n')
+                if start_tag:
+                    if value[0] == '\n':
+                        value = value.lstrip('\n\t ')
+                        if not len(value):
+                            continue
+                    start_tag = False
                 if has_content and content[-1].endswith('<br/>'):
                     # <p>
                     #   foo          <br />
@@ -845,7 +850,6 @@ def compute_span(stream, _tag_name, attributes):
                     has_content = True
                     content.append(value)
 
-
 ##############################################################################
 # Reportlab widget                                                           #
 ##############################################################################
@@ -860,10 +864,10 @@ def create_paragraph(pdf_stylesheet, element, content):
     # content = ['  Hello\t\', '\t<i>how are</i>', '\tyou?']
 
     # DEBUG
-    print 0, content
+    #print 0, content
     content = normalize(' '.join(content))
     content = '<para>%s</para>' % content
-    print 1, content
+    #print 1, content
     style, bulletText = build_style(pdf_stylesheet, element)
     return Paragraph(content, style, bulletText)
 

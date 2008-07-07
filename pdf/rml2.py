@@ -486,11 +486,9 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, pdf_stylesheet=None)
                     continue
                 elif tag_name == 'a':
                     if cpt or has_content:
-                        content[-1] += build_start_tag_link(stream, tag_name,
-                                                            attributes)
+                        content[-1] += build_start_tag(tag_name, attributes)
                     else:
-                        content.append(build_start_tag_link(stream, tag_name,
-                                                            attributes))
+                        content.append(build_start_tag(tag_name, attributes))
                     cpt += 1
                 elif tag_name == 'img':
                     img_attrs = compute_image_attrs(stream, tag_name,
@@ -792,11 +790,9 @@ def compute_span(stream, _tag_name, attributes):
                     continue
                 elif tag_name == 'a':
                     if cpt or has_content:
-                        content[-1] += build_start_tag_link(stream, tag_name,
-                                                   attributes)
+                        content[-1] += build_start_tag(tag_name, attributes)
                     else:
-                        content.append(build_start_tag_link(stream, tag_name,
-                                                   attributes))
+                        content.append(build_start_tag(tag_name, attributes))
                     cpt += 1
                 elif tag_name == 'img':
                     img_attrs = compute_image_attrs(stream, tag_name,
@@ -1183,11 +1179,21 @@ def build_start_tag(tag_name, attributes={}):
     """
 
     if tag_name == 'a':
+        tag = None
+        attrs = {}
         if exist_attribute(attributes, ['href']):
-            href = attributes.get((URI, 'href'))
+            attrs['href'] = attributes.get((URI, 'href'))
             # Reencode the entities because the a tags
             # are decoded again by the reportlab para parser.
-            attrs[(URI, 'href')]= XMLContent.encode(href)
+            href = XMLContent.encode(attrs['href'])
+            tag = '<a href="%s">' % href
+        if exist_attribute(attributes, ['id', 'name'], at_least=True):
+            name = attributes.get((URI, 'id'), attributes.get((URI, 'name')))
+            if tag:
+                tag += '<a name="%s"/>' % name
+            else:
+                tag = '<a name="%s">' % name
+        return tag
     attr_str = ''.join([' %s="%s"' % (key[1], attributes[key])
                             for key in attributes.keys()])
     return '<%s%s>' % (tag_name, attr_str)

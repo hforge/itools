@@ -1,0 +1,16 @@
+<html>
+  <body>
+    <table>
+      <tr>
+        <th>head 1</th>
+        <th>head 2</th>
+        <th>head 3</th>
+      </tr>
+      <tr>
+        <td bgcolor="blue"><img src="../pdf/itaapy.png"/></td>
+        <td bgcolor="#ff9000">cell</td>
+        <td><p><img src="../pdf/itaapy.png"/>cell</p></td>
+      </tr>
+    </table>
+  </body>
+</html>

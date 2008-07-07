@@ -318,6 +318,10 @@ def list_stream(stream, _tag_name, attributes, pdf_stylesheet, id=0):
     li_state = 0 # 0 -> outside, 1 -> inside
     attrs = {}
     bullet = None
+    cpt = 0
+    start_tag = True
+    end_tag = False
+
     if _tag_name == 'ul':
         bullet = get_bullet(attributes.get((URI, 'type'), 'disc'))
     else:
@@ -349,14 +353,44 @@ def list_stream(stream, _tag_name, attributes, pdf_stylesheet, id=0):
             elif tag_name == 'li':
                 li_state = 1
                 content.append(bullet)
-            elif tag_name in ('i', 'em', 'b', 'strong', 'u', 'sup', 'sub'):
-                content.append(build_start_tag(P_FORMAT.get(tag_name, 'b')))
-            elif tag_name == 'a':
-                content += build_start_tag(tag_name, attributes)
-            else:
-                print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
-                # unknown tag
-                stack.append((tag_name, attributes))
+            elif tag_name in INLINE:
+                start_tag = True
+                if tag_name in ('i', 'em', 'b', 'strong', 'u', 'sup', 'sub'):
+                    # FIXME
+                    tag = P_FORMAT.get(tag_name, 'b')
+                    if cpt or has_content:
+                        content[-1] += build_start_tag(tag)
+                    else:
+                        content.append(build_start_tag(tag))
+                    cpt += 1
+                elif tag_name == 'span':
+                    tag = P_FORMAT.get(tag_name, 'b')
+                    attrs, tag_stack = build_span_attributes(attributes)
+                    if cpt or has_content:
+                        content[-1] += build_start_tag(tag, attrs)
+                    else:
+                        content.append(build_start_tag(tag, attrs))
+                    for i in tag_stack:
+                        content[-1] += '<%s>' % i
+                    cpt += 1
+                elif tag_name == 'br':
+                    continue
+                elif tag_name == 'a':
+                    if cpt or has_content:
+                        content[-1] += build_start_tag(tag_name, attributes)
+                    else:
+                        content.append(build_start_tag(tag_name, attributes))
+                    cpt += 1
+                elif tag_name == 'img':
+                    img_attrs = compute_image_attrs(stream, tag_name,
+                                                    attributes)
+                    content.append(build_start_tag(tag_name, img_attrs))
+                    content[-1] = content[-1].rstrip('>')
+                    content[-1] += ' valign="middle"/>'
+                else:
+                    print TAG_NOT_SUPPORTED % ('document', line_number,
+                                               tag_name)
+                    stack.append((tag_name, attributes))
 
         #### END ELEMENT ####
         elif event == END_ELEMENT:
@@ -366,13 +400,29 @@ def list_stream(stream, _tag_name, attributes, pdf_stylesheet, id=0):
                              content))
                 story.append(Indenter(left=-INDENT_VALUE))
                 return story
-            elif tag_name in ('i', 'em', 'b', 'strong', 'u', 'sup', 'sub'):
-                content.append(build_end_tag(P_FORMAT.get(tag_name, 'b')))
-            elif tag_name == 'li':
+            if len(content):
+                # spaces must be ignore if character before it is '\n'
+                tmp = content[-1].rstrip(' \t')
+                if len(tmp):
+                    if tmp[-1] == '\n':
+                        content[-1] = tmp.rstrip('\n')
+            if tag_name == 'li':
                 story.append(create_paragraph(pdf_stylesheet, stack[0],
                                               content))
                 content = []
                 li_state = 0
+            elif tag_name == 'span':
+                cpt -= 1
+                end_tag = True
+                while tag_stack:
+                    content[-1] += '</%s>' % tag_stack.pop()
+                content[-1] += build_end_tag(P_FORMAT.get(tag_name, 'b'))
+            elif tag_name == 'br':
+                content.append('<br/>')
+            elif tag_name in P_FORMAT.keys():
+                cpt -= 1
+                end_tag = True
+                content[-1] += build_end_tag(P_FORMAT.get(tag_name, 'b'))
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
@@ -384,8 +434,33 @@ def list_stream(stream, _tag_name, attributes, pdf_stylesheet, id=0):
                 # alow to write :
                 # <para><u><i>foo</i> </u></para>
                 value = XMLContent.encode(value) # entities
-                content.append(value)
-                has_content = True
+                # spaces must be ignore after a start tag if the next
+                # character is '\n'
+                if start_tag:
+                    if value[0] == '\n':
+                        value = value.lstrip('\n\t ')
+                        if not len(value):
+                            continue
+                    start_tag = False
+                if has_content and content[-1].endswith('<br/>'):
+                    # <p>
+                    #   foo          <br />
+                    #     bar   <br />     team
+                    # </p>
+                    # equal
+                    # <p>foo <br />bar <br />team</p>
+                    value = value.lstrip()
+                    content[-1] += value
+                    end_tag = False
+                elif has_content and content[-1].endswith('</span>'):
+                    content[-1] += value
+                    end_tag = False
+                elif end_tag or cpt:
+                    content[-1] += value
+                    end_tag = False
+                else:
+                    has_content = True
+                    content.append(value)
 
 
 def table_stream(stream, _tag_name, attributes, pdf_stylesheet):
@@ -427,12 +502,13 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes,
                       pdf_stylesheet=None):
     content = []
     cpt = 0
-    end_tag = False
     has_content = False
     is_table = elt_tag_name in ('td', 'th')
     story = []
     tag_stack = []
     start_tag = True
+    end_tag = False
+
     while True:
         event, value, line_number = stream_next(stream)
         if event == None:

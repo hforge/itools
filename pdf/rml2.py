@@ -423,7 +423,8 @@ def table_stream(stream, _tag_name, attributes, pdf_stylesheet):
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
 
 
-def compute_paragraph(stream, elt_tag_name, elt_attributes, pdf_stylesheet=None):
+def compute_paragraph(stream, elt_tag_name, elt_attributes,
+                      pdf_stylesheet=None):
     content = []
     cpt = 0
     end_tag = False
@@ -443,7 +444,8 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, pdf_stylesheet=None)
                 skip = True
                 # TODO ? Merge with body_stream?
                 if tag_name in ('p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
-                    story.append(paragraph_stream(stream, tag_name, attributes,
+                    story.append(paragraph_stream(stream, tag_name,
+                                                  attributes,
                                                   pdf_stylesheet))
                 elif tag_name == 'pre':
                     story.append(pre_stream(stream, tag_name, attributes,
@@ -621,7 +623,8 @@ def compute_tr(stream, _tag_name, attributes, table, pdf_stylesheet):
         if event == START_ELEMENT:
             tag_uri, tag_name, attributes = value
             if tag_name in ('td', 'th'):
-                cont = compute_paragraph(stream, tag_name, attributes, pdf_stylesheet)
+                cont = compute_paragraph(stream, tag_name, attributes,
+                                         pdf_stylesheet)
                 table.push_content(cont)
                 if exist_attribute(attributes, ['colspan', 'rowspan'],
                                    at_least=True):
@@ -636,7 +639,10 @@ def compute_tr(stream, _tag_name, attributes, table, pdf_stylesheet):
                     if val:
                         if val[0:3] == 'rgb':
                             val = get_color_hexa(val)
-                        table.add_style(('BACKGROUND', (table.current_x, table.current_y), stop,  colors.toColor(val, colors.black)))
+                        table.add_style(('BACKGROUND', (table.current_x,
+                                                        table.current_y),
+                                         stop, colors.toColor(val,
+                                         colors.black)))
                 #ALIGNMENT
                 for i in ('align', 'valign'):
                     if exist_attribute(attributes, [i]):
@@ -722,133 +728,6 @@ def build_span_attributes(attributes):
                     print 'Warning font-style not valid'
     return attrib, tag_stack
 
-
-#TODO must be merge with compute paragraph
-def compute_span(stream, _tag_name, attributes):
-
-    content = []
-    tag_stack = []
-    attrs = {}
-    cpt = 0
-    end_tag = False
-    has_content = False
-    if exist_attribute(attributes, ['style']):
-        style = ''.join(attributes.pop((URI, 'style')).split()).rstrip(';')
-        if style:
-            stylelist = style.split(';')
-            for element in stylelist:
-                element_list = element.split(':')
-                attrs[element_list[0].lower()] = element_list[1].lower()
-            if attrs.has_key('color'):
-                x = attrs['color']
-                if x[0:3] == 'rgb':
-                    attrs['color'] = get_color_hexa(x)
-                    if attrs['color'] is None:
-                        del attrs['color']
-            if attrs.has_key('font-family'):
-                x = attrs.pop('font-family')
-                attrs['face'] = FONT.get(x, 'helvetica')
-            if attrs.has_key('font-size'):
-                x = attrs.pop('font-size')
-                attrs['size'] = font_value(x)
-            if attrs.has_key('font-style'):
-                x = attrs.pop('font-style')
-                if x in ('italic', 'oblique'):
-                    tag_stack.append('i')
-                elif x != 'normal':
-                    print 'Warning font-style not valid'
-
-    # Why not use build_start_tag ?
-    attr_str = ''.join([' %s="%s"' % (key, attrs[key])
-                        for key in attrs.keys()])
-    if attr_str:
-        start_tag = '<%s %s>' % (_tag_name, attr_str)
-    else:
-        start_tag = '<%s>' % _tag_name
-    if tag_stack:
-        start_tag = '<%s>' % tag_stack
-
-    while True:
-        event, value, line_number = stream_next(stream)
-        if event == None:
-            break
-        #### START ELEMENT ####
-        if event == START_ELEMENT:
-            tag_uri, tag_name, attributes = value
-            if tag_name in INLINE:
-                if tag_name in ('i', 'em', 'b', 'strong', 'u', 'sup', 'sub'):
-                    # FIXME
-                    tag = P_FORMAT.get(tag_name, 'b')
-                    if cpt or has_content:
-                        content[-1] += build_start_tag(tag)
-                    else:
-                        content.append(build_start_tag(tag))
-                    cpt += 1
-                elif tag_name == 'span':
-                    tag = P_FORMAT.get(tag_name)
-                    if cpt or has_content:
-                        content[-1] += compute_span(stream, tag, attributes)
-                    else:
-                        content.append(compute_span(stream, tag, attributes))
-                    cpt += 1
-                elif tag_name == 'br':
-                    continue
-                elif tag_name == 'a':
-                    if cpt or has_content:
-                        content[-1] += build_start_tag(tag_name, attributes)
-                    else:
-                        content.append(build_start_tag(tag_name, attributes))
-                    cpt += 1
-                elif tag_name == 'img':
-                    img_attrs = compute_image_attrs(stream, tag_name,
-                                                    attributes)
-                    content.append(build_start_tag(tag_name, img_attrs))
-                    content[-1] = content[-1].rstrip('>')
-                    content[-1] += ' valign="middle"/>'
-                else:
-                    print TAG_NOT_SUPPORTED % ('document', line_number,
-                                               tag_name)
-            else:
-                print WARNING_DTD % ('document', line_number, tag_name)
-
-        #### END ELEMENT ####
-        elif event == END_ELEMENT:
-            tag_uri, tag_name = value
-            if tag_name == 'span':
-                while tag_stack:
-                    content[-1] += '<%s>' % tag_stack.pop()
-                content[-1] += '</font>'
-                return '%s%s' % (start_tag, ' '.join(content))
-            elif tag_name == 'br':
-                content.append('<br/>')
-            elif tag_name in INLINE:
-                cpt -= 1
-                end_tag = True
-                content[-1] += build_end_tag(P_FORMAT.get(tag_name, 'b'))
-            else:
-                print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
-                # unknown tag
-
-        #### TEXT ELEMENT ####
-        elif event == TEXT:
-            if len(value) > 0:
-                value = XMLContent.encode(value) # entities
-                # FIXME
-                if has_content and content[-1].endswith('<br/>') :
-                    value = value.lstrip()
-                    content[-1] += value
-                    end_tag = False
-                elif not (len(value.strip()) or has_content):
-                    has_content = False
-                elif has_content and content[-1].endswith('</span>'):
-                    content[-1] += value
-                    end_tag = False
-                elif end_tag or cpt:
-                    content[-1] += value
-                    end_tag = False
-                else:
-                    has_content = True
-                    content.append(value)
 
 ##############################################################################
 # Reportlab widget                                                           #

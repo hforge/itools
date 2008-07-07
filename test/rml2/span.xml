@@ -1,0 +1,48 @@
+<html>
+    <head>
+    </head>
+    <body>
+        <p><span style="font-size: 160%;">Python</span> is an interpreted,
+        interactive, object-oriented
+        <span style="color: blue;">programming  language</span>
+        that combines <span style="font-family: arial;">remarkable power</span>
+        with very <span style="color: #FF9000">clear syntax</span>.
+        </p>
+        <p>
+        <span style="color: rgb(0, 221, 69);">The Python Software Foundation:
+            http://www.python.org/psf</span>
+        </p>
+        <p>
+        <b>size :</b>
+        <span style="font-size: xx-small;">xx-small</span>,
+        <span style="font-size: x-small;">x-small</span>,
+        <span style="font-size: smaller;">smaller</span>,
+        <span style="font-size: small;">small</span>,
+        <span style="font-size: medium;">medium</span>,
+        <span style="font-size: large;">large</span>,
+        <span style="font-size: larger;">larger</span>,
+        <span style="font-size: x-large;">x-large</span>,
+        <span style="font-size: xx-large;">xx-large</span>
+        </p>
+        <p>
+        <span style="font-size: large;">
+            <tt>Teletype text</tt>
+            <i>Italic text</i>
+            <b>Bold text</b>
+            <big>Big text</big>
+            <small>Small text</small>
+            super<sup>text</sup>
+            sub<sub>text</sub>
+        </span>
+        </p>
+        <p>essai<span style="color: rgb(255, 0, 0);"> essai essai
+        </span>essai</p>
+        <p>essai <span style="color: rgb(0, 255, 0);">essai essai
+        </span>essai</p>
+        <p>essai <span style="color: rgb(0, 0, 255);">essai essai</span>
+        essai</p>
+        <h1><span style="color: rgb(255, 0, 0);">span in span</span></h1>
+        <p>Span <span style="color: rgb(255, 0, 0);">span    span  <span
+                style="color: #00DD45;">span</span> span</span>.</p>
+    </body>
+</html>

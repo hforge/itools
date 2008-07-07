@@ -49,72 +49,121 @@ class FunctionTestCase(unittest.TestCase):
         stream = XMLParser(data)
         stream.next()
         p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
-        self.assertEqual(p.text, 'TXT <i>TEXT<u>TEXT</u></i>')
+        self.assertEqual(p.text, '<para>TXT <i>TEXT<u>TEXT</u></i></para>')
 
         data = '<p>TXT <i>TEXT<u>TEXT</u>TEXT</i></p>'
         stream = XMLParser(data)
         stream.next()
         p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
-        self.assertEqual(p.text, 'TXT <i>TEXT<u>TEXT</u>TEXT</i>')
+        goodanswer = '<para>TXT <i>TEXT<u>TEXT</u>TEXT</i></para>'
+        self.assertEqual(p.text, goodanswer)
 
         data = '<p>TXT <i>TEXT<u>TEXT</u></i>TEXT</p>'
         stream = XMLParser(data)
         stream.next()
         p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
-        self.assertEqual(p.text, 'TXT <i>TEXT<u>TEXT</u></i>TEXT')
+        goodanswer = '<para>TXT <i>TEXT<u>TEXT</u></i>TEXT</para>'
+        self.assertEqual(p.text, goodanswer)
 
         data = '<p>TXT <i>TEXT<u>TEXT</u>TEXT</i>TEXT</p>'
         stream = XMLParser(data)
         stream.next()
         p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
-        self.assertEqual(p.text, 'TXT <i>TEXT<u>TEXT</u>TEXT</i>TEXT')
+        goodanswer = '<para>TXT <i>TEXT<u>TEXT</u>TEXT</i>TEXT</para>'
+        self.assertEqual(p.text, goodanswer)
 
         data = '<p>TXT <i><u>TXT</u></i></p>'
         stream = XMLParser(data)
         stream.next()
         p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
-        self.assertEqual(p.text, 'TXT <i><u>TXT</u></i>')
+        self.assertEqual(p.text, '<para>TXT <i><u>TXT</u></i></para>')
 
         data = '<p><i>TEXT<u>TEXT</u></i></p>'
         stream = XMLParser(data)
         stream.next()
         p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
-        self.assertEqual(p.text, '<i>TEXT<u>TEXT</u></i>')
+        self.assertEqual(p.text, '<para><i>TEXT<u>TEXT</u></i></para>')
 
         data = '<p><i>TEXT<u>TEXT</u>TEXT</i></p>'
         stream = XMLParser(data)
         stream.next()
         p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
-        self.assertEqual(p.text, '<i>TEXT<u>TEXT</u>TEXT</i>')
+        self.assertEqual(p.text, '<para><i>TEXT<u>TEXT</u>TEXT</i></para>')
 
         data = '<p><i>TEXT<u>TEXT</u></i>TEXT</p>'
         stream = XMLParser(data)
         stream.next()
         p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
-        self.assertEqual(p.text, '<i>TEXT<u>TEXT</u></i>TEXT')
+        self.assertEqual(p.text, '<para><i>TEXT<u>TEXT</u></i>TEXT</para>')
 
         data = '<p><i>TEXT<u>TEXT</u>TEXT</i>TEXT</p>'
         stream = XMLParser(data)
         stream.next()
         p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
-        self.assertEqual(p.text, '<i>TEXT<u>TEXT</u>TEXT</i>TEXT')
+        goodanswer = '<para><i>TEXT<u>TEXT</u>TEXT</i>TEXT</para>'
+        self.assertEqual(p.text, goodanswer)
 
         data = '<p><i><u>TXT</u></i></p>'
         stream = XMLParser(data)
         stream.next()
         p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
-        self.assertEqual(p.text, '<i><u>TXT</u></i>')
-
+        self.assertEqual(p.text, '<para><i><u>TXT</u></i></para>')
 
         data = '<p>TEXT<sup>TEXT</sup></p>'
         stream = XMLParser(data)
         stream.next()
         p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
-        self.assertEqual(p.text, 'TEXT<super>TEXT</super>')
+        self.assertEqual(p.text, '<para>TEXT<super>TEXT</super></para>')
+
+
+    def test_formatting_using_span(self):
+        data = '<p><span style="color: #FF9000">clear syntax</span></p>'
+        stream = XMLParser(data)
+        stream.next()
+        p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
+        goodanswer = '<para><font color="#ff9000">clear syntax</font></para>'
+        self.assertEqual(p.text, goodanswer)
+
+        data = '<p>essai<span style="color: rgb(255, 0, 0);"> essai essai'
+        data += '</span>essai</p>'
+        stream = XMLParser(data)
+        stream.next()
+        p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
+        goodanswer = '<para>essai<font color="#ff0000"> essai essai'
+        goodanswer += '</font>essai</para>'
+        self.assertEqual(p.text, goodanswer)
+
+        data = '<p>essai <span style="color: rgb(0, 255, 0);">essai essai'
+        data += '</span>essai</p>'
+        stream = XMLParser(data)
+        stream.next()
+        p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
+        goodanswer = '<para>essai <font color="#00ff00">essai essai'
+        goodanswer += '</font>essai</para>'
+        self.assertEqual(p.text, goodanswer)
+
+        data = '<p>essai <span style="color: rgb(0, 0, 255);">essai '
+        data += 'essai</span> essai</p>'
+        stream = XMLParser(data)
+        stream.next()
+        p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
+        goodanswer = '<para>essai <font color="#0000ff">essai essai</font>'
+        goodanswer += ' essai</para>'
+        self.assertEqual(p.text, goodanswer)
+
+        data = '<p>Span <span style="color: rgb(255, 0, 0);">span    span '
+        data += '<span style="color: #00DD45;">span</span> span</span>.</p>'
+        stream = XMLParser(data)
+        stream.next()
+        p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
+        goodanswer = '<para>Span <font color="#ff0000">span span <font '
+        goodanswer += 'color="#00dd45">span</font> span</font>.</para>'
+        self.assertEqual(p.text, goodanswer)
 
 
 
 class HtmlTestCase(unittest.TestCase):
+
 
     def test_empty_body(self):
         data = '<html><body></body></html>'
@@ -126,6 +175,7 @@ class HtmlTestCase(unittest.TestCase):
         story, stylesheet = rml2topdf_test(data, raw=True)
         self.assertEqual(len(story), 1)
 
+
     def test_paragraph2(self):
         data = '<html><body><h1>title</h1><p>hello  world</p>'
         data += '<h2>subtitle1</h2><p>Hello</p><h2>subtitle 2</h2>'
@@ -133,13 +183,16 @@ class HtmlTestCase(unittest.TestCase):
         story, stylesheet = rml2topdf_test(data, raw=True)
         self.assertEqual(len(story), 6)
 
+
     def test_paragraph3(self):
         story, stylesheet = rml2topdf_test('rml2/paragraph.xml')
         self.assertEqual(len(story), 10)
 
+
     def test_list(self):
         story, stylesheet = rml2topdf_test('rml2/list.xml')
         self.assertEqual(len(story), 184)
+
 
     def test_image(self):
         data = """
@@ -151,7 +204,13 @@ class HtmlTestCase(unittest.TestCase):
             </body>
         </html>"""
         story, stylesheet = rml2topdf_test(data, raw=True)
-        self.assertEqual(len(story), 5)
+        self.assertEqual(len(story), 3)
+
+
+    def test_table(self):
+        story, stylesheet = rml2topdf_test('rml2/table.xml')
+        self.assertEqual(len(story), 1)
+
 
 
 if __name__ == '__main__':

@@ -1,10 +1,12 @@
 <html>
   <body>
-    <p>hello  world toto<img src="../pdf/itaapy.gif" alt="itaapy" /></p>
-    <img src="../pdf/itaapy.jpeg" alt="itaapy" />
-    <p><img src="../pdf/itaapy.png" alt="itaapy" /></p>-->
+    <p>hello  world toto<img src="itools_powered.gif" alt="itools powered (GIF format)" /></p>
+    <img src="itools_powered.jpeg" alt="itools powered (JPEG format)" />
+    <p><img src="itools_powered.png" alt="image(PNG format) in paragraph" /></p>
+    <img src="http://www.ikaaro.org/ui/ikaaro/images/logo2.png" alt="remote image"/>
     <!-- not found -->
-    <img src="../pdf/itaa.jpeg" alt="itaapy" />-->
-    <img src="http://blablalba.com/trehter.png" alt="itaapy" />-->
+    <img src="itools_power.jpeg" alt="local file not found" />
+    <img src="http://demo.ikaaro.org/Test_HML.png" alt="404 error" />
+    <img src="http://demo.ikaaro.org/;login_form" alt="image not valid"/>
   </body>
 </html>

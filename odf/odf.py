@@ -26,8 +26,6 @@ from itools.handlers import register_handler_class, ZIPFile
 from itools.xml.i18n import get_messages
 from itools.xml import (xml_to_text, translate, OfficeDocument, stream_to_str,
                         XMLParser, XML_DECL, START_ELEMENT, TEXT)
-import definition
-import w3
 
 
 def stl_to_odt(model_odt, namespace):

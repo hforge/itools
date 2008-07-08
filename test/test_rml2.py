@@ -20,7 +20,7 @@ import unittest
 
 # Import from itools
 from itools.pdf import (rml2topdf_test, normalize, paragraph_stream,
-                        getSampleStyleSheet)
+                        Param)
 from itools.xml import XMLParser
 
 
@@ -45,120 +45,138 @@ class FunctionTestCase(unittest.TestCase):
 
 
     def test_formatting(self):
+        parameters = Param()
         data = '<p>TXT <i>TEXT<u>TEXT</u></i></p>'
         stream = XMLParser(data)
         stream.next()
-        p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
-        self.assertEqual(p.text, '<para>TXT <i>TEXT<u>TEXT</u></i></para>')
+        para = paragraph_stream(stream, 'p', {},
+                                parameters.getSampleStyleSheet())
+        self.assertEqual(para.text, '<para>TXT <i>TEXT<u>TEXT</u></i></para>')
 
         data = '<p>TXT <i>TEXT<u>TEXT</u>TEXT</i></p>'
         stream = XMLParser(data)
         stream.next()
-        p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
+        para = paragraph_stream(stream, 'p', {},
+                                parameters.getSampleStyleSheet())
         goodanswer = '<para>TXT <i>TEXT<u>TEXT</u>TEXT</i></para>'
-        self.assertEqual(p.text, goodanswer)
+        self.assertEqual(para.text, goodanswer)
 
         data = '<p>TXT <i>TEXT<u>TEXT</u></i>TEXT</p>'
         stream = XMLParser(data)
         stream.next()
-        p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
+        para = paragraph_stream(stream, 'p', {},
+                                parameters.getSampleStyleSheet())
         goodanswer = '<para>TXT <i>TEXT<u>TEXT</u></i>TEXT</para>'
-        self.assertEqual(p.text, goodanswer)
+        self.assertEqual(para.text, goodanswer)
 
         data = '<p>TXT <i>TEXT<u>TEXT</u>TEXT</i>TEXT</p>'
         stream = XMLParser(data)
         stream.next()
-        p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
+        para = paragraph_stream(stream, 'p', {},
+                                parameters.getSampleStyleSheet())
         goodanswer = '<para>TXT <i>TEXT<u>TEXT</u>TEXT</i>TEXT</para>'
-        self.assertEqual(p.text, goodanswer)
+        self.assertEqual(para.text, goodanswer)
 
         data = '<p>TXT <i><u>TXT</u></i></p>'
         stream = XMLParser(data)
         stream.next()
-        p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
-        self.assertEqual(p.text, '<para>TXT <i><u>TXT</u></i></para>')
+        para = paragraph_stream(stream, 'p', {},
+                                parameters.getSampleStyleSheet())
+        self.assertEqual(para.text, '<para>TXT <i><u>TXT</u></i></para>')
 
         data = '<p><i>TEXT<u>TEXT</u></i></p>'
         stream = XMLParser(data)
         stream.next()
-        p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
-        self.assertEqual(p.text, '<para><i>TEXT<u>TEXT</u></i></para>')
+        para = paragraph_stream(stream, 'p', {},
+                                parameters.getSampleStyleSheet())
+        self.assertEqual(para.text, '<para><i>TEXT<u>TEXT</u></i></para>')
 
         data = '<p><i>TEXT<u>TEXT</u>TEXT</i></p>'
         stream = XMLParser(data)
         stream.next()
-        p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
-        self.assertEqual(p.text, '<para><i>TEXT<u>TEXT</u>TEXT</i></para>')
+        para = paragraph_stream(stream, 'p', {},
+                                parameters.getSampleStyleSheet())
+        self.assertEqual(para.text, '<para><i>TEXT<u>TEXT</u>TEXT</i></para>')
 
         data = '<p><i>TEXT<u>TEXT</u></i>TEXT</p>'
         stream = XMLParser(data)
         stream.next()
-        p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
-        self.assertEqual(p.text, '<para><i>TEXT<u>TEXT</u></i>TEXT</para>')
+        para = paragraph_stream(stream, 'p', {},
+                                parameters.getSampleStyleSheet())
+        self.assertEqual(para.text, '<para><i>TEXT<u>TEXT</u></i>TEXT</para>')
 
         data = '<p><i>TEXT<u>TEXT</u>TEXT</i>TEXT</p>'
         stream = XMLParser(data)
         stream.next()
-        p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
+        para = paragraph_stream(stream, 'p', {},
+                                parameters.getSampleStyleSheet())
         goodanswer = '<para><i>TEXT<u>TEXT</u>TEXT</i>TEXT</para>'
-        self.assertEqual(p.text, goodanswer)
+        self.assertEqual(parameters.text, goodanswer)
 
         data = '<p><i><u>TXT</u></i></p>'
         stream = XMLParser(data)
         stream.next()
-        p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
-        self.assertEqual(p.text, '<para><i><u>TXT</u></i></para>')
+        para = paragraph_stream(stream, 'p', {},
+                                parameters.getSampleStyleSheet())
+        self.assertEqual(para.text, '<para><i><u>TXT</u></i></para>')
 
         data = '<p>TEXT<sup>TEXT</sup></p>'
         stream = XMLParser(data)
         stream.next()
-        p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
-        self.assertEqual(p.text, '<para>TEXT<super>TEXT</super></para>')
+        para = paragraph_stream(stream, 'p', {},
+                                parameters.getSampleStyleSheet())
+        self.assertEqual(para.text, '<para>TEXT<super>TEXT</super></para>')
 
 
     def test_formatting_using_span(self):
+        parameters = Param()
         data = '<p><span style="color: #FF9000">clear syntax</span></p>'
         stream = XMLParser(data)
         stream.next()
-        p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
+        para = paragraph_stream(stream, 'p', {},
+                                parameters.getSampleStyleSheet())
         goodanswer = '<para><font color="#ff9000">clear syntax</font></para>'
-        self.assertEqual(p.text, goodanswer)
+        self.assertEqual(para.text, goodanswer)
 
         data = '<p>essai<span style="color: rgb(255, 0, 0);"> essai essai'
         data += '</span>essai</p>'
         stream = XMLParser(data)
         stream.next()
-        p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
+        para = paragraph_stream(stream, 'p', {},
+                                parameters.getSampleStyleSheet())
         goodanswer = '<para>essai<font color="#ff0000"> essai essai'
         goodanswer += '</font>essai</para>'
-        self.assertEqual(p.text, goodanswer)
+        self.assertEqual(para.text, goodanswer)
 
         data = '<p>essai <span style="color: rgb(0, 255, 0);">essai essai'
         data += '</span>essai</p>'
         stream = XMLParser(data)
         stream.next()
-        p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
+        para = paragraph_stream(stream, 'p', {},
+                                parameters.getSampleStyleSheet())
         goodanswer = '<para>essai <font color="#00ff00">essai essai'
         goodanswer += '</font>essai</para>'
-        self.assertEqual(p.text, goodanswer)
+        self.assertEqual(para.text, goodanswer)
 
         data = '<p>essai <span style="color: rgb(0, 0, 255);">essai '
         data += 'essai</span> essai</p>'
         stream = XMLParser(data)
         stream.next()
-        p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
+        para = paragraph_stream(stream, 'p', {},
+                                parameters.getSampleStyleSheet())
         goodanswer = '<para>essai <font color="#0000ff">essai essai</font>'
         goodanswer += ' essai</para>'
-        self.assertEqual(p.text, goodanswer)
+        self.assertEqual(para.text, goodanswer)
 
         data = '<p>Span <span style="color: rgb(255, 0, 0);">span    span '
         data += '<span style="color: #00DD45;">span</span> span</span>.</p>'
         stream = XMLParser(data)
         stream.next()
-        p = paragraph_stream(stream, 'p', {}, getSampleStyleSheet())
+        para = paragraph_stream(stream, 'p', {},
+                                parameters.getSampleStyleSheet())
         goodanswer = '<para>Span <font color="#ff0000">span span <font '
         goodanswer += 'color="#00dd45">span</font> span</font>.</para>'
-        self.assertEqual(p.text, goodanswer)
+        self.assertEqual(para.text, goodanswer)
 
 
 

@@ -19,6 +19,7 @@
 from textwrap import wrap
 
 # Import from itools
+from itools.datatypes.primitive import String
 from text import TextFile
 
 
@@ -346,19 +347,28 @@ class ConfigFile(TextFile):
         if name not in self.values:
             if default is not None:
                 return default
+            elif type is not None and getattr(type, 'default', None):
+                return type.default
             elif self.schema is not None and name in self.schema:
                 return self.schema[name].default
-            else:
-                return None
+            return None
+
         # Get the line
         n = self.values[name]
         line = self.lines[n]
-        # Return the variable value
         value = line[1][1]
         if type is None:
-            if self.schema is not None and name in self.schema:
-                return self.schema[name].decode(value)
-            return value
+            type = String
+            if self.schema is not None:
+                type = self.schema.get(name, String)
+
+        # Multiple values
+        is_multiple = getattr(type, 'multiple', False)
+        if is_multiple:
+            value = value.split()
+            values = [ type.decode(x) for x in value ]
+            return values
+
         return type.decode(value)
 
 

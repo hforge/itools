@@ -63,6 +63,7 @@ class Element(ElementSchema):
     is_inline = True
     #translate_attributes = fronzenset(['name'])
 
+
     def __init__(self, uri, name, attributes, **kw):
         ElementSchema.__init__(self, name, **kw)
         self.class_uri = uri
@@ -79,6 +80,7 @@ class Element(ElementSchema):
 
     def is_translatable(self, attributes, attribute_name):
         return attribute_name in self.translatable_attributes
+
 
 
 class BlockElement(Element):

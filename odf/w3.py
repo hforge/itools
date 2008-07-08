@@ -16,61 +16,69 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.xml import XMLNamespace, register_namespace, XMLError
+from itools.xml import XMLNamespace, register_namespace
+from itools.xml import ElementSchema
 
 
 # TODO
 # Theses class are only used by ODT (for the moment)
 # For the future, we can move this class to the xml package for example
 
-
-class XlinkNamespace(XMLNamespace):
-
-    uri = "http://www.w3.org/1999/xlink"
-    prefix = 'xlink'
-
-
-class MathMlNamespace(XMLNamespace):
-
-    uri = "http://www.w3.org/1998/Math/MathML"
-    prefix = 'math'
-
-    elements_schema = {
-        'math': {'is_inline': False, 'is_empty': False}
-    }
+###########################################################################
+# Namespace URIs
+###########################################################################
+xlink_uri = 'http://www.w3.org/1999/xlink'
+mathml_uri = 'http://www.w3.org/1998/Math/MathML'
+dom_uri = 'http://www.w3.org/2001/xml-events'
+xforms_uri = 'http://www.w3.org/2002/xforms'
+xsd_uri = 'http://www.w3.org/2001/XMLSchema'
+xsi_uri = 'http://www.w3.org/2001/XMLSchema-instance'
 
 
-class EventsNamespace(XMLNamespace):
 
-    uri = "http://www.w3.org/2001/xml-events"
-    prefix = 'dom'
+class Element(ElementSchema):
 
+    # Default
+    is_empty = False
+    is_inline = True
+    #translate_attributes = fronzenset(['name'])
 
-class XformsNamespace(XMLNamespace):
-
-    uri = "http://www.w3.org/2002/xforms"
-    prefix = 'xforms'
-
-    elements_schema = {
-        'model': {'is_inline': False, 'is_empty': False}
-    }
-
-
-class XsdNamespace(XMLNamespace):
-
-    uri = "http://www.w3.org/2001/XMLSchema"
-    prefix = 'xsd'
+    def __init__(self, uri, name, attributes, **kw):
+        ElementSchema.__init__(self, name, **kw)
+        self.class_uri = uri
+        self.attributes = frozenset(attributes)
+        self.translatable_attributes = frozenset([])
 
 
-class XsiNamespace(XMLNamespace):
 
-    uri = "http://www.w3.org/2001/XMLSchema-instance"
-    prefix = 'xsi'
+    def is_translatable(self, attributes, attribute_name):
+        return attribute_name in self.translatable_attributes
+
+
+
+class BlockElement(Element):
+
+    is_inline = False
+
+
+
+mathml_elements = [
+    BlockElement(mathml_uri, 'math', [])]
+xforms_elements = [
+    BlockElement(xforms_uri, 'model', [])]
+
+
+xlink_namespace = XMLNamespace(xlink_uri, 'xlink', [])
+mathml_namespace = XMLNamespace(mathml_uri, 'math', mathml_elements)
+events_namespace = XMLNamespace(dom_uri, 'dom', [])
+xforms_namespace = XMLNamespace(xforms_uri, 'xforms', xforms_elements)
+xsd_namespace = XMLNamespace(xsd_uri, 'xsd', [])
+xsi_namespace = XMLNamespace(xsi_uri, 'xsi', [])
 
 
 ###########################################################################
 # Register
 ###########################################################################
-for namespace in [XlinkNamespace, MathMlNamespace, EventsNamespace,
-                  XformsNamespace, XsdNamespace, XsiNamespace]:
+for namespace in [xlink_namespace, mathml_namespace, events_namespace,
+                  xforms_namespace, xsd_namespace, xsi_namespace]:
     register_namespace(namespace)

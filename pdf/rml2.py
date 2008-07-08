@@ -27,6 +27,7 @@ from itools.vfs import vfs
 from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, TEXT
 import itools.http
 from itools import get_abspath
+from itools.handlers import Image as ItoolsImage
 
 #Import from the reportlab Library
 from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT, TA_JUSTIFY
@@ -38,6 +39,7 @@ from reportlab.platypus.flowables import HRFlowable
 from reportlab.platypus import (Paragraph, SimpleDocTemplate, Preformatted,
                                 Image, Indenter, Table)
 from reportlab.lib import colors
+import tempfile
 
 encoding = 'UTF-8'
 URI = None
@@ -922,27 +924,58 @@ def create_img(attributes, check_dimension=False):
 
     if vfs.exists(filename) is False:
         print u"/!\ The filename '%s' doesn't exist" % filename
-        filename = get_abspath(globals(), 'not_found.png')
-    elif filename.startswith('http://'):
-        # Remote file
-        # If the image is a remote file, we create a StringIO
-        # object contains the image data to avoid reportlab problems ...
-        filename = StringIO(vfs.open(filename).read())
-
+        filename = image_not_found()
     try:
-        I = Image(filename)
-        if height is not None:
-            I.drawHeight = height
-        if width is not None:
-            I.drawWidth = width
+        I = build_image(filename, width, height)
         return I
     except IOError, msg:
         print msg
-        return None
+        filename = image_not_found()
+        I = build_image(filename, width, height)
+        return I
     except Exception, msg:
         print msg
         return None
 
+
+def image_not_found():
+    return get_abspath(globals(), 'not_found.png')
+
+
+def build_image(filename, width, height):
+    im = None
+    if filename.startswith('http://'):
+        # Remote file
+        # If the image is a remote file, we create a StringIO
+        # object contains the image data to avoid reportlab problems ...
+        data = vfs.open(filename).read()
+        fd, filename = tempfile.mkstemp()
+        file = vfs.open(filename, 'w')
+        file.write(data)
+        file.close()
+        im = ItoolsImage(string=data)
+    if im is None:
+        im = ItoolsImage(filename)
+
+    x, y = im.get_size()
+    if not (x or y):
+        print u'image not valid : %s' % filename
+        filename = image_not_found()
+        im = ItoolsImage(filename)
+        x, y = im.get_size()
+    I = Image(filename)
+    if height and width:
+        I.drawHeight = height
+        I.drawWidth = width
+    elif height is not None:
+        I.drawHeight = height
+        I.drawWidth = height * x / y
+    elif width is not None:
+        I.drawWidth = width * y / y
+        tmp, I.drawHeight = im.get_size()
+    else:
+        I.drawWidth, I.drawHeight = im.get_size()
+    return I
 
 
 class Table_Content(object):

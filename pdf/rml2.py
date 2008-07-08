@@ -32,8 +32,7 @@ from itools.handlers import Image as ItoolsImage
 #Import from the reportlab Library
 from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT, TA_JUSTIFY
 from reportlab.lib.pagesizes import letter
-from reportlab.lib.styles import(getSampleStyleSheet as getBaseStyleSheet,
-                                 ParagraphStyle)
+from reportlab.lib.styles import(getSampleStyleSheet, ParagraphStyle)
 from reportlab.lib.units import inch, cm, mm, pica
 from reportlab.platypus.flowables import HRFlowable
 from reportlab.platypus import (Paragraph, SimpleDocTemplate, Preformatted,
@@ -66,6 +65,56 @@ TAG_NOT_SUPPORTED = '%s: line %s tag "%s" is currently not supported.'
 WARNING_DTD = '%s: line %s tag "%s" is unapproprieted here.'
 
 
+
+class Param(object):
+
+
+    def __init__(self):
+        self.tmp_dir = tempfile.mkdtemp()
+        self.init_base_style_sheet()
+
+
+    def init_base_style_sheet(self):
+        self.stylesheet = getSampleStyleSheet()
+        # Add heading level 4, 5 and 6 like in html
+        self.stylesheet.add(ParagraphStyle(name='Heading4',
+                                           parent=self.stylesheet['h3'],
+                                           fontSize=11),
+                            alias='h4')
+        self.stylesheet.add(ParagraphStyle(name='Heading5',
+                                           parent=self.stylesheet['h4'],
+                                           fontSize=10),
+                            alias='h5')
+        self.stylesheet.add(ParagraphStyle(name='Heading6',
+                                           parent=self.stylesheet['h5'],
+                                           fontSize=9),
+                            alias='h6')
+
+
+    def get_base_style_sheet(self):
+        return self.stylesheet
+
+
+    def get_tmp_file(self):
+        fd, filename = tempfile.mkstemp(dir=self.tmp_dir)
+        return vfs.open(filename, 'w')
+
+
+    def get_style(self, name):
+        """
+           Return the style corresponding to name or the style normal if it
+           does not exist.
+        """
+
+        if self.stylesheet.has_key(name):
+            return self.stylesheet[name]
+        return self.stylesheet['Normal']
+
+
+    def __del__(self):
+        vfs.remove(self.tmp_dir)
+
+
 def rml2topdf_test(value, raw=False):
     """
       If raw is False, value is the test file path
@@ -96,23 +145,6 @@ def rml2topdf(filename):
     return iostream.getvalue()
 
 
-def getSampleStyleSheet():
-    stylesheet = getBaseStyleSheet()
-
-    # Add heading level 4, 5 and 6 like in html
-    stylesheet.add(ParagraphStyle(name='Heading4',
-                                  parent=stylesheet['h3'],
-                                  fontSize=11),
-                   alias='h4')
-    stylesheet.add(ParagraphStyle(name='Heading5',
-                                  parent=stylesheet['h4'],
-                                  fontSize=10),
-                   alias='h5')
-    stylesheet.add(ParagraphStyle(name='Heading6',
-                                  parent=stylesheet['h5'],
-                                  fontSize=9),
-                   alias='h6')
-    return stylesheet
 
 
 def document_stream(stream, pdf_stream, document_name, is_test=False):
@@ -126,7 +158,7 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
 
     stack = []
     story = []
-    pdf_stylesheet = getSampleStyleSheet()
+    parameters = Param()
     state = 0
     while True:
         event, value, line_number = stream_next(stream)
@@ -145,7 +177,7 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
                 if state == 1:
                     state = 2
                     story += body_stream(stream, tag_name, attributes,
-                                         pdf_stylesheet)
+                                         parameters)
                 else:
                     print WARNING_DTD % ('document', line_number, tag_name)
                 continue
@@ -166,7 +198,7 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
 
     #### BUILD PDF ####
     if is_test == True:
-        test_data = list(story), pdf_stylesheet
+        test_data = list(story), parameters.get_base_style_sheet()
 
     doc = SimpleDocTemplate(pdf_stream, pagesize = letter)
     doc.build(story)
@@ -175,7 +207,7 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
         return test_data
 
 
-def body_stream(stream, _tag_name, _attributes, pdf_stylesheet):
+def body_stream(stream, _tag_name, _attributes, param):
     """
         stream : parser stream
     """
@@ -191,22 +223,22 @@ def body_stream(stream, _tag_name, _attributes, pdf_stylesheet):
             tag_uri, tag_name, attributes = value
             if tag_name in ('p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
                 story.append(paragraph_stream(stream, tag_name, attributes,
-                                              pdf_stylesheet))
+                                              param))
             elif tag_name == 'pre':
                 story.append(pre_stream(stream, tag_name, attributes,
-                                        pdf_stylesheet))
+                                        param))
             elif tag_name == 'hr':
                 story.append(hr_stream(stream, tag_name, attributes))
             elif tag_name == 'img':
-                widget = img_stream(stream, tag_name, attributes)
+                widget = img_stream(stream, tag_name, attributes, param)
                 if widget:
                     story.append(widget)
             elif tag_name in ('ol', 'ul'):
                 story.extend(list_stream(stream, tag_name, attributes,
-                                         pdf_stylesheet))
+                                         param))
             elif tag_name == 'table':
                 story.append(table_stream(stream, tag_name, attributes,
-                                          pdf_stylesheet))
+                                          param))
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
@@ -222,24 +254,22 @@ def body_stream(stream, _tag_name, _attributes, pdf_stylesheet):
     return story
 
 
-def paragraph_stream(stream, elt_tag_name, elt_attributes, pdf_stylesheet):
+def paragraph_stream(stream, elt_tag_name, elt_attributes, param):
     """
         stream : parser stream
     """
     content = compute_paragraph(stream, elt_tag_name, elt_attributes)
-    return create_paragraph(pdf_stylesheet, (elt_tag_name, elt_attributes),
-                            content)
+    return create_paragraph(param, (elt_tag_name, elt_attributes), content)
 
 
-def pre_stream(stream, tag_name, attributes, pdf_stylesheet):
+def pre_stream(stream, tag_name, attributes, param):
     """
         stream : parser stream
     """
 
     stack = []
     story = []
-    styles = getSampleStyleSheet()
-    styleN = styles['Normal']
+    styleN = param.get_style('Normal')
     content = []
     has_content = False
     stack.append((tag_name, attributes))
@@ -258,8 +288,7 @@ def pre_stream(stream, tag_name, attributes, pdf_stylesheet):
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
             if tag_name == 'pre':
-                return create_preformatted(pdf_stylesheet, stack.pop(),
-                                           content)
+                return create_preformatted(param, stack.pop(), content)
             else:
                 print WARNING_DTD % ('document', line_number, tag_name)
                 # unknown tag
@@ -300,12 +329,12 @@ def hr_stream(stream, _tag_name, _attributes):
             print WARNING_DTD % ('document', line_number, tag_name)
 
 
-def img_stream(stream, _tag_name, _attributes):
+def img_stream(stream, _tag_name, _attributes, param):
     attrs = compute_image_attrs(stream, _tag_name, _attributes)
-    return create_img(attrs)
+    return create_img(attrs, param)
 
 
-def list_stream(stream, _tag_name, attributes, pdf_stylesheet, id=0):
+def list_stream(stream, _tag_name, attributes, param, id=0):
     """
         stream : parser stream
     """
@@ -345,11 +374,11 @@ def list_stream(stream, _tag_name, attributes, pdf_stylesheet, id=0):
             tag_uri, tag_name, attributes = value
             if tag_name in ('ul', 'ol'):
                 if li_state:
-                    story.append(create_paragraph(pdf_stylesheet, stack[0],
+                    story.append(create_paragraph(param, stack[0],
                                                   content))
                     content = ["<seqDefault id='%s'/>" % strid]
                     story += list_stream(stream, tag_name, attributes,
-                                         pdf_stylesheet, id+1)
+                                         param, id+1)
                 else:
                     print WARNING_DTD % ('document', line_number, tag_name)
             elif tag_name == 'li':
@@ -398,7 +427,7 @@ def list_stream(stream, _tag_name, attributes, pdf_stylesheet, id=0):
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
             if tag_name in ('ul', 'ol'):
-                story.append(create_paragraph(pdf_stylesheet, stack.pop(),
+                story.append(create_paragraph(param, stack.pop(),
                              content))
                 story.append(Indenter(left=-INDENT_VALUE))
                 return story
@@ -409,7 +438,7 @@ def list_stream(stream, _tag_name, attributes, pdf_stylesheet, id=0):
                     if tmp[-1] == '\n':
                         content[-1] = tmp.rstrip('\n')
             if tag_name == 'li':
-                story.append(create_paragraph(pdf_stylesheet, stack[0],
+                story.append(create_paragraph(param, stack[0],
                                               content))
                 content = []
                 li_state = 0
@@ -465,7 +494,7 @@ def list_stream(stream, _tag_name, attributes, pdf_stylesheet, id=0):
                     content.append(value)
 
 
-def table_stream(stream, _tag_name, attributes, pdf_stylesheet):
+def table_stream(stream, _tag_name, attributes, param):
     content = Table_Content()
     start = (0, 0)
     stop = (-1, -1)
@@ -486,7 +515,7 @@ def table_stream(stream, _tag_name, attributes, pdf_stylesheet):
             tag_uri, tag_name, attributes = value
             if tag_name == 'tr':
                 content = compute_tr(stream, tag_name, attributes,
-                                    content, pdf_stylesheet)
+                                    content, param)
                 content.next_line()
             else:
                 print WARNING_DTD % ('document', line_number, tag_name)
@@ -501,7 +530,7 @@ def table_stream(stream, _tag_name, attributes, pdf_stylesheet):
 
 
 def compute_paragraph(stream, elt_tag_name, elt_attributes,
-                      pdf_stylesheet=None):
+                      param=None):
     content = []
     cpt = 0
     has_content = False
@@ -524,22 +553,22 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes,
                 if tag_name in ('p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
                     story.append(paragraph_stream(stream, tag_name,
                                                   attributes,
-                                                  pdf_stylesheet))
+                                                  param))
                 elif tag_name == 'pre':
                     story.append(pre_stream(stream, tag_name, attributes,
-                                            pdf_stylesheet))
+                                            param))
                 elif tag_name == 'hr':
                     story.append(hr_stream(stream, tag_name, attributes))
                 elif tag_name == 'img':
-                    widget = img_stream(stream, tag_name, attributes)
+                    widget = img_stream(stream, tag_name, attributes, param)
                     if widget:
                         story.append(widget)
                 elif tag_name in ('ol', 'ul'):
                     story.extend(list_stream(stream, tag_name, attributes,
-                                             pdf_stylesheet))
+                                             param))
                 elif tag_name == 'table':
                     story.append(table_stream(stream, tag_name, attributes,
-                                              pdf_stylesheet))
+                                              param))
                 else:
                     skip = False
                 if skip:
@@ -690,7 +719,7 @@ def compute_image_attrs(stream, _tag_name, _attributes):
             print WARNING_DTD % ('document', line_number, tag_name)
 
 
-def compute_tr(stream, _tag_name, attributes, table, pdf_stylesheet):
+def compute_tr(stream, _tag_name, attributes, table, param):
     stop = None
 
     while True:
@@ -702,7 +731,7 @@ def compute_tr(stream, _tag_name, attributes, table, pdf_stylesheet):
             tag_uri, tag_name, attributes = value
             if tag_name in ('td', 'th'):
                 cont = compute_paragraph(stream, tag_name, attributes,
-                                         pdf_stylesheet)
+                                         param)
                 table.push_content(cont)
                 if exist_attribute(attributes, ['colspan', 'rowspan'],
                                    at_least=True):
@@ -810,7 +839,7 @@ def build_span_attributes(attributes):
 ##############################################################################
 # Reportlab widget                                                           #
 ##############################################################################
-def create_paragraph(pdf_stylesheet, element, content):
+def create_paragraph(param, element, content):
     """
         Create a reportlab paragraph widget.
     """
@@ -825,11 +854,11 @@ def create_paragraph(pdf_stylesheet, element, content):
     content = normalize(' '.join(content))
     content = '<para>%s</para>' % content
     #print 1, content
-    style, bulletText = build_style(pdf_stylesheet, element)
+    style, bulletText = build_style(param, element)
     return Paragraph(content, style, bulletText)
 
 
-def build_style(pdf_stylesheet, element):
+def build_style(param, element):
     style_attr = {}
     # The default style is Normal
     parent_style_name = 'Normal'
@@ -854,12 +883,12 @@ def build_style(pdf_stylesheet, element):
     style_name = parent_style_name
     if element[0] in ('h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
         parent_style_name = element[0]
-    parent_style = get_style(pdf_stylesheet, parent_style_name)
+    parent_style = param.get_style(parent_style_name)
     return (ParagraphStyle(style_name, parent=parent_style, **style_attr),
             bulletText)
 
 
-def create_preformatted(pdf_stylesheet, element, content):
+def create_preformatted(param, element, content):
     """
         Create a reportlab preformatted widget.
     """
@@ -870,7 +899,7 @@ def create_preformatted(pdf_stylesheet, element, content):
     for key, attr_value in element[1].iteritems():
         if key[1] == 'style':
             style_name = attr_value
-    style = get_style(pdf_stylesheet, style_name)
+    style = param.get_style(style_name)
     widget = Preformatted(content, style)
     return widget
 
@@ -904,7 +933,7 @@ def create_hr(attributes):
     return HRFlowable(**attrs)
 
 
-def create_img(attributes, check_dimension=False):
+def create_img(attributes, param, check_dimension=False):
     """
         Create a reportlab image widget.
         If check_dimension is true and the width and the height attributes
@@ -926,12 +955,12 @@ def create_img(attributes, check_dimension=False):
         print u"/!\ The filename '%s' doesn't exist" % filename
         filename = image_not_found()
     try:
-        I = build_image(filename, width, height)
+        I = build_image(filename, width, height, param)
         return I
     except IOError, msg:
         print msg
         filename = image_not_found()
-        I = build_image(filename, width, height)
+        I = build_image(filename, width, height, param)
         return I
     except Exception, msg:
         print msg
@@ -942,17 +971,17 @@ def image_not_found():
     return get_abspath(globals(), 'not_found.png')
 
 
-def build_image(filename, width, height):
+def build_image(filename, width, height, param):
     im = None
     if filename.startswith('http://'):
         # Remote file
         # If the image is a remote file, we create a StringIO
         # object contains the image data to avoid reportlab problems ...
         data = vfs.open(filename).read()
-        fd, filename = tempfile.mkstemp()
-        file = vfs.open(filename, 'w')
-        file.write(data)
-        file.close()
+        my_file = param.get_tmp_file()
+        filename = my_file.name
+        my_file.write(data)
+        my_file.close()
         im = ItoolsImage(string=data)
     if im is None:
         im = ItoolsImage(filename)
@@ -1231,15 +1260,6 @@ def get_int_value(value, default=0):
         return default
 
 
-def get_style(stylesheet, name):
-    """
-       Return the style corresponding to name or the style normal if it does
-       not exist.
-    """
-
-    if stylesheet.has_key(name):
-        return stylesheet[name]
-    return stylesheet['Normal']
 
 
 def get_bullet(type, indent='-0.4cm'):

@@ -733,6 +733,9 @@ def compute_tr(stream, _tag_name, attributes, table, param):
                 cont = compute_paragraph(stream, tag_name, attributes,
                                          param)
                 table.push_content(cont)
+                if exist_attribute(attributes, ['width']):
+                    width = attributes.get((URI, 'width'))
+                    table.add_colWidth(width)
                 if exist_attribute(attributes, ['colspan', 'rowspan'],
                                    at_least=True):
                     rowspan = attributes.get((URI, 'rowspan'))
@@ -1032,6 +1035,7 @@ class Table_Content(object):
         # current cell
         self.current_x = 0
         self.current_y = 0
+        self.colWidths = []
 
 
     def add_attributes(self, name, value):
@@ -1044,6 +1048,8 @@ class Table_Content(object):
             while self.span_stack:
                 start, stop = self.span_stack.pop()
                 self.add_span(start, stop)
+            l = len(self.colWidths)
+            self.colWidths.extend([ None for x in xrange(l, self.current_x) ])
         # Next line
         self.current_x = 0
         self.current_y += 1
@@ -1117,7 +1123,8 @@ class Table_Content(object):
 
 
     def create(self):
-        return Table(self.content, style=self.style, **self.attrs)
+        return Table(self.content, style=self.style, colWidths=self.colWidths,
+                     **self.attrs)
 
 
     def create_table_line(self):
@@ -1125,6 +1132,16 @@ class Table_Content(object):
         line.extend([ 0 for x in xrange(self.size[0]) ])
         self.content.append(line)
         self.size[1] += 1
+
+
+    def add_colWidth(self, width):
+        l = len(self.colWidths)
+        if not self.current_y and l <= self.current_x:
+            none_list = [ None for x in xrange(l, self.current_x+1) ]
+            self.colWidths.extend(none_list)
+        if self.colWidths is None\
+            or rml_value(width) > self.colWidths[self.current_x]:
+            self.colWidths[self.current_x] = rml_value(width)
 
 
     def add_span(self, start, stop):

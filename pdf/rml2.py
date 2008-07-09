@@ -941,8 +941,8 @@ def create_img(attributes, param, check_dimension=False):
         are not set we return None
     """
     filename = attributes.get((URI, 'src'), None)
-    width = attributes.get((URI, 'width'), None)
-    height = attributes.get((URI, 'height'), None)
+    width = rml_value(attributes.get((URI, 'width'), None))
+    height = rml_value(attributes.get((URI, 'height'), None))
     if filename is None:
         print u'/!\ Filename is None'
         return None
@@ -973,6 +973,8 @@ def image_not_found():
 
 def build_image(filename, width, height, param):
     im = None
+    # determines behavior of both arguments(width, height)
+    kind = 'direct'
     if filename.startswith('http://'):
         # Remote file
         # If the image is a remote file, we create a StringIO
@@ -992,20 +994,25 @@ def build_image(filename, width, height, param):
         filename = image_not_found()
         im = ItoolsImage(filename)
         x, y = im.get_size()
-    I = Image(filename)
 
-    if height and width:
-        I.drawHeight = height
-        I.drawWidth = width
-    elif height is not None:
-        I.drawHeight = height
-        I.drawWidth = height * x / y
-    elif width is not None:
-        I.drawWidth = width * y / y
-        tmp, I.drawHeight = im.get_size()
-    else:
-        I.drawWidth, I.drawHeight = im.get_size()
-    return I
+    #FIXME not like html
+    if height or width:
+        if isinstance(width, str) is not None and width[-1:] == '%':
+            width = get_int_value(width[:-1])
+            if not height:
+                height = width
+            kind = '%'
+        if isinstance(height, str) and height[-1:] == '%':
+            height = get_int_value(height[:-1])
+            if not width:
+                width = height
+            kind = '%'
+        if not (height and width):
+            if height:
+                width = height * x / y
+            elif width:
+                height = width * y / x
+    return Image(filename, width, height, kind)
 
 
 class Table_Content(object):

@@ -120,6 +120,8 @@ def setup(namespace, classifiers=[], ext_modules=[]):
     package_name = config.get_value('name')
     packages = [package_name]
     package_data = {package_name: []}
+    provided_packages = []
+    required_packages = []
 
     # The sub-packages
     if config.has_value('packages'):
@@ -128,6 +130,16 @@ def setup(namespace, classifiers=[], ext_modules=[]):
             packages.append('%s.%s' % (package_name, subpackage_name))
     else:
         subpackages = []
+
+    # The provided packages
+    if config.has_value('provides'):
+        for provided_package_name in config.get_value('provides').split():
+            provided_packages.append(provided_package_name)
+
+    # The required packages
+    if config.has_value('requires'):
+        for required_package_name in config.get_value('requires').split():
+            required_packages.append(required_package_name)
 
     # Write the manifest file if it does not exist
     if exists('MANIFEST'):
@@ -177,6 +189,10 @@ def setup(namespace, classifiers=[], ext_modules=[]):
                package_dir = {package_name: ''},
                packages = packages,
                package_data = package_data,
+               # Requires
+               requires = required_packages,
+               # Provides
+               provides = provided_packages,
                # Scripts
                scripts = scripts,
                # C extensions

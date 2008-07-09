@@ -31,7 +31,7 @@ from itools.handlers import Image as ItoolsImage
 
 #Import from the reportlab Library
 from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT, TA_JUSTIFY
-from reportlab.lib.pagesizes import letter
+from reportlab.lib.pagesizes import LETTER
 from reportlab.lib.styles import(getSampleStyleSheet, ParagraphStyle)
 from reportlab.lib.units import inch, cm, mm, pica
 from reportlab.platypus.flowables import HRFlowable
@@ -95,11 +95,6 @@ class Param(object):
         return self.stylesheet
 
 
-    def get_tmp_file(self):
-        fd, filename = tempfile.mkstemp(dir=self.tmp_dir)
-        return vfs.open(filename, 'w')
-
-
     def get_style(self, name):
         """
            Return the style corresponding to name or the style normal if it
@@ -111,8 +106,14 @@ class Param(object):
         return self.stylesheet['Normal']
 
 
+    def get_tmp_file(self):
+        fd, filename = tempfile.mkstemp(dir=self.tmp_dir)
+        return vfs.open(filename, 'w')
+
+
     def __del__(self):
         vfs.remove(self.tmp_dir)
+
 
 
 def rml2topdf_test(value, raw=False):
@@ -200,7 +201,7 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
     if is_test == True:
         test_data = list(story), parameters.get_base_style_sheet()
 
-    doc = SimpleDocTemplate(pdf_stream, pagesize = letter)
+    doc = SimpleDocTemplate(pdf_stream, pagesize=LETTER)
     doc.build(story)
 
     if is_test == True:
@@ -941,8 +942,7 @@ def create_img(attributes, param, check_dimension=False):
     """
     filename = attributes.get((URI, 'src'), None)
     width = attributes.get((URI, 'width'), None)
-    height =  attributes.get((URI, 'height'), None)
-
+    height = attributes.get((URI, 'height'), None)
     if filename is None:
         print u'/!\ Filename is None'
         return None
@@ -993,6 +993,7 @@ def build_image(filename, width, height, param):
         im = ItoolsImage(filename)
         x, y = im.get_size()
     I = Image(filename)
+
     if height and width:
         I.drawHeight = height
         I.drawWidth = width

@@ -72,7 +72,7 @@ class Param(object):
     def __init__(self):
         self.tmp_dir = tempfile.mkdtemp()
         self.init_base_style_sheet()
-
+        self.image_not_found_path = get_abspath(globals(), 'not_found.png')
 
     def init_base_style_sheet(self):
         self.stylesheet = getSampleStyleSheet()
@@ -955,13 +955,13 @@ def create_img(attributes, param, check_dimension=False):
 
     if vfs.exists(filename) is False:
         print u"/!\ The filename '%s' doesn't exist" % filename
-        filename = image_not_found()
+        filename = param.image_not_found_path
     try:
         I = build_image(filename, width, height, param)
         return I
     except IOError, msg:
         print msg
-        filename = image_not_found()
+        filename = param.image_not_found_path
         I = build_image(filename, width, height, param)
         return I
     except Exception, msg:
@@ -969,8 +969,7 @@ def create_img(attributes, param, check_dimension=False):
         return None
 
 
-def image_not_found():
-    return get_abspath(globals(), 'not_found.png')
+
 
 
 def build_image(filename, width, height, param):
@@ -993,7 +992,7 @@ def build_image(filename, width, height, param):
     x, y = im.get_size()
     if not (x or y):
         print u'image not valid : %s' % filename
-        filename = image_not_found()
+        filename = param.image_not_found_path
         im = ItoolsImage(filename)
         x, y = im.get_size()
 

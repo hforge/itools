@@ -1,12 +1,37 @@
 <html>
   <body>
-    <p>hello  world toto<img src="itools_powered.gif" alt="itools powered (GIF format)" /></p>
-    <img src="itools_powered.jpeg" alt="itools powered (JPEG format)" />
-    <p><img src="itools_powered.png" alt="image(PNG format) in paragraph" /></p>
-    <img src="http://www.ikaaro.org/ui/ikaaro/images/logo2.png" alt="remote image"/>
+    <h2>Found</h2>
+    <h3>itools powered (GIF format) in paragraph</h3>
+    <p>hello  world toto
+      <img src="itools_powered.gif" alt="itools powered (GIF format)" />
+    </p>
+    <h3>itools powered (JPEG format) original</h3>
+    <img src="itools_powered.jpeg"
+         alt="itools powered (JPEG format) original" />
+    <h3>itools powered (JPEG format) width="100%"</h3>
+    <img src="itools_powered.jpeg" width="100%"
+         alt="itools powered (JPEG format) 100%" />
+    <h3>itools powered (JPEG format) width="400%"</h3>
+    <img src="itools_powered.jpeg" width="400%"
+         alt="itools powered (JPEG format) 200%" />
+    <h3>itools powered (JPEG format) width="200"</h3>
+    <p>
+      <img src="itools_powered.png" width="200"
+           alt="image(PNG format) in paragraph" />
+    </p>
+    <h3>itools powered (PNG format) height="200%" width="100%"</h3>
+    <img src="itools_powered.png" height="200%" width="100%"
+         alt="image(PNG format)" />
+    <h3>ikaaro logo height="100%" width="100%</h3>
+    <img src="http://www.ikaaro.org/ui/ikaaro/images/logo2.png"
+         height="100%" width="100%" alt="remote image" />
     <!-- not found -->
+    <h2>Not found</h2>
+    <h3>local file not found</h3>
     <img src="itools_power.jpeg" alt="local file not found" />
+    <h3>404 error</h3>
     <img src="http://demo.ikaaro.org/Test_HML.png" alt="404 error" />
-    <img src="http://demo.ikaaro.org/;login_form" alt="image not valid"/>
+    <h3>Image not valid</h3>
+    <img src="http://demo.ikaaro.org/;login_form" alt="image not valid" />
   </body>
 </html>

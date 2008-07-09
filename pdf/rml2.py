@@ -259,7 +259,7 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, param):
     """
         stream : parser stream
     """
-    content = compute_paragraph(stream, elt_tag_name, elt_attributes)
+    content = compute_paragraph(stream, elt_tag_name, elt_attributes, param)
     return create_paragraph(param, (elt_tag_name, elt_attributes), content)
 
 
@@ -530,8 +530,7 @@ def table_stream(stream, _tag_name, attributes, param):
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
 
 
-def compute_paragraph(stream, elt_tag_name, elt_attributes,
-                      param=None):
+def compute_paragraph(stream, elt_tag_name, elt_attributes, param):
     content = []
     cpt = 0
     has_content = False

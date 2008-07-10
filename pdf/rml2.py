@@ -45,7 +45,7 @@ URI = None
 # Mapping HTML -> REPORTLAB
 P_FORMAT = {'a': 'a', 'i': 'i', 'em': 'i', 'b': 'b', 'strong': 'b', 'u': 'u',
             'span': 'font', 'sup': 'super', 'sub': 'sub', 'p': 'para'}
-
+SIZE = {'in': inch, 'cm': cm, 'mm': mm, 'pica': pica, 'px': 1}
 SPECIAL = ('a', 'br', 'img', 'span', 'sub', 'sup')
 PHRASE = ('em', 'strong')
 FONT_STYLE = ('b', 'big', 'i', 'small', 'tt')
@@ -1338,22 +1338,13 @@ def rml_value(value, default=None):
 
     if value == 'None':
         return None
-    if value[-2:] == 'in':
-        coef = inch
-        value = value[:-2]
-    elif value[-2:] == 'cm':
-        coef = cm
-        value = value[:-2]
-    elif value[-2:] == 'mm':
-        coef = mm
-        value = value[:-2]
-    elif value[-4:] == 'pica':
-        coef = pica
-        value = value[:-4]
-
-    elif value[-1:] == '%':
+    if value[-1:] == '%':
         return value
-
+    for key in SIZE.keys():
+        l = len(key)
+        if value[-l:] == key:
+            value = value[:-l]
+            coef = SIZE[key]
     try:
         value = float(value) * coef
     except ValueError:

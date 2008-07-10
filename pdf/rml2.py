@@ -110,7 +110,7 @@ class Param(object):
             return value
         if value == 'None':
             return None
-        if value.endswit('%'):
+        if value.endswith('%'):
             return value
         for key in self.size.keys():
             lenth_of_key = len(key)
@@ -723,6 +723,7 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, param):
 
 def compute_image_attrs(stream, _tag_name, _attributes, param):
     attrs = {}
+    itools_img = None
     for key, attr_value in _attributes.iteritems():
         key = key[1]
         if key == 'src':
@@ -732,6 +733,26 @@ def compute_image_attrs(stream, _tag_name, _attributes, param):
             attrs[(URI, 'width')] = param.format_size(attr_value)
         elif key == 'height':
             attrs[(URI, 'height')] = param.format_size(attr_value)
+
+    exist_width = exist_attribute(attrs, ['width'])
+    exist_height = exist_attribute(attrs, ['height'])
+
+    if exist_width:
+        element = attrs[(URI, 'width')]
+        if element.endswith('%'):
+            width, height = itools_img.get_size()
+            value = get_int_value(element[:-1])
+            attrs[(URI, 'width')] = value * width / 100.0
+            if not exist_height:
+                attrs[(URI, 'height')] = value * height / 100.0
+    if exist_height and isinstance(attrs[(URI, 'height')], str):
+        element = attrs[(URI, 'height')]
+        if element.endswith('%'):
+            value = get_int_value(element[:-1])
+            width, height = itools_img.get_size()
+            attrs[(URI, 'height')] = value * height / 100.0
+            if not exist_width:
+                attrs[(URI, 'width')] = value * width / 100.0
 
     while True:
         event, value, line_number = stream_next(stream)
@@ -1033,12 +1054,12 @@ def build_image(filename, width, height, param):
     x, y = itools_img.get_size()
     #FIXME not like html
     if height or width:
-        if isinstance(width, str) and width[-1:] == '%':
+        if isinstance(width, str) and width.endswith('%'):
             width = get_int_value(width[:-1])
             if not height:
                 height = width
             kind = '%'
-        if isinstance(height, str) and height[-1:] == '%':
+        if isinstance(height, str) and height.endswith('%'):
             height = get_int_value(height[:-1])
             if not width:
                 width = height

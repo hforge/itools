@@ -331,7 +331,7 @@ def hr_stream(stream, _tag_name, _attributes):
 
 
 def img_stream(stream, _tag_name, _attributes, param):
-    attrs = compute_image_attrs(stream, _tag_name, _attributes)
+    attrs = compute_image_attrs(stream, _tag_name, _attributes, param)
     return create_img(attrs, param)
 
 
@@ -415,7 +415,7 @@ def list_stream(stream, _tag_name, attributes, param, id=0):
                     cpt += 1
                 elif tag_name == 'img':
                     img_attrs = compute_image_attrs(stream, tag_name,
-                                                    attributes)
+                                                    attributes, param)
                     content.append(build_start_tag(tag_name, img_attrs))
                     content[-1] = content[-1].rstrip('>')
                     content[-1] += ' valign="middle"/>'
@@ -603,7 +603,7 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, param):
                     cpt += 1
                 elif tag_name == 'img':
                     img_attrs = compute_image_attrs(stream, tag_name,
-                                                    attributes)
+                                                    attributes, param)
                     content.append(build_start_tag(tag_name, img_attrs))
                     content[-1] = content[-1].rstrip('>')
                     content[-1] += ' valign="middle"/>'
@@ -688,12 +688,13 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, param):
                     content.append(value)
 
 
-def compute_image_attrs(stream, _tag_name, _attributes):
+def compute_image_attrs(stream, _tag_name, _attributes, param):
     attrs = {}
     for key, attr_value in _attributes.iteritems():
         key = key[1]
         if key == 'src':
-            attrs[(URI, 'src')] = attr_value
+            file_path, itools_img = check_image(attr_value, param)
+            attrs[(URI, 'src')] = file_path
         elif key == 'width':
             attrs[(URI, 'width')] = rml_value(attr_value)
         elif key == 'height':
@@ -953,9 +954,6 @@ def create_img(attributes, param, check_dimension=False):
         print u'/!\ Cannot add an image inside a td without predefined size'
         return None
 
-    if vfs.exists(filename) is False:
-        print u"/!\ The filename '%s' doesn't exist" % filename
-        filename = param.image_not_found_path
     try:
         I = build_image(filename, width, height, param)
         return I
@@ -969,13 +967,11 @@ def create_img(attributes, param, check_dimension=False):
         return None
 
 
-
-
-
-def build_image(filename, width, height, param):
+def check_image(filename, param):
+    if vfs.exists(filename) is False:
+        print u"/!\ The filename '%s' doesn't exist" % filename
+        filename = param.image_not_found_path
     im = None
-    # determines behavior of both arguments(width, height)
-    kind = 'direct'
     if filename.startswith('http://'):
         # Remote file
         # If the image is a remote file, we create a StringIO
@@ -994,11 +990,17 @@ def build_image(filename, width, height, param):
         print u'image not valid : %s' % filename
         filename = param.image_not_found_path
         im = ItoolsImage(filename)
-        x, y = im.get_size()
+    return filename, im
 
+
+def build_image(filename, width, height, param):
+    # determines behavior of both arguments(width, height)
+    kind = 'direct'
+    file_path, itools_img = check_image(filename, param)
+    x, y = itools_img.get_size()
     #FIXME not like html
     if height or width:
-        if isinstance(width, str) is not None and width[-1:] == '%':
+        if isinstance(width, str) and width.endswith('%'):
             width = get_int_value(width[:-1])
             if not height:
                 height = width
@@ -1013,7 +1015,8 @@ def build_image(filename, width, height, param):
                 width = height * x / y
             elif width:
                 height = width * y / x
-    return Image(filename, width, height, kind)
+    return Image(file_path, width, height, kind)
+
 
 
 class Table_Content(object):

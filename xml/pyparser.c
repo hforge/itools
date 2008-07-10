@@ -309,15 +309,16 @@ XMLParser_dealloc (XMLParser * self)
 
 static int
 XMLParser_init (XMLParser * self, PyObject * args, PyObject * kwds)
-/* __init__(source, namespaces=None, cache=None)
+/* __init__(source, namespaces=None, doctype=None)
  * source: is a string or a file
  * namespaces: a dictionnary (prefix => uri)
- * cache: name of file that makes the mapping: urn <-> dtd
+ * doctype: a string parsed before the document
  */
 {
   PyObject *source;
   PyObject *namespaces = NULL;
-  static char *kwlist[] = { "source", "namespaces", NULL };
+  char *doctype = NULL;
+  static char *kwlist[] = { "source", "namespaces", "doctype", NULL };
 
   Parser *parser;
 
@@ -330,8 +331,8 @@ XMLParser_init (XMLParser * self, PyObject * args, PyObject * kwds)
   XMLParser_reset (self);
 
   /* Arguments */
-  if (!PyArg_ParseTupleAndKeywords (args, kwds, "O|O", kwlist, &source,
-                                    &namespaces))
+  if (!PyArg_ParseTupleAndKeywords (args, kwds, "O|Os", kwlist, &source,
+                                    &namespaces, &doctype))
     return -1;
 
 
@@ -370,7 +371,7 @@ XMLParser_init (XMLParser * self, PyObject * args, PyObject * kwds)
   self->source = source;
 
   /* Add the namespaces */
-  if (namespaces != NULL)
+  if (namespaces)
     {
       if (PyDict_Check (namespaces))
         while (PyDict_Next (namespaces, &pos, &py_prefix, &py_uri))
@@ -394,6 +395,15 @@ XMLParser_init (XMLParser * self, PyObject * args, PyObject * kwds)
         }
     }
 
+  /* Parse a doctype ? */
+  if (doctype)
+    if (parser_add_doctype (parser, doctype))
+      {
+        PyErr_Format (XMLError, "an error occured during the 'doctype' "
+                      "argument parsing");
+        return -1;
+      }
+
   return 0;
 }
 
@@ -416,6 +426,7 @@ XMLParser_iternext (XMLParser * self)
         case END_ELEMENT:
           value = XMLParser_translate_ETag (self);
           break;
+        case DOCUMENT_TYPE:
         case TEXT:
         case COMMENT:
         case CDATA:

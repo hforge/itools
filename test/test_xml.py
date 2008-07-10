@@ -152,7 +152,7 @@ class XMLTestCase(TestCase):
                 '<test>&example;</test>\n')
 
         parser = XMLParser(data)
-        self.assertEqual(list(parser)[5:8], [
+        self.assertEqual(list(parser)[6:9], [
                   (2, (None, 'p', {}), 6),
                   (4, 'An ampersand (&) may be escaped numerically (&#38;) '
                       'or with a general  entity (&amp;).', 6),
@@ -169,7 +169,7 @@ class XMLTestCase(TestCase):
                 '<test>This sample shows a &tricky; method.</test>')
 
         parser = XMLParser(data)
-        self.assertEqual(list(parser)[4], (4,
+        self.assertEqual(list(parser)[5], (4,
                          'This sample shows a error-prone method.', 8))
 
     def test_3(self):
@@ -181,7 +181,7 @@ class XMLTestCase(TestCase):
         expected = '« ƒ Ξ ψ ‰ ℜ ∞ ∴ ♣'
 
         parser = XMLParser(data)
-        self.assertEqual(list(parser)[4][1], expected)
+        self.assertEqual(list(parser)[5][1], expected)
 
 
 class TranslatableTestCase(TestCase):

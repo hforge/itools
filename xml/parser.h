@@ -74,7 +74,7 @@ typedef struct
   EventHeader;
 } CommonEvent;
 
-/* TEXT/COMMENT/CDATA */
+/* DOCUMENT_TYPE/TEXT/COMMENT/CDATA */
 typedef struct
 {
   EventHeader;
@@ -157,11 +157,12 @@ Parser *parser_new (gchar * data, FILE * file);
 void parser_free (Parser * parser);
 
 
-/**********************************************
- * Add a prefix/namespace in namespaces table *
- **********************************************/
+/********************************************
+ * Some external informations about the doc *
+ ********************************************/
 
 void parser_add_namespace (Parser * parser, gchar * prefix, gchar * uri);
+gboolean parser_add_doctype (Parser * parser, gchar * doctype);
 
 
 /***********************************

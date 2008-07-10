@@ -110,7 +110,7 @@ class Param(object):
             return value
         if value == 'None':
             return None
-        if value[-1:] == '%':
+        if value.endswit('%'):
             return value
         for key in self.size.keys():
             lenth_of_key = len(key)
@@ -303,7 +303,6 @@ def pre_stream(stream, tag_name, attributes, param):
     """
 
     stack = []
-    story = []
     styleN = param.get_style('Normal')
     content = []
     has_content = False
@@ -782,7 +781,7 @@ def compute_tr(stream, _tag_name, attributes, table, param):
                 if exist_attribute(attributes, ['bgcolor']):
                     val = attributes.get((URI,'bgcolor'))
                     if val:
-                        if val[0:3] == 'rgb':
+                        if val.startswith('rgb'):
                             val = get_color_hexa(val)
                         table.add_style(('BACKGROUND', (table.current_x,
                                                         table.current_y),
@@ -853,23 +852,23 @@ def build_span_attributes(attributes):
                 element_list = element.split(':')
                 attrs[element_list[0].lower()] = element_list[1].lower()
             if attrs.has_key('color'):
-                x = attrs['color']
-                if x is not None:
-                    if x[0:3] == 'rgb':
-                        attrib[(URI, 'color')] = get_color_hexa(x)
+                color = attrs['color']
+                if color is not None:
+                    if color.startswith('rgb'):
+                        attrib[(URI, 'color')] = get_color_hexa(color)
                     else:
-                        attrib[(URI, 'color')] = x
+                        attrib[(URI, 'color')] = color
             if attrs.has_key('font-family'):
-                x = attrs.pop('font-family')
-                attrib[(URI, 'face')] = FONT.get(x, 'helvetica')
+                family = attrs.pop('font-family')
+                attrib[(URI, 'face')] = FONT.get(family, 'helvetica')
             if attrs.has_key('font-size'):
-                x = attrs.pop('font-size')
-                attrib[(URI, 'size')] = font_value(x)
+                size = attrs.pop('font-size')
+                attrib[(URI, 'size')] = font_value(size)
             if attrs.has_key('font-style'):
-                x = attrs.pop('font-style')
-                if x in ('italic', 'oblique'):
+                style = attrs.pop('font-style')
+                if style in ('italic', 'oblique'):
                     tag_stack.append('i')
-                elif x != 'normal':
+                elif style != 'normal':
                     print 'Warning font-style not valid'
     return attrib, tag_stack
 
@@ -1243,7 +1242,7 @@ def font_value(str_value, style_size = 12):
             value = style_size
         else:
             value = value * style_size / 100
-    elif str_value[-1] == '%':
+    elif str_value.endswith('%'):
         value = (int(str_value.rstrip('%')) * style_size) / 100
     else:
         try:
@@ -1350,8 +1349,6 @@ def exist_attribute(attrs, keys, at_least=False):
             if attrs.has_key((URI, key)) is True:
                 return True
         return False
-
-
 
 
 def is_str(s, check_is_unicode=True):

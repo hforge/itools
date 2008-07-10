@@ -1,7 +1,7 @@
 <html>
   <body>
     <h1>first title : paragraph</h1>
-    <!--<h1>first title : paragraph</h1>--> 
+    <!--<h1>first title : paragraph</h1>-->
     <p>
       This paragraph
       contains a lot of lines
@@ -33,9 +33,9 @@
       <i>Italic text</i><br />
       <b>Bold text</b><br />
       <big>Big text</big><br />
-      <small>Small text</small><br /> 
-      super<sup>text</sup><br /> 
-      sub<sub>text</sub><br /> 
+      <small>Small text</small><br />
+      super<sup>text</sup><br />
+      sub<sub>text</sub><br />
     </p>
     <!--<p>
       <tt>Teletype text</tt>

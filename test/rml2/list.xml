@@ -7,7 +7,7 @@
       <li>Bananas</li>
       <li>Lemons</li>
       <li>Oranges</li>
-    </ol>  
+    </ol>
 
     <h4>Lowercase letters list:</h4>
     <ol type="a">
@@ -15,7 +15,7 @@
       <li>Bananas</li>
       <li>Lemons</li>
       <li>Oranges</li>
-    </ol>  
+    </ol>
 
     <h4>Roman numbers list:</h4>
     <ol type="I">
@@ -23,7 +23,7 @@
       <li>Bananas</li>
       <li>Lemons</li>
       <li>Oranges</li>
-    </ol>  
+    </ol>
 
     <h4>Lowercase Roman numbers list:</h4>
     <ol type="i">
@@ -31,7 +31,7 @@
       <li>Bananas</li>
       <li>Lemons</li>
       <li>Oranges</li>
-    </ol>  
+    </ol>
 
     <h1>Unordered list</h1>
     <h4>Disc bullets list:</h4>
@@ -40,7 +40,7 @@
       <li>Bananas</li>
       <li>Lemons</li>
       <li>Oranges</li>
-    </ul>  
+    </ul>
 
     <h4>Circle bullets list:</h4>
     <ul type="circle">
@@ -48,7 +48,7 @@
       <li>Bananas</li>
       <li>Lemons</li>
       <li>Oranges</li>
-    </ul>  
+    </ul>
 
     <h4>Square bullets list:</h4>
     <ul type="square">
@@ -56,7 +56,7 @@
       <li>Bananas</li>
       <li>Lemons</li>
       <li>Oranges</li>
-    </ul>  
+    </ul>
 
     <h1>Mix</h1>
     <h4>ol in ol</h4>
@@ -99,7 +99,7 @@
       <li>Bananas2</li>
       <li>Lemons2</li>
       <li>Oranges2</li>
-    </ol>  
+    </ol>
 
     <h4>ul in ul</h4>
     <ul>
@@ -120,7 +120,7 @@
       <li>Bananas2</li>
       <li>Lemons2</li>
       <li>Oranges2</li>
-    </ul>  
+    </ul>
 
 
     <h4>ol in ul</h4>
@@ -181,6 +181,6 @@
       <li>Bananas2</li>
       <li>Lemons2</li>
       <li>Oranges2</li>
-    </ul> 
+    </ul>
   </body>
 </html>

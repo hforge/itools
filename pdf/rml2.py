@@ -45,7 +45,6 @@ URI = None
 # Mapping HTML -> REPORTLAB
 P_FORMAT = {'a': 'a', 'i': 'i', 'em': 'i', 'b': 'b', 'strong': 'b', 'u': 'u',
             'span': 'font', 'sup': 'super', 'sub': 'sub', 'p': 'para'}
-SIZE = {'in': inch, 'cm': cm, 'mm': mm, 'pica': pica, 'px': 1}
 SPECIAL = ('a', 'br', 'img', 'span', 'sub', 'sup')
 PHRASE = ('em', 'strong')
 FONT_STYLE = ('b', 'big', 'i', 'small', 'tt')
@@ -73,6 +72,7 @@ class Param(object):
         self.tmp_dir = tempfile.mkdtemp()
         self.init_base_style_sheet()
         self.image_not_found_path = get_abspath(globals(), 'not_found.png')
+        self.size = {'in': inch, 'cm': cm, 'mm': mm, 'pica': pica, 'px': 1}
 
     def init_base_style_sheet(self):
         self.stylesheet = getSampleStyleSheet()
@@ -89,6 +89,40 @@ class Param(object):
                                            parent=self.stylesheet['h5'],
                                            fontSize=9),
                             alias='h6')
+
+
+    def format_size(self, value, default=None):
+        """
+           Return the reportlab value of value
+           only if value is a string
+           '2cm' -> 2 * cm
+           '2in' -> 2 * inch
+           '2in' -> 2 * mm
+           '2in' -> 2 * pica
+           '2%' -> '2%'
+        """
+
+        if value is None:
+            return default
+
+        coef = 1
+        if not is_str(value):
+            return value
+        if value == 'None':
+            return None
+        if value[-1:] == '%':
+            return value
+        for key in self.size.keys():
+            lenth_of_key = len(key)
+            if value.endswith(key):
+                value = value[:-len(key)]
+                coef = self.size[key]
+                break
+        try:
+            value = float(value) * coef
+        except ValueError:
+            value = default
+        return value
 
 
     def get_base_style_sheet(self):
@@ -696,9 +730,9 @@ def compute_image_attrs(stream, _tag_name, _attributes, param):
             file_path, itools_img = check_image(attr_value, param)
             attrs[(URI, 'src')] = file_path
         elif key == 'width':
-            attrs[(URI, 'width')] = rml_value(attr_value)
+            attrs[(URI, 'width')] = param.format_size(attr_value)
         elif key == 'height':
-            attrs[(URI, 'height')] = rml_value(attr_value)
+            attrs[(URI, 'height')] = param.format_size(attr_value)
 
     while True:
         event, value, line_number = stream_next(stream)
@@ -880,7 +914,7 @@ def build_style(param, element):
             if key == 'align':
                 attr_value = ALIGNMENTS.get(attr_value.upper())
             elif key in ['leftIndent', 'rightIndent']:
-                attr_value = rml_value(attr_value)
+                attr_value = param.format_size(attr_value)
             style_attr[key] = attr_value
     style_attr['autoLeading'] = 'max'
 
@@ -917,7 +951,7 @@ def create_hr(attributes):
     attrs['width'] = '100%'
     for key in ('width', 'thickness', 'spaceBefore', 'spaceAfter'):
         if exist_attribute(attributes, [key]):
-            attrs[key] = rml_value(attributes.get((URI, key)))
+            attrs[key] = param.format_size(attributes.get((URI, key)))
 
     if exist_attribute(attributes, ['lineCap']):
         line_cap = attributes.get((URI, 'lineCap'))
@@ -944,8 +978,8 @@ def create_img(attributes, param, check_dimension=False):
         are not set we return None
     """
     filename = attributes.get((URI, 'src'), None)
-    width = rml_value(attributes.get((URI, 'width'), None))
-    height = rml_value(attributes.get((URI, 'height'), None))
+    width = param.format_size(attributes.get((URI, 'width'), None))
+    height = param.format_size(attributes.get((URI, 'height'), None))
     if filename is None:
         print u'/!\ Filename is None'
         return None
@@ -1142,8 +1176,8 @@ class Table_Content(object):
             none_list = [ None for x in xrange(l, self.current_x+1) ]
             self.colWidths.extend(none_list)
         if self.colWidths is None\
-            or rml_value(width) > self.colWidths[self.current_x]:
-            self.colWidths[self.current_x] = rml_value(width)
+            or param.format_size(width) > self.colWidths[self.current_x]:
+            self.colWidths[self.current_x] = param.format_size(width)
 
 
     def add_span(self, start, stop):
@@ -1318,38 +1352,6 @@ def exist_attribute(attrs, keys, at_least=False):
         return False
 
 
-def rml_value(value, default=None):
-    """
-       Return the reportlab value of value
-       only if value is a string
-       '2cm' -> 2 * cm
-       '2in' -> 2 * inch
-       '2in' -> 2 * mm
-       '2in' -> 2 * pica
-       '2%' -> '2%'
-    """
-
-    if value is None:
-        return default
-
-    coef = 1
-    if not is_str(value):
-        return value
-
-    if value == 'None':
-        return None
-    if value[-1:] == '%':
-        return value
-    for key in SIZE.keys():
-        l = len(key)
-        if value[-l:] == key:
-            value = value[:-l]
-            coef = SIZE[key]
-    try:
-        value = float(value) * coef
-    except ValueError:
-        value = default
-    return value
 
 
 def is_str(s, check_is_unicode=True):

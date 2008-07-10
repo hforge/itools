@@ -1033,7 +1033,7 @@ def build_image(filename, width, height, param):
     x, y = itools_img.get_size()
     #FIXME not like html
     if height or width:
-        if isinstance(width, str) and width.endswith('%'):
+        if isinstance(width, str) and width[-1:] == '%':
             width = get_int_value(width[:-1])
             if not height:
                 height = width

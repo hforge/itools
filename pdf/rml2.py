@@ -195,6 +195,7 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
     story = []
     parameters = Param()
     state = 0
+    informations = None
     while True:
         event, value, line_number = stream_next(stream)
         if event == None:
@@ -208,6 +209,9 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
                 else:
                     print WARNING_DTD % ('document', line_number, tag_name)
                 continue
+            elif tag_name == 'head':
+                informations = head_stream(stream, tag_name, attributes,
+                                           parameters)
             elif tag_name == 'body':
                 if state == 1:
                     state = 2
@@ -236,10 +240,57 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
         test_data = list(story), parameters.get_base_style_sheet()
 
     doc = SimpleDocTemplate(pdf_stream, pagesize=LETTER)
+    doc.author = informations.get('author', '')
+    doc.title = informations.get('title', '')
     doc.build(story)
 
     if is_test == True:
         return test_data
+
+
+def head_stream(stream, _tag_name, _attributes, param):
+    informations = {}
+    names = ('author', 'copyright', 'date', 'keywords')
+    content = []
+    while True:
+        event, value, line_number = stream_next(stream)
+        if event == None:
+            break
+        #### START ELEMENT ####
+        if event == START_ELEMENT:
+            tag_uri, tag_name, attributes = value
+            content = []
+            if tag_name == 'meta':
+                if exist_attribute(attributes, ['name']):
+                    name = attributes.get((URI, 'name'))
+                    if exist_attribute(attributes, ['content']):
+                        if name in names:
+                            attr_content = attributes.get((URI, 'content'))
+                            informations[name] = normalize(attr_content)
+            elif tag_name == 'title':
+                continue
+            else:
+                print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
+
+        #### END ELEMENT ####
+        elif event == END_ELEMENT:
+            tag_uri, tag_name = value
+            if tag_name == _tag_name:
+                if len(informations):
+                    return informations
+                else:
+                    return None
+            elif tag_name == 'title':
+                informations[tag_name] = normalize(' '.join(content))
+            elif tag_name == 'meta':
+                continue
+            else:
+                print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
+                # unknown tag
+
+        #### TEXT ELEMENT ####
+        elif event == TEXT:
+            content.append(value)
 
 
 def body_stream(stream, _tag_name, _attributes, param):

@@ -44,8 +44,8 @@ encoding = 'UTF-8'
 URI = None
 # Mapping HTML -> REPORTLAB
 P_FORMAT = {'a': 'a', 'em': 'i', 'b': 'b', 'span': 'font', 'sub': 'sub',
-            'i': 'i', 'tt': 'font', 'p': 'para', 'u': 'u', 'sup': 'super',
-            'strong': 'b'}
+            'i': 'i', 'big': 'font', 'tt': 'font', 'p': 'para', 'u': 'u',
+            'sup': 'super', 'small': 'font', 'strong': 'b'}
 SPECIAL = ('a', 'br', 'img', 'span', 'sub', 'sup')
 PHRASE = ('em', 'strong')
 FONT_STYLE = ('b', 'big', 'i', 'small', 'tt')
@@ -627,6 +627,20 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, param):
                 elif tag_name == 'tt':
                     tag = P_FORMAT.get(tag_name, 'b')
                     attrs = {(URI, 'face'): FONT['monospace']}
+                    if cpt or has_content:
+                        content[-1] += build_start_tag(tag, attrs)
+                    else:
+                        content.append(build_start_tag(tag, attrs))
+                elif tag_name == 'small':
+                    tag = P_FORMAT.get(tag_name, 'b')
+                    attrs = {(URI, 'size'): font_value('80%')}
+                    if cpt or has_content:
+                        content[-1] += build_start_tag(tag, attrs)
+                    else:
+                        content.append(build_start_tag(tag, attrs))
+                elif tag_name == 'big':
+                    tag = P_FORMAT.get(tag_name, 'b')
+                    attrs = {(URI, 'size'): font_value('120%')}
                     if cpt or has_content:
                         content[-1] += build_start_tag(tag, attrs)
                     else:

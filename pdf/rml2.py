@@ -529,7 +529,7 @@ def list_stream(stream, _tag_name, attributes, param, id=0):
 
 
 def table_stream(stream, _tag_name, attributes, param):
-    content = Table_Content()
+    content = Table_Content(param)
     start = (0, 0)
     stop = (-1, -1)
     if exist_attribute(attributes, ['border']):
@@ -791,6 +791,9 @@ def compute_tr(stream, _tag_name, attributes, table, param):
                 if exist_attribute(attributes, ['width']):
                     width = attributes.get((URI, 'width'))
                     table.add_colWidth(width)
+                if exist_attribute(attributes, ['height']):
+                    width = attributes.get((URI, 'height'))
+                    table.add_lineHeight(width)
                 if exist_attribute(attributes, ['colspan', 'rowspan'],
                                    at_least=True):
                     rowspan = attributes.get((URI, 'rowspan'))
@@ -1045,7 +1048,7 @@ def build_image(filename, width, height, param):
 class Table_Content(object):
 
 
-    def __init__(self, parent_style=None):
+    def __init__(self, param, parent_style=None):
         self.content = []
         """
         [['foo'], ['bar']] => size[1,2]
@@ -1061,6 +1064,8 @@ class Table_Content(object):
         self.current_x = 0
         self.current_y = 0
         self.colWidths = []
+        self.rowHeights = []
+        self.parameters = param
 
 
     def add_attributes(self, name, value):
@@ -1148,8 +1153,13 @@ class Table_Content(object):
 
 
     def create(self):
+        l = len(self.rowHeights)
+        if l:
+            self.rowHeights.extend([ None for x in xrange(l, self.current_y) ])
+        else:
+            self.rowHeights = None
         return Table(self.content, style=self.style, colWidths=self.colWidths,
-                     **self.attrs)
+                     rowHeights=self.rowHeights, **self.attrs)
 
 
     def create_table_line(self):
@@ -1164,9 +1174,19 @@ class Table_Content(object):
         if not self.current_y and l <= self.current_x:
             none_list = [ None for x in xrange(l, self.current_x+1) ]
             self.colWidths.extend(none_list)
-        if self.colWidths is None\
-            or param.format_size(width) > self.colWidths[self.current_x]:
-            self.colWidths[self.current_x] = param.format_size(width)
+        if self.colWidths[self.current_x] is None\
+            or self.parameters.format_size(width) > self.colWidths[self.current_x]:
+            self.colWidths[self.current_x] = self.parameters.format_size(width)
+
+
+    def add_lineHeight(self, value):
+        l = len(self.rowHeights)
+        if l <= self.current_y:
+            none_list = [ None for y in xrange(l, self.current_y+1) ]
+            self.rowHeights.extend(none_list)
+        if self.rowHeights[self.current_y] is None\
+            or self.parameters.format_size(value) > self.rowHeights[self.current_y]:
+            self.rowHeights[self.current_y] = self.parameters.format_size(value)
 
 
     def add_span(self, start, stop):

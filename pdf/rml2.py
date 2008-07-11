@@ -74,6 +74,7 @@ class Param(object):
         self.image_not_found_path = get_abspath(globals(), 'not_found.png')
         self.size = {'in': inch, 'cm': cm, 'mm': mm, 'pica': pica, 'px': 1}
 
+
     def init_base_style_sheet(self):
         self.stylesheet = getSampleStyleSheet()
         # Add heading level 4, 5 and 6 like in html
@@ -178,8 +179,6 @@ def rml2topdf(filename):
     iostream = StringIO()
     document_stream(stream, iostream, filename, False)
     return iostream.getvalue()
-
-
 
 
 def document_stream(stream, pdf_stream, document_name, is_test=False):
@@ -1044,7 +1043,9 @@ def build_image(filename, width, height, param):
 
 
 class Table_Content(object):
-
+    """
+        Allow to add, to manipulate table content and to create platypus widget
+    """
 
     def __init__(self, param, parent_style=None):
         self.content = []
@@ -1066,8 +1067,20 @@ class Table_Content(object):
         self.parameters = param
 
 
-    def add_attributes(self, name, value):
-        self.attrs[name] = value
+    # Create platypus object
+    def create(self):
+        l = len(self.rowHeights)
+        if l:
+            self.rowHeights.extend([ None for x in xrange(l, self.current_y) ])
+        else:
+            self.rowHeights = None
+        return Table(self.content, style=self.style, colWidths=self.colWidths,
+                     rowHeights=self.rowHeights, **self.attrs)
+
+
+    # Get current position in table
+    def get_current(self):
+        return (self.current_x, self.current_y)
 
 
     def next_line(self):
@@ -1116,6 +1129,11 @@ class Table_Content(object):
             self.size[0] += 1
 
 
+    # Attributes
+    def add_attributes(self, name, value):
+        self.attrs[name] = value
+
+
     def add_style(self, style):
         self.style.append(style)
 
@@ -1146,31 +1164,11 @@ class Table_Content(object):
         return (col, row)
 
 
-    def get_current(self):
-        return (self.current_x, self.current_y)
-
-
-    def create(self):
-        l = len(self.rowHeights)
-        if l:
-            self.rowHeights.extend([ None for x in xrange(l, self.current_y) ])
-        else:
-            self.rowHeights = None
-        return Table(self.content, style=self.style, colWidths=self.colWidths,
-                     rowHeights=self.rowHeights, **self.attrs)
-
-
-    def create_table_line(self):
-        line = []
-        line.extend([ 0 for x in xrange(self.size[0]) ])
-        self.content.append(line)
-        self.size[1] += 1
-
-
+    # Set colomn and line size
     def add_colWidth(self, width):
-        l = len(self.colWidths)
-        if not self.current_y and l <= self.current_x:
-            none_list = [ None for x in xrange(l, self.current_x+1) ]
+        list_lenth = len(self.colWidths)
+        if not self.current_y and list_lenth <= self.current_x:
+            none_list = [ None for x in xrange(list_lenth, self.current_x+1) ]
             self.colWidths.extend(none_list)
         if self.colWidths[self.current_x] is None\
             or self.parameters.format_size(width) > self.colWidths[self.current_x]:
@@ -1178,13 +1176,21 @@ class Table_Content(object):
 
 
     def add_lineHeight(self, value):
-        l = len(self.rowHeights)
-        if l <= self.current_y:
-            none_list = [ None for y in xrange(l, self.current_y+1) ]
+        list_lenth = len(self.rowHeights)
+        if list_lenth <= self.current_y:
+            none_list = [ None for y in xrange(list_lenth, self.current_y+1) ]
             self.rowHeights.extend(none_list)
         if self.rowHeights[self.current_y] is None\
             or self.parameters.format_size(value) > self.rowHeights[self.current_y]:
             self.rowHeights[self.current_y] = self.parameters.format_size(value)
+
+
+    # Internal
+    def create_table_line(self):
+        line = []
+        line.extend([ 0 for x in xrange(self.size[0]) ])
+        self.content.append(line)
+        self.size[1] += 1
 
 
     def add_span(self, start, stop):
@@ -1295,14 +1301,6 @@ def build_end_tag(tag_name):
     return '</%s>' % tag_name
 
 
-def get_color(value):
-    if value:
-        if value.startswith('rgb'):
-            value = get_color_hexa(value)
-        color = colors.toColor(value, colors.black)
-    return color
-
-
 def get_color_hexa(x):
     x = x.lstrip('#rgb(').rstrip(')').split(',')
     x = [int(i) for i in x]
@@ -1318,6 +1316,14 @@ def get_color_hexa(x):
     return '#%s' % ''.join(tmp)
 
 
+def get_color(value):
+    if value:
+        if value.startswith('rgb'):
+            value = get_color_hexa(value)
+        color = colors.toColor(value, colors.black)
+    return color
+
+
 def get_int_value(value, default=0):
     """
     Return the interger representation of value is his decoding succeed
@@ -1329,8 +1335,6 @@ def get_int_value(value, default=0):
         return Integer.decode(value)
     except ValueError:
         return default
-
-
 
 
 def get_bullet(type, indent='-0.4cm'):

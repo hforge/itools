@@ -830,37 +830,6 @@ def compute_tr(stream, _tag_name, attributes, table, param):
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
 
 
-def compute_td(stream, _tag_name, attributes):
-    content = []
-
-    while True:
-        event, value, line_number = stream_next(stream)
-        if event == None:
-            break
-        #### START ELEMENT ####
-        if event == START_ELEMENT:
-            tag_uri, tag_name, attributes = value
-            if tag_name in INLINE:
-                content.append('<%s>' % tag_name)
-            else:
-                print WARNING_DTD % ('document', line_number, tag_name)
-
-        #### END ELEMENT ####
-        elif event == END_ELEMENT:
-            tag_uri, tag_name = value
-            if tag_name in INLINE:
-                content.append('</%s>' % tag_name)
-            elif tag_name == _tag_name:
-                return ' '.join(content)
-            else:
-                print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
-
-        #### TEXT ELEMENT ####
-        elif event == TEXT:
-            value = XMLContent.encode(value)
-            content.append(value)
-
-
 def build_span_attributes(attributes):
     tag_stack = []
     attrs = {}

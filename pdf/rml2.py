@@ -805,13 +805,10 @@ def compute_tr(stream, _tag_name, attributes, table, param):
                 # DEPRECATED
                 if exist_attribute(attributes, ['bgcolor']):
                     val = attributes.get((URI,'bgcolor'))
-                    if val:
-                        if val.startswith('rgb'):
-                            val = get_color_hexa(val)
-                        table.add_style(('BACKGROUND', (table.current_x,
-                                                        table.current_y),
-                                         stop, colors.toColor(val,
-                                         colors.black)))
+                    color = get_color(val)
+                    table.add_style(('BACKGROUND', (table.current_x,
+                                                    table.current_y),
+                                     stop, color))
                 #ALIGNMENT
                 for i in ('align', 'valign'):
                     if exist_attribute(attributes, [i]):
@@ -1299,7 +1296,11 @@ def build_end_tag(tag_name):
 
 
 def get_color(value):
-    raise NotImplementedError
+    if value:
+        if value.startswith('rgb'):
+            value = get_color_hexa(value)
+        color = colors.toColor(value, colors.black)
+    return color
 
 
 def get_color_hexa(x):

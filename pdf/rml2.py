@@ -263,7 +263,7 @@ def body_stream(stream, _tag_name, _attributes, param):
                 story.append(pre_stream(stream, tag_name, attributes,
                                         param))
             elif tag_name == 'hr':
-                story.append(hr_stream(stream, tag_name, attributes))
+                story.append(hr_stream(stream, tag_name, attributes, param))
             elif tag_name == 'img':
                 widget = img_stream(stream, tag_name, attributes, param)
                 if widget:
@@ -336,7 +336,7 @@ def pre_stream(stream, tag_name, attributes, param):
                 content.append(value)
 
 
-def hr_stream(stream, _tag_name, _attributes):
+def hr_stream(stream, _tag_name, _attributes, param):
     """
         Create a hr widget.
 
@@ -355,7 +355,7 @@ def hr_stream(stream, _tag_name, _attributes):
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
             if tag_name == _tag_name:
-                return create_hr(_attributes)
+                return create_hr(_attributes, param)
         #### TEXT ELEMENT ####
         elif event == TEXT:
             pass
@@ -591,7 +591,8 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, param):
                     story.append(pre_stream(stream, tag_name, attributes,
                                             param))
                 elif tag_name == 'hr':
-                    story.append(hr_stream(stream, tag_name, attributes))
+                    story.append(hr_stream(stream, tag_name, attributes,
+                                           param))
                 elif tag_name == 'img':
                     widget = img_stream(stream, tag_name, attributes, param)
                     if widget:
@@ -934,7 +935,7 @@ def create_preformatted(param, element, content):
     return widget
 
 
-def create_hr(attributes):
+def create_hr(attributes, param):
     """
         Create a reportlab hr widget
     """

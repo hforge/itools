@@ -16,6 +16,7 @@
 
 # Import from the Standard Library
 from string import Template
+from sys import _getframe
 from types import ModuleType
 
 # Import from itools
@@ -85,9 +86,13 @@ class MSG(object):
 
     __slots__ = ['message', 'domain']
 
-    def __init__(self, message, domain):
+    def __init__(self, message, domain=None):
+        if domain is None:
+            domain = _getframe(1).f_globals.get('__name__')
+            domain = domain.split('.', 1)[0]
+
         self.message = message
-        self.domain = domain.split('.', 1)[0]
+        self.domain = domain
 
 
     def gettext(self, language=None, **kw):

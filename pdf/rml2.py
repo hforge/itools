@@ -43,8 +43,9 @@ import tempfile
 encoding = 'UTF-8'
 URI = None
 # Mapping HTML -> REPORTLAB
-P_FORMAT = {'a': 'a', 'i': 'i', 'em': 'i', 'b': 'b', 'strong': 'b', 'u': 'u',
-            'span': 'font', 'sup': 'super', 'sub': 'sub', 'p': 'para'}
+P_FORMAT = {'a': 'a', 'em': 'i', 'b': 'b', 'span': 'font', 'sub': 'sub',
+            'i': 'i', 'tt': 'font', 'p': 'para', 'u': 'u', 'sup': 'super',
+            'strong': 'b'}
 SPECIAL = ('a', 'br', 'img', 'span', 'sub', 'sup')
 PHRASE = ('em', 'strong')
 FONT_STYLE = ('b', 'big', 'i', 'small', 'tt')
@@ -616,6 +617,13 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, param):
                     else:
                         content.append(build_start_tag(tag))
                     cpt += 1
+                elif tag_name == 'tt':
+                    tag = P_FORMAT.get(tag_name, 'b')
+                    attrs = {(URI, 'face'): FONT['monospace']}
+                    if cpt or has_content:
+                        content[-1] += build_start_tag(tag, attrs)
+                    else:
+                        content.append(build_start_tag(tag, attrs))
                 elif tag_name == 'span':
                     tag = P_FORMAT.get(tag_name, 'b')
                     attrs, tag_stack = build_span_attributes(attributes)

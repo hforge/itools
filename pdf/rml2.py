@@ -435,6 +435,20 @@ def list_stream(stream, _tag_name, attributes, param, id=0):
                         content[-1] += build_start_tag(tag, attrs)
                     else:
                         content.append(build_start_tag(tag, attrs))
+                elif tag_name == 'small':
+                    tag = P_FORMAT.get(tag_name, 'b')
+                    attrs = {(URI, 'size'): font_value('80%')}
+                    if cpt or has_content:
+                        content[-1] += build_start_tag(tag, attrs)
+                    else:
+                        content.append(build_start_tag(tag, attrs))
+                elif tag_name == 'big':
+                    tag = P_FORMAT.get(tag_name, 'b')
+                    attrs = {(URI, 'size'): font_value('120%')}
+                    if cpt or has_content:
+                        content[-1] += build_start_tag(tag, attrs)
+                    else:
+                        content.append(build_start_tag(tag, attrs))
                 elif tag_name == 'span':
                     tag = P_FORMAT.get(tag_name, 'b')
                     attrs, tag_stack = build_span_attributes(attributes)

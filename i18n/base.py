@@ -51,7 +51,7 @@ def get_language_name(code):
     """
     if code in languages:
         return languages[code]
-    return MSG(u'???', __name__)
+    return MSG(u'???')
 
 
 

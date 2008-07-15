@@ -44,8 +44,8 @@ encoding = 'UTF-8'
 URI = None
 # Mapping HTML -> REPORTLAB
 P_FORMAT = {'a': 'a', 'em': 'i', 'b': 'b', 'span': 'font', 'sub': 'sub',
-            'i': 'i', 'big': 'font', 'tt': 'font', 'p': 'para', 'u': 'u',
-            'sup': 'super', 'small': 'font', 'strong': 'b'}
+            'i': 'i', 'img': 'img', 'big': 'font', 'tt': 'font', 'p': 'para',
+            'u': 'u', 'sup': 'super', 'small': 'font', 'strong': 'b'}
 SPECIAL = ('a', 'br', 'img', 'span', 'sub', 'sup')
 PHRASE = ('em', 'strong')
 FONT_STYLE = ('b', 'big', 'i', 'small', 'tt')
@@ -477,42 +477,20 @@ def list_stream(stream, _tag_name, attributes, param, id=0):
                 content.append(bullet)
             elif tag_name in INLINE:
                 start_tag = True
-                if tag_name in ('i', 'em', 'b', 'strong', 'u', 'sup', 'sub'):
+                if tag_name in ('b', 'big', 'em', 'i', 'small', 'strong',
+                                'sub', 'sup', 'tt', 'u'):
                     # FIXME
-                    tag = P_FORMAT.get(tag_name, 'b')
                     if cpt or has_content:
-                        content[-1] += build_start_tag(tag)
+                        content[-1] += build_start_tag(tag_name)
                     else:
-                        content.append(build_start_tag(tag))
+                        content.append(build_start_tag(tag_name))
                     cpt += 1
-                elif tag_name == 'tt':
-                    tag = P_FORMAT.get(tag_name, 'b')
-                    attrs = {(URI, 'face'): FONT['monospace']}
-                    if cpt or has_content:
-                        content[-1] += build_start_tag(tag, attrs)
-                    else:
-                        content.append(build_start_tag(tag, attrs))
-                elif tag_name == 'small':
-                    tag = P_FORMAT.get(tag_name, 'b')
-                    attrs = {(URI, 'size'): font_value('80%')}
-                    if cpt or has_content:
-                        content[-1] += build_start_tag(tag, attrs)
-                    else:
-                        content.append(build_start_tag(tag, attrs))
-                elif tag_name == 'big':
-                    tag = P_FORMAT.get(tag_name, 'b')
-                    attrs = {(URI, 'size'): font_value('120%')}
-                    if cpt or has_content:
-                        content[-1] += build_start_tag(tag, attrs)
-                    else:
-                        content.append(build_start_tag(tag, attrs))
                 elif tag_name == 'span':
-                    tag = P_FORMAT.get(tag_name, 'b')
                     attrs, tag_stack = build_span_attributes(attributes)
                     if cpt or has_content:
-                        content[-1] += build_start_tag(tag, attrs)
+                        content[-1] += build_start_tag(tag_name, attrs)
                     else:
-                        content.append(build_start_tag(tag, attrs))
+                        content.append(build_start_tag(tag_name, attrs))
                     for i in tag_stack:
                         content[-1] += '<%s>' % i
                     cpt += 1
@@ -534,6 +512,8 @@ def list_stream(stream, _tag_name, attributes, param, id=0):
                     print TAG_NOT_SUPPORTED % ('document', line_number,
                                                tag_name)
                     stack.append((tag_name, attributes))
+            else:
+                print WARNING_DTD % ('document', line_number, tag_name)
 
         #### END ELEMENT ####
         elif event == END_ELEMENT:
@@ -693,42 +673,20 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, param):
                     continue
             if tag_name in INLINE:
                 start_tag = True
-                if tag_name in ('i', 'em', 'b', 'strong', 'u', 'sup', 'sub'):
+                if tag_name in ('b', 'big', 'em', 'i', 'small', 'strong',
+                                'sub', 'sup', 'tt', 'u'):
                     # FIXME
-                    tag = P_FORMAT.get(tag_name, 'b')
                     if cpt or has_content:
-                        content[-1] += build_start_tag(tag)
+                        content[-1] += build_start_tag(tag_name)
                     else:
-                        content.append(build_start_tag(tag))
+                        content.append(build_start_tag(tag_name))
                     cpt += 1
-                elif tag_name == 'tt':
-                    tag = P_FORMAT.get(tag_name, 'b')
-                    attrs = {(URI, 'face'): FONT['monospace']}
-                    if cpt or has_content:
-                        content[-1] += build_start_tag(tag, attrs)
-                    else:
-                        content.append(build_start_tag(tag, attrs))
-                elif tag_name == 'small':
-                    tag = P_FORMAT.get(tag_name, 'b')
-                    attrs = {(URI, 'size'): font_value('80%')}
-                    if cpt or has_content:
-                        content[-1] += build_start_tag(tag, attrs)
-                    else:
-                        content.append(build_start_tag(tag, attrs))
-                elif tag_name == 'big':
-                    tag = P_FORMAT.get(tag_name, 'b')
-                    attrs = {(URI, 'size'): font_value('120%')}
-                    if cpt or has_content:
-                        content[-1] += build_start_tag(tag, attrs)
-                    else:
-                        content.append(build_start_tag(tag, attrs))
                 elif tag_name == 'span':
-                    tag = P_FORMAT.get(tag_name, 'b')
                     attrs, tag_stack = build_span_attributes(attributes)
                     if cpt or has_content:
-                        content[-1] += build_start_tag(tag, attrs)
+                        content[-1] += build_start_tag(tag_name, attrs)
                     else:
-                        content.append(build_start_tag(tag, attrs))
+                        content.append(build_start_tag(tag_name, attrs))
                     for i in tag_stack:
                         content[-1] += '<%s>' % i
                     cpt += 1
@@ -1382,7 +1340,6 @@ def build_start_tag(tag_name, attributes={}):
         Create the XML start tag from his name and his attributes
         span => font (map)
     """
-
     if tag_name == 'a':
         tag = None
         attrs = {}
@@ -1399,9 +1356,18 @@ def build_start_tag(tag_name, attributes={}):
             else:
                 tag = '<a name="%s">' % name
         return tag
-    attr_str = ''.join([' %s="%s"' % (key[1], attributes[key])
-                            for key in attributes.keys()])
-    return '<%s%s>' % (tag_name, attr_str)
+    elif tag_name == 'big':
+        attrs = {(URI, 'size'): font_value('120%')}
+    elif tag_name == 'small':
+        attrs = {(URI, 'size'): font_value('80%')}
+    elif tag_name == 'tt':
+        attrs = {(URI, 'face'): FONT['monospace']}
+    else:
+        attrs = attributes
+    tag = P_FORMAT.get(tag_name, 'b')
+    attr_str = ''.join([' %s="%s"' % (key[1], attrs[key])
+                            for key in attrs.keys()])
+    return '<%s%s>' % (tag, attr_str)
 
 
 def build_end_tag(tag_name):

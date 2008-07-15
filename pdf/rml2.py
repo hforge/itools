@@ -242,6 +242,7 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
     doc = SimpleDocTemplate(pdf_stream, pagesize=LETTER)
     doc.author = informations.get('author', '')
     doc.title = informations.get('title', '')
+    doc.subject = informations.get('subject', '')
     doc.keywords = informations.get('keywords', [])
     doc.build(story)
 
@@ -251,7 +252,7 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
 
 def head_stream(stream, _tag_name, _attributes, param):
     informations = {}
-    names = ('author', 'copyright', 'date', 'keywords')
+    names = ('author', 'copyright', 'date', 'keywords', 'subject')
     content = []
     while True:
         event, value, line_number = stream_next(stream)

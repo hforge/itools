@@ -421,8 +421,25 @@ def hr_stream(stream, _tag_name, _attributes, param):
 
 
 def img_stream(stream, _tag_name, _attributes, param):
-    attrs = compute_image_attrs(stream, _tag_name, _attributes, param)
-    return create_img(attrs, param)
+    attrs = build_img_attributes(_attributes, param)
+    while True:
+        event, value, line_number = stream_next(stream)
+        if event == None:
+            break
+        #### START ELEMENT ####
+        if event == START_ELEMENT:
+            tag_uri, tag_name, attributes = value
+            print WARNING_DTD % ('document', line_number, tag_name)
+        #### END ELEMENT ####
+        elif event == END_ELEMENT:
+            tag_uri, tag_name = value
+            if tag_name == _tag_name:
+                return create_img(attrs, param)
+        #### TEXT ELEMENT ####
+        elif event == TEXT:
+            pass
+        else:
+            print WARNING_DTD % ('document', line_number, tag_name)
 
 
 def list_stream(stream, _tag_name, attributes, param, id=0):
@@ -498,11 +515,8 @@ def list_stream(stream, _tag_name, attributes, param, id=0):
                 elif tag_name == 'br':
                     continue
                 elif tag_name == 'img':
-                    img_attrs = compute_image_attrs(stream, tag_name,
-                                                    attributes, param)
-                    content.append(build_start_tag(tag_name, img_attrs))
-                    content[-1] = content[-1].rstrip('>')
-                    content[-1] += ' valign="middle"/>'
+                    attrs = build_img_attributes(attributes, param)
+                    content.append(build_start_tag(tag_name, attrs))
                 else:
                     print TAG_NOT_SUPPORTED % ('document', line_number,
                                                tag_name)
@@ -689,11 +703,8 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, param):
                 elif tag_name == 'br':
                     continue
                 elif tag_name == 'img':
-                    img_attrs = compute_image_attrs(stream, tag_name,
-                                                    attributes, param)
-                    content.append(build_start_tag(tag_name, img_attrs))
-                    content[-1] = content[-1].rstrip('>')
-                    content[-1] += ' valign="middle"/>'
+                    attrs = build_img_attributes(attributes, param)
+                    content.append(build_start_tag(tag_name, attrs))
                 else:
                     print TAG_NOT_SUPPORTED % ('document', line_number,
                                                tag_name)
@@ -775,7 +786,7 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, param):
                     content.append(value)
 
 
-def compute_image_attrs(stream, _tag_name, _attributes, param):
+def build_img_attributes(_attributes, param):
     attrs = {}
     itools_img = None
     for key, attr_value in _attributes.iteritems():
@@ -793,7 +804,7 @@ def compute_image_attrs(stream, _tag_name, _attributes, param):
 
     if exist_width:
         element = attrs[(URI, 'width')]
-        if element.endswith('%'):
+        if isinstance(element, str) and element.endswith('%'):
             width, height = itools_img.get_size()
             value = get_int_value(element[:-1])
             attrs[(URI, 'width')] = value * width / 100.0
@@ -801,31 +812,13 @@ def compute_image_attrs(stream, _tag_name, _attributes, param):
                 attrs[(URI, 'height')] = value * height / 100.0
     if exist_height and isinstance(attrs[(URI, 'height')], str):
         element = attrs[(URI, 'height')]
-        if element.endswith('%'):
+        if isinstance(element, str) and element.endswith('%'):
             value = get_int_value(element[:-1])
             width, height = itools_img.get_size()
             attrs[(URI, 'height')] = value * height / 100.0
             if not exist_width:
                 attrs[(URI, 'width')] = value * width / 100.0
-
-    while True:
-        event, value, line_number = stream_next(stream)
-        if event == None:
-            break
-        #### START ELEMENT ####
-        if event == START_ELEMENT:
-            tag_uri, tag_name, attributes = value
-            print WARNING_DTD % ('document', line_number, tag_name)
-        #### END ELEMENT ####
-        elif event == END_ELEMENT:
-            tag_uri, tag_name = value
-            if tag_name == _tag_name:
-                return attrs
-        #### TEXT ELEMENT ####
-        elif event == TEXT:
-            pass
-        else:
-            print WARNING_DTD % ('document', line_number, tag_name)
+    return attrs
 
 
 def compute_tr(stream, _tag_name, attributes, table, param):

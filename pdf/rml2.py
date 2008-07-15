@@ -477,13 +477,14 @@ def list_stream(stream, _tag_name, attributes, param, id=0):
                 content.append(bullet)
             elif tag_name in INLINE:
                 start_tag = True
-                if tag_name in ('b', 'big', 'em', 'i', 'small', 'strong',
+                if tag_name in ('a', 'b', 'big', 'em', 'i', 'small', 'strong',
                                 'sub', 'sup', 'tt', 'u'):
                     # FIXME
+                    attrs = build_attributes(tag_name, attributes)
                     if cpt or has_content:
-                        content[-1] += build_start_tag(tag_name)
+                        content[-1] += build_start_tag(tag_name, attrs)
                     else:
-                        content.append(build_start_tag(tag_name))
+                        content.append(build_start_tag(tag_name, attrs))
                     cpt += 1
                 elif tag_name == 'span':
                     attrs, tag_stack = build_span_attributes(attributes)
@@ -496,12 +497,6 @@ def list_stream(stream, _tag_name, attributes, param, id=0):
                     cpt += 1
                 elif tag_name == 'br':
                     continue
-                elif tag_name == 'a':
-                    if cpt or has_content:
-                        content[-1] += build_start_tag(tag_name, attributes)
-                    else:
-                        content.append(build_start_tag(tag_name, attributes))
-                    cpt += 1
                 elif tag_name == 'img':
                     img_attrs = compute_image_attrs(stream, tag_name,
                                                     attributes, param)
@@ -673,13 +668,14 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, param):
                     continue
             if tag_name in INLINE:
                 start_tag = True
-                if tag_name in ('b', 'big', 'em', 'i', 'small', 'strong',
+                if tag_name in ('a', 'b', 'big', 'em', 'i', 'small', 'strong',
                                 'sub', 'sup', 'tt', 'u'):
                     # FIXME
+                    attrs = build_attributes(tag_name, attributes)
                     if cpt or has_content:
-                        content[-1] += build_start_tag(tag_name)
+                        content[-1] += build_start_tag(tag_name, attrs)
                     else:
-                        content.append(build_start_tag(tag_name))
+                        content.append(build_start_tag(tag_name, attrs))
                     cpt += 1
                 elif tag_name == 'span':
                     attrs, tag_stack = build_span_attributes(attributes)
@@ -692,12 +688,6 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, param):
                     cpt += 1
                 elif tag_name == 'br':
                     continue
-                elif tag_name == 'a':
-                    if cpt or has_content:
-                        content[-1] += build_start_tag(tag_name, attributes)
-                    else:
-                        content.append(build_start_tag(tag_name, attributes))
-                    cpt += 1
                 elif tag_name == 'img':
                     img_attrs = compute_image_attrs(stream, tag_name,
                                                     attributes, param)
@@ -1335,6 +1325,20 @@ def font_value(str_value, style_size = 12):
     return value
 
 
+def build_attributes(tag_name, attributes):
+    if tag_name == 'a':
+        attrs = attributes
+    elif tag_name == 'big':
+        attrs = {(URI, 'size'): font_value('120%')}
+    elif tag_name == 'small':
+        attrs = {(URI, 'size'): font_value('80%')}
+    elif tag_name == 'tt':
+        attrs = {(URI, 'face'): FONT['monospace']}
+    else:
+        attrs = {}
+    return attrs
+
+
 def build_start_tag(tag_name, attributes={}):
     """
         Create the XML start tag from his name and his attributes
@@ -1356,12 +1360,6 @@ def build_start_tag(tag_name, attributes={}):
             else:
                 tag = '<a name="%s">' % name
         return tag
-    elif tag_name == 'big':
-        attrs = {(URI, 'size'): font_value('120%')}
-    elif tag_name == 'small':
-        attrs = {(URI, 'size'): font_value('80%')}
-    elif tag_name == 'tt':
-        attrs = {(URI, 'face'): FONT['monospace']}
     else:
         attrs = attributes
     tag = P_FORMAT.get(tag_name, 'b')

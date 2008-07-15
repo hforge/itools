@@ -1141,7 +1141,8 @@ def build_image(filename, width, height, param):
 
 class Table_Content(object):
     """
-        Allow to add, to manipulate table content and to create platypus widget
+        Allow to add, to manipulate table content and to create platypus
+        widget
     """
 
     def __init__(self, param, parent_style=None):
@@ -1168,7 +1169,8 @@ class Table_Content(object):
     def create(self):
         l = len(self.rowHeights)
         if l:
-            self.rowHeights.extend([ None for x in xrange(l, self.current_y) ])
+            none_list = [ None for x in xrange(l, self.current_y) ]
+            self.rowHeights.extend(none_list)
         else:
             self.rowHeights = None
         return Table(self.content, style=self.style, colWidths=self.colWidths,
@@ -1187,7 +1189,8 @@ class Table_Content(object):
                 start, stop = self.span_stack.pop()
                 self.add_span(start, stop)
             l = len(self.colWidths)
-            self.colWidths.extend([ None for x in xrange(l, self.current_x) ])
+            none_list = [ None for x in xrange(l, self.current_x) ]
+            self.colWidths.extend(none_list)
         # Next line
         self.current_x = 0
         self.current_y += 1
@@ -1262,24 +1265,26 @@ class Table_Content(object):
 
 
     # Set colomn and line size
-    def add_colWidth(self, width):
+    def add_colWidth(self, value):
         list_lenth = len(self.colWidths)
+        platypus_value = self.parameters.format_size(value)
         if not self.current_y and list_lenth <= self.current_x:
             none_list = [ None for x in xrange(list_lenth, self.current_x+1) ]
             self.colWidths.extend(none_list)
         if self.colWidths[self.current_x] is None\
-            or self.parameters.format_size(width) > self.colWidths[self.current_x]:
-            self.colWidths[self.current_x] = self.parameters.format_size(width)
+            or platypus_value > self.colWidths[self.current_x]:
+            self.colWidths[self.current_x] = platypus_value
 
 
     def add_lineHeight(self, value):
         list_lenth = len(self.rowHeights)
+        platypus_value = self.parameters.format_size(value)
         if list_lenth <= self.current_y:
             none_list = [ None for y in xrange(list_lenth, self.current_y+1) ]
             self.rowHeights.extend(none_list)
         if self.rowHeights[self.current_y] is None\
-            or self.parameters.format_size(value) > self.rowHeights[self.current_y]:
-            self.rowHeights[self.current_y] = self.parameters.format_size(value)
+            or platypus_value > self.rowHeights[self.current_y]:
+            self.rowHeights[self.current_y] = platypus_value
 
 
     # Internal

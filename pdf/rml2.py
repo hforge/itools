@@ -195,7 +195,7 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
     story = []
     parameters = Param()
     state = 0
-    informations = None
+    informations = {}
     while True:
         event, value, line_number = stream_next(stream)
         if event == None:
@@ -242,6 +242,7 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
     doc = SimpleDocTemplate(pdf_stream, pagesize=LETTER)
     doc.author = informations.get('author', '')
     doc.title = informations.get('title', '')
+    doc.keywords = informations.get('keywords', [])
     doc.build(story)
 
     if is_test == True:
@@ -266,7 +267,12 @@ def head_stream(stream, _tag_name, _attributes, param):
                     if exist_attribute(attributes, ['content']):
                         if name in names:
                             attr_content = attributes.get((URI, 'content'))
-                            informations[name] = normalize(attr_content)
+                            if name == 'keywords':
+                                attr_content = attr_content.split(',')
+                                keywords = ''.join(attr_content).split(' ')
+                                informations[name] = keywords
+                            else:
+                                informations[name] = normalize(attr_content)
             elif tag_name == 'title':
                 continue
             else:
@@ -276,10 +282,7 @@ def head_stream(stream, _tag_name, _attributes, param):
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
             if tag_name == _tag_name:
-                if len(informations):
-                    return informations
-                else:
-                    return None
+                return informations
             elif tag_name == 'title':
                 informations[tag_name] = normalize(' '.join(content))
             elif tag_name == 'meta':

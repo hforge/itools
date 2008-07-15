@@ -61,6 +61,8 @@ FONT = {'monospace': 'courier', 'times-new-roman': 'times-roman',
 ALIGNMENTS = {'LEFT': TA_LEFT, 'RIGHT': TA_RIGHT, 'CENTER': TA_CENTER,
               'JUSTIFY': TA_JUSTIFY}
 
+PADDINGS = ('LEFTPADDING', 'RIGHTPADDING', 'BOTTOMPADDING', 'TOPPADDING')
+
 TAG_NOT_SUPPORTED = '%s: line %s tag "%s" is currently not supported.'
 WARNING_DTD = '%s: line %s tag "%s" is unapproprieted here.'
 
@@ -615,6 +617,12 @@ def table_stream(stream, _tag_name, attributes, param):
         hAlign = attributes.get((URI, 'align')).upper()
         if hAlign in ['LEFT', 'RIGHT', 'CENTER', 'CENTRE']:
             content.add_attributes('hAlign', hAlign)
+    if exist_attribute(attributes, ['cellpadding']):
+        attr_value = attributes.get((URI, 'cellpadding'), None)
+        if attr_value is not None:
+            value = int(param.format_size(attr_value))
+            for padding in PADDINGS:
+                content.add_style((padding, start, stop, value))
 
     while True:
         event, value, line_number = stream_next(stream)

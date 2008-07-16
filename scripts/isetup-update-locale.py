@@ -87,8 +87,8 @@ if __name__ == '__main__':
         for path in paths:
             write('.')
             handler = XHTMLFile(path)
-            messages = handler.get_messages()
             try:
+                messages = handler.get_messages()
                 messages = list(messages)
             except:
                 print

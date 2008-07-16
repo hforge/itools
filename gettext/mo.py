@@ -24,7 +24,7 @@ from itools.handlers import File, register_handler_class
 
 class MOFile(File):
 
-    class_mimetypes = ['application/x-mo']
+    class_mimetypes = ['application/x-gettext-translation']
     class_extension = 'mo'
 
     def _load_state_from_file(self, file):

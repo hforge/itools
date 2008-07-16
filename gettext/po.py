@@ -219,7 +219,10 @@ msgstr ""
 
 class POFile(TextFile):
 
-    class_mimetypes = ['text/x-po']
+    class_mimetypes = [
+        'text/x-gettext-translation',
+        'text/x-gettext-translation-template',
+        'text/x-po']
     class_extension = 'po'
 
 

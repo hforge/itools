@@ -33,5 +33,7 @@ __all__ = [
     'Message']
 
 
-add_type('text/x-po', '.po')
-add_type('application/x-mo', '.mo')
+add_type('text/x-gettext-translation', '.po')
+add_type('text/x-gettext-translation-template', '.pot')
+add_type('application/x-gettext-translation', '.mo')
+add_type('application/x-gettext-translation', '.gmo')

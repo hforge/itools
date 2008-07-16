@@ -624,6 +624,9 @@ def table_stream(stream, _tag_name, attributes, param):
                 content = compute_tr(stream, tag_name, attributes,
                                     content, param)
                 content.next_line()
+            elif tag_name == 'thead':
+                if len(content.content):
+                    print 'Warning data are already pushed'
             else:
                 print WARNING_DTD % ('document', line_number, tag_name)
 
@@ -632,6 +635,8 @@ def table_stream(stream, _tag_name, attributes, param):
             tag_uri, tag_name = value
             if tag_name == _tag_name:
                 return content.create()
+            elif tag_name == 'thead':
+                content.thead()
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
 
@@ -723,7 +728,7 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, param):
                         content[-1] = tmp.rstrip('\n')
             if tag_name == elt_tag_name:
                 # FIXME
-                # if compute_paragraph is called by tr_stream
+                # if compute_paragraph is called by table_stream
                 # then this function return
                 #   # either a platypus object list if it exist at least
                 #     one platypus object, ignore text out of paragraph
@@ -1113,6 +1118,7 @@ class Table_Content(object):
         self.colWidths = []
         self.rowHeights = []
         self.parameters = param
+        self.split = 0
 
 
     # Create platypus object
@@ -1123,8 +1129,10 @@ class Table_Content(object):
             self.rowHeights.extend(none_list)
         else:
             self.rowHeights = None
+        print self.split
         return Table(self.content, style=self.style, colWidths=self.colWidths,
-                     rowHeights=self.rowHeights, **self.attrs)
+                     rowHeights=self.rowHeights, repeatRows=self.split,
+                     **self.attrs)
 
 
     # Get current position in table
@@ -1177,6 +1185,10 @@ class Table_Content(object):
                 self.size[1] += 1
             self.content[0].append(value)
             self.size[0] += 1
+
+
+    def thead(self):
+        self.split = self.current_y
 
 
     # Attributes

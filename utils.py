@@ -19,22 +19,24 @@ from distutils import core
 from distutils.command.build_py import build_py
 from os import getcwd, getpid, listdir
 from os.path import exists, join as join_path, sep, splitdrive, isfile
+from sys import _getframe, platform
 import sys
 
 # Import from itools
 import git
 
-if sys.platform[:3] == 'win':
+if platform[:3] == 'win':
     from utils_win import vmsize, get_time_spent
 else:
     from utils_unix import vmsize, get_time_spent
 
 
 
-def get_abspath(globals_namespace, local_path):
+def get_abspath(local_path, mname=None):
     """Returns the absolute path to the required file.
     """
-    mname = globals_namespace['__name__']
+    if mname is None:
+        mname = _getframe(1).f_globals.get('__name__')
 
     if mname == '__main__' or mname == '__init__':
         mpath = getcwd()
@@ -163,16 +165,20 @@ def list_eggs_info(dir, module_name=''):
 ############################################################################
 # Our all powerful setup
 ############################################################################
-def get_version(namespace):
-    path = get_abspath(namespace, 'version.txt')
+def get_version(mname=None):
+    if mname is None:
+        mname = _getframe(1).f_globals.get('__name__')
+
+    path = get_abspath('version.txt', mname=mname)
     if exists(path):
         return open(path).read().strip()
     return None
 
 
 
-def setup(namespace, classifiers=[], ext_modules=[]):
-    version = get_version(namespace)
+def setup(classifiers=[], ext_modules=[]):
+    mname = _getframe(1).f_globals.get('__name__')
+    version = get_version(mname)
     try:
         from itools.handlers import ConfigFile
     except ImportError:

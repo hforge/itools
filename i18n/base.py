@@ -20,7 +20,7 @@ from itools.utils import get_abspath
 
 # Initializes a dictionary containing the iso 639 language codes/names
 languages = {}
-filename = get_abspath(globals(), 'languages.txt')
+filename = get_abspath('languages.txt')
 for line in open(filename).readlines():
     line = line.strip()
     if line and line[0] != '#':

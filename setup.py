@@ -46,4 +46,4 @@ if __name__ == '__main__':
                         sources=['xml/parser.c', 'xml/pyparser.c'],
                         libraries=['glib-2.0'])
 
-    setup(globals(), classifiers=classifiers, ext_modules=[cparser])
+    setup(classifiers=classifiers, ext_modules=[cparser])

@@ -49,21 +49,27 @@ __all__ = [
 add_type('application/xhtml+xml', '.xhtml')
 
 # Register DTD
-dtd = [
-    # -//W3C//DTD XHTML 1.0 Strict//EN
-    ('urn:publicid:-:W3C:DTD+XHTML+1.0+Strict:EN', 'xhtml1-strict.dtd'),
-    #-//W3C//DTD XHTML 1.0 Transitional//EN
-    ('urn:publicid:-:W3C:DTD+XHTML+1.0+Transitional:EN',
-     'xhtml1-transitional.dtd'),
-    # -//W3C//DTD XHTML 1.0 Frameset//EN
-    ('urn:publicid:-:W3C:DTD+XHTML+1.0+Frameset:EN', 'xhtml1-frameset.dtd'),
-    # -//W3C//ENTITIES Latin 1 for XHTML//EN
-    ('urn:publicid:-:W3C:ENTITIES+Latin+1+for+XHTML:EN', 'xhtml-lat1.ent'),
-    # -//W3C//ENTITIES Symbols for XHTML//EN
-    ('urn:publicid:-:W3C:ENTITIES+Symbols+for+XHTML:EN', 'xhtml-symbol.ent'),
-    # -//W3C//ENTITIES Special for XHTML//EN
-    ('urn:publicid:-:W3C:ENTITIES+Special+for+XHTML:EN', 'xhtml-special.ent')
-]
+# -//W3C//DTD XHTML 1.0 Strict//EN
+register_dtd('urn:publicid:-:W3C:DTD+XHTML+1.0+Strict:EN',
+             get_abspath('xhtml1-strict.dtd'))
 
-for urn, filename in dtd:
-    register_dtd(urn, get_abspath(globals(), filename))
+#-//W3C//DTD XHTML 1.0 Transitional//EN
+register_dtd('urn:publicid:-:W3C:DTD+XHTML+1.0+Transitional:EN',
+             get_abspath('xhtml1-transitional.dtd'))
+
+# -//W3C//DTD XHTML 1.0 Frameset//EN
+register_dtd('urn:publicid:-:W3C:DTD+XHTML+1.0+Frameset:EN',
+             get_abspath('xhtml1-frameset.dtd'))
+
+# -//W3C//ENTITIES Latin 1 for XHTML//EN
+register_dtd('urn:publicid:-:W3C:ENTITIES+Latin+1+for+XHTML:EN',
+             get_abspath('xhtml-lat1.ent'))
+
+# -//W3C//ENTITIES Symbols for XHTML//EN
+register_dtd('urn:publicid:-:W3C:ENTITIES+Symbols+for+XHTML:EN',
+             get_abspath('xhtml-symbol.ent'))
+
+# -//W3C//ENTITIES Special for XHTML//EN
+register_dtd('urn:publicid:-:W3C:ENTITIES+Special+for+XHTML:EN',
+             get_abspath('xhtml-special.ent'))
+

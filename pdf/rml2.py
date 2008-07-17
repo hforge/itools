@@ -1134,7 +1134,6 @@ class Table_Content(object):
             self.rowHeights.extend(none_list)
         else:
             self.rowHeights = None
-        print self.split
         return Table(self.content, style=self.style, colWidths=self.colWidths,
                      rowHeights=self.rowHeights, repeatRows=self.split,
                      **self.attrs)
@@ -1169,7 +1168,9 @@ class Table_Content(object):
             x = self.current_x
             y = self.current_y
         if y:
-            if x > self.size[0]:
+            if x >= self.size[0]:
+                current_line = self.current_y + 1
+                print u'Table error : too many row at its line: %s' % current_line
                 return
             elif y >= self.size[1]:
                 self.create_table_line()
@@ -1215,6 +1216,10 @@ class Table_Content(object):
             row += rtmp
         if ctmp > 0:
             col += ctmp
+            if self.current_y and col >= self.size[0]:
+                current_line = self.current_y + 1
+                print u'Table error : too many row at its line: %s' % current_line
+                col = self.size[0] - 1
         if not self.current_y:
             if ctmp > 0:
                 self.span_stack.append(((self.current_x, self.current_y),

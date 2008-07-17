@@ -39,6 +39,7 @@ from reportlab.platypus import (Paragraph, SimpleDocTemplate, Preformatted,
                                 Image, Indenter, Table)
 from reportlab.lib import colors
 import tempfile
+from math import floor
 
 encoding = 'UTF-8'
 URI = None
@@ -806,23 +807,27 @@ def build_img_attributes(_attributes, param):
 
     exist_width = exist_attribute(attrs, ['width'])
     exist_height = exist_attribute(attrs, ['height'])
-
-    if exist_width:
-        element = attrs[(URI, 'width')]
-        if isinstance(element, str) and element.endswith('%'):
-            width, height = itools_img.get_size()
-            value = get_int_value(element[:-1])
-            attrs[(URI, 'width')] = value * width / 100.0
+    if exist_width or exist_height:
+        width, height = itools_img.get_size()
+        width = width * 1.0
+        height = height * 1.0
+        tup_width = (URI, 'width')
+        tup_height = (URI, 'height')
+        # Calculate sizes to resize
+        if exist_width:
+            element = attrs[tup_width]
+            if isinstance(element, str) and element.endswith('%'):
+                value = get_int_value(element[:-1])
+                attrs[tup_width] = value * width / 100
             if not exist_height:
-                attrs[(URI, 'height')] = value * height / 100.0
-    if exist_height and isinstance(attrs[(URI, 'height')], str):
-        element = attrs[(URI, 'height')]
-        if isinstance(element, str) and element.endswith('%'):
-            value = get_int_value(element[:-1])
-            width, height = itools_img.get_size()
-            attrs[(URI, 'height')] = value * height / 100.0
+                attrs[tup_height] = round(attrs[tup_width] * height / width)
+        if exist_height:
+            element = attrs[tup_height]
+            if isinstance(element, str) and element.endswith('%'):
+                value = get_int_value(element[:-1])
+                attrs[tup_height] = value * height / 100
             if not exist_width:
-                attrs[(URI, 'width')] = value * width / 100.0
+                attrs[tup_width] = round(attrs[tup_height] * width / height)
     return attrs
 
 
@@ -1415,6 +1420,10 @@ def get_int_value(value, default=0):
         return Integer.decode(value)
     except ValueError:
         return default
+
+
+def round(value):
+    return floor(value + 0.5)
 
 
 def get_bullet(type, indent='-0.4cm'):

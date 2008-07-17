@@ -51,8 +51,9 @@ class Test_ODT_File(TestCase):
 
     def test_translation(self):
         # Translate the document
-        str = ('msgid "Hello <text:span text:style-name="T1">world</text:span> !"\n'
-        'msgstr "Hola <text:span text:style-name="T1">mundo</text:span> !"\n')
+        str = ('msgid "Hello <text:span text:style-name="T1">world</text:span>'
+               ' !"\nmsgstr "Hola '
+               '<text:span text:style-name="T1">mundo</text:span> !"\n')
         po = POFile(string=str)
         translate_odt_document = self.doc.translate(po)
         # Get the message of the translate document
@@ -112,7 +113,6 @@ class Test_ODP_File(TestCase):
         for msg in expected_messages:
             expected.append(Message([],[msg], [u'']))
         self.assertEqual(messages, expected)
-
 
 
 

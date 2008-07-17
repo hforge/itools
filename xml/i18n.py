@@ -19,7 +19,8 @@
 from itools.gettext import Message as gettextMessage
 from itools.datatypes import XMLContent
 from itools.i18n import Message
-from namespaces import get_namespace, get_element_schema, xmlns_uri
+from itools.i18n.segment import get_segments, translate_message
+from namespaces import get_element_schema, xmlns_uri
 from parser import XMLParser, START_ELEMENT, END_ELEMENT, TEXT
 
 
@@ -37,7 +38,7 @@ elements_to_keep_spaces = set(['pre'])
 ###########################################################################
 # Code common to "get_messages" and "translate"
 ###########################################################################
-def process_buffer(buffer, hit, encoding):
+def _process_buffer(buffer, hit, encoding):
     from xml import get_start_tag, get_end_tag
 
     # Miss: the buffer is really empty
@@ -57,14 +58,6 @@ def process_buffer(buffer, hit, encoding):
         tail = [tail]
     else:
         tail = []
-
-    # Wipe-out sourrounding elements
-    while (buffer[0][0] == START_ELEMENT and buffer[-1][0] == END_ELEMENT
-           and buffer[0][1][-1] == buffer[-1][1][-1]):
-        type, value, line = buffer.pop(0)
-        yield type, value[:-1], line
-        type, value, line = buffer.pop()
-        tail.insert(0, (type, value[:-1], line))
 
     # Remove auxiliar data
     for i in range(len(buffer)):
@@ -96,7 +89,7 @@ def process_buffer(buffer, hit, encoding):
 
 
 
-def get_translatable_blocks(events):
+def _get_translatable_blocks(events):
     """This method is defined so it can be used by both "get_messages" and
     "translate". Hence it contains the logic that is commont to both, to avoid
     code duplication.
@@ -172,7 +165,7 @@ def get_translatable_blocks(events):
 
         # Anything else: comments, block elements (start or end), etc.
         # are considered delimiters
-        for x in process_buffer(buffer, hit, encoding):
+        for x in _process_buffer(buffer, hit, encoding):
             yield x
 
         yield event
@@ -183,7 +176,7 @@ def get_translatable_blocks(events):
         stack = []
         id = 0
 
-    for x in process_buffer(buffer, hit, encoding):
+    for x in _process_buffer(buffer, hit, encoding):
         yield x
 
 
@@ -192,7 +185,7 @@ def get_translatable_blocks(events):
 ###########################################################################
 def get_messages(events, filename=None):
     keep_spaces = False
-    for type, value, line in get_translatable_blocks(events):
+    for type, value, line in _get_translatable_blocks(events):
         if type == START_ELEMENT:
             tag_uri, tag_name, attributes = value
             element = get_element_schema(tag_uri, tag_name)
@@ -214,7 +207,7 @@ def get_messages(events, filename=None):
                 keep_spaces = False
         elif type == MESSAGE:
             # Segmentation
-            for segment in value.get_segments(keep_spaces):
+            for segment in get_segments(value, keep_spaces):
                 yield gettextMessage([], [segment], [u''], {filename: [line]})
 
 
@@ -226,7 +219,7 @@ def translate(events, catalog):
     encoding = 'utf-8' # FIXME hardcoded
     keep_spaces = False
     namespaces = {}
-    for event in get_translatable_blocks(events):
+    for event in _get_translatable_blocks(events):
         type, value, line = event
         if type == START_ELEMENT:
             tag_uri, tag_name, attributes = value
@@ -257,10 +250,9 @@ def translate(events, catalog):
             if tag_name in elements_to_keep_spaces:
                 keep_spaces = False
         elif type == MESSAGE:
-            for segment in value.get_segments(keep_spaces):
-                segment = catalog.gettext(segment).encode('utf-8')
-                for event in XMLParser(segment, namespaces):
-                    yield event
+            translation = translate_message(value, catalog, keep_spaces)
+            for event in XMLParser(translation, namespaces):
+                yield event
         else:
             yield event
 

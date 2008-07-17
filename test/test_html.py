@@ -74,6 +74,7 @@ class HTMLParserTestCase(TestCase):
         self.assertEqual(parse_tags(data), expected)
 
 
+
     #######################################################################
     # Broken HTML
     #######################################################################
@@ -167,6 +168,89 @@ class i18nTestCase(TestCase):
         self.assertEqual(output, expected)
 
 
+    def test_translation1(self):
+        """Test translation with surrounding tags"""
+
+        doc = HTMLFile(string =
+            '<em>hello world</em>')
+
+        p = POFile(string=
+            'msgid "hello world"\n'
+            'msgstr "hola mundo"')
+
+        self.assertEqual(doc.translate(p), '<em>hola mundo</em>')
+
+
+    def test_translation2(self):
+        """Test translation with surrounding tags (2)"""
+
+        doc = HTMLFile(string =
+            'Say: <em>hello world. It\'s me.</em>')
+
+        p = POFile(string=
+            'msgid "Say:"\n'
+            'msgstr "Dice:"\n\n'
+            'msgid "hello world."\n'
+            'msgstr "hola mundo."\n\n'
+            'msgid "It\'s me."\n'
+            'msgstr "Es me."')
+
+        self.assertEqual(doc.translate(p), 'Dice: <em>hola mundo. Es me.</em>')
+
+
+    def test_translation3(self):
+        """Test translation with surrounding tags (3)"""
+
+        doc = HTMLFile(string =
+            'Say: <em> hello world. It\'s me.</em> Do you remember me ?')
+
+        p = POFile(string=
+            'msgid "Say:"\n'
+            'msgstr "Dites:"\n\n'
+            'msgid "hello world."\n'
+            'msgstr "Bonjour monde."\n\n'
+            'msgid "It\'s me."\n'
+            'msgstr "C\'est moi."\n\n'
+            'msgid "Do you remember me ?"\n'
+            'msgstr "Vous vous rappelez de moi ?"')
+
+        self.assertEqual(doc.translate(p),
+                         'Dites: <em> Bonjour monde. C\'est moi.</em> '
+                         'Vous vous rappelez de moi ?')
+
+
+    def test_translation4(self):
+        """Test translation with surrounding tags (4)"""
+
+        doc = HTMLFile(string =
+            'Say: <em>   hello world. It\'s     me.</em>'
+            '      Do you remember me ?  ')
+
+        p = POFile(string=
+            'msgid "Say:"\n'
+            'msgstr "Dites:"\n\n'
+            'msgid "hello world."\n'
+            'msgstr "Bonjour monde."\n\n'
+            'msgid "It\'s me."\n'
+            'msgstr "C\'est moi."\n\n'
+            'msgid "Do you remember me ?"\n'
+            'msgstr "Vous vous rappelez de moi ?"')
+
+        self.assertEqual(doc.translate(p), 'Dites: '
+                         '<em> Bonjour monde. C\'est moi.</em>'
+                         '  Vous vous rappelez de moi ? ')
+
+
+    def test_pre(self):
+        """Test raw content."""
+        doc = HTMLFile(string = '<pre>   This is raw text, and every '
+                                'characters should be kept </pre>')
+
+        messages = list(doc.get_messages())
+        expected = u'   This is raw text, and every characters should be kept '
+        self.assertEqual(messages, [Message([], [expected], [u''])])
+
+
 ###########################################################################
 # Test XHTML
 ###########################################################################
@@ -253,7 +337,8 @@ class SegmentationTestCase(TestCase):
         messages = list(doc.get_messages())
         expected = [Message([], [u'this <em>word</em> is nice'], [u'']),
                     Message([], [u'hello world'], [u'']),
-                    Message([], [u'<br/> bye <em>J. David Ibanez Palomar</em>'], [u''])]
+                    Message([], [u'<br/> bye <em>J. David Ibanez '
+                                 u'Palomar</em>'], [u''])]
         self.assertEqual(messages, expected)
 
 
@@ -279,7 +364,8 @@ class SegmentationTestCase(TestCase):
         messages = doc.get_messages()
         messages = list(messages)
 
-        expected = [Message([], [u'Hi <b>everybody, </b><i>how are you ? </i>'], [u''])]
+        expected = [Message([], [u'Hi <b>everybody, </b><i>how are you ? '
+                                 u'</i>'], [u''])]
         self.assertEqual(messages, expected)
 
 
@@ -303,7 +389,8 @@ class TranslationTestCase(TestCase):
         doc = XHTMLFile(string=data)
         messages = list(doc.get_messages())
 
-        self.assertEqual(messages, [Message([], [u'hello litle world'], [u''])])
+        self.assertEqual(messages, [Message([], [u'hello litle world'],
+                                            [u''])])
 
 
     def test_case2(self):

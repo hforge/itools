@@ -218,9 +218,9 @@ class OracleTestCase(unittest.TestCase):
         fiscal year ended in March despite a backlash in the United States
         against outsourcing, a trade group said.
         .
-        Those revenues rose to $12.5 billion in the latest fiscal year from $9.6
-        billion a year earlier, said Kiran Karnik, president of the National
-        Association of Software and Service Companies.
+        Those revenues rose to $12.5 billion in the latest fiscal year from
+        $9.6 billion a year earlier, said Kiran Karnik, president of the
+        National Association of Software and Service Companies.
         .
         U.S. companies account for 70 percent of the revenue. Karnik forecast
         growth of 30 percent to 32 percent in the current"""
@@ -386,9 +386,11 @@ class SentenceTestCase(unittest.TestCase):
         self.assertEqual(list(segments), result)
 
 
-    def test_HTML3(self):
-        text = u""" <a href="http://www.debian.org/"> Debian </a> Hello. Toto"""
-        result = [u'<a href="http://www.debian.org/"> Debian </a> Hello.', u'Toto']
+    def test_HTML4(self):
+        text = u""" <a href="http://www.debian.org/"> Debian </a> Hello.
+        Toto"""
+        result = [u'<a href="http://www.debian.org/"> Debian </a> Hello.',
+                  u'Toto']
 
         message = Message()
         message.append_text(text)
@@ -472,6 +474,49 @@ class SentenceTestCase(unittest.TestCase):
         segments = message.get_segments()
 
         self.assertEqual(list(segments), result)
+
+
+    def test_raw_text(self):
+        text = u'This is raw text. Every characters must be kept. ' \
+               u'1 space 2 spaces  3spaces   1 newline\nend.'
+        expected = [u'This is raw text. ', u'Every characters must be kept. ',
+                    u'1 space 2 spaces  3spaces   1 newline\nend.']
+
+        message = Message()
+        message.append_text(text)
+        segments = message.get_segments(keep_spaces=True)
+
+        self.assertEqual(list(segments), expected)
+
+
+    def test_surrounding_format(self):
+        text = 'Surrounding format elements shouldn\'t be extrated !'
+        expected = ['Surrounding format elements shouldn\'t be extrated !']
+
+        message = Message()
+        message.append_start_format('<em>')
+        message.append_text(text)
+        message.append_end_format('</em>')
+        segments = message.get_segments()
+        self.assertEqual(list(segments), expected)
+
+
+    def test_iter_segmentation(self):
+        """Here is a message surrounded by format elements and which contains
+        others segments. The segments must be well extracted by the iterative
+        algorithm."""
+
+        text = 'This text contains many sentences. A sentence. Another ' \
+               'one. This text must be well segmented.'
+        expected = ['This text contains many sentences.', 'A sentence.',
+                    'Another one.', 'This text must be well segmented.']
+
+        message = Message()
+        message.append_start_format('<span>')
+        message.append_text(text)
+        message.append_end_format('</span>')
+        segments = message.get_segments()
+        self.assertEqual(list(segments), expected)
 
 
 if __name__ == '__main__':

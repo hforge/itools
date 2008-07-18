@@ -69,7 +69,7 @@ WARNING_DTD = '%s: line %s tag "%s" is unapproprieted here.'
 
 HEADING = ('h1', 'h2', 'h3', 'h4', 'h5', 'h6')
 
-class Param(object):
+class Context(object):
 
 
     def __init__(self):
@@ -207,7 +207,7 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
 
     stack = []
     story = []
-    parameters = Param()
+    context = Context()
     state = 0
     informations = {}
     while True:
@@ -225,12 +225,12 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
                 continue
             elif tag_name == 'head':
                 informations = head_stream(stream, tag_name, attributes,
-                                           parameters)
+                                           context)
             elif tag_name == 'body':
                 if state == 1:
                     state = 2
                     story += body_stream(stream, tag_name, attributes,
-                                         parameters)
+                                         context)
                 else:
                     print WARNING_DTD % ('document', line_number, tag_name)
                 continue
@@ -251,11 +251,11 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
 
     #### BUILD PDF ####
     if is_test == True:
-        test_data = list(story), parameters.get_base_style_sheet()
+        test_data = list(story), context.get_base_style_sheet()
 
-    if parameters.toc_place is not None:
-        place = parameters.toc_place
-        story = story[:place] + create_toc(parameters) + story[place:]
+    if context.toc_place is not None:
+        place = context.toc_place
+        story = story[:place] + create_toc(context) + story[place:]
 
     doc = SimpleDocTemplate(pdf_stream, pagesize=LETTER)
     doc.author = informations.get('author', '')
@@ -268,7 +268,7 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
         return test_data
 
 
-def head_stream(stream, _tag_name, _attributes, param):
+def head_stream(stream, _tag_name, _attributes, context):
     informations = {}
     names = ('author', 'copyright', 'date', 'keywords', 'subject')
     content = []
@@ -315,14 +315,14 @@ def head_stream(stream, _tag_name, _attributes, param):
             content.append(value)
 
 
-def create_toc(param):
+def create_toc(context):
     INDENT_VALUE = 1 * cm
     text_title = ['<b>Contents<b>']
-    title = create_paragraph(param, ('toctitle', {}), text_title)
+    title = create_paragraph(context, ('toctitle', {}), text_title)
     story = [title,Indenter(left=INDENT_VALUE)]
     level = 1
     bullet = get_bullet('disc')
-    for ref in param.toc_ref:
+    for ref in context.toc_ref:
         hlevel = get_int_value(ref[0][5])
         if hlevel > level:
             while xrange(level, hlevel):
@@ -334,12 +334,12 @@ def create_toc(param):
                 story.append(Indenter(left=-INDENT_VALUE))
         content = [bullet]
         content.append('<a href="%s">%s</a>' % ref)
-        story.append(create_paragraph(param, ('toc', {}), content))
+        story.append(create_paragraph(context, ('toc', {}), content))
     story.append(PageBreak())
     return story
 
 
-def body_stream(stream, _tag_name, _attributes, param):
+def body_stream(stream, _tag_name, _attributes, context):
     """
         stream : parser stream
     """
@@ -355,24 +355,24 @@ def body_stream(stream, _tag_name, _attributes, param):
             tag_uri, tag_name, attributes = value
             if tag_name in ('p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
                 story.append(paragraph_stream(stream, tag_name, attributes,
-                                              param))
+                                              context))
             elif tag_name == 'pre':
                 story.append(pre_stream(stream, tag_name, attributes,
-                                        param))
+                                        context))
             elif tag_name == 'hr':
-                story.append(hr_stream(stream, tag_name, attributes, param))
+                story.append(hr_stream(stream, tag_name, attributes, context))
             elif tag_name == 'img':
-                widget = img_stream(stream, tag_name, attributes, param)
+                widget = img_stream(stream, tag_name, attributes, context)
                 if widget:
                     story.append(widget)
             elif tag_name in ('ol', 'ul'):
                 story.extend(list_stream(stream, tag_name, attributes,
-                                         param))
+                                         context))
             elif tag_name == 'table':
                 story.append(table_stream(stream, tag_name, attributes,
-                                          param))
+                                          context))
             elif tag_name == 'toc':
-                param.toc_place = len(story)
+                context.toc_place = len(story)
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
@@ -390,21 +390,21 @@ def body_stream(stream, _tag_name, _attributes, param):
     return story
 
 
-def paragraph_stream(stream, elt_tag_name, elt_attributes, param):
+def paragraph_stream(stream, elt_tag_name, elt_attributes, context):
     """
         stream : parser stream
     """
-    content = compute_paragraph(stream, elt_tag_name, elt_attributes, param)
-    return create_paragraph(param, (elt_tag_name, elt_attributes), content)
+    content = compute_paragraph(stream, elt_tag_name, elt_attributes, context)
+    return create_paragraph(context, (elt_tag_name, elt_attributes), content)
 
 
-def pre_stream(stream, tag_name, attributes, param):
+def pre_stream(stream, tag_name, attributes, context):
     """
         stream : parser stream
     """
 
     stack = []
-    styleN = param.get_style('Normal')
+    styleN = context.get_style('Normal')
     content = []
     has_content = False
     stack.append((tag_name, attributes))
@@ -423,7 +423,7 @@ def pre_stream(stream, tag_name, attributes, param):
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
             if tag_name == 'pre':
-                return create_preformatted(param, stack.pop(), content)
+                return create_preformatted(context, stack.pop(), content)
             else:
                 print WARNING_DTD % ('document', line_number, tag_name)
                 # unknown tag
@@ -437,7 +437,7 @@ def pre_stream(stream, tag_name, attributes, param):
                 content.append(value)
 
 
-def hr_stream(stream, _tag_name, _attributes, param):
+def hr_stream(stream, _tag_name, _attributes, context):
     """
         Create a hr widget.
 
@@ -456,7 +456,7 @@ def hr_stream(stream, _tag_name, _attributes, param):
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
             if tag_name == _tag_name:
-                return create_hr(_attributes, param)
+                return create_hr(_attributes, context)
         #### TEXT ELEMENT ####
         elif event == TEXT:
             pass
@@ -464,8 +464,8 @@ def hr_stream(stream, _tag_name, _attributes, param):
             print WARNING_DTD % ('document', line_number, tag_name)
 
 
-def img_stream(stream, _tag_name, _attributes, param):
-    attrs = build_img_attributes(_attributes, param)
+def img_stream(stream, _tag_name, _attributes, context):
+    attrs = build_img_attributes(_attributes, context)
     while True:
         event, value, line_number = stream_next(stream)
         if event == None:
@@ -478,7 +478,7 @@ def img_stream(stream, _tag_name, _attributes, param):
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
             if tag_name == _tag_name:
-                return create_img(attrs, param)
+                return create_img(attrs, context)
         #### TEXT ELEMENT ####
         elif event == TEXT:
             pass
@@ -486,7 +486,7 @@ def img_stream(stream, _tag_name, _attributes, param):
             print WARNING_DTD % ('document', line_number, tag_name)
 
 
-def list_stream(stream, _tag_name, attributes, param, id=0):
+def list_stream(stream, _tag_name, attributes, context, id=0):
     """
         stream : parser stream
     """
@@ -526,11 +526,11 @@ def list_stream(stream, _tag_name, attributes, param, id=0):
             tag_uri, tag_name, attributes = value
             if tag_name in ('ul', 'ol'):
                 if li_state:
-                    story.append(create_paragraph(param, stack[0],
+                    story.append(create_paragraph(context, stack[0],
                                                   content))
                     content = ["<seqDefault id='%s'/>" % strid]
                     story += list_stream(stream, tag_name, attributes,
-                                         param, id+1)
+                                         context, id+1)
                 else:
                     print WARNING_DTD % ('document', line_number, tag_name)
             elif tag_name == 'li':
@@ -559,7 +559,7 @@ def list_stream(stream, _tag_name, attributes, param, id=0):
                 elif tag_name == 'br':
                     continue
                 elif tag_name == 'img':
-                    attrs = build_img_attributes(attributes, param)
+                    attrs = build_img_attributes(attributes, context)
                     content.append(build_start_tag(tag_name, attrs))
                 else:
                     print TAG_NOT_SUPPORTED % ('document', line_number,
@@ -572,7 +572,7 @@ def list_stream(stream, _tag_name, attributes, param, id=0):
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
             if tag_name in ('ul', 'ol'):
-                story.append(create_paragraph(param, stack.pop(),
+                story.append(create_paragraph(context, stack.pop(),
                              content))
                 story.append(Indenter(left=-INDENT_VALUE))
                 return story
@@ -583,7 +583,7 @@ def list_stream(stream, _tag_name, attributes, param, id=0):
                     if tmp[-1] == '\n':
                         content[-1] = tmp.rstrip('\n')
             if tag_name == 'li':
-                story.append(create_paragraph(param, stack[0],
+                story.append(create_paragraph(context, stack[0],
                                               content))
                 content = []
                 li_state = 0
@@ -639,8 +639,8 @@ def list_stream(stream, _tag_name, attributes, param, id=0):
                     content.append(value)
 
 
-def table_stream(stream, _tag_name, attributes, param):
-    content = Table_Content(param)
+def table_stream(stream, _tag_name, attributes, context):
+    content = Table_Content(context)
     start = (0, 0)
     stop = (-1, -1)
     if exist_attribute(attributes, ['border']):
@@ -653,7 +653,7 @@ def table_stream(stream, _tag_name, attributes, param):
     if exist_attribute(attributes, ['cellpadding']):
         attr_value = attributes.get((URI, 'cellpadding'), None)
         if attr_value is not None:
-            value = int(param.format_size(attr_value))
+            value = int(context.format_size(attr_value))
             for padding in PADDINGS:
                 content.add_style((padding, start, stop, value))
 
@@ -666,7 +666,7 @@ def table_stream(stream, _tag_name, attributes, param):
             tag_uri, tag_name, attributes = value
             if tag_name == 'tr':
                 content = compute_tr(stream, tag_name, attributes,
-                                    content, param)
+                                    content, context)
                 content.next_line()
             elif tag_name == 'thead':
                 if len(content.content):
@@ -685,7 +685,7 @@ def table_stream(stream, _tag_name, attributes, param):
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
 
 
-def compute_paragraph(stream, elt_tag_name, elt_attributes, param):
+def compute_paragraph(stream, elt_tag_name, elt_attributes, context):
     content = []
     cpt = 0
     has_content = False
@@ -708,23 +708,23 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, param):
                 if tag_name in ('p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
                     story.append(paragraph_stream(stream, tag_name,
                                                   attributes,
-                                                  param))
+                                                  context))
                 elif tag_name == 'pre':
                     story.append(pre_stream(stream, tag_name, attributes,
-                                            param))
+                                            context))
                 elif tag_name == 'hr':
                     story.append(hr_stream(stream, tag_name, attributes,
-                                           param))
+                                           context))
                 elif tag_name == 'img':
-                    widget = img_stream(stream, tag_name, attributes, param)
+                    widget = img_stream(stream, tag_name, attributes, context)
                     if widget:
                         story.append(widget)
                 elif tag_name in ('ol', 'ul'):
                     story.extend(list_stream(stream, tag_name, attributes,
-                                             param))
+                                             context))
                 elif tag_name == 'table':
                     story.append(table_stream(stream, tag_name, attributes,
-                                              param))
+                                              context))
                 else:
                     skip = False
                 if skip:
@@ -752,7 +752,7 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, param):
                 elif tag_name == 'br':
                     continue
                 elif tag_name == 'img':
-                    attrs = build_img_attributes(attributes, param)
+                    attrs = build_img_attributes(attributes, context)
                     content.append(build_start_tag(tag_name, attrs))
                 else:
                     print TAG_NOT_SUPPORTED % ('document', line_number,
@@ -835,18 +835,18 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, param):
                     content.append(value)
 
 
-def build_img_attributes(_attributes, param):
+def build_img_attributes(_attributes, context):
     attrs = {}
     itools_img = None
     for key, attr_value in _attributes.iteritems():
         key = key[1]
         if key == 'src':
-            file_path, itools_img = check_image(attr_value, param)
+            file_path, itools_img = check_image(attr_value, context)
             attrs[(URI, 'src')] = file_path
         elif key == 'width':
-            attrs[(URI, 'width')] = param.format_size(attr_value)
+            attrs[(URI, 'width')] = context.format_size(attr_value)
         elif key == 'height':
-            attrs[(URI, 'height')] = param.format_size(attr_value)
+            attrs[(URI, 'height')] = context.format_size(attr_value)
 
     exist_width = exist_attribute(attrs, ['width'])
     exist_height = exist_attribute(attrs, ['height'])
@@ -874,7 +874,7 @@ def build_img_attributes(_attributes, param):
     return attrs
 
 
-def compute_tr(stream, _tag_name, attributes, table, param):
+def compute_tr(stream, _tag_name, attributes, table, context):
     stop = None
 
     while True:
@@ -886,7 +886,7 @@ def compute_tr(stream, _tag_name, attributes, table, param):
             tag_uri, tag_name, attributes = value
             if tag_name in ('td', 'th'):
                 cont = compute_paragraph(stream, tag_name, attributes,
-                                         param)
+                                         context)
                 table.push_content(cont)
                 if exist_attribute(attributes, ['width']):
                     width = attributes.get((URI, 'width'))
@@ -966,7 +966,7 @@ def build_span_attributes(attributes):
 ##############################################################################
 # Reportlab widget                                                           #
 ##############################################################################
-def create_paragraph(param, element, content):
+def create_paragraph(context, element, content):
     """
         Create a reportlab paragraph widget.
     """
@@ -980,14 +980,14 @@ def create_paragraph(param, element, content):
     #print 0, content
     content = normalize(' '.join(content))
     if element[0] in HEADING:
-        content = param.get_toc_anchor(element[0], content)
+        content = context.get_toc_anchor(element[0], content)
     content = '<para>%s</para>' % content
     #print 1, content
-    style, bulletText = build_style(param, element)
+    style, bulletText = build_style(context, element)
     return Paragraph(content, style, bulletText)
 
 
-def build_style(param, element):
+def build_style(context, element):
     style_attr = {}
     # The default style is Normal
     parent_style_name = 'Normal'
@@ -1005,19 +1005,19 @@ def build_style(param, element):
             if key == 'align':
                 attr_value = ALIGNMENTS.get(attr_value.upper())
             elif key in ['leftIndent', 'rightIndent']:
-                attr_value = param.format_size(attr_value)
+                attr_value = context.format_size(attr_value)
             style_attr[key] = attr_value
     style_attr['autoLeading'] = 'max'
 
     style_name = parent_style_name
     if element[0] in HEADING:
         parent_style_name = element[0]
-    parent_style = param.get_style(parent_style_name)
+    parent_style = context.get_style(parent_style_name)
     return (ParagraphStyle(style_name, parent=parent_style, **style_attr),
             bulletText)
 
 
-def create_preformatted(param, element, content):
+def create_preformatted(context, element, content):
     """
         Create a reportlab preformatted widget.
     """
@@ -1028,12 +1028,12 @@ def create_preformatted(param, element, content):
     for key, attr_value in element[1].iteritems():
         if key[1] == 'style':
             style_name = attr_value
-    style = param.get_style(style_name)
+    style = context.get_style(style_name)
     widget = Preformatted(content, style)
     return widget
 
 
-def create_hr(attributes, param):
+def create_hr(attributes, context):
     """
         Create a reportlab hr widget
     """
@@ -1042,7 +1042,7 @@ def create_hr(attributes, param):
     attrs['width'] = '100%'
     for key in ('width', 'thickness', 'spaceBefore', 'spaceAfter'):
         if exist_attribute(attributes, [key]):
-            attrs[key] = param.format_size(attributes.get((URI, key)))
+            attrs[key] = context.format_size(attributes.get((URI, key)))
 
     if exist_attribute(attributes, ['lineCap']):
         line_cap = attributes.get((URI, 'lineCap'))
@@ -1062,15 +1062,15 @@ def create_hr(attributes, param):
     return HRFlowable(**attrs)
 
 
-def create_img(attributes, param, check_dimension=False):
+def create_img(attributes, context, check_dimension=False):
     """
         Create a reportlab image widget.
         If check_dimension is true and the width and the height attributes
         are not set we return None
     """
     filename = attributes.get((URI, 'src'), None)
-    width = param.format_size(attributes.get((URI, 'width'), None))
-    height = param.format_size(attributes.get((URI, 'height'), None))
+    width = context.format_size(attributes.get((URI, 'width'), None))
+    height = context.format_size(attributes.get((URI, 'height'), None))
     if filename is None:
         print u'/!\ Filename is None'
         return None
@@ -1080,29 +1080,29 @@ def create_img(attributes, param, check_dimension=False):
         return None
 
     try:
-        I = build_image(filename, width, height, param)
+        I = build_image(filename, width, height, context)
         return I
     except IOError, msg:
         print msg
-        filename = param.image_not_found_path
-        I = build_image(filename, width, height, param)
+        filename = context.image_not_found_path
+        I = build_image(filename, width, height, context)
         return I
     except Exception, msg:
         print msg
         return None
 
 
-def check_image(filename, param):
+def check_image(filename, context):
     if vfs.exists(filename) is False:
         print u"/!\ The filename '%s' doesn't exist" % filename
-        filename = param.image_not_found_path
+        filename = context.image_not_found_path
     im = None
     if filename.startswith('http://'):
         # Remote file
         # If the image is a remote file, we create a StringIO
         # object contains the image data to avoid reportlab problems ...
         data = vfs.open(filename).read()
-        my_file = param.get_tmp_file()
+        my_file = context.get_tmp_file()
         filename = my_file.name
         my_file.write(data)
         my_file.close()
@@ -1113,15 +1113,15 @@ def check_image(filename, param):
     x, y = im.get_size()
     if not (x or y):
         print u'image not valid : %s' % filename
-        filename = param.image_not_found_path
+        filename = context.image_not_found_path
         im = ItoolsImage(filename)
     return filename, im
 
 
-def build_image(filename, width, height, param):
+def build_image(filename, width, height, context):
     # determines behavior of both arguments(width, height)
     kind = 'direct'
-    file_path, itools_img = check_image(filename, param)
+    file_path, itools_img = check_image(filename, context)
     x, y = itools_img.get_size()
     #FIXME not like html
     if height or width:
@@ -1150,7 +1150,7 @@ class Table_Content(object):
         widget
     """
 
-    def __init__(self, param, parent_style=None):
+    def __init__(self, context, parent_style=None):
         self.content = []
         """
         [['foo'], ['bar']] => size[1,2]
@@ -1167,7 +1167,7 @@ class Table_Content(object):
         self.current_y = 0
         self.colWidths = []
         self.rowHeights = []
-        self.parameters = param
+        self.context = context
         self.split = 0
 
 
@@ -1284,7 +1284,7 @@ class Table_Content(object):
     # Set colomn and line size
     def add_colWidth(self, value):
         list_lenth = len(self.colWidths)
-        platypus_value = self.parameters.format_size(value)
+        platypus_value = self.context.format_size(value)
         if not self.current_y and list_lenth <= self.current_x:
             none_list = [ None for x in xrange(list_lenth, self.current_x+1) ]
             self.colWidths.extend(none_list)
@@ -1295,7 +1295,7 @@ class Table_Content(object):
 
     def add_lineHeight(self, value):
         list_lenth = len(self.rowHeights)
-        platypus_value = self.parameters.format_size(value)
+        platypus_value = self.context.format_size(value)
         if list_lenth <= self.current_y:
             none_list = [ None for y in xrange(list_lenth, self.current_y+1) ]
             self.rowHeights.extend(none_list)

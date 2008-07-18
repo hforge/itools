@@ -126,6 +126,10 @@ if __name__ == '__main__':
                     authors.setdefault(email, (name, set()))
                     authors[email][1].add(year)
 
+        # Don't consider the email 'not.committed.yet' as a valid author email
+        if authors.has_key('not.committed.yet'):
+            del authors['not.committed.yet']
+
         # Keep old copyright
         if options.keep:
             lines = open(filename).readlines()

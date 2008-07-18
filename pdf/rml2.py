@@ -36,7 +36,7 @@ from reportlab.lib.styles import(getSampleStyleSheet, ParagraphStyle)
 from reportlab.lib.units import inch, cm, mm, pica
 from reportlab.platypus.flowables import HRFlowable
 from reportlab.platypus import (Paragraph, SimpleDocTemplate, Preformatted,
-                                Image, Indenter, Table)
+                                PageBreak, Image, Indenter, Table)
 from reportlab.lib import colors
 import tempfile
 from math import floor
@@ -67,7 +67,7 @@ PADDINGS = ('LEFTPADDING', 'RIGHTPADDING', 'BOTTOMPADDING', 'TOPPADDING')
 TAG_NOT_SUPPORTED = '%s: line %s tag "%s" is currently not supported.'
 WARNING_DTD = '%s: line %s tag "%s" is unapproprieted here.'
 
-
+HEADING = ('h1', 'h2', 'h3', 'h4', 'h5', 'h6')
 
 class Param(object):
 
@@ -77,6 +77,9 @@ class Param(object):
         self.init_base_style_sheet()
         self.image_not_found_path = get_abspath(globals(), 'not_found.png')
         self.size = {'in': inch, 'cm': cm, 'mm': mm, 'pica': pica, 'px': 1}
+        self.toc_place = None
+        self.toc_ref = []
+        self.toc_high_level = 3
 
 
     def init_base_style_sheet(self):
@@ -148,6 +151,14 @@ class Param(object):
     def get_tmp_file(self):
         fd, filename = tempfile.mkstemp(dir=self.tmp_dir)
         return vfs.open(filename, 'w')
+
+
+    def get_toc_anchor(self, tag_name, content):
+        if not self.toc_high_level > tag_name[1]:
+            ref = 'toc_' + tag_name + '_' + str(len(self.toc_ref))
+            self.toc_ref.append((ref, Unicode.encode(content)))
+            content = '<a name="' + ref + '" />' + content
+        return content
 
 
     def __del__(self):
@@ -242,6 +253,10 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
     if is_test == True:
         test_data = list(story), parameters.get_base_style_sheet()
 
+    if parameters.toc_place is not None:
+        place = parameters.toc_place
+        story = story[:place] + create_toc(parameters) + story[place:]
+
     doc = SimpleDocTemplate(pdf_stream, pagesize=LETTER)
     doc.author = informations.get('author', '')
     doc.title = informations.get('title', '')
@@ -300,6 +315,30 @@ def head_stream(stream, _tag_name, _attributes, param):
             content.append(value)
 
 
+def create_toc(param):
+    INDENT_VALUE = 1 * cm
+    text_title = ['<b>Contents<b>']
+    title = create_paragraph(param, ('toctitle', {}), text_title)
+    story = [title,Indenter(left=INDENT_VALUE)]
+    level = 1
+    bullet = get_bullet('disc')
+    for ref in param.toc_ref:
+        hlevel = get_int_value(ref[0][5])
+        if hlevel > level:
+            while xrange(level, hlevel):
+                level += 1
+                story.append(Indenter(left=INDENT_VALUE))
+        else:
+            while xrange(hlevel, level):
+                level -= 1
+                story.append(Indenter(left=-INDENT_VALUE))
+        content = [bullet]
+        content.append('<a href="%s">%s</a>' % ref)
+        story.append(create_paragraph(param, ('toc', {}), content))
+    story.append(PageBreak())
+    return story
+
+
 def body_stream(stream, _tag_name, _attributes, param):
     """
         stream : parser stream
@@ -332,6 +371,8 @@ def body_stream(stream, _tag_name, _attributes, param):
             elif tag_name == 'table':
                 story.append(table_stream(stream, tag_name, attributes,
                                           param))
+            elif tag_name == 'toc':
+                param.toc_place = len(story)
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
@@ -341,6 +382,8 @@ def body_stream(stream, _tag_name, _attributes, param):
             tag_uri, tag_name = value
             if tag_name == _tag_name:
                 break
+            elif tag_name == 'toc':
+                continue
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
@@ -936,6 +979,8 @@ def create_paragraph(param, element, content):
     # DEBUG
     #print 0, content
     content = normalize(' '.join(content))
+    if element[0] in HEADING:
+        content = param.get_toc_anchor(element[0], content)
     content = '<para>%s</para>' % content
     #print 1, content
     style, bulletText = build_style(param, element)
@@ -965,7 +1010,7 @@ def build_style(param, element):
     style_attr['autoLeading'] = 'max'
 
     style_name = parent_style_name
-    if element[0] in ('h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
+    if element[0] in HEADING:
         parent_style_name = element[0]
     parent_style = param.get_style(parent_style_name)
     return (ParagraphStyle(style_name, parent=parent_style, **style_attr),

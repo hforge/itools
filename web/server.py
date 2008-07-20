@@ -497,11 +497,23 @@ class Server(object):
 
         # (3) Close the transaction (commit or abort)
         if status < 400 and context.commit is True:
+            # Hook: before commit
             try:
-                self.commit_transaction(context)
+                self.before_commit()
             except:
-                self.log_error(context)
                 status = 500
+                self.log_error(context)
+                self.abort_transaction(context)
+            # Commit
+            else:
+                try:
+                    for db in self.get_databases():
+                        db.save_changes()
+                except:
+                    status = 500
+                    self.log_error(context)
+            # Error
+            if status == 500:
                 body = root.internal_server_error(context)
         else:
             self.abort_transaction(context)
@@ -641,17 +653,6 @@ class Server(object):
     def abort_transaction(self, context):
         for db in self.get_databases():
             db.abort_changes()
-
-
-    def commit_transaction(self, context):
-        try:
-            self.before_commit()
-        except:
-            self.log_error(context)
-            self.abort_transaction(context)
-        else:
-            for db in self.get_databases():
-                db.save_changes()
 
 
     ########################################################################

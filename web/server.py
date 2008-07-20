@@ -399,10 +399,12 @@ class Server(object):
         except Forbidden:
             if context.user is None:
                 status = 401
-                body = context.site_root.unauthorized(context)
+                view = context.site_root.unauthorized
+                body = view.GET(here, context)
             else:
                 status = 403
-                body = context.root.forbidden(context)
+                view = context.root.forbidden
+                body = view.GET(here, context)
 
         # Redirection
         if isinstance(body, Reference):

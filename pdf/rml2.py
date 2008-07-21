@@ -1518,17 +1518,17 @@ def build_end_tag(tag_name):
     return '</%s>' % tag_name
 
 
-def get_color_hexa(x):
-    x = x.lstrip('rgb(').rstrip(')').split(',')
-    x = [int(i) for i in x]
+def get_color_hexa(hex):
+    value = hex.lstrip('rgb(').rstrip(')').split(',')
+    value = [int(i) for i in value]
     tmp = []
-    if len(x) == 3:
+    if len(value) == 3:
         # RGB
-        for i in x:
+        for i in value:
             if i < 256:
                 tmp.append('%02x' % i)
             else:
-                print 'Warning color error'
+                print 'Warning the color "%s" is not well formed ' % hex
                 return None
     return '#%s' % ''.join(tmp)
 

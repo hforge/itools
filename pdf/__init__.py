@@ -23,7 +23,7 @@ from itools.xml import register_dtd
 try:
     from rml import rmltopdf, stl_rmltopdf
     from rml2 import (rml2topdf, rml2topdf_test, normalize, paragraph_stream,
-                      Context)
+                      Context, get_color)
 except ImportError:
     print 'You need to install the package "reportlab" to get RML working.'
     def rmltopdf(*args, **kw):

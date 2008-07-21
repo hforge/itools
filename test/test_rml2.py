@@ -20,8 +20,9 @@ import unittest
 
 # Import from itools
 from itools.pdf import (rml2topdf_test, normalize, paragraph_stream,
-                        Param)
+                        Context, get_color)
 from itools.xml import XMLParser
+
 
 
 class FunctionTestCase(unittest.TestCase):
@@ -45,84 +46,84 @@ class FunctionTestCase(unittest.TestCase):
 
 
     def test_formatting(self):
-        parameters = Param()
+        Contexteters = Context()
         data = '<p>TXT <i>TEXT<u>TEXT</u></i></p>'
         stream = XMLParser(data)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, parameters)
+        para = paragraph_stream(stream, 'p', {}, Contexteters)
         self.assertEqual(para.text, '<para>TXT <i>TEXT<u>TEXT</u></i></para>')
 
         data = '<p>TXT <i>TEXT<u>TEXT</u>TEXT</i></p>'
         stream = XMLParser(data)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, parameters)
+        para = paragraph_stream(stream, 'p', {}, Contexteters)
         goodanswer = '<para>TXT <i>TEXT<u>TEXT</u>TEXT</i></para>'
         self.assertEqual(para.text, goodanswer)
 
         data = '<p>TXT <i>TEXT<u>TEXT</u></i>TEXT</p>'
         stream = XMLParser(data)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, parameters)
+        para = paragraph_stream(stream, 'p', {}, Contexteters)
         goodanswer = '<para>TXT <i>TEXT<u>TEXT</u></i>TEXT</para>'
         self.assertEqual(para.text, goodanswer)
 
         data = '<p>TXT <i>TEXT<u>TEXT</u>TEXT</i>TEXT</p>'
         stream = XMLParser(data)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, parameters)
+        para = paragraph_stream(stream, 'p', {}, Contexteters)
         goodanswer = '<para>TXT <i>TEXT<u>TEXT</u>TEXT</i>TEXT</para>'
         self.assertEqual(para.text, goodanswer)
 
         data = '<p>TXT <i><u>TXT</u></i></p>'
         stream = XMLParser(data)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, parameters)
+        para = paragraph_stream(stream, 'p', {}, Contexteters)
         self.assertEqual(para.text, '<para>TXT <i><u>TXT</u></i></para>')
 
         data = '<p><i>TEXT<u>TEXT</u></i></p>'
         stream = XMLParser(data)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, parameters)
+        para = paragraph_stream(stream, 'p', {}, Contexteters)
         self.assertEqual(para.text, '<para><i>TEXT<u>TEXT</u></i></para>')
 
         data = '<p><i>TEXT<u>TEXT</u>TEXT</i></p>'
         stream = XMLParser(data)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, parameters)
+        para = paragraph_stream(stream, 'p', {}, Contexteters)
         self.assertEqual(para.text, '<para><i>TEXT<u>TEXT</u>TEXT</i></para>')
 
         data = '<p><i>TEXT<u>TEXT</u></i>TEXT</p>'
         stream = XMLParser(data)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, parameters)
+        para = paragraph_stream(stream, 'p', {}, Contexteters)
         self.assertEqual(para.text, '<para><i>TEXT<u>TEXT</u></i>TEXT</para>')
 
         data = '<p><i>TEXT<u>TEXT</u>TEXT</i>TEXT</p>'
         stream = XMLParser(data)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, parameters)
+        para = paragraph_stream(stream, 'p', {}, Contexteters)
         goodanswer = '<para><i>TEXT<u>TEXT</u>TEXT</i>TEXT</para>'
         self.assertEqual(para.text, goodanswer)
 
         data = '<p><i><u>TXT</u></i></p>'
         stream = XMLParser(data)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, parameters)
+        para = paragraph_stream(stream, 'p', {}, Contexteters)
         self.assertEqual(para.text, '<para><i><u>TXT</u></i></para>')
 
         data = '<p>TEXT<sup>TEXT</sup></p>'
         stream = XMLParser(data)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, parameters)
+        para = paragraph_stream(stream, 'p', {}, Contexteters)
         self.assertEqual(para.text, '<para>TEXT<super>TEXT</super></para>')
 
 
     def test_formatting_using_span(self):
-        parameters = Param()
+        Contexteters = Context()
         data = '<p><span style="color: #FF9000">clear syntax</span></p>'
         stream = XMLParser(data)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, parameters)
+        para = paragraph_stream(stream, 'p', {}, Contexteters)
         goodanswer = '<para><font color="#ff9000">clear syntax</font></para>'
         self.assertEqual(para.text, goodanswer)
 
@@ -130,7 +131,7 @@ class FunctionTestCase(unittest.TestCase):
         data += '</span>essai</p>'
         stream = XMLParser(data)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, parameters)
+        para = paragraph_stream(stream, 'p', {}, Contexteters)
         goodanswer = '<para>essai<font color="#ff0000"> essai essai'
         goodanswer += '</font>essai</para>'
         self.assertEqual(para.text, goodanswer)
@@ -139,7 +140,7 @@ class FunctionTestCase(unittest.TestCase):
         data += '</span>essai</p>'
         stream = XMLParser(data)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, parameters)
+        para = paragraph_stream(stream, 'p', {}, Contexteters)
         goodanswer = '<para>essai <font color="#00ff00">essai essai'
         goodanswer += '</font>essai</para>'
         self.assertEqual(para.text, goodanswer)
@@ -148,7 +149,7 @@ class FunctionTestCase(unittest.TestCase):
         data += 'essai</span> essai</p>'
         stream = XMLParser(data)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, parameters)
+        para = paragraph_stream(stream, 'p', {}, Contexteters)
         goodanswer = '<para>essai <font color="#0000ff">essai essai</font>'
         goodanswer += ' essai</para>'
         self.assertEqual(para.text, goodanswer)
@@ -157,7 +158,7 @@ class FunctionTestCase(unittest.TestCase):
         data += '<span style="color: #00DD45;">span</span> span</span>.</p>'
         stream = XMLParser(data)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, parameters)
+        para = paragraph_stream(stream, 'p', {}, Contexteters)
         goodanswer = '<para>Span <font color="#ff0000">span span <font '
         goodanswer += 'color="#00dd45">span</font> span</font>.</para>'
         self.assertEqual(para.text, goodanswer)
@@ -165,7 +166,6 @@ class FunctionTestCase(unittest.TestCase):
 
 
 class HtmlTestCase(unittest.TestCase):
-
 
     def test_empty_body(self):
         data = '<html><body></body></html>'
@@ -212,6 +212,61 @@ class HtmlTestCase(unittest.TestCase):
     def test_table(self):
         story, stylesheet = rml2topdf_test('rml2/table.xml')
         self.assertEqual(len(story), 1)
+
+
+
+class ColorTestCase(unittest.TestCase):
+
+
+    def test_hexa_simple(self):
+        str = '#abc'
+        color = get_color(str)
+        self.assertEqual(color.hexval(), '0xaabbcc')
+
+        str = '#aabbcc'
+        color = get_color(str)
+        self.assertEqual(color.hexval(), '0xaabbcc')
+
+
+    def test_name(self):
+        for data in (('green', '0x008000'),
+                     ('purple', '0x800080'),
+                     ('cyan', '0x00ffff')):
+            name, expected = data
+            color = get_color(name)
+            self.assertEqual(color.hexval(), expected)
+
+
+    def test_rgb(self):
+        str = 'rgb(230, 100, 180)'
+        color = get_color(str)
+        self.assertEqual(color.hexval(), '0xe664b4')
+
+
+    def test_wrong_color(self):
+        str = ''
+        color = get_color(str)
+        self.assertEqual(color.hexval(), '0x000000')
+
+        str = '#'
+        color = get_color(str)
+        self.assertEqual(color.hexval(), '0x000000')
+
+        str = '#abt'
+        color = get_color(str)
+        self.assertEqual(color.hexval(), '0x000000')
+
+        str = '#aabbtt'
+        color = get_color(str)
+        self.assertEqual(color.hexval(), '0x000000')
+
+        str = 'cian'
+        color = get_color(str)
+        self.assertEqual(color.hexval(), '0x000000')
+
+        str = 'rgb(230, 100, 1800)'
+        color = get_color(str)
+        self.assertEqual(color.hexval(), '0x000000')
 
 
 

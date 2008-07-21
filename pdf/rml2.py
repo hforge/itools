@@ -1108,7 +1108,7 @@ def create_preformatted(context, element, content):
     style_name = 'Normal'
 
     for key, attr_value in element[1].iteritems():
-        if key[1] == 'style':
+        if key[1] == 'class':
             style_name = attr_value
     style = context.get_style(style_name)
     widget = Preformatted(content, style)

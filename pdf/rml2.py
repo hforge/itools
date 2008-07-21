@@ -37,7 +37,7 @@ from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT, TA_JUSTIFY
 from reportlab.lib.pagesizes import LETTER
 from reportlab.lib.styles import(getSampleStyleSheet, ParagraphStyle)
 from reportlab.lib.units import inch, cm, mm, pica
-from reportlab.platypus import (Paragraph, SimpleDocTemplate, Preformatted,
+from reportlab.platypus import (Paragraph, SimpleDocTemplate, XPreformatted,
                                 PageBreak, Image, Indenter, Table)
 from reportlab.platypus import tableofcontents
 from reportlab.platypus.doctemplate import PageTemplate, BaseDocTemplate
@@ -1111,7 +1111,7 @@ def create_preformatted(context, element, content):
         if key[1] == 'class':
             style_name = attr_value
     style = context.get_style(style_name)
-    widget = Preformatted(content, style)
+    widget = XPreformatted(content, style)
     return widget
 
 

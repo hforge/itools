@@ -1545,7 +1545,7 @@ def get_color(value):
                 g = value[2] * 2
                 b = value[3] * 2
                 value = '#%s%s%s' % (r, g, b)
-        color = colors.toColor(value, colors.black)
+    color = colors.toColor(value, colors.black)
     return color
 
 

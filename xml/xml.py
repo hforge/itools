@@ -114,15 +114,7 @@ def stream_to_str(stream, encoding='UTF-8'):
                     '<?xml version="%s" encoding="%s" standalone="%s"?>'
                     % (version, encoding, standalone))
         elif event == DOCUMENT_TYPE:
-            name, system_id, public_id, has_internal_subset = value
-            if public_id is None:
-                data.append('<!DOCTYPE %s SYSTEM "%s">' % (name, system_id))
-            elif system_id is None:
-                # XXX Special case for HTML (not good XML)
-                data.append('<!DOCTYPE %s PUBLIC "%s">' % (name, public_id))
-            else:
-                data.append('<!DOCTYPE %s PUBLIC "%s"\n  "%s">'
-                    % (name, public_id, system_id))
+            data.append(value)
         elif event == CDATA:
             data.append('<![CDATA[%s]]>' % value)
         else:

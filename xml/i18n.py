@@ -207,8 +207,9 @@ def get_messages(events, filename=None):
                 keep_spaces = False
         elif type == MESSAGE:
             # Segmentation
-            for segment in get_segments(value, keep_spaces):
-                yield gettextMessage([], [segment], [u''], {filename: [line]})
+            for segment, line_offset in get_segments(value, keep_spaces):
+                yield gettextMessage([], [segment], [u''],
+                                     {filename: [line + line_offset]})
 
 
 

@@ -223,7 +223,7 @@ class i18nTestCase(TestCase):
         """Test translation with surrounding tags (4)"""
 
         doc = HTMLFile(string =
-            'Say: <em>   hello world. It\'s     me.</em>'
+            'Say: <em>   hello world. It\'s me.</em>'
             '      Do you remember me ?  ')
 
         p = POFile(string=
@@ -237,8 +237,8 @@ class i18nTestCase(TestCase):
             'msgstr "Vous vous rappelez de moi ?"')
 
         self.assertEqual(doc.translate(p), 'Dites: '
-                         '<em> Bonjour monde. C\'est moi.</em>'
-                         '  Vous vous rappelez de moi ? ')
+                         '<em>   Bonjour monde. C\'est moi.</em>'
+                         '      Vous vous rappelez de moi ? ')
 
 
     def test_pre(self):

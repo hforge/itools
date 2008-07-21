@@ -206,9 +206,17 @@ def _split_message(message, keep_spaces=False):
     last_char = None
     sub_structure = []
     stack_id = []
+    offset = 0
+    line_offset = 0
+    if message and message[0][1][0] == '\n':
+        line_offset = 1
 
     for type, atom in message.get_atoms():
         if type == TEXT:
+            if atom == '\n':
+                if not _make_sentence(sub_sentence, True).strip():
+                    line_offset = max(offset,line_offset)
+                offset += 1
             sub_sentence.append(atom)
             if atom.isspace():
                 word_stop = True
@@ -218,7 +226,8 @@ def _split_message(message, keep_spaces=False):
                     sub_structure.append(
                         (TEXT, _make_sentence(sub_sentence, keep_spaces),
                          TEXT_ID))
-                    yield sub_structure
+                    yield sub_structure, line_offset
+                    line_offset = offset
                     sub_sentence = []
                     sub_structure = []
                     sentence_done = False
@@ -258,7 +267,7 @@ def _split_message(message, keep_spaces=False):
             (TEXT, _make_sentence(sub_sentence, keep_spaces),
              TEXT_ID))
     if sub_structure:
-        yield sub_structure
+        yield sub_structure, line_offset
 
 
 
@@ -271,20 +280,20 @@ def get_segments(message, keep_spaces=False):
     message.
     """
 
-    for segment_structure in _split_message(message, keep_spaces):
+    for segment_structure, line_offset in _split_message(message, keep_spaces):
         segment_structure = \
             _rm_surrounding_spaces(segment_structure, keep_spaces)
         new_seg_struct = \
             _rm_surrounding_format(segment_structure, keep_spaces)
         if new_seg_struct != segment_structure:
             new_message = _reconstruct_message(new_seg_struct)
-            for segment in get_segments(new_message, keep_spaces):
-                yield segment
+            for segment, new_line_offset in get_segments(new_message, keep_spaces):
+                yield segment, line_offset + new_line_offset
         else:
             segment = _reconstruct_segment(segment_structure,
                                            keep_spaces)
             if segment:
-                yield segment
+                yield segment, line_offset
 
 
 
@@ -307,7 +316,7 @@ def translate_message(message, catalog, keep_spaces):
 
 def _translate_segments(message, translation_dict, keep_spaces):
 
-    for seg_struct in _split_message(message, keep_spaces):
+    for seg_struct in _split_message(message, keep_spaces)[0]:
         seg_struct, spaces_pos = \
             _get_surrounding_spaces(seg_struct, keep_spaces)
         new_seg_struct = _rm_surrounding_format(seg_struct, keep_spaces)

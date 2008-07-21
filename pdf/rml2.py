@@ -20,26 +20,30 @@
 
 # Import from the Standard Library
 from cStringIO import StringIO
+from math import floor
+import tempfile
 
 # Import from itools
+from itools import get_abspath
 from itools.datatypes import Unicode, XMLContent, Integer
+from itools.handlers import Image as ItoolsImage
 from itools.vfs import vfs
 from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, TEXT
 import itools.http
-from itools import get_abspath
-from itools.handlers import Image as ItoolsImage
 
 #Import from the reportlab Library
+from reportlab.lib import colors
 from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT, TA_JUSTIFY
 from reportlab.lib.pagesizes import LETTER
 from reportlab.lib.styles import(getSampleStyleSheet, ParagraphStyle)
 from reportlab.lib.units import inch, cm, mm, pica
-from reportlab.platypus.flowables import HRFlowable
 from reportlab.platypus import (Paragraph, SimpleDocTemplate, Preformatted,
                                 PageBreak, Image, Indenter, Table)
-from reportlab.lib import colors
-import tempfile
-from math import floor
+from reportlab.platypus import tableofcontents
+from reportlab.platypus.doctemplate import PageTemplate, BaseDocTemplate
+from reportlab.platypus.flowables import HRFlowable
+from reportlab.platypus.frames import Frame
+from reportlab.platypus.tableofcontents import TableOfContents
 
 encoding = 'UTF-8'
 URI = None
@@ -78,7 +82,7 @@ class Context(object):
         self.image_not_found_path = get_abspath(globals(), 'not_found.png')
         self.size = {'in': inch, 'cm': cm, 'mm': mm, 'pica': pica, 'px': 1}
         self.toc_place = None
-        self.toc_ref = []
+        self.cpt_toc_ref = 0
         self.toc_high_level = 3
 
 
@@ -97,6 +101,9 @@ class Context(object):
                                            parent=self.stylesheet['h5'],
                                            fontSize=9),
                             alias='h6')
+        self.stylesheet.add(ParagraphStyle(name='toctitle',
+                                           parent=self.stylesheet['Normal'],
+                                           fontSize=40))
 
 
     def format_size(self, value, default=None):
@@ -155,8 +162,8 @@ class Context(object):
 
     def get_toc_anchor(self, tag_name, content):
         if not self.toc_high_level > tag_name[1]:
-            ref = 'toc_' + tag_name + '_' + str(len(self.toc_ref))
-            self.toc_ref.append((ref, Unicode.encode(content)))
+            ref = 'toc_' + str(self.cpt_toc_ref)
+            self.cpt_toc_ref += 1
             content = '<a name="' + ref + '" />' + content
         return content
 
@@ -194,6 +201,74 @@ def rml2topdf(filename):
     iostream = StringIO()
     document_stream(stream, iostream, filename, False)
     return iostream.getvalue()
+
+
+def makeTocHeaderStyle(level, delta, epsilon, fontName='Times-Roman'):
+    "Make a header style for different levels."
+
+    assert level >= 0, "Level must be >= 0."
+
+    PS = ParagraphStyle
+    size = 12
+    style = PS(name = 'Heading' + str(level),
+               fontName = fontName,
+               fontSize = size,
+               leading = size*1.2,
+               spaceBefore = size/4.0,
+               spaceAfter = size/8.0,
+               firstLineIndent = -epsilon,
+               leftIndent = level*delta + epsilon)
+
+    return style
+
+
+class MyDocTemplate(BaseDocTemplate):
+    "The document template used for all PDF documents."
+
+    def __init__(self, filename, **kw):
+        BaseDocTemplate.__init__(self, filename, **kw)
+        self.toc_index = 0
+
+
+    def _get_heading_level(self, name):
+        if name.startswith('Heading'):
+            return int(name[7:])
+            # Heading0 -> h1
+        elif name[0] == 'h' and len(name) == 2:
+            # h1~h6
+            return int(name[1:]) - 1
+        else:
+            return None
+
+
+    def _allSatisfied(self):
+        status = BaseDocTemplate._allSatisfied(self)
+        self.toc_index = 0
+        return status
+
+
+    def afterFlowable(self, flowable):
+        "Registers TOC entries and makes outline entries."
+
+        if flowable.__class__.__name__ == 'Paragraph':
+            style_name = flowable.style.name
+            level = self._get_heading_level(style_name)
+            if level is not None:
+                # Register TOC entries.
+                text = flowable.getPlainText()
+                pageNum = self.page
+                # Hook the text content by adding a link
+                content = '<para><a href="toc_%s">%s</a></para>'
+                content = content % (self.toc_index, text)
+                self.toc_index += 1
+                self.notify('TOCEntry', (level, content, pageNum))
+
+                # Add PDF outline entries (not really needed/tested here).
+                key = str(hash(flowable))
+                c = self.canv
+                c.bookmarkPage(key)
+                c.addOutlineEntry(text, key, level=level, closed=0)
+
 
 
 def document_stream(stream, pdf_stream, document_name, is_test=False):
@@ -254,15 +329,29 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
         test_data = list(story), context.get_base_style_sheet()
 
     if context.toc_place is not None:
+        # Create platypus toc
         place = context.toc_place
         story = story[:place] + create_toc(context) + story[place:]
 
-    doc = SimpleDocTemplate(pdf_stream, pagesize=LETTER)
+        # Create doc template
+        doc = MyDocTemplate(pdf_stream, pagesize=LETTER)
+        frame1 = Frame(doc.leftMargin, doc.bottomMargin, doc.width,
+                       doc.height, id='normal')
+        template_attrs = {'id': 'now', 'frames': [frame1], 'pagesize': LETTER}
+        page_template = PageTemplate(**template_attrs)
+        doc.addPageTemplates([page_template])
+    else:
+        doc = SimpleDocTemplate(pdf_stream, pagesize=LETTER)
+
     doc.author = informations.get('author', '')
     doc.title = informations.get('title', '')
     doc.subject = informations.get('subject', '')
     doc.keywords = informations.get('keywords', [])
-    doc.build(story)
+
+    if context.toc_place is not None:
+        doc.multiBuild(story)
+    else:
+        doc.build(story)
 
     if is_test == True:
         return test_data
@@ -316,25 +405,18 @@ def head_stream(stream, _tag_name, _attributes, context):
 
 
 def create_toc(context):
-    INDENT_VALUE = 1 * cm
-    text_title = ['<b>Contents<b>']
+    text_title = ['Contents']
     title = create_paragraph(context, ('toctitle', {}), text_title)
-    story = [title,Indenter(left=INDENT_VALUE)]
-    level = 1
-    bullet = get_bullet('disc')
-    for ref in context.toc_ref:
-        hlevel = get_int_value(ref[0][5])
-        if hlevel > level:
-            while xrange(level, hlevel):
-                level += 1
-                story.append(Indenter(left=INDENT_VALUE))
-        else:
-            while xrange(hlevel, level):
-                level -= 1
-                story.append(Indenter(left=-INDENT_VALUE))
-        content = [bullet]
-        content.append('<a href="%s">%s</a>' % ref)
-        story.append(create_paragraph(context, ('toc', {}), content))
+    story = [title,]
+    # Create styles to be used for TOC entry lines
+    # for headers on differnet levels.
+    tocLevelStyles = []
+    d, e = tableofcontents.delta, tableofcontents.epsilon
+    for i in range(context.toc_high_level):
+        tocLevelStyles.append(makeTocHeaderStyle(i, d, e))
+    toc = TableOfContents()
+    toc.levelStyles = tocLevelStyles
+    story.append(toc)
     story.append(PageBreak())
     return story
 
@@ -1009,9 +1091,9 @@ def build_style(context, element):
             style_attr[key] = attr_value
     style_attr['autoLeading'] = 'max'
 
-    style_name = parent_style_name
-    if element[0] in HEADING:
+    if element[0] in HEADING + ('toctitle', ):
         parent_style_name = element[0]
+    style_name = parent_style_name
     parent_style = context.get_style(parent_style_name)
     return (ParagraphStyle(style_name, parent=parent_style, **style_attr),
             bulletText)

@@ -440,7 +440,7 @@ def set_prefix(stream, prefix):
             aux = {}
             for attr_uri, attr_name in attributes:
                 value = attributes[(attr_uri, attr_name)]
-                if tag_uri == xhtml_uri and attr_uri == xhtml_uri:
+                if tag_uri == xhtml_uri and attr_uri in (None, xhtml_uri):
                     # <... src="X" />
                     if attr_name == 'src':
                         value = resolve_pointer(value, prefix)

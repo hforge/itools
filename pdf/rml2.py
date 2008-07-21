@@ -1437,7 +1437,7 @@ def build_end_tag(tag_name):
 
 
 def get_color_hexa(x):
-    x = x.lstrip('#rgb(').rstrip(')').split(',')
+    x = x.lstrip('rgb(').rstrip(')').split(',')
     x = [int(i) for i in x]
     tmp = []
     if len(x) == 3:
@@ -1452,9 +1452,17 @@ def get_color_hexa(x):
 
 
 def get_color(value):
+    value = value.strip()
     if value:
         if value.startswith('rgb'):
             value = get_color_hexa(value)
+        elif value.startswith('#'):
+            if len(value) == 4:
+                # #aba -> #aabbaa
+                r = value[1] * 2
+                g = value[2] * 2
+                b = value[3] * 2
+                value = '#%s%s%s' % (r, g, b)
         color = colors.toColor(value, colors.black)
     return color
 

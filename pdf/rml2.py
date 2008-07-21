@@ -114,7 +114,7 @@ class Context(object):
             return default
 
         coef = 1
-        if not is_str(value):
+        if not isinstance(value, (str, unicode)):
             return value
         if value == 'None':
             return None
@@ -1512,15 +1512,3 @@ def exist_attribute(attrs, keys, at_least=False):
             if attrs.has_key((URI, key)) is True:
                 return True
         return False
-
-
-def is_str(s, check_is_unicode=True):
-    """
-        Check is str is a string.
-    """
-
-    if isinstance(s, str) is False:
-        if not check_is_unicode:
-            return False
-        return isinstance(s, unicode)
-    return True

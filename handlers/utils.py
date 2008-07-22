@@ -16,13 +16,18 @@
 
 
 
-src = ur"""ÄÅÁÀÂÃäåáàâãÇçÉÈÊËéèêëæÍÌÎÏíìîïÑñÖÓÒÔÕØöóòôõøßÜÚÙÛüúùûÝŸýÿ"""
-dst = ur"""AAAAAAaaaaaaCcEEEEeeeeeIIIIiiiiNnOOOOOOooooooSUUUUuuuuYŸyy"""
+src = ur"""ÄÅÁÀÂÃäåáàâãÇçÉÈÊËéèêëÍÌÎÏíìîïÑñÖÓÒÔÕØöóòôõøÜÚÙÛüúùûÝŸýÿ"""
+dst = ur"""AAAAAAaaaaaaCcEEEEeeeeIIIIiiiiNnOOOOOOooooooUUUUuuuuYŸyy"""
 
 transmap = {}
 for i in range(len(src)):
     a, b = src[i], dst[i]
     transmap[ord(a)] = ord(b)
+transmap[ord(u'æ')] = u'ae'
+transmap[ord(u'Æ')] = u'AE'
+transmap[ord(u'œ')] = u'oe'
+transmap[ord(u'Œ')] = u'OE'
+transmap[ord(u'ß')] = u'ss'
 
 
 def checkid(id):

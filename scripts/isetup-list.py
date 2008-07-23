@@ -22,8 +22,8 @@ from optparse import OptionParser
 from os import sep
 
 # Import from itools
-from itools import utils, __version__
-from itools.utils import list_eggs_info
+from itools import  __version__
+from itools.isetup import list_eggs_info
 
 
 if __name__ == '__main__':
@@ -44,6 +44,14 @@ if __name__ == '__main__':
 
     # List available modules
     for site in sites:
-        print "Packages for %s :" % site
-        list_eggs_info(site)
-        print
+        eggs = list_eggs_info(site)
+        if len(eggs) > 0:
+            print "Packages for %s :" % site
+            for egg in eggs:
+                print "* %-20.20s Version: %-12.12s" % (egg['Name'],\
+                                                       egg['Version']),
+                if egg['is_imported']:
+                    print "Import: OK"
+                else:
+                    print "Import: NOT OK"
+            print

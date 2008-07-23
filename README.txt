@@ -6,18 +6,19 @@ The packages included are:
 
   itools.abnf             itools.i18n             itools.uri
   itools.csv              itools.ical             itools.vfs
-  itools.datatypes        itools.odf              itools.web
-  itools.gettext          itools.pdf              itools.workflow
-  itools.git              itools.rest             itools.xapian
-  itools.handlers         itools.rss              itools.xliff
-  itools.html             itools.stl              itools.xml
-  itools.http             itools.tmx
+  itools.datatypes        itools.isetup           itools.odf
+  itools.gettext          itools.pdf              itools.web
+  itools.git              itools.rest             itools.workflow
+  itools.handlers         itools.rss              itools.xapian
+  itools.html             itools.stl              itools.xliff
+  itools.http             itools.tmx              itools.xml
 
 The scripts included are:
 
-  igettext-build.py       isetup-quality.py       isetup-update-locale.py
-  igettext-extract.py     isetup-build.py
-  igettext-merge.py       isetup-copyright.py
+  igettext-build.py       isetup-build.py         isetup-info.py
+  igettext-extract.py     isetup-copyright.py     isetup-install.py
+  igettext-merge.py       isetup-list.py
+  isetup-quality.py       isetup-update-locale.py
 
 
 Requirements

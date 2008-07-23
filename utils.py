@@ -17,8 +17,8 @@
 # Import from the Standard Library
 from distutils import core
 from distutils.command.build_py import build_py
-from os import getcwd, getpid, listdir
-from os.path import exists, join as join_path, sep, splitdrive, isfile
+from os import getcwd
+from os.path import exists, join as join_path, sep, splitdrive
 from sys import _getframe, platform
 import sys
 
@@ -59,75 +59,6 @@ def get_abspath(local_path, mname=None):
     return mpath
 
 
-# Note : some .egg-info are directories and not files
-def egg_info(filename):
-    """
-    Return a dict containing all information available for a .egg-info
-
-    >>> egg_info('/usr/lib/python2.5/site-packages/pexpect-2.1.egg-info')
-    {'Author': 'Noah Spurrier', 'Author-email': 'noah@noah.org', ...}
-    """
-    attributes = {}
-    if isfile(filename):
-        data = open(filename).readlines()
-        for line in data:
-            if ':' in line:
-                (key, val) = line.split(': ', 1)
-                # Don't record useless attribute
-                if val != 'UNKNOWN\n':
-                    # Comma separated string for lists
-                    if key in attributes.keys():
-                        attributes[key] += ',' + val[:-1]
-                    else:
-                        attributes[key] = val[:-1]
-    return attributes
-
-
-def list_eggs_info(dir, module_name=''):
-    """
-    For every .egg-info in a directory, print its name, version and test
-    if import is possible.
-
-    """
-    # sort the files
-    eggs = [egg for egg in listdir(dir) if egg.endswith('.egg-info')]
-    eggs.sort(lambda a, b: cmp(a.upper(),b.upper()))
-
-    for egg in eggs:
-        infos = egg_info(join_path(dir, egg))
-        # for the time being only file .egg-info are supported
-        if not isfile(join_path(dir, egg)) or\
-           module_name.upper() not in infos['Name'].upper():
-            continue
-        print "* %-20.20s" % infos['Name'],
-        if module_name == '':
-            print " Version: %-12.12s" % infos['Version'],
-
-        # try the import
-        # if the project filled Provides field use this one
-        try:
-            for provided_module in infos['Provides'].split(','):
-                __import__(provided_module)
-            import_ok = True
-        except ImportError:
-            import_ok = False
-        except KeyError:
-            # We can try the name if the project has not filled Provides
-            # field
-            try:
-                __import__(infos['Name'])
-                import_ok = True
-            except ImportError:
-                import_ok = False
-        if import_ok:
-            print " Import: OK"
-        else:
-            print " Import: NOT OK"
-
-        if module_name != '':
-            for key in infos:
-                print "%-18.18s%s" % (key + ':', infos[key])
-            print
 
 
 ############################################################################

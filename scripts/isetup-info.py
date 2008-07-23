@@ -23,7 +23,7 @@ from os import sep
 
 # Import from itools
 from itools import __version__
-from itools.utils import list_eggs_info
+from itools.isetup import list_eggs_info
 
 
 if __name__ == '__main__':
@@ -51,6 +51,16 @@ if __name__ == '__main__':
 
     # List available modules
     for site in sites:
-        print "Matching packages in %s :" % site
-        list_eggs_info(site, module_name)
-        print
+        eggs = list_eggs_info(site, module_name)
+        if len(eggs) > 0:
+            print "Matching packages in %s :" % site
+            for egg in eggs:
+                print "* %-15.15s" % egg['Name'],
+                if egg['is_imported']:
+                    print "Import: OK"
+                else:
+                    print "Import: NOT OK"
+                del egg['is_imported']
+                for key in egg:
+                    print "%-18.18s%s" % (key + ':', egg[key])
+            print

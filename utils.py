@@ -59,38 +59,6 @@ def get_abspath(local_path, mname=None):
     return mpath
 
 
-
-############################################################################
-# XXX To be removed once distutils works again:
-# http://bugs.python.org/issue1183712
-class build_py_fixed(build_py):
-
-    def get_data_files(self):
-        """Generate list of '(package,src_dir,build_dir,filenames)' tuples.
-        """
-        data = []
-        if not self.packages:
-            return data
-        for package in self.packages:
-            # Locate package source directory
-            src_dir = self.get_package_dir(package)
-
-            # Compute package build directory
-            build_dir = join_path(*([self.build_lib] + package.split('.')))
-
-            # Length of path to strip from found files
-            if src_dir:
-                plen = len(src_dir)+1
-            else:
-                plen = 0
-
-            # Strip directory from globbed filenames
-            filenames = [
-                file[plen:] for file in self.find_data_files(package, src_dir)
-                ]
-            data.append((package, src_dir, build_dir, filenames))
-        return data
-
 # Note : some .egg-info are directories and not files
 def egg_info(filename):
     """
@@ -271,9 +239,7 @@ def setup(classifiers=[], ext_modules=[]):
                # Scripts
                scripts = scripts,
                # C extensions
-               ext_modules=ext_modules,
-               # XXX broken distutils
-               cmdclass={'build_py': build_py_fixed})
+               ext_modules=ext_modules)
 
 
 

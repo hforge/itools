@@ -56,11 +56,7 @@ class Context(object):
         self.request = request
         self.response = Response()
 
-
-    def init(self):
-        """To process a request it must be loaded, in the first place.
-        """
-        request = self.request
+        # Read the origin host
         if request.has_header('X-Forwarded-Host'):
             host = request.get_header('X-Forwarded-Host')
         elif request.has_header('Host'):

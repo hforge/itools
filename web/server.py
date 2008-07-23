@@ -477,16 +477,20 @@ class Server(object):
 
 
     def handle_request(self, request):
-        context = Context(request)
-        response = context.response
         # (1) Initialize the context
-        context.init()
-        context.server = self
-        root = self.root
-        context.root = root
-        set_context(context)
+        context = Context(request)
+        self.init_context(context)
 
-        # (2) Perform the request method (GET, POST, ...)
+        # (2) Get the authenticated user
+        context.user = self.get_user(context)
+
+        # (3) Get the Site Root
+        site_root = self.get_site_root(context.uri.authority.host)
+        context.site_root = site_root
+        site_root.before_traverse(context)
+
+        # (4) Perform the request method (GET, POST, ...)
+        root = self.root
         method = getattr(self, request.method)
         try:
             status, body = method(context)
@@ -495,7 +499,7 @@ class Server(object):
             status = 500
             body = root.internal_server_error(context)
 
-        # (3) Close the transaction (commit or abort)
+        # (5) Close the transaction (commit or abort)
         if status < 400 and context.commit is True:
             # Hook: before commit
             try:
@@ -518,7 +522,7 @@ class Server(object):
         else:
             self.abort_transaction(context)
 
-        # (4) Build response, when postponed (useful for POST methods)
+        # (6) Build response, when postponed (useful for POST methods)
         if isinstance(body, (FunctionType, MethodType)):
             try:
                 body = body(context.object, context)
@@ -528,7 +532,7 @@ class Server(object):
                 body = root.internal_server_error(context)
             self.abort_transaction(context)
 
-        # (5) Post-process (useful to wrap the body in a skin)
+        # (7) Post-process (useful to wrap the body in a skin)
         if isinstance(body, (str, list, GeneratorType, XMLParser)):
             try:
                 body = root.after_traverse(context, body)
@@ -537,14 +541,15 @@ class Server(object):
                 status = 500
                 body = root.internal_server_error(context)
 
-        # (6) If request is HEAD, do not return an entity
+        # (8) If request is HEAD, do not return an entity
+        response = context.response
         if request.method == 'HEAD':
             if isinstance(body, str):
                 # Set the content length, and body is None
                 response.set_header('content-length', len(body))
                 body = None
 
-        # (7) Build and return the response
+        # (9) Build and return the response
         if body is None:
             response.set_body(body)
         elif isinstance(body, str):
@@ -555,8 +560,14 @@ class Server(object):
         return response
 
 
-    ########################################################################
+    #######################################################################
     # Stages
+    def init_context(self, context):
+        context.server = self
+        context.root = self.root
+        set_context(context)
+
+
     def get_user(self, context):
         # Check the id/auth cookie
         cookie = context.get_cookie('__ac')
@@ -580,28 +591,30 @@ class Server(object):
         return None
 
 
-    def traverse(self, context):
-        """Returns the status code (200 if everything is Ok so far) and
-        the method to call.
-        """
-        root = context.root
-        root.init(context)
-        user = context.user = self.get_user(context)
-        site_root = self.get_site_root(context.uri.authority.host)
-        site_root.before_traverse(context)
-        context.site_root = site_root
-
-        # Get the object
+    def get_object(self, context):
+        site_root = context.site_root
         path = str(context.path)
         if path[0] == '/':
             path = path[1:]
             if path == '':
                 path = '.'
         try:
-            here = site_root.get_object(path)
+            return site_root.get_object(path)
         except LookupError:
-            here = None
+            return None
 
+
+    def traverse(self, context):
+        """Returns the status code (200 if everything is Ok so far) and the
+        method to call.
+        """
+        root = context.root
+        site_root = context.site_root
+
+        # Get the object
+        here = self.get_object(context)
+
+        # Not Found
         if here is None:
             # Find an ancestor to render the page
             abspath = Path(path)
@@ -629,6 +642,7 @@ class Server(object):
             return 404, here, view, view.GET
 
         # Check security
+        user = context.user
         ac = here.get_access_control()
         if not ac.is_access_allowed(user, here, view):
             # Unauthorized

@@ -215,12 +215,6 @@ class Root(AccessControl, Node):
     type Foldern so check out the Handler and Folder API.
     """
 
-    def init(self, context):
-        """Initialize the root for the new context.  Useful for resetting
-        attributes, etc."""
-        pass
-
-
     def get_user(self, username):
         """Return an object representing the user named after the username,
         or 'None'.  The nature of the object, the location of the storage

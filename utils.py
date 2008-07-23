@@ -151,8 +151,10 @@ def setup(classifiers=[], ext_modules=[]):
         from itools.handlers import ConfigFile
     except ImportError:
         # Are we trying to install itools?
-        # XXX Should use relative imports, by they don't work well yet, see
-        # http://bugs.python.org/issue1510172
+        # FIXME Should use relative imports, by they don't work well yet (see
+        # http://bugs.python.org/issue1510172).  This issue is solved with
+        # Python 2.6, so we will remove this code once we raise the required
+        # Python version to 2.6.
         start_local_import()
         from handlers import ConfigFile
         end_local_import()

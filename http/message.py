@@ -39,4 +39,4 @@ class Message(File):
 
     def get_header(self, name):
         name = name.lower()
-        return self.headers[name]
+        return self.headers.get(name)

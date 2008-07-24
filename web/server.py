@@ -29,7 +29,6 @@ from socket import AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR
 import sys
 from time import strftime
 from traceback import print_exc
-from types import GeneratorType
 from urllib import unquote
 
 # Import from itools
@@ -37,7 +36,6 @@ from itools.http import Request, Response, HTTPError
 from itools.http import BadRequest, Forbidden, NotFound, Unauthorized
 from itools.i18n import init_language_selector
 from itools.uri import Reference, Path
-from itools.xml import XMLParser
 from context import Context, get_context, set_context, select_language
 from views import BaseView
 
@@ -369,307 +367,6 @@ class Server(object):
 
 
     ########################################################################
-    # Handle a request
-    ########################################################################
-    def GET(self, context):
-        request, response = context.request, context.response
-        # This is a safe method
-        context.commit = False
-        # Our canonical URLs never end with an slash
-        if context.uri.path.endswith_slash:
-            goto = copy(context.uri)
-            goto.path.endswith_slash = False
-            return 302, goto
-        # Traverse
-        status, here, view, method = self.traverse(context)
-        if status == 200:
-            # Check modification time
-            mtime = view.get_mtime(here)
-            if mtime is not None:
-                mtime = mtime.replace(microsecond=0)
-                response.set_header('last-modified', mtime)
-                if request.method == 'GET':
-                    if request.has_header('if-modified-since'):
-                        msince = request.get_header('if-modified-since')
-                        if mtime <= msince:
-                            return 304, None
-        # Call the method
-        try:
-            body = method(here, context)
-        except Forbidden:
-            if context.user is None:
-                status = 401
-                view = context.site_root.unauthorized
-                body = view.GET(here, context)
-            else:
-                status = 403
-                view = context.root.forbidden
-                body = view.GET(here, context)
-
-        # Redirection
-        if isinstance(body, Reference):
-            return 302, body
-
-        return status, body
-
-
-    def HEAD(self, context):
-        # Tweak the method to call if needed
-        if context.method == 'HEAD':
-            context.method = 'GET'
-        # Do a GET
-        return self.GET(context)
-
-
-    def POST(self, context):
-        request, response = context.request, context.response
-        # Not a safe method
-        context.commit = True
-        # Traverse
-        status, here, view, method = self.traverse(context)
-        # Call the method
-        try:
-            body = method(here, context)
-        except Forbidden:
-            if context.user is None:
-                status = 401
-                body = context.site_root.unauthorized(context)
-            else:
-                status = 403
-                body = context.root.forbidden(context)
-
-        # Redirection
-        if isinstance(body, Reference):
-            return 302, body
-
-        return status, body
-
-
-    def PUT(self, context):
-        context.commit = True
-        # Traverse
-        status, here, view, method = self.traverse(context)
-        # Call the method
-        body = method(context)
-        return 204, None
-
-
-    def LOCK(self, context):
-        context.commit = True
-        # Traverse
-        status, here, view, method = self.traverse(context)
-        # Call the method
-        body = method(context)
-        if isinstance(body, str):
-            return 200, body
-        elif body is None:
-            return 423, None
-        raise TypeError
-
-
-    def UNLOCK(self, context):
-        context.commit = True
-        # Traverse
-        status, here, view, method = self.traverse(context)
-        # Call the method
-        body = method(context)
-        return 204, None
-
-
-    def handle_request(self, request):
-        # (1) Initialize the context
-        context = Context(request)
-        self.init_context(context)
-
-        # (2) Get the authenticated user
-        context.user = self.get_user(context)
-
-        # (3) Get the Site Root
-        site_root = self.get_site_root(context.uri.authority.host)
-        context.site_root = site_root
-        site_root.before_traverse(context)
-
-        # (4) Perform the request method (GET, POST, ...)
-        root = self.root
-        method = getattr(self, request.method)
-        try:
-            status, body = method(context)
-        except:
-            self.log_error(context)
-            status = 500
-            body = root.internal_server_error(context)
-
-        # (5) Close the transaction (commit or abort)
-        if status < 400 and context.commit is True:
-            # Hook: before commit
-            try:
-                self.before_commit()
-            except:
-                status = 500
-                self.log_error(context)
-                self.abort_transaction(context)
-            # Commit
-            else:
-                try:
-                    for db in self.get_databases():
-                        db.save_changes()
-                except:
-                    status = 500
-                    self.log_error(context)
-            # Error
-            if status == 500:
-                body = root.internal_server_error(context)
-        else:
-            self.abort_transaction(context)
-
-        # (6) Build response, when postponed (useful for POST methods)
-        if isinstance(body, (FunctionType, MethodType)):
-            try:
-                body = body(context.object, context)
-            except:
-                self.log_error(context)
-                status = 500
-                body = root.internal_server_error(context)
-            self.abort_transaction(context)
-
-        # (7) Post-process (useful to wrap the body in a skin)
-        if isinstance(body, (str, list, GeneratorType, XMLParser)):
-            try:
-                body = root.after_traverse(context, body)
-            except:
-                self.log_error(context)
-                status = 500
-                body = root.internal_server_error(context)
-
-        # (8) If request is HEAD, do not return an entity
-        response = context.response
-        if request.method == 'HEAD':
-            if isinstance(body, str):
-                # Set the content length, and body is None
-                response.set_header('content-length', len(body))
-                body = None
-
-        # (9) Build and return the response
-        if body is None:
-            response.set_body(body)
-        elif isinstance(body, str):
-            response.set_body(body)
-        elif isinstance(body, Reference):
-            context.redirect(body)
-        response.set_status(status)
-        return response
-
-
-    #######################################################################
-    # Stages
-    def init_context(self, context):
-        context.server = self
-        context.root = self.root
-        set_context(context)
-
-
-    def get_user(self, context):
-        # Check the id/auth cookie
-        cookie = context.get_cookie('__ac')
-        if cookie is None:
-            return None
-
-        # Process cookie
-        cookie = unquote(cookie)
-        cookie = decodestring(cookie)
-        username, password = cookie.split(':', 1)
-
-        # Check user exists
-        user = context.root.get_user(username)
-        if user is None:
-            return None
-
-        # Authenticate
-        if user.authenticate(password):
-            return user
-
-        return None
-
-
-    def get_object(self, context):
-        site_root = context.site_root
-        path = str(context.path)
-        if path[0] == '/':
-            path = path[1:]
-            if path == '':
-                path = '.'
-        try:
-            return site_root.get_object(path)
-        except LookupError:
-            return None
-
-
-    def traverse(self, context):
-        """Returns the status code (200 if everything is Ok so far) and the
-        method to call.
-        """
-        root = context.root
-        site_root = context.site_root
-
-        # Get the object
-        here = self.get_object(context)
-
-        # Not Found
-        if here is None:
-            # Find an ancestor to render the page
-            abspath = Path(path)
-            for x in range(len(abspath) - 1, 0, -1):
-                path = abspath[:x]
-                try:
-                    here = site_root.get_object(path)
-                except LookupError:
-                    continue
-                else:
-                    break
-            else:
-                here = site_root
-            context.object = here
-            view = root.get_view('not_found')
-            return 404, here, view, view.GET
-
-        context.object = here
-
-        # Get the view
-        query = context.uri.query
-        view = here.get_view(context.method, **query)
-        if view is None:
-            view = root.get_view('not_found')
-            return 404, here, view, view.GET
-
-        # Check security
-        user = context.user
-        ac = here.get_access_control()
-        if not ac.is_access_allowed(user, here, view):
-            # Unauthorized
-            if user is None:
-                view = site_root.get_view('unauthorized')
-                return 401, here, view, view.GET
-            # Forbidden
-            view = site_root.get_view('forbidden')
-            return 403, here, view, view.GET
-
-        # Get the method
-        method = getattr(view, context.request.method, None)
-        if method is None:
-            # FIXME For HTTP 1.1 this should be "405 Method not Allowed"
-            view = site_root.get_view('forbidden')
-            return 403, here, view, view.GET
-
-        # OK
-        return 200, here, view, method
-
-
-    def abort_transaction(self, context):
-        for db in self.get_databases():
-            db.abort_changes()
-
-
-    ########################################################################
     # Logging
     ########################################################################
     def log_access(self, conn, request, response):
@@ -769,6 +466,383 @@ class Server(object):
         pass
 
 
-    def get_site_root(self, hostname):
-        return self.root
+    #######################################################################
+    # Stage 0: Initialize the context
+    #######################################################################
+    def init_context(self, context):
+        # (1) Initialize the response status to None, it will be changed
+        # through the request handling process.
+        context.status = None
+
+        # (2) The server, the data root and the authenticated user
+        context.server = self
+        context.root = self.root
+
+        # (3) The authenticated user
+        self.find_user(context)
+
+        # (4) The Site Root
+        self.find_site_root(context)
+        context.site_root.before_traverse(context)  # Hook
+
+        # (5) Keep the context
+        set_context(context)
+
+
+    def find_user(self, context):
+        # (1) Read the id/auth cookie
+        cookie = context.get_cookie('__ac')
+        if cookie is None:
+            context.user = None
+            return
+
+        cookie = unquote(cookie)
+        cookie = decodestring(cookie)
+        username, password = cookie.split(':', 1)
+
+        # (2) Get the user object
+        user = context.root.get_user(username)
+        if user is None:
+            context.user = None
+            return
+
+        # (3) Authenticate
+        if not user.authenticate(password):
+            context.user = None
+            return
+
+        # (4) Ok
+        context.user = user
+
+
+    def find_site_root(self, context):
+        """This method may be overriden to support virtual hosting.
+        """
+        context.site_root = self.root
+
+
+    ########################################################################
+    # Request handling: main functions
+    ########################################################################
+    def handle_request(self, request):
+        # (1) Get the class that will handle the request
+        method = methods.get(request.method)
+        if method is None:
+            # FIXME Return the right response
+            message = 'the request method "%s" is not implemented'
+            raise NotImplementedError, message % request.method
+
+        # (2) Initialize the context
+        context = Context(request)
+        self.init_context(context)
+
+        # (3) Pass control to the Get method class
+        method.handle_request(self, context)
+
+        # (4) Return the response
+        return context.response
+
+
+    def abort_transaction(self, context):
+        for db in self.get_databases():
+            db.abort_changes()
+
+
+    def PUT(self, context):
+        context.commit = True
+        # Traverse
+        status, here, view, method = self.traverse(context)
+        # Call the method
+        body = method(context)
+        return 204, None
+
+
+    def UNLOCK(self, context):
+        context.commit = True
+        # Traverse
+        status, here, view, method = self.traverse(context)
+        # Call the method
+        body = method(context)
+        return 204, None
+
+
+
+###########################################################################
+# The Request Methods
+###########################################################################
+
+class RequestMethod(object):
+
+    @classmethod
+    def handle_request(cls, server, context):
+        # (1) Initialize 'context.commit' (true if the method is not safe)
+        context.commit = (cls.is_safe is False)
+
+        # (2) The requested resource
+        cls.find_resource(server, context)
+
+        # (3) The resource view
+        cls.find_view(server, context)
+
+        # (4) Access Control
+        cls.check_access(server, context)
+
+        # (5) Check the request method is supported
+        cls.check_method(server, context)
+
+        # (6) Render the view
+        cls.render_view(server, context)
+
+        # (7) Close the transaction (commit or abort)
+        if context.status < 400 and context.commit is True:
+            cls.commit_transaction(server, context)
+        else:
+            server.abort_transaction(context)
+
+        # (8) Build response, when postponed (useful for POST methods)
+        if isinstance(context.entity, (FunctionType, MethodType)):
+            try:
+                context.entity = context.entity(context.object, context)
+            except:
+                server.log_error(context)
+                context.status = 500
+            server.abort_transaction(context)
+
+        # (9) Error
+        root = context.root
+        if context.status == 500:
+            context.entity = root.internal_server_error(context)
+
+        # (10) After Traverse hook
+        body = context.entity
+        try:
+            context.site_root.after_traverse(context)
+        except:
+            server.log_error(context)
+            context.status = 500
+            context.entity = root.internal_server_error(context)
+
+        # (11) Build and return the response
+        context.response.set_status(context.status)
+        cls.set_body(server, context)
+
+        # (12) Ok
+        return context.response
+
+
+    @classmethod
+    def find_resource(cls, server, context):
+        """Sets 'context.object' to the requested resource if it exists.
+
+        Otherwise sets 'context.status' to 404 (not found error) and
+        'context.object' to the latest resource in the path that does exist.
+        """
+        resource = context.site_root
+        for name in context.path:
+            try:
+                resource = resource.get_object(name)
+            except LookupError:
+                context.status = 404
+                context.view_name = 'not_found'
+                break
+
+        context.object = resource
+
+
+    @classmethod
+    def find_view(cls, server, context):
+        query = context.uri.query
+        context.view = context.object.get_view(context.view_name, **query)
+
+
+    @classmethod
+    def check_access(cls, server, context):
+        """Tell whether the user is allowed to access the view on the
+        resource.
+        """
+        user = context.user
+        resource = context.object
+        view = context.view
+
+        # Get the check-point
+        ac = resource.get_access_control()
+        if ac.is_access_allowed(user, resource, view):
+            return
+
+        # Unauthorized (401) or Forbidden (403)
+        if user is None:
+            context.status = 401
+            context.view_name = 'unauthorized'
+        else:
+            # Forbidden
+            context.status = 403
+            context.view_name = 'forbidden'
+
+        # Replace the view
+        context.view = context.root.get_view(context.view_name)
+
+
+    @classmethod
+    def check_method(cls, server, context):
+        # If there was an error, the method name always will be 'GET'
+        if context.status is None:
+            method_name = context.request.method
+        else:
+            method_name = 'GET'
+
+        # Get the method
+        method = getattr(context.view, method_name, None)
+        if method is not None:
+            context.view_method = method
+            return
+
+        # Method not allowed
+        # FIXME For HTTP 1.1 this should be "405 Method not Allowed"
+        context.status = 403
+        context.view_name = 'forbidden'
+        context.view = context.site_root.get_view(context.view_name)
+        context.view_method = context.view.GET
+
+
+    @classmethod
+    def commit_transaction(cls, server, context):
+        # Hook: before commit
+        try:
+            server.before_commit()
+        except:
+            context.status = 500
+            server.log_error(context)
+            server.abort_transaction(context)
+            return
+
+        # Commit
+        try:
+            for db in server.get_databases():
+                db.save_changes()
+        except:
+            context.status = 500
+            server.log_error(context)
+
+
+    @classmethod
+    def set_body(cls, server, context):
+        response = context.response
+        body = context.entity
+        if body is None:
+            response.set_body(body)
+        elif isinstance(body, str):
+            response.set_header('content-length', len(body))
+            response.set_body(body)
+        elif isinstance(body, Reference):
+            context.redirect(body)
+
+
+
+class GET(RequestMethod):
+
+    is_safe = True
+
+    @classmethod
+    def render_view(cls, server, context):
+        resource = context.object
+        view = context.view
+
+        # Cache: check modification time
+        if_modified_since = context.request.get_header('if-modified-since')
+        if if_modified_since is not None:
+            mtime = view.get_mtime(resource)
+            if mtime is not None:
+                mtime = mtime.replace(microsecond=0)
+                context.response.set_header('last-modified', mtime)
+                if mtime <= if_modified_since:
+                    context.status = 304
+                    context.entity = None
+                    return
+
+        # Call the method
+        try:
+            context.entity = context.view_method(resource, context)
+        except Forbidden:
+            if context.user is None:
+                context.status = 401
+                view = context.site_root.unauthorized
+                context.entity = view.GET(resource, context)
+            else:
+                status = 403
+                view = context.root.forbidden
+                context.entity = view.GET(resource, context)
+        else:
+            # Ok: set status
+            if isinstance(context.entity, Reference):
+                context.status = 302
+            else:
+                context.status = 200
+
+
+
+class HEAD(GET):
+
+    @classmethod
+    def handle_request(cls, server, context):
+        # (1) Tweak the method to call if needed
+        if context.view_name == 'HEAD':
+            context.view_name = 'GET'
+
+        # (2) Proceed as usual
+        GET.handle_request(cls, server, context)
+
+
+    @classmethod
+    def set_body(cls, server, context):
+        GET.set_body(cls, server, context)
+        # Drop the body from the response
+        context.response.set_body(None)
+
+
+
+class POST(RequestMethod):
+
+    is_safe = False
+
+
+    @classmethod
+    def render_view(cls, server, context):
+        resource = context.object
+        view = context.view
+
+        # Call the method
+        try:
+            context.entity = context.view_method(resource, context)
+        except Forbidden:
+            if context.user is None:
+                context.status = 401
+                view = context.site_root.unauthorized
+                context.entity = view.GET(resource, context)
+            else:
+                context.status = 403
+                view = context.root.forbidden
+                context.entity = view.GET(resource, context)
+        else:
+            # Ok: set status
+            if isinstance(context.entity, Reference):
+                context.status = 302
+            else:
+                context.status = 200
+
+
+
+###########################################################################
+# Registry
+###########################################################################
+
+methods = {}
+
+
+def register_method(method, method_handler):
+    methods[method] = method_handler
+
+
+register_method('GET', GET)
+register_method('HEAD', HEAD)
+register_method('POST', POST)
 

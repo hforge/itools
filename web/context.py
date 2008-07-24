@@ -80,10 +80,10 @@ class Context(object):
         path = request.request_uri.path
         if path and path[-1].name == '':
             self.path = path[:-1]
-            self.method = path[-1].params[0]
+            self.view_name = path[-1].params[0]
         else:
             self.path = path
-            self.method = request.method
+            self.view_name = request.method
 
         # Language negotiation
         headers = request.headers
@@ -327,6 +327,22 @@ class Context(object):
     def del_cookie(self, name):
         self.response.del_cookie(name)
 
+
+    #######################################################################
+    # API / Utilities
+    #######################################################################
+    def agent_is_a_robot(self):
+        footprints = [
+            'Ask Jeeves/Teoma', 'Bot/', 'crawler', 'Crawler',
+            'freshmeat.net URI validator', 'Gigabot', 'Google',
+            'LinkChecker', 'msnbot', 'Python-urllib', 'Yahoo', 'Wget',
+            'Zope External Editor']
+
+        user_agent = self.request.get_header('User-Agent')
+        for footprint in footprints:
+            if footprint in user_agent:
+                return True
+        return False
 
 
 ###########################################################################

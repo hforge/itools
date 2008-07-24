@@ -50,7 +50,7 @@ from reportlab.platypus.frames import Frame
 from reportlab.platypus.tableofcontents import TableOfContents
 
 encoding = 'UTF-8'
-URI = None
+URI = 'http://www.w3.org/1999/xhtml'
 # Mapping HTML -> REPORTLAB
 P_FORMAT = {'a': 'a', 'em': 'i', 'b': 'b', 'span': 'font', 'sub': 'sub',
             'i': 'i', 'img': 'img', 'big': 'font', 'tt': 'font', 'p': 'para',
@@ -185,7 +185,7 @@ def rml2topdf_test(value, raw=False):
       otherwise it is the string representation of a xml document
     """
 
-    namespaces = {None: 'http://www.w3.org/1999/xhtml'}
+    namespaces = {None: URI}
     if raw is False:
         input = vfs.open(value)
         data = input.read()
@@ -204,7 +204,7 @@ def rml2topdf(filename):
     """
 
     iostream = StringIO()
-    namespaces = {None: 'http://www.w3.org/1999/xhtml'}
+    namespaces = {None: URI}
     fd = vfs.open(filename)
     stream = XMLParser(fd.read(), namespaces)
     fd.close()

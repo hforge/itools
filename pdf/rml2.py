@@ -429,7 +429,6 @@ def create_toc(context):
     toc = TableOfContents()
     toc.levelStyles = tocLevelStyles
     story.append(toc)
-    story.append(PageBreak())
     return story
 
 
@@ -462,6 +461,8 @@ def body_stream(stream, _tag_name, _attributes, context):
             elif tag_name in ('ol', 'ul'):
                 story.extend(list_stream(stream, tag_name, attributes,
                                          context))
+            elif tag_name == 'pagebreak':
+                story.append(PageBreak())
             elif tag_name == 'table':
                 story.append(table_stream(stream, tag_name, attributes,
                                           context))
@@ -476,7 +477,7 @@ def body_stream(stream, _tag_name, _attributes, context):
             tag_uri, tag_name = value
             if tag_name == _tag_name:
                 break
-            elif tag_name == 'toc':
+            elif tag_name in ('toc', 'pagebreak'):
                 continue
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)

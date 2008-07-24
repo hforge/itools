@@ -89,6 +89,9 @@ def list_eggs_info(dir, module_name='', check_import=True):
                     is_imported = True
                 except ImportError:
                     is_imported = False
+            except:
+                # I catch all exception because project could be buggy
+                is_imported = False
 
             infos['is_imported'] = is_imported
         eggs.append(infos)

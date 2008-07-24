@@ -30,6 +30,9 @@ from itools.handlers import Image as ItoolsImage
 from itools.vfs import vfs
 from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, TEXT
 import itools.http
+from itools.uri import Path
+from itools.uri.uri import get_cwd
+from itools.stl import set_prefix
 
 #Import from the reportlab Library
 from reportlab.lib import colors
@@ -72,6 +75,8 @@ TAG_NOT_SUPPORTED = '%s: line %s tag "%s" is currently not supported.'
 WARNING_DTD = '%s: line %s tag "%s" is unapproprieted here.'
 
 HEADING = ('h1', 'h2', 'h3', 'h4', 'h5', 'h6')
+
+
 
 class Context(object):
 
@@ -179,13 +184,14 @@ def rml2topdf_test(value, raw=False):
       otherwise it is the string representation of a xml document
     """
 
+    namespaces = {None: 'http://www.w3.org/1999/xhtml'}
     if raw is False:
         input = vfs.open(value)
         data = input.read()
         input.close()
     else:
         data = value
-    stream = XMLParser(data)
+    stream = XMLParser(data, namespaces)
     return document_stream(stream, StringIO(), 'test', True)
 
 
@@ -196,9 +202,14 @@ def rml2topdf(filename):
       filename: source file
     """
 
-    file = open(filename, 'r')
-    stream = XMLParser(file.read())
     iostream = StringIO()
+    namespaces = {None: 'http://www.w3.org/1999/xhtml'}
+    fd = vfs.open(filename)
+    stream = XMLParser(fd.read(), namespaces)
+    fd.close()
+    here = get_cwd().path
+    prefix = here.resolve2(Path(filename))
+    stream = set_prefix(stream, prefix)
     document_stream(stream, iostream, filename, False)
     return iostream.getvalue()
 

@@ -72,26 +72,26 @@ def list_eggs_info(dir, module_name='', check_import=True):
         if check_import:
             # try the import
             # if the project filled Provides field use this one
-            try:
-                for provided_module in infos['Provides'].split(','):
-                    provided_module = split_provision(provided_module)
-                    provided_module_name = provided_module[0]
-                    provided_module_ver = provided_module[1]
-                    __import__(provided_module_name)
-                is_imported = True
-            except ImportError:
-                is_imported = False
-            except KeyError:
+            if 'Provides' in infos:
+                try:
+                    for provided_module in infos['Provides'].split(','):
+                        provided_module = split_provision(provided_module)
+                        provided_module_name = provided_module[0]
+                        provided_module_ver = provided_module[1]
+                        __import__(provided_module_name)
+                except:
+                    is_imported = False
+                else:
+                    is_imported = True
+            else:
                 # We can try the name if the project has not filled Provides
                 # field
                 try:
                     __import__(infos['Name'])
-                    is_imported = True
-                except ImportError:
+                except:
                     is_imported = False
-            except:
-                # I catch all exception because project could be buggy
-                is_imported = False
+                else:
+                    is_imported = True
 
             infos['is_imported'] = is_imported
         eggs.append(infos)

@@ -239,6 +239,11 @@ class MyDocTemplate(BaseDocTemplate):
     def __init__(self, filename, **kw):
         BaseDocTemplate.__init__(self, filename, **kw)
         self.toc_index = 0
+        frame1 = Frame(self.leftMargin, self.bottomMargin, self.width,
+                       self.height, id='normal')
+        template_attrs = {'id': 'now', 'frames': [frame1], 'pagesize': kw['pagesize']}
+        page_template = PageTemplate(**template_attrs)
+        self.addPageTemplates([page_template])
 
 
     def _get_heading_level(self, name):
@@ -346,11 +351,6 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
 
         # Create doc template
         doc = MyDocTemplate(pdf_stream, pagesize=LETTER)
-        frame1 = Frame(doc.leftMargin, doc.bottomMargin, doc.width,
-                       doc.height, id='normal')
-        template_attrs = {'id': 'now', 'frames': [frame1], 'pagesize': LETTER}
-        page_template = PageTemplate(**template_attrs)
-        doc.addPageTemplates([page_template])
     else:
         doc = SimpleDocTemplate(pdf_stream, pagesize=LETTER)
 

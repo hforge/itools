@@ -237,7 +237,7 @@ def makeTocHeaderStyle(level, delta, epsilon, fontName='Times-Roman'):
 class MyDocTemplate(BaseDocTemplate):
     "The document template used for all PDF documents."
 
-    def __init__(self, filename, **kw):
+    def __init__(self, toc_high_level,  filename, **kw):
         BaseDocTemplate.__init__(self, filename, **kw)
         self.toc_index = 0
         frame1 = Frame(self.leftMargin, self.bottomMargin, self.width,
@@ -245,6 +245,7 @@ class MyDocTemplate(BaseDocTemplate):
         template_attrs = {'id': 'now', 'frames': [frame1], 'pagesize': kw['pagesize']}
         page_template = PageTemplate(**template_attrs)
         self.addPageTemplates([page_template])
+        self.toc_high_level = toc_high_level
 
 
     def _get_heading_level(self, name):
@@ -270,7 +271,7 @@ class MyDocTemplate(BaseDocTemplate):
         if flowable.__class__.__name__ == 'Paragraph':
             style_name = flowable.style.name
             level = self._get_heading_level(style_name)
-            if level is not None:
+            if level is not None and level < self.toc_high_level:
                 # Register TOC entries.
                 text = flowable.getPlainText()
                 pageNum = self.page
@@ -351,7 +352,7 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
         story = story[:place] + create_toc(context) + story[place:]
 
         # Create doc template
-        doc = MyDocTemplate(pdf_stream, pagesize=LETTER)
+        doc = MyDocTemplate(context.toc_high_level, pdf_stream, pagesize=LETTER)
     else:
         doc = SimpleDocTemplate(pdf_stream, pagesize=LETTER)
 
@@ -467,6 +468,9 @@ def body_stream(stream, _tag_name, _attributes, context):
                 story.append(table_stream(stream, tag_name, attributes,
                                           context))
             elif tag_name == 'toc':
+                if exist_attribute(attributes, ['level']):
+                    context.toc_high_level = get_int_value(attributes[(URI, 'level')])
+                    print context.toc_high_level
                 context.toc_place = len(story)
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)

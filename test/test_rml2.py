@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2007 Henry Obein <henry@itaapy.com>
-# Copyright (C) 2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2007 Henry Obein <henry@itools.com>
+# Copyright (C) 2007 Juan David Ibáñez Palomar <jdavid@itools.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,6 +22,9 @@ import unittest
 from itools.pdf import (rml2topdf_test, normalize, paragraph_stream,
                         Context, get_color)
 from itools.xml import XMLParser
+
+URI = 'http://www.w3.org/1999/xhtml'
+NAMESPACES = {None: URI}
 
 
 
@@ -46,119 +49,119 @@ class FunctionTestCase(unittest.TestCase):
 
 
     def test_formatting(self):
-        Contexteters = Context()
+        context = Context()
         data = '<p>TXT <i>TEXT<u>TEXT</u></i></p>'
-        stream = XMLParser(data)
+        stream = XMLParser(data, NAMESPACES)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, Contexteters)
+        para = paragraph_stream(stream, 'p', {}, context)
         self.assertEqual(para.text, '<para>TXT <i>TEXT<u>TEXT</u></i></para>')
 
         data = '<p>TXT <i>TEXT<u>TEXT</u>TEXT</i></p>'
-        stream = XMLParser(data)
+        stream = XMLParser(data, NAMESPACES)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, Contexteters)
+        para = paragraph_stream(stream, 'p', {}, context)
         goodanswer = '<para>TXT <i>TEXT<u>TEXT</u>TEXT</i></para>'
         self.assertEqual(para.text, goodanswer)
 
         data = '<p>TXT <i>TEXT<u>TEXT</u></i>TEXT</p>'
-        stream = XMLParser(data)
+        stream = XMLParser(data, NAMESPACES)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, Contexteters)
+        para = paragraph_stream(stream, 'p', {}, context)
         goodanswer = '<para>TXT <i>TEXT<u>TEXT</u></i>TEXT</para>'
         self.assertEqual(para.text, goodanswer)
 
         data = '<p>TXT <i>TEXT<u>TEXT</u>TEXT</i>TEXT</p>'
-        stream = XMLParser(data)
+        stream = XMLParser(data, NAMESPACES)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, Contexteters)
+        para = paragraph_stream(stream, 'p', {}, context)
         goodanswer = '<para>TXT <i>TEXT<u>TEXT</u>TEXT</i>TEXT</para>'
         self.assertEqual(para.text, goodanswer)
 
         data = '<p>TXT <i><u>TXT</u></i></p>'
-        stream = XMLParser(data)
+        stream = XMLParser(data, NAMESPACES)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, Contexteters)
+        para = paragraph_stream(stream, 'p', {}, context)
         self.assertEqual(para.text, '<para>TXT <i><u>TXT</u></i></para>')
 
         data = '<p><i>TEXT<u>TEXT</u></i></p>'
-        stream = XMLParser(data)
+        stream = XMLParser(data, NAMESPACES)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, Contexteters)
+        para = paragraph_stream(stream, 'p', {}, context)
         self.assertEqual(para.text, '<para><i>TEXT<u>TEXT</u></i></para>')
 
         data = '<p><i>TEXT<u>TEXT</u>TEXT</i></p>'
-        stream = XMLParser(data)
+        stream = XMLParser(data, NAMESPACES)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, Contexteters)
+        para = paragraph_stream(stream, 'p', {}, context)
         self.assertEqual(para.text, '<para><i>TEXT<u>TEXT</u>TEXT</i></para>')
 
         data = '<p><i>TEXT<u>TEXT</u></i>TEXT</p>'
-        stream = XMLParser(data)
+        stream = XMLParser(data, NAMESPACES)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, Contexteters)
+        para = paragraph_stream(stream, 'p', {}, context)
         self.assertEqual(para.text, '<para><i>TEXT<u>TEXT</u></i>TEXT</para>')
 
         data = '<p><i>TEXT<u>TEXT</u>TEXT</i>TEXT</p>'
-        stream = XMLParser(data)
+        stream = XMLParser(data, NAMESPACES)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, Contexteters)
+        para = paragraph_stream(stream, 'p', {}, context)
         goodanswer = '<para><i>TEXT<u>TEXT</u>TEXT</i>TEXT</para>'
         self.assertEqual(para.text, goodanswer)
 
         data = '<p><i><u>TXT</u></i></p>'
-        stream = XMLParser(data)
+        stream = XMLParser(data, NAMESPACES)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, Contexteters)
+        para = paragraph_stream(stream, 'p', {}, context)
         self.assertEqual(para.text, '<para><i><u>TXT</u></i></para>')
 
         data = '<p>TEXT<sup>TEXT</sup></p>'
-        stream = XMLParser(data)
+        stream = XMLParser(data, NAMESPACES)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, Contexteters)
+        para = paragraph_stream(stream, 'p', {}, context)
         self.assertEqual(para.text, '<para>TEXT<super>TEXT</super></para>')
 
 
     def test_formatting_using_span(self):
-        Contexteters = Context()
+        context = Context()
         data = '<p><span style="color: #FF9000">clear syntax</span></p>'
-        stream = XMLParser(data)
+        stream = XMLParser(data, NAMESPACES)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, Contexteters)
+        para = paragraph_stream(stream, 'p', {}, context)
         goodanswer = '<para><font color="#ff9000">clear syntax</font></para>'
         self.assertEqual(para.text, goodanswer)
 
         data = '<p>essai<span style="color: rgb(255, 0, 0);"> essai essai'
         data += '</span>essai</p>'
-        stream = XMLParser(data)
+        stream = XMLParser(data, NAMESPACES)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, Contexteters)
+        para = paragraph_stream(stream, 'p', {}, context)
         goodanswer = '<para>essai<font color="#ff0000"> essai essai'
         goodanswer += '</font>essai</para>'
         self.assertEqual(para.text, goodanswer)
 
         data = '<p>essai <span style="color: rgb(0, 255, 0);">essai essai'
         data += '</span>essai</p>'
-        stream = XMLParser(data)
+        stream = XMLParser(data, NAMESPACES)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, Contexteters)
+        para = paragraph_stream(stream, 'p', {}, context)
         goodanswer = '<para>essai <font color="#00ff00">essai essai'
         goodanswer += '</font>essai</para>'
         self.assertEqual(para.text, goodanswer)
 
         data = '<p>essai <span style="color: rgb(0, 0, 255);">essai '
         data += 'essai</span> essai</p>'
-        stream = XMLParser(data)
+        stream = XMLParser(data, NAMESPACES)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, Contexteters)
+        para = paragraph_stream(stream, 'p', {}, context)
         goodanswer = '<para>essai <font color="#0000ff">essai essai</font>'
         goodanswer += ' essai</para>'
         self.assertEqual(para.text, goodanswer)
 
         data = '<p>Span <span style="color: rgb(255, 0, 0);">span    span '
         data += '<span style="color: #00DD45;">span</span> span</span>.</p>'
-        stream = XMLParser(data)
+        stream = XMLParser(data, NAMESPACES)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, Contexteters)
+        para = paragraph_stream(stream, 'p', {}, context)
         goodanswer = '<para>Span <font color="#ff0000">span span <font '
         goodanswer += 'color="#00dd45">span</font> span</font>.</para>'
         self.assertEqual(para.text, goodanswer)
@@ -200,9 +203,9 @@ class HtmlTestCase(unittest.TestCase):
         data = """
         <html>
             <body>
-                <p>hello  world <img src="pdf/itaapy.gif" alt="itaapy" /></p>
-                <img src="pdf/itaapy.jpeg" alt="itaapy" />
-                <p><img src="pdf/itaapy.png" alt="itaapy" /></p>
+                <p>hello  world <img src="rml2/itools_powered.gif" alt="itools" /></p>
+                <img src="rml2/itools_powered.jpeg" alt="itools" />
+                <p><img src="rml2/itools_powered.png" alt="itools" /></p>
             </body>
         </html>"""
         story, stylesheet = rml2topdf_test(data, raw=True)

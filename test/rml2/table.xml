@@ -7,9 +7,9 @@
         <th>head 3</th>
       </tr>
       <tr>
-        <td bgcolor="blue"><img src="../pdf/itaapy.png"/></td>
+        <td bgcolor="blue"><img src="itools_powered.png" /></td>
         <td bgcolor="#ff9000">cell</td>
-        <td><p><img src="../pdf/itaapy.png"/>cell</p></td>
+        <td><p><img src="itools_powered.png" />cell</p></td>
       </tr>
     </table>
   </body>

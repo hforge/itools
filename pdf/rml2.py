@@ -193,6 +193,10 @@ def rml2topdf_test(value, raw=False):
     else:
         data = value
     stream = XMLParser(data, namespaces)
+    if raw is False:
+        here = get_cwd().path
+        prefix = here.resolve2(Path(value))
+        stream = set_prefix(stream, prefix)
     return document_stream(stream, StringIO(), 'test', True)
 
 

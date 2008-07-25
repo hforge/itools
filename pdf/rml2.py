@@ -85,7 +85,7 @@ class Context(object):
     def __init__(self):
         self.tmp_dir = tempfile.mkdtemp()
         self.init_base_style_sheet()
-        self.image_not_found_path = get_abspath(globals(), 'not_found.png')
+        self.image_not_found_path = get_abspath(globals(), 'missing.png')
         self.size = {'in': inch, 'cm': cm, 'mm': mm, 'pica': pica, 'px': 1}
         self.toc_place = None
         self.cpt_toc_ref = 0

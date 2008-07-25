@@ -691,13 +691,13 @@ def list_stream(stream, _tag_name, attributes, context, id=0):
                 end_tag = True
                 while tag_stack:
                     content[-1] += '</%s>' % tag_stack.pop()
-                content[-1] += get_end_tag(URI, P_FORMAT.get(tag_name, 'b'))
+                content[-1] += get_end_tag(None, P_FORMAT.get(tag_name, 'b'))
             elif tag_name == 'br':
                 content.append('<br/>')
             elif tag_name in P_FORMAT.keys():
                 cpt -= 1
                 end_tag = True
-                content[-1] += get_end_tag(URI, P_FORMAT.get(tag_name, 'b'))
+                content[-1] += get_end_tag(None, P_FORMAT.get(tag_name, 'b'))
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
@@ -888,13 +888,13 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, context):
                 end_tag = True
                 while tag_stack:
                     content[-1] += '</%s>' % tag_stack.pop()
-                content[-1] += get_end_tag(URI, P_FORMAT.get(tag_name, 'b'))
+                content[-1] += get_end_tag(None, P_FORMAT.get(tag_name, 'b'))
             elif tag_name == 'br':
                 content.append('<br/>')
             elif tag_name in P_FORMAT.keys():
                 cpt -= 1
                 end_tag = True
-                content[-1] += get_end_tag(URI, P_FORMAT.get(tag_name, 'b'))
+                content[-1] += get_end_tag(None, P_FORMAT.get(tag_name, 'b'))
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag

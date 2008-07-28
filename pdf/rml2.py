@@ -27,13 +27,13 @@ import tempfile
 from itools import get_abspath
 from itools.datatypes import Unicode, XMLContent, Integer
 from itools.handlers import Image as ItoolsImage
+from itools.stl import set_prefix
+from itools.uri import Path
+from itools.uri.uri import get_cwd
 from itools.vfs import vfs
 from itools.xml import (XMLParser, START_ELEMENT, END_ELEMENT, TEXT,
                         get_end_tag)
 import itools.http
-from itools.uri import Path
-from itools.uri.uri import get_cwd
-from itools.stl import set_prefix
 
 #Import from the reportlab Library
 from reportlab.lib import colors
@@ -76,8 +76,10 @@ ALIGNMENTS = {'LEFT': TA_LEFT, 'RIGHT': TA_RIGHT, 'CENTER': TA_CENTER,
 
 PADDINGS = ('LEFTPADDING', 'RIGHTPADDING', 'BOTTOMPADDING', 'TOPPADDING')
 
-TAG_NOT_SUPPORTED = '%s: line %s tag "%s" is currently not supported.'
-WARNING_DTD = '%s: line %s tag "%s" is unapproprieted here.'
+# ERROR MESSAGES
+MSG_TAG_NOT_SUPPORTED = '%s: line %s tag "%s" is currently not supported.'
+MSG_WARNING_DTD = '%s: line %s tag "%s" is unapproprieted here.'
+MSG_ROW_ERROR = 'Table error : too many row at its line: %s'
 
 HEADING = ('h1', 'h2', 'h3', 'h4', 'h5', 'h6')
 
@@ -257,7 +259,9 @@ def rml2topdf(filename):
 
 
 def makeTocHeaderStyle(level, delta, epsilon, fontName='Times-Roman'):
-    "Make a header style for different levels."
+    """
+        Make a header style for different levels.
+    """
 
     assert level >= 0, "Level must be >= 0."
 
@@ -275,15 +279,20 @@ def makeTocHeaderStyle(level, delta, epsilon, fontName='Times-Roman'):
     return style
 
 
+
 class MyDocTemplate(BaseDocTemplate):
-    "The document template used for all PDF documents."
+    """
+        The document template used for all PDF documents.
+    """
+
 
     def __init__(self, toc_high_level,  filename, **kw):
         BaseDocTemplate.__init__(self, filename, **kw)
         self.toc_index = 0
         frame1 = Frame(self.leftMargin, self.bottomMargin, self.width,
                        self.height, id='normal')
-        template_attrs = {'id': 'now', 'frames': [frame1], 'pagesize': kw['pagesize']}
+        template_attrs = {'id': 'now', 'frames': [frame1],
+                          'pagesize': kw['pagesize']}
         page_template = PageTemplate(**template_attrs)
         self.addPageTemplates([page_template])
         self.toc_high_level = toc_high_level
@@ -356,7 +365,7 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
                 if state == 0:
                     state = 1
                 else:
-                    print WARNING_DTD % ('document', line_number, tag_name)
+                    print MSG_WARNING_DTD % ('document', line_number, tag_name)
                 continue
             elif tag_name == 'head':
                 informations = head_stream(stream, tag_name, attributes,
@@ -367,10 +376,10 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
                     story += body_stream(stream, tag_name, attributes,
                                          context)
                 else:
-                    print WARNING_DTD % ('document', line_number, tag_name)
+                    print MSG_WARNING_DTD % ('document', line_number, tag_name)
                 continue
             else:
-                print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
+                print MSG_TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
                 stack.append((tag_name, attributes))
         #### END ELEMENT ####
@@ -395,7 +404,8 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
         story = story[:place] + create_toc(context) + story[place:]
 
         # Create doc template
-        doc = MyDocTemplate(context.toc_high_level, pdf_stream, pagesize=LETTER)
+        doc = MyDocTemplate(context.toc_high_level, pdf_stream,
+                            pagesize=LETTER)
     else:
         doc = SimpleDocTemplate(pdf_stream, pagesize=LETTER)
 
@@ -442,7 +452,7 @@ def head_stream(stream, _tag_name, _attributes, context):
             elif tag_name == 'style':
                 continue
             else:
-                print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
+                print MSG_TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
 
         #### END ELEMENT ####
         elif event == END_ELEMENT:
@@ -457,7 +467,7 @@ def head_stream(stream, _tag_name, _attributes, context):
             elif tag_name == 'meta':
                 continue
             else:
-                print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
+                print MSG_TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
 
         #### TEXT ELEMENT ####
@@ -517,12 +527,12 @@ def body_stream(stream, _tag_name, _attributes, context):
                 story.append(table_stream(stream, tag_name, attributes,
                                           context))
             elif tag_name == 'toc':
-                if exist_attribute(attributes, ['level']):
-                    context.toc_high_level = get_int_value(attributes[(URI, 'level')])
-                    print context.toc_high_level
+                level = attributes.get((URI, 'level'), None)
+                if level is not None:
+                    context.toc_high_level = get_int_value(level)
                 context.toc_place = len(story)
             else:
-                print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
+                print MSG_TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
 
         #### END ELEMENT ####
@@ -534,7 +544,7 @@ def body_stream(stream, _tag_name, _attributes, context):
             elif tag_name in ('toc', 'pagebreak'):
                 continue
             else:
-                print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
+                print MSG_TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
     return story
 
@@ -544,8 +554,10 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context):
         stream : parser stream
     """
 
-    content, style = compute_paragraph(stream, elt_tag_name, elt_attributes, context)
-    return create_paragraph(context, (elt_tag_name, elt_attributes), content, style)
+    content, style = compute_paragraph(stream, elt_tag_name, elt_attributes,
+                                       context)
+    return create_paragraph(context, (elt_tag_name, elt_attributes), content,
+                            style)
 
 
 def pre_stream(stream, tag_name, attributes, context):
@@ -566,7 +578,7 @@ def pre_stream(stream, tag_name, attributes, context):
 
         #### START ELEMENT ####
         if event == START_ELEMENT:
-            print WARNING_DTD % ('document', line_number, tag_name)
+            print MSG_WARNING_DTD % ('document', line_number, tag_name)
             stack.append((tag_name, attributes))
 
         #### END ELEMENT ####
@@ -575,9 +587,10 @@ def pre_stream(stream, tag_name, attributes, context):
             if tag_name == 'pre':
                 css_style = context.get_css_props()
                 context.path_on_end_event()
-                return create_paragraph(context, stack.pop(), content, css_style)
+                return create_paragraph(context, stack.pop(), content,
+                                        css_style)
             else:
-                print WARNING_DTD % ('document', line_number, tag_name)
+                print MSG_WARNING_DTD % ('document', line_number, tag_name)
                 # unknown tag
                 stack.append((tag_name, attributes))
 
@@ -603,7 +616,7 @@ def hr_stream(stream, _tag_name, _attributes, context):
         #### START ELEMENT ####
         if event == START_ELEMENT:
             tag_uri, tag_name, attributes = value
-            print WARNING_DTD % ('document', line_number, tag_name)
+            print MSG_WARNING_DTD % ('document', line_number, tag_name)
         #### END ELEMENT ####
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
@@ -614,7 +627,7 @@ def hr_stream(stream, _tag_name, _attributes, context):
         elif event == TEXT:
             pass
         else:
-            print WARNING_DTD % ('document', line_number, tag_name)
+            print MSG_WARNING_DTD % ('document', line_number, tag_name)
 
 
 def img_stream(stream, _tag_name, _attributes, context):
@@ -626,7 +639,7 @@ def img_stream(stream, _tag_name, _attributes, context):
         #### START ELEMENT ####
         if event == START_ELEMENT:
             tag_uri, tag_name, attributes = value
-            print WARNING_DTD % ('document', line_number, tag_name)
+            print MSG_WARNING_DTD % ('document', line_number, tag_name)
         #### END ELEMENT ####
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
@@ -637,7 +650,7 @@ def img_stream(stream, _tag_name, _attributes, context):
         elif event == TEXT:
             pass
         else:
-            print WARNING_DTD % ('document', line_number, tag_name)
+            print MSG_WARNING_DTD % ('document', line_number, tag_name)
 
 
 def list_stream(stream, _tag_name, attributes, context, id=0):
@@ -687,7 +700,7 @@ def list_stream(stream, _tag_name, attributes, context, id=0):
                     story += list_stream(stream, tag_name, attributes,
                                          context, id+1)
                 else:
-                    print WARNING_DTD % ('document', line_number, tag_name)
+                    print MSG_WARNING_DTD % ('document', line_number, tag_name)
             elif tag_name == 'li':
                 li_state = 1
                 content.append(bullet)
@@ -717,11 +730,11 @@ def list_stream(stream, _tag_name, attributes, context, id=0):
                     attrs = build_img_attributes(attributes, context)
                     content.append(build_start_tag(tag_name, attrs))
                 else:
-                    print TAG_NOT_SUPPORTED % ('document', line_number,
+                    print MSG_TAG_NOT_SUPPORTED % ('document', line_number,
                                                tag_name)
                     stack.append((tag_name, attributes))
             else:
-                print WARNING_DTD % ('document', line_number, tag_name)
+                print MSG_WARNING_DTD % ('document', line_number, tag_name)
 
         #### END ELEMENT ####
         elif event == END_ELEMENT:
@@ -756,7 +769,7 @@ def list_stream(stream, _tag_name, attributes, context, id=0):
                 end_tag = True
                 content[-1] += get_end_tag(None, P_FORMAT.get(tag_name, 'b'))
             else:
-                print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
+                print MSG_TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
                 stack.append((tag_name, attributes))
 
@@ -829,7 +842,7 @@ def table_stream(stream, _tag_name, attributes, context):
                 if len(content.content):
                     print 'Warning data are already pushed'
             else:
-                print WARNING_DTD % ('document', line_number, tag_name)
+                print MSG_WARNING_DTD % ('document', line_number, tag_name)
 
         #### END ELEMENT ####
         elif event == END_ELEMENT:
@@ -840,7 +853,7 @@ def table_stream(stream, _tag_name, attributes, context):
             elif tag_name == 'thead':
                 content.thead()
             else:
-                print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
+                print MSG_TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
 
 
 def compute_paragraph(stream, elt_tag_name, elt_attributes, context):
@@ -915,11 +928,11 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, context):
                     attrs = build_img_attributes(attributes, context)
                     content.append(build_start_tag(tag_name, attrs))
                 else:
-                    print TAG_NOT_SUPPORTED % ('document', line_number,
+                    print MSG_TAG_NOT_SUPPORTED % ('document', line_number,
                                                tag_name)
                     # unknown tag
             else:
-                print WARNING_DTD % ('document', line_number, tag_name)
+                print MSG_WARNING_DTD % ('document', line_number, tag_name)
 
         #### END ELEMENT ####
         elif event == END_ELEMENT:
@@ -958,7 +971,7 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, context):
                 end_tag = True
                 content[-1] += get_end_tag(None, P_FORMAT.get(tag_name, 'b'))
             else:
-                print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
+                print MSG_TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
                 # unknown tag
 
         #### TEXT ELEMENT ####
@@ -1081,7 +1094,7 @@ def compute_tr(stream, _tag_name, attributes, table, context):
 
                 table.next_cell()
             else:
-                print WARNING_DTD % ('document', line_number, tag_name)
+                print MSG_WARNING_DTD % ('document', line_number, tag_name)
 
         #### END ELEMENT ####
         elif event == END_ELEMENT:
@@ -1090,7 +1103,7 @@ def compute_tr(stream, _tag_name, attributes, table, context):
             if tag_name == _tag_name:
                 return table
             else:
-                print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
+                print MSG_TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
 
 
 def build_span_attributes(attributes):
@@ -1191,7 +1204,6 @@ def build_style(context, element, style_css):
     parent_style = context.get_style(parent_style_name)
     return (ParagraphStyle(style_name, parent=parent_style, **style_attr),
             bulletText)
-
 
 
 
@@ -1312,6 +1324,8 @@ class Table_Content(object):
         widget
     """
 
+
+
     def __init__(self, context, parent_style=None):
         self.content = []
         """
@@ -1377,7 +1391,7 @@ class Table_Content(object):
         if y:
             if x >= self.size[0]:
                 current_line = self.current_y + 1
-                print u'Table error : too many row at its line: %s' % current_line
+                print MSG_ROW_ERROR % current_line
                 return
             elif y >= self.size[1]:
                 self.create_table_line()
@@ -1425,7 +1439,7 @@ class Table_Content(object):
             col += ctmp
             if self.current_y and col >= self.size[0]:
                 current_line = self.current_y + 1
-                print u'Table error : too many row at its line: %s' % current_line
+                print MSG_ROW_ERROR % current_line
                 col = self.size[0] - 1
         if not self.current_y:
             if ctmp > 0:

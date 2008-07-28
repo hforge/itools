@@ -572,9 +572,9 @@ def pre_stream(stream, tag_name, attributes, context):
         #### END ELEMENT ####
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
-            context.path_on_end_event()
             if tag_name == 'pre':
                 css_style = context.get_css_props()
+                context.path_on_end_event()
                 return create_paragraph(context, stack.pop(), content, css_style)
             else:
                 print WARNING_DTD % ('document', line_number, tag_name)

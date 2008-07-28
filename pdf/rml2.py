@@ -543,8 +543,9 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context):
     """
         stream : parser stream
     """
-    content = compute_paragraph(stream, elt_tag_name, elt_attributes, context)
-    return create_paragraph(context, (elt_tag_name, elt_attributes), content)
+
+    content, style = compute_paragraph(stream, elt_tag_name, elt_attributes, context)
+    return create_paragraph(context, (elt_tag_name, elt_attributes), content, style)
 
 
 def pre_stream(stream, tag_name, attributes, context):
@@ -850,6 +851,7 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, context):
     tag_stack = []
     start_tag = True
     end_tag = False
+    style_p = context.get_css_props()
 
     while True:
         event, value, line_number = stream_next(stream)
@@ -939,9 +941,9 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, context):
                 #     want a str list to build the platypus object
                 if is_table:
                     if len(story) > 0:
-                        return story
-                    return ' '.join(content)
-                return content
+                        return story, style_p
+                    return ' '.join(content), style_p
+                return content, style_p
             elif tag_name == 'span':
                 cpt -= 1
                 end_tag = True
@@ -1044,7 +1046,7 @@ def compute_tr(stream, _tag_name, attributes, table, context):
             tag_uri, tag_name, attributes = value
             context.path_on_start_event(tag_name, attributes)
             if tag_name in ('td', 'th'):
-                cont = compute_paragraph(stream, tag_name, attributes,
+                cont, style = compute_paragraph(stream, tag_name, attributes,
                                          context)
                 table.push_content(cont)
                 if exist_attribute(attributes, ['width']):
@@ -1126,7 +1128,7 @@ def build_span_attributes(attributes):
 ##############################################################################
 # Reportlab widget                                                           #
 ##############################################################################
-def create_paragraph(context, element, content):
+def create_paragraph(context, element, content, style_css = {}):
     """
         Create a reportlab paragraph widget.
     """
@@ -1143,15 +1145,23 @@ def create_paragraph(context, element, content):
         content = context.get_toc_anchor(element[0], content)
     content = '<para>%s</para>' % content
     #print 1, content
-    style, bulletText = build_style(context, element)
+    style, bulletText = build_style(context, element, style_css)
     return Paragraph(content, style, bulletText)
 
 
-def build_style(context, element):
+def build_style(context, element, style_css):
     style_attr = {}
     # The default style is Normal
     parent_style_name = 'Normal'
     bulletText = None
+
+    for key in style_css.keys():
+        if key == 'color':
+            style_attr['textColor'] = style_css[key]
+        elif key == 'background':
+            style_attr['backColor'] = style_css[key]
+        elif key == 'border':
+            style_attr['borderWidth'] = style_css[key]
 
     # Overload the attributes values
     for key, attr_value in element[1].iteritems():

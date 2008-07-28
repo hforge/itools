@@ -1,19 +1,39 @@
 <html>
-  <body>
+  <head>
+    <style>
+      p#first
+      {
+        color: #ffffff;
+        background: red;
+      }
+
+      *.essai
+      {
+        color:#ff9000;
+      }
+
+      #my_body
+      {
+        margin: 10px;
+        color:#ffff00;
+      }
+    </style>
+  </head>
+  <body id="my_body" class="body_class">
     <h1>first title : paragraph</h1>
     <!--<h1>first title : paragraph</h1>-->
-    <p>
+    <p id="first">
       This paragraph
       contains a lot of lines
     </p>
     <!--<p>This paragraph contains a lot of lines</p>-->
-    <p>
+    <p id="second">
       This paragraph
-      contains      a lot of spaces
+      contains      <a href="about:blank">a lot of spaces</a>
       in this xml source.
     </p>
     <!--<p>This paragraph contains a lot of spaces in this xml source.</p>-->
-    <p>
+    <p class="essai">
       toto<br />tata<br />
       titi
     </p>

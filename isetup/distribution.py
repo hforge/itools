@@ -17,8 +17,9 @@
 
 
 # Import from Standard Library
-from os import execl, makedirs, chdir, spawnl, P_WAIT, getcwd
+from os import execl, makedirs, chdir, getcwd
 from os.path import join, split
+from subprocess import call
 from sys import executable
 from zipfile import ZipFile
 from tarfile import open as tar_open, is_tarfile
@@ -79,15 +80,15 @@ class Dist(object):
         :)
         """
         cache_dir = self.location[:-len(Path(self.location).get_name())]
-        if self.bundle.extract(cache_dir):
-            setup_py_file = self.bundle.find_file('setup.py')
-            before = getcwd()
-            chdir(split(join(cache_dir, setup_py_file))[0])
-            ret = spawnl(P_WAIT, executable, 'python', 'setup.py', 'install')
-            chdir(before)
-            return ret
-        else:
+        if not self.bundle.extract(cache_dir):
             raise ArchiveNotSupported
+
+        setup_py_file = self.bundle.find_file('setup.py')
+        before = getcwd()
+        chdir(split(join(cache_dir, setup_py_file))[0])
+        ret = call([executable, 'setup.py', 'build'])
+        chdir(before)
+        return ret
 
 
 

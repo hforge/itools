@@ -586,29 +586,21 @@ class RequestMethod(object):
             try:
                 context.entity = context.entity(context.object, context)
             except:
-                server.log_error(context)
-                context.status = 500
+                cls.internal_server_error(server, context)
             server.abort_transaction(context)
 
-        # (9) Error
-        root = context.root
-        if context.status == 500:
-            context.entity = root.internal_server_error(context)
-
-        # (10) After Traverse hook
+        # (9) After Traverse hook
         body = context.entity
         try:
             context.site_root.after_traverse(context)
         except:
-            server.log_error(context)
-            context.status = 500
-            context.entity = root.internal_server_error(context)
+            cls.internal_server_error(server, context)
 
-        # (11) Build and return the response
+        # (10) Build and return the response
         context.response.set_status(context.status)
         cls.set_body(server, context)
 
-        # (12) Ok
+        # (11) Ok
         return context.response
 
 
@@ -692,8 +684,7 @@ class RequestMethod(object):
         try:
             server.before_commit()
         except:
-            context.status = 500
-            server.log_error(context)
+            cls.internal_server_error(server, context)
             server.abort_transaction(context)
             return
 
@@ -702,8 +693,7 @@ class RequestMethod(object):
             for db in server.get_databases():
                 db.save_changes()
         except:
-            context.status = 500
-            server.log_error(context)
+            cls.internal_server_error(server, context)
 
 
     @classmethod
@@ -717,6 +707,13 @@ class RequestMethod(object):
             response.set_body(body)
         elif isinstance(body, Reference):
             context.redirect(body)
+
+
+    @classmethod
+    def internal_server_error(cls, server, context):
+        server.log_error(context)
+        context.status = 500
+        context.entity = server.root.internal_server_error(context)
 
 
 
@@ -753,6 +750,8 @@ class GET(RequestMethod):
                 status = 403
                 view = context.root.forbidden
                 context.entity = view.GET(resource, context)
+        except:
+            cls.internal_server_error(server, context)
         else:
             # Ok: set status
             if isinstance(context.entity, Reference):
@@ -804,6 +803,8 @@ class POST(RequestMethod):
                 context.status = 403
                 view = context.root.forbidden
                 context.entity = view.GET(resource, context)
+        except:
+            cls.internal_server_error(server, context)
         else:
             # Ok: set status
             if isinstance(context.entity, Reference):

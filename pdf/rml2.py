@@ -95,6 +95,7 @@ class Context(object):
         self.cpt_toc_ref = 0
         self.toc_high_level = 3
         self.current_object_path = []
+        self.css = None
 
 
     def init_base_style_sheet(self):
@@ -177,6 +178,21 @@ class Context(object):
             self.cpt_toc_ref += 1
             content = '<a name="' + ref + '" />' + content
         return content
+
+
+    def add_current_style(self, stylesheet_text):
+        if self.css is None:
+            self.css = css.CssStylesheet.from_css(stylesheet_text)
+        else:
+            tmp = css.CssStylesheet.from_css(stylesheet_text)
+            self.css = self.css.merge(tmp)
+
+
+    def get_css_props(self):
+        if self.css is None:
+            return {}
+        else:
+            return self.css.props(' '.join(self.current_object_path))
 
 
     def path_on_start_event(self, tag_name, attributes):

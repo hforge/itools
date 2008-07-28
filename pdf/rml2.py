@@ -574,7 +574,8 @@ def pre_stream(stream, tag_name, attributes, context):
             tag_uri, tag_name = value
             context.path_on_end_event()
             if tag_name == 'pre':
-                return create_preformatted(context, stack.pop(), content)
+                css_style = context.get_css_props()
+                return create_paragraph(context, stack.pop(), content, css_style)
             else:
                 print WARNING_DTD % ('document', line_number, tag_name)
                 # unknown tag
@@ -1138,15 +1139,20 @@ def create_paragraph(context, element, content, style_css = {}):
     # Another choice is to strip the content (1 time) here
     # content = ['  Hello\t\', '\t<i>how are</i>', '\tyou?']
 
-    # DEBUG
-    #print 0, content
-    content = normalize(' '.join(content))
-    if element[0] in HEADING:
-        content = context.get_toc_anchor(element[0], content)
-    content = '<para>%s</para>' % content
-    #print 1, content
     style, bulletText = build_style(context, element, style_css)
-    return Paragraph(content, style, bulletText)
+    if element[0] == 'pre':
+        content = ''.join(content)
+        widget = XPreformatted(content, style)
+    else:
+        # DEBUG
+        #print 0, content
+        content = normalize(' '.join(content))
+        if element[0] in HEADING:
+            content = context.get_toc_anchor(element[0], content)
+        content = '<para>%s</para>' % content
+        #print 1, content
+        widget = Paragraph(content, style, bulletText)
+    return widget
 
 
 def build_style(context, element, style_css):
@@ -1187,20 +1193,6 @@ def build_style(context, element, style_css):
             bulletText)
 
 
-def create_preformatted(context, element, content):
-    """
-        Create a reportlab preformatted widget.
-    """
-
-    content = ''.join(content)
-    style_name = 'Normal'
-
-    for key, attr_value in element[1].iteritems():
-        if key[1] == 'class':
-            style_name = attr_value
-    style = context.get_style(style_name)
-    widget = XPreformatted(content, style)
-    return widget
 
 
 def create_hr(attributes, context):

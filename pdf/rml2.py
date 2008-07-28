@@ -439,6 +439,8 @@ def head_stream(stream, _tag_name, _attributes, context):
                                 informations[name] = normalize(attr_content)
             elif tag_name == 'title':
                 continue
+            elif tag_name == 'style':
+                continue
             else:
                 print TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
 
@@ -448,6 +450,8 @@ def head_stream(stream, _tag_name, _attributes, context):
             if tag_name == _tag_name:
                 context.path_on_end_event()
                 return informations
+            elif tag_name == 'style':
+                context.add_current_style(' '.join(content))
             elif tag_name == 'title':
                 informations[tag_name] = normalize(' '.join(content))
             elif tag_name == 'meta':

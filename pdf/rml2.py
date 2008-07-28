@@ -49,6 +49,10 @@ from reportlab.platypus.flowables import HRFlowable
 from reportlab.platypus.frames import Frame
 from reportlab.platypus.tableofcontents import TableOfContents
 
+#import the graphication css parser
+import css
+
+
 encoding = 'UTF-8'
 URI = 'http://www.w3.org/1999/xhtml'
 # Mapping HTML -> REPORTLAB
@@ -90,6 +94,7 @@ class Context(object):
         self.toc_place = None
         self.cpt_toc_ref = 0
         self.toc_high_level = 3
+        self.current_object_path = []
 
 
     def init_base_style_sheet(self):
@@ -172,6 +177,22 @@ class Context(object):
             self.cpt_toc_ref += 1
             content = '<a name="' + ref + '" />' + content
         return content
+
+
+    def path_on_start_event(self, tag_name, attributes):
+        if isinstance(tag_name, str):
+            tag_path = tag_name
+            o_id = attributes.get((URI, 'id'), None)
+            if o_id is not None:
+                tag_path += '#%s' % o_id
+            o_class = attributes.get((URI, 'class'), None)
+            if o_class is not None:
+                tag_path += '.%s' % o_class
+            self.current_object_path.append(tag_path)
+
+
+    def path_on_end_event(self):
+        self.current_object_path.pop()
 
 
     def __del__(self):
@@ -314,6 +335,7 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
         #### START ELEMENT ####
         if event == START_ELEMENT:
             tag_uri, tag_name, attributes = value
+            context.path_on_start_event(tag_name, attributes)
             if tag_name == 'html':
                 if state == 0:
                     state = 1
@@ -338,6 +360,7 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
         #### END ELEMENT ####
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
+            context.path_on_end_event()
             if tag_name == 'html':
                 break
             if tag_name == 'head':
@@ -407,6 +430,7 @@ def head_stream(stream, _tag_name, _attributes, context):
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
             if tag_name == _tag_name:
+                context.path_on_end_event()
                 return informations
             elif tag_name == 'title':
                 informations[tag_name] = normalize(' '.join(content))
@@ -451,6 +475,7 @@ def body_stream(stream, _tag_name, _attributes, context):
         #### START ELEMENT ####
         if event == START_ELEMENT:
             tag_uri, tag_name, attributes = value
+            context.path_on_start_event(tag_name, attributes)
             if tag_name in ('p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
                 story.append(paragraph_stream(stream, tag_name, attributes,
                                               context))
@@ -483,6 +508,7 @@ def body_stream(stream, _tag_name, _attributes, context):
         #### END ELEMENT ####
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
+            context.path_on_end_event()
             if tag_name == _tag_name:
                 break
             elif tag_name in ('toc', 'pagebreak'):
@@ -525,6 +551,7 @@ def pre_stream(stream, tag_name, attributes, context):
         #### END ELEMENT ####
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
+            context.path_on_end_event()
             if tag_name == 'pre':
                 return create_preformatted(context, stack.pop(), content)
             else:
@@ -558,6 +585,7 @@ def hr_stream(stream, _tag_name, _attributes, context):
         #### END ELEMENT ####
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
+            context.path_on_end_event()
             if tag_name == _tag_name:
                 return create_hr(_attributes, context)
         #### TEXT ELEMENT ####
@@ -580,6 +608,7 @@ def img_stream(stream, _tag_name, _attributes, context):
         #### END ELEMENT ####
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
+            context.path_on_end_event()
             if tag_name == _tag_name:
                 return create_img(attrs, context)
         #### TEXT ELEMENT ####
@@ -627,6 +656,7 @@ def list_stream(stream, _tag_name, attributes, context, id=0):
         #### START ELEMENT ####
         if event == START_ELEMENT:
             tag_uri, tag_name, attributes = value
+            context.path_on_start_event(tag_name, attributes)
             if tag_name in ('ul', 'ol'):
                 if li_state:
                     story.append(create_paragraph(context, stack[0],
@@ -674,6 +704,7 @@ def list_stream(stream, _tag_name, attributes, context, id=0):
         #### END ELEMENT ####
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
+            context.path_on_end_event()
             if tag_name in ('ul', 'ol'):
                 story.append(create_paragraph(context, stack.pop(),
                              content))
@@ -767,6 +798,7 @@ def table_stream(stream, _tag_name, attributes, context):
         #### START ELEMENT ####
         if event == START_ELEMENT:
             tag_uri, tag_name, attributes = value
+            context.path_on_start_event(tag_name, attributes)
             if tag_name == 'tr':
                 content = compute_tr(stream, tag_name, attributes,
                                     content, context)
@@ -780,6 +812,7 @@ def table_stream(stream, _tag_name, attributes, context):
         #### END ELEMENT ####
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
+            context.path_on_end_event()
             if tag_name == _tag_name:
                 return content.create()
             elif tag_name == 'thead':
@@ -805,6 +838,7 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, context):
         #### START ELEMENT ####
         if event == START_ELEMENT:
             tag_uri, tag_name, attributes = value
+            context.path_on_start_event(tag_name, attributes)
             if is_table:
                 skip = True
                 # TODO ? Merge with body_stream?
@@ -867,6 +901,7 @@ def compute_paragraph(stream, elt_tag_name, elt_attributes, context):
         #### END ELEMENT ####
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
+            context.path_on_end_event()
             if len(content):
                 # spaces must be ignore if character before it is '\n'
                 tmp = content[-1].rstrip(' \t')
@@ -987,6 +1022,7 @@ def compute_tr(stream, _tag_name, attributes, table, context):
         #### START ELEMENT ####
         if event == START_ELEMENT:
             tag_uri, tag_name, attributes = value
+            context.path_on_start_event(tag_name, attributes)
             if tag_name in ('td', 'th'):
                 cont = compute_paragraph(stream, tag_name, attributes,
                                          context)
@@ -1026,6 +1062,7 @@ def compute_tr(stream, _tag_name, attributes, table, context):
 
         #### END ELEMENT ####
         elif event == END_ELEMENT:
+            context.path_on_end_event()
             tag_uri, tag_name = value
             if tag_name == _tag_name:
                 return table

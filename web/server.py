@@ -548,24 +548,6 @@ class Server(object):
             db.abort_changes()
 
 
-    def PUT(self, context):
-        context.commit = True
-        # Traverse
-        status, here, view, method = self.traverse(context)
-        # Call the method
-        body = method(context)
-        return 204, None
-
-
-    def UNLOCK(self, context):
-        context.commit = True
-        # Traverse
-        status, here, view, method = self.traverse(context)
-        # Call the method
-        body = method(context)
-        return 204, None
-
-
 
 ###########################################################################
 # The Request Methods

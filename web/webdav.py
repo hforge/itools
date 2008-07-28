@@ -1,7 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2005-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
-# Copyright (C) 2006-2007 Hervé Cauwelier <herve@itaapy.com>
-# Copyright (C) 2007 Henry Obein <henry@itaapy.com>
+# Copyright (C) 2008 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,6 +16,13 @@
 
 # Import from itools
 from server import RequestMethod, register_method
+
+
+# This module is meant to provide support for the WebDav protocol.  Though so
+# far it only does the minimum required for the "external editor" of ikaaro to
+# work; it even includes an implementation of the PUT method, which probably
+# does not belong here.  Also, there is much code duplicated through the
+# LOCK, UNLOCK and PUT methods which may be refactored.
 
 
 
@@ -72,7 +77,7 @@ class LOCK(RequestMethod):
         except:
             server.log_error(context)
             server.abort_transaction(context)
-            response.set_status(423)
+            response.set_status(500)
             response.set_header('content-length', 0)
             response.set_body(None)
             return response
@@ -118,8 +123,7 @@ class UNLOCK(RequestMethod):
             response.set_body(None)
             return response
 
-        # (4) Unlock
-        # Check wether we have the right key
+        # (4) Check wether we have the right key
         key = context.request.get_header('Lock-Token')
         key = key[len('opaquelocktoken:'):]
         lock = resource.get_lock()
@@ -127,15 +131,75 @@ class UNLOCK(RequestMethod):
             # FIXME Send some nice response to the client
             raise ValueError, 'can not unlock resource, wrong key'
 
-        resource.unlock()
+        # (5) Unlock
+        try:
+            resource.unlock()
+        except:
+            server.log_error(context)
+            server.abort_transaction(context)
+            response.set_status(500)
+            response.set_header('content-length', 0)
+            response.set_body(None)
+            return response
+
+        # (6) Commit transaction
+        cls.commit_transaction(server, context)
+
+        # (7) Ok
+        response.set_status(204)
+        response.set_header('Content-Type', 'text/xml; charset="utf-8"')
+        response.set_header('Lock-Token', 'opaquelocktoken:%s' % lock)
+        response.set_header('content-length', 0)
+        response.set_body(None)
+        return response
+
+
+
+# FIXME The method PUT does not really belongs to webdav, but to HTTP 1.1
+class PUT(RequestMethod):
+
+    @classmethod
+    def handle_request(cls, server, context):
+        response = context.response
+
+        # (1) The requested resource
+        cls.find_resource(server, context)
+        resource = context.object
+
+        # (2) Access Control
+        ac = resource.get_access_control()
+        if not ac.is_allowed_to_lock(context.user, resource):
+            # XXX Should it be Unauthorized (401) or Forbidden (403) ?
+            response.set_status(401)
+            response.set_header('content-length', 0)
+            response.set_body(None)
+            return response
+
+        # (3) Check whether the resource is already locked
+        if not resource.is_locked():
+            # FIXME This probably not the good response
+            response.set_status(423)
+            response.set_header('content-length', 0)
+            response.set_body(None)
+            return response
+
+        # (4) Put
+        try:
+            resource.put(context)
+        except:
+            server.log_error(context)
+            server.abort_transaction(context)
+            response.set_status(500)
+            response.set_header('content-length', 0)
+            response.set_body(None)
+            return response
 
         # (5) Commit transaction
         cls.commit_transaction(server, context)
 
         # (6) Ok
-        response.set_status(200)
-        response.set_header('Content-Type', 'text/xml; charset="utf-8"')
-        response.set_header('Lock-Token', 'opaquelocktoken:%s' % lock)
+        response.set_status(204)
+        response.set_header('content-length', 0)
         response.set_body(None)
         return response
 
@@ -147,3 +211,4 @@ class UNLOCK(RequestMethod):
 
 register_method('LOCK', LOCK)
 register_method('UNLOCK', UNLOCK)
+register_method('PUT', PUT)

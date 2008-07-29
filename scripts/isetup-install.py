@@ -26,7 +26,6 @@ or distutils, if it was with setuptools stop here, else check dependencies and
 treat them with something like a "install_package" function.
 """
 
-
 # Import from the Standard Library
 import re
 from distutils.version import LooseVersion
@@ -209,7 +208,7 @@ def summary(pretend=False, ask=False):
                                    parsed_name['version'],
                                    origin)
 
-    if len(unretrievables) > 1:
+    if len(unretrievables) > 0:
         print "But some dependencies have not been found:"
 
         for error, dep in unretrievables:
@@ -250,8 +249,8 @@ if __name__ == '__main__':
     description = ("Install package from url")
     parser = OptionParser(usage, version=version, description=description)
 
-    parser.add_option("-u", "--index-url",
-                  dest="index_url", default=PYPI_REPO,
+    parser.add_option("-i", "--index-url",
+                  dest="index_url", default="",
                   help="comma separated list of packages index url")
 
     parser.add_option("-c", "--cache-dir",
@@ -281,7 +280,7 @@ if __name__ == '__main__':
     CACHE_DIR = options.cache_dir
 
     INDEX_URLS = options.index_url
-    repositories = INDEX_URLS.split(',')
+    repositories = [PYPI_REPO] + INDEX_URLS.split(',')
 
     return_code = prepare(PACKAGE_SPEC)
 

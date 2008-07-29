@@ -63,13 +63,14 @@ class RepositoryNotSupported(Exception):
 
 
 def Repository(location):
-    """Return a repository object depending on the location"""
+    """Return a repository object depending on the location
+    """
     ref = get_reference(location)
     if ref.scheme == 'http':
         return HTMLRepository(location)
     else:
-        raise RepositoryNotSupported, "%s is not a supported repository" %\
-                ref.sheme
+        raise RepositoryNotSupported, ("%s is not a supported repository" %
+                ref.sheme)
 
 
 def download(url, to):
@@ -109,10 +110,9 @@ def is_distable(url):
 
 
 class HTMLRepository(object):
-    location = ''
-    dists = {}
 
     def __init__(self, location):
+        self.dists = {}
         self.location = location
         self.ref = get_reference(location)
 
@@ -129,7 +129,8 @@ class HTMLRepository(object):
 
 
     def list_distributions(self, package_name):
-        """return a list of available distributions"""
+        """return a list of available distributions
+        """
         self._init_distributions_list(package_name)
 
         return self.dists[package_name]
@@ -145,7 +146,7 @@ class HTMLRepository(object):
 
     def _find_distibutions(self, package_url):
         """On a web page finds link with href to something looking like a
-        package name, or follow the externals links.
+        package name -TODO:, or follow the externals links-.
         """
 
         index_handler = open(package_url)

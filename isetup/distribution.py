@@ -15,7 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 # Import from Standard Library
 from os import execl, makedirs, chdir, getcwd
 from os.path import join, split
@@ -36,15 +35,12 @@ class ArchiveNotSupported(Exception):
     """This archive format is not supported"""
 
 class Dist(object):
-    """abstract distributions like .egg, .zip, .tar.gz ..."""
-
-    _metadata = None
-    bundle = None
-    location = None
-    fromsetuptools = False
-
+    """abstract distributions like .egg, .zip, .tar.gz ...
+    """
 
     def __init__(self, location):
+        self._metadata = None
+        self.fromsetuptools = False
         self.bundle = init_bundle(location)
         self.location = location
 
@@ -76,9 +72,6 @@ class Dist(object):
 
 
     def install(self):
-        """Une fonction dist.install() ne semble que légèrement prétentieuse
-        :)
-        """
         cache_dir = self.location[:-len(Path(self.location).get_name())]
         if not self.bundle.extract(cache_dir):
             raise ArchiveNotSupported
@@ -86,7 +79,7 @@ class Dist(object):
         setup_py_file = self.bundle.find_file('setup.py')
         before = getcwd()
         chdir(split(join(cache_dir, setup_py_file))[0])
-        ret = call([executable, 'setup.py', 'build'])
+        ret = call([executable, 'setup.py', 'install'])
         chdir(before)
         return ret
 

@@ -65,8 +65,8 @@ def list_eggs_info(dir, module_name='', check_import=True):
         else:
             infos = {}
         # for the time being only file .egg-info are supported
-        if not isfile(join(dir, egg)) or\
-           module_name.upper() not in infos['Name'].upper():
+        if (not isfile(join(dir, egg)) or
+           module_name.upper() not in infos['Name'].upper()):
             continue
 
         if check_import:

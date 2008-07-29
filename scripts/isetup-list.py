@@ -48,7 +48,7 @@ if __name__ == '__main__':
         if len(eggs) > 0:
             print "Packages for %s :" % site
             for egg in eggs:
-                print "* %-20.20s Version: %-12.12s" % (egg['Name'],\
+                print "* %-20.20s Version: %-12.12s" % (egg['Name'],
                                                        egg['Version']),
                 if egg['is_imported']:
                     print "Import: OK"

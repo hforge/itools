@@ -82,7 +82,7 @@ class Enumerate(object):
 
 
 prepare_code = Enumerate('NoAvailableCandidate Ok BadArchive BadName '\
-                         'AlreadyInstalled')
+                         'AlreadyInstalled NotFound')
 install_code = Enumerate('Ok SetupError UnknownError')
 
 unretrievables = []
@@ -148,7 +148,7 @@ def prepare(package_spec):
 
     candidates  = [(dist['version'], 'cache', dist)\
                    for dist in cache_candidates]
-    candidates += [(dist['version'], 'repo', dist)\
+    candidates += [(dist['version'], 'repository', dist)\
                    for dist in repo_candidates]
     #candidates += [(dist['version'], 'installed', dist)\
             #for dist in installed_packages]
@@ -159,30 +159,41 @@ def prepare(package_spec):
     if len(candidates) == 0:
         return prepare_code.NoAvailableCandidate
 
-    bestmatch_version, bestmatch_from, bestmatch_dist = candidates[0]
+    while candidates:
+        bestmatch_version, bestmatch_from, bestmatch = candidates.pop()
 
-    if bestmatch_from == 'installed':
-        print '%s %s is already the newest version.' % (bestmatch_dist['Name'],
-                                                        bestmatch_version)
-        return prepare_code.AlreadyInstalled
+        if bestmatch_from == 'installed':
+            print '%s %s is already the newest version.' % (bestmatch['Name'],
+                                                            bestmatch_version)
+            return prepare_code.AlreadyInstalled
 
-    elif bestmatch_from == 'cache' or bestmatch_from == 'repo':
-        if bestmatch_from == 'cache':
-            dist_loc = join(CACHE_DIR, bestmatch_dist['file'])
-        else:
-            dist_loc = download(bestmatch_dist['url'], CACHE_DIR)
+        elif bestmatch_from == 'cache':
+            dist_loc = join(CACHE_DIR, bestmatch['file'])
+        elif bestmatch_from == 'repository':
+            try:
+                dist_loc = download(bestmatch['url'], CACHE_DIR)
+            except LookupError:
+                if not candidates:
+                    unretrievables.append((prepare_code.NotFound,
+                                           bestmatch['name']))
+                    return prepare_code.NotFound
+                else:
+                    continue
         try:
             dist = Dist(str(dist_loc))
         except ArchiveNotSupported:
-            unretrievables.append((prepare_code.BadArchive, package_spec))
-            return prepare_code.BadArchive
-        if not dist.fromsetuptools and dist.has_metadata('Requires'):
-            requirements = dist.get_metadata('Requires').split(',')
+            if not candidates:
+                unretrievables.append((prepare_code.BadArchive, package_spec))
+                return prepare_code.BadArchive
+            else:
+                continue
+        if not dist.fromsetuptools and dist.has_metadata('requires'):
+            requirements = dist.get_metadata('requires').split(',')
             for requirement in requirements:
                 return_code = prepare(requirement)
                 if return_code != prepare_code.Ok:
                     unretrievables.append((return_code, requirement))
-        packages_to_install.append((bestmatch_from, dist, bestmatch_dist))
+        packages_to_install.append((bestmatch_from, dist, bestmatch))
         return prepare_code.Ok
 
 

@@ -153,7 +153,6 @@ def prepare(package_spec):
             #for dist in installed_packages]
 
     candidates.sort(key=itemgetter(0))
-    candidates.reverse()
 
     if len(candidates) == 0:
         return prepare_code.NoAvailableCandidate

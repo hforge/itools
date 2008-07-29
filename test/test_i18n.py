@@ -22,6 +22,7 @@ import unittest
 # Import from itools
 from itools.i18n import (is_similar, get_most_similar, guess_language,
                          AcceptLanguageType, Message)
+from itools.i18n.segment import get_segments
 
 
 
@@ -251,8 +252,9 @@ class SentenceTestCase(unittest.TestCase):
 
         message = Message()
         message.append_text(text)
-        segments = message.get_segments()
-
+        segments = []
+        for seg, offset in get_segments(message):
+            segments.append(seg)
         self.assertEqual(list(segments), result)
 
 
@@ -262,7 +264,9 @@ class SentenceTestCase(unittest.TestCase):
 
         message = Message()
         message.append_text(text)
-        segments = message.get_segments()
+        segments = []
+        for seg, offset in get_segments(message):
+            segments.append(seg)
 
         self.assertEqual(list(segments), result)
 
@@ -273,14 +277,18 @@ class SentenceTestCase(unittest.TestCase):
         result = [u'This is Toto Inc. a big compagny.']
         message = Message()
         message.append_text(text)
-        segments = message.get_segments()
+        segments = []
+        for seg, offset in get_segments(message):
+            segments.append(seg)
         self.assertEqual(list(segments), result)
         # 2
         text = u"Mr. From"
         result =  [u'Mr. From']
         message = Message()
         message.append_text(text)
-        segments = message.get_segments()
+        segments = []
+        for seg, offset in get_segments(message):
+            segments.append(seg)
         self.assertEqual(list(segments), result)
 
 
@@ -290,7 +298,9 @@ class SentenceTestCase(unittest.TestCase):
 
         message = Message()
         message.append_text(text)
-        segments = message.get_segments()
+        segments = []
+        for seg, offset in get_segments(message):
+            segments.append(seg)
 
         self.assertEqual(list(segments), result)
 
@@ -301,7 +311,9 @@ class SentenceTestCase(unittest.TestCase):
 
         message = Message()
         message.append_text(text)
-        segments = message.get_segments()
+        segments = []
+        for seg, offset in get_segments(message):
+            segments.append(seg)
 
         self.assertEqual(list(segments), result)
 
@@ -312,7 +324,9 @@ class SentenceTestCase(unittest.TestCase):
 
         message = Message()
         message.append_text(text)
-        segments = message.get_segments()
+        segments = []
+        for seg, offset in get_segments(message):
+            segments.append(seg)
 
         self.assertEqual(list(segments), result)
 
@@ -323,7 +337,9 @@ class SentenceTestCase(unittest.TestCase):
 
         message = Message()
         message.append_text(text)
-        segments = message.get_segments()
+        segments = []
+        for seg, offset in get_segments(message):
+            segments.append(seg)
 
         self.assertEqual(list(segments), result)
 
@@ -334,7 +350,9 @@ class SentenceTestCase(unittest.TestCase):
 
         message = Message()
         message.append_text(text)
-        segments = message.get_segments()
+        segments = []
+        for seg, offset in get_segments(message):
+            segments.append(seg)
 
         self.assertEqual(list(segments), result)
 
@@ -345,7 +363,9 @@ class SentenceTestCase(unittest.TestCase):
 
         message = Message()
         message.append_text(text)
-        segments = message.get_segments()
+        segments = []
+        for seg, offset in get_segments(message):
+            segments.append(seg)
 
         self.assertEqual(list(segments), result)
 
@@ -358,7 +378,9 @@ class SentenceTestCase(unittest.TestCase):
         message.append_end_format('</a>')
         message.append_text('      GOGO ')
 
-        segments = message.get_segments()
+        segments = []
+        for seg, offset in get_segments(message):
+            segments.append(seg)
 
         result = [u'<a ref="; t. ffff">hello </a> GOGO']
         self.assertEqual(list(segments), result)
@@ -370,7 +392,9 @@ class SentenceTestCase(unittest.TestCase):
 
         message = Message()
         message.append_text(text)
-        segments = message.get_segments()
+        segments = []
+        for seg, offset in get_segments(message):
+            segments.append(seg)
 
         self.assertEqual(list(segments), result)
 
@@ -381,7 +405,9 @@ class SentenceTestCase(unittest.TestCase):
 
         message = Message()
         message.append_text(text)
-        segments = message.get_segments()
+        segments = []
+        for seg, offset in get_segments(message):
+            segments.append(seg)
 
         self.assertEqual(list(segments), result)
 
@@ -394,7 +420,9 @@ class SentenceTestCase(unittest.TestCase):
 
         message = Message()
         message.append_text(text)
-        segments = message.get_segments()
+        segments = []
+        for seg, offset in get_segments(message):
+            segments.append(seg)
 
         self.assertEqual(list(segments), result)
 
@@ -403,7 +431,9 @@ class SentenceTestCase(unittest.TestCase):
         message = Message()
         message.append_text('Hello. ')
 
-        segments = message.get_segments()
+        segments = []
+        for seg, offset in get_segments(message):
+            segments.append(seg)
         self.assertEqual(list(segments), ['Hello.'])
 
 
@@ -419,7 +449,9 @@ class SentenceTestCase(unittest.TestCase):
 
         message = Message()
         message.append_text(text)
-        segments = message.get_segments()
+        segments = []
+        for seg, offset in get_segments(message):
+            segments.append(seg)
 
         self.assertEqual(list(segments), result)
 
@@ -434,7 +466,9 @@ class SentenceTestCase(unittest.TestCase):
 
         message = Message()
         message.append_text(text)
-        segments = message.get_segments()
+        segments = []
+        for seg, offset in get_segments(message):
+            segments.append(seg)
 
         self.assertEqual(list(segments), result)
 
@@ -445,7 +479,9 @@ class SentenceTestCase(unittest.TestCase):
 
         message = Message()
         message.append_text(text)
-        segments = message.get_segments()
+        segments = []
+        for seg, offset in get_segments(message):
+            segments.append(seg)
 
         self.assertEqual(list(segments), result)
 
@@ -458,7 +494,9 @@ class SentenceTestCase(unittest.TestCase):
 
         message = Message()
         message.append_text(text)
-        segments = message.get_segments()
+        segments = []
+        for seg, offset in get_segments(message):
+            segments.append(seg)
 
         self.assertEqual(list(segments), result)
 
@@ -471,7 +509,9 @@ class SentenceTestCase(unittest.TestCase):
 
         message = Message()
         message.append_text(text)
-        segments = message.get_segments()
+        segments = []
+        for seg, offset in get_segments(message):
+            segments.append(seg)
 
         self.assertEqual(list(segments), result)
 
@@ -484,7 +524,9 @@ class SentenceTestCase(unittest.TestCase):
 
         message = Message()
         message.append_text(text)
-        segments = message.get_segments(keep_spaces=True)
+        segments = []
+        for seg, offset in get_segments(message, keep_spaces=True):
+            segments.append(seg)
 
         self.assertEqual(list(segments), expected)
 
@@ -497,7 +539,9 @@ class SentenceTestCase(unittest.TestCase):
         message.append_start_format('<em>')
         message.append_text(text)
         message.append_end_format('</em>')
-        segments = message.get_segments()
+        segments = []
+        for seg, offset in get_segments(message):
+            segments.append(seg)
         self.assertEqual(list(segments), expected)
 
 
@@ -515,7 +559,9 @@ class SentenceTestCase(unittest.TestCase):
         message.append_start_format('<span>')
         message.append_text(text)
         message.append_end_format('</span>')
-        segments = message.get_segments()
+        segments = []
+        for seg, offset in get_segments(message):
+            segments.append(seg)
         self.assertEqual(list(segments), expected)
 
 

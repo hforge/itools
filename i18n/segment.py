@@ -65,7 +65,7 @@ def _rm_surrounding_format(segment_structure, keep_spaces=False):
 
     new_segment_structure = segment_structure
     if segment_structure[0][2] == segment_structure[-1][2] and \
-       segment_structure[0][2] != TEXT_ID:
+       segment_structure[0][2] != TEXT_ID and len(new_segment_structure) > 1:
         new_segment_structure = list(segment_structure)
         while len(new_segment_structure) > 1 and \
               new_segment_structure[0][2] == new_segment_structure[-1][2] and \
@@ -167,7 +167,7 @@ def _translation_to_struct(segment_translations):
     """_translation_to_struct
     """
     seg_struct = segment_translations
-    if type(segment_translations[0]) is str:
+    if segment_translations and type(segment_translations[0]) is str:
         seg_struct = []
         for translation in segment_translations:
             translation_tuple = (TEXT, translation, TEXT_ID)
@@ -287,8 +287,8 @@ def get_segments(message, keep_spaces=False):
             _rm_surrounding_format(segment_structure, keep_spaces)
         if new_seg_struct != segment_structure:
             new_message = _reconstruct_message(new_seg_struct)
-            for segment, new_line_offset in get_segments(new_message, keep_spaces):
-                yield segment, line_offset + new_line_offset
+            for segment, new_offset in get_segments(new_message, keep_spaces):
+                yield segment, line_offset + new_offset
         else:
             segment = _reconstruct_segment(segment_structure,
                                            keep_spaces)
@@ -303,7 +303,7 @@ def translate_message(message, catalog, keep_spaces):
     translation. This method is recursive.
     """
     translation_dict = {}
-    for segment in get_segments(message, keep_spaces):
+    for segment, line_offset in get_segments(message, keep_spaces):
         segment_translation = catalog.gettext(segment).encode('utf-8')
         translation_dict[segment] = segment_translation
     translation = ''
@@ -316,15 +316,17 @@ def translate_message(message, catalog, keep_spaces):
 
 def _translate_segments(message, translation_dict, keep_spaces):
 
-    for seg_struct in _split_message(message, keep_spaces)[0]:
+    for seg_struct, line_offset in _split_message(message, keep_spaces):
         seg_struct, spaces_pos = \
             _get_surrounding_spaces(seg_struct, keep_spaces)
         new_seg_struct = _rm_surrounding_format(seg_struct, keep_spaces)
         if new_seg_struct is seg_struct:
             segment = _reconstruct_segment(seg_struct, keep_spaces)
+            segment = segment.decode('utf-8')
             if segment:
                 raw_segment = _reconstruct_segment(seg_struct, True)
                 translation = translation_dict[segment]
+                translation = translation.decode('utf-8')
                 translation = raw_segment.replace(segment, translation)
                 yield translation.encode('utf-8')
         else:

@@ -2,6 +2,7 @@
 # Copyright (C) 2002-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 # Copyright (C) 2006 Hervé Cauwelier <herve@itaapy.com>
 # Copyright (C) 2007 Sylvain Taverne <sylvain@itaapy.com>
+# Copyright (C) 2008 David Versmisse <david.versmisse@itaapy.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,10 +22,12 @@ import dublin_core
 from namespaces import XMLNamespace, register_namespace, get_namespace
 from namespaces import xml_uri, xmlns_uri, get_element_schema, ElementSchema
 from namespaces import is_empty
-from parser import XMLParser, register_dtd, XMLError, XML_DECL, DOCUMENT_TYPE
-from parser import START_ELEMENT, END_ELEMENT, TEXT, COMMENT, PI, CDATA
+from parser import XMLParser, DocType, register_dtd, XMLError, XML_DECL
+from parser import DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, TEXT, COMMENT
+from parser import PI, CDATA
 from xml import XMLFile, Element, stream_to_str, get_element, find_end
 from xml import get_qname, get_attribute_qname, get_start_tag, get_end_tag
+from xml import get_doctype
 from indexer import xml_to_text
 from office import OfficeDocument, MSWord, MSExcel, MSPowerPoint, RTF
 from i18n import translate
@@ -37,6 +40,7 @@ __all__ = [
     'get_attribute_qname',
     'get_start_tag',
     'get_end_tag',
+    'get_doctype',
     'stream_to_str',
     'find_end',
     'get_element',
@@ -61,6 +65,8 @@ __all__ = [
     'COMMENT',
     'PI',
     'CDATA',
+    # DocType
+    'DocType',
     # Handlers
     'XMLFile',
     'Element',

@@ -20,8 +20,9 @@ from unittest import TestCase
 
 # Import from itools
 from itools import html
-from itools.xml import (XMLFile, XMLParser, XMLError, XML_DECL, DOCUMENT_TYPE,
-    START_ELEMENT, END_ELEMENT, TEXT, COMMENT, PI, CDATA, stream_to_str)
+from itools.xml import (XMLFile, XMLParser, DocType, XMLError, XML_DECL,
+    DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, TEXT, COMMENT, PI, CDATA,
+    stream_to_str, get_doctype)
 from itools.xml.i18n import get_messages
 from itools.gettext import Message
 
@@ -182,6 +183,44 @@ class XMLTestCase(TestCase):
 
         parser = XMLParser(data)
         self.assertEqual(list(parser)[5][1], expected)
+
+
+class DocTypeTestCase(TestCase):
+
+    def test_1(self):
+        dtd = ('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" '
+               '"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" '
+               '[\n'
+               '<!ENTITY entity_test "TEST">\n'
+               ']>')
+        data = '<?xml version="1.0"?>\n'+dtd
+
+        parser = XMLParser(data)
+
+        name, doctype = list(parser)[2][1]
+        self.assertEqual(get_doctype(name, doctype), dtd)
+
+    def test_2(self):
+        dtd = ('PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" '
+               '"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" '
+               '[\n'
+               '<!ENTITY entity_test "TEST">\n'
+               ']')
+        doctype = DocType(PubidLiteral='-//W3C//DTD XHTML 1.0 Strict//EN',
+                          SystemLiteral=
+                          'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd',
+                          intSubset='\n<!ENTITY entity_test "TEST">\n')
+        self.assertEqual(doctype.to_str(), dtd)
+
+    def test_3(self):
+        doctype = DocType(PubidLiteral='-//W3C//DTD XHTML 1.0 Strict//EN',
+                          SystemLiteral=
+                          'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd',
+                          intSubset='\n<!ENTITY entity_test "TEST">\n')
+        data = '<html>&Agrave; &entity_test;</html>'
+
+        # No raise
+        list(XMLParser(data, doctype=doctype))
 
 
 class TranslatableTestCase(TestCase):

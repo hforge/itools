@@ -16,11 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-/**************************************************************************
- * The Prolog
- *************************************************************************/
-
 #include <Python.h>
 #include <structmember.h>
 #include <stdlib.h>
@@ -28,16 +23,154 @@
 #include "parser.h"
 
 
-/*************
- * Constants *
- *************/
+/**************************************************************************
+ * XMLError
+ *************************************************************************/
 
-#define BUFFER_SIZE 512
+static PyObject *XMLError;
 
 
 /**************************************************************************
- * The internal functions/objects
+ * DocType
  *************************************************************************/
+
+/************************
+ * The PyDocType object *
+ ************************/
+typedef struct
+{
+  PyObject_HEAD
+  DocType * doctype;
+} PyDocType;
+
+
+/**********************
+ * DocType public API *
+ **********************/
+static PyObject *
+PyDocType_new (PyTypeObject * type, PyObject * args, PyObject * kwds)
+{
+  PyDocType *self;
+
+  self = (PyDocType *) type->tp_alloc (type, 0);
+  if (self != NULL)
+    self->doctype = NULL;
+
+  return (PyObject *) self;
+}
+
+
+static void
+PyDocType_dealloc (PyDocType * self)
+{
+  /* Reset, if not new */
+  if (self->doctype)
+    doctype_free (self->doctype);
+
+  self->ob_type->tp_free ((PyObject *) self);
+}
+
+
+static int
+PyDocType_init (PyDocType * self, PyObject * args, PyObject * kwds)
+/* __init__(PubidLiteral=None, SystemLiteral=None, intSubset=None)
+ */
+{
+  char *PubidLiteral = NULL;
+  char *SystemLiteral = NULL;
+  char *intSubset = NULL;
+  static char *kwlist[] =
+    { "PubidLiteral", "SystemLiteral", "intSubset", NULL };
+  DocType *doctype;
+  char *error_msg;
+
+  /* Reset, if not new */
+  if (self->doctype)
+    doctype_free (self->doctype);
+
+  /* Arguments */
+  if (!PyArg_ParseTupleAndKeywords (args, kwds, "|sss", kwlist, &PubidLiteral,
+                                    &SystemLiteral, &intSubset))
+    return -1;
+
+  /* Creation of a new DocType object */
+  doctype = doctype_new (PubidLiteral, SystemLiteral, intSubset, &error_msg);
+  if (!doctype)
+    {
+      PyErr_Format (XMLError, error_msg);
+      return -1;
+    }
+  self->doctype = doctype;
+
+  /* ALL OK */
+  return 0;
+}
+
+
+static PyObject *
+PyDocType_to_str (PyDocType * self, PyObject * trash1, PyObject * trash2)
+{
+  return PyString_FromString (doctype_to_str (self->doctype));
+}
+
+
+/********************************
+ * Declaration of PyDocTypeType *
+ ********************************/
+static PyMethodDef PyDocType_methods[] = {
+  {"to_str", (PyCFunction) PyDocType_to_str, METH_NOARGS, "Return a 'ready "
+   "to insert' representation of the doctype"},
+  {NULL}                        /* Sentinel */
+};
+
+static PyTypeObject PyDocTypeType = {
+  PyObject_HEAD_INIT
+  (NULL) 0,                       /* ob_size */
+  "itools.xml.parser.DocType",    /* tp_name */
+  sizeof (PyDocType),             /* tp_basicsize */
+  0,                              /* tp_itemsize */
+  (destructor) PyDocType_dealloc, /* tp_dealloc */
+  0,                              /* tp_print */
+  0,                              /* tp_getattr */
+  0,                              /* tp_setattr */
+  0,                              /* tp_compare */
+  0,                              /* tp_repr */
+  0,                              /* tp_as_number */
+  0,                              /* tp_as_sequence */
+  0,                              /* tp_as_mapping */
+  0,                              /* tp_hash */
+  0,                              /* tp_call */
+  0,                              /* tp_str */
+  0,                              /* tp_getattro */
+  0,                              /* tp_setattro */
+  0,                              /* tp_as_buffer */
+  Py_TPFLAGS_DEFAULT,             /* tp_flags */
+  "The DocType object",           /* tp_doc */
+  0,                              /* tp_traverse */
+  0,                              /* tp_clear */
+  0,                              /* tp_richcompare */
+  0,                              /* tp_weaklistoffset */
+  0,                              /* tp_iter */
+  0,                              /* tp_iternext */
+  PyDocType_methods,              /* tp_methods */
+  0,                              /* tp_members */
+  0,                              /* tp_getset */
+  0,                              /* tp_base */
+  0,                              /* tp_dict */
+  0,                              /* tp_descr_get */
+  0,                              /* tp_descr_set */
+  0,                              /* tp_dictoffset */
+  (initproc) PyDocType_init,      /* tp_init */
+  0,                              /* tp_alloc */
+  (newfunc) PyDocType_new,        /* tp_new */
+};
+
+
+/**************************************************************************
+ * XMLParser
+ *************************************************************************/
+
+#define BUFFER_SIZE 512
 
 /********************
  * Interned strings *
@@ -59,31 +192,109 @@ XMLParser_intern_string (gchar * str)
 }
 
 
-/***********************
- * The XMLError object *
- ***********************/
-
-static PyObject *XMLError;
-
-
 /************************
  * The XMLParser object *
  ************************/
-
 typedef struct
 {
   PyObject_HEAD
   Parser * parser;
   PyObject *source;
+  PyObject *py_doctype;
   Event event;
 } XMLParser;
 
 
-/*****************************
- * The translation functions *
- *****************************/
+/*************************
+ * XMLParser private API *
+ *************************/
+static PyObject *
+XMLParser_translate_Decl (XMLParser * self)
+{
+  DeclEvent *event = (DeclEvent *) & self->event;
+  PyObject *version, *encoding, *standalone, *result;
 
-PyObject *
+  /* Version */
+  version = PyString_FromString (event->version);
+  if (version == NULL)
+    return NULL;
+
+  /* Encoding */
+  encoding = PyString_FromString (event->encoding);
+  if (encoding == NULL)
+    {
+      Py_DECREF (version);
+      return NULL;
+    }
+
+  /* standalone */
+  if ((event->standalone)[0] == '\0')
+    {
+      Py_INCREF (Py_None);
+      standalone = Py_None;
+    }
+  else
+    {
+      standalone = PyString_FromString (event->standalone);
+      if (standalone == NULL)
+        {
+          Py_DECREF (version);
+          Py_DECREF (encoding);
+          return NULL;
+        }
+    }
+
+  /* The result */
+  result = Py_BuildValue ("(NNN)", version, encoding, standalone);
+  if (result == NULL)
+    {
+      Py_DECREF (version);
+      Py_DECREF (encoding);
+      Py_DECREF (standalone);
+      return NULL;
+    }
+
+  return result;
+}
+
+
+static PyObject *
+XMLParser_translate_DocType (XMLParser * self)
+{
+  DocTypeEvent *event = (DocTypeEvent *) & self->event;
+  PyDocType *py_doctype;
+  PyObject *name, *result;
+
+  /* Name */
+  name = PyString_FromString (event->name);
+  if (!name)
+    return NULL;
+
+  /* Creation of a new PyDocType object */
+  py_doctype = PyObject_New (PyDocType, &PyDocTypeType);
+  if (!py_doctype)
+    {
+      Py_DECREF (name);
+      return NULL;
+    }
+  py_doctype->doctype = event->doctype;
+  self->py_doctype = (PyObject *) py_doctype;
+  Py_INCREF (py_doctype);
+
+  /* The result */
+  result = Py_BuildValue ("(NN)", name, py_doctype);
+  if (result == NULL)
+    {
+      Py_DECREF (name);
+      Py_DECREF (py_doctype);
+      return NULL;
+    }
+
+  return result;
+}
+
+
+static PyObject *
 XMLParser_translate_STag (XMLParser * self)
 {
   StartTagEvent *event = (StartTagEvent *) & self->event;
@@ -180,7 +391,7 @@ XMLParser_translate_STag (XMLParser * self)
 }
 
 
-PyObject *
+static PyObject *
 XMLParser_translate_ETag (XMLParser * self)
 {
   EndTagEvent *event = (EndTagEvent *) & self->event;
@@ -212,7 +423,7 @@ XMLParser_translate_ETag (XMLParser * self)
 }
 
 
-PyObject *
+static PyObject *
 XMLParser_translate_PI (XMLParser * self)
 {
   PIEvent *event = (PIEvent *) & self->event;
@@ -220,60 +431,9 @@ XMLParser_translate_PI (XMLParser * self)
 }
 
 
-PyObject *
-XMLParser_translate_Decl (XMLParser * self)
-{
-  DeclEvent *event = (DeclEvent *) & self->event;
-  PyObject *version, *encoding, *standalone, *result;
-
-  /* Version */
-  version = PyString_FromString (event->version);
-  if (version == NULL)
-    return NULL;
-
-  /* Encoding */
-  encoding = PyString_FromString (event->encoding);
-  if (encoding == NULL)
-    {
-      Py_DECREF (version);
-      return NULL;
-    }
-
-  /* standalone */
-  if ((event->standalone)[0] == '\0')
-    {
-      Py_INCREF (Py_None);
-      standalone = Py_None;
-    }
-  else
-    {
-      standalone = PyString_FromString (event->standalone);
-      if (standalone == NULL)
-        {
-          Py_DECREF (version);
-          Py_DECREF (encoding);
-          return NULL;
-        }
-    }
-
-  /* The result */
-  result = Py_BuildValue ("(NNN)", version, encoding, standalone);
-  if (result == NULL)
-    {
-      Py_DECREF (version);
-      Py_DECREF (encoding);
-      Py_DECREF (standalone);
-      return NULL;
-    }
-
-  return result;
-}
-
-
-/**************************************************************************
- * Methods of XMLParser
- *************************************************************************/
-
+/************************
+ * XMLParser public API *
+ ************************/
 static PyObject *
 XMLParser_new (PyTypeObject * type, PyObject * args, PyObject * kwds)
 {
@@ -284,6 +444,7 @@ XMLParser_new (PyTypeObject * type, PyObject * args, PyObject * kwds)
     {
       self->parser = NULL;
       self->source = NULL;
+      self->py_doctype = NULL;
     }
 
   return (PyObject *) self;
@@ -296,6 +457,7 @@ XMLParser_reset (XMLParser * self)
   if (self->parser != NULL)
     parser_free (self->parser);
   Py_XDECREF (self->source);
+  Py_XDECREF (self->py_doctype);
 }
 
 
@@ -312,12 +474,13 @@ XMLParser_init (XMLParser * self, PyObject * args, PyObject * kwds)
 /* __init__(source, namespaces=None, doctype=None)
  * source: is a string or a file
  * namespaces: a dictionnary (prefix => uri)
- * doctype: a string parsed before the document
+ * doctype: a PyDocType object
  */
 {
   PyObject *source;
   PyObject *namespaces = NULL;
-  char *doctype = NULL;
+  PyObject *py_doctype = NULL;
+  DocType *doctype = NULL;
   static char *kwlist[] = { "source", "namespaces", "doctype", NULL };
 
   Parser *parser;
@@ -331,16 +494,29 @@ XMLParser_init (XMLParser * self, PyObject * args, PyObject * kwds)
   XMLParser_reset (self);
 
   /* Arguments */
-  if (!PyArg_ParseTupleAndKeywords (args, kwds, "O|Os", kwlist, &source,
-                                    &namespaces, &doctype))
+  if (!PyArg_ParseTupleAndKeywords (args, kwds, "O|OO", kwlist, &source,
+                                    &namespaces, &py_doctype))
     return -1;
 
+  /* A DocType ? */
+  if (py_doctype)
+    {
+      /* A DocType object ? */
+      if (!PyObject_TypeCheck (py_doctype, &PyDocTypeType))
+        {
+          PyErr_SetString (PyExc_TypeError, "the doctype argument must be "
+                           "DocType object");
+          return -1;
+        }
+
+      doctype = ((PyDocType *) py_doctype)->doctype;
+    }
 
   /* Check the source */
   if (PyString_CheckExact (source))
     {
       /* Create the parser object */
-      parser = parser_new (PyString_AsString (source), NULL);
+      parser = parser_new (PyString_AsString (source), NULL, doctype);
     }
   else if (PyFile_CheckExact (source))
     {
@@ -348,7 +524,7 @@ XMLParser_init (XMLParser * self, PyObject * args, PyObject * kwds)
       PyFile_SetBufSize (source, BUFFER_SIZE);
 
       /* Create the parser object */
-      parser = parser_new (NULL, PyFile_AsFile (source));
+      parser = parser_new (NULL, PyFile_AsFile (source), doctype);
     }
   else
     {
@@ -366,9 +542,11 @@ XMLParser_init (XMLParser * self, PyObject * args, PyObject * kwds)
   self->parser = parser;
 
 
-  /* To avoid its destruction */
+  /* To avoid their destructions */
   Py_INCREF (source);
   self->source = source;
+  Py_XINCREF (py_doctype);
+  self->py_doctype = py_doctype;
 
   /* Add the namespaces */
   if (namespaces)
@@ -395,15 +573,6 @@ XMLParser_init (XMLParser * self, PyObject * args, PyObject * kwds)
         }
     }
 
-  /* Parse a doctype ? */
-  if (doctype)
-    if (parser_add_doctype (parser, doctype))
-      {
-        PyErr_Format (XMLError, "an error occured during the 'doctype' "
-                      "argument parsing");
-        return -1;
-      }
-
   return 0;
 }
 
@@ -420,13 +589,15 @@ XMLParser_iternext (XMLParser * self)
         case XML_DECL:
           value = XMLParser_translate_Decl (self);
           break;
+        case DOCUMENT_TYPE:
+          value = XMLParser_translate_DocType (self);
+          break;
         case START_ELEMENT:
           value = XMLParser_translate_STag (self);
           break;
         case END_ELEMENT:
           value = XMLParser_translate_ETag (self);
           break;
-        case DOCUMENT_TYPE:
         case TEXT:
         case COMMENT:
         case CDATA:
@@ -437,7 +608,6 @@ XMLParser_iternext (XMLParser * self)
           break;
         case END_DOCUMENT:
           return NULL;
-        case NOT_IMPLEMENTED:
         default:
           value = PyString_FromString ("Not implemented");
         }
@@ -458,58 +628,56 @@ XMLParser_iternext (XMLParser * self)
 }
 
 
-/**************************************************************************
- * Declaration of XMLParser
- *************************************************************************/
-
-/* The XMLParser object: type. */
+/****************************
+ * Declaration of XMLParser *
+ ****************************/
 static PyTypeObject XMLParserType = {
   PyObject_HEAD_INIT
-  (NULL) 0,                     /* ob_size */
-  "itools.xml.parser.XMLParser",/* tp_name */
-  sizeof (XMLParser),           /* tp_basicsize */
-  0,                            /* tp_itemsize */
-  (destructor) XMLParser_dealloc,       /* tp_dealloc */
-  0,                            /* tp_print */
-  0,                            /* tp_getattr */
-  0,                            /* tp_setattr */
-  0,                            /* tp_compare */
-  0,                            /* tp_repr */
-  0,                            /* tp_as_number */
-  0,                            /* tp_as_sequence */
-  0,                            /* tp_as_mapping */
-  0,                            /* tp_hash */
-  0,                            /* tp_call */
-  0,                            /* tp_str */
-  0,                            /* tp_getattro */
-  0,                            /* tp_setattro */
-  0,                            /* tp_as_buffer */
-  Py_TPFLAGS_DEFAULT,           /* tp_flags */
-  "Low-Level XML Parser",       /* tp_doc */
-  0,                            /* tp_traverse */
-  0,                            /* tp_clear */
-  0,                            /* tp_richcompare */
-  0,                            /* tp_weaklistoffset */
-  PyObject_SelfIter,            /* tp_iter */
-  (iternextfunc) XMLParser_iternext,    /* tp_iternext */
-  0,                            /* tp_methods */
-  0,                            /* tp_members */
-  0,                            /* tp_getset */
-  0,                            /* tp_base */
-  0,                            /* tp_dict */
-  0,                            /* tp_descr_get */
-  0,                            /* tp_descr_set */
-  0,                            /* tp_dictoffset */
-  (initproc) XMLParser_init,    /* tp_init */
-  0,                            /* tp_alloc */
-  (newfunc) XMLParser_new,      /* tp_new */
+  (NULL) 0,                          /* ob_size */
+  "itools.xml.parser.XMLParser",     /* tp_name */
+  sizeof (XMLParser),                /* tp_basicsize */
+  0,                                 /* tp_itemsize */
+  (destructor) XMLParser_dealloc,    /* tp_dealloc */
+  0,                                 /* tp_print */
+  0,                                 /* tp_getattr */
+  0,                                 /* tp_setattr */
+  0,                                 /* tp_compare */
+  0,                                 /* tp_repr */
+  0,                                 /* tp_as_number */
+  0,                                 /* tp_as_sequence */
+  0,                                 /* tp_as_mapping */
+  0,                                 /* tp_hash */
+  0,                                 /* tp_call */
+  0,                                 /* tp_str */
+  0,                                 /* tp_getattro */
+  0,                                 /* tp_setattro */
+  0,                                 /* tp_as_buffer */
+  Py_TPFLAGS_DEFAULT,                /* tp_flags */
+  "Low-Level XML Parser",            /* tp_doc */
+  0,                                 /* tp_traverse */
+  0,                                 /* tp_clear */
+  0,                                 /* tp_richcompare */
+  0,                                 /* tp_weaklistoffset */
+  PyObject_SelfIter,                 /* tp_iter */
+  (iternextfunc) XMLParser_iternext, /* tp_iternext */
+  0,                                 /* tp_methods */
+  0,                                 /* tp_members */
+  0,                                 /* tp_getset */
+  0,                                 /* tp_base */
+  0,                                 /* tp_dict */
+  0,                                 /* tp_descr_get */
+  0,                                 /* tp_descr_set */
+  0,                                 /* tp_dictoffset */
+  (initproc) XMLParser_init,         /* tp_init */
+  0,                                 /* tp_alloc */
+  (newfunc) XMLParser_new,           /* tp_new */
 };
+
 
 
 /**************************************************************************
  * Module functions
  *************************************************************************/
-
 static PyObject *
 pyparser_register_dtd (PyObject * trash, PyObject * args, PyObject * kwds)
 {
@@ -522,7 +690,7 @@ pyparser_register_dtd (PyObject * trash, PyObject * args, PyObject * kwds)
     return NULL;
 
   /* Register */
-  parser_register_dtd (urn, filename);
+  doctype_register_dtd (urn, filename);
 
   Py_RETURN_NONE;
 }
@@ -561,6 +729,13 @@ initparser (void)
     return;
   Py_INCREF (&XMLParserType);
   PyModule_AddObject (module, "XMLParser", (PyObject *) & XMLParserType);
+
+
+  /* Register DocType (PyDocType) */
+  if (PyType_Ready (&PyDocTypeType) != 0)
+    return;
+  Py_INCREF (&PyDocTypeType);
+  PyModule_AddObject (module, "DocType", (PyObject *) & PyDocTypeType);
 
   /* Register exceptions */
   XMLError = PyErr_NewException ("itools.xml.parser.XMLError", NULL, NULL);

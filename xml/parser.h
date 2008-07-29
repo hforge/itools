@@ -22,17 +22,16 @@
 #include <stdio.h>
 #include <glib.h>
 
-
 /**************************************************************************
  * The objects
  *************************************************************************/
 
-/*******************
- * The parser type *
- *  (opaque type)  *
- *******************/
-
+/******************************
+ * The Parser/DocType objects *
+ *       (opaque types)       *
+ ******************************/
 typedef struct _Parser Parser;
+typedef struct _DocType DocType;
 
 
 /**************
@@ -56,10 +55,8 @@ typedef struct
 #define COMMENT         5
 #define PI              6
 #define CDATA           7
-
 #define END_DOCUMENT    8
 #define XML_ERROR       9
-#define NOT_IMPLEMENTED 10
 
 
 #define EventHeader \
@@ -67,19 +64,28 @@ typedef struct
           gint row; \
           gint column
 
-
-/* END_DOCUMENT/NOT_IMPLEMENTED */
+/* CommonEvent/END_DOCUMENT */
 typedef struct
 {
   EventHeader;
 } CommonEvent;
 
-/* DOCUMENT_TYPE/TEXT/COMMENT/CDATA */
+/* XML_DECL */
 typedef struct
 {
   EventHeader;
-  gchar *text;
-} TextEvent;
+  gchar *version;
+  gchar *encoding;
+  gchar *standalone;
+} DeclEvent;
+
+/* DOCUMENT_TYPE */
+typedef struct
+{
+  EventHeader;
+  gchar *name;
+  DocType *doctype;
+} DocTypeEvent;
 
 /* START_ELEMENT */
 typedef struct
@@ -87,7 +93,6 @@ typedef struct
   EventHeader;
   gchar *uri;
   gchar *name;
-
   Attribute *attributes;
   guint attributes_number;
 } StartTagEvent;
@@ -100,6 +105,13 @@ typedef struct
   gchar *name;
 } EndTagEvent;
 
+/* TEXT/COMMENT/CDATA */
+typedef struct
+{
+  EventHeader;
+  gchar *text;
+} TextEvent;
+
 /* PI */
 typedef struct
 {
@@ -107,15 +119,6 @@ typedef struct
   gchar *pi_target;
   gchar *content;
 } PIEvent;
-
-/* XML_DECL */
-typedef struct
-{
-  EventHeader;
-  gchar *version;
-  gchar *encoding;
-  gchar *standalone;
-} DeclEvent;
 
 /* XML_ERROR */
 typedef struct
@@ -131,45 +134,39 @@ typedef union
   int type;
 
   CommonEvent common_event;
-  TextEvent text_event;
+  DeclEvent decl_event;
+  DocTypeEvent doctype_event;
   StartTagEvent start_tag_event;
   EndTagEvent end_tag_event;
+  TextEvent text_event;
   PIEvent pi_event;
   ErrorEvent error_event;
 } Event;
 
 
 /**************************************************************************
- * The API
+ * The Parser API
  *************************************************************************/
 
 #define ERROR TRUE
 #define ALL_OK FALSE
 
+
 /*******************
- * New/Free parser *
+ * New/Free Parser *
  *******************/
 
 /* if data != NULL source = data
  * else            source = file
  */
-Parser *parser_new (gchar * data, FILE * file);
+Parser *parser_new (gchar * data, FILE * file, DocType * doctype);
 void parser_free (Parser * parser);
 
 
-/********************************************
- * Some external informations about the doc *
- ********************************************/
-
+/**********************************************
+ * Add a prefix/namespace in namespaces table *
+ **********************************************/
 void parser_add_namespace (Parser * parser, gchar * prefix, gchar * uri);
-gboolean parser_add_doctype (Parser * parser, gchar * doctype);
-
-
-/***********************************
- * Add a urn/filename in URN table *
- ***********************************/
-
-void parser_register_dtd (gchar * urn, gchar * filename);
 
 
 /*********************
@@ -181,10 +178,46 @@ void parser_register_dtd (gchar * urn, gchar * filename);
 gboolean parser_next (Parser * parser, Event * event);
 
 
-/**********************************************
- * Destroy all data initialised by the parser *
- **********************************************/
-
+/******************************************************
+ * Destroy all data initialised by all Parser objects *
+ ******************************************************/
 void parser_global_reset (void);
+
+
+/**************************************************************************
+ * The DocType API
+ *************************************************************************/
+
+/********************
+ * New/Free DocType *
+ ********************/
+DocType *doctype_new (gchar * PubidLiteral, gchar * SystemLiteral,
+                      gchar * intSubset, gchar ** error_msg);
+void doctype_free (DocType * doctype);
+
+
+/******************
+ * DocType to str *
+ ******************/
+gchar *doctype_to_str (DocType * doctype);
+
+
+/***********************
+ * Get an entity value *
+ ***********************/
+gchar *doctype_get_entity_value (DocType * doctype, gchar * entity_name);
+
+
+/***********************************
+ * Add a urn/filename in URN table *
+ ***********************************/
+void doctype_register_dtd (gchar * urn, gchar * filename);
+
+
+/*******************************************************
+ * Destroy all data initialised by all DocType objects *
+ *******************************************************/
+void doctype_global_reset (void);
+
 
 #endif

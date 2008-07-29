@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 # Copyright (C) 2003-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 # Copyright (C) 2007 Sylvain Taverne <sylvain@itaapy.com>
+# Copyright (C) 2008 David Versmisse <david.versmisse@itaapy.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -88,6 +89,10 @@ def get_end_tag(ns_uri, name):
     if is_empty(ns_uri, name):
         return ''
     return '</%s>' % get_qname(ns_uri, name)
+
+
+def get_doctype(name, doctype):
+    return '<!DOCTYPE %s %s>' % (name, doctype.to_str())
 
 
 def stream_to_str(stream, encoding='UTF-8'):

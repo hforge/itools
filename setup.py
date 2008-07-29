@@ -43,7 +43,8 @@ classifiers = ['Development Status :: 3 - Alpha',
 
 if __name__ == '__main__':
     cparser = Extension('itools.xml.parser',
-                        sources=['xml/parser.c', 'xml/pyparser.c'],
+                        sources=['xml/parser.c', 'xml/doctype.c',
+                                 'xml/arp.c', 'xml/pyparser.c'],
                         libraries=['glib-2.0'])
 
     setup(classifiers=classifiers, ext_modules=[cparser])

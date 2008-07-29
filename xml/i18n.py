@@ -21,7 +21,7 @@ from itools.datatypes import XMLContent
 from itools.i18n import Message
 from itools.i18n.segment import get_segments, translate_message
 from namespaces import get_element_schema, xmlns_uri
-from parser import XMLParser, START_ELEMENT, END_ELEMENT, TEXT
+from parser import XMLParser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, TEXT
 
 
 
@@ -218,11 +218,14 @@ def get_messages(events, filename=None):
 ###########################################################################
 def translate(events, catalog):
     encoding = 'utf-8' # FIXME hardcoded
+    doctype = None
     keep_spaces = False
     namespaces = {}
     for event in _get_translatable_blocks(events):
         type, value, line = event
-        if type == START_ELEMENT:
+        if type == DOCUMENT_TYPE:
+            name, doctype = value
+        elif type == START_ELEMENT:
             tag_uri, tag_name, attributes = value
             element = get_element_schema(tag_uri, tag_name)
             # Attributes (translate)
@@ -252,7 +255,7 @@ def translate(events, catalog):
                 keep_spaces = False
         elif type == MESSAGE:
             translation = translate_message(value, catalog, keep_spaces)
-            for event in XMLParser(translation, namespaces):
+            for event in XMLParser(translation, namespaces, doctype=doctype):
                 yield event
         else:
             yield event

@@ -97,7 +97,9 @@ class MSG(object):
 
     def gettext(self, language=None, **kw):
         message = self.message
-        domain = domains[self.domain]
+        domain = domains.get(self.domain)
+        if domain is None:
+            return message
 
         # Find out the language (the 'select_language' function must be
         # built-in)

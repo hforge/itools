@@ -14,8 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from itools
+from itools.gettext import MSG
 
-MSG_MISSING_OR_INVALID = (
+MSG_MISSING_OR_INVALID = MSG(
     u'Some required fields are missing, or some values are not valid. '
     u'Please correct them and continue.')
 

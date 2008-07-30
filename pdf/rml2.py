@@ -521,6 +521,9 @@ def body_stream(stream, _tag_name, _attributes, context):
             elif tag_name in ('ol', 'ul'):
                 story.extend(list_stream(stream, tag_name, attributes,
                                          context))
+            elif tag_name == 'dl':
+                story.extend(def_list_stream(stream, tag_name, attributes,
+                                             context))
             elif tag_name == 'pagebreak':
                 story.append(PageBreak())
             elif tag_name == 'table':
@@ -595,6 +598,9 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context):
                 elif tag_name in ('ol', 'ul'):
                     story.extend(list_stream(stream, tag_name, attributes,
                                              context))
+                elif tag_name == 'dl':
+                    story.extend(def_list_stream(stream, tag_name, attributes,
+                                                 context))
                 elif tag_name == 'table':
                     story.append(table_stream(stream, tag_name, attributes,
                                               context))
@@ -951,6 +957,43 @@ def list_stream(stream, _tag_name, attributes, context, id=0):
                 else:
                     has_content = True
                     content.append(value)
+
+
+def def_list_stream(stream, _tag_name, attributes, context):
+    """
+        stream : parser stream
+    """
+
+    INDENT_VALUE = 1 * cm
+    story = []
+    has_content = False
+
+    while True:
+        event, value, line_number = stream_next(stream)
+        if event == None:
+            break
+        #### START ELEMENT ####
+        if event == START_ELEMENT:
+            tag_uri, tag_name, attributes = value
+            context.path_on_start_event(tag_name, attributes)
+            if tag_name == 'dt':
+                story.extend(paragraph_stream(stream, tag_name, attributes, context))
+            elif tag_name == 'dd':
+                story.append(Indenter(left=INDENT_VALUE))
+                story.extend(paragraph_stream(stream, tag_name, attributes, context))
+                story.append(Indenter(left=-INDENT_VALUE))
+            else:
+                print '5', MSG_WARNING_DTD % ('document', line_number, tag_name)
+
+        #### END ELEMENT ####
+        elif event == END_ELEMENT:
+            tag_uri, tag_name = value
+            if tag_name == _tag_name:
+                return story
+            else:
+                print '4', MSG_WARNING_DTD % ('document', line_number, tag_name)
+            context.path_on_end_event()
+
 
 
 def table_stream(stream, _tag_name, attributes, context):

@@ -84,7 +84,6 @@ MSG_ROW_ERROR = 'Table error : too many row at its line: %s'
 HEADING = ('h1', 'h2', 'h3', 'h4', 'h5', 'h6')
 
 
-
 class Context(object):
 
 
@@ -98,6 +97,7 @@ class Context(object):
         self.toc_high_level = 3
         self.current_object_path = []
         self.css = None
+        self.anchor = []
 
 
     def init_base_style_sheet(self):
@@ -518,6 +518,10 @@ def body_stream(stream, _tag_name, _attributes, context):
                 widget = img_stream(stream, tag_name, attributes, context)
                 if widget:
                     story.append(widget)
+            elif tag_name == 'a':
+                # FIXME anchor are stored in stack and it pop in the nextest
+                # paragraph
+                context.anchor.append(build_start_tag(tag_name, attributes))
             elif tag_name in ('ol', 'ul'):
                 story.extend(list_stream(stream, tag_name, attributes,
                                          context))
@@ -569,6 +573,8 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context):
     skip = False
     place = 0
 
+    while context.anchor:
+        content.append(context.anchor.pop())
     while True:
         event, value, line_number = stream_next(stream)
         if event == None:
@@ -1626,10 +1632,13 @@ def build_start_tag(tag_name, attributes={}):
             tag = '<a href="%s">' % href
         if exist_attribute(attributes, ['id', 'name'], at_least=True):
             name = attributes.get((URI, 'id'), attributes.get((URI, 'name')))
-            if tag:
-                tag += '<a name="%s"/>' % name
+            if name:
+                if tag:
+                    tag += '<a name="%s"/>' % name
+                else:
+                    tag = '<a name="%s"/>' % name
             else:
-                tag = '<a name="%s"/>' % name
+                tag = ''
         return tag
     else:
         attrs = attributes

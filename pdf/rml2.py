@@ -1009,9 +1009,11 @@ def table_stream(stream, _tag_name, attributes, context):
     if exist_attribute(attributes, ['cellpadding']):
         attr_value = attributes.get((URI, 'cellpadding'), None)
         if attr_value is not None:
-            value = int(context.format_size(attr_value))
-            for padding in PADDINGS:
-                content.add_style((padding, start, stop, value))
+            value = context.format_size(attr_value)
+            if value is not None:
+                value = int(value)
+                for padding in PADDINGS:
+                    content.add_style((padding, start, stop, value))
 
     while True:
         event, value, line_number = stream_next(stream)

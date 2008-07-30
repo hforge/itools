@@ -304,31 +304,29 @@ def translate_message(message, catalog, keep_spaces):
     """
     translation_dict = {}
     for segment, line_offset in get_segments(message, keep_spaces):
-        segment_translation = catalog.gettext(segment).encode('utf-8')
+        segment_translation = catalog.gettext(segment)
         translation_dict[segment] = segment_translation
-    translation = ''
-    for translated_segment in _translate_segments(message, translation_dict,
-                                                  keep_spaces):
-        translation = translation + translated_segment
-    return translation
+
+    translation = _translate_segments(message, translation_dict, keep_spaces)
+    translation = list(translation)
+    translation = u''.join(translation)
+
+    return translation.encode('utf-8')
 
 
 
 def _translate_segments(message, translation_dict, keep_spaces):
-
     for seg_struct, line_offset in _split_message(message, keep_spaces):
         seg_struct, spaces_pos = \
             _get_surrounding_spaces(seg_struct, keep_spaces)
         new_seg_struct = _rm_surrounding_format(seg_struct, keep_spaces)
         if new_seg_struct is seg_struct:
             segment = _reconstruct_segment(seg_struct, keep_spaces)
-            segment = segment.decode('utf-8')
             if segment:
                 raw_segment = _reconstruct_segment(seg_struct, True)
                 translation = translation_dict[segment]
-                translation = translation.decode('utf-8')
                 translation = raw_segment.replace(segment, translation)
-                yield translation.encode('utf-8')
+                yield translation
         else:
             start_format = seg_struct.pop(0)
             end_format = seg_struct.pop()
@@ -341,7 +339,7 @@ def _translate_segments(message, translation_dict, keep_spaces):
                 _reinsert_format(seg_struct, (start_format, end_format))
             seg_struct = _reinsert_spaces(seg_struct, spaces_pos)
             translation = _reconstruct_segment(seg_struct, True)
-            yield translation.encode('utf-8')
+            yield translation
 
 
 

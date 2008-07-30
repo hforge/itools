@@ -1627,7 +1627,7 @@ def build_start_tag(tag_name, attributes={}):
             if tag:
                 tag += '<a name="%s"/>' % name
             else:
-                tag = '<a name="%s">' % name
+                tag = '<a name="%s"/>' % name
         return tag
     else:
         attrs = attributes

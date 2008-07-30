@@ -167,7 +167,8 @@ def _translation_to_struct(segment_translations):
     """_translation_to_struct
     """
     seg_struct = segment_translations
-    if segment_translations and type(segment_translations[0]) is str:
+    if segment_translations \
+        and isinstance(segment_translations[0], (str, unicode)):
         seg_struct = []
         for translation in segment_translations:
             translation_tuple = (TEXT, translation, TEXT_ID)

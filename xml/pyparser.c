@@ -499,7 +499,7 @@ XMLParser_init (XMLParser * self, PyObject * args, PyObject * kwds)
     return -1;
 
   /* A DocType ? */
-  if (py_doctype)
+  if (py_doctype && py_doctype != Py_None)
     {
       /* A DocType object ? */
       if (!PyObject_TypeCheck (py_doctype, &PyDocTypeType))

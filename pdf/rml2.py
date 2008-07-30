@@ -592,9 +592,8 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context):
                     story.append(hr_stream(stream, tag_name, attributes,
                                            context))
                 elif tag_name == 'img':
-                    widget = img_stream(stream, tag_name, attributes, context)
-                    if widget:
-                        story.append(widget)
+                    # allow to put <a><img /></a>
+                    skip = False
                 elif tag_name in ('ol', 'ul'):
                     story.extend(list_stream(stream, tag_name, attributes,
                                              context))

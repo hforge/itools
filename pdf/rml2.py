@@ -554,10 +554,155 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context):
         stream : parser stream
     """
 
-    content, style = compute_paragraph(stream, elt_tag_name, elt_attributes,
-                                       context)
-    return create_paragraph(context, (elt_tag_name, elt_attributes), content,
-                            style)
+    content = []
+    cpt = 0
+    has_content = False
+    is_not_paragraph = (elt_tag_name != 'p')
+    story = []
+    tag_stack = []
+    start_tag = True
+    end_tag = False
+    style_p = context.get_css_props()
+    skip = False
+    place = 0
+
+    while True:
+        event, value, line_number = stream_next(stream)
+        if event == None:
+            break
+        #### START ELEMENT ####
+        if event == START_ELEMENT:
+            tag_uri, tag_name, attributes = value
+            context.path_on_start_event(tag_name, attributes)
+            if is_not_paragraph:
+                skip = True
+                place = len(story)
+                # TODO ? Merge with body_stream?
+                if tag_name in ('p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
+                    story.extend(paragraph_stream(stream, tag_name,
+                                                  attributes,
+                                                  context))
+                elif tag_name == 'pre':
+                    story.append(pre_stream(stream, tag_name, attributes,
+                                            context))
+                elif tag_name == 'hr':
+                    story.append(hr_stream(stream, tag_name, attributes,
+                                           context))
+                elif tag_name == 'img':
+                    widget = img_stream(stream, tag_name, attributes, context)
+                    if widget:
+                        story.append(widget)
+                elif tag_name in ('ol', 'ul'):
+                    story.extend(list_stream(stream, tag_name, attributes,
+                                             context))
+                elif tag_name == 'table':
+                    story.append(table_stream(stream, tag_name, attributes,
+                                              context))
+                else:
+                    skip = False
+            if not skip:
+                if tag_name in INLINE:
+                    start_tag = True
+                    if tag_name in ('a', 'b', 'big', 'em', 'i', 'small', 'strong',
+                                    'sub', 'sup', 'tt', 'u'):
+                        # FIXME
+                        attrs = build_attributes(tag_name, attributes)
+                        if cpt or has_content:
+                            content[-1] += build_start_tag(tag_name, attrs)
+                        else:
+                            content.append(build_start_tag(tag_name, attrs))
+                            has_content = True
+                        cpt += 1
+                    elif tag_name == 'span':
+                        attrs, tag_stack = build_span_attributes(attributes)
+                        if cpt or has_content:
+                            content[-1] += build_start_tag(tag_name, attrs)
+                        else:
+                            content.append(build_start_tag(tag_name, attrs))
+                            has_content = True
+                        for i in tag_stack:
+                            content[-1] += '<%s>' % i
+                        cpt += 1
+                    elif tag_name == 'br':
+                        continue
+                    elif tag_name == 'img':
+                        attrs = build_img_attributes(attributes, context)
+                        content.append(build_start_tag(tag_name, attrs))
+                    else:
+                        print MSG_TAG_NOT_SUPPORTED % ('document', line_number,
+                                                       tag_name)
+                        # unknown tag
+                else:
+                    print MSG_WARNING_DTD % ('document', line_number, tag_name)
+
+        #### END ELEMENT ####
+        elif event == END_ELEMENT:
+            tag_uri, tag_name = value
+            context.path_on_end_event()
+            if len(content):
+                # spaces must be ignore if character before it is '\n'
+                tmp = content[-1].rstrip(' \t')
+                if len(tmp):
+                    if tmp[-1] == '\n':
+                        content[-1] = tmp.rstrip('\n')
+            content_lenth = len(content)
+            if content_lenth > 0:
+                if skip:
+                    story.insert(place, create_paragraph(context, (elt_tag_name, elt_attributes), content, style_p))
+                    content = []
+                    has_content = False
+            if tag_name == elt_tag_name:
+                if content_lenth > 0:
+                    story.append(create_paragraph(context, (elt_tag_name, elt_attributes), content, style_p))
+                return story
+            elif tag_name == 'span':
+                cpt -= 1
+                end_tag = True
+                while tag_stack:
+                    content[-1] += '</%s>' % tag_stack.pop()
+                content[-1] += get_end_tag(None, P_FORMAT.get(tag_name, 'b'))
+            elif tag_name == 'br':
+                content.append('<br/>')
+            elif tag_name in P_FORMAT.keys():
+                cpt -= 1
+                end_tag = True
+                content[-1] += get_end_tag(None, P_FORMAT.get(tag_name, 'b'))
+            else:
+                print MSG_TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
+                # unknown tag
+
+        #### TEXT ELEMENT ####
+        elif event == TEXT:
+            if len(value) > 0:
+                # alow to write :
+                # <para><u><i>foo</i> </u></para>
+                # spaces must be ignore after a start tag if the next
+                # character is '\n'
+                if start_tag:
+                    if value[0] == '\n':
+                        value = value.lstrip('\n\t ')
+                        if not len(value):
+                            continue
+                    start_tag = False
+                if has_content:
+                    if content[-1].endswith('<br/>'):
+                        # <p>
+                        #   foo          <br />
+                        #     bar   <br />     team
+                        # </p>
+                        # equal
+                        # <p>foo <br />bar <br />team</p>
+                        value = value.lstrip()
+                        content[-1] += value
+                        end_tag = False
+                    elif content[-1].endswith('</span>') or end_tag or cpt:
+                        content[-1] += value
+                        end_tag = False
+                    else:
+                        content.append(value)
+                else:
+                    has_content = True
+                    content.append(value)
 
 
 def pre_stream(stream, tag_name, attributes, context):
@@ -854,159 +999,6 @@ def table_stream(stream, _tag_name, attributes, context):
                 content.thead()
             else:
                 print MSG_TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
-
-
-def compute_paragraph(stream, elt_tag_name, elt_attributes, context):
-    content = []
-    cpt = 0
-    has_content = False
-    is_table = elt_tag_name in ('td', 'th')
-    story = []
-    tag_stack = []
-    start_tag = True
-    end_tag = False
-    style_p = context.get_css_props()
-
-    while True:
-        event, value, line_number = stream_next(stream)
-        if event == None:
-            break
-        #### START ELEMENT ####
-        if event == START_ELEMENT:
-            tag_uri, tag_name, attributes = value
-            context.path_on_start_event(tag_name, attributes)
-            if is_table:
-                skip = True
-                # TODO ? Merge with body_stream?
-                if tag_name in ('p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
-                    story.append(paragraph_stream(stream, tag_name,
-                                                  attributes,
-                                                  context))
-                elif tag_name == 'pre':
-                    story.append(pre_stream(stream, tag_name, attributes,
-                                            context))
-                elif tag_name == 'hr':
-                    story.append(hr_stream(stream, tag_name, attributes,
-                                           context))
-                elif tag_name == 'img':
-                    widget = img_stream(stream, tag_name, attributes, context)
-                    if widget:
-                        story.append(widget)
-                elif tag_name in ('ol', 'ul'):
-                    story.extend(list_stream(stream, tag_name, attributes,
-                                             context))
-                elif tag_name == 'table':
-                    story.append(table_stream(stream, tag_name, attributes,
-                                              context))
-                else:
-                    skip = False
-                if skip:
-                    continue
-            if tag_name in INLINE:
-                start_tag = True
-                if tag_name in ('a', 'b', 'big', 'em', 'i', 'small', 'strong',
-                                'sub', 'sup', 'tt', 'u'):
-                    # FIXME
-                    attrs = build_attributes(tag_name, attributes)
-                    if cpt or has_content:
-                        content[-1] += build_start_tag(tag_name, attrs)
-                    else:
-                        content.append(build_start_tag(tag_name, attrs))
-                    cpt += 1
-                elif tag_name == 'span':
-                    attrs, tag_stack = build_span_attributes(attributes)
-                    if cpt or has_content:
-                        content[-1] += build_start_tag(tag_name, attrs)
-                    else:
-                        content.append(build_start_tag(tag_name, attrs))
-                    for i in tag_stack:
-                        content[-1] += '<%s>' % i
-                    cpt += 1
-                elif tag_name == 'br':
-                    continue
-                elif tag_name == 'img':
-                    attrs = build_img_attributes(attributes, context)
-                    content.append(build_start_tag(tag_name, attrs))
-                else:
-                    print MSG_TAG_NOT_SUPPORTED % ('document', line_number,
-                                               tag_name)
-                    # unknown tag
-            else:
-                print MSG_WARNING_DTD % ('document', line_number, tag_name)
-
-        #### END ELEMENT ####
-        elif event == END_ELEMENT:
-            tag_uri, tag_name = value
-            context.path_on_end_event()
-            if len(content):
-                # spaces must be ignore if character before it is '\n'
-                tmp = content[-1].rstrip(' \t')
-                if len(tmp):
-                    if tmp[-1] == '\n':
-                        content[-1] = tmp.rstrip('\n')
-            if tag_name == elt_tag_name:
-                # FIXME
-                # if compute_paragraph is called by table_stream
-                # then this function return
-                #   # either a platypus object list if it exist at least
-                #     one platypus object, ignore text out of paragraph
-                #   # either a str object in other case
-                # else this function is called by paragraph stream which
-                #     want a str list to build the platypus object
-                if is_table:
-                    if len(story) > 0:
-                        return story, style_p
-                    return ' '.join(content), style_p
-                return content, style_p
-            elif tag_name == 'span':
-                cpt -= 1
-                end_tag = True
-                while tag_stack:
-                    content[-1] += '</%s>' % tag_stack.pop()
-                content[-1] += get_end_tag(None, P_FORMAT.get(tag_name, 'b'))
-            elif tag_name == 'br':
-                content.append('<br/>')
-            elif tag_name in P_FORMAT.keys():
-                cpt -= 1
-                end_tag = True
-                content[-1] += get_end_tag(None, P_FORMAT.get(tag_name, 'b'))
-            else:
-                print MSG_TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
-                # unknown tag
-
-        #### TEXT ELEMENT ####
-        elif event == TEXT:
-            if len(value) > 0:
-                # alow to write :
-                # <para><u><i>foo</i> </u></para>
-                value = XMLContent.encode(value) # entities
-                # spaces must be ignore after a start tag if the next
-                # character is '\n'
-                if start_tag:
-                    if value[0] == '\n':
-                        value = value.lstrip('\n\t ')
-                        if not len(value):
-                            continue
-                    start_tag = False
-                if has_content and content[-1].endswith('<br/>'):
-                    # <p>
-                    #   foo          <br />
-                    #     bar   <br />     team
-                    # </p>
-                    # equal
-                    # <p>foo <br />bar <br />team</p>
-                    value = value.lstrip()
-                    content[-1] += value
-                    end_tag = False
-                elif has_content and content[-1].endswith('</span>'):
-                    content[-1] += value
-                    end_tag = False
-                elif end_tag or cpt:
-                    content[-1] += value
-                    end_tag = False
-                else:
-                    has_content = True
-                    content.append(value)
 
 
 def build_img_attributes(_attributes, context):

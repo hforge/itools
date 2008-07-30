@@ -507,7 +507,7 @@ def body_stream(stream, _tag_name, _attributes, context):
             tag_uri, tag_name, attributes = value
             context.path_on_start_event(tag_name, attributes)
             if tag_name in ('p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
-                story.append(paragraph_stream(stream, tag_name, attributes,
+                story.extend(paragraph_stream(stream, tag_name, attributes,
                                               context))
             elif tag_name == 'pre':
                 story.append(pre_stream(stream, tag_name, attributes,
@@ -1052,8 +1052,7 @@ def compute_tr(stream, _tag_name, attributes, table, context):
             tag_uri, tag_name, attributes = value
             context.path_on_start_event(tag_name, attributes)
             if tag_name in ('td', 'th'):
-                cont, style = compute_paragraph(stream, tag_name, attributes,
-                                         context)
+                cont = paragraph_stream(stream, tag_name, attributes, context)
                 table.push_content(cont)
                 if exist_attribute(attributes, ['width']):
                     width = attributes.get((URI, 'width'))

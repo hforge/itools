@@ -62,17 +62,27 @@ def _rm_surrounding_format(segment_structure, keep_spaces=False):
     new segment_structure, then a boolean that indicates whether the
     segment_structure changed.
     """
+    first, last = segment_structure[0], segment_structure[-1]
+    n = len(segment_structure)
 
-    new_segment_structure = segment_structure
-    if segment_structure[0][2] == segment_structure[-1][2] and \
-       segment_structure[0][2] != TEXT_ID and len(new_segment_structure) > 1:
-        new_segment_structure = list(segment_structure)
-        while len(new_segment_structure) > 1 and \
-              new_segment_structure[0][2] == new_segment_structure[-1][2] and \
-              new_segment_structure[0][2] != TEXT_ID:
-            new_segment_structure.pop(0)
-            new_segment_structure.pop()
-    return new_segment_structure
+    # Check there is at least one surrounding format to remove
+    if n <= 1 or first[2] == TEXT_ID or first[2] != last[2]:
+        return segment_structure
+
+    # Make a copy
+    segment_structure = list(segment_structure)
+
+    # Remove surrounding format
+    while n > 1 and first[2] != TEXT_ID and first[2] == last[2]:
+        segment_structure.pop(0)
+        segment_structure.pop()
+        n -= 2
+        # Next (check we did not reach the empty list)
+        if n == 0:
+            break
+        first, last = segment_structure[0], segment_structure[-1]
+
+    return segment_structure
 
 
 

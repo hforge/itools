@@ -20,19 +20,15 @@ from os import execl, makedirs, chdir, getcwd
 from os.path import join, split
 from subprocess import call
 from sys import executable
-from zipfile import ZipFile
-from tarfile import open as tar_open, is_tarfile
+from tarfile import open as tar_open, is_tarfile, TarError
+from zipfile import ZipFile, error as zip_error, LargeZipFile
 
 # Import from itools
-from itools.vfs import exists, make_file
 from itools.uri import Path
-
+from itools.vfs import exists, make_file
 from metadata import egg_info
 from repository import EXTENSIONS
 
-
-class ArchiveNotSupported(Exception):
-    """This archive format is not supported"""
 
 class Dist(object):
     """abstract distributions like .egg, .zip, .tar.gz ...
@@ -42,18 +38,20 @@ class Dist(object):
         self._metadata = None
         self.fromsetuptools = False
         self.bundle = init_bundle(location)
+        if self.bundle == None:
+            return None
         self.location = location
 
 
     def _init_metadata(self):
         if self._metadata is None:
-            pkg_info = self.bundle.find_file('PKG-INFO')
+            pkg_info = self.bundle.find_lowest_file('PKG-INFO')
             if pkg_info != None:
                 self._metadata = \
                         egg_info(self.bundle.read_file(pkg_info))
             else:
                 self._metadata = {}
-            setuppy = self.bundle.find_file('setup.py')
+            setuppy = self.bundle.find_lowest_file('setup.py')
             if setuppy != None:
                 setuppy_data = self.bundle.read_file(setuppy)
                 for line in setuppy_data.splitlines():
@@ -73,10 +71,12 @@ class Dist(object):
 
     def install(self):
         cache_dir = self.location[:-len(Path(self.location).get_name())]
-        if not self.bundle.extract(cache_dir):
-            raise ArchiveNotSupported
+        try:
+            self.bundle.extract(cache_dir)
+        except (zip_error, LargeZipFile, TarError):
+            return -1
 
-        setup_py_file = self.bundle.find_file('setup.py')
+        setup_py_file = self.bundle.find_lowest_file('setup.py')
         before = getcwd()
         chdir(split(join(cache_dir, setup_py_file))[0])
         ret = call([executable, 'setup.py', 'install'])
@@ -95,12 +95,22 @@ def init_bundle(location):
         return TarBundle(location, 'bz2')
     if split(location)[1].endswith('.tar'):
         return TarBundle(location, '')
-    else:
-        raise ArchiveNotSupported
 
 
 
-class TarBundle(object):
+class Bundle(object):
+
+    def find_lowest_file(self, filename):
+        files = [f for f in self.handle.getnames() if split(f)[1] == filename]
+        files.sort(lambda x, y: cmp(len(x), len(y)))
+        if len(files) > 0:
+            return files[0]
+        else:
+            return None
+
+
+
+class TarBundle(Bundle):
 
     # Format can be 'gzip' 'bz2' or ''
     def __init__(self, location, format):
@@ -110,55 +120,34 @@ class TarBundle(object):
             self.handle = tar_open(location, 'r:bz2')
         elif format == '':
             self.handle = tar_open(location, 'r')
-        else:
-            raise ArchiveNotSupported
 
 
     def extract(self, to):
         self.handle.extractall(to)
-        return True
 
 
     def read_file(self, filename):
         return self.handle.extractfile(filename).read()
 
 
-    def find_file(self, filename):
-        for file in self.handle.getnames():
-            if split(file)[1] == filename:
-                # why not yield?
-                return file
-        return None
 
-
-
-class ZipBundle(object):
+class ZipBundle(Bundle):
 
     def __init__(self, location):
         self.handle = ZipFile(location)
 
 
     def extract(self, to):
-        for f in self.handle.namelist():
-            ext_dir = split(join(to, f))[0]
+        for file in self.handle.namelist():
+            path = join(to, file)
+            ext_dir = split(path)[0]
             if not exists(ext_dir):
                 makedirs(ext_dir)
-            if not exists(join(to, f)):
-                make_file(join(to, f))
-                out = open(join(to, f), 'w+b')
-                out.write(self.handle.read(f))
-                out.close()
-        return True
+            if not exists(path):
+                make_file(path)
+                out = open(path, 'w+b').write(self.handle.read(file))
 
 
     def read_file(self, filename):
         return self.handle.read(filename)
-
-
-    def find_file(self, filename):
-        for file in self.handle.namelist():
-            if split(file)[1] == filename:
-                # why not yield?
-                return file
-        return None
 

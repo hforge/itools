@@ -16,11 +16,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from isetup
-from repository import parse_package_name, is_distable, download, Repository,\
-        RepositoryNotSupported, EXTENSIONS
-from distribution import Dist, ArchiveNotSupported
-
+from distribution import Dist
 from metadata import list_eggs_info, egg_info
+from repository import parse_package_name, download, get_repository, EXTENSIONS
+
 
 __all__ = [
     # Metadata functions
@@ -28,14 +27,10 @@ __all__ = [
     'egg_info',
     # Repositories functions and classses
     'parse_package_name',
-    'is_distable',
     'download',
-    'Repository',
+    'get_repository',
     # Distribution class
     'Dist',
-    # Exceptions
-    'RepositoryNotSupported',
-    'ArchiveNotSupported'
     # List of supported extensions
     'EXTENSIONS',
     ]

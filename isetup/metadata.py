@@ -22,7 +22,6 @@ from os.path import join, isfile
 from itools.vfs import get_names
 
 
-
 # Note : some .egg-info are directories and not files
 def egg_info(data):
     """Return a dict containing information from PKG-INFO formated data
@@ -96,5 +95,4 @@ def list_eggs_info(dir, module_name='', check_import=True):
             infos['is_imported'] = is_imported
         eggs.append(infos)
     return eggs
-
 

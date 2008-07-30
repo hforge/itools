@@ -27,27 +27,47 @@ treat them with something like a "install_package" function.
 """
 
 # Import from the Standard Library
-import re
 from distutils.version import LooseVersion
 from distutils.versionpredicate import VersionPredicate
 from optparse import OptionParser
 from operator import itemgetter
 from os import sep
 from os.path import join
+import re
 from sys import path, exit
 
 # Import from itools
 from itools import __version__
 import itools.http
-from itools.isetup import (parse_package_name, download, list_eggs_info,
-                           Repository, EXTENSIONS, Dist, ArchiveNotSupported)
-from itools.vfs import exists, open, is_folder, get_names, make_folder
+from itools.isetup import parse_package_name, download, list_eggs_info, Dist
+from itools.isetup import get_repository, EXTENSIONS
+from itools.vfs import exists, is_folder, get_names, make_folder
+from itools import vfs
 
 
 # This is what is called Packages/
-TMP_DIR = TMP_DIR_DEFAULT = 'Packages'
+TMP_DIR = 'Packages'
 PYPI_REPO = 'http://pypi.python.org/simple/'
 YES = ('y', 'Y', 'yes', 'YES', 'ok', 'Yes', 'yep')
+
+class Enumerate(object):
+    """Utility Class
+    """
+    def __init__(self, names):
+        for number, name in enumerate(names.split()):
+            setattr(self, name, number)
+
+
+prepare_code = Enumerate('NoAvailableCandidate Ok BadArchive BadName '\
+                         'AlreadyInstalled NotFound')
+install_code = Enumerate('Ok SetupError UnknownError')
+
+# List of unretrievables packages
+unretrievables = []
+# List of packages to install
+packages_to_install = []
+
+
 
 def find_installed_package(package_version):
     # find the site-packages absolute path
@@ -72,21 +92,6 @@ def find_installed_package(package_version):
                 pass
 
 
-class Enumerate(object):
-    """Utility Class
-    """
-    def __init__(self, names):
-        for number, name in enumerate(names.split()):
-            setattr(self, name, number)
-
-
-prepare_code = Enumerate('NoAvailableCandidate Ok BadArchive BadName '\
-                         'AlreadyInstalled NotFound')
-install_code = Enumerate('Ok SetupError UnknownError')
-
-unretrievables = []
-packages_to_install = []
-
 def prepare(package_spec):
     """Work with a few globals variables, like repositories, ...
     """
@@ -98,31 +103,23 @@ def prepare(package_spec):
 
     # Repository listing
     repo_candidates = []
-
-    for repo in repositories:
+    for repo_str in repositories:
         # If the repository has the package
-        if exists(join(repo, package_version.name)):
-            repo = Repository(repo)
+        if exists(join(repo_str, package_version.name)):
+            repo = get_repository(repo_str)
             # List versions of this package for this repository
             dists = repo.list_distributions(package_version.name)
             for dist in dists:
                 if package_version.satisfied_by(dist['version']):
+                    dist['version'] = LooseVersion(dist['version'])
                     repo_candidates.append(dist)
 
-    # Transform string version of each dists to a LooseVersion
-    for candidate in repo_candidates:
-        candidate['version'] = LooseVersion(candidate['version'])
-
-
     # Cache listing
-    cache_candidate = []
-
     if not exists(CACHE_DIR):
         make_folder(CACHE_DIR)
 
     cache_candidates = []
-
-    cache_dir = open(CACHE_DIR)
+    cache_dir = vfs.open(CACHE_DIR)
     for filename in cache_dir.get_names('.'):
         dist = parse_package_name(filename)
         if dist['name'] == package_version.name and\
@@ -134,23 +131,23 @@ def prepare(package_spec):
                 continue
 
 
-    ## Installation listing
-    #installed_packages = []
-    #for dist in find_installed_package(package_version):
-    #    if dist['Name'] == package_version.name:
-    #        try:
-    #            dist['version'] = LooseVersion(dist['Version'])
-    #            cache_candidates.append(dist)
-    #        except ValueError:
-    #            continue
-    #        installed_packages.append(dist)
+    # Installation listing
+    installed_packages = []
+    for dist in find_installed_package(package_version):
+        if dist['Name'] == package_version.name:
+            try:
+                dist['version'] = LooseVersion(dist['Version'])
+                cache_candidates.append(dist)
+            except ValueError:
+                continue
+            installed_packages.append(dist)
 
     candidates  = [(dist['version'], 'cache', dist)\
                    for dist in cache_candidates]
     candidates += [(dist['version'], 'repository', dist)\
                    for dist in repo_candidates]
-    #candidates += [(dist['version'], 'installed', dist)\
-            #for dist in installed_packages]
+    candidates += [(dist['version'], 'installed', dist)\
+                   for dist in installed_packages]
 
     candidates.sort(key=itemgetter(0))
 
@@ -177,9 +174,8 @@ def prepare(package_spec):
                     return prepare_code.NotFound
                 else:
                     continue
-        try:
-            dist = Dist(str(dist_loc))
-        except ArchiveNotSupported:
+        dist = Dist(str(dist_loc))
+        if dist == None:
             if not candidates:
                 unretrievables.append((prepare_code.BadArchive, package_spec))
                 return prepare_code.BadArchive
@@ -228,16 +224,16 @@ def install():
     for origin, dist, parsed_name in packages_to_install:
         print "installing %s %s" % (parsed_name['name'],\
                                     parsed_name['version']),
-        try:
-            ret = dist.install()
-        except ArchiveNotSupported:
-            print " ... Failed: ",
-            print "Unable to extract files from archive"
+        ret = dist.install()
         if ret == 0:
             print " ... OK"
+            continue
+
+        print " ... Failed: ",
+        if ret == -1:
+            print "Unable to extract files from archive"
         else:
-            print " ... Failed: ",
-            print " error code : %d", ret
+            print "error code : %d", ret
 
 
 

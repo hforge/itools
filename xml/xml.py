@@ -119,7 +119,8 @@ def stream_to_str(stream, encoding='UTF-8'):
                     '<?xml version="%s" encoding="%s" standalone="%s"?>'
                     % (version, encoding, standalone))
         elif event == DOCUMENT_TYPE:
-            data.append(value)
+            name, doctype = value
+            data.append(get_doctype(name, doctype))
         elif event == CDATA:
             data.append('<![CDATA[%s]]>' % value)
         else:

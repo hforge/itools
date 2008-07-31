@@ -53,7 +53,7 @@ class LOCK(RequestMethod):
 
         # (1) The requested resource
         cls.find_resource(server, context)
-        resource = context.object
+        resource = context.resource
 
         # (2) Access Control
         ac = resource.get_access_control()
@@ -104,7 +104,7 @@ class UNLOCK(RequestMethod):
 
         # (1) The requested resource
         cls.find_resource(server, context)
-        resource = context.object
+        resource = context.resource
 
         # (2) Access Control
         ac = resource.get_access_control()
@@ -164,7 +164,7 @@ class PUT(RequestMethod):
 
         # (1) The requested resource
         cls.find_resource(server, context)
-        resource = context.object
+        resource = context.resource
 
         # (2) Access Control
         ac = resource.get_access_control()

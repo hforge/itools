@@ -50,17 +50,17 @@ class BaseView(object):
 
     #######################################################################
     # Caching
-    def get_mtime(self, model):
+    def get_mtime(self, resource):
         return None
 
 
     #######################################################################
     # Request methods
-    def GET(self, model, context):
+    def GET(self, resource, context):
         raise NotImplementedError
 
 
-    def POST(self, model, context):
+    def POST(self, resource, context):
         raise NotImplementedError
 
 
@@ -70,11 +70,11 @@ class BaseForm(BaseView):
     schema = {}
 
 
-    def get_schema(self, model):
+    def get_schema(self, resource):
         return self.schema
 
 
-    def _get_form(self, model, context):
+    def _get_form(self, resource, context):
         """Form checks the request form and collect inputs consider the
         schema.  This method also checks the request form and raise an
         FormError if there is something wrong (a mandatory field is missing,
@@ -84,7 +84,7 @@ class BaseForm(BaseView):
           {'toto': Unicode(mandatory=True, multiple=False, default=u'toto'),
            'tata': Unicode(mandatory=True, multiple=False, default=u'tata')}
         """
-        schema = self.get_schema(model)
+        schema = self.get_schema(resource)
 
         values = {}
         invalid = []
@@ -103,10 +103,10 @@ class BaseForm(BaseView):
         return values
 
 
-    def POST(self, model, context):
+    def POST(self, resource, context):
         # (1) Automatically validate and get the form input (from the schema).
         try:
-            form = self._get_form(model, context)
+            form = self._get_form(resource, context)
         except FormError:
             context.message = MSG_MISSING_OR_INVALID
             return self.GET
@@ -123,7 +123,7 @@ class BaseForm(BaseView):
         method = getattr(self, action, None)
         if method is None:
             raise NotImplementedError
-        goto = method(model, context, form)
+        goto = method(resource, context, form)
 
         # (4) Return
         if goto is None:
@@ -137,21 +137,21 @@ class STLView(BaseView):
     template = None
 
 
-    def get_namespace(self, model, context, query=None):
+    def get_namespace(self, resource, context, query=None):
         return {}
 
 
-    def GET(self, model, context):
+    def GET(self, resource, context):
         if self.template is None:
             raise NotImplementedError
 
         # XXX Some subclasses do not have a query parameter on get_namespace
         query = self.get_query(context)
         if query:
-            namespace = self.get_namespace(model, context, query)
+            namespace = self.get_namespace(resource, context, query)
         else:
-            namespace = self.get_namespace(model, context)
-        handler = model.get_object(self.template)
+            namespace = self.get_namespace(resource, context)
+        handler = resource.get_object(self.template)
         return stl(handler, namespace)
 
 

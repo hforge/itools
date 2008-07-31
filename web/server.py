@@ -584,7 +584,7 @@ class RequestMethod(object):
         # (8) Build response, when postponed (useful for POST methods)
         if isinstance(context.entity, (FunctionType, MethodType)):
             try:
-                context.entity = context.entity(context.object, context)
+                context.entity = context.entity(context.resource, context)
             except:
                 cls.internal_server_error(server, context)
             server.abort_transaction(context)
@@ -606,10 +606,10 @@ class RequestMethod(object):
 
     @classmethod
     def find_resource(cls, server, context):
-        """Sets 'context.object' to the requested resource if it exists.
+        """Sets 'context.resource' to the requested resource if it exists.
 
         Otherwise sets 'context.status' to 404 (not found error) and
-        'context.object' to the latest resource in the path that does exist.
+        'context.resource' to the latest resource in the path that does exist.
         """
         resource = context.site_root
         for name in context.path:
@@ -620,13 +620,13 @@ class RequestMethod(object):
                 context.view_name = 'not_found'
                 break
 
-        context.object = resource
+        context.resource = resource
 
 
     @classmethod
     def find_view(cls, server, context):
         query = context.uri.query
-        context.view = context.object.get_view(context.view_name, **query)
+        context.view = context.resource.get_view(context.view_name, **query)
 
 
     @classmethod
@@ -635,7 +635,7 @@ class RequestMethod(object):
         resource.
         """
         user = context.user
-        resource = context.object
+        resource = context.resource
         view = context.view
 
         # Get the check-point
@@ -723,7 +723,7 @@ class GET(RequestMethod):
 
     @classmethod
     def render_view(cls, server, context):
-        resource = context.object
+        resource = context.resource
         view = context.view
 
         # Cache: check modification time
@@ -788,7 +788,7 @@ class POST(RequestMethod):
 
     @classmethod
     def render_view(cls, server, context):
-        resource = context.object
+        resource = context.resource
         view = context.view
 
         # Call the method

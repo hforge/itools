@@ -70,6 +70,10 @@ class BaseForm(BaseView):
     schema = {}
 
 
+    def get_form_title(self):
+        return self.form_title
+
+
     def get_schema(self, resource):
         return self.schema
 

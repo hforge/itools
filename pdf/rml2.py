@@ -66,10 +66,10 @@ FONT_STYLE = ('b', 'big', 'i', 'small', 'tt')
 DEPRECATED = ('u',)
 INLINE = FONT_STYLE + PHRASE + SPECIAL + DEPRECATED
 
-FONT = {'monospace': 'courier', 'times-new-roman': 'times-roman',
-        'arial': 'helvetica', 'serif': 'times',
-        'sans-serif': 'helvetica', 'helvetica': 'helvetica',
-        'symbol': 'symbol'}
+FONT = {'monospace': 'Courier', 'times-new-roman': 'Times-Roman',
+        'arial': 'Helvetica', 'serif': 'Times',
+        'sans-serif': 'Helvetica', 'helvetica': 'Helvetica',
+        'symbol': 'Symbol'}
 
 # ALIGNMENT
 ALIGNMENTS = {'LEFT': TA_LEFT, 'RIGHT': TA_RIGHT, 'CENTER': TA_CENTER,
@@ -1223,7 +1223,7 @@ def build_style(context, element, style_css):
             style_attr['borderWidth'] = style_css[key]
         elif key == 'font-family':
             family = style_css['font-family']
-            style_attr['fontName'] = FONT.get(family, 'helvetica')
+            style_attr['fontName'] = FONT.get(family, 'Helvetica')
 
 
     # Overload the attributes values

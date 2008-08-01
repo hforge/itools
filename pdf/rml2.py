@@ -1224,6 +1224,21 @@ def create_paragraph(context, element, content, style_css = {}):
     return widget
 
 
+def border_style(context, value):
+    tab = value.split()
+    style_attrs = {}
+    for i in tab:
+        size = context.format_size(i, None)
+        if size:
+            style_attrs['borderWidth'] = size
+            continue
+        color = get_color_as_hexa(i, None)
+        if color:
+            style_attrs['borderColor'] = color
+            continue
+    return style_attrs
+
+
 def build_style(context, element, style_css):
     style_attr = {}
     # The default style is Normal
@@ -1236,7 +1251,7 @@ def build_style(context, element, style_css):
         elif key in ('background', 'background-color'):
             style_attr['backColor'] = get_color_as_hexa(style_css[key])
         elif key == 'border':
-            style_attr['borderWidth'] = style_css[key]
+            style_attr.update(border_style(context, style_css[key]))
         elif key == 'font-family':
             family = style_css['font-family']
             style_attr['fontName'] = FONT.get(family, 'Helvetica')
@@ -1668,7 +1683,7 @@ def build_start_tag(tag_name, attributes={}):
     return '<%s%s>' % (tag, attr_str)
 
 
-def get_color_as_hexa(value):
+def get_color_as_hexa(value, default='#000000'):
     value = value.strip()
     if value.startswith('rgb'):
         value = value.lstrip('rgb(').rstrip(')').split(',')
@@ -1692,7 +1707,7 @@ def get_color_as_hexa(value):
             value = '#%s%s%s' % (r, g, b)
     else:
         # Warning getAllNamedColors() uses a singleton
-        value = colors.getAllNamedColors().get(value, '#000000')
+        value = colors.getAllNamedColors().get(value, default)
     return value
 
 

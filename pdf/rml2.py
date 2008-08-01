@@ -1217,10 +1217,14 @@ def build_style(context, element, style_css):
     for key in style_css.keys():
         if key == 'color':
             style_attr['textColor'] = get_color_as_hexa(style_css[key])
-        elif key == 'background':
+        elif key in ('background', 'background-color'):
             style_attr['backColor'] = get_color_as_hexa(style_css[key])
         elif key == 'border':
             style_attr['borderWidth'] = style_css[key]
+        elif key == 'font-family':
+            family = style_css['font-family']
+            style_attr['fontName'] = FONT.get(family, 'helvetica')
+
 
     # Overload the attributes values
     for key, attr_value in element[1].iteritems():

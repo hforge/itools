@@ -1241,6 +1241,10 @@ def build_style(context, element, style_css):
     parent_style_name = 'Normal'
     bulletText = None
 
+    PADDINGS = {'padding-top' : 'spaceBefore', 'padding-bottom': 'spaceAfter',
+                'padding-left': 'leftIndent', 'padding-right': 'rightIndent'}
+    #FIXME must be moved in default css
+    style_attr['spaceAfter'] = 0.2 * cm
     for key in style_css.keys():
         if key == 'color':
             style_attr['textColor'] = get_color_as_hexa(style_css[key])
@@ -1252,6 +1256,15 @@ def build_style(context, element, style_css):
             style_attr['fontName'] = FONT.get(style_css[key], 'Helvetica')
         elif key == 'font-size':
             style_attr['fontSize'] = font_value(style_css[key])
+        elif key == 'padding':
+            value = context.format_size(style_css[key], None)
+            if value:
+                for attr_key in PADDINGS.values():
+                    style_attr[attr_key] = value
+        elif key in PADDINGS.keys():
+            value = context.format_size(style_css[key], None)
+            if value:
+                style_attr[PADDINGS[key]] = value
 
     # Overload the attributes values
     for key, attr_value in element[1].iteritems():

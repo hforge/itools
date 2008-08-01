@@ -91,13 +91,19 @@ class Context(object):
     def __init__(self):
         self.tmp_dir = tempfile.mkdtemp()
         self.init_base_style_sheet()
-        self.image_not_found_path = get_abspath(globals(), 'missing.png')
+        v_globals = globals()
+        self.image_not_found_path = get_abspath(v_globals, 'missing.png')
         self.size = {'in': inch, 'cm': cm, 'mm': mm, 'pica': pica, 'px': 1}
         self.toc_place = None
         self.cpt_toc_ref = 0
         self.toc_high_level = 3
         self.current_object_path = []
         self.css = None
+        css_file = get_abspath(v_globals, 'html.css')
+        if vfs.exists(css_file):
+            data = vfs.open(css_file).read()
+            self.add_current_style(data)
+            self.css = css.CssStylesheet.from_css(data)
         self.anchor = []
 
 

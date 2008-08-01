@@ -85,6 +85,7 @@ MSG_ROW_ERROR = 'Table error : too many row at its line: %s'
 HEADING = ('h1', 'h2', 'h3', 'h4', 'h5', 'h6')
 
 
+
 class Context(object):
 
 
@@ -100,10 +101,7 @@ class Context(object):
         self.current_object_path = []
         self.css = None
         css_file = get_abspath(v_globals, 'html.css')
-        if vfs.exists(css_file):
-            data = vfs.open(css_file).read()
-            self.add_current_style(data)
-            self.css = css.CssStylesheet.from_css(data)
+        self.add_css_from_file(css_file)
         self.anchor = []
 
 
@@ -195,6 +193,12 @@ class Context(object):
         else:
             tmp = css.CssStylesheet.from_css(stylesheet_text)
             self.css = self.css.merge(tmp)
+
+
+    def add_css_from_file(self, filename):
+        if vfs.exists(filename):
+            data = vfs.open(filename).read()
+            self.add_current_style(data)
 
 
     def get_css_props(self):
@@ -461,11 +465,7 @@ def head_stream(stream, _tag_name, _attributes, context):
                     rel = attributes.get((URI, 'rel'))
                     type = attributes.get((URI, 'type'))
                     if rel == 'stylesheet' and type == 'text/css':
-                        filename = attributes[(URI, 'href')]
-                        if vfs.exists(filename):
-                            data = vfs.open(filename).read()
-                            context.add_current_style(data)
-
+                        context.add_css_from_file(attributes[(URI, 'href')])
             elif tag_name == 'style':
                 continue
             else:

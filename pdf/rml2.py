@@ -205,7 +205,8 @@ class Context(object):
         if self.css is None:
             return {}
         else:
-            return self.css.props(' '.join(self.current_object_path))
+            path = ' '.join(self.current_object_path)
+            return self.css.get_properties_str(path)
 
 
     def path_on_start_event(self, tag_name, attributes):

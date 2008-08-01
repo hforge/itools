@@ -1163,10 +1163,7 @@ def build_span_attributes(attributes):
             if attrs.has_key('color'):
                 color = attrs['color']
                 if color is not None:
-                    if color.startswith('rgb'):
-                        attrib[(URI, 'color')] = get_color_hexa(color)
-                    else:
-                        attrib[(URI, 'color')] = color
+                    attrib[(URI, 'color')] = get_color_as_hexa(color)
             if attrs.has_key('font-family'):
                 family = attrs.pop('font-family')
                 attrib[(URI, 'face')] = FONT.get(family, 'helvetica')
@@ -1219,9 +1216,9 @@ def build_style(context, element, style_css):
 
     for key in style_css.keys():
         if key == 'color':
-            style_attr['textColor'] = style_css[key]
+            style_attr['textColor'] = get_color_as_hexa(style_css[key])
         elif key == 'background':
-            style_attr['backColor'] = style_css[key]
+            style_attr['backColor'] = get_color_as_hexa(style_css[key])
         elif key == 'border':
             style_attr['borderWidth'] = style_css[key]
 
@@ -1366,7 +1363,6 @@ class Table_Content(object):
         Allow to add, to manipulate table content and to create platypus
         widget
     """
-
 
 
     def __init__(self, context, parent_style=None):
@@ -1650,33 +1646,36 @@ def build_start_tag(tag_name, attributes={}):
     return '<%s%s>' % (tag, attr_str)
 
 
-def get_color_hexa(hex):
-    value = hex.lstrip('rgb(').rstrip(')').split(',')
-    value = [int(i) for i in value]
-    tmp = []
-    if len(value) == 3:
-        # RGB
-        for i in value:
-            if i < 256:
-                tmp.append('%02x' % i)
-            else:
-                print 'Warning the color "%s" is not well formed ' % hex
-                return None
-    return '#%s' % ''.join(tmp)
+def get_color_as_hexa(value):
+    value = value.strip()
+    if value.startswith('rgb'):
+        value = value.lstrip('rgb(').rstrip(')').split(',')
+        value = [ int(i) for i in value ]
+        tmp = []
+        if len(value) == 3:
+            # RGB
+            for i in value:
+                if i < 256:
+                    tmp.append('%02x' % i)
+                else:
+                    print 'Warning the color "%s" is not well formed ' % hex
+                    return None
+        value = '#%s' % ''.join(tmp)
+    elif value.startswith('#'):
+        if len(value) == 4:
+            # #aba -> #aabbaa
+            r = value[1] * 2
+            g = value[2] * 2
+            b = value[3] * 2
+            value = '#%s%s%s' % (r, g, b)
+    else:
+        # Warning getAllNamedColors() uses a singleton
+        value = colors.getAllNamedColors().get(value, '#000000')
+    return value
 
 
 def get_color(value):
-    value = value.strip()
-    if value:
-        if value.startswith('rgb'):
-            value = get_color_hexa(value)
-        elif value.startswith('#'):
-            if len(value) == 4:
-                # #aba -> #aabbaa
-                r = value[1] * 2
-                g = value[2] * 2
-                b = value[3] * 2
-                value = '#%s%s%s' % (r, g, b)
+    value = get_color_as_hexa(value)
     color = colors.toColor(value, colors.black)
     return color
 

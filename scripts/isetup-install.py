@@ -39,14 +39,14 @@ from sys import path, exit
 # Import from itools
 from itools import __version__
 import itools.http
-from itools.isetup import parse_package_name, download, list_eggs_info, Dist
-from itools.isetup import get_repository, EXTENSIONS
+from itools.isetup import parse_package_name, download, get_installed_info
+from itools.isetup import get_repository, EXTENSIONS, Dist
 from itools.vfs import exists, is_folder, get_names, make_folder
 from itools import vfs
 
 
-# This is what is called Packages/
-TMP_DIR = 'Packages'
+# See --cache-dir option description
+TMP_DIR = '/tmp/Packages'
 PYPI_REPO = 'http://pypi.python.org/simple/'
 YES = ('y', 'Y', 'yes', 'YES', 'ok', 'Yes', 'yep')
 
@@ -58,8 +58,7 @@ class Enumerate(object):
             setattr(self, name, number)
 
 
-prepare_code = Enumerate('NoAvailableCandidate Ok BadArchive BadName '\
-                         'AlreadyInstalled NotFound')
+prepare_code = Enumerate('NoAvailableCandidate Ok BadArchive BadName NotFound')
 install_code = Enumerate('Ok SetupError UnknownError')
 
 # List of unretrievables packages
@@ -70,31 +69,35 @@ packages_to_install = []
 
 
 def find_installed_package(package_version):
+    """Returns informations from package installed in the closest site
+    directory possible, (eg. the package in use in this python).
+    """
     # find the site-packages absolute path
-    # The behaviour may change, why not look in every sys.path folder?
     sites = set([])
     for dir in path:
-        if is_folder(dir):
-            sites.add(dir)
         if 'site-packages' in dir:
             dir = dir.split(sep)
             sites.add(sep.join(dir[:dir.index('site-packages')+1]))
 
     # yield compatible packages
     for site in sites:
-        eggs = list_eggs_info(site, package_version.name)
-        for egg in eggs:
-            try:
-                if package_version.satisfied_by(egg['Version']):
-                    yield egg
+        infos = get_installed_info(site, package_version.name)
+        if infos == None:
+            continue
+        try:
+            new_version = LooseVersion(infos['version'])
+        except ValueError:
             # if a package installed gives us an bogus version don't crash
-            except ValueError:
-                pass
+            new_version = '?'
+        infos['version'] = new_version
+        return infos
+    return None
 
 
 def prepare(package_spec):
     """Work with a few globals variables, like repositories, ...
     """
+    # Parse the version specifications
     try:
         package_version = VersionPredicate(package_spec)
     except ValueError:
@@ -130,39 +133,19 @@ def prepare(package_spec):
             except ValueError:
                 continue
 
-
-    # Installation listing
-    installed_packages = []
-    for dist in find_installed_package(package_version):
-        if dist['Name'] == package_version.name:
-            try:
-                dist['version'] = LooseVersion(dist['Version'])
-                cache_candidates.append(dist)
-            except ValueError:
-                continue
-            installed_packages.append(dist)
-
+    # Candidates sorting
     candidates  = [(dist['version'], 'cache', dist)\
                    for dist in cache_candidates]
     candidates += [(dist['version'], 'repository', dist)\
                    for dist in repo_candidates]
-    candidates += [(dist['version'], 'installed', dist)\
-                   for dist in installed_packages]
 
     candidates.sort(key=itemgetter(0))
 
-    if len(candidates) == 0:
-        return prepare_code.NoAvailableCandidate
-
     while candidates:
+        # Iterate over candidates until "usable" package found
         bestmatch_version, bestmatch_from, bestmatch = candidates.pop()
 
-        if bestmatch_from == 'installed':
-            print '%s %s is already the newest version.' % (bestmatch['Name'],
-                                                            bestmatch_version)
-            return prepare_code.AlreadyInstalled
-
-        elif bestmatch_from == 'cache':
+        if bestmatch_from == 'cache':
             dist_loc = join(CACHE_DIR, bestmatch['file'])
         elif bestmatch_from == 'repository':
             try:
@@ -181,36 +164,83 @@ def prepare(package_spec):
                 return prepare_code.BadArchive
             else:
                 continue
-        if not dist.fromsetuptools and dist.has_metadata('requires'):
-            requirements = dist.get_metadata('requires').split(',')
+
+        # At this point the package is thought to be ok
+        # So we can recursvely parse its requirements
+        if not dist.fromsetuptools and dist.has_metadata('Requires'):
+            requirements = dist.get_metadata('Requires').split(',')
             for requirement in requirements:
                 return_code = prepare(requirement)
                 if return_code != prepare_code.Ok:
                     unretrievables.append((return_code, requirement))
-        packages_to_install.append((bestmatch_from, dist, bestmatch))
+
+
+        installed_package = find_installed_package(package_version)
+
+        if installed_package == None:
+            packages_to_install.append(('N', None,
+                                        bestmatch_from, dist, bestmatch))
+        elif installed_package['version'] == bestmatch_version:
+            packages_to_install.append(('R', installed_package['version'],
+                                        bestmatch_from, dist, bestmatch))
+        elif installed_package['version'] < bestmatch_version:
+            packages_to_install.append(('U', installed_package['version'],
+                                        bestmatch_from, dist, bestmatch))
+        elif installed_package['version'] > bestmatch_version:
+            packages_to_install.append(('D', installed_package['version'],
+                                        bestmatch_from, dist, bestmatch))
+
         return prepare_code.Ok
 
-
-
-def summary(pretend=False, ask=False):
-    if pretend:
-        print "Would have installed:"
     else:
-        print "Will install:"
+        # No candidates
+        return prepare_code.NoAvailableCandidate
 
-    for origin, dist, parsed_name in packages_to_install:
-        print "%s %s (from %s)" % (parsed_name['name'],
-                                   parsed_name['version'],
-                                   origin)
+
+
+def summary(pretend=False, ask=False, force=False):
+    """Prints a summary of operations that will come next
+    """
+    if len(packages_to_install) > 0:
+        if pretend:
+            print "Would have installed, in order:"
+        else:
+            print "Will install, in order:"
+        print "Note : some packages may install other dependencies themself"
+
+        for status, installed, origin, dist, infos in packages_to_install:
+            print "[%s] %-18.18s [%-12.12s] (from: %s)" % (status,
+                                                            infos['name'],
+                                                            infos['version'],
+                                                            origin),
+            if installed:
+                print " [%-12.12s]" % installed
+            else:
+                print
 
     if len(unretrievables) > 0:
-        print "But some dependencies have not been found:"
+        print
+        print "Following packages have not been found:"
 
         for error, dep in unretrievables:
-            print "%s (error code: %d)" % (dep, error)
+            if error == prepare_code.NoAvailableCandidate:
+                print "%s: no package found in repositories" % dep
+            elif error == prepare_code.BadArchive:
+                print "%s: the package archive is malformed/unsupported" % dep
+            elif error == prepare_code.BadName:
+                print "%s: could not understand package name" % dep
+            elif error == prepare_code.NotFound:
+                print "%s: present in repository, but unable to download" % dep
+            else:
+                print "%s (error code: %d)" % (dep, error)
 
-        print "Please ensure these packages are correctly installed in your "\
-                "system."
+        if force:
+            print "Please ensure these packages are correctly installed",
+            print " in your system."
+            print
+        else:
+            print "Cannot install the package"
+            exit(1)
 
     if not pretend:
         if ask and raw_input("Is this ok?(y/N) ") not in YES:
@@ -218,12 +248,10 @@ def summary(pretend=False, ask=False):
         install()
 
 
-
-
 def install():
-    for origin, dist, parsed_name in packages_to_install:
-        print "installing %s %s" % (parsed_name['name'],\
-                                    parsed_name['version']),
+    for status, installed,origin, dist, infos in packages_to_install:
+        print "installing %s %s" % (infos['name'],\
+                                    infos['version']),
         ret = dist.install()
         if ret == 0:
             print " ... OK"
@@ -261,6 +289,11 @@ if __name__ == '__main__':
                   dest="ask", default=False, action="store_true",
                   help="Ask before installing")
 
+    parser.add_option("-f", "--force",
+                  dest="force", default=False, action="store_true",
+                  help="Force installation even if some dependencies are not"
+                      " found")
+
 
     (options, args) = parser.parse_args()
 
@@ -283,5 +316,5 @@ if __name__ == '__main__':
         print "%s has not been found" % PACKAGE_SPEC
         exit(1)
 
-    summary(pretend=options.pretend, ask=options.ask)
+    summary(pretend=options.pretend, ask=options.ask, force=options.force)
 

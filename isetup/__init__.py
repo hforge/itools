@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from isetup
-from distribution import Dist
+from distribution import Dist, ArchiveNotSupported
 from metadata import parse_pkginfo, get_package_version, SetupFile
 from packages import list_packages_info, get_installed_info
 from repository import parse_package_name, download, get_repository, EXTENSIONS
@@ -36,6 +36,8 @@ __all__ = [
     'get_repository',
     # Distribution class
     'Dist',
+    # Exceptions
+    'ArchiveNotSupported',
     # List of supported extensions
     'EXTENSIONS',
     ]

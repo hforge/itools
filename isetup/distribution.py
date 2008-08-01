@@ -30,6 +30,12 @@ from metadata import parse_pkginfo
 from repository import EXTENSIONS
 
 
+class ArchiveNotSupported(Exception):
+    """Raised when unable to open an archive
+    """
+
+
+
 class Dist(object):
     """abstract distributions like .egg, .zip, .tar.gz ...
     """
@@ -39,7 +45,7 @@ class Dist(object):
         self.fromsetuptools = False
         self.bundle = init_bundle(location)
         if self.bundle == None:
-            return None
+            raise ArchiveNotSupported
         self.location = location
 
 

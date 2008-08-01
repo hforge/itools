@@ -57,10 +57,11 @@ encoding = 'UTF-8'
 URI = 'http://www.w3.org/1999/xhtml'
 # Mapping HTML -> REPORTLAB
 P_FORMAT = {'a': 'a', 'em': 'i', 'b': 'b', 'span': 'font', 'sub': 'sub',
-            'i': 'i', 'img': 'img', 'big': 'font', 'tt': 'font', 'p': 'para',
-            'u': 'u', 'sup': 'super', 'small': 'font', 'strong': 'b'}
+            'img': 'img', 'i': 'i', 'big': 'font', 'tt': 'font', 'p': 'para',
+            'code': 'font', 'u': 'u', 'sup': 'super', 'small': 'font',
+            'strong': 'b'}
 SPECIAL = ('a', 'br', 'img', 'span', 'sub', 'sup')
-PHRASE = ('em', 'strong')
+PHRASE = ('code', 'em', 'strong')
 FONT_STYLE = ('b', 'big', 'i', 'small', 'tt')
 DEPRECATED = ('u',)
 INLINE = FONT_STYLE + PHRASE + SPECIAL + DEPRECATED
@@ -1609,7 +1610,7 @@ def build_attributes(tag_name, attributes):
         attrs = {(URI, 'size'): font_value('120%')}
     elif tag_name == 'small':
         attrs = {(URI, 'size'): font_value('80%')}
-    elif tag_name == 'tt':
+    elif tag_name in ('code', 'tt'):
         attrs = {(URI, 'face'): FONT['monospace']}
     else:
         attrs = {}

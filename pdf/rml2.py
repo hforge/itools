@@ -450,6 +450,16 @@ def head_stream(stream, _tag_name, _attributes, context):
                                 informations[name] = normalize(attr_content)
             elif tag_name == 'title':
                 continue
+            elif tag_name == 'link':
+                if exist_attribute(attributes, ['rel', 'type', 'href']):
+                    rel = attributes.get((URI, 'rel'))
+                    type = attributes.get((URI, 'type'))
+                    if rel == 'stylesheet' and type == 'text/css':
+                        filename = attributes[(URI, 'href')]
+                        if vfs.exists(filename):
+                            data = vfs.open(filename).read()
+                            context.add_current_style(data)
+
             elif tag_name == 'style':
                 continue
             else:

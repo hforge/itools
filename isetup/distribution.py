@@ -26,7 +26,7 @@ from zipfile import ZipFile, error as zip_error, LargeZipFile
 # Import from itools
 from itools.uri import Path
 from itools.vfs import exists, make_file
-from metadata import egg_info
+from metadata import parse_pkginfo
 from repository import EXTENSIONS
 
 
@@ -48,7 +48,7 @@ class Dist(object):
             pkg_info = self.bundle.find_lowest_file('PKG-INFO')
             if pkg_info != None:
                 self._metadata = \
-                        egg_info(self.bundle.read_file(pkg_info))
+                        parse_pkginfo(self.bundle.read_file(pkg_info))
             else:
                 self._metadata = {}
             setuppy = self.bundle.find_lowest_file('setup.py')

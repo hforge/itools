@@ -17,14 +17,19 @@
 
 # Import from isetup
 from distribution import Dist
-from metadata import list_eggs_info, egg_info
+from metadata import parse_pkginfo, get_package_version, SetupFile
+from packages import list_packages_info, get_installed_info
 from repository import parse_package_name, download, get_repository, EXTENSIONS
 
 
 __all__ = [
     # Metadata functions
-    'list_eggs_info',
-    'egg_info',
+    'parse_pkginfo',
+    'get_package_version',
+    'SetupFile',
+    # Packages infos functions
+    'list_packages_info',
+    'get_installed_info',
     # Repositories functions and classses
     'parse_package_name',
     'download',

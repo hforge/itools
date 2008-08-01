@@ -17,13 +17,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from sys import path
 from optparse import OptionParser
 from os import sep
+from sys import exit, path
 
 # Import from itools
 from itools import __version__
-from itools.isetup import list_eggs_info
+from itools.isetup import list_packages_info
 
 
 if __name__ == '__main__':
@@ -50,17 +50,25 @@ if __name__ == '__main__':
             sites.add(sep.join(dir[:dir.index('site-packages')+1]))
 
     # List available modules
+    found_count = 0
     for site in sites:
-        eggs = list_eggs_info(site, module_name)
-        if len(eggs) > 0:
-            print "Matching packages in %s :" % site
-            for egg in eggs:
-                print "* %-15.15s" % egg['Name'],
-                if egg['is_imported']:
-                    print "Import: OK"
-                else:
-                    print "Import: NOT OK"
-                del egg['is_imported']
-                for key in egg:
-                    print "%-18.18s%s" % (key + ':', egg[key])
+        infos = list_packages_info(site, module_name, True)
+        if len(infos) == 0:
+            continue
+        print "Package(s) for %s :" % site
+        found_count += len(infos)
+        for package_name, info in infos:
+            print "* %-15.15s" % info['name'],
+            if info['is_imported']:
+                print "Import: OK"
+            else:
+                print "Import: NOT OK"
+            del info['is_imported']
+            for key in info:
+                print "%-18.18s%s" % (key + ':', info[key])
             print
+
+    if found_count == 0:
+        print "No package found for %s" % module_name
+    else:
+        print "Found %d package(s) corresponding to search" % found_count

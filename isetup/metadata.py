@@ -15,20 +15,43 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from distutils.versionpredicate import split_provision
-from os.path import join, isfile
+from os.path import join
 
 # Import from itools
-from itools.vfs import get_names
+from itools.datatypes import String, LanguageTag, Tokens
+from itools.handlers import ConfigFile
+from itools.vfs import exists, is_folder
+
+
+class SetupFile(ConfigFile):
+    """abstract a setup.conf file
+    """
+
+    schema = {
+        'name': String(default=''),
+        'title': String(default=''),
+        'url': String(default=''),
+        'author_name': String(default=''),
+        'author_email': String(default=''),
+        'license': String(default=''),
+        'description': String(default=''),
+        'packages': Tokens(default=()),
+        'requires': Tokens(default=()),
+        'provides': Tokens(default=()),
+        'scripts': String(default=''),
+        'source_language': LanguageTag(default=('en', 'EN')),
+        'target_languages': Tokens(default=(('en', 'EN'),))
+    }
 
 
 # Note : some .egg-info are directories and not files
-def egg_info(data):
+# XXX Implement it by subclassing itools.handlers.TextFile
+def parse_pkginfo(data):
     """Return a dict containing information from PKG-INFO formated data
     like .egg-info files.
 
     >>> filename = '/usr/lib/python2.5/site-packages/pexpect-2.1.egg-info'
-    >>> egg_info(open(filename).read())
+    >>> parse_pkginfo(open(filename).read())
     {'Author': 'Noah Spurrier', 'Author-email': 'noah@noah.org', ...}
     """
     attributes = {}
@@ -49,50 +72,36 @@ def egg_info(data):
     return attributes
 
 
-def list_eggs_info(dir, module_name='', check_import=True):
-    """For every .egg-info in a directory, return its informations and test if
-    import is possible.
+def parse_setupconf(package_dir):
+    """Return a dict containing information from setup.conf in a itools package
+    plus the version of the package
     """
-    eggs = []
-    # sort the files
-    eggs_info = [egg for egg in get_names(dir) if egg.endswith('.egg-info')]
-    eggs_info.sort(lambda a, b: cmp(a.upper(),b.upper()))
+    attributes = {}
+    if not is_folder(package_dir):
+        return attributes
+    if not exists(join(package_dir, "setup.conf")):
+        return attributes
+    config = SetupFile(join(package_dir, "setup.conf"))
+    for attribute in config.schema:
+        attributes[attribute] = config.get_value(attribute)
+    attributes['version'] = get_package_version(attributes['name'])
+    return attributes
 
-    for egg in eggs_info:
-        if isfile(join(dir, egg)):
-            infos = egg_info(open(join(dir, egg)).read())
+
+def get_package_version(package_name):
+    try:
+        mod = __import__(package_name)
+        if hasattr(mod, 'version'):
+            if hasattr(mod.version, "__call__"):
+                return mod.version()
+            return mod.version
+        elif hasattr(mod, '__version__'):
+            if hasattr(mod.__version__, "__call__"):
+                return mod.__version__()
+            return mod.__version__
         else:
-            infos = {}
-        # for the time being only file .egg-info are supported
-        if (not isfile(join(dir, egg)) or
-           module_name.upper() not in infos['Name'].upper()):
-            continue
+            return '?'
+    except ImportError:
+        return '?'
 
-        if check_import:
-            # try the import
-            # if the project filled Provides field use this one
-            if 'Provides' in infos:
-                try:
-                    for provided_module in infos['Provides'].split(','):
-                        provided_module = split_provision(provided_module)
-                        provided_module_name = provided_module[0]
-                        provided_module_ver = provided_module[1]
-                        __import__(provided_module_name)
-                except:
-                    is_imported = False
-                else:
-                    is_imported = True
-            else:
-                # We can try the name if the project has not filled Provides
-                # field
-                try:
-                    __import__(infos['Name'])
-                except:
-                    is_imported = False
-                else:
-                    is_imported = True
-
-            infos['is_imported'] = is_imported
-        eggs.append(infos)
-    return eggs
 

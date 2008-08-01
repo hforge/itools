@@ -32,7 +32,7 @@ from itools.uri import Path
 from itools.uri.uri import get_cwd
 from itools.vfs import vfs
 from itools.xml import (XMLParser, START_ELEMENT, END_ELEMENT, TEXT,
-                        get_end_tag)
+                        get_start_tag, get_end_tag)
 import itools.http
 
 #Import from the reportlab Library
@@ -41,7 +41,7 @@ from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT, TA_JUSTIFY
 from reportlab.lib.pagesizes import LETTER
 from reportlab.lib.styles import(getSampleStyleSheet, ParagraphStyle)
 from reportlab.lib.units import inch, cm, mm, pica
-from reportlab.platypus import (Paragraph, SimpleDocTemplate, Preformatted,
+from reportlab.platypus import (Paragraph, SimpleDocTemplate, XPreformatted,
                                 PageBreak, Image, Indenter, Table)
 from reportlab.platypus import tableofcontents
 from reportlab.platypus.doctemplate import PageTemplate, BaseDocTemplate
@@ -742,7 +742,6 @@ def pre_stream(stream, tag_name, attributes, context):
     styleN = context.get_style('Normal')
     content = []
     has_content = False
-    stack.append((tag_name, attributes))
 
     while True:
         event, value, line_number = stream_next(stream)
@@ -751,8 +750,9 @@ def pre_stream(stream, tag_name, attributes, context):
 
         #### START ELEMENT ####
         if event == START_ELEMENT:
-            print MSG_WARNING_DTD % ('document', line_number, tag_name)
-            stack.append((tag_name, attributes))
+            tag_uri, tag_name, attrs = value
+            tag = get_start_tag(tag_uri, tag_name, attrs)
+            content.append(XMLContent.encode(tag))
 
         #### END ELEMENT ####
         elif event == END_ELEMENT:
@@ -760,19 +760,15 @@ def pre_stream(stream, tag_name, attributes, context):
             if tag_name == 'pre':
                 css_style = context.get_css_props()
                 context.path_on_end_event()
-                return create_paragraph(context, stack.pop(), content,
+                return create_paragraph(context, (tag_name, attributes), content,
                                         css_style)
             else:
-                print MSG_WARNING_DTD % ('document', line_number, tag_name)
-                # unknown tag
-                stack.append((tag_name, attributes))
+                content.append(XMLContent.encode(get_end_tag(None, tag_name)))
 
         #### TEXT ELEMENT ####
         elif event == TEXT:
-            if stack:
-                # we dont strip the string --> preformatted widget
-                value = XMLContent.encode(value) # entities
-                content.append(value)
+            # we dont strip the string --> preformatted widget
+            content.append(value)
 
 
 def hr_stream(stream, _tag_name, _attributes, context):
@@ -1211,7 +1207,7 @@ def create_paragraph(context, element, content, style_css = {}):
     style, bulletText = build_style(context, element, style_css)
     if element[0] == 'pre':
         content = ''.join(content)
-        widget = Preformatted(content, style)
+        widget = XPreformatted(content, style)
     else:
         # DEBUG
         #print 0, content

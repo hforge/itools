@@ -994,11 +994,11 @@ def def_list_stream(stream, _tag_name, attributes, context):
         #### END ELEMENT ####
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
+            context.path_on_end_event()
             if tag_name == _tag_name:
                 return story
             else:
                 print '4', MSG_WARNING_DTD % ('document', line_number, tag_name)
-            context.path_on_end_event()
 
 
 

@@ -1008,7 +1008,8 @@ def table_stream(stream, _tag_name, attributes, context):
     stop = (-1, -1)
     if exist_attribute(attributes, ['border']):
         border = get_int_value(attributes.get((URI, 'border')))
-        content.add_style(('GRID', start, stop, border, colors.grey))
+        if border > 0:
+            content.add_style(('GRID', start, stop, border, colors.grey))
     if exist_attribute(attributes, ['align']):
         hAlign = attributes.get((URI, 'align')).upper()
         if hAlign in ['LEFT', 'RIGHT', 'CENTER', 'CENTRE']:

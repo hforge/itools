@@ -1253,11 +1253,9 @@ def build_style(context, element, style_css):
         elif key == 'border':
             style_attr.update(border_style(context, style_css[key]))
         elif key == 'font-family':
-            family = style_css['font-family']
-            style_attr['fontName'] = FONT.get(family, 'Helvetica')
+            style_attr['fontName'] = FONT.get(style_css[key], 'Helvetica')
         elif key == 'font-size':
-            size = style_css['font-size']
-            style_attr['fontSize'] = font_value(size)
+            style_attr['fontSize'] = font_value(style_css[key])
 
     # Overload the attributes values
     for key, attr_value in element[1].iteritems():

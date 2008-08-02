@@ -32,7 +32,7 @@ from traceback import print_exc
 from urllib import unquote
 
 # Import from itools
-from itools.http import Request, Response, HTTPError
+from itools.http import Request, Response, ClientError, NotModified
 from itools.http import BadRequest, Forbidden, NotFound, Unauthorized
 from itools.i18n import init_language_selector
 from itools.uri import Reference, Path
@@ -556,55 +556,6 @@ class Server(object):
 class RequestMethod(object):
 
     @classmethod
-    def handle_request(cls, server, context):
-        # (1) Initialize 'context.commit' (true if the method is not safe)
-        context.commit = (cls.is_safe is False)
-
-        # (2) The requested resource
-        cls.find_resource(server, context)
-
-        # (3) The resource view
-        cls.find_view(server, context)
-
-        # (4) Access Control
-        cls.check_access(server, context)
-
-        # (5) Check the request method is supported
-        cls.check_method(server, context)
-
-        # (6) Render the view
-        cls.render_view(server, context)
-
-        # (7) Close the transaction (commit or abort)
-        if context.status < 400 and context.commit is True:
-            cls.commit_transaction(server, context)
-        else:
-            server.abort_transaction(context)
-
-        # (8) Build response, when postponed (useful for POST methods)
-        if isinstance(context.entity, (FunctionType, MethodType)):
-            try:
-                context.entity = context.entity(context.resource, context)
-            except:
-                cls.internal_server_error(server, context)
-            server.abort_transaction(context)
-
-        # (9) After Traverse hook
-        body = context.entity
-        try:
-            context.site_root.after_traverse(context)
-        except:
-            cls.internal_server_error(server, context)
-
-        # (10) Build and return the response
-        context.response.set_status(context.status)
-        cls.set_body(server, context)
-
-        # (11) Ok
-        return context.response
-
-
-    @classmethod
     def find_resource(cls, server, context):
         """Sets 'context.resource' to the requested resource if it exists.
 
@@ -616,9 +567,8 @@ class RequestMethod(object):
             try:
                 resource = resource.get_object(name)
             except LookupError:
-                context.status = 404
-                context.view_name = 'not_found'
-                break
+                context.resource = resource
+                raise NotFound
 
         context.resource = resource
 
@@ -627,6 +577,8 @@ class RequestMethod(object):
     def find_view(cls, server, context):
         query = context.uri.query
         context.view = context.resource.get_view(context.view_name, **query)
+        if context.view is None:
+            raise NotFound
 
 
     @classmethod
@@ -643,39 +595,12 @@ class RequestMethod(object):
         if ac.is_access_allowed(user, resource, view):
             return
 
-        # Unauthorized (401) or Forbidden (403)
+        # Unauthorized (401)
         if user is None:
-            context.status = 401
-            context.view_name = 'unauthorized'
-        else:
-            # Forbidden
-            context.status = 403
-            context.view_name = 'forbidden'
+            raise Unauthorized
 
-        # Replace the view
-        context.view = context.root.get_view(context.view_name)
-
-
-    @classmethod
-    def check_method(cls, server, context):
-        # If there was an error, the method name always will be 'GET'
-        if context.status is None:
-            method_name = context.request.method
-        else:
-            method_name = 'GET'
-
-        # Get the method
-        method = getattr(context.view, method_name, None)
-        if method is not None:
-            context.view_method = method
-            return
-
-        # Method not allowed
-        # FIXME For HTTP 1.1 this should be "405 Method not Allowed"
-        context.status = 403
-        context.view_name = 'forbidden'
-        context.view = context.site_root.get_view(context.view_name)
-        context.view_method = context.view.GET
+        # Forbidden (403)
+        raise Forbidden
 
 
     @classmethod
@@ -717,39 +642,58 @@ class RequestMethod(object):
 
 
 
+status2name = {
+    401: 'unauthorized',
+    403: 'forbidden',
+    404: 'not_found',
+    405: 'forbidden',
+}
+
+
 class GET(RequestMethod):
 
-    is_safe = True
+    @classmethod
+    def check_method(cls, server, context):
+        # Get the method
+        method = getattr(context.view, 'GET', None)
+        if method is None:
+            raise MethodNotAllowed
+
+        context.view_method = method
+
 
     @classmethod
-    def render_view(cls, server, context):
+    def handle_request(cls, server, context):
+        response = context.response
+        root = context.root
+
+        # (1) Find out the requested resource and view
+        try:
+            # The requested resource and view
+            cls.find_resource(server, context)
+            cls.find_view(server, context)
+            # Access Control
+            cls.check_access(server, context)
+            # Check the request method is supported
+            cls.check_method(server, context)
+            # Check the client's cache
+            cls.check_cache(server, context)
+        except ClientError, error:
+            status = error.code
+            context.status = status
+            context.view_name = status2name[status]
+            context.view = root.get_view(context.view_name)
+        except NotModified:
+            response.set_status(304)
+            response.set_header('content-length', 0)
+            response.set_body(None)
+            return response
+
+        # (2) Render
         resource = context.resource
         view = context.view
-
-        # Cache: check modification time
-        if_modified_since = context.request.get_header('if-modified-since')
-        if if_modified_since is not None:
-            mtime = view.get_mtime(resource)
-            if mtime is not None:
-                mtime = mtime.replace(microsecond=0)
-                context.response.set_header('last-modified', mtime)
-                if mtime <= if_modified_since:
-                    context.status = 304
-                    context.entity = None
-                    return
-
-        # Call the method
         try:
-            context.entity = context.view_method(resource, context)
-        except Forbidden:
-            if context.user is None:
-                context.status = 401
-                view = context.site_root.unauthorized
-                context.entity = view.GET(resource, context)
-            else:
-                status = 403
-                view = context.root.forbidden
-                context.entity = view.GET(resource, context)
+            context.entity = view.GET(resource, context)
         except:
             cls.internal_server_error(server, context)
         else:
@@ -758,6 +702,42 @@ class GET(RequestMethod):
                 context.status = 302
             else:
                 context.status = 200
+
+        # (3) Reset the transaction in any case
+        server.abort_transaction(context)
+
+        # (4) After Traverse hook
+        try:
+            context.site_root.after_traverse(context)
+        except:
+            cls.internal_server_error(server, context)
+
+        # (8) Build and return the response
+        context.response.set_status(context.status)
+        cls.set_body(server, context)
+
+        # (9) Ok
+        return context.response
+
+
+    @classmethod
+    def check_cache(cls, server, context):
+        # Check for the request header If-Modified-Since
+        if_modified_since = context.request.get_header('if-modified-since')
+        if if_modified_since is None:
+            return
+
+        # Get the resource's modification time
+        resource = context.resource
+        mtime = context.view.get_mtime(resource)
+        if mtime is None:
+            return
+
+        # Cache: check modification time
+        mtime = mtime.replace(microsecond=0)
+        context.response.set_header('last-modified', mtime)
+        if mtime <= if_modified_since:
+            raise NotModified
 
 
 
@@ -783,26 +763,53 @@ class HEAD(GET):
 
 class POST(RequestMethod):
 
-    is_safe = False
+    @classmethod
+    def check_method(cls, server, context):
+        # If there was an error, the method name always will be 'GET'
+        if context.status is None:
+            method_name = 'POST'
+        else:
+            method_name = 'GET'
+
+        # Get the method
+        method = getattr(context.view, method_name, None)
+        if method is not None:
+            context.view_method = method
+            return
+
+        # Method not allowed
+        # FIXME For HTTP 1.1 this should be "405 Method not Allowed"
+        context.status = 403
+        context.view_name = 'forbidden'
+        context.view = context.site_root.get_view(context.view_name)
+        context.view_method = context.view.GET
 
 
     @classmethod
-    def render_view(cls, server, context):
+    def handle_request(cls, server, context):
+        response = context.response
+        root = context.root
+
+        # (1) Find out the requested resource and view
+        try:
+            # The requested resource and view
+            cls.find_resource(server, context)
+            cls.find_view(server, context)
+            # Access Control
+            cls.check_access(server, context)
+            # Check the request method is supported
+            cls.check_method(server, context)
+        except ClientError, error:
+            status = error.code
+            context.status = status
+            context.view_name = status2name[status]
+            context.view = root.get_view(context.view_name)
+
+        # (2) Render
         resource = context.resource
         view = context.view
-
-        # Call the method
         try:
-            context.entity = context.view_method(resource, context)
-        except Forbidden:
-            if context.user is None:
-                context.status = 401
-                view = context.site_root.unauthorized
-                context.entity = view.GET(resource, context)
-            else:
-                context.status = 403
-                view = context.root.forbidden
-                context.entity = view.GET(resource, context)
+            context.entity = view.POST(resource, context)
         except:
             cls.internal_server_error(server, context)
         else:
@@ -811,6 +818,33 @@ class POST(RequestMethod):
                 context.status = 302
             else:
                 context.status = 200
+
+        # (3) Commit the transaction commit
+        if context.status < 400:
+            cls.commit_transaction(server, context)
+        else:
+            server.abort_transaction(context)
+
+        # (4) Build response, when postponed (useful for POST methods)
+        if isinstance(context.entity, (FunctionType, MethodType)):
+            try:
+                context.entity = context.entity(context.resource, context)
+            except:
+                cls.internal_server_error(server, context)
+            server.abort_transaction(context)
+
+        # (5) After Traverse hook
+        try:
+            context.site_root.after_traverse(context)
+        except:
+            cls.internal_server_error(server, context)
+
+        # (6) Build and return the response
+        context.response.set_status(context.status)
+        cls.set_body(server, context)
+
+        # (7) Ok
+        return context.response
 
 
 

@@ -19,6 +19,13 @@ class HTTPError(Exception):
     """Base class for all errors, client or server side."""
 
 
+
+class NotModified(HTTPError):
+    code = 304
+    title = 'Not Modified'
+
+
+
 class ClientError(HTTPError):
     """Base class for 4xx responses."""
 
@@ -40,7 +47,12 @@ class Forbidden(ClientError):
 
 class NotFound(ClientError):
     code = 404
-    title = 'NotFound'
+    title = 'Not Found'
+
+
+class MethodNotAllowed(ClientError):
+    code = 405
+    title = 'Method Not Allowed'
 
 
 

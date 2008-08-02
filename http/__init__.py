@@ -15,9 +15,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from exceptions import (HTTPError, ClientError, BadRequest, Unauthorized,
-                        Forbidden, NotFound, ServerError, InternalServerError,
-                        NotImplemented, BadGateway, ServiceUnavailable)
+from exceptions import HTTPError, ClientError, ServerError
+from exceptions import NotModified
+from exceptions import BadRequest, Unauthorized, Forbidden, NotFound
+from exceptions import (InternalServerError, NotImplemented, BadGateway,
+                        ServiceUnavailable)
 from request import Request
 from response import Response
 import vfs
@@ -26,6 +28,7 @@ import vfs
 __all__ = [
     # Exceptions
     'HTTPError',
+    'NotModified',
     'ClientError',
     'BadRequest',
     'Unauthorized',

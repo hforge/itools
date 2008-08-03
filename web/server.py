@@ -744,16 +744,6 @@ class GET(RequestMethod):
 class HEAD(GET):
 
     @classmethod
-    def handle_request(cls, server, context):
-        # (1) Tweak the method to call if needed
-        if context.view_name == 'HEAD':
-            context.view_name = 'GET'
-
-        # (2) Proceed as usual
-        GET.handle_request(cls, server, context)
-
-
-    @classmethod
     def set_body(cls, server, context):
         GET.set_body(cls, server, context)
         # Drop the body from the response

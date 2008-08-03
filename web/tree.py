@@ -162,9 +162,15 @@ class Node(object):
     # API / HTTP
     #######################################################################
     def get_view(self, name, **kw):
+        # To define a default view, override this
+        if name is None:
+            return None
+
+        # Explicit view, defined by name
         view = getattr(self, name, None)
         if view is None or not isinstance(view, BaseView):
             return None
+
         return view
 
 

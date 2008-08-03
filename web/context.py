@@ -83,7 +83,7 @@ class Context(object):
             self.view_name = path[-1].params[0]
         else:
             self.path = path
-            self.view_name = request.method
+            self.view_name = None
 
         # Language negotiation
         headers = request.headers

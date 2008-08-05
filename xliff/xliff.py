@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.handlers import TextFile
+from itools.handlers import TextFile, register_handler_class
 from itools.xml import (XMLParser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT,
                         COMMENT, TEXT)
 
@@ -254,3 +254,7 @@ class XLIFF(TextFile):
                 targets.append(target)
 
         return ((files_id, sources, targets))
+
+
+
+register_handler_class(XLIFF)

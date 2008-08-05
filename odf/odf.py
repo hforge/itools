@@ -23,7 +23,7 @@ from cStringIO import StringIO
 # Import from itools
 from itools.stl import stl
 from itools.handlers import register_handler_class, ZIPFile
-from itools.xml.i18n import get_messages
+from itools.xml.i18n import get_units
 from itools.xml import (xml_to_text, translate, OfficeDocument, stream_to_str,
                         XMLParser, XML_DECL, START_ELEMENT, TEXT)
 
@@ -96,9 +96,9 @@ class ODFFile(OOFile):
                 yield event
 
 
-    def get_messages(self):
+    def get_units(self):
         for filename in ['content.xml', 'meta.xml', 'styles.xml']:
-            for message in get_messages(self.get_events(filename), filename):
+            for message in get_units(self.get_events(filename), filename):
                 yield message
 
 

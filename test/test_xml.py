@@ -23,7 +23,7 @@ from itools import html
 from itools.xml import (XMLFile, XMLParser, DocType, XMLError, XML_DECL,
     DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, TEXT, COMMENT, PI, CDATA,
     stream_to_str, get_doctype)
-from itools.xml.i18n import get_messages
+from itools.xml.i18n import get_units
 from itools.gettext import Message
 
 
@@ -228,7 +228,7 @@ class TranslatableTestCase(TestCase):
     def test_surrounding(self):
         text = '<em>Hello World</em>'
         parser = XMLParser(text)
-        messages = list(get_messages(parser))
+        messages = list(get_units(parser))
 
         self.assertEqual(messages, [Message([], [u'Hello World'], [u''])])
 

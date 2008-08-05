@@ -46,7 +46,7 @@ class Python(TextFile):
     class_extension = 'py'
 
 
-    def get_messages(self):
+    def get_units(self):
         data = self.to_str()
         # Make it work with Windows files (the parser expects '\n' ending
         # lines)

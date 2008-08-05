@@ -68,7 +68,7 @@ class POTestCase(TestCase):
         po = POFile()
         po.load_state_from_string(content)
 
-        self.assertEqual((po.get_messages())[0].to_str(), content)
+        self.assertEqual((po.get_units())[0].to_str(), content)
 
 
     def test_fuzzy(self):

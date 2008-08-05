@@ -96,7 +96,7 @@ class i18nTestCase(TestCase):
         doc = HTMLFile(string=
             '<p>hello world</p>')
 
-        messages = list(doc.get_messages())
+        messages = list(doc.get_units())
         self.assertEqual(messages, [Message([], [u'hello world'], [u''])])
 
 
@@ -105,7 +105,7 @@ class i18nTestCase(TestCase):
         doc = HTMLFile(string=
             '<img alt="The beach" src="beach.jpg">')
 
-        messages = list(doc.get_messages())
+        messages = list(doc.get_units())
         self.assertEqual(messages, [Message([], [u'The beach'], [u''])])
 
 
@@ -117,7 +117,7 @@ class i18nTestCase(TestCase):
             '<input type="submit" value="Change">\n'
             '</html>')
 
-        messages = list(doc.get_messages())
+        messages = list(doc.get_units())
         self.assertEqual(messages, [Message([], [u'Change'], [u''])])
 
 
@@ -246,7 +246,7 @@ class i18nTestCase(TestCase):
         doc = HTMLFile(string = '<pre>   This is raw text, and every '
                                 'characters should be kept </pre>')
 
-        messages = list(doc.get_messages())
+        messages = list(doc.get_units())
         expected = u'   This is raw text, and every characters should be kept '
         self.assertEqual(messages, [Message([], [expected], [u''])])
 
@@ -287,7 +287,7 @@ class SegmentationTestCase(TestCase):
             'acclaimed, <em>open source</em>, <b>Mozilla 1.6</b>.\n'
             '</p>')
 
-        messages = list(doc.get_messages())
+        messages = list(doc.get_units())
         msg1 = (u'The Mozilla project maintains <em>choice</em> and'
                 u' <em>innovation</em> on the Internet.')
         msg2 = (u'Developing the acclaimed, <em>open source</em>,'
@@ -313,7 +313,7 @@ class SegmentationTestCase(TestCase):
             '  </tr>\n'
             '</table>')
 
-        messages = list(doc.get_messages())
+        messages = list(doc.get_units())
         expected = [Message([], [u'Title'], [u'']),
                     Message([], [u'Size'], [u'']),
                     Message([], [u'The good, the bad and the ugly'], [u'']),
@@ -334,7 +334,7 @@ class SegmentationTestCase(TestCase):
             '  bye <em>J. David Ibanez Palomar</em>\n'
             '</body>')
 
-        messages = list(doc.get_messages())
+        messages = list(doc.get_units())
         expected = [Message([], [u'this <em>word</em> is nice'], [u'']),
                     Message([], [u'hello world'], [u'']),
                     Message([], [u'<br/> bye <em>J. David Ibanez '
@@ -351,7 +351,7 @@ class SegmentationTestCase(TestCase):
             '  <input type="submit" value="Change" />\n'
             '</form>')
 
-        messages = list(doc.get_messages())
+        messages = list(doc.get_units())
         self.assertEqual(messages, [Message([], [u'Change'], [u''])])
 
 
@@ -361,7 +361,7 @@ class SegmentationTestCase(TestCase):
             'Hi <b>everybody, </b><i>how are you ? </i>'
             '</p>')
 
-        messages = doc.get_messages()
+        messages = doc.get_units()
         messages = list(messages)
 
         expected = [Message([], [u'Hi <b>everybody, </b><i>how are you ? '
@@ -387,7 +387,7 @@ class TranslationTestCase(TestCase):
         """Test element content."""
         data = self.template % '<p>hello litle world</p>'
         doc = XHTMLFile(string=data)
-        messages = list(doc.get_messages())
+        messages = list(doc.get_units())
 
         self.assertEqual(messages, [Message([], [u'hello litle world'],
                                             [u''])])
@@ -397,7 +397,7 @@ class TranslationTestCase(TestCase):
         """Test simple attribute."""
         data = self.template % '<img alt="The beach" src="beach.jpg" />'
         doc = XHTMLFile(string=data)
-        messages = list(doc.get_messages())
+        messages = list(doc.get_units())
 
         self.assertEqual(messages, [Message([], [u'The beach'], [u''])])
 
@@ -407,7 +407,7 @@ class TranslationTestCase(TestCase):
         data = self.template % ('<input type="text" name="id" />\n'
                                 '<input type="submit" value="Change" />')
         doc = XHTMLFile(string=data)
-        messages = list(doc.get_messages())
+        messages = list(doc.get_units())
 
         self.assertEqual(messages, [Message([], [u'Change'], [u''])])
 
@@ -425,7 +425,7 @@ class TranslationTestCase(TestCase):
         string = source.translate(p)
         xhtml = XHTMLFile(string=string)
 
-        messages = list(xhtml.get_messages())
+        messages = list(xhtml.get_units())
         self.assertEqual(messages, [Message([], [u'hola mundo'], [u''])])
 
 
@@ -440,7 +440,7 @@ class TranslationTestCase(TestCase):
         html = xhtml.translate(po)
         xhtml = XHTMLFile(string=html)
 
-        messages = list(xhtml.get_messages())
+        messages = list(xhtml.get_units())
         self.assertEqual(messages, [Message([], [u'La playa'], [u''])])
 
 

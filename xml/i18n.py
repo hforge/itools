@@ -36,7 +36,7 @@ elements_to_keep_spaces = set(['pre'])
 
 
 ###########################################################################
-# Code common to "get_messages" and "translate"
+# Code common to "get_units" and "translate"
 ###########################################################################
 def _process_buffer(buffer, hit, encoding):
     from xml import get_start_tag, get_end_tag
@@ -90,7 +90,7 @@ def _process_buffer(buffer, hit, encoding):
 
 
 def _get_translatable_blocks(events):
-    """This method is defined so it can be used by both "get_messages" and
+    """This method is defined so it can be used by both "get_units" and
     "translate". Hence it contains the logic that is commont to both, to avoid
     code duplication.
 
@@ -183,7 +183,7 @@ def _get_translatable_blocks(events):
 ###########################################################################
 # Get Messages
 ###########################################################################
-def get_messages(events, filename=None):
+def get_units(events, filename=None):
     keep_spaces = False
     for type, value, line in _get_translatable_blocks(events):
         if type == START_ELEMENT:

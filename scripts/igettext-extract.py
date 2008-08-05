@@ -56,13 +56,13 @@ if __name__ == '__main__':
         for filename in args:
             handler = get_handler(filename)
             try:
-                get_messages = handler.get_messages
+                get_units = handler.get_units
             except AttributeError:
                 message = 'ERROR: The file "%s" could not be processed\n'
                 sys.stderr.write(message % filename)
                 continue
             # Extract the messages
-            po.set_messages(get_messages())
+            po.add_units(get_units())
 
         # XXX Should omit the header?
         output.write(po.to_str())

@@ -24,7 +24,7 @@ from itools.odf import ODTFile, ODPFile, ODSFile
 from itools.gettext import POFile, Message
 from itools import vfs
 from itools.xml import XMLParser
-from itools.xml.i18n import get_messages, translate
+from itools.xml.i18n import get_units, translate
 
 
 class Test_ODT_File(TestCase):
@@ -36,7 +36,7 @@ class Test_ODT_File(TestCase):
 
 
     def test_get_msg(self):
-        messages = list(self.doc.get_messages())
+        messages = list(self.doc.get_units())
         expected_messages = [
             # content.xml
             u'Hello <text:span text:style-name="T1">world</text:span> !',
@@ -59,7 +59,7 @@ class Test_ODT_File(TestCase):
         # Get the message of the translate document
         doc2 = ODTFile()
         doc2.load_state_from_string(translate_odt_document)
-        messages = list(doc2.get_messages())
+        messages = list(doc2.get_units())
         # Check if allright
         expected_messages = [
             # content.xml
@@ -98,7 +98,7 @@ class Test_ODP_File(TestCase):
 
 
     def test_get_msg(self):
-        messages = list(self.doc.get_messages())
+        messages = list(self.doc.get_units())
         expected_messages = [
             # content.xml
             u'<text:span text:style-name="T1">Hello </text:span>'
@@ -124,7 +124,7 @@ class Test_ODS_File(TestCase):
         self.doc.load_state_from_file(file)
 
     def test_get_msg(self):
-        messages = list(self.doc.get_messages())
+        messages = list(self.doc.get_units())
         expected_messages = [# content.xml
                              u'Chocolate', u'Coffee', u'Tea', u'Price', u'80',
                              u'20', u'40', u'Quantity', u'20', u'30', u'20',
@@ -189,7 +189,7 @@ class Test_ODT_Parser(TestCase):
                    '</office:text>')
         content = self.template % content
         events = XMLParser(content)
-        messages = list(get_messages(events))
+        messages = list(get_units(events))
         expected = [Message([], [u'hello world'], [u''])]
         self.assertEqual(messages, expected)
 
@@ -227,7 +227,7 @@ class Test_ODT_Parser(TestCase):
 
         content = self.template % content
         events = XMLParser(content)
-        messages = list(get_messages(events))
+        messages = list(get_units(events))
         expected= [Message([], [u'A'], [u'']), Message([], [u'B'], [u'']),
                    Message([], [u'C'], [u'']), Message([], [u'D'], [u'']),
                    Message([], [u'E'], [u'']), Message([], [u'F'], [u''])]
@@ -248,7 +248,7 @@ class Test_ODT_Parser(TestCase):
         content = self.template % content
         events = XMLParser(content)
         string = translate(events, po)
-        messages = list(get_messages(string))
+        messages = list(get_units(string))
         self.assertEqual(messages, [Message([], [u'hola mundo'], [u''])])
 
 

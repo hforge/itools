@@ -70,7 +70,7 @@ if __name__ == '__main__':
         if path.endswith('.py') and path != 'utils.py':
             write('.')
             handler = Python(path)
-            for message in handler.get_messages():
+            for message in handler.get_units():
                 if len(message.msgid[0]) > 2:
                     po.set_message(message)
     print
@@ -88,7 +88,7 @@ if __name__ == '__main__':
             write('.')
             handler = XHTMLFile(path)
             try:
-                messages = handler.get_messages()
+                messages = handler.get_units()
                 messages = list(messages)
             except:
                 print

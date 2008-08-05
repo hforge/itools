@@ -396,7 +396,7 @@ class POFile(TextFile):
         return self.messages.keys()
 
 
-    def get_messages(self):
+    def get_units(self):
         """Rerturns all the message (objects of the class <Message>).
         """
         return self.messages.values()

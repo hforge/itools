@@ -161,10 +161,19 @@ class Node(object):
     #######################################################################
     # API / HTTP
     #######################################################################
+    default_view_name = None
+
+
+    def get_default_view_name(self):
+        return self.default_view_name
+
+
     def get_view(self, name, **kw):
         # To define a default view, override this
         if name is None:
-            return None
+            name = self.get_default_view_name()
+            if name is None:
+                return None
 
         # Explicit view, defined by name
         view = getattr(self, name, None)

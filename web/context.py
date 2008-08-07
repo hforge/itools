@@ -146,78 +146,21 @@ class Context(object):
     #######################################################################
     # API / Forms
     #######################################################################
-    def get_query_value(self, name):
+    def get_query_value(self, name, type=String, default=None):
         """Returns the value for the given name from the query.  Useful for
         POST requests.
         """
-        query = self.uri.query
-        return query.get(name)
+        form = self.uri.query
+        return get_form_value(form, name, type, default)
+
+
+    def get_form_value(self, name, type=String, default=None):
+        form = self.request.get_form()
+        return get_form_value(form, name, type, default)
 
 
     def get_form_keys(self):
         return self.request.get_form().keys()
-
-
-    def get_form_value(self, name, type=String, default=None):
-        request = self.request
-
-        # Figure out the default value
-        is_multiple = getattr(type, 'multiple', False)
-        if default is None:
-            default = type.default
-            if is_multiple and not isinstance(default, list):
-                default = []
-
-        # Missing
-        is_mandatory = getattr(type, 'mandatory', False)
-        is_missing = not request.has_parameter(name)
-        if is_missing:
-            # Mandatory: raise an error
-            if is_mandatory and is_missing:
-                raise FormError(missing=[name])
-            # Optional: return the default value
-            return default
-
-        # Multiple values
-        if is_multiple:
-            value = request.get_parameter(name)
-            if not isinstance(value, list):
-                value = [value]
-            try:
-                values = [ type.decode(x) for x in value ]
-            except:
-                raise FormError(invalid=[name])
-            # Check the values are valid
-            for value in values:
-                if not type.is_valid(value):
-                    raise FormError(invalid=[name])
-            return values
-
-        # Single value
-        value = request.get_parameter(name)
-        if isinstance(value, list):
-            value = value[0]
-        try:
-            value = type.decode(value)
-        except:
-            raise FormError(invalid=[name])
-
-        # We consider that if the type deserializes the value to None, then
-        # we must use the default.
-        if value is None:
-            if is_mandatory:
-                raise FormError(missing=[name])
-            return default
-
-        # We consider a blank string to be a missing value (FIXME not
-        # reliable).
-        is_blank = isinstance(value, (str, unicode)) and not value.strip()
-        if is_blank:
-            if is_mandatory:
-               raise FormError(missing=[name])
-        elif not type.is_valid(value):
-            raise FormError(invalid=[name])
-        return value
 
 
     # FIXME Obsolete since 0.20.4, to be removed by the next major release
@@ -388,3 +331,64 @@ def select_language(languages):
     accept = get_context().accept_language
     return accept.select_language(languages)
 
+
+#######################################################################
+# Get from the form or query
+#######################################################################
+def get_form_value(form, name, type=String, default=None):
+    # Figure out the default value
+    is_multiple = getattr(type, 'multiple', False)
+    if default is None:
+        default = type.default
+        if is_multiple and not isinstance(default, list):
+            default = []
+
+    # Missing
+    is_mandatory = getattr(type, 'mandatory', False)
+    is_missing = name not in form
+    if is_missing:
+        # Mandatory: raise an error
+        if is_mandatory and is_missing:
+            raise FormError(missing=[name])
+        # Optional: return the default value
+        return default
+
+    # Multiple values
+    if is_multiple:
+        value = form.get(name)
+        if not isinstance(value, list):
+            value = [value]
+        try:
+            values = [ type.decode(x) for x in value ]
+        except:
+            raise FormError(invalid=[name])
+        # Check the values are valid
+        for value in values:
+            if not type.is_valid(value):
+                raise FormError(invalid=[name])
+        return values
+
+    # Single value
+    value = form.get(name)
+    if isinstance(value, list):
+        value = value[0]
+    try:
+        value = type.decode(value)
+    except:
+        raise FormError(invalid=[name])
+
+    # We consider that if the type deserializes the value to None, then we
+    # must use the default.
+    if value is None:
+        if is_mandatory:
+            raise FormError(missing=[name])
+        return default
+
+    # We consider a blank string to be a missing value (FIXME not reliable).
+    is_blank = isinstance(value, (str, unicode)) and not value.strip()
+    if is_blank:
+        if is_mandatory:
+           raise FormError(missing=[name])
+    elif not type.is_valid(value):
+        raise FormError(invalid=[name])
+    return value

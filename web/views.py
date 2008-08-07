@@ -37,7 +37,7 @@ class BaseView(object):
     #######################################################################
     # Query
     def get_query(self, context):
-        get_value = context.get_form_value
+        get_value = context.get_query_value
         schema = self.query_schema
 
         query = {}
@@ -108,6 +108,9 @@ class BaseForm(BaseView):
 
 
     def POST(self, resource, context):
+        # Load the query
+        context.query = self.get_query(context)
+
         # (1) Automatically validate and get the form input (from the schema).
         try:
             form = self._get_form(resource, context)
@@ -146,17 +149,19 @@ class STLView(BaseView):
 
 
     def GET(self, resource, context):
+        # Check there is a template defined
         if self.template is None:
             raise NotImplementedError
 
-        # XXX Some subclasses do not have a query parameter on get_namespace
-        query = self.get_query(context)
-        if query:
-            namespace = self.get_namespace(resource, context, query)
-        else:
-            namespace = self.get_namespace(resource, context)
-        handler = resource.get_object(self.template)
-        return stl(handler, namespace)
+        # Load the query
+        context.query = self.get_query(context)
+
+        # Get the namespace
+        namespace = self.get_namespace(resource, context)
+
+        # Ok
+        template = resource.get_object(self.template)
+        return stl(template, namespace)
 
 
 

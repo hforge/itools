@@ -100,7 +100,7 @@ def p_font_style(key, value):
 def p_padding_style(key, value):
     style_attr = {}
     size = format_size(value, None)
-    if value:
+    if size:
         if key == 'padding':
             for padding in P_PADDINGS.values():
                 style_attr[padding] = size
@@ -112,7 +112,7 @@ def p_padding_style(key, value):
 def table_padding_style(key, value, start, stop):
     style = []
     size = format_size(value, None)
-    if value:
+    if size:
         if key == 'padding':
             for padding in TABLE_PADDINGS.values():
                 style.append((padding, start, stop, size))
@@ -154,7 +154,7 @@ def build_paragraph_style(context, element, style_css):
     for key, value in style_css.iteritems():
         if key == 'color':
             style_attr['textColor'] = get_color_as_hexa(value)
-        elif key in ('background', 'background-color'):
+        elif key in ('background-color'):
             style_attr['backColor'] = get_color_as_hexa(value)
         elif key.startswith('border'):
             style_attr.update(p_border_style(key, value))

@@ -37,7 +37,7 @@ import itools.http
 
 # Internal import
 from style import (build_paragraph_style, get_table_style,
-                   makeTocHeaderStyle, get_align)
+                   makeTocHeaderStyle, get_align, p_font_style)
 from utils import (FONT, URI, check_image, exist_attribute, font_value,
                    format_size, get_color, get_color_as_hexa, get_int_value,
                    normalize, pc_float, stream_next)
@@ -1294,32 +1294,33 @@ def build_img_attributes(attributes, context):
 
 
 def build_span_attributes(attributes, context):
-    attrs = {}
-    attrib = {}
+    style_attr = {}
+    style_css = {}
+
     if exist_attribute(attributes, ['style']):
         style = ''.join(attributes.pop((URI, 'style')).split()).rstrip(';')
         if style:
             stylelist = style.split(';')
             for element in stylelist:
                 element_list = element.split(':')
-                attrs[element_list[0].lower()] = element_list[1].lower()
-            if attrs.has_key('color'):
-                color = attrs['color']
-                if color is not None:
-                    attrib[(URI, 'color')] = get_color_as_hexa(color)
-            if attrs.has_key('font-family'):
-                family = attrs.pop('font-family')
-                attrib[(URI, 'face')] = FONT.get(family, 'helvetica')
-            if attrs.has_key('font-size'):
-                size = attrs.pop('font-size')
-                attrib[(URI, 'size')] = font_value(size)
-            if attrs.has_key('font-style'):
-                style = attrs.pop('font-style')
-                if style in ('italic', 'oblique'):
-                    context.tag_stack.append('i')
-                elif style != 'normal':
-                    print 'Warning font-style not valid'
-    return attrib
+                style_css[element_list[0]] = element_list[1]
+
+    for key, value in style_css.iteritems():
+        if key == 'color':
+            style_attr[(URI, 'textColor')] = get_color_as_hexa(value)
+        elif key in ('background-color'):
+            style_attr[(URI, 'backColor')] = get_color_as_hexa(value)
+        elif key == 'font-style':
+            if style in ('italic', 'oblique'):
+                context.tag_stack.append('i')
+            elif style != 'normal':
+                print 'Warning font-style not valid'
+        elif key.startswith('font'):
+            font = p_font_style(key, value)
+            for f_key, f_value in font.iteritems():
+                style_attr[(URI, f_key)] = f_value
+
+    return style_attr
 
 
 ##############################################################################

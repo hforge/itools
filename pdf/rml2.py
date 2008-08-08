@@ -512,7 +512,8 @@ def body_stream(stream, _tag_name, _attributes, context):
     return story
 
 
-def paragraph_stream(stream, elt_tag_name, elt_attributes, context, prefix=None):
+def paragraph_stream(stream, elt_tag_name, elt_attributes, context,
+                     prefix=None):
     """
         stream : parser stream
     """
@@ -572,7 +573,8 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context, prefix=None)
                 if tag_name in INLINE:
                     start_tag = True
                     if tag_name in P_FORMAT.keys():
-                        attrs = build_attributes(tag_name, attributes, context)
+                        attrs = build_attributes(tag_name, attributes,
+                                                 context)
                         if cpt or has_content:
                             content[-1] += build_start_tag(tag_name, attrs)
                         else:
@@ -613,9 +615,9 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context, prefix=None)
                     para = create_paragraph(context, elt, content, style_p)
                     story.append(para)
                 return story
-            if tag_name in EMPTY_TAGS:
-                has_content = False
             elif tag_name in P_FORMAT.keys():
+                if tag_name in EMPTY_TAGS:
+                    has_content = False
                 cpt -= 1
                 end_tag = True
                 while context.tag_stack:
@@ -652,7 +654,7 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context, prefix=None)
                         value = value.lstrip()
                         content[-1] += value
                         end_tag = False
-                    elif content[-1].endswith('</span>') or end_tag or cpt:
+                    elif  end_tag or cpt:
                         content[-1] += value
                         end_tag = False
                     else:
@@ -793,10 +795,12 @@ def list_stream(stream, _tag_name, attributes, context, id=0):
             if tag_name in ('ul', 'ol'):
                 prefix = ["<seqDefault id='%s'/>" % strid]
                 story += list_stream(stream, tag_name, attributes,
-                                         context, id+1)
+                                     context, id+1)
             elif tag_name == 'li':
                 prefix.append(bullet)
-                story.extend(paragraph_stream(stream, tag_name, attributes, context, ''.join(prefix)))
+                para = paragraph_stream(stream, tag_name, attributes,
+                                        context, ''.join(prefix))
+                story.extend(para)
                 prefix = []
             else:
                 print MSG_WARNING_DTD % ('document', line_number, tag_name)

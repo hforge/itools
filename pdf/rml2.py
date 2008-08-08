@@ -751,6 +751,7 @@ def list_stream(stream, _tag_name, attributes, context, id=0):
             prefix.append(seq)
         else:
             prefix.append("<seqFormat id='%s' value='1'/>" % strid)
+    pref = "<seqDefault id='%s'/>"
 
     while True:
         event, value, line_number = stream_next(stream)
@@ -761,7 +762,7 @@ def list_stream(stream, _tag_name, attributes, context, id=0):
             tag_uri, tag_name, attributes = value
             context.path_on_start_event(tag_name, attributes)
             if tag_name in ('ul', 'ol'):
-                prefix = ["<seqDefault id='%s'/>" % strid]
+                prefix = [pref % strid]
                 story += list_stream(stream, tag_name, attributes,
                                      context, id+1)
             elif tag_name == 'li':

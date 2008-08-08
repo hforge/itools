@@ -97,6 +97,7 @@ class Context(object):
         self.add_css_from_file(css_file)
         self.anchor = []
         socket.setdefaulttimeout(10)
+        self.list_anchor = []
 
 
     def init_base_style_sheet(self):
@@ -467,7 +468,7 @@ def body_stream(stream, _tag_name, _attributes, context):
             elif tag_name == 'a':
                 # FIXME anchor are stored in stack and it pop in the nextest
                 # paragraph
-                context.anchor.append(build_start_tag(tag_name, attributes))
+                context.anchor.append(build_start_tag(tag_name, attributes, context))
             elif tag_name in ('ol', 'ul'):
                 story.extend(list_stream(stream, tag_name, attributes,
                                          context))
@@ -524,6 +525,7 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context, prefix=None)
         content.append(prefix)
     while context.anchor:
         content.append(context.anchor.pop())
+
     while True:
         event, value, line_number = stream_next(stream)
         if event == None:
@@ -567,9 +569,9 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context, prefix=None)
                         # FIXME
                         attrs = build_attributes(tag_name, attributes)
                         if cpt or has_content:
-                            content[-1] += build_start_tag(tag_name, attrs)
+                            content[-1] += build_start_tag(tag_name, attrs, context)
                         else:
-                            content.append(build_start_tag(tag_name, attrs))
+                            content.append(build_start_tag(tag_name, attrs, context))
                             has_content = True
                         cpt += 1
                     elif tag_name == 'span':
@@ -1345,7 +1347,7 @@ def build_span_attributes(attributes):
 ##############################################################################
 # Internal Functions                                                         #
 ##############################################################################
-def build_start_tag(tag_name, attributes={}):
+def build_start_tag(tag_name, attributes={}, context=None):
     """
         Create the XML start tag from his name and his attributes
         span => font (map)
@@ -1359,6 +1361,10 @@ def build_start_tag(tag_name, attributes={}):
             # are decoded again by the reportlab para parser.
             href = XMLContent.encode(attrs['href'])
             tag = '<a href="%s">' % href
+            if href.startswith('#'):
+                ref = href[1:]
+                if ref not in context.list_anchor:
+                    tag += '<a name="%s"/>' % ref
         if exist_attribute(attributes, ['id', 'name'], at_least=True):
             name = attributes.get((URI, 'id'), attributes.get((URI, 'name')))
             if name:
@@ -1366,6 +1372,7 @@ def build_start_tag(tag_name, attributes={}):
                     tag += '<a name="%s"/>' % name
                 else:
                     tag = '<a name="%s"/>' % name
+                context.list_anchor.append(name)
             else:
                 tag = ''
         return tag

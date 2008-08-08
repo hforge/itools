@@ -537,9 +537,6 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context,
                 elif tag_name == 'hr':
                     story.append(hr_stream(stream, tag_name, attributes,
                                            context))
-                elif tag_name == 'img':
-                    # allow to put <a><img /></a>
-                    skip = False
                 elif tag_name in ('ol', 'ul'):
                     story.extend(list_stream(stream, tag_name, attributes,
                                              context))
@@ -556,8 +553,8 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context,
                     content.append(context.anchor.pop())
 
                 if tag_name in INLINE:
-                    start_tag = True
                     if tag_name in P_FORMAT.keys():
+                        start_tag = True
                         attrs = build_attributes(tag_name, attributes,
                                                  context)
                         if cpt or has_content:
@@ -606,7 +603,7 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context,
                 cpt -= 1
                 end_tag = True
                 while context.tag_stack:
-                    tag, attrs = context.tag_stack.pop()
+                    tag = context.tag_stack.pop()
                     content[-1] += get_end_tag(None, P_FORMAT.get(tag, 'b'))
                 content[-1] += get_end_tag(None, P_FORMAT.get(tag_name, 'b'))
 

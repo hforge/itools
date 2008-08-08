@@ -222,6 +222,8 @@ def rml2topdf(filename):
       filename: source file
     """
 
+    import time
+    t0 = time.time()
     iostream = StringIO()
     namespaces = {None: URI}
     fd = vfs.open(filename)
@@ -231,6 +233,9 @@ def rml2topdf(filename):
     prefix = here.resolve2(Path(filename))
     stream = set_prefix(stream, prefix)
     document_stream(stream, iostream, filename, False)
+    t1 = time.time()
+    print u'Time spent %s s' % (t1 - t0)
+
     return iostream.getvalue()
 
 

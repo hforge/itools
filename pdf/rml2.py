@@ -4,6 +4,7 @@
 # Copyright (C) 2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 # Copyright (C) 2008 Fabrice Decroix <fabrice.decroix@gmail.com>
 # Copyright (C) 2008 Yannick Martel <yannick.martel@gmail.com>
+# Copyright (C) 2008 Dumont Sébastien <sebastien.dumont@itaapy.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,13 +21,11 @@
 
 # Import from the Standard Library
 from cStringIO import StringIO
-from math import floor
 import tempfile
 
 # Import from itools
 from itools import get_abspath
-from itools.datatypes import Unicode, XMLContent, Integer
-from itools.handlers import Image as ItoolsImage
+from itools.datatypes import XMLContent
 from itools.stl import set_prefix
 from itools.uri import Path
 from itools.uri.uri import get_cwd
@@ -35,12 +34,15 @@ from itools.xml import (XMLParser, START_ELEMENT, END_ELEMENT, TEXT,
                         get_start_tag, get_end_tag)
 import itools.http
 
+# Internal import
+from style import build_paragraph_style, makeTocHeaderStyle
+from utils import (FONT, URI, check_image, exist_attribute, font_value,
+                   format_size, get_color, get_color_as_hexa, get_int_value,
+                   normalize, stream_next)
+
 #Import from the reportlab Library
-from reportlab.lib import colors
-from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT, TA_JUSTIFY
 from reportlab.lib.pagesizes import LETTER
-from reportlab.lib.styles import(getSampleStyleSheet, ParagraphStyle)
-from reportlab.lib.units import inch, cm, mm, pica
+from reportlab.lib.styles import (getSampleStyleSheet, ParagraphStyle)
 from reportlab.platypus import (Paragraph, SimpleDocTemplate, XPreformatted,
                                 PageBreak, Image, Indenter, Table)
 from reportlab.platypus import tableofcontents
@@ -48,32 +50,22 @@ from reportlab.platypus.doctemplate import PageTemplate, BaseDocTemplate
 from reportlab.platypus.flowables import HRFlowable
 from reportlab.platypus.frames import Frame
 from reportlab.platypus.tableofcontents import TableOfContents
+from reportlab.lib.units import cm
 
 #import the graphication css parser
 import css
 
-
-encoding = 'UTF-8'
-URI = 'http://www.w3.org/1999/xhtml'
 # Mapping HTML -> REPORTLAB
 P_FORMAT = {'a': 'a', 'em': 'i', 'b': 'b', 'span': 'font', 'sub': 'sub',
             'img': 'img', 'i': 'i', 'big': 'font', 'tt': 'font', 'p': 'para',
             'code': 'font', 'u': 'u', 'sup': 'super', 'small': 'font',
             'strong': 'b'}
+
 SPECIAL = ('a', 'br', 'img', 'span', 'sub', 'sup')
 PHRASE = ('code', 'em', 'strong')
 FONT_STYLE = ('b', 'big', 'i', 'small', 'tt')
 DEPRECATED = ('u',)
 INLINE = FONT_STYLE + PHRASE + SPECIAL + DEPRECATED
-
-FONT = {'monospace': 'Courier', 'times-new-roman': 'Times-Roman',
-        'arial': 'Helvetica', 'serif': 'Times',
-        'sans-serif': 'Helvetica', 'helvetica': 'Helvetica',
-        'symbol': 'Symbol'}
-
-# ALIGNMENT
-ALIGNMENTS = {'LEFT': TA_LEFT, 'RIGHT': TA_RIGHT, 'CENTER': TA_CENTER,
-              'JUSTIFY': TA_JUSTIFY}
 
 PADDINGS = ('LEFTPADDING', 'RIGHTPADDING', 'BOTTOMPADDING', 'TOPPADDING')
 
@@ -94,7 +86,6 @@ class Context(object):
         self.init_base_style_sheet()
         v_globals = globals()
         self.image_not_found_path = get_abspath(v_globals, 'missing.png')
-        self.size = {'in': inch, 'cm': cm, 'mm': mm, 'pica': pica, 'px': 1}
         self.toc_place = None
         self.cpt_toc_ref = 0
         self.toc_high_level = 3
@@ -123,40 +114,6 @@ class Context(object):
         self.stylesheet.add(ParagraphStyle(name='toctitle',
                                            parent=self.stylesheet['Normal'],
                                            fontSize=40))
-
-
-    def format_size(self, value, default=None):
-        """
-           Return the reportlab value of value
-           only if value is a string
-           '2cm' -> 2 * cm
-           '2in' -> 2 * inch
-           '2in' -> 2 * mm
-           '2in' -> 2 * pica
-           '2%' -> '2%'
-        """
-
-        if value is None:
-            return default
-
-        coef = 1
-        if not isinstance(value, (str, unicode)):
-            return value
-        if value == 'None':
-            return None
-        if value.endswith('%'):
-            return value
-        for key in self.size.keys():
-            lenth_of_key = len(key)
-            if value.endswith(key):
-                value = value[:-len(key)]
-                coef = self.size[key]
-                break
-        try:
-            value = float(value) * coef
-        except ValueError:
-            value = default
-        return value
 
 
     def get_base_style_sheet(self):
@@ -268,27 +225,6 @@ def rml2topdf(filename):
     stream = set_prefix(stream, prefix)
     document_stream(stream, iostream, filename, False)
     return iostream.getvalue()
-
-
-def makeTocHeaderStyle(level, delta, epsilon, fontName='Times-Roman'):
-    """
-        Make a header style for different levels.
-    """
-
-    assert level >= 0, "Level must be >= 0."
-
-    PS = ParagraphStyle
-    size = 12
-    style = PS(name = 'Heading' + str(level),
-               fontName = fontName,
-               fontSize = size,
-               leading = size*1.2,
-               spaceBefore = size/4.0,
-               spaceAfter = size/8.0,
-               firstLineIndent = -epsilon,
-               leftIndent = level*delta + epsilon)
-
-    return style
 
 
 
@@ -491,22 +427,6 @@ def head_stream(stream, _tag_name, _attributes, context):
         #### TEXT ELEMENT ####
         elif event == TEXT:
             content.append(value)
-
-
-def create_toc(context):
-    text_title = ['Contents']
-    title = create_paragraph(context, ('toctitle', {}), text_title)
-    story = [title,]
-    # Create styles to be used for TOC entry lines
-    # for headers on differnet levels.
-    tocLevelStyles = []
-    d, e = tableofcontents.delta, tableofcontents.epsilon
-    for i in range(context.toc_high_level):
-        tocLevelStyles.append(makeTocHeaderStyle(i, d, e))
-    toc = TableOfContents()
-    toc.levelStyles = tocLevelStyles
-    story.append(toc)
-    return story
 
 
 def body_stream(stream, _tag_name, _attributes, context):
@@ -829,6 +749,7 @@ def list_stream(stream, _tag_name, attributes, context, id=0):
     """
 
     stack = []
+    # TODO : default value must be in default css
     INDENT_VALUE = 1 * cm
     story = [Indenter(left=INDENT_VALUE)]
     strid = str(id)
@@ -1022,7 +943,8 @@ def table_stream(stream, _tag_name, attributes, context):
     if exist_attribute(attributes, ['border']):
         border = get_int_value(attributes.get((URI, 'border')))
         if border > 0:
-            content.add_style(('GRID', start, stop, border, colors.grey))
+            # FIXME default color must be moved in default css
+            content.add_style(('GRID', start, stop, border, get_color('grey')))
     if exist_attribute(attributes, ['align']):
         hAlign = attributes.get((URI, 'align')).upper()
         if hAlign in ['LEFT', 'RIGHT', 'CENTER', 'CENTRE']:
@@ -1030,7 +952,7 @@ def table_stream(stream, _tag_name, attributes, context):
     if exist_attribute(attributes, ['cellpadding']):
         attr_value = attributes.get((URI, 'cellpadding'), None)
         if attr_value is not None:
-            value = context.format_size(attr_value)
+            value = format_size(attr_value)
             if value is not None:
                 value = int(value)
                 for padding in PADDINGS:
@@ -1045,7 +967,7 @@ def table_stream(stream, _tag_name, attributes, context):
             tag_uri, tag_name, attributes = value
             context.path_on_start_event(tag_name, attributes)
             if tag_name == 'tr':
-                content = compute_tr(stream, tag_name, attributes,
+                content = tr_stream(stream, tag_name, attributes,
                                     content, context)
                 content.next_line()
             elif tag_name == 'thead':
@@ -1066,46 +988,7 @@ def table_stream(stream, _tag_name, attributes, context):
                 print MSG_TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
 
 
-def build_img_attributes(_attributes, context):
-    attrs = {}
-    itools_img = None
-    for key, attr_value in _attributes.iteritems():
-        key = key[1]
-        if key == 'src':
-            file_path, itools_img = check_image(attr_value, context)
-            attrs[(URI, 'src')] = file_path
-        elif key == 'width':
-            attrs[(URI, 'width')] = context.format_size(attr_value)
-        elif key == 'height':
-            attrs[(URI, 'height')] = context.format_size(attr_value)
-
-    exist_width = exist_attribute(attrs, ['width'])
-    exist_height = exist_attribute(attrs, ['height'])
-    if exist_width or exist_height:
-        width, height = itools_img.get_size()
-        width = width * 1.0
-        height = height * 1.0
-        tup_width = (URI, 'width')
-        tup_height = (URI, 'height')
-        # Calculate sizes to resize
-        if exist_width:
-            element = attrs[tup_width]
-            if isinstance(element, str) and element.endswith('%'):
-                value = get_int_value(element[:-1])
-                attrs[tup_width] = value * width / 100
-            if not exist_height:
-                attrs[tup_height] = round(attrs[tup_width] * height / width)
-        if exist_height:
-            element = attrs[tup_height]
-            if isinstance(element, str) and element.endswith('%'):
-                value = get_int_value(element[:-1])
-                attrs[tup_height] = value * height / 100
-            if not exist_width:
-                attrs[tup_width] = round(attrs[tup_height] * width / height)
-    return attrs
-
-
-def compute_tr(stream, _tag_name, attributes, table, context):
+def tr_stream(stream, _tag_name, attributes, table, context):
     stop = None
 
     while True:
@@ -1162,36 +1045,6 @@ def compute_tr(stream, _tag_name, attributes, table, context):
                 print MSG_TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
 
 
-def build_span_attributes(attributes):
-    tag_stack = []
-    attrs = {}
-    attrib = {}
-    if exist_attribute(attributes, ['style']):
-        style = ''.join(attributes.pop((URI, 'style')).split()).rstrip(';')
-        if style:
-            stylelist = style.split(';')
-            for element in stylelist:
-                element_list = element.split(':')
-                attrs[element_list[0].lower()] = element_list[1].lower()
-            if attrs.has_key('color'):
-                color = attrs['color']
-                if color is not None:
-                    attrib[(URI, 'color')] = get_color_as_hexa(color)
-            if attrs.has_key('font-family'):
-                family = attrs.pop('font-family')
-                attrib[(URI, 'face')] = FONT.get(family, 'helvetica')
-            if attrs.has_key('font-size'):
-                size = attrs.pop('font-size')
-                attrib[(URI, 'size')] = font_value(size)
-            if attrs.has_key('font-style'):
-                style = attrs.pop('font-style')
-                if style in ('italic', 'oblique'):
-                    tag_stack.append('i')
-                elif style != 'normal':
-                    print 'Warning font-style not valid'
-    return attrib, tag_stack
-
-
 ##############################################################################
 # Reportlab widget                                                           #
 ##############################################################################
@@ -1205,7 +1058,7 @@ def create_paragraph(context, element, content, style_css = {}):
     # Another choice is to strip the content (1 time) here
     # content = ['  Hello\t\', '\t<i>how are</i>', '\tyou?']
 
-    style, bulletText = build_style(context, element, style_css)
+    style, bulletText = build_paragraph_style(context, element, style_css)
     if element[0] == 'pre':
         content = ''.join(content)
         widget = XPreformatted(content, style)
@@ -1221,75 +1074,20 @@ def create_paragraph(context, element, content, style_css = {}):
     return widget
 
 
-def border_style(context, value):
-    tab = value.split()
-    style_attrs = {}
-    for i in tab:
-        size = context.format_size(i, None)
-        if size:
-            style_attrs['borderWidth'] = size
-            continue
-        color = get_color_as_hexa(i, None)
-        if color:
-            style_attrs['borderColor'] = color
-            continue
-    return style_attrs
-
-
-def build_style(context, element, style_css):
-    style_attr = {}
-    # The default style is Normal
-    parent_style_name = 'Normal'
-    bulletText = None
-
-    PADDINGS = {'padding-top' : 'spaceBefore', 'padding-bottom': 'spaceAfter',
-                'padding-left': 'leftIndent', 'padding-right': 'rightIndent'}
-    #FIXME must be moved in default css
-    style_attr['spaceAfter'] = 0.2 * cm
-    for key in style_css.keys():
-        if key == 'color':
-            style_attr['textColor'] = get_color_as_hexa(style_css[key])
-        elif key in ('background', 'background-color'):
-            style_attr['backColor'] = get_color_as_hexa(style_css[key])
-        elif key == 'border':
-            style_attr.update(border_style(context, style_css[key]))
-        elif key == 'font-family':
-            style_attr['fontName'] = FONT.get(style_css[key], 'Helvetica')
-        elif key == 'font-size':
-            style_attr['fontSize'] = font_value(style_css[key])
-        elif key == 'padding':
-            value = context.format_size(style_css[key], None)
-            if value:
-                for attr_key in PADDINGS.values():
-                    style_attr[attr_key] = value
-        elif key in PADDINGS.keys():
-            value = context.format_size(style_css[key], None)
-            if value:
-                style_attr[PADDINGS[key]] = value
-
-    # Overload the attributes values
-    for key, attr_value in element[1].iteritems():
-        key = key[1] # (None, key)
-        if key == 'style':
-            # Set the parent style for inheritance
-            parent_style_name = attr_value
-        elif key == 'bulletText':
-            bulletText = attr_value
-        else:
-            if key == 'align':
-                attr_value = ALIGNMENTS.get(attr_value.upper())
-            elif key in ['leftIndent', 'rightIndent']:
-                attr_value = context.format_size(attr_value)
-            style_attr[key] = attr_value
-    style_attr['autoLeading'] = 'max'
-
-    if element[0] in HEADING + ('toctitle', ):
-        parent_style_name = element[0]
-    style_name = parent_style_name
-    parent_style = context.get_style(parent_style_name)
-    return (ParagraphStyle(style_name, parent=parent_style, **style_attr),
-            bulletText)
-
+def create_toc(context):
+    text_title = ['Contents']
+    title = create_paragraph(context, ('toctitle', {}), text_title)
+    story = [title,]
+    # Create styles to be used for TOC entry lines
+    # for headers on differnet levels.
+    tocLevelStyles = []
+    d, e = tableofcontents.delta, tableofcontents.epsilon
+    for i in range(context.toc_high_level):
+        tocLevelStyles.append(makeTocHeaderStyle(i, d, e))
+    toc = TableOfContents()
+    toc.levelStyles = tocLevelStyles
+    story.append(toc)
+    return story
 
 
 def create_hr(attributes, context):
@@ -1301,7 +1099,7 @@ def create_hr(attributes, context):
     attrs['width'] = '100%'
     for key in ('width', 'thickness', 'spaceBefore', 'spaceAfter'):
         if exist_attribute(attributes, [key]):
-            attrs[key] = context.format_size(attributes.get((URI, key)))
+            attrs[key] = format_size(attributes.get((URI, key)))
 
     if exist_attribute(attributes, ['lineCap']):
         line_cap = attributes.get((URI, 'lineCap'))
@@ -1328,8 +1126,8 @@ def create_img(attributes, context, check_dimension=False):
         are not set we return None
     """
     filename = attributes.get((URI, 'src'), None)
-    width = context.format_size(attributes.get((URI, 'width'), None))
-    height = context.format_size(attributes.get((URI, 'height'), None))
+    width = format_size(attributes.get((URI, 'width'), None))
+    height = format_size(attributes.get((URI, 'height'), None))
     if filename is None:
         print u'/!\ Filename is None'
         return None
@@ -1349,32 +1147,6 @@ def create_img(attributes, context, check_dimension=False):
     except Exception, msg:
         print msg
         return None
-
-
-def check_image(filename, context):
-    if vfs.exists(filename) is False:
-        print u"/!\ The filename '%s' doesn't exist" % filename
-        filename = context.image_not_found_path
-    im = None
-    if filename.startswith('http://'):
-        # Remote file
-        # If the image is a remote file, we create a StringIO
-        # object contains the image data to avoid reportlab problems ...
-        data = vfs.open(filename).read()
-        my_file = context.get_tmp_file()
-        filename = my_file.name
-        my_file.write(data)
-        my_file.close()
-        im = ItoolsImage(string=data)
-    if im is None:
-        im = ItoolsImage(filename)
-
-    x, y = im.get_size()
-    if not (x or y):
-        print u'image not valid : %s' % filename
-        filename = context.image_not_found_path
-        im = ItoolsImage(filename)
-    return filename, im
 
 
 def build_image(filename, width, height, context):
@@ -1544,7 +1316,7 @@ class Table_Content(object):
     # Set colomn and line size
     def add_colWidth(self, value):
         list_lenth = len(self.colWidths)
-        platypus_value = self.context.format_size(value)
+        platypus_value = format_size(value)
         if not self.current_y and list_lenth <= self.current_x:
             none_list = [ None for x in xrange(list_lenth, self.current_x+1) ]
             self.colWidths.extend(none_list)
@@ -1555,7 +1327,7 @@ class Table_Content(object):
 
     def add_lineHeight(self, value):
         list_lenth = len(self.rowHeights)
-        platypus_value = self.context.format_size(value)
+        platypus_value = format_size(value)
         if list_lenth <= self.current_y:
             none_list = [ None for y in xrange(list_lenth, self.current_y+1) ]
             self.rowHeights.extend(none_list)
@@ -1588,63 +1360,8 @@ class Table_Content(object):
 
 
 ##############################################################################
-# Internal Functions                                                         #
+# tag attributes
 ##############################################################################
-def stream_next(stream):
-    """
-        return the next value of the stream
-        (event, value, line_number)
-        or
-        (None, None, None) if StopIteration exception is raised
-    """
-
-    try:
-        event, value, line_number = stream.next()
-        return (event, value, line_number)
-    except StopIteration:
-        return (None, None, None)
-
-
-def normalize(data):
-    """
-        Normalize data
-
-        http://www.w3.org/TR/html401/struct/text.html#h-9.1
-        collapse input white space sequences when producing output inter-word
-        space.
-    """
-
-    # decode the data
-    data = Unicode.decode(data, encoding)
-    return ' '.join(data.split())
-
-
-def font_value(str_value, style_size = 12):
-    style_size = 12  # TODO : replace default_value by current stylesheet
-                     # size
-    map_fontsize = {'xx-small': 20, 'x-small': 40, 'smaller': 60, 'small':80,
-                    'medium':100, 'large': 120, 'larger': 140, 'x-large': 160,
-                    'xx-large': 180}
-    if str_value[0].isalpha():
-        if str_value in map_fontsize.keys():
-            value = map_fontsize[str_value]
-        else:
-            print u"/!\ 'font-size' bad value"
-            value = 100
-        if value == 100:
-            value = style_size
-        else:
-            value = value * style_size / 100
-    elif str_value.endswith('%'):
-        value = (int(str_value.rstrip('%')) * style_size) / 100
-    else:
-        try:
-            value = int(str_value)
-        except ValueError:
-            value = style_size
-    return value
-
-
 def build_attributes(tag_name, attributes):
     if tag_name == 'a':
         attrs = attributes
@@ -1659,6 +1376,78 @@ def build_attributes(tag_name, attributes):
     return attrs
 
 
+def build_img_attributes(_attributes, context):
+    attrs = {}
+    itools_img = None
+    for key, attr_value in _attributes.iteritems():
+        key = key[1]
+        if key == 'src':
+            file_path, itools_img = check_image(attr_value, context)
+            attrs[(URI, 'src')] = file_path
+        elif key == 'width':
+            attrs[(URI, 'width')] = format_size(attr_value)
+        elif key == 'height':
+            attrs[(URI, 'height')] = format_size(attr_value)
+
+    exist_width = exist_attribute(attrs, ['width'])
+    exist_height = exist_attribute(attrs, ['height'])
+    if exist_width or exist_height:
+        width, height = itools_img.get_size()
+        width = width * 1.0
+        height = height * 1.0
+        tup_width = (URI, 'width')
+        tup_height = (URI, 'height')
+        # Calculate sizes to resize
+        if exist_width:
+            element = attrs[tup_width]
+            if isinstance(element, str) and element.endswith('%'):
+                value = get_int_value(element[:-1])
+                attrs[tup_width] = value * width / 100
+            if not exist_height:
+                attrs[tup_height] = round(attrs[tup_width] * height / width)
+        if exist_height:
+            element = attrs[tup_height]
+            if isinstance(element, str) and element.endswith('%'):
+                value = get_int_value(element[:-1])
+                attrs[tup_height] = value * height / 100
+            if not exist_width:
+                attrs[tup_width] = round(attrs[tup_height] * width / height)
+    return attrs
+
+
+def build_span_attributes(attributes):
+    tag_stack = []
+    attrs = {}
+    attrib = {}
+    if exist_attribute(attributes, ['style']):
+        style = ''.join(attributes.pop((URI, 'style')).split()).rstrip(';')
+        if style:
+            stylelist = style.split(';')
+            for element in stylelist:
+                element_list = element.split(':')
+                attrs[element_list[0].lower()] = element_list[1].lower()
+            if attrs.has_key('color'):
+                color = attrs['color']
+                if color is not None:
+                    attrib[(URI, 'color')] = get_color_as_hexa(color)
+            if attrs.has_key('font-family'):
+                family = attrs.pop('font-family')
+                attrib[(URI, 'face')] = FONT.get(family, 'helvetica')
+            if attrs.has_key('font-size'):
+                size = attrs.pop('font-size')
+                attrib[(URI, 'size')] = font_value(size)
+            if attrs.has_key('font-style'):
+                style = attrs.pop('font-style')
+                if style in ('italic', 'oblique'):
+                    tag_stack.append('i')
+                elif style != 'normal':
+                    print 'Warning font-style not valid'
+    return attrib, tag_stack
+
+
+##############################################################################
+# Internal Functions                                                         #
+##############################################################################
 def build_start_tag(tag_name, attributes={}):
     """
         Create the XML start tag from his name and his attributes
@@ -1691,57 +1480,6 @@ def build_start_tag(tag_name, attributes={}):
     return '<%s%s>' % (tag, attr_str)
 
 
-def get_color_as_hexa(value, default='#000000'):
-    value = value.strip()
-    if value.startswith('rgb'):
-        value = value.lstrip('rgb(').rstrip(')').split(',')
-        value = [ int(i) for i in value ]
-        tmp = []
-        if len(value) == 3:
-            # RGB
-            for i in value:
-                if i < 256:
-                    tmp.append('%02x' % i)
-                else:
-                    print 'Warning the color "%s" is not well formed ' % hex
-                    return None
-        value = '#%s' % ''.join(tmp)
-    elif value.startswith('#'):
-        if len(value) == 4:
-            # #aba -> #aabbaa
-            r = value[1] * 2
-            g = value[2] * 2
-            b = value[3] * 2
-            value = '#%s%s%s' % (r, g, b)
-    else:
-        # Warning getAllNamedColors() uses a singleton
-        value = colors.getAllNamedColors().get(value, default)
-    return value
-
-
-def get_color(value):
-    value = get_color_as_hexa(value)
-    color = colors.toColor(value, colors.black)
-    return color
-
-
-def get_int_value(value, default=0):
-    """
-    Return the interger representation of value is his decoding succeed
-    otherwise the default value
-    """
-    if not value:
-        return default
-    try:
-        return Integer.decode(value)
-    except ValueError:
-        return default
-
-
-def round(value):
-    return floor(value + 0.5)
-
-
 def get_bullet(type, indent='-0.4cm'):
 
     types = {'disc': '\xe2\x80\xa2',
@@ -1751,22 +1489,3 @@ def get_bullet(type, indent='-0.4cm'):
     s = '<bullet bulletIndent="%s" font="Symbol">%s</bullet>'
     bullet = s % (indent, types.get(type, types['disc']))
     return bullet
-
-
-def exist_attribute(attrs, keys, at_least=False):
-    """
-        if at_least is False
-        Return True if all key in keys
-        are contained in the dictionnary attrs
-    """
-
-    if at_least is False:
-        for key in keys:
-            if attrs.has_key((URI, key)) is False:
-                return False
-        return True
-    else:
-        for key in keys:
-            if attrs.has_key((URI, key)) is True:
-                return True
-        return False

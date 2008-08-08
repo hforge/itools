@@ -485,6 +485,9 @@ def body_stream(stream, _tag_name, _attributes, context):
                 if level is not None:
                     context.toc_high_level = get_int_value(level)
                 context.toc_place = len(story)
+            elif tag_name in PHRASE:
+                story.extend(paragraph_stream(stream, tag_name, attributes,
+                                              context))
             else:
                 print MSG_TAG_NOT_SUPPORTED % ('document', line_number,
                                                tag_name)
@@ -564,8 +567,9 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context, prefix=None)
             if not skip:
                 if tag_name in INLINE:
                     start_tag = True
-                    if tag_name in ('a', 'b', 'big', 'em', 'i', 'small',
-                                    'strong', 'sub', 'sup', 'tt', 'u'):
+                    if tag_name in ('a', 'b', 'big', 'code', 'em', 'i',
+                                    'small', 'strong', 'sub', 'sup', 'tt',
+                                    'u'):
                         # FIXME
                         attrs = build_attributes(tag_name, attributes)
                         if cpt or has_content:

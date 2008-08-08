@@ -40,7 +40,7 @@ from style import (build_paragraph_style, get_table_style,
                    makeTocHeaderStyle, get_align)
 from utils import (FONT, URI, check_image, exist_attribute, font_value,
                    format_size, get_color, get_color_as_hexa, get_int_value,
-                   normalize, stream_next)
+                   normalize, pc_float, stream_next)
 
 #Import from the reportlab Library
 from reportlab.lib.pagesizes import LETTER
@@ -1327,14 +1327,14 @@ def build_img_attributes(attributes, context):
             element = attrs[tup_width]
             if isinstance(element, str) and element.endswith('%'):
                 value = get_int_value(element[:-1])
-                attrs[tup_width] = value * width / 100
+                attrs[tup_width] = pc_float(value, width)
             if not exist_height:
                 attrs[tup_height] = round(attrs[tup_width] * height / width)
         if exist_height:
             element = attrs[tup_height]
             if isinstance(element, str) and element.endswith('%'):
                 value = get_int_value(element[:-1])
-                attrs[tup_height] = value * height / 100
+                attrs[tup_height] = pc_float(value, height)
             if not exist_width:
                 attrs[tup_width] = round(attrs[tup_height] * width / height)
     return attrs

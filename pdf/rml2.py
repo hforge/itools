@@ -36,7 +36,7 @@ from itools.xml import (XMLParser, START_ELEMENT, END_ELEMENT, TEXT,
 import itools.http
 
 # Internal import
-from style import build_paragraph_style, makeTocHeaderStyle
+from style import build_paragraph_style, get_table_style, makeTocHeaderStyle
 from utils import (FONT, URI, check_image, exist_attribute, font_value,
                    format_size, get_color, get_color_as_hexa, get_int_value,
                    normalize, stream_next)
@@ -937,28 +937,16 @@ def def_list_stream(stream, _tag_name, attributes, context):
                 print '4', MSG_WARNING_DTD % ('document', line_number, tag_name)
 
 
-
 def table_stream(stream, _tag_name, attributes, context):
     content = Table_Content(context)
     start = (0, 0)
     stop = (-1, -1)
-    if exist_attribute(attributes, ['border']):
-        border = get_int_value(attributes.get((URI, 'border')))
-        if border > 0:
-            # FIXME default color must be moved in default css
-            content.add_style(('GRID', start, stop, border, get_color('grey')))
     if exist_attribute(attributes, ['align']):
         hAlign = attributes.get((URI, 'align')).upper()
         if hAlign in ['LEFT', 'RIGHT', 'CENTER', 'CENTRE']:
             content.add_attributes('hAlign', hAlign)
-    if exist_attribute(attributes, ['cellpadding']):
-        attr_value = attributes.get((URI, 'cellpadding'), None)
-        if attr_value is not None:
-            value = format_size(attr_value)
-            if value is not None:
-                value = int(value)
-                for padding in PADDINGS:
-                    content.add_style((padding, start, stop, value))
+
+    content.extend_style(get_table_style(context, attributes, start, stop))
 
     while True:
         event, value, line_number = stream_next(stream)
@@ -991,6 +979,10 @@ def table_stream(stream, _tag_name, attributes, context):
 
 
 def tr_stream(stream, _tag_name, attributes, table, context):
+    x, y = table.get_current()
+    style = get_table_style(context, attributes, (0, y), (-1, y))
+    table.extend_style(style)
+
     stop = None
 
     while True:
@@ -1017,22 +1009,9 @@ def tr_stream(stream, _tag_name, attributes, table, context):
                     stop = table.process_span(rowspan, colspan)
                 else:
                     stop = table.get_current()
-                # DEPRECATED
-                if exist_attribute(attributes, ['bgcolor']):
-                    val = attributes.get((URI,'bgcolor'))
-                    color = get_color(val)
-                    table.add_style(('BACKGROUND', (table.current_x,
-                                                    table.current_y),
-                                     stop, color))
-                #ALIGNMENT
-                for i in ('align', 'valign'):
-                    if exist_attribute(attributes, [i]):
-                        val = attributes.get((URI, i))
-                        table.add_style((i.upper(),
-                                        (table.current_x, table.current_y),
-                                        stop,
-                                        val.upper()))
-
+                start = (table.current_x, table.current_y)
+                style = get_table_style(context, attributes, start, stop)
+                table.extend_style(style)
                 table.next_cell()
             else:
                 print MSG_WARNING_DTD % ('document', line_number, tag_name)
@@ -1283,6 +1262,10 @@ class Table_Content(object):
 
     def add_style(self, style):
         self.style.append(style)
+
+
+    def extend_style(self, style):
+        self.style.extend(style)
 
 
     def process_span(self, rowspan, colspan):

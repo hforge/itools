@@ -22,15 +22,24 @@
 from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT, TA_JUSTIFY
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import cm
-from utils import (FONT, font_value, format_size, get_color_as_hexa)
+from utils import (URI, FONT, font_value, format_size, get_color_as_hexa,
+                   get_color)
 
 P_ALIGNMENTS = {'left': TA_LEFT, 'right': TA_RIGHT, 'center': TA_CENTER,
               'justify': TA_JUSTIFY}
+TAB_V_ALIGN = ('top', 'middle', 'bottom')
+TAB_H_ALIGN = {'left': 'LEFT', 'right': 'RIGHT', 'center': 'CENTER', 'justify':
+               'LEFT'}
 
 P_PADDINGS = {'padding-top' : 'spaceBefore', 'padding-bottom': 'spaceAfter',
               'padding-left': 'leftIndent', 'padding-right': 'rightIndent'}
 
 HEADING = ('h1', 'h2', 'h3', 'h4', 'h5', 'h6')
+
+TABLE_PADDINGS = { 'padding-top':'TOPPADDING',
+                   'padding-bottom': 'BOTTOMPADDING',
+                   'padding-left': 'LEFTPADDING',
+                   'padding-right': 'RIGHTPADDING'}
 
 
 def p_border_style(key, value):
@@ -57,6 +66,14 @@ def p_border_style(key, value):
     return style_attrs
 
 
+def table_border_style(border, start, stop):
+    width = border.get('borderWidth', None)
+    if width is not None and width > 0:
+        color = get_color(border.get('borderColor', 'grey'))
+        return [('GRID', start, stop, width, color)]
+    return []
+
+
 def p_font_style(key, value):
     style_attr = {}
     if key == 'font-family':
@@ -76,6 +93,38 @@ def p_padding_style(key, value):
         elif key in P_PADDINGS.keys():
             style_attr[P_PADDINGS[key]] = size
     return style_attr
+
+
+def table_padding_style(key, value, start, stop):
+    style = []
+    size = format_size(value, None)
+    if value:
+        if key == 'padding':
+            for padding in TABLE_PADDINGS.values():
+                style.append((padding, start, stop, size))
+        elif key in TABLE_PADDINGS.keys():
+            style.append((TABLE_PADDINGS[key], start, stop, size))
+    return style
+
+
+def table_background_style(key, value, start, stop):
+    style = []
+    if key == 'background-color':
+        color = get_color(value)
+        style.append(('BACKGROUND', start, stop, color))
+    return style
+
+
+def table_align_style(key, value, start, stop):
+
+    style = []
+    if key == 'vertical-align':
+        if value in TAB_V_ALIGN:
+            style.append(('VALIGN', start, stop, key.upper()))
+    elif key == 'text-align':
+        val = TAB_H_ALIGN.get(value, 'LEFT')
+        style.append(('ALIGN', start, stop, val))
+    return style
 
 
 def build_paragraph_style(context, element, style_css):
@@ -123,6 +172,31 @@ def build_paragraph_style(context, element, style_css):
             bulletText)
 
 
+def get_table_style(context, attributes, start, stop):
+    style_css = context.get_css_props()
+    table_style = []
+    border = {}
+
+    for key, value in style_css.iteritems():
+        if key.startswith('border'):
+            border.update(p_border_style(key, value))
+        elif key.startswith('padding'):
+            table_style.extend(table_padding_style(key, value, start, stop))
+        elif key.startswith('background'):
+            table_style.extend(table_background_style(key, value, start, stop))
+        elif key.endswith('align'):
+            table_style.extend(table_align_style(key, value, start, stop))
+
+    for key, value in attributes.iteritems():
+        if key == (URI, 'border') and start == (0, 0) and stop == (-1,-1):
+            border.update(p_border_style('border-width', value))
+        if key[0] == URI and key[1] in ATTR_TO_STYLE.keys():
+            function, style_key = ATTR_TO_STYLE[key[1]]
+            table_style.extend(function(style_key, value, start, stop))
+    table_style.extend(table_border_style(border, start, stop))
+    return table_style
+
+
 def makeTocHeaderStyle(level, delta, epsilon, fontName='Times-Roman'):
     """
         Make a header style for different levels.
@@ -142,3 +216,9 @@ def makeTocHeaderStyle(level, delta, epsilon, fontName='Times-Roman'):
                leftIndent = level*delta + epsilon)
 
     return style
+
+
+# This map of functions is defined here
+# to avoid definition's problems
+ATTR_TO_STYLE = {'cellpadding': (table_padding_style, 'padding'),
+                 'bgcolor': (table_background_style, 'background-color')}

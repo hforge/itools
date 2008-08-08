@@ -36,7 +36,8 @@ from itools.xml import (XMLParser, START_ELEMENT, END_ELEMENT, TEXT,
 import itools.http
 
 # Internal import
-from style import build_paragraph_style, get_table_style, makeTocHeaderStyle
+from style import (build_paragraph_style, get_table_style,
+                   makeTocHeaderStyle, get_align)
 from utils import (FONT, URI, check_image, exist_attribute, font_value,
                    format_size, get_color, get_color_as_hexa, get_int_value,
                    normalize, stream_next)
@@ -941,11 +942,7 @@ def table_stream(stream, _tag_name, attributes, context):
     content = Table_Content(context)
     start = (0, 0)
     stop = (-1, -1)
-    if exist_attribute(attributes, ['align']):
-        hAlign = attributes.get((URI, 'align')).upper()
-        if hAlign in ['LEFT', 'RIGHT', 'CENTER', 'CENTRE']:
-            content.add_attributes('hAlign', hAlign)
-
+    content.add_attributes(get_align(attributes))
     content.extend_style(get_table_style(context, attributes, start, stop))
 
     while True:
@@ -1089,14 +1086,7 @@ def create_hr(attributes, context):
         attrs['lineCap'] = line_cap
     if exist_attribute(attributes, ['color']):
         attrs['color'] = get_color(attributes.get((URI, 'color')))
-    if exist_attribute(attributes, ['align']):
-        h_align = attributes.get((URI, 'align'), '').upper()
-        if h_align in ('LEFT', 'RIGHT', 'CENTER', 'CENTRE'):
-            attrs['hAlign'] = h_align
-    if exist_attribute(attributes, ['vAlign']):
-        v_align = attributes.get((URI, 'vAlign'), '').upper()
-        if v_align in ('TOP', 'MIDDLE', 'BOTTOM'):
-            attrs['vAlign'] = v_align
+    attrs.update(get_align(attributes))
     return HRFlowable(**attrs)
 
 
@@ -1256,8 +1246,8 @@ class Table_Content(object):
 
 
     # Attributes
-    def add_attributes(self, name, value):
-        self.attrs[name] = value
+    def add_attributes(self, attributes):
+        self.attrs.update(attributes)
 
 
     def add_style(self, style):

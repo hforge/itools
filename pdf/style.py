@@ -31,6 +31,9 @@ TAB_V_ALIGN = ('top', 'middle', 'bottom')
 TAB_H_ALIGN = {'left': 'LEFT', 'right': 'RIGHT', 'center': 'CENTER', 'justify':
                'LEFT'}
 
+H_ALIGN = ('left', 'right', 'center')
+V_ALIGN = ('top', 'middle', 'bottom')
+
 P_PADDINGS = {'padding-top' : 'spaceBefore', 'padding-bottom': 'spaceAfter',
               'padding-left': 'leftIndent', 'padding-right': 'rightIndent'}
 
@@ -40,6 +43,17 @@ TABLE_PADDINGS = { 'padding-top':'TOPPADDING',
                    'padding-bottom': 'BOTTOMPADDING',
                    'padding-left': 'LEFTPADDING',
                    'padding-right': 'RIGHTPADDING'}
+
+
+def get_align(attributes):
+    attrs = {}
+    hAlign = attributes.get((URI, 'align'), None)
+    if hAlign in H_ALIGN:
+        attrs['hAlign'] = hAlign.upper()
+    vAlign = attributes.get((URI, 'valign'), None)
+    if vAlign in V_ALIGN:
+        attrs['vAlign'] = vAlign.upper()
+    return attrs
 
 
 def p_border_style(key, value):

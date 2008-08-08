@@ -504,7 +504,7 @@ def body_stream(stream, _tag_name, _attributes, context):
     return story
 
 
-def paragraph_stream(stream, elt_tag_name, elt_attributes, context):
+def paragraph_stream(stream, elt_tag_name, elt_attributes, context, prefix=None):
     """
         stream : parser stream
     """
@@ -520,7 +520,8 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context):
     style_p = context.get_css_props()
     skip = False
     place = 0
-
+    if prefix is not None:
+        content.append(prefix)
     while context.anchor:
         content.append(context.anchor.pop())
     while True:
@@ -768,7 +769,7 @@ def list_stream(stream, _tag_name, attributes, context, id=0):
     INDENT_VALUE = 1 * cm
     story = [Indenter(left=INDENT_VALUE)]
     strid = str(id)
-    content = ["<seqDefault id='%s'/><seqReset id='%s'/>" % (strid, strid)]
+    prefix = ["<seqDefault id='%s'/><seqReset id='%s'/>" % (strid, strid)]
     has_content = False
     stack.append((_tag_name, attributes))
     li_state = 0 # 0 -> outside, 1 -> inside
@@ -786,9 +787,9 @@ def list_stream(stream, _tag_name, attributes, context, id=0):
         if exist_attribute(attributes, ['type']):
             attrs['type'] = attributes.get((URI, 'type'))
             seq = "<seqFormat id='%s' value='%s'/>" % (strid, attrs['type'])
-            content.append(seq)
+            prefix.append(seq)
         else:
-            content.append("<seqFormat id='%s' value='1'/>" % strid)
+            prefix.append("<seqFormat id='%s' value='1'/>" % strid)
 
     while True:
         event, value, line_number = stream_next(stream)
@@ -799,47 +800,13 @@ def list_stream(stream, _tag_name, attributes, context, id=0):
             tag_uri, tag_name, attributes = value
             context.path_on_start_event(tag_name, attributes)
             if tag_name in ('ul', 'ol'):
-                if li_state:
-                    story.append(create_paragraph(context, stack[0],
-                                                  content))
-                    content = ["<seqDefault id='%s'/>" % strid]
-                    story += list_stream(stream, tag_name, attributes,
+                prefix = ["<seqDefault id='%s'/>" % strid]
+                story += list_stream(stream, tag_name, attributes,
                                          context, id+1)
-                else:
-                    print MSG_WARNING_DTD % ('document', line_number,
-                                             tag_name)
             elif tag_name == 'li':
-                li_state = 1
-                content.append(bullet)
-            elif tag_name in INLINE:
-                start_tag = True
-                if tag_name in ('a', 'b', 'big', 'em', 'i', 'small', 'strong',
-                                'sub', 'sup', 'tt', 'u'):
-                    # FIXME
-                    attrs = build_attributes(tag_name, attributes)
-                    if cpt or has_content:
-                        content[-1] += build_start_tag(tag_name, attrs)
-                    else:
-                        content.append(build_start_tag(tag_name, attrs))
-                    cpt += 1
-                elif tag_name == 'span':
-                    attrs, tag_stack = build_span_attributes(attributes)
-                    if cpt or has_content:
-                        content[-1] += build_start_tag(tag_name, attrs)
-                    else:
-                        content.append(build_start_tag(tag_name, attrs))
-                    for i in tag_stack:
-                        content[-1] += '<%s>' % i
-                    cpt += 1
-                elif tag_name == 'br':
-                    continue
-                elif tag_name == 'img':
-                    attrs = build_img_attributes(attributes, context)
-                    content.append(build_start_tag(tag_name, attrs))
-                else:
-                    print MSG_TAG_NOT_SUPPORTED % ('document', line_number,
-                                               tag_name)
-                    stack.append((tag_name, attributes))
+                prefix.append(bullet)
+                story.extend(paragraph_stream(stream, tag_name, attributes, context, ''.join(prefix)))
+                prefix = []
             else:
                 print MSG_WARNING_DTD % ('document', line_number, tag_name)
 
@@ -848,72 +815,13 @@ def list_stream(stream, _tag_name, attributes, context, id=0):
             tag_uri, tag_name = value
             context.path_on_end_event()
             if tag_name in ('ul', 'ol'):
-                story.append(create_paragraph(context, stack.pop(),
-                             content))
                 story.append(Indenter(left=-INDENT_VALUE))
                 return story
-            if len(content):
-                # spaces must be ignore if character before it is '\n'
-                tmp = content[-1].rstrip(' \t')
-                if len(tmp):
-                    if tmp[-1] == '\n':
-                        content[-1] = tmp.rstrip('\n')
-            if tag_name == 'li':
-                story.append(create_paragraph(context, stack[0],
-                                              content))
-                content = []
-                li_state = 0
-            elif tag_name == 'span':
-                cpt -= 1
-                end_tag = True
-                while tag_stack:
-                    content[-1] += '</%s>' % tag_stack.pop()
-                content[-1] += get_end_tag(None, P_FORMAT.get(tag_name, 'b'))
-            elif tag_name == 'br':
-                content.append('<br/>')
-            elif tag_name in P_FORMAT.keys():
-                cpt -= 1
-                end_tag = True
-                content[-1] += get_end_tag(None, P_FORMAT.get(tag_name, 'b'))
             else:
                 print MSG_TAG_NOT_SUPPORTED % ('document', line_number,
                                                tag_name)
                 # unknown tag
                 stack.append((tag_name, attributes))
-
-        #### TEXT ELEMENT ####
-        elif event == TEXT:
-            if li_state:
-                # alow to write :
-                # <para><u><i>foo</i> </u></para>
-                value = XMLContent.encode(value) # entities
-                # spaces must be ignore after a start tag if the next
-                # character is '\n'
-                if start_tag:
-                    if value[0] == '\n':
-                        value = value.lstrip('\n\t ')
-                        if not len(value):
-                            continue
-                    start_tag = False
-                if has_content and content[-1].endswith('<br/>'):
-                    # <p>
-                    #   foo          <br />
-                    #     bar   <br />     team
-                    # </p>
-                    # equal
-                    # <p>foo <br />bar <br />team</p>
-                    value = value.lstrip()
-                    content[-1] += value
-                    end_tag = False
-                elif has_content and content[-1].endswith('</span>'):
-                    content[-1] += value
-                    end_tag = False
-                elif end_tag or cpt:
-                    content[-1] += value
-                    end_tag = False
-                else:
-                    has_content = True
-                    content.append(value)
 
 
 def def_list_stream(stream, _tag_name, attributes, context):

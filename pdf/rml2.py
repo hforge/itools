@@ -58,10 +58,10 @@ from reportlab.lib.units import cm
 import css
 
 # Mapping HTML -> REPORTLAB
-P_FORMAT = {'a': 'a', 'em': 'i', 'b': 'b', 'span': 'font', 'sub': 'sub',
-            'img': 'img', 'i': 'i', 'big': 'font', 'tt': 'font', 'p': 'para',
-            'code': 'font', 'u': 'u', 'sup': 'super', 'small': 'font',
-            'strong': 'b'}
+P_FORMAT = {'a': 'a', 'em': 'i', 'b': 'b', 'br': 'br', 'span': 'font',
+            'sub': 'sub', 'img': 'img', 'i': 'i', 'big': 'font',
+            'tt': 'font', 'p': 'para', 'code': 'font', 'u': 'u',
+            'sup': 'super', 'small': 'font', 'strong': 'b'}
 
 SPECIAL = ('a', 'br', 'img', 'span', 'sub', 'sup')
 PHRASE = ('code', 'em', 'strong')
@@ -77,6 +77,8 @@ MSG_WARNING_DTD = '%s: line %s tag "%s" is unapproprieted here.'
 MSG_ROW_ERROR = 'Table error : too many row at its line: %s'
 
 HEADING = ('h1', 'h2', 'h3', 'h4', 'h5', 'h6')
+
+EMPTY_TAGS = ('br', 'img')
 
 
 
@@ -98,6 +100,7 @@ class Context(object):
         self.anchor = []
         socket.setdefaulttimeout(10)
         self.list_anchor = []
+        self.tag_stack = []
 
 
     def init_base_style_sheet(self):
@@ -468,7 +471,8 @@ def body_stream(stream, _tag_name, _attributes, context):
             elif tag_name == 'a':
                 # FIXME anchor are stored in stack and it pop in the nextest
                 # paragraph
-                context.anchor.append(build_start_tag(tag_name, attributes, context))
+                attrs = build_attributes(tag_name, attributes, context)
+                context.anchor.append(build_start_tag(tag_name, attrs))
             elif tag_name in ('ol', 'ul'):
                 story.extend(list_stream(stream, tag_name, attributes,
                                          context))
@@ -499,7 +503,7 @@ def body_stream(stream, _tag_name, _attributes, context):
             context.path_on_end_event()
             if tag_name == _tag_name:
                 break
-            elif tag_name in ('toc', 'pagebreak'):
+            elif tag_name in ('a', 'toc', 'pagebreak'):
                 continue
             else:
                 print MSG_TAG_NOT_SUPPORTED % ('document', line_number,
@@ -518,7 +522,6 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context, prefix=None)
     has_content = False
     is_not_paragraph = (elt_tag_name != 'p')
     story = []
-    tag_stack = []
     start_tag = True
     end_tag = False
     style_p = context.get_css_props()
@@ -526,8 +529,6 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context, prefix=None)
     place = 0
     if prefix is not None:
         content.append(prefix)
-    while context.anchor:
-        content.append(context.anchor.pop())
 
     while True:
         event, value, line_number = stream_next(stream)
@@ -565,34 +566,21 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context, prefix=None)
                 else:
                     skip = False
             if not skip:
+                while context.anchor:
+                    content.append(context.anchor.pop())
+
                 if tag_name in INLINE:
                     start_tag = True
-                    if tag_name in ('a', 'b', 'big', 'code', 'em', 'i',
-                                    'small', 'strong', 'sub', 'sup', 'tt',
-                                    'u'):
-                        # FIXME
-                        attrs = build_attributes(tag_name, attributes)
-                        if cpt or has_content:
-                            content[-1] += build_start_tag(tag_name, attrs, context)
-                        else:
-                            content.append(build_start_tag(tag_name, attrs, context))
-                            has_content = True
-                        cpt += 1
-                    elif tag_name == 'span':
-                        attrs, tag_stack = build_span_attributes(attributes)
+                    if tag_name in P_FORMAT.keys():
+                        attrs = build_attributes(tag_name, attributes, context)
                         if cpt or has_content:
                             content[-1] += build_start_tag(tag_name, attrs)
                         else:
                             content.append(build_start_tag(tag_name, attrs))
                             has_content = True
-                        for i in tag_stack:
-                            content[-1] += '<%s>' % i
+                        for tag, attrs in context.tag_stack:
+                            content[-1] += build_start_tag(tag, attrs)
                         cpt += 1
-                    elif tag_name == 'br':
-                        continue
-                    elif tag_name == 'img':
-                        attrs = build_img_attributes(attributes, context)
-                        content.append(build_start_tag(tag_name, attrs))
                     else:
                         print MSG_TAG_NOT_SUPPORTED % ('document',
                                                        line_number, tag_name)
@@ -625,17 +613,14 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context, prefix=None)
                     para = create_paragraph(context, elt, content, style_p)
                     story.append(para)
                 return story
-            elif tag_name == 'span':
-                cpt -= 1
-                end_tag = True
-                while tag_stack:
-                    content[-1] += '</%s>' % tag_stack.pop()
-                content[-1] += get_end_tag(None, P_FORMAT.get(tag_name, 'b'))
-            elif tag_name == 'br':
-                content.append('<br/>')
+            if tag_name in EMPTY_TAGS:
+                has_content = False
             elif tag_name in P_FORMAT.keys():
                 cpt -= 1
                 end_tag = True
+                while context.tag_stack:
+                    tag, attrs = context.tag_stack.pop()
+                    content[-1] += get_end_tag(None, P_FORMAT.get(tag, 'b'))
                 content[-1] += get_end_tag(None, P_FORMAT.get(tag_name, 'b'))
             else:
                 print MSG_TAG_NOT_SUPPORTED % ('document', line_number,
@@ -1265,24 +1250,57 @@ class Table_Content(object):
 ##############################################################################
 # tag attributes
 ##############################################################################
-def build_attributes(tag_name, attributes):
+def build_attributes(tag_name, attributes, context):
     if tag_name == 'a':
-        attrs = attributes
+        attrs = build_anchor_attributes(attributes, context)
     elif tag_name == 'big':
         attrs = {(URI, 'size'): font_value('120%')}
     elif tag_name == 'small':
         attrs = {(URI, 'size'): font_value('80%')}
     elif tag_name in ('code', 'tt'):
         attrs = {(URI, 'face'): FONT['monospace']}
+    elif tag_name == 'span':
+        attrs = build_span_attributes(attributes, context)
+    elif tag_name == 'img':
+        attrs = build_img_attributes(attributes, context)
     else:
         attrs = {}
     return attrs
 
 
-def build_img_attributes(_attributes, context):
+def build_anchor_attributes(attributes, context):
+    flag = False
+    attrs = {}
+    if exist_attribute(attributes, ['href']):
+        flag = True
+        href = XMLContent.encode(attributes.get((URI, 'href')))
+        # Reencode the entities because the a tags
+        # are decoded again by the reportlab para parser.
+        if href.startswith('#'):
+            ref = href[1:]
+            if ref not in context.list_anchor:
+                attrs2 = {(URI, 'name'): ref}
+                context.tag_stack.append(('a',  attrs2))
+        attrs[(URI, 'href')] = href
+    if exist_attribute(attributes, ['id', 'name'], at_least=True):
+        name = attributes.get((URI, 'id'), attributes.get((URI, 'name')))
+        if name:
+            if flag:
+                attrs2 = {(URI, 'name'): name}
+                context.tag_stack.append(('a',  attrs2))
+            else:
+                flag = True
+                attrs[(URI, 'name')] = name
+            context.list_anchor.append(name)
+    if not flag:
+        attrs[(URI, 'name')] = '_invalid_syntax_:('
+    return attrs
+
+
+def build_img_attributes(attributes, context):
     attrs = {}
     itools_img = None
-    for key, attr_value in _attributes.iteritems():
+    for key, attr_value in attributes.iteritems():
         key = key[1]
         if key == 'src':
             file_path, itools_img = check_image(attr_value, context)
@@ -1318,8 +1336,7 @@ def build_img_attributes(_attributes, context):
     return attrs
 
 
-def build_span_attributes(attributes):
-    tag_stack = []
+def build_span_attributes(attributes, context):
     attrs = {}
     attrib = {}
     if exist_attribute(attributes, ['style']):
@@ -1342,50 +1359,28 @@ def build_span_attributes(attributes):
             if attrs.has_key('font-style'):
                 style = attrs.pop('font-style')
                 if style in ('italic', 'oblique'):
-                    tag_stack.append('i')
+                    context.tag_stack.append('i')
                 elif style != 'normal':
                     print 'Warning font-style not valid'
-    return attrib, tag_stack
+    return attrib
 
 
 ##############################################################################
 # Internal Functions                                                         #
 ##############################################################################
-def build_start_tag(tag_name, attributes={}, context=None):
+def build_start_tag(tag_name, attrs={}):
     """
         Create the XML start tag from his name and his attributes
         span => font (map)
     """
-    if tag_name == 'a':
-        tag = None
-        attrs = {}
-        if exist_attribute(attributes, ['href']):
-            attrs['href'] = attributes.get((URI, 'href'))
-            # Reencode the entities because the a tags
-            # are decoded again by the reportlab para parser.
-            href = XMLContent.encode(attrs['href'])
-            tag = '<a href="%s">' % href
-            if href.startswith('#'):
-                ref = href[1:]
-                if ref not in context.list_anchor:
-                    tag += '<a name="%s"/>' % ref
-        if exist_attribute(attributes, ['id', 'name'], at_least=True):
-            name = attributes.get((URI, 'id'), attributes.get((URI, 'name')))
-            if name:
-                if tag:
-                    tag += '<a name="%s"/>' % name
-                else:
-                    tag = '<a name="%s"/>' % name
-                context.list_anchor.append(name)
-            else:
-                tag = ''
-        return tag
-    else:
-        attrs = attributes
     tag = P_FORMAT.get(tag_name, 'b')
     attr_str = ''.join([' %s="%s"' % (key[1], attrs[key])
                             for key in attrs.keys()])
-    return '<%s%s>' % (tag, attr_str)
+    a_is_empty = tag_name == 'a' and exist_attribute(attrs, ['name'])
+    if tag_name in EMPTY_TAGS or a_is_empty:
+        return '<%s%s/>' % (tag, attr_str)
+    else:
+        return '<%s%s>' % (tag, attr_str)
 
 
 def get_bullet(type, indent='-0.4cm'):

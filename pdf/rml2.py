@@ -22,6 +22,7 @@
 # Import from the Standard Library
 from cStringIO import StringIO
 import tempfile
+import socket
 
 # Import from itools
 from itools import get_abspath
@@ -94,6 +95,7 @@ class Context(object):
         css_file = get_abspath(v_globals, 'html.css')
         self.add_css_from_file(css_file)
         self.anchor = []
+        socket.setdefaulttimeout(10)
 
 
     def init_base_style_sheet(self):

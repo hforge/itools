@@ -638,6 +638,7 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context):
         #### TEXT ELEMENT ####
         elif event == TEXT:
             if len(value) > 0:
+                value = XMLContent.encode(value)
                 # alow to write :
                 # <para><u><i>foo</i> </u></para>
                 # spaces must be ignore after a start tag if the next

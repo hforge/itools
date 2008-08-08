@@ -303,7 +303,6 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
         Childs : template, stylesheet, story
     """
 
-    stack = []
     story = []
     context = Context()
     state = 0
@@ -339,18 +338,12 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
                 print MSG_TAG_NOT_SUPPORTED % ('document', line_number,
                                                tag_name)
                 # unknown tag
-                stack.append((tag_name, attributes))
         #### END ELEMENT ####
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
             context.path_on_end_event()
             if tag_name == 'html':
                 break
-            if tag_name == 'head':
-                continue
-            else:
-                # unknown tag
-                stack.pop()
 
     #### BUILD PDF ####
     if is_test == True:
@@ -367,6 +360,7 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
     else:
         doc = SimpleDocTemplate(pdf_stream, pagesize=LETTER)
 
+    # Record PDF informations
     doc.author = informations.get('author', '')
     doc.title = informations.get('title', '')
     doc.subject = informations.get('subject', '')
@@ -387,8 +381,6 @@ def head_stream(stream, _tag_name, _attributes, context):
     content = []
     while True:
         event, value, line_number = stream_next(stream)
-        if event == None:
-            break
         #### START ELEMENT ####
         if event == START_ELEMENT:
             tag_uri, tag_name, attributes = value
@@ -429,12 +421,6 @@ def head_stream(stream, _tag_name, _attributes, context):
                 context.add_current_style(' '.join(content))
             elif tag_name == 'title':
                 informations[tag_name] = normalize(' '.join(content))
-            elif tag_name == 'meta':
-                continue
-            else:
-                print MSG_TAG_NOT_SUPPORTED % ('document', line_number,
-                                               tag_name)
-                # unknown tag
 
         #### TEXT ELEMENT ####
         elif event == TEXT:
@@ -503,12 +489,6 @@ def body_stream(stream, _tag_name, _attributes, context):
             context.path_on_end_event()
             if tag_name == _tag_name:
                 break
-            elif tag_name in ('a', 'toc', 'pagebreak'):
-                continue
-            else:
-                print MSG_TAG_NOT_SUPPORTED % ('document', line_number,
-                                               tag_name)
-                # unknown tag
     return story
 
 
@@ -624,10 +604,6 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context,
                     tag, attrs = context.tag_stack.pop()
                     content[-1] += get_end_tag(None, P_FORMAT.get(tag, 'b'))
                 content[-1] += get_end_tag(None, P_FORMAT.get(tag_name, 'b'))
-            else:
-                print MSG_TAG_NOT_SUPPORTED % ('document', line_number,
-                                               tag_name)
-                # unknown tag
 
         #### TEXT ELEMENT ####
         elif event == TEXT:
@@ -669,7 +645,6 @@ def pre_stream(stream, tag_name, attributes, context):
         stream : parser stream
     """
 
-    stack = []
     styleN = context.get_style('Normal')
     content = []
     has_content = False
@@ -722,11 +697,6 @@ def hr_stream(stream, _tag_name, _attributes, context):
             context.path_on_end_event()
             if tag_name == _tag_name:
                 return create_hr(_attributes, context)
-        #### TEXT ELEMENT ####
-        elif event == TEXT:
-            pass
-        else:
-            print MSG_WARNING_DTD % ('document', line_number, tag_name)
 
 
 def img_stream(stream, _tag_name, _attributes, context):
@@ -745,11 +715,6 @@ def img_stream(stream, _tag_name, _attributes, context):
             context.path_on_end_event()
             if tag_name == _tag_name:
                 return create_img(attrs, context)
-        #### TEXT ELEMENT ####
-        elif event == TEXT:
-            pass
-        else:
-            print MSG_WARNING_DTD % ('document', line_number, tag_name)
 
 
 def list_stream(stream, _tag_name, attributes, context, id=0):
@@ -757,14 +722,12 @@ def list_stream(stream, _tag_name, attributes, context, id=0):
         stream : parser stream
     """
 
-    stack = []
     # TODO : default value must be in default css
     INDENT_VALUE = 1 * cm
     story = [Indenter(left=INDENT_VALUE)]
     strid = str(id)
     prefix = ["<seqDefault id='%s'/><seqReset id='%s'/>" % (strid, strid)]
     has_content = False
-    stack.append((_tag_name, attributes))
     li_state = 0 # 0 -> outside, 1 -> inside
     attrs = {}
     bullet = None
@@ -812,11 +775,6 @@ def list_stream(stream, _tag_name, attributes, context, id=0):
             if tag_name in ('ul', 'ol'):
                 story.append(Indenter(left=-INDENT_VALUE))
                 return story
-            else:
-                print MSG_TAG_NOT_SUPPORTED % ('document', line_number,
-                                               tag_name)
-                # unknown tag
-                stack.append((tag_name, attributes))
 
 
 def def_list_stream(stream, _tag_name, attributes, context):
@@ -853,8 +811,6 @@ def def_list_stream(stream, _tag_name, attributes, context):
             context.path_on_end_event()
             if tag_name == _tag_name:
                 return story
-            else:
-                print MSG_WARNING_DTD % ('document', line_number, tag_name)
 
 
 def table_stream(stream, _tag_name, attributes, context):
@@ -890,9 +846,6 @@ def table_stream(stream, _tag_name, attributes, context):
                 return content.create()
             elif tag_name == 'thead':
                 content.thead()
-            else:
-                print MSG_TAG_NOT_SUPPORTED % ('document', line_number,
-                                               tag_name)
 
 
 def tr_stream(stream, _tag_name, attributes, table, context):
@@ -939,9 +892,6 @@ def tr_stream(stream, _tag_name, attributes, table, context):
             tag_uri, tag_name = value
             if tag_name == _tag_name:
                 return table
-            else:
-                print MSG_TAG_NOT_SUPPORTED % ('document', line_number,
-                                               tag_name)
 
 
 ##############################################################################
@@ -1259,14 +1209,14 @@ def build_attributes(tag_name, attributes, context):
         attrs = build_anchor_attributes(attributes, context)
     elif tag_name == 'big':
         attrs = {(URI, 'size'): font_value('120%')}
-    elif tag_name == 'small':
-        attrs = {(URI, 'size'): font_value('80%')}
-    elif tag_name in ('code', 'tt'):
-        attrs = {(URI, 'face'): FONT['monospace']}
-    elif tag_name == 'span':
-        attrs = build_span_attributes(attributes, context)
     elif tag_name == 'img':
         attrs = build_img_attributes(attributes, context)
+    elif tag_name == 'small':
+        attrs = {(URI, 'size'): font_value('80%')}
+    elif tag_name == 'span':
+        attrs = build_span_attributes(attributes, context)
+    elif tag_name in ('code', 'tt'):
+        attrs = {(URI, 'face'): FONT['monospace']}
     else:
         attrs = {}
     return attrs

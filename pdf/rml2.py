@@ -101,6 +101,7 @@ class Context(object):
         socket.setdefaulttimeout(10)
         self.list_anchor = []
         self.tag_stack = []
+        self.style_tag_stack = []
 
 
     def init_base_style_sheet(self):
@@ -603,7 +604,7 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context,
                 cpt -= 1
                 end_tag = True
                 while context.tag_stack:
-                    tag = context.tag_stack.pop()
+                    tag, attrib = context.tag_stack.pop()
                     content[-1] += get_end_tag(None, P_FORMAT.get(tag, 'b'))
                 content[-1] += get_end_tag(None, P_FORMAT.get(tag_name, 'b'))
 
@@ -911,8 +912,19 @@ def create_paragraph(context, element, content, style_css = {}):
     # content = ['  Hello\t\', '\t<i>how are</i>', '\tyou?']
 
     style, bulletText = build_paragraph_style(context, element, style_css)
+    if context.style_tag_stack:
+        start_tags = end_tags = ''
+        for tag in context.style_tag_stack:
+            start_tags += '<%s>' % tag
+        while context.style_tag_stack:
+            end_tags += get_end_tag(None, context.style_tag_stack.pop())
+
     if element[0] == 'pre':
         content = XMLContent.encode(''.join(content))
+        if context.style_tag_stack:
+            content = start_tags + content + end_tags
+        while context.style_tag_stack:
+            content += context.style_tag_stack.pop()
         widget = XPreformatted(content, style)
     else:
         # DEBUG
@@ -920,6 +932,8 @@ def create_paragraph(context, element, content, style_css = {}):
         content = normalize(' '.join(content))
         if element[0] in HEADING:
             content = context.get_toc_anchor(element[0], content)
+        if context.style_tag_stack:
+            content = start_tags + content + end_tags
         content = '<para>%s</para>' % content
         #print 1, content
         widget = Paragraph(content, style, bulletText)
@@ -1310,13 +1324,8 @@ def build_span_attributes(attributes, context):
             style_attr[(URI, 'textColor')] = get_color_as_hexa(value)
         elif key in ('background-color'):
             style_attr[(URI, 'backColor')] = get_color_as_hexa(value)
-        elif key == 'font-style':
-            if style in ('italic', 'oblique'):
-                context.tag_stack.append('i')
-            elif style != 'normal':
-                print 'Warning font-style not valid'
         elif key.startswith('font'):
-            font = p_font_style(key, value)
+            font = p_font_style(key, value, context)
             for f_key, f_value in font.iteritems():
                 style_attr[(URI, f_key)] = f_value
 

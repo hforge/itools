@@ -88,10 +88,15 @@ def table_border_style(border, start, stop):
     return []
 
 
-def p_font_style(key, value):
+def p_font_style(key, value, context):
     style_attr = {}
     if key == 'font-family':
         style_attr['fontName'] = FONT.get(value, 'Helvetica')
+    elif key == 'font-style':
+        if value in ('italic', 'oblique'):
+            context.style_tag_stack.append(('i'))
+        elif style != 'normal':
+            print 'Warning font-style not valid'
     elif key == 'font-size':
         style_attr['fontSize'] = font_value(value)
     return style_attr
@@ -159,7 +164,7 @@ def build_paragraph_style(context, element, style_css):
         elif key.startswith('border'):
             style_attr.update(p_border_style(key, value))
         elif key.startswith('font'):
-            style_attr.update(p_font_style(key, value))
+            style_attr.update(p_font_style(key, value, context))
         elif key.startswith('padding'):
             style_attr.update(p_padding_style(key, value))
 

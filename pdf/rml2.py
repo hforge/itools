@@ -316,7 +316,8 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
                 if state == 0:
                     state = 1
                 else:
-                    print MSG_WARNING_DTD % ('document', line_number, tag_name)
+                    print MSG_WARNING_DTD % ('document', line_number,
+                                             tag_name)
                 continue
             elif tag_name == 'head':
                 informations = head_stream(stream, tag_name, attributes,
@@ -327,10 +328,12 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
                     story += body_stream(stream, tag_name, attributes,
                                          context)
                 else:
-                    print MSG_WARNING_DTD % ('document', line_number, tag_name)
+                    print MSG_WARNING_DTD % ('document', line_number,
+                                             tag_name)
                 continue
             else:
-                print MSG_TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
+                print MSG_TAG_NOT_SUPPORTED % ('document', line_number,
+                                               tag_name)
                 # unknown tag
                 stack.append((tag_name, attributes))
         #### END ELEMENT ####
@@ -409,7 +412,8 @@ def head_stream(stream, _tag_name, _attributes, context):
             elif tag_name == 'style':
                 continue
             else:
-                print MSG_TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
+                print MSG_TAG_NOT_SUPPORTED % ('document', line_number,
+                                               tag_name)
 
         #### END ELEMENT ####
         elif event == END_ELEMENT:
@@ -424,7 +428,8 @@ def head_stream(stream, _tag_name, _attributes, context):
             elif tag_name == 'meta':
                 continue
             else:
-                print MSG_TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
+                print MSG_TAG_NOT_SUPPORTED % ('document', line_number,
+                                               tag_name)
                 # unknown tag
 
         #### TEXT ELEMENT ####
@@ -480,7 +485,8 @@ def body_stream(stream, _tag_name, _attributes, context):
                     context.toc_high_level = get_int_value(level)
                 context.toc_place = len(story)
             else:
-                print MSG_TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
+                print MSG_TAG_NOT_SUPPORTED % ('document', line_number,
+                                               tag_name)
                 # unknown tag
 
         #### END ELEMENT ####
@@ -492,7 +498,8 @@ def body_stream(stream, _tag_name, _attributes, context):
             elif tag_name in ('toc', 'pagebreak'):
                 continue
             else:
-                print MSG_TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
+                print MSG_TAG_NOT_SUPPORTED % ('document', line_number,
+                                               tag_name)
                 # unknown tag
     return story
 
@@ -530,8 +537,7 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context):
                 # TODO ? Merge with body_stream?
                 if tag_name in ('p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
                     story.extend(paragraph_stream(stream, tag_name,
-                                                  attributes,
-                                                  context))
+                                                  attributes, context))
                 elif tag_name == 'pre':
                     story.append(pre_stream(stream, tag_name, attributes,
                                             context))
@@ -555,8 +561,8 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context):
             if not skip:
                 if tag_name in INLINE:
                     start_tag = True
-                    if tag_name in ('a', 'b', 'big', 'em', 'i', 'small', 'strong',
-                                    'sub', 'sup', 'tt', 'u'):
+                    if tag_name in ('a', 'b', 'big', 'em', 'i', 'small',
+                                    'strong', 'sub', 'sup', 'tt', 'u'):
                         # FIXME
                         attrs = build_attributes(tag_name, attributes)
                         if cpt or has_content:
@@ -581,11 +587,12 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context):
                         attrs = build_img_attributes(attributes, context)
                         content.append(build_start_tag(tag_name, attrs))
                     else:
-                        print MSG_TAG_NOT_SUPPORTED % ('document', line_number,
-                                                       tag_name)
+                        print MSG_TAG_NOT_SUPPORTED % ('document',
+                                                       line_number, tag_name)
                         # unknown tag
                 else:
-                    print MSG_WARNING_DTD % ('document', line_number, tag_name)
+                    print MSG_WARNING_DTD % ('document', line_number,
+                                             tag_name)
 
         #### END ELEMENT ####
         elif event == END_ELEMENT:
@@ -600,12 +607,16 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context):
             content_lenth = len(content)
             if content_lenth > 0:
                 if skip:
-                    story.insert(place, create_paragraph(context, (elt_tag_name, elt_attributes), content, style_p))
+                    elt = (elt_tag_name, elt_attributes)
+                    para = create_paragraph(context, elt, content, style_p)
+                    story.insert(place, para)
                     content = []
                     has_content = False
             if tag_name == elt_tag_name:
                 if content_lenth > 0:
-                    story.append(create_paragraph(context, (elt_tag_name, elt_attributes), content, style_p))
+                    elt = (elt_tag_name, elt_attributes)
+                    para = create_paragraph(context, elt, content, style_p)
+                    story.append(para)
                 return story
             elif tag_name == 'span':
                 cpt -= 1
@@ -620,7 +631,8 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context):
                 end_tag = True
                 content[-1] += get_end_tag(None, P_FORMAT.get(tag_name, 'b'))
             else:
-                print MSG_TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
+                print MSG_TAG_NOT_SUPPORTED % ('document', line_number,
+                                               tag_name)
                 # unknown tag
 
         #### TEXT ELEMENT ####
@@ -675,8 +687,7 @@ def pre_stream(stream, tag_name, attributes, context):
         #### START ELEMENT ####
         if event == START_ELEMENT:
             tag_uri, tag_name, attrs = value
-            tag = get_start_tag(tag_uri, tag_name, attrs)
-            content.append(XMLContent.encode(tag))
+            content.append(get_start_tag(tag_uri, tag_name, attrs))
 
         #### END ELEMENT ####
         elif event == END_ELEMENT:
@@ -684,10 +695,10 @@ def pre_stream(stream, tag_name, attributes, context):
             if tag_name == 'pre':
                 css_style = context.get_css_props()
                 context.path_on_end_event()
-                return create_paragraph(context, (tag_name, attributes), content,
-                                        css_style)
+                return create_paragraph(context, (tag_name, attributes),
+                                        content, css_style)
             else:
-                content.append(XMLContent.encode(get_end_tag(None, tag_name)))
+                content.append(get_end_tag(None, tag_name))
 
         #### TEXT ELEMENT ####
         elif event == TEXT:
@@ -794,7 +805,8 @@ def list_stream(stream, _tag_name, attributes, context, id=0):
                     story += list_stream(stream, tag_name, attributes,
                                          context, id+1)
                 else:
-                    print MSG_WARNING_DTD % ('document', line_number, tag_name)
+                    print MSG_WARNING_DTD % ('document', line_number,
+                                             tag_name)
             elif tag_name == 'li':
                 li_state = 1
                 content.append(bullet)
@@ -863,7 +875,8 @@ def list_stream(stream, _tag_name, attributes, context, id=0):
                 end_tag = True
                 content[-1] += get_end_tag(None, P_FORMAT.get(tag_name, 'b'))
             else:
-                print MSG_TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
+                print MSG_TAG_NOT_SUPPORTED % ('document', line_number,
+                                               tag_name)
                 # unknown tag
                 stack.append((tag_name, attributes))
 
@@ -920,13 +933,15 @@ def def_list_stream(stream, _tag_name, attributes, context):
             tag_uri, tag_name, attributes = value
             context.path_on_start_event(tag_name, attributes)
             if tag_name == 'dt':
-                story.extend(paragraph_stream(stream, tag_name, attributes, context))
+                para = paragraph_stream(stream, tag_name, attributes, context)
+                story.extend(para)
             elif tag_name == 'dd':
                 story.append(Indenter(left=INDENT_VALUE))
-                story.extend(paragraph_stream(stream, tag_name, attributes, context))
+                para = paragraph_stream(stream, tag_name, attributes, context)
+                story.extend(para)
                 story.append(Indenter(left=-INDENT_VALUE))
             else:
-                print '5', MSG_WARNING_DTD % ('document', line_number, tag_name)
+                print MSG_WARNING_DTD % ('document', line_number, tag_name)
 
         #### END ELEMENT ####
         elif event == END_ELEMENT:
@@ -935,7 +950,7 @@ def def_list_stream(stream, _tag_name, attributes, context):
             if tag_name == _tag_name:
                 return story
             else:
-                print '4', MSG_WARNING_DTD % ('document', line_number, tag_name)
+                print MSG_WARNING_DTD % ('document', line_number, tag_name)
 
 
 def table_stream(stream, _tag_name, attributes, context):
@@ -972,7 +987,8 @@ def table_stream(stream, _tag_name, attributes, context):
             elif tag_name == 'thead':
                 content.thead()
             else:
-                print MSG_TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
+                print MSG_TAG_NOT_SUPPORTED % ('document', line_number,
+                                               tag_name)
 
 
 def tr_stream(stream, _tag_name, attributes, table, context):
@@ -1020,7 +1036,8 @@ def tr_stream(stream, _tag_name, attributes, table, context):
             if tag_name == _tag_name:
                 return table
             else:
-                print MSG_TAG_NOT_SUPPORTED % ('document', line_number, tag_name)
+                print MSG_TAG_NOT_SUPPORTED % ('document', line_number,
+                                               tag_name)
 
 
 ##############################################################################
@@ -1038,7 +1055,7 @@ def create_paragraph(context, element, content, style_css = {}):
 
     style, bulletText = build_paragraph_style(context, element, style_css)
     if element[0] == 'pre':
-        content = ''.join(content)
+        content = XMLContent.encode(''.join(content))
         widget = XPreformatted(content, style)
     else:
         # DEBUG
@@ -1248,10 +1265,6 @@ class Table_Content(object):
     # Attributes
     def add_attributes(self, attributes):
         self.attrs.update(attributes)
-
-
-    def add_style(self, style):
-        self.style.append(style)
 
 
     def extend_style(self, style):

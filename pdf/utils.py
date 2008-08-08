@@ -149,8 +149,7 @@ SIZE = {'in': inch, 'cm': cm, 'mm': mm, 'pica': pica, 'px': 1}
 
 
 def font_value(str_value, style_size = 12):
-    style_size = 12  # TODO : replace default_value by current stylesheet
-                     # size
+    style_size = 12  # TODO : replace default_value by current stylesheet size
     if str_value[0].isalpha():
         ratio = FONTSIZE.get(str_value, 100)
         value = pc_float(ratio, style_size)

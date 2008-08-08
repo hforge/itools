@@ -28,8 +28,8 @@ from utils import (URI, FONT, font_value, format_size, get_color_as_hexa,
 P_ALIGNMENTS = {'left': TA_LEFT, 'right': TA_RIGHT, 'center': TA_CENTER,
               'justify': TA_JUSTIFY}
 TAB_V_ALIGN = ('top', 'middle', 'bottom')
-TAB_H_ALIGN = {'left': 'LEFT', 'right': 'RIGHT', 'center': 'CENTER', 'justify':
-               'LEFT'}
+TAB_H_ALIGN = {'left': 'LEFT', 'right': 'RIGHT', 'center': 'CENTER',
+               'justify': 'LEFT'}
 
 H_ALIGN = ('left', 'right', 'center')
 V_ALIGN = ('top', 'middle', 'bottom')
@@ -121,7 +121,7 @@ def table_padding_style(key, value, start, stop):
     return style
 
 
-def table_background_style(key, value, start, stop):
+def table_bg_style(key, value, start, stop):
     style = []
     if key == 'background-color':
         color = get_color(value)
@@ -197,7 +197,7 @@ def get_table_style(context, attributes, start, stop):
         elif key.startswith('padding'):
             table_style.extend(table_padding_style(key, value, start, stop))
         elif key.startswith('background'):
-            table_style.extend(table_background_style(key, value, start, stop))
+            table_style.extend(table_bg_style(key, value, start, stop))
         elif key.endswith('align'):
             table_style.extend(table_align_style(key, value, start, stop))
 
@@ -235,4 +235,4 @@ def makeTocHeaderStyle(level, delta, epsilon, fontName='Times-Roman'):
 # This map of functions is defined here
 # to avoid definition's problems
 ATTR_TO_STYLE = {'cellpadding': (table_padding_style, 'padding'),
-                 'bgcolor': (table_background_style, 'background-color')}
+                 'bgcolor': (table_bg_style, 'background-color')}

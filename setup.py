@@ -17,15 +17,30 @@
 
 # Import from the Standard Library
 from distutils.core import Extension
+from subprocess import Popen, PIPE
+from sys import exit
 
 # Import from itools
 from utils import setup
 
+def hlib_dirs():
+    # Try to launch pkg_config
+    proc = Popen(['pkg-config', '--libs', '--cflags', 'hlib'], stdout=PIPE)
+    if proc.wait() != 0:
+        exit()
+
+    # Analyze the results
+    cmd_mapping = {'l': 'libraries', 'L': 'library_dirs', 'I': 'include_dirs'}
+    result = {'libraries': [], 'library_dirs': [], 'include_dirs': []}
+    for token in proc.stdout.read().split():
+            result[cmd_mapping[token[1]]].append(token[2:])
+    result['runtime_library_dirs'] = result['library_dirs']
+
+    return result
+
 
 if __name__ == '__main__':
-    cparser = Extension('itools.xml.parser',
-                        sources=['xml/parser.c', 'xml/doctype.c',
-                                 'xml/arp.c', 'xml/pyparser.c'],
-                        libraries=['glib-2.0'])
+    cparser = Extension('itools.xml.parser', sources=['xml/parser.c'],
+                        **hlib_dirs())
 
     setup(ext_modules=[cparser])

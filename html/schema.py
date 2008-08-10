@@ -361,6 +361,7 @@ html_elements = [
     Element('var', common_attrs),
     # XHTML 1.0 transitional
     EmptyElement('basefont', ['id', 'size', 'color', 'face']),
+    BlockElement('center', core_attrs),
     Element('font', core_attrs + i18n_attrs + ['size', 'color', 'face']),
     EmptyBlockElement('isindex', core_attrs + i18n_attrs + ['prompt']),
     Element('s', common_attrs),

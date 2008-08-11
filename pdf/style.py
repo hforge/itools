@@ -88,6 +88,34 @@ def table_border_style(border, start, stop):
     return []
 
 
+def inline_color_style(key, value, context):
+    if key == 'color':
+        return ('span', {(URI, 'color'): get_color_as_hexa(value)})
+    return None
+    
+
+def inline_text_style(key, value, context):
+    style = None
+    if key == 'text-decoration':
+        if value == 'underline':
+            style = ('u', {})
+    return style
+
+
+def inline_font_style(key, value, context):
+    style = None
+    if key == 'font-family':
+        style = ('span', {(URI, 'fontName'): FONT.get(value, 'Helvetica')})
+    elif key == 'font-style':
+        if value in ('italic', 'oblique'):
+            style = ('i', {})
+        elif value != 'normal':
+            print 'Warning font-style not valid'
+    elif key == 'font-size':
+        style = ('span', {(URI, 'fontSize'): font_value(value)})
+    return style
+
+
 def p_font_style(key, value, context):
     style_attr = {}
     if key == 'font-family':
@@ -189,6 +217,25 @@ def build_paragraph_style(context, element, style_css):
     parent_style = context.get_style(parent_style_name)
     return (ParagraphStyle(style_name, parent=parent_style, **style_attr),
             bulletText)
+
+
+def build_inline_style(context, tag_name, style_css):
+    style = {}
+    for key, value in style_css.iteritems():
+        if key.endswith('color'):
+            tag_and_attrs = inline_color_style(key, value, context)
+        elif key.startswith('text'):
+            tag_and_attrs = inline_text_style(key, value, context)
+        else:
+            continue
+        if tag_and_attrs:
+            tag, attrs = tag_and_attrs
+            if style.has_key(tag):
+                style[tag].update(attrs)
+            else:
+                style[tag] = attrs
+    for tag, attrs in style.iteritems():
+        context.tag_stack.append((tag, attrs))
 
 
 def get_table_style(context, attributes, start, stop):

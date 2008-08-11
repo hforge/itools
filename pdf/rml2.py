@@ -37,7 +37,7 @@ import itools.http
 
 # Internal import
 from style import (build_paragraph_style, get_table_style,
-                   makeTocHeaderStyle, get_align, p_font_style)
+                   makeTocHeaderStyle, get_align, p_font_style, build_inline_style)
 from utils import (FONT, URI, check_image, exist_attribute, font_value,
                    format_size, get_color, get_color_as_hexa, get_int_value,
                    normalize, pc_float, stream_next)
@@ -1222,6 +1222,8 @@ class Table_Content(object):
 # tag attributes
 ##############################################################################
 def build_attributes(tag_name, attributes, context):
+    style_css = context.get_css_props()
+    build_inline_style(context, tag_name, style_css)
     if tag_name == 'a':
         attrs = build_anchor_attributes(attributes, context)
     elif tag_name == 'big':

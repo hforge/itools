@@ -89,9 +89,12 @@ def table_border_style(border, start, stop):
 
 
 def inline_color_style(key, value, context):
+    style = None
     if key == 'color':
-        return ('span', {(URI, 'color'): get_color_as_hexa(value)})
-    return None
+        style = ('span', {(URI, key): get_color_as_hexa(value)})
+    elif key in ('background-color'):
+        style = ('span', {(URI, 'backColor'): get_color_as_hexa(value)})
+    return style
     
 
 def inline_text_style(key, value, context):
@@ -224,6 +227,8 @@ def build_inline_style(context, tag_name, style_css):
     for key, value in style_css.iteritems():
         if key.endswith('color'):
             tag_and_attrs = inline_color_style(key, value, context)
+        elif key.startswith('font'):
+            tag_and_attrs = inline_font_style(key, value, context)
         elif key.startswith('text'):
             tag_and_attrs = inline_text_style(key, value, context)
         else:

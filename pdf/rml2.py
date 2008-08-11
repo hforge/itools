@@ -40,7 +40,7 @@ from style import (build_paragraph_style, get_table_style,
                    makeTocHeaderStyle, get_align, p_font_style, build_inline_style)
 from utils import (FONT, URI, check_image, exist_attribute, font_value,
                    format_size, get_color, get_color_as_hexa, get_int_value,
-                   normalize, pc_float, stream_next)
+                   normalize, pc_float, parse_style_attributes, stream_next)
 
 #Import from the reportlab Library
 from reportlab.lib.pagesizes import LETTER
@@ -1223,7 +1223,9 @@ class Table_Content(object):
 ##############################################################################
 def build_attributes(tag_name, attributes, context):
     style_css = context.get_css_props()
+    style_css.update(parse_style_attributes(attributes))
     build_inline_style(context, tag_name, style_css)
+
     if tag_name == 'a':
         attrs = build_anchor_attributes(attributes, context)
     elif tag_name == 'big':
@@ -1232,8 +1234,6 @@ def build_attributes(tag_name, attributes, context):
         attrs = build_img_attributes(attributes, context)
     elif tag_name == 'small':
         attrs = {(URI, 'size'): font_value('80%')}
-    elif tag_name == 'span':
-        attrs = build_span_attributes(attributes, context)
     elif tag_name in ('code', 'tt'):
         attrs = {(URI, 'face'): FONT['monospace']}
     else:
@@ -1307,31 +1307,6 @@ def build_img_attributes(attributes, context):
             if not exist_width:
                 attrs[tup_width] = round(attrs[tup_height] * width / height)
     return attrs
-
-
-def build_span_attributes(attributes, context):
-    style_attr = {}
-    style_css = {}
-
-    if exist_attribute(attributes, ['style']):
-        style = ''.join(attributes.pop((URI, 'style')).split()).rstrip(';')
-        if style:
-            stylelist = style.split(';')
-            for element in stylelist:
-                element_list = element.split(':')
-                style_css[element_list[0]] = element_list[1]
-
-    for key, value in style_css.iteritems():
-        if key == 'color':
-            style_attr[(URI, 'textColor')] = get_color_as_hexa(value)
-        elif key in ('background-color'):
-            style_attr[(URI, 'backColor')] = get_color_as_hexa(value)
-        elif key.startswith('font'):
-            font = p_font_style(key, value, context)
-            for f_key, f_value in font.iteritems():
-                style_attr[(URI, f_key)] = f_value
-
-    return style_attr
 
 
 ##############################################################################

@@ -106,6 +106,18 @@ def exist_attribute(attrs, keys, at_least=False):
         return False
 
 
+def parse_style_attributes(attributes):
+    style_css = {}
+    if attributes.has_key((URI, 'style')):
+        style = ''.join(attributes.pop((URI, 'style')).split()).rstrip(';')
+        if style:
+            stylelist = style.split(';')
+            for element in stylelist:
+                element_list = element.split(':')
+                style_css[element_list[0]] = element_list[1]
+    return style_css
+
+
 ##############################################################################
 # Math
 ##############################################################################

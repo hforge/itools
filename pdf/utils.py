@@ -72,7 +72,7 @@ def get_color_as_hexa(value, default='#000000'):
                     tmp.append('%02x' % i)
                 else:
                     print 'Warning the color "%s" is not well formed ' % hex
-                    return None
+                    return default
         value = '#%s' % ''.join(tmp)
     elif value.startswith('#'):
         if len(value) == 4:
@@ -83,7 +83,7 @@ def get_color_as_hexa(value, default='#000000'):
             value = '#%s%s%s' % (r, g, b)
     else:
         # Warning getAllNamedColors() uses a singleton
-        value = colors.getAllNamedColors().get(value, default)
+        value = '#%02x%02x%02x' % colors.toColor(value, colors.black).bitmap_rgb()
     return value
 
 

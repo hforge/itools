@@ -122,22 +122,16 @@ class Doc(object):
 
 class SearchResults(object):
 
-    def __init__(self, query, db, fields):
-        self._query = query
-        self._db = db
+    def __init__(self, enquire, fields):
+        self._enquire = enquire
         self._fields = fields
-
-        # Compute max
-        enquire = Enquire(db)
-        enquire.set_query(query)
-        self._max = enquire.get_mset(0,0).get_matches_upper_bound()
+        max = enquire.get_mset(0,0).get_matches_upper_bound()
+        self._max = enquire.get_mset(0, max).size()
 
 
     def get_n_documents(self):
         """Returns the number of documents found."""
-        enquire = Enquire(self._db)
-        enquire.set_query(self._query)
-        return enquire.get_mset(0, self._max).size()
+        return self._max
 
 
     def get_documents(self, sort_by=None, reverse=False, start=0, size=0):
@@ -167,8 +161,7 @@ class SearchResults(object):
 
         By default all the documents are returned.
         """
-        enquire = Enquire(self._db)
-        enquire.set_query(self._query)
+        enquire = self._enquire
         fields = self._fields
 
         # sort_by != None
@@ -375,14 +368,19 @@ class Catalog(object):
                                                           info['prefix']))
                     else:
                         # If there is a problem => an empty result
-                        return SearchResults(Query(), self._db, fields)
-                xquery = Query(Query.OP_AND, xqueries)
+                        xquery = Query()
+                        break
+                else:
+                    xquery = Query(Query.OP_AND, xqueries)
             else:
                 xquery = Query('')
         else:
             xquery = self._query2xquery(query)
 
-        return SearchResults(xquery, self._db, fields)
+        enquire = Enquire(self._db)
+        enquire.set_query(xquery)
+
+        return SearchResults(enquire, fields)
 
 
     def get_unique_values(self, name):

@@ -121,7 +121,7 @@ class BaseForm(BaseView):
         # (2) Find out which button has been pressed, if more than one
         for name in context.get_form_keys():
             if name.startswith(';'):
-                action = name[1:]
+                action = 'action_%s' % name[1:]
                 break
         else:
             action = 'action'

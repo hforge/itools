@@ -74,7 +74,14 @@ class BaseForm(BaseView):
         return self.form_title
 
 
-    def get_schema(self, resource):
+    def get_schema(self, resource, context):
+        # Check for specific schema
+        action = context.form_action
+        schema = getattr(self, '%s_schema' % action, None)
+        if schema is not None:
+            return schema
+
+        # Default
         return self.schema
 
 
@@ -88,7 +95,7 @@ class BaseForm(BaseView):
           {'toto': Unicode(mandatory=True, multiple=False, default=u'toto'),
            'tata': Unicode(mandatory=True, multiple=False, default=u'tata')}
         """
-        schema = self.get_schema(resource)
+        schema = self.get_schema(resource, context)
 
         values = {}
         invalid = []
@@ -111,23 +118,23 @@ class BaseForm(BaseView):
         # Load the query
         context.query = self.get_query(context)
 
-        # (1) Automatically validate and get the form input (from the schema).
+        # (1) Find out which button has been pressed, if more than one
+        for name in context.get_form_keys():
+            if name.startswith(';'):
+                context.form_action = 'action_%s' % name[1:]
+                break
+        else:
+            context.form_action = 'action'
+
+        # (2) Automatically validate and get the form input (from the schema).
         try:
             form = self._get_form(resource, context)
         except FormError:
             context.message = MSG_MISSING_OR_INVALID
             return self.GET
 
-        # (2) Find out which button has been pressed, if more than one
-        for name in context.get_form_keys():
-            if name.startswith(';'):
-                action = 'action_%s' % name[1:]
-                break
-        else:
-            action = 'action'
-
         # (3) Action
-        method = getattr(self, action, None)
+        method = getattr(self, context.form_action, None)
         if method is None:
             raise NotImplementedError
         goto = method(resource, context, form)

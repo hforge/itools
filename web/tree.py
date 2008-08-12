@@ -138,19 +138,19 @@ class Node(object):
             yield object
 
 
-    def set_object(self, path, object):
+    def set_resource(self, path, object):
         raise NotImplementedError
 
 
-    def del_object(self, path):
+    def del_resource(self, path):
         raise NotImplementedError
 
 
-    def copy_object(self, source, target):
+    def copy_resource(self, source, target):
         raise NotImplementedError
 
 
-    def move_object(self, source, target):
+    def move_resource(self, source, target):
         raise NotImplementedError
 
 

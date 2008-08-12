@@ -381,7 +381,7 @@ html_elements = [
     # for a talk about <embed> see:
     #   http://alistapart.com/articles/byebyeembed
     # FIXME Check the attribute list for <embed>
-    EmptyBlockElement('embed', []),
+    EmptyBlockElement('embed', ['src', 'type']),
     ]
 
 

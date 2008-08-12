@@ -722,20 +722,22 @@ class GET(RequestMethod):
 
     @classmethod
     def check_cache(cls, server, context):
-        # Check for the request header If-Modified-Since
-        if_modified_since = context.request.get_header('if-modified-since')
-        if if_modified_since is None:
-            return
-
         # Get the resource's modification time
         resource = context.resource
         mtime = context.view.get_mtime(resource)
         if mtime is None:
             return
 
-        # Cache: check modification time
+        # Set the last-modified header
         mtime = mtime.replace(microsecond=0)
         context.response.set_header('last-modified', mtime)
+
+        # Check for the request header If-Modified-Since
+        if_modified_since = context.request.get_header('if-modified-since')
+        if if_modified_since is None:
+            return
+
+        # Cache: check modification time
         if mtime <= if_modified_since:
             raise NotModified
 

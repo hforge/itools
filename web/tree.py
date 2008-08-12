@@ -29,7 +29,7 @@ class Node(object):
     #######################################################################
     # API / Private
     #######################################################################
-    def _has_object(self, name):
+    def _has_resource(self, name):
         """Default implementation, may be overriden for a better performance.
         """
         try:
@@ -85,7 +85,7 @@ class Node(object):
         return self.get_abspath().get_pathto(handler.get_abspath())
 
 
-    def has_object(self, path):
+    def has_resource(self, path):
         if not isinstance(path, Path):
             path = Path(path)
 
@@ -99,7 +99,7 @@ class Node(object):
         except LookupError:
             return False
 
-        return container._has_object(name)
+        return container._has_resource(name)
 
 
     def get_names(self, path='.'):

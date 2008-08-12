@@ -33,7 +33,7 @@ class Node(object):
         """Default implementation, may be overriden for a better performance.
         """
         try:
-            self._get_object(name)
+            self._get_resource(name)
         except LookupError:
             return False
         return True
@@ -43,7 +43,7 @@ class Node(object):
         raise NotImplementedError
 
 
-    def _get_object(self, name):
+    def _get_resource(self, name):
         raise LookupError
 
 
@@ -72,7 +72,7 @@ class Node(object):
         cpath = self.get_canonical_path()
         if cpath == self.get_abspath():
             return self
-        return self.get_object(cpath)
+        return self.get_resource(cpath)
 
 
     def get_root(self):
@@ -95,7 +95,7 @@ class Node(object):
 
         path, name = path[:-1], path[-1]
         try:
-            container = self.get_object(path)
+            container = self.get_resource(path)
         except LookupError:
             return False
 
@@ -103,11 +103,11 @@ class Node(object):
 
 
     def get_names(self, path='.'):
-        object = self.get_object(path)
+        object = self.get_resource(path)
         return object._get_names()
 
 
-    def get_object(self, path):
+    def get_resource(self, path):
         if not isinstance(path, Path):
             path = Path(path)
 
@@ -121,7 +121,7 @@ class Node(object):
             path = path[1:]
 
         for name in path:
-            object = here._get_object(name)
+            object = here._get_resource(name)
             object.parent = here
             object.name = name
             here = object
@@ -129,10 +129,10 @@ class Node(object):
         return here
 
 
-    def get_objects(self, path='.'):
-        here = self.get_object(path)
+    def get_resources(self, path='.'):
+        here = self.get_resource(path)
         for name in here._get_names():
-            object = here._get_object(name)
+            object = here._get_resource(name)
             object.parent = here
             object.name = name
             yield object

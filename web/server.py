@@ -565,7 +565,7 @@ class RequestMethod(object):
         resource = context.site_root
         for name in context.path:
             try:
-                resource = resource.get_object(name)
+                resource = resource.get_resource(name)
             except LookupError:
                 context.resource = resource
                 raise NotFound

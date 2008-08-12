@@ -167,7 +167,7 @@ class STLView(BaseView):
         namespace = self.get_namespace(resource, context)
 
         # Ok
-        template = resource.get_object(self.template)
+        template = resource.get_resource(self.template)
         return stl(template, namespace)
 
 

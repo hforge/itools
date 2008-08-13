@@ -182,7 +182,7 @@ class Context(object):
         return self.request.has_parameter(name)
 
 
-    def build_form_namespace(self, schema, method=None):
+    def build_form_namespace(self, schema, get_value=None):
         """This utility method builds a namespace suitable to use to produce
         an HTML form. Its input data is a dictionnary that defines the form
         variables to consider:
@@ -214,8 +214,8 @@ class Context(object):
                     value = self.get_form_value(name)
                     cls.append('missing')
             else:
-                if method:
-                    value = method(name)
+                if get_value:
+                    value = get_value(name, self)
                 else:
                     value = datatype.default
             if isinstance(datatype, Enumerate):

@@ -163,7 +163,8 @@ def font_value(str_value, style_size = 12):
         ratio = get_int_value(str_value.rstrip('%'), 100)
         value = pc_float(ratio, style_size)
     else:
-        value = get_int_value(str_value, style_size)
+        value = str_value.rstrip('pt')
+        value = get_int_value(value, style_size)
     return value
 
 

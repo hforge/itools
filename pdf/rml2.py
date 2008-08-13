@@ -876,29 +876,23 @@ def create_paragraph(context, element, content, style_css = {}):
     # content = ['  Hello\t\', '\t<i>how are</i>', '\tyou?']
 
     style, bulletText = build_paragraph_style(context, element, style_css)
+    start_tags = end_tags = ''
     if context.style_tag_stack:
-        start_tags = end_tags = ''
         for tag in context.style_tag_stack:
             start_tags += '<%s>' % tag
         while context.style_tag_stack:
             end_tags += get_end_tag(None, context.style_tag_stack.pop())
-
     if element[0] == 'pre':
         content = join_content(content)
-        if context.style_tag_stack:
-            content = start_tags + content + end_tags
-        while context.style_tag_stack:
-            content += context.style_tag_stack.pop()
+        content = start_tags + content + end_tags
         widget = XPreformatted(content, style)
-#Paragraph(content, style, bulletText)
     else:
         # DEBUG
         #print 0, content
         content = normalize(' '.join(content))
         if element[0] in HEADING:
             content = context.get_toc_anchor(element[0], content)
-        if context.style_tag_stack:
-            content = start_tags + content + end_tags
+        content = start_tags + content + end_tags
         content = '<para>%s</para>' % content
         #print 1, content
         widget = Paragraph(content, style, bulletText)

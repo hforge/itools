@@ -23,7 +23,7 @@ from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT, TA_JUSTIFY
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import cm
 from utils import (URI, FONT, font_value, format_size, get_color_as_hexa,
-                   get_color)
+                   get_color, get_int_value)
 
 P_ALIGNMENTS = {'left': TA_LEFT, 'right': TA_RIGHT, 'center': TA_CENTER,
               'justify': TA_JUSTIFY}
@@ -130,6 +130,12 @@ def p_font_style(key, value, context):
             print 'Warning font-style not valid'
     elif key == 'font-size':
         style_attr['fontSize'] = font_value(value)
+    elif key == 'font-weight':
+        if len(value):
+            if value[0].isalpha() and value in ('bold', 'bolder'):
+                context.style_tag_stack.append(('b'))
+            elif not get_int_value(value, 400) < 700:
+                context.style_tag_stack.append(('b'))
     return style_attr
 
 

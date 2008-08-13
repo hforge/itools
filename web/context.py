@@ -24,7 +24,7 @@ from thread import get_ident, allocate_lock
 from time import strptime
 
 # Import from itools
-from itools.datatypes import String, Enumerate
+from itools.datatypes import String
 from itools.http import Response
 from itools.i18n import AcceptLanguageType
 from itools.uri import get_reference
@@ -180,49 +180,6 @@ class Context(object):
 
     def has_form_value(self, name):
         return self.request.has_parameter(name)
-
-
-    def build_form_namespace(self, schema, get_value=None):
-        """This utility method builds a namespace suitable to use to produce
-        an HTML form. Its input data is a dictionnary that defines the form
-        variables to consider:
-
-          {'toto': Unicode(mandatory=True, multiple=False, default=u'toto'),
-           'tata': Unicode(mandatory=True, multiple=False, default=u'tata')}
-
-        Every element specifies the datatype of the field.
-        The output is like:
-
-            {<field name>: {'value': <field value>, 'class': <CSS class>}
-             ...}
-        """
-        # Figure out whether the form has been submit or not (FIXME This
-        # heuristic is not reliable)
-        submit = set(self.get_form_keys()) & set(schema.keys())
-
-        # Build the namespace
-        namespace = {}
-        for name in schema:
-            datatype = schema[name]
-            cls = []
-            if getattr(datatype, 'mandatory', False):
-                cls.append('field_required')
-            if submit:
-                try:
-                    value = self.get_form_value(name, type=datatype)
-                except FormError:
-                    value = self.get_form_value(name)
-                    cls.append('missing')
-            else:
-                if get_value:
-                    value = get_value(name, self)
-                else:
-                    value = datatype.default
-            if isinstance(datatype, Enumerate):
-                value = datatype.get_namespace(value)
-            cls = ' '.join(cls) or None
-            namespace[name] = {'name': name, 'value': value, 'class': cls}
-        return namespace
 
 
     #######################################################################

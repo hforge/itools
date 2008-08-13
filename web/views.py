@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
+from itools.datatypes import Enumerate
 from itools.stl import stl
 from context import FormError
 from messages import MSG_MISSING_OR_INVALID
@@ -115,6 +116,51 @@ class BaseForm(BaseView):
         if missing or invalid:
             raise FormError(missing, invalid)
         return values
+
+
+    def get_value(self, resource, context, name, datatype):
+        return datatype.default
+
+
+    def build_namespace(self, resource, context):
+        """This utility method builds a namespace suitable to use to produce
+        an HTML form. Its input data is a dictionnary that defines the form
+        variables to consider:
+
+          {'toto': Unicode(mandatory=True, multiple=False, default=u'toto'),
+           'tata': Unicode(mandatory=True, multiple=False, default=u'tata')}
+
+        Every element specifies the datatype of the field.
+        The output is like:
+
+            {<field name>: {'value': <field value>, 'class': <CSS class>}
+             ...}
+        """
+        # Figure out whether the form has been submit or not (FIXME This
+        # heuristic is not reliable)
+        schema = self.get_schema(resource, context)
+        submit = (context.request.method == 'POST')
+
+        # Build the namespace
+        namespace = {}
+        for name in schema:
+            datatype = schema[name]
+            cls = []
+            if getattr(datatype, 'mandatory', False):
+                cls.append('field_required')
+            if submit:
+                try:
+                    value = context.get_form_value(name, type=datatype)
+                except FormError:
+                    value = context.get_form_value(name)
+                    cls.append('missing')
+            else:
+                value = self.get_value(resource, context, name, datatype)
+            if isinstance(datatype, Enumerate):
+                value = datatype.get_namespace(value)
+            cls = ' '.join(cls) or None
+            namespace[name] = {'name': name, 'value': value, 'class': cls}
+        return namespace
 
 
     def POST(self, resource, context):

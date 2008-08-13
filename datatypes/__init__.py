@@ -17,7 +17,7 @@
 # Import from itools
 from base import DataType, is_datatype
 from primitive import Boolean, Decimal, Email, Integer, String, Unicode, URI
-from primitive import FileName, Tokens, Enumerate
+from primitive import FileName, Tokens, Enumerate, DynamicEnumerate
 from primitive import QName, XMLAttribute, XMLContent
 from datetime_ import ISOCalendarDate, ISOTime, ISODateTime, HTTPDate
 from languages import LanguageTag
@@ -41,6 +41,7 @@ __all__ = [
     'QName',
     'Tokens',
     'Enumerate',
+    'DynamicEnumerate',
     'XMLContent',
     'XMLAttribute',
     'ISOCalendarDate',

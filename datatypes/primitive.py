@@ -210,6 +210,9 @@ class Tokens(DataType):
 
 
 
+###########################################################################
+# Enumerates
+
 class Enumerate(String):
 
     is_enumerate = True
@@ -231,40 +234,78 @@ class Enumerate(String):
     def is_valid(cls, name):
         """Returns True if the given name is part of this Enumerate's options.
         """
-        for option in cls.get_options():
-            if name == option['name']:
-                return True
-        return False
+        options = cls.get_options()
+        return enumerate_is_valid(options, name)
 
 
     @classmethod
     def get_namespace(cls, name):
-        """Extends the options with information about which one is matching the
-        given name.
+        """Extends the options with information about which one is matching
+        the given name.
         """
         options = cls.get_options()
-        if isinstance(name, list):
-            for option in options:
-                option['selected'] = option['name'] in name
-        else:
-            for option in options:
-                option['selected'] = option['name'] == name
-        return options
+        return enumerate_get_namespace(options, name)
 
 
     @classmethod
     def get_value(cls, name, default=None):
         """Returns the value matching the given name, or the default value.
         """
-        for option in cls.get_options():
-            if option['name'] == name:
-                return option['value']
-
-        return default
+        options = cls.get_options()
+        return enumerate_get_value(options, name, default)
 
 
-############################################################################
+
+class DynamicEnumerate(Enumerate):
+
+    def get_options(self):
+        raise NotImplementedError
+
+
+    def is_valid(self, name):
+        options = self.get_options()
+        return enumerate_is_valid(options, name)
+
+
+    def get_namespace(self, name):
+        options = self.get_options()
+        return enumerate_get_namespace(options, name)
+
+
+    def get_value(self, name, default=None):
+        options = self.get_options()
+        return enumerate_get_value(options, name, default)
+
+
+
+def enumerate_is_valid(options, name):
+    for option in options:
+        if name == option['name']:
+            return True
+    return False
+
+
+def enumerate_get_namespace(options, name):
+    if isinstance(name, list):
+        for option in options:
+            option['selected'] = option['name'] in name
+    else:
+        for option in options:
+            option['selected'] = option['name'] == name
+    return options
+
+
+def enumerate_get_value(options, name, default=None):
+    for option in options:
+        if option['name'] == name:
+            return option['value']
+
+    return default
+
+
+###########################################################################
 # Medium decoder/encoders (not for values)
+###########################################################################
 
 class XMLContent(object):
 

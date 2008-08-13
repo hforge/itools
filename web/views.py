@@ -64,14 +64,16 @@ class BaseView(object):
         raise NotImplementedError
 
 
+    #######################################################################
+    # View's metadata
+    def get_title(self, context):
+        return self.title
+
+
 
 class BaseForm(BaseView):
 
     schema = {}
-
-
-    def get_form_title(self):
-        return self.form_title
 
 
     def get_schema(self, resource, context):

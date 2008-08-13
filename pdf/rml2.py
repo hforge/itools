@@ -547,7 +547,14 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context,
                                               context))
                 else:
                     skip = False
-            if not skip:
+            if skip:
+                if content:
+                    elt = (elt_tag_name, elt_attributes)
+                    para = create_paragraph(context, elt, content, style_p)
+                    story.insert(place, para)
+                    content = []
+                    has_content = False
+            else:
                 while context.anchor:
                     content.append(context.anchor.pop())
 
@@ -577,22 +584,14 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context,
             tag_uri, tag_name = value
             context.path_on_end_event()
             if is_not_pre:
-                if len(content):
+                if content:
                     # spaces must be ignore if character before it is '\n'
                     tmp = content[-1].rstrip(' \t')
                     if len(tmp):
                         if tmp[-1] == '\n':
                             content[-1] = tmp.rstrip('\n')
-            content_lenth = len(content)
-            if content_lenth > 0:
-                if skip:
-                    elt = (elt_tag_name, elt_attributes)
-                    para = create_paragraph(context, elt, content, style_p)
-                    story.insert(place, para)
-                    content = []
-                    has_content = False
             if tag_name == elt_tag_name:
-                if content_lenth > 0:
+                if content:
                     elt = (elt_tag_name, elt_attributes)
                     para = create_paragraph(context, elt, content, style_p)
                     story.append(para)

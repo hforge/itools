@@ -40,7 +40,8 @@ from style import (build_paragraph_style, get_table_style,
                    makeTocHeaderStyle, get_align, p_font_style, build_inline_style)
 from utils import (FONT, URI, check_image, exist_attribute, font_value,
                    format_size, get_color, get_color_as_hexa, get_int_value,
-                   normalize, pc_float, parse_style_attributes, stream_next)
+                   normalize, pc_float, parse_style_attributes, stream_next,
+                   join_content)
 
 #Import from the reportlab Library
 from reportlab.lib.pagesizes import LETTER
@@ -448,12 +449,9 @@ def body_stream(stream, _tag_name, _attributes, context):
         if event == START_ELEMENT:
             tag_uri, tag_name, attributes = value
             context.path_on_start_event(tag_name, attributes)
-            if tag_name in ('p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
+            if tag_name in ('p', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
                 story.extend(paragraph_stream(stream, tag_name, attributes,
                                               context))
-            elif tag_name == 'pre':
-                story.append(pre_stream(stream, tag_name, attributes,
-                                        context))
             elif tag_name == 'hr':
                 story.append(hr_stream(stream, tag_name, attributes, context))
             elif tag_name == 'img':
@@ -508,6 +506,7 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context,
     cpt = 0
     has_content = False
     is_not_paragraph = (elt_tag_name != 'p')
+    is_not_pre = (elt_tag_name != 'pre')
     story = []
     start_tag = True
     end_tag = False
@@ -530,12 +529,10 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context,
                 skip = True
                 place = len(story)
                 # TODO ? Merge with body_stream?
-                if tag_name in ('p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
+                if tag_name in ('p', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5',
+                                'h6'):
                     story.extend(paragraph_stream(stream, tag_name,
                                                   attributes, context))
-                elif tag_name == 'pre':
-                    story.append(pre_stream(stream, tag_name, attributes,
-                                            context))
                 elif tag_name == 'hr':
                     story.append(hr_stream(stream, tag_name, attributes,
                                            context))
@@ -579,12 +576,13 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context,
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
             context.path_on_end_event()
-            if len(content):
-                # spaces must be ignore if character before it is '\n'
-                tmp = content[-1].rstrip(' \t')
-                if len(tmp):
-                    if tmp[-1] == '\n':
-                        content[-1] = tmp.rstrip('\n')
+            if is_not_pre:
+                if len(content):
+                    # spaces must be ignore if character before it is '\n'
+                    tmp = content[-1].rstrip(' \t')
+                    if len(tmp):
+                        if tmp[-1] == '\n':
+                            content[-1] = tmp.rstrip('\n')
             content_lenth = len(content)
             if content_lenth > 0:
                 if skip:
@@ -613,16 +611,17 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context,
         elif event == TEXT:
             if len(value) > 0:
                 value = XMLContent.encode(value)
-                # alow to write :
-                # <para><u><i>foo</i> </u></para>
-                # spaces must be ignore after a start tag if the next
-                # character is '\n'
-                if start_tag:
-                    if value[0] == '\n':
-                        value = value.lstrip('\n\t ')
-                        if not len(value):
-                            continue
-                    start_tag = False
+                if is_not_pre:
+                    # alow to write :
+                    # <para><u><i>foo</i> </u></para>
+                    # spaces must be ignore after a start tag if the next
+                    # character is '\n'
+                    if start_tag:
+                        if value[0] == '\n':
+                            value = value.lstrip('\n\t ')
+                            if not len(value):
+                                continue
+                        start_tag = False
                 if has_content:
                     if content[-1].endswith('<br/>'):
                         # <p>
@@ -642,42 +641,6 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context,
                 else:
                     has_content = True
                     content.append(value)
-
-
-def pre_stream(stream, tag_name, attributes, context):
-    """
-        stream : parser stream
-    """
-
-    styleN = context.get_style('Normal')
-    content = []
-    has_content = False
-
-    while True:
-        event, value, line_number = stream_next(stream)
-        if event == None:
-            break
-
-        #### START ELEMENT ####
-        if event == START_ELEMENT:
-            tag_uri, tag_name, attrs = value
-            content.append(get_start_tag(tag_uri, tag_name, attrs))
-
-        #### END ELEMENT ####
-        elif event == END_ELEMENT:
-            tag_uri, tag_name = value
-            if tag_name == 'pre':
-                css_style = context.get_css_props()
-                context.path_on_end_event()
-                return create_paragraph(context, (tag_name, attributes),
-                                        content, css_style)
-            else:
-                content.append(get_end_tag(None, tag_name))
-
-        #### TEXT ELEMENT ####
-        elif event == TEXT:
-            # we dont strip the string --> preformatted widget
-            content.append(value)
 
 
 def hr_stream(stream, _tag_name, _attributes, context):
@@ -921,12 +884,13 @@ def create_paragraph(context, element, content, style_css = {}):
             end_tags += get_end_tag(None, context.style_tag_stack.pop())
 
     if element[0] == 'pre':
-        content = XMLContent.encode(''.join(content))
+        content = join_content(content)
         if context.style_tag_stack:
             content = start_tags + content + end_tags
         while context.style_tag_stack:
             content += context.style_tag_stack.pop()
         widget = XPreformatted(content, style)
+#Paragraph(content, style, bulletText)
     else:
         # DEBUG
         #print 0, content

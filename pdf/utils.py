@@ -59,6 +59,12 @@ def normalize(data):
     return ' '.join(data.split())
 
 
+def join_content(data):
+    data = ''.join(data)
+    data = Unicode.decode(data, encoding)
+    return data
+
+
 def get_color_as_hexa(value, default='#000000'):
     value = value.strip()
     if value.startswith('rgb'):

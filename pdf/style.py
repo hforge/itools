@@ -190,6 +190,8 @@ def build_paragraph_style(context, element, style_css):
     bulletText = None
 
     style_attr['autoLeading'] = 'max'
+    style_attr['borderPadding'] = 0.2 * cm
+    style_attr['leading'] = 0.4 * cm
 
     #FIXME must be moved in default css
     style_attr['spaceAfter'] = 0.2 * cm

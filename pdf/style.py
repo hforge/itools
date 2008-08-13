@@ -192,6 +192,9 @@ def build_paragraph_style(context, element, style_css):
             style_attr['textColor'] = get_color_as_hexa(value)
         elif key in ('background-color'):
             style_attr['backColor'] = get_color_as_hexa(value)
+        elif key.startswith('text-align'):
+            if value in P_ALIGNMENTS.keys():
+                style_attr['alignment'] = P_ALIGNMENTS.get(value)
         elif key.startswith('border'):
             style_attr.update(p_border_style(key, value))
         elif key.startswith('font'):
@@ -202,17 +205,11 @@ def build_paragraph_style(context, element, style_css):
     # Overload the attributes values
     for key, attr_value in element[1].iteritems():
         key = key[1] # (None, key)
-        if key == 'style':
+        if key == 'class':
             # Set the parent style for inheritance
             parent_style_name = attr_value
         elif key == 'bulletText':
             bulletText = attr_value
-        else:
-            if key == 'align':
-                attr_value = P_ALIGNMENTS.get(attr_value, TA_LEFT)
-            elif key in ['leftIndent', 'rightIndent']:
-                attr_value = context.format_size(attr_value)
-            style_attr[key] = attr_value
 
     if element[0] in HEADING + ('toctitle', ):
         parent_style_name = element[0]

@@ -512,6 +512,7 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context,
     start_tag = True
     end_tag = False
     style_p = context.get_css_props()
+    style_p.update(parse_style_attributes(elt_attributes))
     skip = False
     place = 0
     if prefix is not None:

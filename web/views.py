@@ -78,10 +78,11 @@ class BaseForm(BaseView):
 
     def get_schema(self, resource, context):
         # Check for specific schema
-        action = context.form_action
-        schema = getattr(self, '%s_schema' % action, None)
-        if schema is not None:
-            return schema
+        action = getattr(context, 'form_action', None)
+        if action is not None:
+            schema = getattr(self, '%s_schema' % action, None)
+            if schema is not None:
+                return schema
 
         # Default
         return self.schema

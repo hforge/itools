@@ -167,6 +167,8 @@ class CSVFile(TextFile):
         if self.schema is not None:
             self.catalog.index_document(row, row.number)
 
+        return row
+
 
     def get_datatype(self, name):
         if self.schema is None:
@@ -221,7 +223,7 @@ class CSVFile(TextFile):
         """Append new row as an instance of row class.
         """
         self.set_changed()
-        self._add_row(row)
+        return self._add_row(row)
 
 
     def update_row(self, index, **kw):

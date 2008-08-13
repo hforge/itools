@@ -126,7 +126,7 @@ def p_font_style(key, value, context):
     elif key == 'font-style':
         if value in ('italic', 'oblique'):
             context.style_tag_stack.append(('i'))
-        elif style != 'normal':
+        elif value != 'normal':
             print 'Warning font-style not valid'
     elif key == 'font-size':
         style_attr['fontSize'] = font_value(value)
@@ -198,10 +198,10 @@ def build_paragraph_style(context, element, style_css):
             style_attr['textColor'] = get_color_as_hexa(value)
         elif key in ('background-color'):
             style_attr['backColor'] = get_color_as_hexa(value)
-        elif key.startswith('text-align'):
+        elif key == 'text-align':
             if value in P_ALIGNMENTS.keys():
                 style_attr['alignment'] = P_ALIGNMENTS.get(value)
-        elif key.startswith('border'):
+        elif element[0] not in ('td', 'th') and key.startswith('border'):
             style_attr.update(p_border_style(key, value))
         elif key.startswith('font'):
             style_attr.update(p_font_style(key, value, context))
@@ -243,7 +243,7 @@ def build_inline_style(context, tag_name, style_css):
             else:
                 style[tag] = attrs
     for tag, attrs in style.iteritems():
-        context.tag_stack.append((tag, attrs))
+        context.tag_stack[0].append((tag, attrs))
 
 
 def get_table_style(context, attributes, start, stop):

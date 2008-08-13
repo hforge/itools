@@ -40,8 +40,7 @@ from style import (build_paragraph_style, get_table_style,
                    makeTocHeaderStyle, get_align, p_font_style, build_inline_style)
 from utils import (FONT, URI, check_image, exist_attribute, font_value,
                    format_size, get_color, get_color_as_hexa, get_int_value,
-                   normalize, pc_float, parse_style_attributes, stream_next,
-                   join_content)
+                   normalize, pc_float, stream_next, join_content)
 
 #Import from the reportlab Library
 from reportlab.lib.pagesizes import LETTER
@@ -103,6 +102,7 @@ class Context(object):
         self.list_anchor = []
         self.tag_stack = []
         self.style_tag_stack = []
+        self.num_id = 0
 
 
     def init_base_style_sheet(self):
@@ -159,6 +159,14 @@ class Context(object):
         else:
             tmp = css.CssStylesheet.from_css(stylesheet_text)
             self.css = self.css.merge(tmp)
+
+    def add_style_attribute(self, data):
+        if self.current_object_path[-1].find('#') < 0:
+            str_id = '_attr_style_id_' + str(self.num_id)
+            self.num_id += 1
+            self.current_object_path[-1] += "#%s" % str_id
+        data = '%s {%s}' % (self.current_object_path[-1], data)
+        self.add_current_style(data)
 
 
     def add_css_from_file(self, filename):
@@ -511,7 +519,9 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context,
     start_tag = True
     end_tag = False
     style_p = context.get_css_props()
-    style_p.update(parse_style_attributes(elt_attributes))
+    style_attr_value = elt_attributes.get((URI, 'style'))
+    if style_attr_value:
+        context.add_style_attribute(style_attr_value)
     skip = False
     place = 0
     if prefix is not None:
@@ -568,7 +578,7 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context,
                         else:
                             content.append(build_start_tag(tag_name, attrs))
                             has_content = True
-                        for tag, attrs in context.tag_stack:
+                        for tag, attrs in context.tag_stack[-1]:
                             content[-1] += build_start_tag(tag, attrs)
                         cpt += 1
                     else:
@@ -601,9 +611,10 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context,
                     has_content = False
                 cpt -= 1
                 end_tag = True
-                while context.tag_stack:
-                    tag, attrib = context.tag_stack.pop()
+                while context.tag_stack[-1]:
+                    tag, attrib = context.tag_stack[-1].pop()
                     content[-1] += get_end_tag(None, P_FORMAT.get(tag, 'b'))
+                context.tag_stack.pop()
                 content[-1] += get_end_tag(None, P_FORMAT.get(tag_name, 'b'))
 
         #### TEXT ELEMENT ####
@@ -1180,8 +1191,11 @@ class Table_Content(object):
 # tag attributes
 ##############################################################################
 def build_attributes(tag_name, attributes, context):
+    context.tag_stack.append([])
+    style_attr_value = attributes.get((URI, 'style'))
+    if style_attr_value:
+        context.add_style_attribute(style_attr_value)
     style_css = context.get_css_props()
-    style_css.update(parse_style_attributes(attributes))
     build_inline_style(context, tag_name, style_css)
 
     if tag_name == 'a':
@@ -1211,14 +1225,14 @@ def build_anchor_attributes(attributes, context):
             ref = href[1:]
             if ref not in context.list_anchor:
                 attrs2 = {(URI, 'name'): ref}
-                context.tag_stack.append(('a',  attrs2))
+                context.tag_stack[-1].append(('a',  attrs2))
         attrs[(URI, 'href')] = href
     if exist_attribute(attributes, ['id', 'name'], at_least=True):
         name = attributes.get((URI, 'id'), attributes.get((URI, 'name')))
         if name:
             if flag:
                 attrs2 = {(URI, 'name'): name}
-                context.tag_stack.append(('a',  attrs2))
+                context.tag_stack[-1].append(('a',  attrs2))
             else:
                 flag = True
                 attrs[(URI, 'name')] = name

@@ -67,6 +67,8 @@ class BaseView(object):
 
     #######################################################################
     # View's metadata
+    title = None
+
     def get_title(self, context):
         return self.title
 

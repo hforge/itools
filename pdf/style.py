@@ -116,6 +116,12 @@ def inline_font_style(key, value, context):
             print 'Warning font-style not valid'
     elif key == 'font-size':
         style = ('span', {(URI, 'fontSize'): font_value(value)})
+    elif key == 'font-weight':
+        if len(value):
+            if value[0].isalpha() and value in ('bold', 'bolder'):
+                style = ('b', {})
+            elif not get_int_value(value, 400) < 700:
+                style = ('b', {})
     return style
 
 
@@ -203,6 +209,9 @@ def build_paragraph_style(context, element, style_css):
         elif key == 'text-align':
             if value in P_ALIGNMENTS.keys():
                 style_attr['alignment'] = P_ALIGNMENTS.get(value)
+        elif key == 'text-decoration':
+            if value == 'underline':
+                context.style_tag_stack.append(('u'))
         elif element[0] not in ('td', 'th') and key.startswith('border'):
             style_attr.update(p_border_style(key, value))
         elif key.startswith('font'):

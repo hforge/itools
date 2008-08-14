@@ -129,9 +129,13 @@ class SearchResults(object):
         self._max = enquire.get_mset(0, max).size()
 
 
-    def get_n_documents(self):
+    def __len__(self):
         """Returns the number of documents found."""
         return self._max
+
+
+    # FIXME Obsolete
+    get_n_documents = __len__
 
 
     def get_documents(self, sort_by=None, reverse=False, start=0, size=0):

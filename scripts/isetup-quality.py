@@ -339,7 +339,7 @@ def create_graph():
     project_name = getcwd().split('/')[-1]
     # We copy project to tmp (for security)
     current_directory = getcwd()
-    tmp_directory = '%s/isetup_quality.git/' % mkdtemp()
+    tmp_directory = '%s/isetup_quality.git' % mkdtemp()
     popen('git clone %s %s' % (current_directory, tmp_directory))
     chdir(tmp_directory)
     # First step: we create a list of statistics

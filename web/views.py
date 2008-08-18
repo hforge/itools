@@ -26,10 +26,6 @@ class BaseView(object):
     # Access Control
     access = False
 
-    # Query Schema
-    query_schema = {}
-
-
     def __init__(self, **kw):
         for key in kw:
             setattr(self, key, kw[key])
@@ -37,9 +33,16 @@ class BaseView(object):
 
     #######################################################################
     # Query
+    query_schema = {}
+
+
+    def get_query_schema(self):
+        return self.query_schema
+
+
     def get_query(self, context):
         get_value = context.get_query_value
-        schema = self.query_schema
+        schema = self.get_query_schema()
 
         query = {}
         for name in schema:

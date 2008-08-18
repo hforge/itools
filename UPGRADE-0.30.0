@@ -1,0 +1,192 @@
+*************************************************************************
+itools 0.30.0
+*************************************************************************
+
+The current upgrade notes are no complete. Thanks to report any problem you
+find.
+
+
+itools.catalog
+==============
+
+The "itools.catalog" package has been drop, use instead "itools.xapian". The
+API of itools.xapian is exactly the same as the itools.catalog's one. The
+imports are the same too.  "itools.xapian" relies on the xapian library and its
+python binding, cf http://www.xapian.org/
+
+
+itools.csv
+==========
+
+Imports:
++ MemoryCatalog
++ UniqueError (raised when setting a value already used to a unique property)
+
+Modifications:
+class Table: - def get_field_title(self, name)
+
+
+itools.datatypes
+================
+
+Imports:
++ DynamicEnumerate
+- XML
+
+
+itools.gettext
+==============
+
+Imports:
+- DomainAware
++ MSG
++ Message
+
+Modifications:
+class Message: + def __eq__(self, other)
+class Message: + def __repr__(self)
+
+class POFile: ! def set_message: (self, msgid, msgstr=[u''], comments=[],
+                                  references={}, fuzzy=False)
+                              => (self, message)
+class POFile: + def set_messages(self, messages)
+
+class POFile: - def get_messages(self)
+           => + def get_units(self) (and return a Message)
+
+
+itools.handlers
+===============
+
+Modifications:
+class Handler: - def to_text(self)
+class Handler: - mimetype (use get_mimetype)
+class File: + def to_text(self)
+class Python: - def get_messages(self)
+           => + def get_units(self) (and return a Message)
+
+
+itools.http
+===========
+
+Imports:
++ NotModified
+
+
+itools.i18n
+===========
+
+Imports:
++ select_language
++ init_language_selector
+
+Modifications:
+get_language_name returns now a MSG
+
++ def get_segments(message, keep_spaces=False)
+class Message: - def get_segments(self, keep_spaces=None)
+class Message: - def __init__(self)
+
+
+itools.isetup
+=============
+New!
+
+
+itools.odf
+==========
+
+Modifications:
+class ODFFile: - def get_messages(self)
+class ODFFile: + def get_units(self)
+
+
+itools.web
+==========
+
+Imports:
++ select_language
++ BaseView
++ BaseForm
++ STLView
++ STLForm
++ MSG_MISSING_OR_INVALID
+
+Modifications:
+class AccessControl: ! def is_access_allowed: (self, user, object, method_name)
+                                           => (self, user, object, view)
+
+class Context: - def build_form_namespace(self, schema, method=None)
+class Context: ! def get_form_value: (self, name, default=None, type=String)
+                                  => (self, name, type=String, default=None)
+class Context: - def init(self)
+class Context: - def check_form_input(self, schema)
+class Context: + def agent_is_a_robot(self)
+class Context: + def get_query_value(self, name, type=String, default=None)
+
+class Server: - def HEAD(self, context)
+class Server: - def commit_transaction(self, context)
+class Server: - def traverse(self, context)
+class Server: - def GET(self, context)
+class Server: - def LOCK(self, context)
+class Server: - def UNLOCK(self, context)
+class Server: - def PUT(self, context)
+class Server: - def get_site_root(self, hostname)
+class Server: - def POST(self, context)
+class Server: - def get_user(self, context)
+class Server: + def find_user(self, context)
+class Server: + def find_site_root(self, context)
+class Server: + def init_context(self, context)
+
+
+itools.xml
+==========
+
+Imports:
+- set_namespace
+- XMLNSNamespace
+- AbstractNamespace
++ get_doctype
++ xml_uri
++ xmlns_uri
++ register_namespace
++ ElementSchema
++ DocType
++ register_dtd
+
+Modifications:
+! class XMLNamespace: (AbstractNamespace)
+                   => (object)
+class XMLNamespace: - def get_datatype(cls, name)
+class XMLNamespace: + def __init__(self, uri, prefix, elements=None,
+                                   free_attributes=None)
+class XMLNamespace: + def get_element(self, name)
+class XMLNamespace: + def get_free_attribute(self, name)
+
+! class XMLNSNamespace: (AbstractNamespace)
+                     => (XMLNamespace)
+class XMLNSNamespace: - def get_datatype(cls, name)
+class XMLNSNamespace: + def get_free_datatype(self, name)
+
+
+Remarque:
+The XMLParser returns now the following event for a doctype:
+
+(DOCUMENT_TYPE, DocType, line_number)
+
+DocType is a new class that can manage the DTD.
+
+
+scripts
+=======
+
+- icatalog-inspect.py
++ isetup-cache-list.py
++ isetup-info.py
++ isetup-install.py
++ isetup-list.py
+
+
+
+
+

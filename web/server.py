@@ -79,7 +79,7 @@ except ImportError:
 
 
 ###########################################################################
-# Wrapper around sockets in non-blocking mode that offers the a file
+# Wrapper around sockets in non-blocking mode that offers a file
 # like API
 ###########################################################################
 class SocketWrapper(object):

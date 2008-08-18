@@ -11,16 +11,12 @@ itools.catalog
 
 The "itools.catalog" package has been drop, use instead "itools.xapian". The
 API of itools.xapian is exactly the same as the itools.catalog's one. The
-imports are the same too.  "itools.xapian" relies on the xapian library and its
-python binding, cf http://www.xapian.org/
+imports are the same too.  "itools.xapian" relies on the xapian library and
+its python binding, cf http://www.xapian.org/
 
 
 itools.csv
 ==========
-
-Imports:
-+ MemoryCatalog
-+ UniqueError (raised when setting a value already used to a unique property)
 
 Modifications:
 class Table: - def get_field_title(self, name)
@@ -30,7 +26,6 @@ itools.datatypes
 ================
 
 Imports:
-+ DynamicEnumerate
 - XML
 
 
@@ -50,7 +45,6 @@ class POFile: ! def set_message: (self, msgid, msgstr=[u''], comments=[],
                                   references={}, fuzzy=False)
                               => (self, message)
 class POFile: + def set_messages(self, messages)
-
 class POFile: - def get_messages(self)
            => + def get_units(self) (and return a Message)
 
@@ -66,31 +60,15 @@ class Python: - def get_messages(self)
            => + def get_units(self) (and return a Message)
 
 
-itools.http
-===========
-
-Imports:
-+ NotModified
-
-
 itools.i18n
 ===========
 
-Imports:
-+ select_language
-+ init_language_selector
-
 Modifications:
-get_language_name returns now a MSG
+get_language_name returns now a MSG (cf itools.gettext)
 
 + def get_segments(message, keep_spaces=False)
 class Message: - def get_segments(self, keep_spaces=None)
 class Message: - def __init__(self)
-
-
-itools.isetup
-=============
-New!
 
 
 itools.odf
@@ -98,19 +76,11 @@ itools.odf
 
 Modifications:
 class ODFFile: - def get_messages(self)
-class ODFFile: + def get_units(self)
+            => + def get_units(self) (and return a Message)
 
 
 itools.web
 ==========
-
-Imports:
-+ select_language
-+ BaseView
-+ BaseForm
-+ STLView
-+ STLForm
-+ MSG_MISSING_OR_INVALID
 
 Modifications:
 class AccessControl: ! def is_access_allowed: (self, user, object, method_name)
@@ -146,13 +116,7 @@ Imports:
 - set_namespace
 - XMLNSNamespace
 - AbstractNamespace
-+ get_doctype
-+ xml_uri
-+ xmlns_uri
-+ register_namespace
-+ ElementSchema
 + DocType
-+ register_dtd
 
 Modifications:
 ! class XMLNamespace: (AbstractNamespace)
@@ -181,10 +145,6 @@ scripts
 =======
 
 - icatalog-inspect.py
-+ isetup-cache-list.py
-+ isetup-info.py
-+ isetup-install.py
-+ isetup-list.py
 
 
 

@@ -40,18 +40,6 @@ class BaseView(object):
         return self.query_schema
 
 
-    def get_query(self, context):
-        get_value = context.get_query_value
-        schema = self.get_query_schema()
-
-        query = {}
-        for name in schema:
-            datatype = schema[name]
-            query[name] = get_value(name, datatype)
-
-        return query
-
-
     #######################################################################
     # Caching
     def get_mtime(self, resource):
@@ -169,9 +157,6 @@ class BaseForm(BaseView):
 
 
     def POST(self, resource, context):
-        # Load the query
-        context.query = self.get_query(context)
-
         # (1) Find out which button has been pressed, if more than one
         for name in context.get_form_keys():
             if name.startswith(';'):
@@ -213,9 +198,6 @@ class STLView(BaseView):
         # Check there is a template defined
         if self.template is None:
             raise NotImplementedError
-
-        # Load the query
-        context.query = self.get_query(context)
 
         # Get the namespace
         namespace = self.get_namespace(resource, context)

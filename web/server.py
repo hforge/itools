@@ -582,6 +582,19 @@ class RequestMethod(object):
 
 
     @classmethod
+    def get_query(cls, context):
+        get_value = context.get_query_value
+        schema = context.view.get_query_schema()
+
+        query = {}
+        for name in schema:
+            datatype = schema[name]
+            query[name] = get_value(name, datatype)
+
+        return query
+
+
+    @classmethod
     def check_access(cls, server, context):
         """Tell whether the user is allowed to access the view on the
         resource.
@@ -693,6 +706,7 @@ class GET(RequestMethod):
         resource = context.resource
         view = context.view
         try:
+            context.query = cls.get_query(context)
             context.entity = view.GET(resource, context)
         except:
             cls.internal_server_error(server, context)
@@ -801,6 +815,7 @@ class POST(RequestMethod):
         resource = context.resource
         view = context.view
         try:
+            context.query = cls.get_query(context)
             context.entity = view.POST(resource, context)
         except:
             cls.internal_server_error(server, context)

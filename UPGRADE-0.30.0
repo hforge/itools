@@ -5,14 +5,75 @@ itools 0.30.0
 The current upgrade notes are no complete. Thanks to report any problem you
 find.
 
+New Dependencies
+================
 
-itools.catalog
+The minimum required version of Python has been raised to 2.5.2.
+
+The new "itools.xapian" package requires the Xapian library (xapian-core)
+and its Python wrapper (xapian-bindings), version 1.0.7 or later.  To
+download from "http://www.xapian.org".
+
+
+Imports
+=======
+
+The package "itools.catalog" has been replaced by the package "itools.xapian",
+but the API is the same, so only the import sentences must be updated.
+
+Other objects have been renamed accross different packages, the table below
+summarizes this changes.
+
+  Before (alphabetical order)    Now
+  ----------------------------   ---------------------------
+  catalog.*                      xapian.*
+  datatypes.XML                  datatypes.XMLContent
+
+
+Global API
+==========
+
+The prototype for the functions "get_abspath", "get_version" and "setup"
+has changed.  The required globals namespace has been dropped:
+
+  Before                          Now
+  -----------------------------   -------------
+  get_abspath(globals(), '...')   get_abspath('...')
+  get_version(globals())          get_version()
+  setup(globals())                setup()
+
+
+itools.gettext
 ==============
 
-The "itools.catalog" package has been drop, use instead "itools.xapian". The
-API of itools.xapian is exactly the same as the itools.catalog's one. The
-imports are the same too.  "itools.xapian" relies on the xapian library and
-its python binding, cf http://www.xapian.org/
+(1) The way to translate a message from a Python file has considerably
+changed:
+
+  # Before
+  message = u'...'
+  self.gettext(message)
+
+  # Now
+  from itools.gettext import MSG
+  message = MSG(u'...')
+  message.gettext()
+
+And the "DomainAware" class has dissapeared:
+
+  # Before
+  from itools.gettext import DomainAware
+  class MyClass(DomainAware):
+      class_domain = 'my_project'
+      ...
+
+  # Now
+  class MyClass(object):
+      ...
+
+(2)
+
+
+
 
 
 itools.csv
@@ -22,19 +83,10 @@ Modifications:
 class Table: - def get_field_title(self, name)
 
 
-itools.datatypes
-================
-
-Imports:
-- XML
-
-
 itools.gettext
 ==============
 
 Imports:
-- DomainAware
-+ MSG
 + Message
 
 Modifications:
@@ -139,14 +191,5 @@ The XMLParser returns now the following event for a doctype:
 (DOCUMENT_TYPE, DocType, line_number)
 
 DocType is a new class that can manage the DTD.
-
-
-scripts
-=======
-
-- icatalog-inspect.py
-
-
-
 
 

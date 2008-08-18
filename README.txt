@@ -30,9 +30,8 @@ later is required.
 For the implementation of RML (itools.pdf) to work the package reportlab [2]
 must be installed.
 
-For itools.xapian, you need the latest xapian-core and xapian-bindings
-packages [3].
-
+The "itools.xapian" package requires the Xapian [3] library (xapian-core)
+and its Python wrapper (xapian-bindings), version 1.0.7 or later is required.
 
 [1] http://www.gtk.org/
 [2] http://www.reportlab.org/
@@ -44,11 +43,11 @@ Install
 
 If you are reading this instructions you probably have already unpacked
 the itools tarball with the command line:
-    
+
   $ tar xzf itools-X.Y.Z.tar.gz
 
 And changed the working directory this way:
-    
+
   $ cd itools-X.Y.Z
 
 So now to install itools you just need to type this:

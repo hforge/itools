@@ -42,12 +42,16 @@ if __name__ == '__main__':
             dir = dir.split(sep)
             sites.add(sep.join(dir[:dir.index('site-packages')+1]))
 
+    packages_displayed = []
     # List available modules
     for site in sites:
         packages = list_packages_info(site)
         if len(packages) > 0:
             print "Packages for %s :" % site
             for package_name, package, origin in packages:
+                if package_name in packages_displayed:
+                    continue
+                packages_displayed.append(package_name)
                 print "%s %-20.20s %-25.25s" % (origin,
                                                   package['name'],
                                                   package['version']),
@@ -57,3 +61,7 @@ if __name__ == '__main__':
                 else:
                     print " NOT OK"
             print
+
+    print "The first letter tells from where data is read:"
+    print "  E: .egg-info, M: standard package, S: itools package"
+

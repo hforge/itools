@@ -309,12 +309,19 @@ def stl(document=None, namespace={}, prefix=None, events=None, mode='events'):
 
 stl_repeat = stl_uri, 'repeat'
 stl_if = stl_uri, 'if'
+stl_omit_tag = stl_uri, 'omit-tag'
 
 
 def process_start_tag(tag_uri, tag_name, attributes, stack, repeat, encoding):
-    # Skip "stl:block" and "stl:inline"
+    # Skip "<stl:block>" and "<stl:inline>"
     if tag_uri == stl_uri:
-        return
+        return None
+
+    # stl:omit-tag
+    if stl_omit_tag in attributes:
+        expression = attributes[stl_omit_tag]
+        if evaluate_if(expression, stack, repeat):
+            return None
 
     element = get_element_schema(tag_uri, tag_name)
 
@@ -348,6 +355,7 @@ def process_start_tag(tag_uri, tag_name, attributes, stack, repeat, encoding):
 
 
 def process(events, start, end, stack, repeat_stack, encoding):
+    skip = set()
     i = start
     while i < end:
         event, value, line = events[i]
@@ -403,7 +411,9 @@ def process(events, start, end, stack, repeat_stack, encoding):
                 if evaluate_if(expression, stack, repeat_stack):
                     x = process_start_tag(tag_uri, tag_name, attributes, stack,
                                           repeat_stack, encoding)
-                    if x is not None:
+                    if x is None:
+                        skip.add(find_end(events, i))
+                    else:
                         yield x
                 else:
                     i = find_end(events, i)
@@ -412,11 +422,13 @@ def process(events, start, end, stack, repeat_stack, encoding):
                 if tag_uri != stl_uri:
                     x = process_start_tag(tag_uri, tag_name, attributes, stack,
                                           repeat_stack, encoding)
-                    if x is not None:
+                    if x is None:
+                        skip.add(find_end(events, i))
+                    else:
                         yield x
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
-            if tag_uri != stl_uri:
+            if tag_uri != stl_uri and i not in skip:
                 yield event, value, line
         else:
             yield events[i]
@@ -482,7 +494,10 @@ def resolve_pointer(value, offset):
 # The XML namespace handler
 ########################################################################
 
-stl_attributes = {'repeat': String, 'if': String}
+stl_attributes = {
+    'repeat': String,
+    'if': String,
+    'omit-tag': String}
 
 
 class STLElement(ElementSchema):

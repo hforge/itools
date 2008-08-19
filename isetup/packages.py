@@ -34,8 +34,14 @@ def get_setupconf(dir, package):
 
 
 def get_egginfo(dir, file):
-    if is_file(join(dir, file)) and file.endswith('.egg-info'):
-        attrs = parse_pkginfo(open(join(dir, file)).read())
+    egginfo = join(dir, file)
+    if is_file(egginfo) and file.endswith('.egg-info'):
+        attrs = parse_pkginfo(open(egginfo).read())
+        attrs['name'] = attrs['Name']
+        attrs['version'] = attrs['Version']
+        return attrs
+    elif is_folder(egginfo) and egginfo.endswith('.egg-info'):
+        attrs = parse_pkginfo(open(join(egginfo, 'PKG-INFO')).read())
         attrs['name'] = attrs['Name']
         attrs['version'] = attrs['Version']
         return attrs

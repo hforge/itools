@@ -128,21 +128,23 @@ def list_packages_info(dir, module_name='', check_import=True):
         if package != None:
             if check_import:
                 package['is_imported'] = can_import(package)
-            packages.append((package['name'], package))
+            packages.append((package['name'], package, 'S'))
             recorded_packages.append(package['name'])
 
     for package in egginfo_packages:
         if package != None and package['Name'] not in recorded_packages:
             if check_import:
                 package['is_imported'] = can_import(package)
-            packages.append((package['name'], package))
+            del package['Name']
+            del package['Version']
+            packages.append((package['name'], package, 'E'))
             recorded_packages.append(package['name'])
 
     for package in default_package:
         if package != None and package['name'] not in recorded_packages:
             if check_import:
                 package['is_imported'] = can_import(package)
-            packages.append((package['name'], package))
+            packages.append((package['name'], package, 'M'))
 
     packages.sort(cmp=lambda a, b: cmp(a.upper(),b.upper()), key=itemgetter(0))
 

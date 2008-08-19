@@ -47,11 +47,13 @@ if __name__ == '__main__':
         packages = list_packages_info(site)
         if len(packages) > 0:
             print "Packages for %s :" % site
-            for package_name, package in packages:
-                print "* %-20.20s Version: %-12.12s" % (package['name'],
-                                                        package['version']),
+            for package_name, package, origin in packages:
+                print "%s %-20.20s %-25.25s" % (origin,
+                                                  package['name'],
+                                                  package['version']),
+
                 if package['is_imported']:
-                    print "Import: OK"
+                    print " OK"
                 else:
-                    print "Import: NOT OK"
+                    print " NOT OK"
             print

@@ -38,7 +38,7 @@ class SetupFile(ConfigFile):
         'packages': Tokens(default=()),
         'requires': Tokens(default=()),
         'provides': Tokens(default=()),
-        'scripts': String(default=''),
+        'scripts': Tokens(default=''),
         'source_language': LanguageTag(default=('en', 'EN')),
         'target_languages': Tokens(default=(('en', 'EN'),))
     }
@@ -63,7 +63,10 @@ def parse_pkginfo(data):
             if val != 'UNKNOWN':
                 # Comma separated string for lists
                 if key in attributes.keys():
-                    attributes[key] += ',' + val
+                    if hasattr(attributes[key], 'append'):
+                        attributes[key].append(val)
+                    else:
+                        attributes[key] = [val]
                 else:
                     attributes[key] = val
                 last_line_key = key

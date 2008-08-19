@@ -57,18 +57,22 @@ if __name__ == '__main__':
             continue
         print "Package(s) for %s :" % site
         found_count += len(infos)
-        for package_name, info in infos:
-            print "* %-15.15s" % info['name'],
+        for package_name, info, origin in infos:
+            print "%s %-15.15s" % (origin, info['name']),
             if info['is_imported']:
                 print "Import: OK"
             else:
                 print "Import: NOT OK"
             del info['is_imported']
             for key in info:
-                print "%-18.18s%s" % (key + ':', info[key])
+                if type(info[key]) in [type([]), type(())]:
+                    for val in info[key]:
+                        print "  %s %s" % (key + ':', val)
+                else:
+                    print "  %s %s" % (key + ':', info[key])
             print
 
     if found_count == 0:
         print "No package found for %s" % module_name
     else:
-        print "Found %d package(s) corresponding to search" % found_count
+        print "Found %d package(s) matching search" % found_count

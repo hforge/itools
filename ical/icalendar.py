@@ -811,11 +811,14 @@ class icalendar(TextFile):
         return self.search_events_in_date(date) != []
 
 
-    def get_conflicts(self, date):
+    def get_conflicts(self, start_date, end_date=None):
         """Returns a list of uid couples which happen at the same time.
         We check only last occurrence of events.
         """
-        events = self.search_events_in_date(date)
+        if end_date is not None:
+            events = self.search_events_in_range(start_date, end_date)
+        else:
+            events = self.search_events_in_date(start_date)
         if len(events) <= 1:
             return None
 
@@ -1417,11 +1420,14 @@ class icalendarTable(Table):
         return self.search_events_in_date(date) != []
 
 
-    def get_conflicts(self, date):
+    def get_conflicts(self, start_date, end_date=None):
         """Returns a list of uid couples which happen at the same time.
         We check only last occurrence of events.
         """
-        events = self.search_events_in_date(date)
+        if end_date is not None:
+            events = self.search_events_in_range(start_date, end_date)
+        else:
+            events = self.search_events_in_date(start_date)
         if len(events) <= 1:
             return None
 

@@ -25,10 +25,6 @@ To build a query:
   query = AndQuery(s1, s2, s3)
 """
 
-# Import from itools
-from catalog import Catalog
-
-
 
 class EqQuery(object):
 
@@ -180,6 +176,8 @@ class NotQuery(object):
 
 
     def search(self, catalog):
+        from catalog import Catalog
+
         all_documents = catalog.search()
         not_documents = self.query.search(catalog)
         sub_results = {}

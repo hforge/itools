@@ -99,7 +99,8 @@ def _get_prefix(number):
     X for a long prefix
     Z for a stemmed word
     """
-    magic_letters = 'ABCDEFGHIJKLMNOPRSTUVWY'
+    # 0 is for the key field, the unique Id of a document
+    magic_letters = 'QABCDEFGHIJKLMNOPRSTUVWY'
     size = len(magic_letters)
     result = 'X'*(number/size)
     return result+magic_letters[number%size]
@@ -292,6 +293,17 @@ class Catalog(object):
                 info = {}
                 # Type
                 info['type'] = field.type
+
+                # The first, so the key field
+                if position == 0:
+                    # Key field
+                    self._key_field = name
+                    info['is_key_field'] = True
+
+                    # The key field must be stored and indexed
+                    if not field.is_stored or not field.is_indexed:
+                        raise ValueError, ('the first field must be stored '
+                                           'and indexed')
                 # Stored ?
                 if field.is_stored:
                     info['is_stored'] = True
@@ -302,10 +314,6 @@ class Catalog(object):
                     info['is_indexed'] = True
                     info['prefix'] = _get_prefix(self._prefix_nb)
                     self._prefix_nb += 1
-                # The first, so the key field?
-                if position == 0:
-                    info['is_key_field'] = True
-                    self._key_field = name
                 fields[name] = info
                 fields_modified = True
             # Verifications

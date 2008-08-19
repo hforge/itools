@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: it\n"
-"POT-Creation-Date: 2008-01-16 10:01+CET\n"
+"POT-Creation-Date: 2008-08-19 16:08+CET\n"
 "PO-Revision-Date: 2004-11-26 14:39+0100\n"
 "Last-Translator: Paolo Dina <paolo@php3.it>\n"
 "Language-Team: Italian <paolo@php3.it>\n"
@@ -16,213 +16,306 @@ msgstr ""
 "X-Poedit-Language: Italian\n"
 "X-Poedit-Country: ITALY\n"
 
-#: ical/icalendar.py:1027
+#: ../xapian/fields.py:157
+msgid "%s%s"
+msgstr ""
+
+#: ../ical/icalendar.py:1030
 msgid "-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN"
 msgstr ""
 
-#: ical/icalendar.py:1026
+#: ../ical/icalendar.py:1029
 msgid "2.0"
 msgstr ""
 
-#: handlers/utils.py:20
-msgid "AAAAAAaaaaaaCcEEEEeeeeeIIIIiiiiNnOOOOOOooooooSUUUUuuuuYŸyy"
+#: ../i18n/base.py:54
+msgid "???"
 msgstr ""
 
-#: i18n/segment.py:19
+#: ../handlers/utils.py:20
+msgid "AAAAAAaaaaaaCcEEEEeeeeIIIIiiiiNnOOOOOOooooooUUUUuuuuYŸyy"
+msgstr ""
+
+#: ../scripts/isetup-quality.py:60
+msgid "Aesthetics (and readibility)"
+msgstr ""
+
+#: ../scripts/isetup-quality.py:54
+msgid "Code length"
+msgstr ""
+
+#: ../scripts/isetup-quality.py:501
+msgid "Error, your project must be versioned with GIT."
+msgstr ""
+
+#: ../csv/table.py:280
+msgid "Error: Field %s must be unique, value %s is already used."
+msgstr ""
+
+#: ../scripts/isetup-quality.py:68
+#, fuzzy
+msgid "Exception handling"
+msgstr "(Exception:"
+
+#: ../scripts/isetup-quality.py:74
+msgid "Import problems"
+msgstr ""
+
+#: ../i18n/segment.py:19
 msgid "Inc"
 msgstr ""
 
-#: pdf/rml.py:1440
+#: ../scripts/isetup-quality.py:56
+msgid "Number of lines"
+msgstr ""
+
+#: ../scripts/isetup-quality.py:57
+msgid "Number of tokens"
+msgstr ""
+
+#: ../scripts/isetup-quality.py:493
+msgid "Options --worse and --show-lines are mutually exclusive."
+msgstr ""
+
+#: ../scripts/isetup-quality.py:491
+#, fuzzy
+msgid "Please give at least one file to analyse."
+msgstr "Devi scegliere un collaboratore da rimuovere."
+
+#: ../scripts/isetup-quality.py:504
+msgid "Please install matplotlib."
+msgstr ""
+
+#: ../web/messages.py:21
+msgid ""
+"Some required fields are missing, or some values are not valid. Please "
+"correct them and continue."
+msgstr ""
+
+#: ../scripts/isetup-quality.py:495
+msgid "The option --show-lines takes one file in parameter."
+msgstr ""
+
+#: ../scripts/isetup-quality.py:284
+#, fuzzy
+msgid "This file is perfect !"
+msgstr "Questa cartella è vuota."
+
+#: ../pdf/rml.py:1440
 msgid "X%sX"
 msgstr ""
 
-#: i18n/oracle.py:61
+#: ../scripts/isetup-quality.py:71
+msgid "all exceptions are catched"
+msgstr ""
+
+#: ../i18n/oracle.py:79
 msgid "and"
 msgstr ""
 
-#: i18n/oracle.py:62
+#: ../i18n/oracle.py:80
 #, fuzzy
 msgid "are"
 msgstr "Confronta"
 
-#: i18n/oracle.py:64
+#: ../i18n/oracle.py:82
 msgid "aux"
 msgstr ""
 
-#: i18n/oracle.py:65
+#: ../scripts/isetup-quality.py:63
+msgid "bad indented"
+msgstr ""
+
+#: ../i18n/oracle.py:83
 #, fuzzy
 msgid "but"
 msgstr "A proposito di"
 
-#: i18n/oracle.py:66
+#: ../i18n/oracle.py:84
 msgid "como"
 msgstr ""
 
-#: i18n/oracle.py:67
+#: ../i18n/oracle.py:85
 #, fuzzy
 msgid "con"
 msgstr "Azione"
 
-#: i18n/oracle.py:69
+#: ../i18n/oracle.py:87
 msgid "del"
 msgstr ""
 
-#: i18n/oracle.py:70
+#: ../i18n/oracle.py:88
 msgid "des"
 msgstr ""
 
-#: i18n/oracle.py:71
+#: ../i18n/oracle.py:89
 msgid "donc"
 msgstr ""
 
-#: i18n/oracle.py:74
+#: ../i18n/oracle.py:92
 msgid "elle"
 msgstr ""
 
-#: i18n/oracle.py:75
+#: ../i18n/oracle.py:93
 msgid "elles"
 msgstr ""
 
-#: i18n/oracle.py:77
+#: ../i18n/oracle.py:95
 msgid "est"
 msgstr ""
 
-#: i18n/oracle.py:78
+#: ../i18n/oracle.py:96
 msgid "está"
 msgstr ""
 
-#: pdf/rml.py:2015
+#: ../pdf/rml.py:2015
 #, fuzzy
 msgid "false"
 msgstr "Incolla"
 
-#: i18n/oracle.py:80
+#: ../i18n/oracle.py:98
 #, fuzzy
 msgid "from"
 msgstr "Da"
 
-#: i18n/oracle.py:81
+#: ../i18n/oracle.py:99
 msgid "hay"
 msgstr ""
 
-#: i18n/oracle.py:85
+#: ../i18n/oracle.py:103
 #, fuzzy
 msgid "ils"
 msgstr "Dettagli"
 
-#: i18n/oracle.py:90
+#: ../i18n/oracle.py:108
 msgid "las"
 msgstr ""
 
-#: i18n/oracle.py:93
+#: ../i18n/oracle.py:111
 msgid "les"
 msgstr ""
 
-#: i18n/oracle.py:94
+#: ../scripts/isetup-quality.py:64
+msgid "longer than 79 characters"
+msgstr ""
+
+#: ../i18n/oracle.py:112
 msgid "los"
 msgstr ""
 
-#: i18n/oracle.py:95
+#: ../i18n/oracle.py:113
 #, fuzzy
 msgid "mais"
 msgstr "Email"
 
-#: i18n/oracle.py:97
+#: ../i18n/oracle.py:115
 #, fuzzy
 msgid "nous"
 msgstr "Gruppi"
 
-#: i18n/oracle.py:98
+#: ../i18n/oracle.py:116
 msgid "nueva"
 msgstr ""
 
-#: i18n/oracle.py:104
+#: ../i18n/oracle.py:122
 msgid "para"
 msgstr ""
 
-#: i18n/oracle.py:105
+#: ../i18n/oracle.py:123
 msgid "pero"
 msgstr ""
 
-#: i18n/oracle.py:106
+#: ../i18n/oracle.py:124
 #, fuzzy
 msgid "por"
 msgstr "o, "
 
-#: i18n/oracle.py:107
+#: ../i18n/oracle.py:125
 #, fuzzy
 msgid "que"
 msgstr "Basco"
 
-#: i18n/oracle.py:108
+#: ../i18n/oracle.py:126
 msgid "qué"
 msgstr ""
 
-#: i18n/oracle.py:109
+#: ../i18n/oracle.py:127
 msgid "she"
 msgstr ""
 
-#: i18n/oracle.py:111
+#: ../scripts/isetup-quality.py:70
+msgid "string exceptions are used"
+msgstr ""
+
+#: ../i18n/oracle.py:129
 msgid "sur"
 msgstr ""
 
-#: i18n/oracle.py:112
+#: ../i18n/oracle.py:130
 #, fuzzy
 msgid "that"
 msgstr "Stato"
 
-#: i18n/oracle.py:113
+#: ../i18n/oracle.py:131
 msgid "the"
 msgstr ""
 
-#: i18n/oracle.py:114
+#: ../i18n/oracle.py:132
 msgid "their"
 msgstr ""
 
-#: i18n/oracle.py:115
+#: ../i18n/oracle.py:133
 msgid "this"
 msgstr ""
 
-#: pdf/rml.py:2014
+#: ../pdf/rml.py:2014
 msgid "true"
 msgstr ""
 
-#: i18n/oracle.py:119
+#: ../i18n/oracle.py:137
 msgid "una"
 msgstr ""
 
-#: i18n/oracle.py:120
+#: ../i18n/oracle.py:138
 msgid "une"
 msgstr ""
 
-#: i18n/oracle.py:121
+#: ../i18n/oracle.py:139
 #, fuzzy
 msgid "vous"
 msgstr "Gruppi"
 
-#: i18n/oracle.py:122
+#: ../i18n/oracle.py:140
 msgid "when"
 msgstr ""
 
-#: i18n/oracle.py:123
+#: ../i18n/oracle.py:141
 #, fuzzy
 msgid "where"
 msgstr "Tema"
 
-#: pdf/rml.py:2014
+#: ../scripts/isetup-quality.py:62
+msgid "with tabulators"
+msgstr ""
+
+#: ../scripts/isetup-quality.py:65
+msgid "with trailing whitespaces"
+msgstr ""
+
+#: ../pdf/rml.py:2014
 msgid "yes"
 msgstr ""
 
-#: i18n/oracle.py:125
+#: ../i18n/oracle.py:143
 msgid "you"
 msgstr ""
 
-#: i18n/oracle.py:126
+#: ../i18n/oracle.py:144
 msgid "your"
 msgstr ""
 
-#: handlers/utils.py:19
-msgid "ÄÅÁÀÂÃäåáàâãÇçÉÈÊËéèêëæÍÌÎÏíìîïÑñÖÓÒÔÕØöóòôõøßÜÚÙÛüúùûÝŸýÿ"
+#: ../handlers/utils.py:19
+msgid "ÄÅÁÀÂÃäåáàâãÇçÉÈÊËéèêëÍÌÎÏíìîïÑñÖÓÒÔÕØöóòôõøÜÚÙÛüúùûÝŸýÿ"
 msgstr ""
 
 #~ msgid "\n"
@@ -471,9 +564,6 @@ msgstr ""
 #~ msgstr ""
 #~ "(1) copyright the software, and (2) offer you this license which gives "
 #~ "you legal permission to copy, distribute and/or modify the software."
-
-#~ msgid "(Exception:"
-#~ msgstr "(Exception:"
 
 #~ msgid ""
 #~ "(Hereinafter, translation is included without limitation in the term "
@@ -2325,10 +2415,6 @@ msgstr ""
 #~ msgstr "Testo integrale"
 
 #, fuzzy
-#~ msgid "Please give a title to your folder."
-#~ msgstr "Devi scegliere un collaboratore da rimuovere."
-
-#, fuzzy
 #~ msgid "Please select a resource."
 #~ msgstr "Devi scegliere un collaboratore da rimuovere."
 
@@ -2936,10 +3022,6 @@ msgstr ""
 #~ "(This alternative is allowed only for noncommercial distribution and only "
 #~ "if you received the program in object code or executable form with such "
 #~ "an offer, in accord with Subsection b above.)"
-
-#, fuzzy
-#~ msgid "This folder is empty."
-#~ msgstr "Questa cartella è vuota."
 
 #, fuzzy
 #~ msgid "This folder or query is empty."

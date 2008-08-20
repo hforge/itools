@@ -62,7 +62,7 @@ if __name__ == '__main__':
                 sys.stderr.write(message % filename)
                 continue
             # Extract the messages
-            po.add_units(get_units())
+            po.set_messages(get_units())
 
         # XXX Should omit the header?
         output.write(po.to_str())

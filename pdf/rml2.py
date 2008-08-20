@@ -103,6 +103,7 @@ class Context(object):
         self.num_id = 0
         self.header = None
         self.footer = None
+        self.multibuild = False
 
 
     def init_base_style_sheet(self):
@@ -285,8 +286,8 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
             elif tag_name == 'header':
                 # the story is pushed in a table (1x1) in order to know its
                 # size
-                context.header = [Table([[paragraph_stream(stream, tag_name,
-                                                  attributes, context)]])]
+                context.header = paragraph_stream(stream, tag_name,
+                                                  attributes, context)
             elif tag_name == 'body':
                 if state == 1:
                     state = 2
@@ -299,8 +300,8 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
             elif tag_name == 'footer':
                 # the story is pushed in a table (1x1) in order to know its
                 # size
-                context.footer = [Table([[paragraph_stream(stream, tag_name,
-                                                  attributes, context)]])]
+                context.footer = paragraph_stream(stream, tag_name,
+                                                  attributes, context)
             else:
                 print MSG_TAG_NOT_SUPPORTED % ('document', line_number,
                                                tag_name)
@@ -315,15 +316,14 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
     #### BUILD PDF ####
     if is_test == True:
         test_data = list(story), context.get_base_style_sheet()
-
-    if context.toc_place is not None:
-        # Create platypus toc
-        place = context.toc_place
-        story = story[:place] + create_toc(context) + story[place:]
+    if context.multibuild:
+        if context.toc_place is not None:
+            # Create platypus toc
+            place = context.toc_place
+            story = story[:place] + create_toc(context) + story[place:]
 
         # Create doc template
-        doc = MyDocTemplate(context.toc_high_level, pdf_stream,
-                            pagesize=LETTER)
+        doc = MyDocTemplate(pdf_stream, context, pagesize=LETTER)
     else:
         doc = MySimpleDocTemplate(pdf_stream, context, pagesize=LETTER)
 
@@ -333,7 +333,7 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
     doc.subject = informations.get('subject', '')
     doc.keywords = informations.get('keywords', [])
 
-    if context.toc_place is not None:
+    if context.multibuild:
         doc.multiBuild(story)
     else:
         doc.build(story)
@@ -439,6 +439,7 @@ def body_stream(stream, _tag_name, _attributes, context):
                 if level is not None:
                     context.toc_high_level = get_int_value(level)
                 context.toc_place = len(story)
+                context.multibuild = True
             elif tag_name in PHRASE:
                 story.extend(paragraph_stream(stream, tag_name, attributes,
                                               context))
@@ -467,6 +468,8 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context,
     has_content = False
     is_not_paragraph = (elt_tag_name != 'p')
     is_not_pre = (elt_tag_name != 'pre')
+    is_footer = (elt_tag_name == 'footer')
+
     story = []
     start_tag = True
     end_tag = False

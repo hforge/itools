@@ -20,10 +20,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from reportlab.platypus import SimpleDocTemplate
+from reportlab.platypus import SimpleDocTemplate, Table
 from reportlab.platypus.doctemplate import PageTemplate, BaseDocTemplate
 from reportlab.platypus.frames import Frame
+
 import copy
+
 
 
 class MySimpleDocTemplate(SimpleDocTemplate):
@@ -31,7 +33,7 @@ class MySimpleDocTemplate(SimpleDocTemplate):
         BaseDocTemplate.__init__(self, filename, **kw)
         self.frame_attr = {'leftPadding': 0, 'bottomPadding': 6,
                            'rightPadding': 0, 'topPadding': 6,
-                           'showBoundary': 1}
+                           'showBoundary': 0}
         self.context = context
         # calculate width available
         self.width_available = self.width
@@ -40,8 +42,8 @@ class MySimpleDocTemplate(SimpleDocTemplate):
 
 
     def beforePage(self):
-
         if self.context.header:
+            self.context.header = [Table([[self.context.header]])]
             # HEADER
             self.canv.saveState()
 
@@ -69,6 +71,7 @@ class MySimpleDocTemplate(SimpleDocTemplate):
             self.canv.restoreState()
 
         if self.context.footer:
+            self.context.footer = [Table([[self.context.footer]])]
             # FOOTER
             self.canv.saveState()
 
@@ -103,7 +106,7 @@ class MyDocTemplate(BaseDocTemplate):
     """
 
 
-    def __init__(self, toc_high_level,  filename, **kw):
+    def __init__(self, filename, context, **kw):
         BaseDocTemplate.__init__(self, filename, **kw)
         self.toc_index = 0
         frame1 = Frame(self.leftMargin, self.bottomMargin, self.width,
@@ -111,8 +114,19 @@ class MyDocTemplate(BaseDocTemplate):
         template_attrs = {'id': 'now', 'frames': [frame1],
                           'pagesize': kw['pagesize']}
         page_template = PageTemplate(**template_attrs)
+        self.context = context
         self.addPageTemplates([page_template])
-        self.toc_high_level = toc_high_level
+        self.toc_high_level = self.context.toc_high_level
+
+        self.frame_attr = {'leftPadding': 0, 'bottomPadding': 6,
+                           'rightPadding': 0, 'topPadding': 6,
+                           'showBoundary': 0}
+
+        self.context = context
+        # calculate width available
+        self.width_available = self.width
+        self.width_available -= self.frame_attr['leftPadding']
+        self.width_available -= self.frame_attr['rightPadding']
 
 
     def _get_heading_level(self, name):
@@ -153,3 +167,61 @@ class MyDocTemplate(BaseDocTemplate):
                 c = self.canv
                 c.bookmarkPage(key)
                 c.addOutlineEntry(text, key, level=level, closed=0)
+
+
+    def beforePage(self):
+        if self.context.header:
+            self.context.header = [Table([[self.context.header]])]
+            # HEADER
+            self.canv.saveState()
+
+            # calculate height
+            element = self.context.header[0]
+            height = element.wrap(self.width_available, self.pagesize[1])[1]
+            height += self.frame_attr['topPadding']
+            height += self.frame_attr['bottomPadding']
+
+            # calculate coordinates
+            x = self.leftMargin
+            y = self.pagesize[1] - height
+
+            # resize margin if the frame is too big
+            if self.topMargin < height:
+                self.topMargin = height
+            else:
+                # frame is centered in top margin
+                y -= (self.topMargin - height) / 2
+
+            # create a frame which will contain all platypus objects defined
+            # in the footer
+            fh = Frame(x, y, self.width_available, height, **self.frame_attr)
+            fh.addFromList(copy.deepcopy(self.context.header), self.canv)
+            self.canv.restoreState()
+
+        if self.context.footer:
+            self.context.footer = [Table([[self.context.footer]])]
+            # FOOTER
+            self.canv.saveState()
+
+            # calculate height
+            element = self.context.footer[0]
+            height = element.wrap(self.width_available, self.pagesize[1])[1]
+            height += self.frame_attr['topPadding']
+            height += self.frame_attr['bottomPadding']
+
+            # calculate coordinates
+            x = self.leftMargin
+            y = 0
+
+            # resize margin if the frame is too big
+            if self.bottomMargin < height:
+                self.bottomMargin = height
+            else:
+                # frame is centered in bottom margin
+                y = (self.bottomMargin - height) / 2
+
+            # create a frame which will contain all platypus objects defined
+            # in the footer
+            ff = Frame(x, y, self.width_available, height, **self.frame_attr)
+            ff.addFromList(copy.deepcopy(self.context.footer), self.canv)
+            self.canv.restoreState()

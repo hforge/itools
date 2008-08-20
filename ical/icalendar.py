@@ -169,7 +169,8 @@ class Component(object):
         """Specify the namespace given on views to represent an event.
 
         day: date selected XXX not used for now
-        conflicts_list: list of conflicts for current resource, [] if not used
+        conflicts_list: list of conflicting uids for current resource, [] if
+            not used
         timetable: timetable index or None
         grid: current calculated view uses gridlayout
         starts_on, ends_on and out_on are used to adjust display.
@@ -229,7 +230,7 @@ class Component(object):
         if id in conflicts_list:
             ns['STATUS'] = 'cal_conflict'
         else:
-            ns['STATUS'] = ''
+            ns['STATUS'] = 'cal_busy'
             status = properties('STATUS')
             if status:
                 ns['STATUS'] = status.value
@@ -928,7 +929,8 @@ class Record(TableRecord):
         """Specify the namespace given on views to represent an event.
 
         day: date selected XXX not used for now
-        conflicts_list: list of conflicts for current resource, [] if not used
+        conflicts_list: list of conflicting uids for current resource, [] if
+            not used
         timetable: timetable index or None
         grid: current calculated view uses gridlayout
         starts_on, ends_on and out_on are used to adjust display.

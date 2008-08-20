@@ -13,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-08-19 16:08+CET\n"
 "PO-Revision-Date: 2007-12-30 23:13+0100\n"
-"Last-Translator: Hervé Cauwelier <herve@itaapy.com>\n"
+"Last-Translator: David Versmisse <david.versmisse@itaapy.com>\n"
 "Language-Team: Français <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -42,27 +42,27 @@ msgstr ""
 
 #: ../scripts/isetup-quality.py:60
 msgid "Aesthetics (and readibility)"
-msgstr ""
+msgstr "Esthétisme (et lisibilité)"
 
 #: ../scripts/isetup-quality.py:54
 msgid "Code length"
-msgstr ""
+msgstr "Longueur du code"
 
 #: ../scripts/isetup-quality.py:501
 msgid "Error, your project must be versioned with GIT."
-msgstr ""
+msgstr "Erreur, votre projet doit être versionné avec GIT"
 
 #: ../csv/table.py:280
 msgid "Error: Field %s must be unique, value %s is already used."
-msgstr ""
+msgstr "Erreur: le champ %s doit être unique, la valeur %s est déjà utilisée"
 
 #: ../scripts/isetup-quality.py:68
 msgid "Exception handling"
-msgstr ""
+msgstr "Gestion des exceptions"
 
 #: ../scripts/isetup-quality.py:74
 msgid "Import problems"
-msgstr ""
+msgstr "Problèmes d'import"
 
 #: ../i18n/segment.py:19
 msgid "Inc"
@@ -70,23 +70,23 @@ msgstr ""
 
 #: ../scripts/isetup-quality.py:56
 msgid "Number of lines"
-msgstr ""
+msgstr "Nombre de lignes"
 
 #: ../scripts/isetup-quality.py:57
 msgid "Number of tokens"
-msgstr ""
+msgstr "Nombre de tokens"
 
 #: ../scripts/isetup-quality.py:493
 msgid "Options --worse and --show-lines are mutually exclusive."
-msgstr ""
+msgstr "Les options --worse et --show-lines sont incompatibles."
 
 #: ../scripts/isetup-quality.py:491
 msgid "Please give at least one file to analyse."
-msgstr ""
+msgstr "Svp, donnez au moins un fichier à analyser"
 
 #: ../scripts/isetup-quality.py:504
 msgid "Please install matplotlib."
-msgstr ""
+msgstr "Svp, installez matplotlib."
 
 #: ../web/messages.py:21
 msgid ""
@@ -98,11 +98,11 @@ msgstr ""
 
 #: ../scripts/isetup-quality.py:495
 msgid "The option --show-lines takes one file in parameter."
-msgstr ""
+msgstr "L'option --show-lines prend un seul fichier en paramètre"
 
 #: ../scripts/isetup-quality.py:284
 msgid "This file is perfect !"
-msgstr ""
+msgstr "Ce fichier est parfait !"
 
 #: ../pdf/rml.py:1440
 msgid "X%sX"
@@ -110,11 +110,11 @@ msgstr ""
 
 #: ../scripts/isetup-quality.py:71
 msgid "all exceptions are catched"
-msgstr ""
+msgstr "Toutes les exceptions sont capturées"
 
 #: ../i18n/oracle.py:79
 msgid "and"
-msgstr ""
+msgstr "et"
 
 #: ../i18n/oracle.py:80
 msgid "are"
@@ -126,11 +126,11 @@ msgstr ""
 
 #: ../scripts/isetup-quality.py:63
 msgid "bad indented"
-msgstr ""
+msgstr "mauvaise indentation"
 
 #: ../i18n/oracle.py:83
 msgid "but"
-msgstr ""
+msgstr "mais"
 
 #: ../i18n/oracle.py:84
 msgid "como"
@@ -194,7 +194,7 @@ msgstr ""
 
 #: ../scripts/isetup-quality.py:64
 msgid "longer than 79 characters"
-msgstr ""
+msgstr "plus long que 79 caractères"
 
 #: ../i18n/oracle.py:112
 msgid "los"
@@ -238,7 +238,7 @@ msgstr ""
 
 #: ../scripts/isetup-quality.py:70
 msgid "string exceptions are used"
-msgstr ""
+msgstr "exception de type 'string' utilisée"
 
 #: ../i18n/oracle.py:129
 msgid "sur"
@@ -286,15 +286,15 @@ msgstr ""
 
 #: ../scripts/isetup-quality.py:62
 msgid "with tabulators"
-msgstr ""
+msgstr "avec des tabulateurs"
 
 #: ../scripts/isetup-quality.py:65
 msgid "with trailing whitespaces"
-msgstr ""
+msgstr "se terminant par des espaces"
 
 #: ../pdf/rml.py:2014
 msgid "yes"
-msgstr ""
+msgstr "oui"
 
 #: ../i18n/oracle.py:143
 msgid "you"

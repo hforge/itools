@@ -219,6 +219,8 @@ def build_paragraph_style(context, element, style_css):
             style_attr.update(p_font_style(key, value, context))
         elif key.startswith('padding'):
             style_attr.update(p_padding_style(key, value))
+        elif key.startswith('line-height'):
+            style_attr['leading'] = format_size(value)
 
     # Overload the attributes values
     for key, attr_value in element[1].iteritems():

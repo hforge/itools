@@ -46,15 +46,27 @@ from utils import (FONT, URI, check_image, exist_attribute, font_value,
 
 #Import from the reportlab Library
 from reportlab.lib.pagesizes import LETTER
-from reportlab.lib.styles import (getSampleStyleSheet, ParagraphStyle)
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import cm
+# CJK
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.cidfonts import UnicodeCIDFont
+
 from reportlab.platypus import (XPreformatted, PageBreak, Image, Indenter,
                                 Table, tableofcontents)
 from reportlab.platypus.flowables import HRFlowable
 from reportlab.platypus.tableofcontents import TableOfContents
-from reportlab.lib.units import cm
 
 #import the graphication css parser
 import css
+
+# CJK font registration
+# register font for simplified Chinese
+pdfmetrics.registerFont(UnicodeCIDFont('STSong-Light'))
+# register font for Japanese
+pdfmetrics.registerFont(UnicodeCIDFont('HeiseiMin-W3'))
+# register font for Korean
+pdfmetrics.registerFont(UnicodeCIDFont('HYSMyeongJo-Medium'))
 
 # Mapping HTML -> REPORTLAB
 P_FORMAT = {'a': 'a', 'em': 'i', 'b': 'b', 'br': 'br', 'span': 'font',

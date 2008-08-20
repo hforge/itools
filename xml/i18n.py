@@ -17,10 +17,10 @@
 
 # Import from itools
 from itools.datatypes import XMLContent
-from itools.i18n import Message
-from itools.i18n.segment import get_segments, translate_message
+from itools.srx import Message, get_segments, translate_message
 from namespaces import get_element_schema, xmlns_uri
 from parser import XMLParser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, TEXT
+from xml import get_start_tag, get_end_tag
 
 
 
@@ -38,8 +38,6 @@ elements_to_keep_spaces = set(['pre'])
 # Code common to "get_units" and "translate"
 ###########################################################################
 def _process_buffer(buffer, hit, encoding):
-    from xml import get_start_tag, get_end_tag
-
     # Miss: the buffer is really empty
     if hit is False:
         for type, value, line in buffer:

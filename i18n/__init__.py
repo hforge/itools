@@ -21,7 +21,6 @@ from base import has_language, get_languages, get_language_name, Multilingual
 from fuzzy import get_distance, get_similarity, is_similar, get_most_similar
 from locale_ import format_date, format_time, format_datetime
 from oracle import guess_language, is_asian_character, is_punctuation
-from segment import Message
 
 
 
@@ -44,8 +43,6 @@ __all__ = [
     'guess_language',
     'is_asian_character',
     'is_punctuation',
-    # segment
-    'Message',
     # languages
     'has_language',
     'get_languages',

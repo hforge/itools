@@ -14,7 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from itools
 from itools.utils import get_abspath
+from srx import SRXFile
+
+
 
 TEXT_ID, TEXT, START_FORMAT, END_FORMAT = range(-1,3)
 
@@ -205,8 +209,6 @@ def _split_message(message, keep_spaces=False):
        (END_FORMAT, </text:span>, 1)]
     ]
     """
-    from itools.srx import SRXFile
-
     format = 0
     sub_sentence = ''
     sub_structure = []

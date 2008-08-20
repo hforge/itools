@@ -26,7 +26,7 @@ import sys
 # Import from itools
 import itools
 from itools.datatypes import FileName
-from itools.gettext import POFile
+from itools.gettext import Message, POFile
 from itools.handlers import Python, ConfigFile
 from itools.html import XHTMLFile
 import itools.stl
@@ -70,7 +70,8 @@ if __name__ == '__main__':
         if path.endswith('.py') and path != 'utils.py':
             write('.')
             handler = Python(path)
-            for message in handler.get_units():
+            for value, references in handler.get_units():
+                message = Message([], [value], [u''], references)
                 if len(message.msgid[0]) > 2:
                     po.set_message(message)
     print
@@ -96,7 +97,8 @@ if __name__ == '__main__':
                 print '* Error:', path
                 print '*'
                 raise
-            for message in messages:
+            for value, references in messages:
+                message = Message([], [value], [u''], references)
                 if len(message.msgid[0]) > 1:
                     po.set_message(message)
         print

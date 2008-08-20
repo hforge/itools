@@ -32,10 +32,8 @@ class VisitorUnicode(object):
 
 
     def visitConst(self, const):
-        from itools.gettext.po import Message # XXX
         if isinstance(const.value, unicode):
-            msg = Message([], [const.value], [u''],
-                          references={self.filename: [const.lineno]})
+            msg = const.value, {self.filename: [const.lineno]}
             self.messages.append(msg)
 
 

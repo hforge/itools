@@ -23,7 +23,7 @@ import sys
 # Import from itools
 import itools
 from itools.handlers import get_handler
-from itools.gettext import POFile
+from itools.gettext import POFile, Message
 import itools.html
 import itools.stl
 import itools.odf
@@ -62,7 +62,9 @@ if __name__ == '__main__':
                 sys.stderr.write(message % filename)
                 continue
             # Extract the messages
-            po.set_messages(get_units())
+            for value, references in get_units():
+                message = Message([], [value], [u''], references)
+                po.set_message(message)
 
         # XXX Should omit the header?
         output.write(po.to_str())

@@ -16,7 +16,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.gettext import Message as gettextMessage
 from itools.datatypes import XMLContent
 from itools.i18n import Message
 from itools.i18n.segment import get_segments, translate_message
@@ -196,7 +195,7 @@ def get_units(events, filename=None):
                 value = attributes[(attr_uri, attr_name)]
                 if not value.strip():
                     continue
-                yield gettextMessage([], [value], [u''], {filename: [line]})
+                yield value, {filename: [line]}
             # Keep spaces
             if tag_name in elements_to_keep_spaces:
                 keep_spaces = True
@@ -208,8 +207,7 @@ def get_units(events, filename=None):
         elif type == MESSAGE:
             # Segmentation
             for segment, line_offset in get_segments(value, keep_spaces):
-                yield gettextMessage([], [segment], [u''],
-                                     {filename: [line + line_offset]})
+                yield segment, {filename: [line + line_offset]}
 
 
 

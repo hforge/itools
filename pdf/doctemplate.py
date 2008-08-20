@@ -42,6 +42,7 @@ class MySimpleDocTemplate(SimpleDocTemplate):
 
 
     def beforePage(self):
+        self.context.current_page += 1
         if self.context.header:
             self.context.header = [Table([[self.context.header]])]
             # HEADER
@@ -170,6 +171,7 @@ class MyDocTemplate(BaseDocTemplate):
 
 
     def beforePage(self):
+        self.context.current_page += 1
         if self.context.header:
             self.context.header = [Table([[self.context.header]])]
             # HEADER

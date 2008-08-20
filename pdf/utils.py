@@ -25,6 +25,8 @@ from itools.vfs import vfs
 from math import floor
 from reportlab.lib import colors
 from reportlab.lib.units import inch, cm, mm, pica
+from reportlab.platypus import Paragraph as Platypus_paragraph
+from reportlab.platypus.paraparser import ParaFrag
 
 encoding = 'UTF-8'
 URI = 'http://www.w3.org/1999/xhtml'
@@ -235,3 +237,34 @@ def check_image(filename, context):
         filename = context.image_not_found_path
         im = ItoolsImage(filename)
     return filename, im
+
+
+
+class Paragraph(Platypus_paragraph):
+
+
+    def __init__(self, text, style, context=None, bulletText=None,
+                 frags=None, caseSensitive=1, encoding='utf8'):
+        Platypus_paragraph.__init__(self, text, style, bulletText, frags,
+                                    caseSensitive, encoding)
+        self.context = context
+        self.save_before_change = None
+
+
+    def wrap(self, availWidth, availHeight):
+        if len(self.frags) and isinstance(self.frags[0], ParaFrag):
+            if self.save_before_change is not None:
+                # restore
+                self.frags[0].text = self.save_before_change
+
+            page_num = self.context.pagenumber
+            is_pagenumber = not self.frags[0].text.find(page_num) < 0
+            if is_pagenumber:
+                if self.save_before_change is None:
+                    # save
+                    self.save_before_change = self.frags[0].text
+                page = str(self.context.current_page)
+                self.frags[0].text = self.frags[0].text.replace(page_num,
+                                                                page)
+
+        return Platypus_paragraph.wrap(self, availWidth, availHeight)

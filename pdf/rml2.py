@@ -40,14 +40,14 @@ from doctemplate import MySimpleDocTemplate, MyDocTemplate
 from style import (build_paragraph_style, get_table_style, makeTocHeaderStyle,
                    get_align, build_inline_style)
 from utils import (FONT, URI, check_image, exist_attribute, font_value,
-                   format_size, get_color, get_int_value, normalize, pc_float,
-                   stream_next, join_content)
+                   format_size, get_color, get_int_value, normalize,
+                   Paragraph, pc_float, stream_next, join_content)
 
 #Import from the reportlab Library
 from reportlab.lib.pagesizes import LETTER
 from reportlab.lib.styles import (getSampleStyleSheet, ParagraphStyle)
-from reportlab.platypus import (Paragraph, XPreformatted, PageBreak, Image,
-                                Indenter, Table, tableofcontents)
+from reportlab.platypus import (XPreformatted, PageBreak, Image, Indenter,
+                                Table, tableofcontents)
 from reportlab.platypus.flowables import HRFlowable
 from reportlab.platypus.tableofcontents import TableOfContents
 from reportlab.lib.units import cm
@@ -76,7 +76,7 @@ MSG_ROW_ERROR = 'Table error : too many row at its line: %s'
 
 HEADING = ('h1', 'h2', 'h3', 'h4', 'h5', 'h6')
 
-EMPTY_TAGS = ('br', 'img')
+EMPTY_TAGS = ('br', 'img', 'toc', 'pagebreak', 'pagenumber')
 
 
 
@@ -103,6 +103,8 @@ class Context(object):
         self.num_id = 0
         self.header = None
         self.footer = None
+        self.current_page = 0
+        self.pagenumber = XMLContent.encode('#pagenumber/>')
         self.multibuild = False
 
 
@@ -541,6 +543,8 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context,
                         print MSG_TAG_NOT_SUPPORTED % ('document',
                                                        line_number, tag_name)
                         # unknown tag
+                elif tag_name == 'pagenumber':
+                    content.append(context.pagenumber)
                 else:
                     print MSG_WARNING_DTD % ('document', line_number,
                                              tag_name)
@@ -864,7 +868,7 @@ def create_paragraph(context, element, content, style_css = {}):
         content = start_tags + content + end_tags
         content = '<para>%s</para>' % content
         #print 1, content
-        widget = Paragraph(content, style, bulletText)
+        widget = Paragraph(content, style, context, bulletText)
     return widget
 
 

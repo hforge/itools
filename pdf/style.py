@@ -195,11 +195,13 @@ def build_paragraph_style(context, element, style_css):
     bulletText = None
 
     style_attr['autoLeading'] = 'max'
-    style_attr['borderPadding'] = 0.2 * cm
-    style_attr['leading'] = 0.4 * cm
+    style_attr['borderPadding'] = 0.1 * cm
+    style_attr['leading'] = 0.3 * cm
 
     #FIXME must be moved in default css
-    style_attr['spaceAfter'] = 0.2 * cm
+
+    style_attr['spaceBefore'] = 0.3 * cm
+    style_attr['spaceAfter'] = 0.3 * cm
     for key, value in style_css.iteritems():
         if key == 'color':
             style_attr['textColor'] = get_color_as_hexa(value)

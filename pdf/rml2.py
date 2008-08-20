@@ -406,6 +406,7 @@ def body_stream(stream, _tag_name, _attributes, context):
         stream : parser stream
     """
 
+    temp_story = None
     story = []
     while True:
         event, value, line_number = stream_next(stream)
@@ -447,6 +448,9 @@ def body_stream(stream, _tag_name, _attributes, context):
                     context.toc_high_level = get_int_value(level)
                 context.toc_place = len(story)
                 context.multibuild = True
+            elif tag_name == 'nobreak':
+                temp_story = story
+                story = []
             elif tag_name in PHRASE:
                 story.extend(paragraph_stream(stream, tag_name, attributes,
                                               context))
@@ -461,6 +465,12 @@ def body_stream(stream, _tag_name, _attributes, context):
             context.path_on_end_event()
             if tag_name == _tag_name:
                 break
+            elif tag_name == 'nobreak':
+                # raise LayoutError if too big
+                if temp_story:
+                    temp_story.append(Table([[story]]))
+                story = temp_story
+                temp_story = None
     return story
 
 

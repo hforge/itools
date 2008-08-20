@@ -23,7 +23,6 @@
 from cStringIO import StringIO
 import tempfile
 import socket
-import copy
 
 # Import from itools
 from itools import get_abspath
@@ -33,25 +32,23 @@ from itools.uri import Path
 from itools.uri.uri import get_cwd
 from itools.vfs import vfs
 from itools.xml import (XMLParser, START_ELEMENT, END_ELEMENT, TEXT,
-                        get_start_tag, get_end_tag)
+                        get_end_tag)
 import itools.http
 
 # Internal import
-from style import (build_paragraph_style, get_table_style,
-                   makeTocHeaderStyle, get_align, p_font_style, build_inline_style)
+from doctemplate import MySimpleDocTemplate, MyDocTemplate
+from style import (build_paragraph_style, get_table_style, makeTocHeaderStyle,
+                   get_align, build_inline_style)
 from utils import (FONT, URI, check_image, exist_attribute, font_value,
-                   format_size, get_color, get_color_as_hexa, get_int_value,
-                   normalize, pc_float, stream_next, join_content)
+                   format_size, get_color, get_int_value, normalize, pc_float,
+                   stream_next, join_content)
 
 #Import from the reportlab Library
 from reportlab.lib.pagesizes import LETTER
 from reportlab.lib.styles import (getSampleStyleSheet, ParagraphStyle)
-from reportlab.platypus import (Paragraph, SimpleDocTemplate, XPreformatted,
-                                PageBreak, Image, Indenter, Table)
-from reportlab.platypus import tableofcontents
-from reportlab.platypus.doctemplate import PageTemplate, BaseDocTemplate
+from reportlab.platypus import (Paragraph, XPreformatted, PageBreak, Image,
+                                Indenter, Table, tableofcontents)
 from reportlab.platypus.flowables import HRFlowable
-from reportlab.platypus.frames import Frame
 from reportlab.platypus.tableofcontents import TableOfContents
 from reportlab.lib.units import cm
 
@@ -253,136 +250,6 @@ def rml2topdf(filename):
     return iostream.getvalue()
 
 
-class MySimpleDocTemplate(SimpleDocTemplate):
-    def __init__(self, filename, context, **kw):
-        BaseDocTemplate.__init__(self, filename, **kw)
-        self.frame_attr = {'leftPadding': 0, 'bottomPadding': 6,
-                           'rightPadding': 0, 'topPadding': 6,
-                           'showBoundary': 1}
-        self.context = context
-        # calculate width available
-        self.width_available = self.width
-        self.width_available -= self.frame_attr['leftPadding']
-        self.width_available -= self.frame_attr['rightPadding']
-
-
-    def beforePage(self):
-
-        if self.context.header:
-            # HEADER
-            self.canv.saveState()
-
-            # calculate height
-            height = 0
-            for element in self.context.header:
-                height += element.wrap(self.width_available, self.pagesize[1])[1]
-            height += self.frame_attr['topPadding']
-            height += self.frame_attr['bottomPadding']
-
-            # calculate coordinates
-            x = self.leftMargin
-            y = self.pagesize[1] - height
-
-            # resize margin if the frame is too big
-            if self.topMargin < height:
-                self.topMargin = height
-            else:
-                # frame is centered in top margin
-                y -= (self.topMargin - height) / 2
-
-            # create a frame which will contain all platypus objects defined
-            # in the footer
-            fh = Frame(x, y, self.width_available, height, **self.frame_attr)
-            fh.addFromList(copy.deepcopy(self.context.header), self.canv)
-            self.canv.restoreState()
-
-        if self.context.footer:
-            # FOOTER
-            self.canv.saveState()
-
-            # calculate height
-            element = self.context.footer[0]
-            height = element.wrap(self.width_available, self.pagesize[1])[1]
-            height += self.frame_attr['topPadding']
-            height += self.frame_attr['bottomPadding']
-
-            # calculate coordinates
-            x = self.leftMargin
-            y = 0
-
-            # resize margin if the frame is too big
-            if self.bottomMargin < height:
-                self.bottomMargin = height
-            else:
-                # frame is centered in bottom margin
-                y = (self.bottomMargin - height) / 2
-
-            # create a frame which will contain all platypus objects defined
-            # in the footer
-            ff = Frame(x, y, self.width_available, height, **self.frame_attr)
-            ff.addFromList(copy.deepcopy(self.context.footer), self.canv)
-            self.canv.restoreState()
-
-
-class MyDocTemplate(BaseDocTemplate):
-    """
-        The document template used for all PDF documents.
-    """
-
-
-    def __init__(self, toc_high_level,  filename, **kw):
-        BaseDocTemplate.__init__(self, filename, **kw)
-        self.toc_index = 0
-        frame1 = Frame(self.leftMargin, self.bottomMargin, self.width,
-                       self.height, id='normal')
-        template_attrs = {'id': 'now', 'frames': [frame1],
-                          'pagesize': kw['pagesize']}
-        page_template = PageTemplate(**template_attrs)
-        self.addPageTemplates([page_template])
-        self.toc_high_level = toc_high_level
-
-
-    def _get_heading_level(self, name):
-        if name.startswith('Heading'):
-            return int(name[7:])
-            # Heading0 -> h1
-        elif name[0] == 'h' and len(name) == 2:
-            # h1~h6
-            return int(name[1:]) - 1
-        else:
-            return None
-
-
-    def _allSatisfied(self):
-        status = BaseDocTemplate._allSatisfied(self)
-        self.toc_index = 0
-        return status
-
-
-    def afterFlowable(self, flowable):
-        "Registers TOC entries and makes outline entries."
-
-        if flowable.__class__.__name__ == 'Paragraph':
-            style_name = flowable.style.name
-            level = self._get_heading_level(style_name)
-            if level is not None and level < self.toc_high_level:
-                # Register TOC entries.
-                text = flowable.getPlainText()
-                pageNum = self.page
-                # Hook the text content by adding a link
-                content = '<para><a href="toc_%s">%s</a></para>'
-                content = content % (self.toc_index, text)
-                self.toc_index += 1
-                self.notify('TOCEntry', (level, content, pageNum))
-
-                # Add PDF outline entries (not really needed/tested here).
-                key = str(hash(flowable))
-                c = self.canv
-                c.bookmarkPage(key)
-                c.addOutlineEntry(text, key, level=level, closed=0)
-
-
-
 def document_stream(stream, pdf_stream, document_name, is_test=False):
     """
         stream : parser stream
@@ -458,7 +325,7 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
         doc = MyDocTemplate(context.toc_high_level, pdf_stream,
                             pagesize=LETTER)
     else:
-        doc = MySimpleDocTemplate(pdf_stream, context, pagesize=LETTER, showBoundary=1)
+        doc = MySimpleDocTemplate(pdf_stream, context, pagesize=LETTER)
 
     # Record PDF informations
     doc.author = informations.get('author', '')

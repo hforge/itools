@@ -23,6 +23,7 @@
 from cStringIO import StringIO
 import tempfile
 import socket
+from sys import _getframe
 
 # Import from itools
 from itools import get_abspath
@@ -104,7 +105,10 @@ class Context(object):
         self.header = None
         self.footer = None
         self.current_page = 0
+        self.number_of_pages = 0
+        # set tag substution
         self.pagenumber = XMLContent.encode('#pagenumber/>')
+        self.pagetotal = XMLContent.encode('#pagetotal/>')
         self.multibuild = False
 
 
@@ -204,7 +208,8 @@ class Context(object):
 
 
     def __del__(self):
-        vfs.remove(self.tmp_dir)
+        if vfs.exists(self.tmp_dir):
+            vfs.remove(self.tmp_dir)
 
 
 
@@ -545,6 +550,9 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context,
                         # unknown tag
                 elif tag_name == 'pagenumber':
                     content.append(context.pagenumber)
+                elif tag_name == 'pagetotal':
+                    context.multibuild = True
+                    content.append(context.pagetotal)
                 else:
                     print MSG_WARNING_DTD % ('document', line_number,
                                              tag_name)

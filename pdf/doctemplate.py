@@ -115,6 +115,7 @@ class MyDocTemplate(BaseDocTemplate):
         template_attrs = {'id': 'now', 'frames': [frame1],
                           'pagesize': kw['pagesize']}
         page_template = PageTemplate(**template_attrs)
+        self.platypus_footer = None
         self.context = context
         self.addPageTemplates([page_template])
         self.toc_high_level = self.context.toc_high_level
@@ -130,6 +131,7 @@ class MyDocTemplate(BaseDocTemplate):
         self.width_available -= self.frame_attr['rightPadding']
 
 
+
     def _get_heading_level(self, name):
         if name.startswith('Heading'):
             return int(name[7:])
@@ -143,6 +145,10 @@ class MyDocTemplate(BaseDocTemplate):
 
     def _allSatisfied(self):
         status = BaseDocTemplate._allSatisfied(self)
+        if self.context.current_page != self.context.number_of_pages:
+            status = 0
+        self.context.number_of_pages = self.context.current_page
+        self.context.current_page = 0
         self.toc_index = 0
         return status
 
@@ -200,13 +206,15 @@ class MyDocTemplate(BaseDocTemplate):
             fh.addFromList(copy.deepcopy(self.context.header), self.canv)
             self.canv.restoreState()
 
-        if self.context.footer:
-            self.context.footer = [Table([[self.context.footer]])]
+        if self.context.footer and self.platypus_footer is None:
+            self.platypus_footer = [Table([[self.context.footer]])]
+
+        if self.platypus_footer is not None:
             # FOOTER
             self.canv.saveState()
 
             # calculate height
-            element = self.context.footer[0]
+            element = self.platypus_footer[0]
             height = element.wrap(self.width_available, self.pagesize[1])[1]
             height += self.frame_attr['topPadding']
             height += self.frame_attr['bottomPadding']
@@ -225,5 +233,7 @@ class MyDocTemplate(BaseDocTemplate):
             # create a frame which will contain all platypus objects defined
             # in the footer
             ff = Frame(x, y, self.width_available, height, **self.frame_attr)
-            ff.addFromList(copy.deepcopy(self.context.footer), self.canv)
+            footer = self.context.footer
+            copy_footer = copy.deepcopy(footer)
+            ff.addFromList(copy_footer, self.canv)
             self.canv.restoreState()

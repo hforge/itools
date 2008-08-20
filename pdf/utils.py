@@ -258,13 +258,18 @@ class Paragraph(Platypus_paragraph):
                 self.frags[0].text = self.save_before_change
 
             page_num = self.context.pagenumber
+            is_pagetotal = not self.frags[0].text.find(self.context.pagetotal) < 0
             is_pagenumber = not self.frags[0].text.find(page_num) < 0
-            if is_pagenumber:
+            if is_pagenumber or is_pagetotal:
                 if self.save_before_change is None:
                     # save
                     self.save_before_change = self.frags[0].text
-                page = str(self.context.current_page)
-                self.frags[0].text = self.frags[0].text.replace(page_num,
-                                                                page)
+                if is_pagenumber:
+                    page = str(self.context.current_page)
+                    self.frags[0].text = self.frags[0].text.replace(page_num,
+                                                                    page)
+                if is_pagetotal:
+                    pages = str(self.context.number_of_pages)
+                    self.frags[0].text = self.frags[0].text.replace(self.context.pagetotal, pages)
 
         return Platypus_paragraph.wrap(self, availWidth, availHeight)

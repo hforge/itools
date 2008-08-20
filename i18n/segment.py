@@ -14,45 +14,20 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from itools.utils import get_abspath
 
-stop_sentences = set([u'.', u';', u'!', u'?', u':'])
-abbreviations = set([u'Inc', u'Md', u'Mr', u'Dr'])
+TEXT_ID, TEXT, START_FORMAT, END_FORMAT = range(-1,3)
 
-
-TEXT, START_FORMAT, END_FORMAT = range(3)
-TEXT_ID = -1
-
-def _is_sentence_done(last_char, last_word):
-    if last_char not in stop_sentences:
-        return False
-
-    # Consider exceptions
-    if last_char == u'.':
-        # Acronyms
-        if len(last_word) == 1 and last_word.isupper():
-            return False
-        # Abbreviations
-        if last_word in abbreviations:
-            return False
-
-    return True
-
-
-
-def _make_sentence(sentence, keep_spaces=False):
-    """Make a sentence normalizing whitespaces or, if keep_spaces is True, a
+def _normalize(sentence, keep_spaces=False):
+    """Make a sentence normalizing whitespaces or, if keep_spaces is True; a
     sentence as raw text.
     """
     if keep_spaces:
-        return u''.join(sentence)
-    sentence = u''.join(sentence)
-    # Right spaces
+        return sentence
     tmp_sentence1 = sentence.rstrip()
-    # Left spaces
     tmp_sentence2 = sentence.lstrip()
-    # Remove surrounding spaces
+    # Normalize: '   text   text2' -> ' text text2'
     res_sentence = u' '.join(sentence.split())
-    # Check the differences
     if tmp_sentence1 != sentence:
         res_sentence = res_sentence + u' '
     if tmp_sentence2 != sentence:
@@ -61,7 +36,7 @@ def _make_sentence(sentence, keep_spaces=False):
 
 
 
-def _rm_surrounding_format(segment_structure, keep_spaces=False):
+def _rm_enclosing_format(segment_structure, keep_spaces=False):
     """This function returns a tuple of two elements. The first element is the
     new segment_structure, then a boolean that indicates whether the
     segment_structure changed.
@@ -69,14 +44,14 @@ def _rm_surrounding_format(segment_structure, keep_spaces=False):
     first, last = segment_structure[0], segment_structure[-1]
     n = len(segment_structure)
 
-    # Check there is at least one surrounding format to remove
+    # Check there is at least one enclosing format to remove
     if n <= 1 or first[2] == TEXT_ID or first[2] != last[2]:
         return segment_structure
 
     # Make a copy
     segment_structure = list(segment_structure)
 
-    # Remove surrounding format
+    # Remove enclosing format
     while n > 1 and first[2] != TEXT_ID and first[2] == last[2]:
         segment_structure.pop(0)
         segment_structure.pop()
@@ -90,73 +65,51 @@ def _rm_surrounding_format(segment_structure, keep_spaces=False):
 
 
 
-def _rm_surrounding_spaces(segment_structure, keep_spaces=False):
+def _rm_enclosing_spaces(segment_structure, keep_spaces=False):
     """This function returns a new segment_structure which no longer contains
-    surrounding spaces.
+    enclosing spaces.
     """
-    n = len(segment_structure)
-    first, last = segment_structure[0], segment_structure[-1]
-    if keep_spaces is False and n > 1:
-        # We remove all empty element which starts the structure
-        empty = not first[1].strip()
-        while empty:
-            segment_structure.pop(0)
-            first = segment_structure[0]
-            empty = not first[1].strip()
-        # We remove all empty element which finish the structure
-        empty = not last[1].strip()
-        while empty:
-            segment_structure.pop()
-            last = segment_structure[-1]
-            empty = not last[1].strip()
+    if keep_spaces is True or len(segment_structure) <= 1:
+        return segment_structure
+
+    # We remove all empty element which starts the structure
+    while not segment_structure[0][1].strip():
+        segment_structure.pop(0)
+    # We remove all empty element which finish the structure
+    while not segment_structure[-1][1].strip():
+        segment_structure.pop()
     return segment_structure
 
 
 
-def _get_surrounding_spaces(segment_structure, keep_spaces=False):
+def _get_enclosing_spaces(segment_structure, keep_spaces=False):
     """This function returns a new segment_structure which no longer contains
-    surrounding spaces. In addition, the function also returns the number of
-    spaces removed (at the beginning and the end of the structure)
+    enclosing spaces.
     """
-    start_index = 0
-    end_index = -1
-    nb_spaces_left = nb_spaces_right = 0
-    first, last = segment_structure[0], segment_structure[-1]
+    nb_left_spaces = nb_right_spaces = 0
+    if keep_spaces is True or len(segment_structure) <= 1:
+        return segment_structure, (nb_left_spaces, nb_right_spaces)
 
-    if keep_spaces is False and len(segment_structure) > 1:
-        # We count all empty elements which starts the structure
-        empty = not first[1].strip()
-        while empty:
-            nb_spaces_left += 1
-            start_index += 1
-            first = segment_structure[start_index]
-            empty = not first[1].strip()
-        # We count all empty elements which finish the structure
-        empty = not last[1].strip()
-        while empty:
-            nb_spaces_right +=1
-            end_index -= 1
-            last = segment_structure[end_index]
-            empty = not last[1].strip()
-    segment_structure = _rm_surrounding_spaces(segment_structure, keep_spaces)
-    return segment_structure, (nb_spaces_left, nb_spaces_right)
+    # We remove all empty element which starts the structure
+    while not segment_structure[nb_left_spaces][1].strip():
+        nb_left_spaces += 1
+    # We remove all empty element which finish the structure
+    while not segment_structure[nb_right_spaces][1].strip():
+        nb_right_spaces +=1
+    segment_structure = _rm_enclosing_spaces(segment_structure, keep_spaces)
+    return segment_structure, (nb_left_spaces, nb_right_spaces)
 
 
 
 def _reinsert_spaces(segment_structure, spaces_positions):
     """Put spaces in the segment structure.
-    'spaces_positions' is a tuple like (x, y). We insert x spaces at the
-    beginning the list and y spaces at the end of the list.
+    'spaces_positions' is a tuple like (x, y). We insert x spaces in front of
+    the list and y spaces at the end of the list.
     """
-    if spaces_positions == (0,0):
-        return segment_structure
-
-    nb_start, nb_end = spaces_positions
-    # Insert starting spaces
-    for space_position in range(nb_start):
+    nb_left_spaces, nb_right_spaces = spaces_positions
+    for space_position in range(nb_left_spaces):
         segment_structure.insert(0, (TEXT, u' ', TEXT_ID))
-    # Insert ending spaces
-    for space_position in range(nb_end):
+    for space_position in range(nb_right_spaces):
         segment_structure.append((TEXT, u' ', TEXT_ID))
     return segment_structure
 
@@ -166,11 +119,9 @@ def _reinsert_format(segment_structure, formats):
     """Re-inject formats into the segment_structure.
     'formats' is a tuple like (start_format, end_format).
     """
-    start_format, end_format = formats
-    #Make a copy
-    segment_structure = segment_structure[:]
-    segment_structure.insert(0, start_format)
-    segment_structure.append(end_format)
+    starting, ending = formats
+    segment_structure.insert(0, starting)
+    segment_structure.append(ending)
     return segment_structure
 
 
@@ -180,13 +131,12 @@ def _reconstruct_message(segment_structure):
     """
     message = Message()
     for seg_struct in segment_structure:
-        type, value, id  = seg_struct
-        if type == TEXT:
-            message.append_text(value)
-        elif type == START_FORMAT:
-            message.append_start_format(value)
-        elif type == END_FORMAT:
-            message.append_end_format(value)
+        if seg_struct[0] == TEXT:
+            message.append_text(seg_struct[1])
+        elif seg_struct[0] == START_FORMAT:
+            message.append_start_format(seg_struct[1])
+        elif seg_struct[0] == END_FORMAT:
+            message.append_end_format(seg_struct[1])
     return message
 
 
@@ -196,24 +146,42 @@ def _reconstruct_segment(segment_structure, keep_spaces=False):
     """
     segment = u''
     for seg_struct in segment_structure:
-        segment += seg_struct[1]
+        segment = segment + seg_struct[1]
     if keep_spaces is False:
         segment = segment.strip()
     return segment
 
 
 
-def _translations_to_struct(translations):
-    """Transform a translation string into a segment structure
+def _translation_to_struct(segment_translations):
+    """_translation_to_struct
     """
-    seg_struct = translations
-    is_string = isinstance(translations[0], (str, unicode))
-    if translations and is_string:
+    seg_struct = segment_translations
+    if segment_translations \
+        and isinstance(segment_translations[0], (str, unicode)):
         seg_struct = []
-        for translation in translations:
+        for translation in segment_translations:
             translation_tuple = (TEXT, translation, TEXT_ID)
             seg_struct.append(translation_tuple)
     return seg_struct
+
+
+
+def _do_break(sentence, rules):
+    break_rules = rules['break_yes']
+    except_rules = rules['break_no']
+    exceptions = []
+    for except_rule in except_rules:
+        exception = except_rule.findall(sentence)
+        if exception:
+            exceptions.append(exception[-1])
+    for break_rule in break_rules:
+        match = break_rule.findall(sentence)
+        if match and match[-1] not in exceptions:
+            tail = break_rule.split(sentence)
+            if tail:
+                tail = tail[-1]
+            return match[-1], tail
 
 
 
@@ -236,80 +204,59 @@ def _split_message(message, keep_spaces=False):
       [(START_FORMAT, '<text:span>', 1), (TEXT, 'Text2.', TEXT_ID),
        (END_FORMAT, </text:span>, 1)]
     ]
-
-    In addition, the function add an offset for each segment, that say where to find the
-    segment from the first line of the message.
     """
+    from itools.srx import SRXFile
 
     format = 0
-    sentence = []
-    sub_sentence = []
-    sentence_done = False
-    last_word = None
-    word_stop = True
-    last_char = None
+    sub_sentence = ''
     sub_structure = []
     stack_id = []
     offset = 0
     line_offset = 0
+
+    # TODO: add an argument to give the srx handler
+    srx = SRXFile(get_abspath('srx/srx_example.srx', 'itools'))
+    rules = srx.get_compiled_rules('default')
+    # In case of messages which begin with a '\n'
     if message and message[0][1][0] == '\n':
         line_offset = 1
 
     for type, atom in message.get_atoms():
         if type == TEXT:
             if atom == '\n':
-                if not _make_sentence(sub_sentence, True).strip():
+                if not sub_sentence.strip():
                     line_offset = max(offset,line_offset)
                 offset += 1
-            sub_sentence.append(atom)
-            if atom.isspace():
-                word_stop = True
-                # Sentence End
-                sentence_done = _is_sentence_done(last_char, last_word)
-                if sentence_done and not stack_id:
-                    sub_structure.append(
-                        (TEXT, _make_sentence(sub_sentence, keep_spaces),
-                         TEXT_ID))
-                    yield sub_structure, line_offset
-                    line_offset = offset
-                    sub_sentence = []
-                    sub_structure = []
-                    sentence_done = False
-            elif atom.isalnum():
-                if word_stop is True:
-                    last_word = atom
-                    word_stop = False
-                else:
-                    last_word += atom
-            else:
-                word_stop = True
-            # Next
-            last_char = atom
+            sub_sentence += atom
+            cut_sentence = _do_break(sub_sentence, rules)
+            if cut_sentence and not stack_id:
+                before_break, after_break = cut_sentence
+                before_break = _normalize(before_break, keep_spaces)
+                sub_structure.append((TEXT, before_break, TEXT_ID))
+                yield sub_structure, line_offset
+                line_offset = offset
+                sub_sentence = ''
+                sub_structure = []
         elif type == START_FORMAT:
             format += 1
             stack_id.append(format)
             if sub_sentence:
-                sub_structure.append(
-                    (TEXT, _make_sentence(sub_sentence, keep_spaces),
-                     TEXT_ID))
-                sub_sentence = []
+                sub_sentence = _normalize(sub_sentence, keep_spaces)
+                sub_structure.append((TEXT, sub_sentence, TEXT_ID))
+                sub_sentence = ''
             id = format
             sub_structure.append((START_FORMAT, u''.join(atom), id))
         elif type == END_FORMAT:
             if sub_sentence:
-                sub_structure.append(
-                    (TEXT, _make_sentence(sub_sentence, keep_spaces),
-                     TEXT_ID))
-                sub_sentence = []
+                sub_sentence = _normalize(sub_sentence, keep_spaces)
+                sub_structure.append((TEXT, sub_sentence, TEXT_ID))
+                sub_sentence = ''
             id = stack_id.pop()
             sub_structure.append((END_FORMAT, u''.join(atom), id))
-            if not stack_id and sentence_done is True:
-                sentence_done = False
     # Send last sentence
     if sub_sentence:
-        sub_structure.append(
-            (TEXT, _make_sentence(sub_sentence, keep_spaces),
-             TEXT_ID))
+        sub_sentence = _normalize(sub_sentence, keep_spaces)
+        sub_structure.append((TEXT, sub_sentence, TEXT_ID))
     if sub_structure:
         yield sub_structure, line_offset
 
@@ -318,58 +265,52 @@ def _split_message(message, keep_spaces=False):
 def get_segments(message, keep_spaces=False):
     """This is a generator that iters over the message. First it segment
     the message and get back the corresponding segments. Then it remove the
-    potentially surrounding format element from the segment. If there was
-    surrounding format, recursion is used to process the last segment as if it
+    potentially enclosing format element from the segment. If there was
+    enclosing format, the generator reiterates on the segment as if it
     was a new message. Indeed, there may be some new segments in this new
     message.
     """
 
-    # Some alias
-    _rm_spaces = _rm_surrounding_spaces
-    _rm_format = _rm_surrounding_format
-    for seg_struct, offset in _split_message(message, keep_spaces):
-        # Remove pointless element (i.e. which don't need be show)
-        seg_struct = _rm_spaces(seg_struct, keep_spaces)
-        new_seg_struct = _rm_format(seg_struct, keep_spaces)
-        # Check if the new structure has changed
-        if new_seg_struct != seg_struct:
-            # Process the segment as a message to get potentially sub-segments
+    for segment_structure, line_offset in _split_message(message, keep_spaces):
+        segment_structure = \
+            _rm_enclosing_spaces(segment_structure, keep_spaces)
+        new_seg_struct = \
+            _rm_enclosing_format(segment_structure, keep_spaces)
+        if new_seg_struct != segment_structure:
             new_message = _reconstruct_message(new_seg_struct)
             for segment, new_offset in get_segments(new_message, keep_spaces):
-                yield segment, offset + new_offset
+                yield segment, line_offset + new_offset
         else:
-            segment = _reconstruct_segment(seg_struct, keep_spaces)
+            segment = _reconstruct_segment(segment_structure,
+                                           keep_spaces)
             if segment:
-                yield segment, offset
+                yield segment, line_offset
 
 
 
 def translate_message(message, catalog, keep_spaces):
-    """Translate a message (text which contains several segments)"""
+    """Returns translation's segments.
+    segment_dict is a dictionnary which map segments to their corresponding
+    translation. This method is recursive.
+    """
     translation_dict = {}
-    for segment, offset in get_segments(message, keep_spaces):
-        translation = catalog.gettext(segment)
-        translation_dict[segment] = translation
+    for segment, line_offset in get_segments(message, keep_spaces):
+        segment_translation = catalog.gettext(segment)
+        translation_dict[segment] = segment_translation
+
     translation = _translate_segments(message, translation_dict, keep_spaces)
     translation = list(translation)
     translation = u''.join(translation)
+
     return translation.encode('utf-8')
 
 
 
 def _translate_segments(message, translation_dict, keep_spaces):
-    """Do Translation segment by segment and use recursion to translate
-    sub-segments if there is pointless format. translation_dict is a
-    dictionnary which map segments to their translations.
-    """
-    # Some alias
-    _rm_spaces = _get_surrounding_spaces
-    _rm_format = _rm_surrounding_format
-    for seg_struct, offset in _split_message(message, keep_spaces):
-        # Remove spaces and store their position
-        seg_struct, spaces_pos = _rm_spaces(seg_struct, keep_spaces)
-        new_seg_struct = _rm_format(seg_struct, keep_spaces)
-        # Check if the new segment has changed
+    for seg_struct, line_offset in _split_message(message, keep_spaces):
+        seg_struct, spaces_pos = \
+            _get_enclosing_spaces(seg_struct, keep_spaces)
+        new_seg_struct = _rm_enclosing_format(seg_struct, keep_spaces)
         if new_seg_struct is seg_struct:
             segment = _reconstruct_segment(seg_struct, keep_spaces)
             if segment:
@@ -378,19 +319,15 @@ def _translate_segments(message, translation_dict, keep_spaces):
                 translation = raw_segment.replace(segment, translation)
                 yield translation
         else:
-            # Simply remove surrounding format and store them
             start_format = seg_struct.pop(0)
             end_format = seg_struct.pop()
-            # Process the new segment as a message for potentially sub-segments
             new_message = _reconstruct_message(seg_struct)
-            seg_trans = \
+            segment_translations = \
                 _translate_segments(new_message, translation_dict, keep_spaces)
-            seg_trans = list(seg_trans)
-            # We transform translation as string to the usually used structure
-            seg_struct = _translations_to_struct(seg_trans)
-            # Re-insert the previously removed formats and spaces
-            seg_struct = \
-                _reinsert_format(seg_struct, (start_format, end_format))
+            segment_translations = list(segment_translations)
+            seg_struct = _translation_to_struct(segment_translations)
+            formats = (start_format, end_format)
+            seg_struct = _reinsert_format(seg_struct, formats)
             seg_struct = _reinsert_spaces(seg_struct, spaces_pos)
             translation = _reconstruct_segment(seg_struct, True)
             yield translation

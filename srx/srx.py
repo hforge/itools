@@ -21,8 +21,7 @@ from re import S as DOTALL
 
 # Import from itools
 from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, TEXT
-from itools.handlers import TextFile, get_handler
-from itools.vfs import open
+from itools.handlers import TextFile
 
 
 class SRXFile(TextFile):

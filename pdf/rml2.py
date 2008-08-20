@@ -23,6 +23,7 @@
 from cStringIO import StringIO
 import tempfile
 import socket
+import copy
 
 # Import from itools
 from itools import get_abspath
@@ -103,6 +104,8 @@ class Context(object):
         self.tag_stack = []
         self.style_tag_stack = []
         self.num_id = 0
+        self.header = None
+        self.footer = None
 
 
     def init_base_style_sheet(self):
@@ -159,6 +162,7 @@ class Context(object):
         else:
             tmp = css.CssStylesheet.from_css(stylesheet_text)
             self.css = self.css.merge(tmp)
+
 
     def add_style_attribute(self, data):
         if self.current_object_path[-1].find('#') < 0:
@@ -249,6 +253,76 @@ def rml2topdf(filename):
     return iostream.getvalue()
 
 
+class MySimpleDocTemplate(SimpleDocTemplate):
+    def __init__(self, filename, context, **kw):
+        BaseDocTemplate.__init__(self, filename, **kw)
+        self.frame_attr = {'leftPadding': 0, 'bottomPadding': 6,
+                           'rightPadding': 0, 'topPadding': 6,
+                           'showBoundary': 1}
+        self.context = context
+        # calculate width available
+        self.width_available = self.width
+        self.width_available -= self.frame_attr['leftPadding']
+        self.width_available -= self.frame_attr['rightPadding']
+
+
+    def beforePage(self):
+
+        if self.context.header:
+            # HEADER
+            self.canv.saveState()
+
+            # calculate height
+            height = 0
+            for element in self.context.header:
+                height += element.wrap(self.width_available, self.pagesize[1])[1]
+            height += self.frame_attr['topPadding']
+            height += self.frame_attr['bottomPadding']
+
+            # calculate coordinates
+            x = self.leftMargin
+            y = self.pagesize[1] - height
+
+            # resize margin if the frame is too big
+            if self.topMargin < height:
+                self.topMargin = height
+            else:
+                # frame is centered in top margin
+                y -= (self.topMargin - height) / 2
+
+            # create a frame which will contain all platypus objects defined
+            # in the footer
+            fh = Frame(x, y, self.width_available, height, **self.frame_attr)
+            fh.addFromList(copy.deepcopy(self.context.header), self.canv)
+            self.canv.restoreState()
+
+        if self.context.footer:
+            # FOOTER
+            self.canv.saveState()
+
+            # calculate height
+            element = self.context.footer[0]
+            height = element.wrap(self.width_available, self.pagesize[1])[1]
+            height += self.frame_attr['topPadding']
+            height += self.frame_attr['bottomPadding']
+
+            # calculate coordinates
+            x = self.leftMargin
+            y = 0
+
+            # resize margin if the frame is too big
+            if self.bottomMargin < height:
+                self.bottomMargin = height
+            else:
+                # frame is centered in bottom margin
+                y = (self.bottomMargin - height) / 2
+
+            # create a frame which will contain all platypus objects defined
+            # in the footer
+            ff = Frame(x, y, self.width_available, height, **self.frame_attr)
+            ff.addFromList(copy.deepcopy(self.context.footer), self.canv)
+            self.canv.restoreState()
+
 
 class MyDocTemplate(BaseDocTemplate):
     """
@@ -322,6 +396,7 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
     context = Context()
     state = 0
     informations = {}
+
     while True:
         event, value, line_number = stream_next(stream)
         if event == None:
@@ -340,6 +415,11 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
             elif tag_name == 'head':
                 informations = head_stream(stream, tag_name, attributes,
                                            context)
+            elif tag_name == 'header':
+                # the story is pushed in a table (1x1) in order to know its
+                # size
+                context.header = [Table([[paragraph_stream(stream, tag_name,
+                                                  attributes, context)]])]
             elif tag_name == 'body':
                 if state == 1:
                     state = 2
@@ -349,6 +429,11 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
                     print MSG_WARNING_DTD % ('document', line_number,
                                              tag_name)
                 continue
+            elif tag_name == 'footer':
+                # the story is pushed in a table (1x1) in order to know its
+                # size
+                context.footer = [Table([[paragraph_stream(stream, tag_name,
+                                                  attributes, context)]])]
             else:
                 print MSG_TAG_NOT_SUPPORTED % ('document', line_number,
                                                tag_name)
@@ -373,7 +458,7 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
         doc = MyDocTemplate(context.toc_high_level, pdf_stream,
                             pagesize=LETTER)
     else:
-        doc = SimpleDocTemplate(pdf_stream, pagesize=LETTER)
+        doc = MySimpleDocTemplate(pdf_stream, context, pagesize=LETTER, showBoundary=1)
 
     # Record PDF informations
     doc.author = informations.get('author', '')

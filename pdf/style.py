@@ -178,11 +178,10 @@ def table_bg_style(key, value, start, stop):
 
 
 def table_align_style(key, value, start, stop):
-
     style = []
     if key == 'vertical-align':
         if value in TAB_V_ALIGN:
-            style.append(('VALIGN', start, stop, key.upper()))
+            style.append(('VALIGN', start, stop, value.upper()))
     elif key == 'text-align':
         val = TAB_H_ALIGN.get(value, 'LEFT')
         style.append(('ALIGN', start, stop, val))
@@ -257,8 +256,7 @@ def build_inline_style(context, tag_name, style_css):
         context.tag_stack[0].append((tag, attrs))
 
 
-def get_table_style(context, attributes, start, stop):
-    style_css = context.get_css_props()
+def get_table_style(style_css, attributes, start, stop):
     table_style = []
     border = {}
 

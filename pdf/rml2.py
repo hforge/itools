@@ -519,6 +519,7 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context,
     start_tag = True
     end_tag = False
     style_p = context.get_css_props()
+
     style_attr_value = elt_attributes.get((URI, 'style'))
     if style_attr_value:
         context.add_style_attribute(style_attr_value)
@@ -796,7 +797,8 @@ def table_stream(stream, _tag_name, attributes, context):
     start = (0, 0)
     stop = (-1, -1)
     content.add_attributes(get_align(attributes))
-    content.extend_style(get_table_style(context, attributes, start, stop))
+    style_css = context.get_css_props()
+    content.extend_style(get_table_style(style_css, attributes, start, stop))
 
     while True:
         event, value, line_number = stream_next(stream)
@@ -828,7 +830,8 @@ def table_stream(stream, _tag_name, attributes, context):
 
 def tr_stream(stream, _tag_name, attributes, table, context):
     x, y = table.get_current()
-    style = get_table_style(context, attributes, (0, y), (-1, y))
+    style_css = context.get_css_props()
+    style = get_table_style(style_css, attributes, (0, y), (-1, y))
     table.extend_style(style)
 
     stop = None
@@ -840,8 +843,9 @@ def tr_stream(stream, _tag_name, attributes, table, context):
         #### START ELEMENT ####
         if event == START_ELEMENT:
             tag_uri, tag_name, attributes = value
-            context.path_on_start_event(tag_name, attributes)
             if tag_name in ('td', 'th'):
+                context.path_on_start_event(tag_name, attributes)
+                style_css = context.get_css_props()
                 cont = paragraph_stream(stream, tag_name, attributes, context)
                 table.push_content(cont)
                 if exist_attribute(attributes, ['width']):
@@ -858,7 +862,7 @@ def tr_stream(stream, _tag_name, attributes, table, context):
                 else:
                     stop = table.get_current()
                 start = (table.current_x, table.current_y)
-                style = get_table_style(context, attributes, start, stop)
+                style = get_table_style(style_css, attributes, start, stop)
                 table.extend_style(style)
                 table.next_cell()
             else:

@@ -18,8 +18,6 @@
 
 # Import from the Standard Library
 from optparse import OptionParser
-from os import sep
-from sys import exit, path, exit
 
 # Import from itools
 from itools import __version__
@@ -57,10 +55,10 @@ if __name__ == '__main__':
 
             if options.test_import:
                 print data['is_imported'] and " OK" or " NOT OK"
+                del data['is_imported']
             else:
                 print
 
-        del data['is_imported']
         for key in data:
             if type(data[key]) in [type([]), type(())]:
                 for val in data[key]:

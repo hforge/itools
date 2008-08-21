@@ -16,8 +16,6 @@
 
 # Import from the Standard Library
 from distutils.versionpredicate import split_provision
-from fnmatch import fnmatch
-from glob import glob
 from operator import itemgetter
 from os import sep
 from os.path import join, split
@@ -130,17 +128,19 @@ def packages_infos(check_import, module_name=None):
         for package in PACKAGES_DB:
             if module_name and module_name != package:
                 continue
-            mask = PACKAGES_DB[package]['E']+'*.egg-info'
-            egg_infos = glob(join(site, mask))
-            if len(egg_infos) > 0:
-                # Why the first?
-                egg_info = egg_infos[0]
-                data = get_egginfo(egg_info)
-                data['module'] = PACKAGES_DB[package]['M']
-                add_package(site, (package, data, 'E'))
-                recorded_packages.append(package)
-                egginfos_mask.append(mask)
-                modules_mask.append(PACKAGES_DB[package]['M'])
+
+            mask = PACKAGES_DB[package]['E']
+            egg_found = False
+            for egg_info in get_names(site):
+                if egg_info.split('-')[0] == mask:
+                    data = get_egginfo(join(site,egg_info))
+                    data['module'] = PACKAGES_DB[package]['M']
+                    add_package(site, (package, data, 'E'))
+                    recorded_packages.append(package)
+                    egginfos_mask.append(mask)
+                    modules_mask.append(PACKAGES_DB[package]['M'])
+                    egg_found = True
+            if egg_found:
                 continue
 
             data = get_setupconf(join(site, PACKAGES_DB[package]['M']))
@@ -170,9 +170,10 @@ def packages_infos(check_import, module_name=None):
             if package in modules_mask:
                 continue
 
-            if (package.endswith('.egg-info') and
-                any(fnmatch(package, m) for m in egginfos_mask)):
-                continue
+            if (package.endswith('.egg-info')):
+                name = package.split('-')[0]
+                if name in egginfos_mask:
+                    continue
 
 
             if package.endswith('.egg-info'):

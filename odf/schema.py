@@ -751,9 +751,9 @@ odf_svg_namespace = XMLNamespace(svg_uri, 'svg', odf_svg_elements)
 odf_dr3d_namespace = XMLNamespace(dr3d_uri, 'dr3d', odf_dr3d_elements)
 odf_form_namespace = XMLNamespace(form_uri, 'form', odf_form_elements)
 odf_script_namespace = XMLNamespace(script_uri, 'script', odf_style_elements)
-odf_ooo_namesapce = XMLNamespace(ooo_uri, 'ooo', [])
-odf_ooow_namesapce = XMLNamespace(ooow_uri, 'ooow', [])
-odf_oooc_namesapce = XMLNamespace(oooc_uri, 'oooc', [])
+odf_ooo_namespace = XMLNamespace(ooo_uri, 'ooo', [])
+odf_ooow_namespace = XMLNamespace(ooow_uri, 'ooow', [])
+odf_oooc_namespace = XMLNamespace(oooc_uri, 'oooc', [])
 odf_data_style_namespace = XMLNamespace(number_uri, 'number',
                                         odf_data_style_elements)
 odf_animation_namespace = XMLNamespace(anim_uri, 'anim',
@@ -764,7 +764,7 @@ odf_manifest_namespace = XMLNamespace(manifest_uri, 'manifest',
                                       odf_manifest_elements)
 odf_presentation_namespace = XMLNamespace(presentation_uri, 'presentation',
                                           odf_presentation_elements)
-odf_smil_namesapce = XMLNamespace(smil_uri, 'uri', [])
+odf_smil_namespace = XMLNamespace(smil_uri, 'uri', [])
 for namespace in [odf_text_namespace, odf_office_namespace,
                   odf_style_namespace, odf_table_namespace,
                   odf_drawing_namespace, odf_meta_namespace,

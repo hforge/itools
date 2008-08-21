@@ -125,36 +125,37 @@ def packages_infos(check_import, module_name=None):
             packages[site] = [package]
 
     for site in sites:
-        for package in PACKAGES_DB:
-            if module_name and module_name != package:
-                continue
-
-            mask = PACKAGES_DB[package]['E']
+        for mask, module_mask in PACKAGES_DB:
             egg_found = False
             for egg_info in get_names(site):
                 if egg_info.split('-')[0] == mask:
                     data = get_egginfo(join(site,egg_info))
-                    data['module'] = PACKAGES_DB[package]['M']
-                    add_package(site, (package, data, 'E'))
-                    recorded_packages.append(package)
+                    if module_name and module_name != data['Name']:
+                        continue
+                    data['module'] = module_mask
+                    add_package(site, (data['Name'], data, 'E'))
+                    recorded_packages.append(data['Name'])
                     egginfos_mask.append(mask)
-                    modules_mask.append(PACKAGES_DB[package]['M'])
+                    modules_mask.append(module_mask)
                     egg_found = True
             if egg_found:
                 continue
 
-            data = get_setupconf(join(site, PACKAGES_DB[package]['M']))
-            if data:
-                add_package(site, (package, data, 'S'))
-                recorded_packages.append(package)
-                modules_mask.append(PACKAGES_DB[package]['M'])
+            if module_name and module_name != module_mask:
                 continue
 
-            data = get_minpackage(join(site, PACKAGES_DB[package]['M']))
+            data = get_setupconf(join(site, module_mask))
             if data:
-                add_package(site, (package, data, 'M'))
-                recorded_packages.append(package)
-                modules_mask.append(PACKAGES_DB[package]['M'])
+                add_package(site, (module_mask, data, 'S'))
+                recorded_packages.append(module_mask)
+                modules_mask.append(module_mask)
+                continue
+
+            data = get_minpackage(join(site, module_mask))
+            if data:
+                add_package(site, (module_mask, data, 'M'))
+                recorded_packages.append(module_mask)
+                modules_mask.append(module_mask)
 
     setupconf_packages = []
     egginfo_packages = []
@@ -164,9 +165,6 @@ def packages_infos(check_import, module_name=None):
 
     for site in sites:
         for package in get_names(site):
-            if module_name and module_name != package:
-                continue
-
             if package in modules_mask:
                 continue
 
@@ -174,17 +172,17 @@ def packages_infos(check_import, module_name=None):
                 name = package.split('-')[0]
                 if name in egginfos_mask:
                     continue
-
-
-            if package.endswith('.egg-info'):
                 # Why the first?
                 data = get_egginfo(join(site, package))
-                if data['Name'] in recorded_packages:
+                if (data['Name'] in recorded_packages or
+                   (module_name and data['Name'] != module_name)):
                     continue
                 del data['Name']
                 del data['Version']
                 add_package(site, (data['name'], data, 'E'))
                 recorded_packages.append(data['name'])
+                continue
+            elif module_name and module_name != package:
                 continue
 
             data = get_setupconf(join(site, package))

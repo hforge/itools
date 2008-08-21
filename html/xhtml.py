@@ -276,6 +276,13 @@ class XHTMLFile(XMLFile):
         return get_element(self.events, 'body')
 
 
+    def get_body_as_html(self):
+        body = self.get_body()
+        if body is None:
+            return None
+        return stream_to_str_as_html(body.get_content_elements())
+
+
     def set_body(self, events):
         body = self.get_body()
         events = self.events[:body.start+1] + events + self.events[body.end:]

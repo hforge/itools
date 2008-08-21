@@ -576,7 +576,7 @@ class RequestMethod(object):
     @classmethod
     def find_view(cls, server, context):
         query = context.uri.query
-        context.view = context.resource.get_view(context.view_name, **query)
+        context.view = context.resource.get_view(context.view_name, query)
         if context.view is None:
             raise NotFound
 

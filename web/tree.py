@@ -168,7 +168,7 @@ class Node(object):
         return self.default_view_name
 
 
-    def get_view(self, name, **kw):
+    def get_view(self, name, query=None):
         # To define a default view, override this
         if name is None:
             name = self.get_default_view_name()

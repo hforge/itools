@@ -87,7 +87,10 @@ def parse_setupconf(package_dir):
     config = SetupFile(join(package_dir, "setup.conf"))
     for attribute in config.schema:
         attributes[attribute] = config.get_value(attribute)
-    attributes['version'] = get_package_version(attributes['name'])
+    if exists(join(package_dir, "version.txt")):
+        attributes['version'] = open(join(package_dir, "version.txt")).read()
+    else:
+        attributes['version'] = get_package_version(attributes['name'])
     return attributes
 
 

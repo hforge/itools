@@ -18,7 +18,8 @@
 # Import from isetup
 from distribution import Dist, ArchiveNotSupported
 from metadata import parse_pkginfo, get_package_version, SetupFile
-from packages import list_packages_info, get_installed_info
+from packages import get_installed_info, packages_infos
+from packages_db import PACKAGES_DB
 from repository import parse_package_name, download, get_repository, EXTENSIONS
 
 
@@ -28,8 +29,8 @@ __all__ = [
     'get_package_version',
     'SetupFile',
     # Packages infos functions
-    'list_packages_info',
     'get_installed_info',
+    'packages_infos',
     # Repositories functions and classses
     'parse_package_name',
     'download',
@@ -40,5 +41,7 @@ __all__ = [
     'ArchiveNotSupported',
     # List of supported extensions
     'EXTENSIONS',
+    # Dict of known packages
+    'PACKAGES_DB'
     ]
 

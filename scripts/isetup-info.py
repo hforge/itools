@@ -19,11 +19,11 @@
 # Import from the Standard Library
 from optparse import OptionParser
 from os import sep
-from sys import exit, path
+from sys import exit, path, exit
 
 # Import from itools
 from itools import __version__
-from itools.isetup import list_packages_info
+from itools.isetup import packages_infos
 
 
 if __name__ == '__main__':
@@ -33,6 +33,11 @@ if __name__ == '__main__':
     description = ("Print available informations for a python package")
     parser = OptionParser(usage, version=version, description=description)
 
+    parser.add_option("-i", "--import",
+                      dest="test_import", default=False, action="store_true",
+                      help="Test if import of the module is possible")
+
+
     (options, args) = parser.parse_args()
 
     if len(args) != 1:
@@ -40,39 +45,33 @@ if __name__ == '__main__':
 
     module_name = args[0]
 
+    found = False
 
-    # find the site-packages absolute path
-    # The behaviour may change, why not look in every sys.path folder?
-    sites = set([])
-    for dir in path:
-        if 'site-packages' in dir:
-            dir = dir.split(sep)
-            sites.add(sep.join(dir[:dir.index('site-packages')+1]))
+    for site, packages in packages_infos(options.test_import, module_name):
+        print "package found in %s" % site
+        for name, data, origin in packages:
+            found = True
+            print "%s %-20.20s %-25.25s" % (origin,
+                                              name,
+                                              data['version']),
 
-    # List available modules
-    found_count = 0
-    for site in sites:
-        infos = list_packages_info(site, module_name, True)
-        if len(infos) == 0:
-            continue
-        print "Package(s) for %s :" % site
-        found_count += len(infos)
-        for package_name, info, origin in infos:
-            print "%s %-15.15s" % (origin, info['name']),
-            if info['is_imported']:
-                print "Import: OK"
+            if options.test_import:
+                print data['is_imported'] and " OK" or " NOT OK"
             else:
-                print "Import: NOT OK"
-            del info['is_imported']
-            for key in info:
-                if type(info[key]) in [type([]), type(())]:
-                    for val in info[key]:
-                        print "  %s %s" % (key + ':', val)
-                else:
-                    print "  %s %s" % (key + ':', info[key])
-            print
+                print
 
-    if found_count == 0:
-        print "No package found for %s" % module_name
+        del data['is_imported']
+        for key in data:
+            if type(data[key]) in [type([]), type(())]:
+                for val in data[key]:
+                    print "  %s %s" % (key + ':', val)
+            else:
+                print "  %s %s" % (key + ':', data[key])
+        print
+
+    if found:
+        print "The first letter tells from where data is read:"
+        print "  E: .egg-info, M: standard package, S: itools package"
     else:
-        print "Found %d package(s) matching search" % found_count
+        print "No matching package found"
+

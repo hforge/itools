@@ -16,26 +16,29 @@
 
 # Import from the Standard Library
 from distutils.versionpredicate import split_provision
+from fnmatch import fnmatch
+from glob import glob
 from operator import itemgetter
-from os.path import join
+from os import sep
+from os.path import join, split
+from sys import path
 
 # Import from itools
-from metadata import get_package_version, parse_setupconf, parse_pkginfo
-from itools.vfs import get_names, exists, is_file, is_folder
 from itools.vfs import get_ctime
+from itools.vfs import get_names, exists, is_file, is_folder
+from metadata import get_package_version, parse_setupconf, parse_pkginfo
+from packages_db import PACKAGES_DB
 
 
-def get_setupconf(dir, package):
-    dir = join(dir, package)
-    setupconf = join(dir, "setup.conf")
+def get_setupconf(package):
+    setupconf = join(package, "setup.conf")
     if is_file(setupconf):
-        return parse_setupconf(dir)
+        return parse_setupconf(package)
     return None
 
 
-def get_egginfo(dir, file):
-    egginfo = join(dir, file)
-    if is_file(egginfo) and file.endswith('.egg-info'):
+def get_egginfo(egginfo):
+    if is_file(egginfo) and egginfo.endswith('.egg-info'):
         attrs = parse_pkginfo(open(egginfo).read())
         attrs['name'] = attrs['Name']
         attrs['version'] = attrs['Version']
@@ -48,40 +51,38 @@ def get_egginfo(dir, file):
     return None
 
 
-def get_minpackage(dir, package):
-    dir = join(dir, package)
+def get_minpackage(dir):
+    package = split(dir)[1]
     if exists(join(dir, '__init__.py')) and is_file(join(dir, '__init__.py')):
         return {'name': package, 'version': get_package_version(package)}
     return None
 
 
-def can_import(package):
-    if 'Provides' in package:
-        try:
-            for provided_module in package['Provides'].split(','):
-                provided_module = split_provision(provided_module)
-                provided_module_name = provided_module[0]
-                provided_module_ver = provided_module[1]
-                __import__(provided_module_name)
-        except:
-            return False
-        else:
-            return True
+def can_import(package, origin=None):
+    if origin and origin == 'E' and package.has_key('module'):
+        test_import = [package['module']]
+    elif 'Provides' in package:
+        test_import = []
+        for provided_module in package['Provides']:
+            test_import.append(split_provision(provided_module)[1])
     else:
         # We can try the name if the project has not filled Provides
         # field
-        try:
-            __import__(package['name'])
-        except:
-            return False
-        else:
-            return True
+        test_import = [package['name']]
+
+    try:
+        for module in test_import:
+            __import__(module)
+    except:
+        return False
+    else:
+        return True
 
 
 def get_installed_info(dir, package_name, check_import=False):
     package = {}
 
-    info = get_setupconf(dir, package_name)
+    info = get_setupconf(join(dir, package_name))
     if info:
         if check_import:
             info['is_imported'] = can_import(info)
@@ -93,31 +94,67 @@ def get_installed_info(dir, package_name, check_import=False):
     entries.sort(lambda a, b: cmp(get_ctime(a), get_ctime(b)))
 
     if len(entries) > 0:
-        info = get_egginfo(dir, entries.pop())
+        info = get_egginfo(join(dir, entries.pop()))
 
     if info:
         if check_import:
             info['is_imported'] = can_import(info)
         return info
 
-    info = get_minpackage(dir, package_name)
+    info = get_minpackage(join(dir, package_name))
     if info:
         if check_import:
             info['is_imported'] = can_import(info)
     return info
 
+def packages_infos(check_import, module_name=None):
+    # find the site-packages absolute path
+    sites = set([])
+    for dir in path:
+        if 'site-packages' in dir:
+            dir = dir.split(sep)
+            sites.add(sep.join(dir[:dir.index('site-packages')+1]))
 
-def list_packages_info(dir, module_name='', check_import=True):
-    """For every package in a directory, return its informations and test if
-    import is possible.
-
-    Works for::
-        * .egg-info
-        * package/setup.conf
-        * understand if package provides .__version__ or .version
-    """
-    packages = []
+    packages = {}
     recorded_packages = []
+    egginfos_mask = []
+    modules_mask = []
+
+    def add_package(site, package):
+        if packages.has_key(site):
+            packages[site].append(package)
+        else:
+            packages[site] = [package]
+
+    for site in sites:
+        for package in PACKAGES_DB:
+            if module_name and module_name != package:
+                continue
+            mask = PACKAGES_DB[package]['E']+'*.egg-info'
+            egg_infos = glob(join(site, mask))
+            if len(egg_infos) > 0:
+                # Why the first?
+                egg_info = egg_infos[0]
+                data = get_egginfo(egg_info)
+                data['module'] = PACKAGES_DB[package]['M']
+                add_package(site, (package, data, 'E'))
+                recorded_packages.append(package)
+                egginfos_mask.append(mask)
+                modules_mask.append(PACKAGES_DB[package]['M'])
+                continue
+
+            data = get_setupconf(join(site, PACKAGES_DB[package]['M']))
+            if data:
+                add_package(site, (package, data, 'S'))
+                recorded_packages.append(package)
+                modules_mask.append(PACKAGES_DB[package]['M'])
+                continue
+
+            data = get_minpackage(join(site, PACKAGES_DB[package]['M']))
+            if data:
+                add_package(site, (package, data, 'M'))
+                recorded_packages.append(package)
+                modules_mask.append(PACKAGES_DB[package]['M'])
 
     setupconf_packages = []
     egginfo_packages = []
@@ -125,34 +162,48 @@ def list_packages_info(dir, module_name='', check_import=True):
     # XXX todo: understand .egg -maybe by using setuptools-
     #egg_packages = []
 
-    folder_entries = [d for d in get_names(dir) if module_name in d]
-    setupconf_packages = [get_setupconf(dir, p) for p in folder_entries]
-    egginfo_packages = [get_egginfo(dir, p) for p in folder_entries]
-    default_package = [get_minpackage(dir, p) for p in folder_entries]
+    for site in sites:
+        for package in get_names(site):
+            if module_name and module_name != package:
+                continue
 
-    for package in setupconf_packages:
-        if package != None:
-            if check_import:
-                package['is_imported'] = can_import(package)
-            packages.append((package['name'], package, 'S'))
-            recorded_packages.append(package['name'])
+            if package in modules_mask:
+                continue
 
-    for package in egginfo_packages:
-        if package != None and package['Name'] not in recorded_packages:
-            if check_import:
-                package['is_imported'] = can_import(package)
-            del package['Name']
-            del package['Version']
-            packages.append((package['name'], package, 'E'))
-            recorded_packages.append(package['name'])
+            if (package.endswith('.egg-info') and
+                any(fnmatch(package, m) for m in egginfos_mask)):
+                continue
 
-    for package in default_package:
-        if package != None and package['name'] not in recorded_packages:
-            if check_import:
-                package['is_imported'] = can_import(package)
-            packages.append((package['name'], package, 'M'))
 
-    packages.sort(cmp=lambda a, b: cmp(a.upper(),b.upper()), key=itemgetter(0))
+            if package.endswith('.egg-info'):
+                # Why the first?
+                data = get_egginfo(join(site, package))
+                if data['Name'] in recorded_packages:
+                    continue
+                del data['Name']
+                del data['Version']
+                add_package(site, (data['name'], data, 'E'))
+                recorded_packages.append(data['name'])
+                continue
 
-    return packages
+            data = get_setupconf(join(site, package))
+            if data and data['name'] not in recorded_packages:
+                add_package(site, (data['name'], data, 'S'))
+                recorded_packages.append(data['name'])
+                continue
+
+            data = get_minpackage(join(site, package))
+            if data and data['name'] not in recorded_packages:
+                add_package(site, (data['name'], data, 'M'))
+                recorded_packages.append(data['name'])
+                continue
+
+
+    for site in packages:
+        packages[site].sort(cmp=lambda a, b: cmp(a.upper(),b.upper()),
+                      key=itemgetter(0))
+        if check_import:
+            for name, package, origin in packages[site]:
+                package['is_imported'] = can_import(package, origin)
+        yield (site, packages[site])
 

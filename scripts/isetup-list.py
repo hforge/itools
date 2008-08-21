@@ -17,13 +17,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from sys import path
 from optparse import OptionParser
-from os import sep
 
 # Import from itools
 from itools import  __version__
-from itools.isetup import list_packages_info
+from itools.isetup import packages_infos
 
 
 if __name__ == '__main__':
@@ -32,35 +30,27 @@ if __name__ == '__main__':
     version = 'itools %s' % __version__
     description = ("List available python packages from site-packages")
     parser = OptionParser(usage, version=version, description=description)
-    parser.parse_args()
+
+    parser.add_option("-i", "--import",
+                      dest="test_import", default=False, action="store_true",
+                      help="Test if import of the module is possible")
 
 
-    # find the site-packages absolute path
-    sites = set([])
-    for dir in path:
-        if 'site-packages' in dir:
-            dir = dir.split(sep)
-            sites.add(sep.join(dir[:dir.index('site-packages')+1]))
+    (options, args) = parser.parse_args()
 
-    packages_displayed = []
-    # List available modules
-    for site in sites:
-        packages = list_packages_info(site)
-        if len(packages) > 0:
-            print "Packages for %s :" % site
-            for package_name, package, origin in packages:
-                if package_name in packages_displayed:
-                    continue
-                packages_displayed.append(package_name)
-                print "%s %-20.20s %-25.25s" % (origin,
-                                                  package['name'],
-                                                  package['version']),
 
-                if package['is_imported']:
-                    print " OK"
-                else:
-                    print " NOT OK"
-            print
+    for site, packages in packages_infos(options.test_import):
+        print "packages in %s" % site
+        for name, data, origin in packages:
+            print "%s %-20.20s %-25.25s" % (origin,
+                                              name,
+                                              data['version']),
+
+            if options.test_import:
+                print data['is_imported'] and " OK" or " NOT OK"
+            else:
+                print
+        print
 
     print "The first letter tells from where data is read:"
     print "  E: .egg-info, M: standard package, S: itools package"

@@ -70,7 +70,38 @@ And the "DomainAware" class has dissapeared:
   class MyClass(object):
       ...
 
-(2)
+(2) TODO
+
+
+
+itools.web
+==========
+
+(1) The architecture of the web framework has considerably changed.  Before
+a URL was mapped to a method, now it is mapped to a instance of the base
+class 'BaseView':
+
+  # Before
+  from itools.web import Node
+  class MyClass(Node):
+      view__access__ = True
+      def view(self, context):
+          ...
+
+  # Now
+  from itools.web import Node, BaseView
+  class MyClassView(BaseView):
+      access = True
+      def GET(self, resource, context):
+          ...
+
+  class MyClass(Node):
+      view = MyClassView()
+
+(2) TODO
+
+
+
 
 
 

@@ -159,7 +159,7 @@ class Node(object):
 
 
     #######################################################################
-    # API / HTTP
+    # API / Views
     #######################################################################
     default_view_name = None
 
@@ -182,34 +182,6 @@ class Node(object):
 
         return view
 
-
-    def GET(self, context):
-        raise NotImplementedError
-
-
-    def HEAD(self, context):
-        """Note that "HEAD" is tweaked by the default Web server to call "GET"
-        and return the length of the body, and None as the body.
-        """
-        pass
-
-
-    def POST(self, context):
-        raise NotImplementedError
-
-
-    def PUT(self, context):
-        raise NotImplementedError
-
-
-    def LOCK(self, context):
-        raise NotImplementedError
-
-
-    def UNLOCK(self, context):
-        raise NotImplementedError
-
-
     #######################################################################
     # API / Security
     #######################################################################
@@ -227,7 +199,7 @@ class Node(object):
 class Root(AccessControl, Node):
     """The Root is the main entry point of the Web application.  Responsible
     for traversal, user retrieval, and error pages.  It is a handler of
-    type Foldern so check out the Handler and Folder API.
+    type Folder so check out the Handler and Folder API.
     """
 
     def get_user(self, username):
@@ -250,10 +222,10 @@ class Root(AccessControl, Node):
         pass
 
 
-    def after_traverse(self, context, body):
+    def after_traverse(self, context):
         """Post-publishing process.
         Possible actions are wrapping the body into a template, etc."""
-        return body
+        pass
 
 
     #######################################################################

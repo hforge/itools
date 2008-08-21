@@ -73,6 +73,17 @@ And the "DomainAware" class has dissapeared:
 (2) TODO
 
 
+itools.stl
+==========
+
+Now the STL attributes must always be prefixed:
+
+  # Before
+  <stl:block repeat="...">
+
+  # Now
+  <stl:block stl:repeat="...">
+
 
 itools.web
 ==========

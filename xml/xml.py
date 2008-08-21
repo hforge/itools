@@ -25,17 +25,6 @@ from parser import (XMLParser, XML_DECL, DOCUMENT_TYPE, START_ELEMENT,
                     END_ELEMENT, TEXT, COMMENT, CDATA)
 
 
-# FIXME Current implementation regarding XML namespaces for attributes
-# does not respectes the standard, and needs therefore be changed.
-# Specifically, unprefixed attributes do not inherit the namspace from
-# the element.
-#
-# See http://lists.xml.org/archives/xml-dev/200505/msg00091.html for
-# an elightement discussion.
-#
-# The modules affected include the parser, and probably the namespace API.
-
-
 #############################################################################
 # Data types
 #############################################################################

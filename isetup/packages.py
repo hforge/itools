@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2002-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2008 Gautier Hayoun <gautier.hayoun@itaapy.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -105,6 +105,7 @@ def get_installed_info(dir, package_name, check_import=False):
             info['is_imported'] = can_import(info)
     return info
 
+
 def packages_infos(check_import, module_name=None):
     # find the site-packages absolute path
     sites = set([])
@@ -115,8 +116,9 @@ def packages_infos(check_import, module_name=None):
 
     packages = {}
     recorded_packages = []
-    egginfos_mask = []
-    modules_mask = []
+    name_mask = set()
+    version_mask = set()
+    module_mask = set()
 
     def add_package(site, package):
         if packages.has_key(site):
@@ -125,37 +127,42 @@ def packages_infos(check_import, module_name=None):
             packages[site] = [package]
 
     for site in sites:
-        for mask, module_mask in PACKAGES_DB:
-            egg_found = False
+        for db_name, db_version, db_module in PACKAGES_DB:
+            db_version = db_version.replace('*', '')
             for egg_info in get_names(site):
-                if egg_info.split('-')[0] == mask:
-                    data = get_egginfo(join(site,egg_info))
-                    if module_name and module_name != data['Name']:
-                        continue
-                    data['module'] = module_mask
-                    add_package(site, (data['Name'], data, 'E'))
-                    recorded_packages.append(data['Name'])
-                    egginfos_mask.append(mask)
-                    modules_mask.append(module_mask)
-                    egg_found = True
-            if egg_found:
-                continue
+                egg_split = egg_info[:-len('.egg-info')].split('-')
+                egg_name = egg_split[0]
+                if egg_name != db_name:
+                    continue
+                egg_version = egg_split[1]
+                if not egg_version.startswith(db_version):
+                    continue
+                data = get_egginfo(join(site, egg_info))
+                if module_name and module_name != data['Name']:
+                    continue
+                data['module'] = db_module
+                add_package(site, (data['Name'], data, 'E'))
+                recorded_packages.append(data['Name'])
+                name_mask.add(db_name)
+                version_mask.add(egg_version)
+                module_mask.add(db_module)
+                break
+            else:
+                if module_name and module_name != db_module:
+                    continue
 
-            if module_name and module_name != module_mask:
-                continue
+                data = get_setupconf(join(site, db_module))
+                if data:
+                    add_package(site, (db_module, data, 'S'))
+                    recorded_packages.append(db_module)
+                    module_mask.add(db_module)
+                    continue
 
-            data = get_setupconf(join(site, module_mask))
-            if data:
-                add_package(site, (module_mask, data, 'S'))
-                recorded_packages.append(module_mask)
-                modules_mask.append(module_mask)
-                continue
-
-            data = get_minpackage(join(site, module_mask))
-            if data:
-                add_package(site, (module_mask, data, 'M'))
-                recorded_packages.append(module_mask)
-                modules_mask.append(module_mask)
+                data = get_minpackage(join(site, db_module))
+                if data:
+                    add_package(site, (db_module, data, 'M'))
+                    recorded_packages.append(db_module)
+                    module_mask.add(db_module)
 
     setupconf_packages = []
     egginfo_packages = []
@@ -165,12 +172,14 @@ def packages_infos(check_import, module_name=None):
 
     for site in sites:
         for package in get_names(site):
-            if package in modules_mask:
+            if package in module_mask:
                 continue
 
             if (package.endswith('.egg-info')):
-                name = package.split('-')[0]
-                if name in egginfos_mask:
+                pkg_split = package.split('-')
+                if pkg_split[0] in name_mask:
+                    continue
+                if pkg_split[1] in version_mask:
                     continue
                 # Why the first?
                 data = get_egginfo(join(site, package))

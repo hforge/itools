@@ -147,22 +147,6 @@ def packages_infos(check_import, module_name=None):
                 version_mask.add(egg_version)
                 module_mask.add(db_module)
                 break
-            else:
-                if module_name and module_name != db_module:
-                    continue
-
-                data = get_setupconf(join(site, db_module))
-                if data:
-                    add_package(site, (db_module, data, 'S'))
-                    recorded_packages.append(db_module)
-                    module_mask.add(db_module)
-                    continue
-
-                data = get_minpackage(join(site, db_module))
-                if data:
-                    add_package(site, (db_module, data, 'M'))
-                    recorded_packages.append(db_module)
-                    module_mask.add(db_module)
 
     setupconf_packages = []
     egginfo_packages = []

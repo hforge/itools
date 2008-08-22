@@ -19,6 +19,7 @@ PACKAGES_DB = (
     ('python_dateutil',       '*',     'dateutil'),
     ('PyXML',                 '*',     '_xmlplus'),
     ('Reportlab',             '*',     'reportlab'),
-    ('Twisted',               '*',     'twisted'),
+    ('Twisted',               '*',    'twisted'),
+    ('Twisted_Core',          '8*',    'twisted'),
     ('Twisted_Web',           '*',     'twisted.web'),
 )

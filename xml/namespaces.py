@@ -104,11 +104,11 @@ def get_namespace_by_prefix(prefix):
 
 
 def get_element_schema(namespace, name):
-    return get_namespace(namespace).get_element(name)
+    return get_namespace(namespace).get_element_schema(name)
 
 
 def is_empty(namespace, name):
-    schema = get_namespace(namespace).get_element(name)
+    schema = get_namespace(namespace).get_element_schema(name)
     return getattr(schema, 'is_empty', False)
 
 
@@ -150,7 +150,7 @@ class ElementSchema(object):
             return self._get_attr_datatype(attr_name)
 
         # Foreign attribute
-        return get_namespace(attr_uri).get_free_attribute(attr_name)
+        return get_namespace(attr_uri).get_attr_datatype(attr_name)
 
 
     #######################################################################
@@ -189,7 +189,7 @@ class XMLNamespace(object):
             self.free_attributes = free_attributes
 
 
-    def get_element(self, name):
+    def get_element_schema(self, name):
         """Returns a dictionary that defines the schema for the given element.
         """
         element = self.elements.get(name)
@@ -199,7 +199,7 @@ class XMLNamespace(object):
         return element
 
 
-    def get_free_attribute(self, name):
+    def get_attr_datatype(self, name):
         datatype = self.free_attributes.get(name)
         if datatype is None:
             raise XMLError, 'unexpected attribute "%s"' % name
@@ -215,7 +215,7 @@ class DefaultNamespace(XMLNamespace):
     bound to a particular namespace.
     """
 
-    def get_element(self, name):
+    def get_element_schema(self, name):
         return ElementSchema(name)
 
 
@@ -236,7 +236,7 @@ xml_namespace = XMLNamespace(
 # The builtin "xmlns:" namespace, for namespace declarations
 class XMLNSNamespace(XMLNamespace):
 
-    def get_free_datatype(self, name):
+    def get_attr_datatype(self, name):
         return String
 
 

@@ -31,9 +31,9 @@ if __name__ == '__main__':
     description = ("Print available informations for a python package")
     parser = OptionParser(usage, version=version, description=description)
 
-    parser.add_option("-i", "--import",
-                      dest="test_import", default=False, action="store_true",
-                      help="Test if import of the module is possible")
+    parser.add_option("-q", "--quiet",
+                      dest="quiet", default=False, action="store_true",
+                      help="Will produce less output (don't test import)")
 
 
     (options, args) = parser.parse_args()
@@ -45,7 +45,7 @@ if __name__ == '__main__':
 
     found = False
 
-    for site, packages in packages_infos(options.test_import, module_name):
+    for site, packages in packages_infos(options.quiet, module_name):
         print "package found in %s" % site
         for name, data, origin in packages:
             found = True
@@ -53,11 +53,11 @@ if __name__ == '__main__':
                                               name,
                                               data['version']),
 
-            if options.test_import:
+            if options.quiet:
+                print
+            else:
                 print data['is_imported'] and " OK" or " NOT OK"
                 del data['is_imported']
-            else:
-                print
 
         for key in data:
             if type(data[key]) in [type([]), type(())]:

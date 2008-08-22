@@ -82,8 +82,6 @@ def get_installed_info(dir, package_name, check_import=False):
 
     info = get_setupconf(join(dir, package_name))
     if info:
-        if check_import:
-            info['is_imported'] = can_import(info)
         return info
 
     entries = [join(dir, f) for f in get_names(dir) if\
@@ -95,18 +93,13 @@ def get_installed_info(dir, package_name, check_import=False):
         info = get_egginfo(join(dir, entries.pop()))
 
     if info:
-        if check_import:
-            info['is_imported'] = can_import(info)
         return info
 
     info = get_minpackage(join(dir, package_name))
-    if info:
-        if check_import:
-            info['is_imported'] = can_import(info)
     return info
 
 
-def packages_infos(check_import, module_name=None):
+def packages_infos(quiet, module_name=None):
     # find the site-packages absolute path
     sites = set([])
     for dir in path:
@@ -194,7 +187,7 @@ def packages_infos(check_import, module_name=None):
     for site in packages:
         packages[site].sort(cmp=lambda a, b: cmp(a.upper(),b.upper()),
                       key=itemgetter(0))
-        if check_import:
+        if not quiet:
             for name, package, origin in packages[site]:
                 package['is_imported'] = can_import(package, origin)
         yield (site, packages[site])

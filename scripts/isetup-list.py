@@ -31,25 +31,25 @@ if __name__ == '__main__':
     description = ("List available python packages from site-packages")
     parser = OptionParser(usage, version=version, description=description)
 
-    parser.add_option("-i", "--import",
-                      dest="test_import", default=False, action="store_true",
-                      help="Test if import of the module is possible")
+    parser.add_option("-q", "--quiet",
+                      dest="quiet", default=False, action="store_true",
+                      help="Will produce less output (don't test import)")
 
 
     (options, args) = parser.parse_args()
 
 
-    for site, packages in packages_infos(options.test_import):
+    for site, packages in packages_infos(options.quiet):
         print "packages in %s" % site
         for name, data, origin in packages:
             print "%s %-20.20s %-25.25s" % (origin,
                                               name,
                                               data['version']),
 
-            if options.test_import:
-                print data['is_imported'] and " OK" or " NOT OK"
-            else:
+            if options.quiet:
                 print
+            else:
+                print data['is_imported'] and " OK" or " NOT OK"
         print
 
     print "The first letter tells from where data is read:"

@@ -117,6 +117,9 @@ def parse_repository(package_url):
             href = value[2][(None, 'href')]
             href = get_reference(href)
 
+            if href.scheme == 'mailto':
+                continue
+
             name = href.path.get_name()
             if not any([name.endswith(ext) for ext in EXTENSIONS]):
                 continue

@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2004-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
-# Copyright (C) 2005-2006 Piotr Macuk <piotr@macuk.pl>
+# Copyright (C) 2005-2008 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2006 Piotr Macuk <piotr@macuk.pl>
 # Copyright (C) 2007 Henry Obein <henry@itaapy.com>
 #
 # This program is free software: you can redistribute it and/or modify

@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2004-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2004-2008 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 # Copyright (C) 2005 Piotr Macuk <piotr@macuk.pl>
 # Copyright (C) 2006-2007 Hervé Cauwelier <herve@itaapy.com>
 # Copyright (C) 2007 Henry Obein <henry@itaapy.com>

@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+# Copyright (C) 2007 Rob McMullen <rob.mcmullen@gmail.com>
 # Copyright (C) 2007 Rob McMullen <robm@users.sourceforge.net>
 #
 # This program is free software: you can redistribute it and/or modify

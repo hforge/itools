@@ -1,3 +1,5 @@
+# Copyright (C) 2008 Gautier Hayoun <gautier.hayoun@itaapy.com>
+# Copyright (C) 2008 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 PACKAGES_DB = (
 #    .egg-info                version  module name
     ('apturl',                '*',     'AptUrl'),

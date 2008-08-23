@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2008 Sylvain Taverne <romain.gauthier@itaapy.com>
+# Copyright (C) 2008 David Versmisse <david.versmisse@itaapy.com>
+# Copyright (C) 2008 Romain Gauthier <romain.gauthier@itaapy.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

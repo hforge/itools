@@ -22,8 +22,8 @@ from access import AccessControl
 from views import BaseView
 
 
-class Node(object):
-    """A Node is a base object supporting the HTTP protocol and the access
+class Resource(object):
+    """A Resource is a base object supporting the HTTP protocol and the access
     control API.
     """
 
@@ -187,20 +187,20 @@ class Node(object):
     # API / Security
     #######################################################################
     def get_access_control(self):
-        node = self
-        while node is not None:
-            if isinstance(node, AccessControl):
-                return node
-            node = node.parent
+        resource = self
+        while resource is not None:
+            if isinstance(resource, AccessControl):
+                return resource
+            resource = resource.parent
 
         return None
 
 
 
-class Root(AccessControl, Node):
-    """The Root is the main entry point of the Web application.  Responsible
-    for traversal, user retrieval, and error pages.  It is a handler of
-    type Folder so check out the Handler and Folder API.
+class RootResource(AccessControl, Resource):
+    """The RootResource is the main entry point of the Web application.
+    Responsible for traversal, user retrieval, and error pages.  It is a
+    handler of type Folder so check out the Handler and Folder API.
     """
 
     def get_user(self, username):

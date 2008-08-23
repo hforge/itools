@@ -19,9 +19,9 @@
 from access import AccessControl
 from context import Context, get_context, set_context, FormError
 from context import select_language
-from messages import *
+from messages import MSG_MISSING_OR_INVALID
+from resources import Resource, RootResource
 from server import Server
-from tree import Root, Node
 from views import BaseView, BaseForm, STLView, STLForm
 import webdav
 
@@ -35,8 +35,8 @@ __all__ = [
     'get_context',
     'select_language',
     # Model
-    'Root',
-    'Node',
+    'Resource',
+    'RootResource',
     # View-Controller
     'BaseView',
     'BaseForm',

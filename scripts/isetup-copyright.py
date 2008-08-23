@@ -68,8 +68,8 @@ if __name__ == '__main__':
         "Modifies the copyright notice in the given FILES. Uses 'git blame'"
         " to figure out the authors.")
     parser = OptionParser(usage, version=version, description=description)
-    parser.add_option('-k', '--keep', action='store_true', default=False,
-        help='keep old copyright (a more conservative approach)')
+    parser.add_option('-f', '--forget', action='store_true', default=False,
+        help='forget the old copyright (a more aggresive approach)')
 
     options, args = parser.parse_args()
     if len(args) == 0:
@@ -131,7 +131,7 @@ if __name__ == '__main__':
             del authors['not.committed.yet']
 
         # Keep old copyright
-        if options.keep:
+        if options.forget is False:
             lines = open(filename).readlines()
             n_lines = len(lines)
             i = 0

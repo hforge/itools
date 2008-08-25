@@ -28,6 +28,8 @@ summarizes this changes.
   ----------------------------   ---------------------------
   catalog.*                      xapian.*
   datatypes.XML                  datatypes.XMLContent
+  web.Node                       web.Resource
+  web.Root                       web.RootResource
 
 
 Global API
@@ -89,8 +91,8 @@ itools.web
 ==========
 
 (1) The architecture of the web framework has considerably changed.  Before
-a URL was mapped to a method, now it is mapped to a instance of the base
-class 'BaseView':
+a URL was mapped to a method, now it is mapped to a instance of the 'BaseView'
+class:
 
   # Before
   from itools.web import Node
@@ -106,12 +108,56 @@ class 'BaseView':
       def GET(self, resource, context):
           ...
 
-  class MyClass(Node):
+  class MyClass(Resource):
       view = MyClassView()
 
-(2) TODO
+(2) The naming has changed.  What before was sometimes called 'node' and
+sometimes 'object', is now named 'resource'.  Some attributes of the
+context object have changed their name too.  The table below summarizes
+these changes.
 
+  Before (alphabetical order)    Now
+  ----------------------------   ---------------------------
+  Context.method                 Context.view_name
+  Context.object                 Context.resource
+  Node._get_object               Resource._get_resource
+  Node._has_object               Resource._has_resource
+  Node.copy_object               Resource.copy_resource
+  Node.del_object                Resource.del_resource
+  Node.get_object                Resource.get_resource
+  Node.get_objects               Resource.get_resources
+  Node.get_real_object           Resource.get_real_resource
+  Node.has_object                Resource.has_resource
+  Node.move_object               Resource.move_resource
+  Node.set_object                Resource.set_resource
+  Node.traverse_objects          Resource.traverse_resources
 
+(3) The prototype of the 'Context.get_form_value' method has changed, the
+order of its optional parameters have been swapped:
+
+  # Before
+  Context.get_form_value(name, default=None, type=String)
+
+  # Now
+  Context.get_form_value(name, type=String, default=None)
+
+Other context methods have been removed, the functionality they provided is
+now available through the views interface.  These methods are:
+
+  # Removed
+  Context.build_form_namespace(schema, method=None)
+  Context.check_form_input(schema)
+
+The 'context.commit' attribute has been dropped.
+
+(4) The access control API has changed too, now the 'is_access_allowed' method
+expects a 'View' instead of a method name.
+
+  # Before
+  AccessControl.is_access_allowed(user, resource, method_name)
+
+  # Now
+  AccessControl.is_access_allowed(user, resource, view)
 
 
 
@@ -171,36 +217,6 @@ itools.odf
 Modifications:
 class ODFFile: - def get_messages(self)
             => + def get_units(self) (and return a Message)
-
-
-itools.web
-==========
-
-Modifications:
-class AccessControl: ! def is_access_allowed: (self, user, object, method_name)
-                                           => (self, user, object, view)
-
-class Context: - def build_form_namespace(self, schema, method=None)
-class Context: ! def get_form_value: (self, name, default=None, type=String)
-                                  => (self, name, type=String, default=None)
-class Context: - def init(self)
-class Context: - def check_form_input(self, schema)
-class Context: + def agent_is_a_robot(self)
-class Context: + def get_query_value(self, name, type=String, default=None)
-
-class Server: - def HEAD(self, context)
-class Server: - def commit_transaction(self, context)
-class Server: - def traverse(self, context)
-class Server: - def GET(self, context)
-class Server: - def LOCK(self, context)
-class Server: - def UNLOCK(self, context)
-class Server: - def PUT(self, context)
-class Server: - def get_site_root(self, hostname)
-class Server: - def POST(self, context)
-class Server: - def get_user(self, context)
-class Server: + def find_user(self, context)
-class Server: + def find_site_root(self, context)
-class Server: + def init_context(self, context)
 
 
 itools.xml

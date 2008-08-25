@@ -23,8 +23,7 @@ from views import BaseView
 
 
 class Resource(object):
-    """A Resource is a base object supporting the HTTP protocol and the access
-    control API.
+    """This is the base class for all web resources.
     """
 
     #######################################################################
@@ -69,7 +68,7 @@ class Resource(object):
         return parent_path.resolve2(self.name)
 
 
-    def get_real_object(self):
+    def get_real_resource(self):
         cpath = self.get_canonical_path()
         if cpath == self.get_abspath():
             return self
@@ -104,8 +103,8 @@ class Resource(object):
 
 
     def get_names(self, path='.'):
-        object = self.get_resource(path)
-        return object._get_names()
+        resource = self.get_resource(path)
+        return resource._get_names()
 
 
     def get_resource(self, path):
@@ -122,10 +121,10 @@ class Resource(object):
             path = path[1:]
 
         for name in path:
-            object = here._get_resource(name)
-            object.parent = here
-            object.name = name
-            here = object
+            resource = here._get_resource(name)
+            resource.parent = here
+            resource.name = name
+            here = resource
 
         return here
 
@@ -133,13 +132,13 @@ class Resource(object):
     def get_resources(self, path='.'):
         here = self.get_resource(path)
         for name in here._get_names():
-            object = here._get_resource(name)
-            object.parent = here
-            object.name = name
-            yield object
+            resource = here._get_resource(name)
+            resource.parent = here
+            resource.name = name
+            yield resource
 
 
-    def set_resource(self, path, object):
+    def set_resource(self, path, resource):
         raise NotImplementedError
 
 
@@ -204,8 +203,8 @@ class RootResource(AccessControl, Resource):
     """
 
     def get_user(self, username):
-        """Return an object representing the user named after the username,
-        or 'None'.  The nature of the object, the location of the storage
+        """Return a resource representing the user named after the username,
+        or 'None'.  The nature of the resource, the location of the storage
         and the retrieval of the data remain at your discretion. The only
         requirements are the "name" attribute, and the "authenticate" method
         with a "password" parameter.

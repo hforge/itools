@@ -49,9 +49,11 @@ def get_languages():
 def get_language_name(code):
     """Returns the name of a language.
     """
+    # FIXME The value returned should be a MSG object, but the MSG class comes
+    # from the itools.gettext module, which is higher level than itools.i18n
     if code in languages:
         return languages[code]
-    return MSG(u'???')
+    return u'???'
 
 
 

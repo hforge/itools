@@ -58,7 +58,8 @@ class Enumerate(object):
             setattr(self, name, number)
 
 
-prepare_code = Enumerate('NoAvailableCandidate Ok BadArchive BadName NotFound')
+prepare_code = Enumerate('NoAvailableCandidate Ok BadArchive BadName '
+                         'NotFound')
 install_code = Enumerate('Ok SetupError UnknownError')
 
 # List of unretrievables packages
@@ -230,7 +231,8 @@ def summary(pretend=False, ask=False, force=False):
             elif error == prepare_code.BadName:
                 print "%s: could not understand package name" % dep
             elif error == prepare_code.NotFound:
-                print "%s: present in repository, but unable to download" % dep
+                print ("%s: present in repository, but unable to "
+                       "download") % dep
             else:
                 print "%s (error code: %d)" % (dep, error)
 

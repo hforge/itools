@@ -71,7 +71,8 @@ class ODFFile(OOFile):
         """
         meta = {}
         meta_tags = ['title', 'description', 'subject', 'initial-creator',
-                     'creation-date', 'creator', 'date', 'keyword', 'language']
+                     'creation-date', 'creator', 'date', 'keyword',
+                     'language']
 
         meta_events = self.get_events('meta.xml')
         previous_tag_name = None
@@ -83,7 +84,7 @@ class ODFFile(OOFile):
                 if previous_tag_name in meta_tags:
                     if meta.has_key(previous_tag_name):
                         meta[previous_tag_name] = '%s\n%s' % (
-                                                meta[previous_tag_name], value)
+                                              meta[previous_tag_name], value)
                     else:
                         meta[previous_tag_name] = value
         return meta
@@ -98,17 +99,18 @@ class ODFFile(OOFile):
                 yield event
 
 
-    def get_units(self):
+    def get_units(self, srx_handler=None):
         for filename in ['content.xml', 'meta.xml', 'styles.xml']:
-            for message in get_units(self.get_events(filename), filename):
+            for message in get_units(self.get_events(filename), filename,
+                                     srx_handler):
                 yield message
 
 
-    def translate(self, catalog):
+    def translate(self, catalog, srx_handler=None):
         """Translate the document and reconstruct an odt document.
         """
         content_events = self.get_events('content.xml')
-        translation = translate(content_events, catalog)
+        translation = translate(content_events, catalog, srx_handler)
         translation = stream_to_str(translation)
         # Reconstruct an Odt
         file = StringIO()

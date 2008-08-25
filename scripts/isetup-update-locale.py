@@ -28,12 +28,12 @@ import sys
 import itools
 from itools.datatypes import FileName
 from itools.gettext import Message, POFile
-from itools.handlers import Python, ConfigFile
+from itools.handlers import Python, ConfigFile, get_handler
 from itools.html import XHTMLFile
 import itools.stl
+import itools.srx
 from itools import vfs
 from itools.vfs import WRITE
-
 
 def write(text):
     sys.stdout.write(text)
@@ -49,6 +49,9 @@ if __name__ == '__main__':
                    ' source.')
     parser = OptionParser('%prog', version=version, description=description)
 
+    parser.add_option('-s', '--srx',
+                      help='Use an other SRX file than the default one.')
+
     options, args = parser.parse_args()
     if len(args) != 0:
         parser.error('incorrect number of arguments')
@@ -56,6 +59,12 @@ if __name__ == '__main__':
     # Read configuration for languages
     config = ConfigFile('setup.conf')
     source_language = config.get_value('source_language', default='en')
+
+    # The SRX file
+    if options.srx is not None:
+        srx_handler = get_handler(options.srx)
+    else:
+        srx_handler = None
 
     # Initialize message catalog
     po = POFile()
@@ -71,7 +80,8 @@ if __name__ == '__main__':
         if path.endswith('.py') and path != 'utils.py':
             write('.')
             handler = Python(path)
-            for value, references in handler.get_units():
+            for value, references in handler.get_units(
+                                             srx_handler=srx_handler):
                 message = Message([], [value], [u''], references)
                 if len(message.msgid[0]) > 2:
                     po.set_message(message)
@@ -90,7 +100,7 @@ if __name__ == '__main__':
             write('.')
             handler = XHTMLFile(path)
             try:
-                messages = handler.get_units()
+                messages = handler.get_units(srx_handler=srx_handler)
                 messages = list(messages)
             except:
                 print

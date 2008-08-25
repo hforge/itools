@@ -183,7 +183,7 @@ def _get_translatable_blocks(events):
 ###########################################################################
 # Get Messages
 ###########################################################################
-def get_units(events, filename=None):
+def get_units(events, filename=None, srx_handler=None):
     keep_spaces = False
     for type, value, line in _get_translatable_blocks(events):
         if type == START_ELEMENT:
@@ -207,7 +207,8 @@ def get_units(events, filename=None):
                 keep_spaces = False
         elif type == MESSAGE:
             # Segmentation
-            for segment, line_offset in get_segments(value, keep_spaces):
+            for segment, line_offset in get_segments(value, keep_spaces,
+                                                     srx_handler):
                 yield segment, {filename: [line + line_offset]}
 
 
@@ -215,7 +216,7 @@ def get_units(events, filename=None):
 ###########################################################################
 # Translate
 ###########################################################################
-def translate(events, catalog):
+def translate(events, catalog, srx_handler=None):
     encoding = 'utf-8' # FIXME hardcoded
     doctype = None
     keep_spaces = False
@@ -223,6 +224,7 @@ def translate(events, catalog):
     for event in _get_translatable_blocks(events):
         type, value, line = event
         if type == DOCUMENT_TYPE:
+            print value
             name, doctype = value
         elif type == START_ELEMENT:
             tag_uri, tag_name, attributes = value
@@ -253,7 +255,8 @@ def translate(events, catalog):
             if tag_name in elements_to_keep_spaces:
                 keep_spaces = False
         elif type == MESSAGE:
-            translation = translate_message(value, catalog, keep_spaces)
+            translation = translate_message(value, catalog, keep_spaces,
+                                            srx_handler)
             for event in XMLParser(translation, namespaces, doctype=doctype):
                 yield event
         else:

@@ -28,6 +28,7 @@ from itools.gettext import POFile, Message
 import itools.html
 import itools.stl
 import itools.odf
+import itools.srx
 
 
 
@@ -39,14 +40,27 @@ if __name__ == '__main__':
     parser = OptionParser('%prog [OPTIONS] [<file>...]',
                           version=version, description=description)
 
+    parser.add_option('-s', '--srx',
+                      help='Use an other SRX file than the default one.')
+
+
     parser.add_option('-o', '--output',
                       help="The output will be written to the given file,"
                            " instead of printed to the standard output.")
 
     options, args = parser.parse_args()
+
+    # Source files
     if len(args) == 0:
         parser.error('Needs at least one source file.')
 
+    # The SRX file
+    if options.srx is not None:
+        srx_handler = get_handler(options.srx)
+    else:
+        srx_handler = None
+
+    # Output
     if options.output is None:
         output = sys.stdout
     else:
@@ -63,7 +77,7 @@ if __name__ == '__main__':
                 sys.stderr.write(message % filename)
                 continue
             # Extract the messages
-            for value, references in get_units():
+            for value, references in get_units(srx_handler=srx_handler):
                 message = Message([], [value], [u''], references)
                 po.set_message(message)
 

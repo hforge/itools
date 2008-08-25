@@ -21,7 +21,7 @@ from re import S as DOTALL
 
 # Import from itools
 from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, TEXT
-from itools.handlers import TextFile
+from itools.handlers import TextFile, register_handler_class
 
 
 class SRXFile(TextFile):
@@ -127,5 +127,8 @@ class SRXFile(TextFile):
             if match(pattern, lang):
                 lang = self.language_map[pattern]
                 return self.language_rules[lang]
+
+
+register_handler_class(SRXFile)
 
 

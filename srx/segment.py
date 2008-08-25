@@ -190,24 +190,24 @@ def _do_break(sentence, rules):
 
 
 
-def _split_message(message, keep_spaces=False):
-    """ We consider a sentence ends by an special puntuation character
+def _split_message(message, keep_spaces=False, srx_handler=None):
+    """ We consider a sentence ends by an special punctuation character
     (dot, colon, semicolon, exclamation or question mark) followed by
-    an space.
+    a space.
 
-    Exceptions to this rule: abbreviations and accronyms.
+    Exceptions to this rule: abbreviations and acronyms.
 
-    This method return a special structure. This is a list which each
-    sub-list represent a segment. The sub-list contains tuples. Each tuples
+    This method returns a special structure. This is a list which each
+    sub-list represents a segment. The sub-list contains tuples. Each tuple
     is an element that can be a format element (e.g. '<em>') or raw text
-    with some others informations (type and id).
-    for example, the message : Text. <text:span>Text2.</text:span>
+    with some other informations (type and id).
+    For example, the message: Text. <text:span>Text2.</text:span>
     will give :
 
     [
       [(TEXT, "Text.", TEXT_ID)],
       [(START_FORMAT, '<text:span>', 1), (TEXT, 'Text2.', TEXT_ID),
-       (END_FORMAT, </text:span>, 1)]
+       (END_FORMAT, </texttest/srx/:span>, 1)]
     ]
     """
     format = 0
@@ -217,9 +217,11 @@ def _split_message(message, keep_spaces=False):
     offset = 0
     line_offset = 0
 
-    # TODO: add an argument to give the srx handler
-    srx = SRXFile(get_abspath('srx/srx_example.srx', 'itools'))
-    rules = srx.get_compiled_rules('default')
+    # No handler ?
+    if srx_handler is None:
+        srx_handler = SRXFile(get_abspath('srx/srx_example.srx', 'itools'))
+
+    rules = srx_handler.get_compiled_rules('default')
     # In case of messages which begin with a '\n'
     if message and message[0][1][0] == '\n':
         line_offset = 1
@@ -265,7 +267,7 @@ def _split_message(message, keep_spaces=False):
 
 
 
-def get_segments(message, keep_spaces=False):
+def get_segments(message, keep_spaces=False, srx_handler=None):
     """This is a generator that iters over the message. First it segment
     the message and get back the corresponding segments. Then it remove the
     potentially enclosing format element from the segment. If there was
@@ -274,14 +276,16 @@ def get_segments(message, keep_spaces=False):
     message.
     """
 
-    for segment_structure, line_offset in _split_message(message, keep_spaces):
+    for segment_structure, line_offset in _split_message(message, keep_spaces,
+                                                         srx_handler):
         segment_structure = \
             _rm_enclosing_spaces(segment_structure, keep_spaces)
         new_seg_struct = \
             _rm_enclosing_format(segment_structure, keep_spaces)
         if new_seg_struct != segment_structure:
             new_message = _reconstruct_message(new_seg_struct)
-            for segment, new_offset in get_segments(new_message, keep_spaces):
+            for segment, new_offset in get_segments(new_message, keep_spaces,
+                                                    srx_handler=None):
                 yield segment, line_offset + new_offset
         else:
             segment = _reconstruct_segment(segment_structure,
@@ -291,13 +295,14 @@ def get_segments(message, keep_spaces=False):
 
 
 
-def translate_message(message, catalog, keep_spaces):
+def translate_message(message, catalog, keep_spaces, srx_handler=None):
     """Returns translation's segments.
     segment_dict is a dictionnary which map segments to their corresponding
     translation. This method is recursive.
     """
     translation_dict = {}
-    for segment, line_offset in get_segments(message, keep_spaces):
+    for segment, line_offset in get_segments(message, keep_spaces,
+                                             srx_handler):
         segment_translation = catalog.gettext(segment)
         translation_dict[segment] = segment_translation
 
@@ -309,8 +314,10 @@ def translate_message(message, catalog, keep_spaces):
 
 
 
-def _translate_segments(message, translation_dict, keep_spaces):
-    for seg_struct, line_offset in _split_message(message, keep_spaces):
+def _translate_segments(message, translation_dict, keep_spaces,
+                        srx_handler=None):
+    for seg_struct, line_offset in _split_message(message, keep_spaces,
+                                                  srx_handler):
         seg_struct, spaces_pos = \
             _get_enclosing_spaces(seg_struct, keep_spaces)
         new_seg_struct = _rm_enclosing_format(seg_struct, keep_spaces)
@@ -325,8 +332,8 @@ def _translate_segments(message, translation_dict, keep_spaces):
             start_format = seg_struct.pop(0)
             end_format = seg_struct.pop()
             new_message = _reconstruct_message(seg_struct)
-            segment_translations = \
-                _translate_segments(new_message, translation_dict, keep_spaces)
+            segment_translations = _translate_segments(new_message,
+                                            translation_dict, keep_spaces)
             segment_translations = list(segment_translations)
             seg_struct = _translation_to_struct(segment_translations)
             formats = (start_format, end_format)

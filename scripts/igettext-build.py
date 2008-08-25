@@ -27,6 +27,7 @@ from itools.handlers import get_handler
 import itools.html
 import itools.stl
 import itools.odf
+import itools.srx
 
 
 def build(parser):
@@ -35,6 +36,12 @@ def build(parser):
     if len(args) != 2:
         parser.error('incorrect number of arguments')
     source, catalog_name = args
+
+    # The SRX file
+    if options.srx is not None:
+        srx_handler = get_handler(options.srx)
+    else:
+        srx_handler = None
 
     # Check for ODF files
     if is_zipfile(source) and options.output is None:
@@ -52,10 +59,11 @@ def build(parser):
     try:
         catalog.gettext
     except AttributeError:
-        print 'Error: The file "%s" is not a supported catalog.' % catalog_name
+        print ('Error: The file "%s" is not a supported '
+              'catalog.') % catalog_name
         return
     # Translate
-    data = translate(catalog)
+    data = translate(catalog, srx_handler=srx_handler)
 
     # Save
     if options.output is None:
@@ -75,6 +83,10 @@ if __name__ == '__main__':
         'in the PO file.')
     parser = OptionParser('%prog <source file> <PO file>', version=version,
         description=description)
+
+    parser.add_option('-s', '--srx',
+                      help='Use an other SRX file than the default one.')
+
     parser.add_option('-o', '--output', help='The output will be written to'
         ' the given file, instead of printed to the standard output.')
 

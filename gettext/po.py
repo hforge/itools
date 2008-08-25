@@ -153,7 +153,8 @@ class Message(object):
     XXX
     1. Right now the 'comments' list keeps translator comments, automatic
     comments and flags, we should distinguish them.
-    2. Maybe the msgid and msgstr should be kept as a strings instead of lists.
+    2. Maybe the msgid and msgstr should be kept as a strings instead of
+    lists.
     XXX
     """
 
@@ -304,12 +305,14 @@ class POFile(TextFile):
                     # End of the entry
                     yield id, comments, msgid, msgstr, fuzzy, line_number
                     state = 0
-                    id, comments, msgid, msgstr, fuzzy = None, [], [], [], False
+                    id, comments, msgid, msgstr = None, [], [], []
+                    fuzzy = False
                 elif line_type == COMMENT:
                     # Add entry
                     self._set_message(msgid, msgstr, comments, {}, fuzzy)
                     # Reset
-                    id, comments, msgid, msgstr, fuzzy = None, [], [], [], False
+                    id, comments, msgid, msgstr= None, [], [], []
+                    fuzzy = False
                     state = 4
                 else:
                     raise POSyntaxError(line_number, line_type)
@@ -321,7 +324,8 @@ class POFile(TextFile):
                     # End of the entry
                     yield id, comments, msgid, msgstr, fuzzy, line_number
                     state = 0
-                    id, comments, msgid, msgstr, fuzzy = None, [], [], [], False
+                    id, comments, msgid, msgstr = None, [], [], []
+                    fuzzy = False
                 else:
                     raise POSyntaxError(line_number, line_type)
 
@@ -386,7 +390,8 @@ class POFile(TextFile):
             msgstr = [msgstr]
 
         id = ''.join(msgid)
-        self.messages[id] = Message(comments, msgid, msgstr, references, fuzzy)
+        self.messages[id] = Message(comments, msgid, msgstr, references,
+                                    fuzzy)
 
 
     #######################################################################
@@ -398,7 +403,7 @@ class POFile(TextFile):
         return self.messages.keys()
 
 
-    def get_units(self):
+    def get_units(self, srx_handler=None):
         """Rerturns all the message (objects of the class <Message>).
         """
         return self.messages.values()

@@ -42,7 +42,8 @@ class HTMLFile(XHTMLFile):
             '  "http://www.w3.org/TR/html4/loose.dtd">\n'
             '<html>\n'
             '  <head>\n'
-            '    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">\n'
+            '    <meta http-equiv="Content-Type" content="text/html;'
+            'charset=UTF-8">\n'
             '    <title>%(title)s</title>\n'
             '  </head>\n'
             '  <body></body>\n'
@@ -59,8 +60,8 @@ class HTMLFile(XHTMLFile):
     to_str = XHTMLFile.to_html
 
 
-    def translate(self, catalog):
-        stream = translate(self.events, catalog)
+    def translate(self, catalog, srx_handler=None):
+        stream = translate(self.events, catalog, srx_handler)
         return stream_to_str_as_html(stream)
 
 

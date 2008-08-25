@@ -234,7 +234,7 @@ class XMLFile(TextFile):
     #######################################################################
     # API / Internationalization - Localization
     #######################################################################
-    def get_units(self):
+    def get_units(self, srx_handler=None):
         from i18n import get_units
 
         relative_path = None
@@ -243,13 +243,13 @@ class XMLFile(TextFile):
             locale_path = get_absolute_reference2('locale').path
             template_path = self.uri.path
             relative_path = locale_path.get_pathto(template_path)
-        return get_units(self.events, relative_path)
+        return get_units(self.events, relative_path, srx_handler)
 
 
-    def translate(self, catalog):
+    def translate(self, catalog, srx_handler=None):
         from i18n import translate
 
-        stream = translate(self.events, catalog)
+        stream = translate(self.events, catalog, srx_handler)
         return stream_to_str(stream)
 
 

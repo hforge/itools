@@ -155,7 +155,7 @@ class Resource(object):
         raise NotImplementedError
 
 
-    def traverse_objects(self):
+    def traverse_resources(self):
         raise NotImplementedError
 
 

@@ -240,7 +240,7 @@ def _split_message(message, keep_spaces=False, srx_handler=None):
                 sub_structure.append((TEXT, before_break, TEXT_ID))
                 yield sub_structure, line_offset
                 line_offset = offset
-                sub_sentence = ''
+                sub_sentence = after_break
                 sub_structure = []
         elif type == START_FORMAT:
             format += 1

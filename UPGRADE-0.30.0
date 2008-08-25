@@ -28,6 +28,7 @@ summarizes this changes.
   ----------------------------   ---------------------------
   catalog.*                      xapian.*
   datatypes.XML                  datatypes.XMLContent
+  i18n.Message                   srx.Message
   web.Node                       web.Resource
   web.Root                       web.RootResource
 
@@ -160,6 +161,28 @@ expects a 'View' instead of a method name.
   AccessControl.is_access_allowed(user, resource, view)
 
 
+itools.xml
+==========
+
+(1) Now the parser returns a different value for DOCUMENT_TYPE events.
+
+  # Before
+  if event == DOCUMENT_TYPE:
+      name, system_id, public_id, has_internal_subset = value
+      if public_id is None:
+          print '<!DOCTYPE %s SYSTEM "%s">' % (name, system_id)
+      elif ...
+
+  # Now
+  if event == DOCUMENT_TYPE:
+      name, doctype = value
+      print '<!DOCTYPE %s %s>' % (name, doctype.to_str())
+
+(2) The namespaces API has changed.
+
+TODO
+
+
 
 
 
@@ -204,7 +227,6 @@ itools.i18n
 ===========
 
 Modifications:
-get_language_name returns now a MSG (cf itools.gettext)
 
 + def get_segments(message, keep_spaces=False)
 class Message: - def get_segments(self, keep_spaces=None)
@@ -241,13 +263,5 @@ class XMLNamespace: + def get_free_attribute(self, name)
                      => (XMLNamespace)
 class XMLNSNamespace: - def get_datatype(cls, name)
 class XMLNSNamespace: + def get_free_datatype(self, name)
-
-
-Remarque:
-The XMLParser returns now the following event for a doctype:
-
-(DOCUMENT_TYPE, DocType, line_number)
-
-DocType is a new class that can manage the DTD.
 
 

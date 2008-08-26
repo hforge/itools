@@ -210,6 +210,20 @@ class Tokens(DataType):
 
 
 
+class MultiLinesTokens(DataType):
+
+    @staticmethod
+    def decode(data):
+        return tuple(data.split('\n'))
+
+
+    @staticmethod
+    def encode(value):
+        return '\n'.join(value)
+
+
+
+
 ###########################################################################
 # Enumerates
 

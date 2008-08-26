@@ -40,144 +40,47 @@ elements_to_keep_spaces = set(['pre'])
 ###########################################################################
 # Code common to "get_units" and "translate"
 ###########################################################################
-def _process_buffer(buffer, hit, encoding):
-    # Miss: the buffer is really empty
-    if hit is False:
-        for type, value, line in buffer:
-            if type == START_ELEMENT or type == END_ELEMENT:
-                yield type, value[:-1], line
-            else:
-                yield type, value, line
-        return
-
-    # Process the buffer
-    # Right strip
-    tail = buffer[-1]
-    if tail[0] == TEXT and tail[1].strip() == '':
-        del buffer[-1]
-        tail = [tail]
-    else:
-        tail = []
-
-    # Remove auxiliar data
-    for i in range(len(buffer)):
-        type, value, line = buffer[i]
-        if type == START_ELEMENT or type == END_ELEMENT:
-            buffer[i] = type, value[:-1], line
-
-    # Build message
-    first_line = None
-    if buffer:
-        type, value, first_line = buffer[0]
-    message = Message()
-    for type, value, line in buffer:
-        if type == TEXT:
-            value = XMLContent.encode(value)
-            value = unicode(value, encoding)
-            message.append_text(value)
-        elif type == START_ELEMENT:
-            message.append_start_format(get_start_tag(*value))
-        elif type == END_ELEMENT:
-            message.append_end_format(get_end_tag(*value))
-
-    # Return message
-    yield MESSAGE, message, first_line
-
-    # Return tail
-    for x in tail:
-        yield x
-
-
-
 def _get_translatable_blocks(events):
-    """This method is defined so it can be used by both "get_units" and
-    "translate". Hence it contains the logic that is commont to both, to avoid
-    code duplication.
+    # XXX this constant must not be a constant
+    encoding = 'utf-8'
 
-    It returns back the events it receives, except that it finds out when a
-    sequence of events defines a translatable block. Then this block sequence
-    is returned, identified by an special event type (MESSAGE).
-
-    A translatable block is one that:
-
-      - contains at least one non-empty text node;
-      - does not contain block-elements;
-
-    We also do not consider sourronding inline-elements. For example, in
-    "<em>Hello baby</em>" the translatable block is just the text node "Hello
-    baby". But in "Hello <em>baby</em>" the translatable block is the whole
-    sequence: "Hello <em>baby</em>".
-    """
-    # Local variables
-    encoding = 'utf-8' # FIXME hardcoded
-    buffer = []
-    skip = 0
-    hit = False
-    # These two are used to uniquely identify the elements, so we can later
-    # match end tags with their start tag.
-    id = 0
-    stack = []
-
+    message = Message()
     for event in events:
         type, value, line = event
-        # Skip mode
-        if skip > 0:
-            if type == START_ELEMENT:
-                skip += 1
-            elif type == END_ELEMENT:
-                skip -= 1
-            yield event
-            continue
 
-        # Text node
-        if type == TEXT:
-            # Don't consider left whitespace
-            if len(buffer) == 0 and value.strip() == '':
-                yield event
-                continue
-            # Buffer the text node
-            buffer.append(event)
-            if value.strip():
-                hit = True
-            continue
-
-        # Inline start element
-        if type == START_ELEMENT:
-            tag_uri, tag_name, attributes = value
+        # We catch the good events!
+        if type == START_ELEMENT or type == END_ELEMENT:
+            tag_uri, tag_name = value[:2]
             schema = get_element_schema(tag_uri, tag_name)
-            if getattr(schema, 'is_inline', False) or stack:
-                buffer.append((type, value + (id,), line))
-                stack.append(id)
-                id += 1
+            # Inline ?
+            if getattr(schema, 'is_inline', False):
+                if not message:
+                    message_line = line
+                if type == START_ELEMENT:
+                    message.append_start_format(get_start_tag(*value))
+                else:
+                    message.append_end_format(get_end_tag(*value))
                 continue
-            # Enter skip mode
-            if not schema.translate_content:
-                skip = 1
-
-        # Inline end element
-        if type == END_ELEMENT:
-            tag_uri, tag_name = value
-            schema = get_element_schema(tag_uri, tag_name)
-            if getattr(schema, 'is_inline', False) or stack:
-                x = stack.pop()
-                buffer.append((type, value + (x,), line))
+        elif type == TEXT:
+            # XXX A lonely 'empty' TEXT are ignored, is it good ?
+            # Not empty ?
+            if value.strip() != '' or message:
+                if not message:
+                    message_line = line
+                value = XMLContent.encode(value)
+                value = unicode(value, encoding)
+                message.append_text(value)
                 continue
 
-        # Anything else: comments, block elements (start or end), etc.
-        # are considered delimiters
-        for x in _process_buffer(buffer, hit, encoding):
-            yield x
+        # Not a good event => break + send the event
+        if message:
+            yield MESSAGE, message, message_line
+        message = Message()
 
         yield event
-
-        # Reset
-        hit = False
-        buffer = []
-        stack = []
-        id = 0
-
-    for x in _process_buffer(buffer, hit, encoding):
-        yield x
+    # Send the last message!
+    if message:
+        yield MESSAGE, message, message_line
 
 
 ###########################################################################

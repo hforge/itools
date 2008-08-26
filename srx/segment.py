@@ -191,7 +191,7 @@ def _do_break(sentence, rules):
 
 
 def _split_message(message, keep_spaces=False, srx_handler=None):
-    """ We consider a sentence ends by an special punctuation character
+    """ We consider a sentence ends by a special punctuation character
     (dot, colon, semicolon, exclamation or question mark) followed by
     a space.
 
@@ -217,11 +217,11 @@ def _split_message(message, keep_spaces=False, srx_handler=None):
     offset = 0
     line_offset = 0
 
-    # No handler ?
+    # Get the rules
     if srx_handler is None:
         srx_handler = SRXFile(get_abspath('srx/srx_example.srx', 'itools'))
-
     rules = srx_handler.get_compiled_rules('default')
+
     # In case of messages which begin with a '\n'
     if message and message[0][1][0] == '\n':
         line_offset = 1
@@ -346,7 +346,7 @@ def _translate_segments(message, translation_dict, keep_spaces,
 
 class Message(list):
     """A 'Message' object represents a text to be processed. It is a complex
-    object instead of just an string to allow us to deal with formatted text.
+    object instead of just a string to allow us to deal with formatted text.
 
     A message is made of atoms, an atom is a unit that can not be splitted.
     It is either a letter or an object that represents a formatted block,
@@ -354,7 +354,7 @@ class Message(list):
     """
 
     def append_text(self, text):
-        """The parameter "text" must be a unicode string.
+        """The parameter "text" must be an unicode string.
         """
         # Append
         if self and (self[-1][0] == TEXT):

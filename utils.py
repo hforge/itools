@@ -76,10 +76,12 @@ def get_version(mname=None):
 
 
 
-def setup(classifiers=[], ext_modules=[]):
+def setup(ext_modules=[]):
     mname = _getframe(1).f_globals.get('__name__')
     version = get_version(mname)
     try:
+        from itools.datatypes import MultiLinesTokens, URI, Email, String
+        from itools.datatypes import Tokens
         from itools.handlers import ConfigFile
     except ImportError:
         # Are we trying to install itools?
@@ -88,35 +90,42 @@ def setup(classifiers=[], ext_modules=[]):
         # Python 2.6, so we will remove this code once we raise the required
         # Python version to 2.6.
         start_local_import()
+        from datatypes import MultiLinesTokens
+        from datatypes import String, URI, Email, Tokens
         from handlers import ConfigFile
         end_local_import()
 
-    config = ConfigFile('setup.conf')
+    class SetupConf(ConfigFile):
+        schema = {'name': String,
+                  'title': String,
+                  'url': URI,
+                  'author_name': String,
+                  'author_email': Email,
+                  'license': String,
+                  'description': String,
+                  'classifiers': MultiLinesTokens(default=()),
+                  'packages': Tokens(default=()),
+                  'requires': Tokens(default=()),
+                  'provides': Tokens(default=()),
+                  'scripts': Tokens(default=()),
+                  'source_language': String,
+                  'target_language': String}
+
+
+    config = SetupConf('setup.conf')
 
     # Initialize variables
     package_name = config.get_value('name')
     packages = [package_name]
     package_data = {package_name: []}
-    provided_packages = []
-    required_packages = []
 
     # The sub-packages
     if config.has_value('packages'):
-        subpackages = config.get_value('packages').split()
+        subpackages = config.get_value('packages')
         for subpackage_name in subpackages:
             packages.append('%s.%s' % (package_name, subpackage_name))
     else:
         subpackages = []
-
-    # The provided packages
-    if config.has_value('provides'):
-        for provided_package_name in config.get_value('provides').split():
-            provided_packages.append(provided_package_name)
-
-    # The required packages
-    if config.has_value('requires'):
-        for required_package_name in config.get_value('requires').split():
-            required_packages.append(required_package_name)
 
     # Write the manifest file if it does not exist
     if exists('MANIFEST'):
@@ -142,7 +151,7 @@ def setup(classifiers=[], ext_modules=[]):
 
     # The scripts
     if config.has_value('scripts'):
-        scripts = config.get_value('scripts').split()
+        scripts = config.get_value('scripts')
         scripts = [ join_path(*['scripts', x]) for x in scripts ]
     else:
         scripts = []
@@ -161,15 +170,15 @@ def setup(classifiers=[], ext_modules=[]):
                url = config.get_value('url'),
                description = config.get_value('title'),
                long_description = config.get_value('description'),
-               classifiers = classifiers,
+               classifiers = config.get_value('classifiers'),
                # Packages
                package_dir = {package_name: ''},
                packages = packages,
                package_data = package_data,
                # Requires
-               requires = required_packages,
+               requires = config.get_value('requires'),
                # Provides
-               provides = provided_packages,
+               provides = config.get_value('provides'),
                # Scripts
                scripts = scripts,
                # C extensions

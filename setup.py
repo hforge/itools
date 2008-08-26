@@ -22,28 +22,10 @@ from distutils.core import Extension
 from utils import setup
 
 
-# FIXME Information to be moved to setup.conf
-classifiers = ['Development Status :: 3 - Alpha',
-               'Intended Audience :: Developers',
-               'License :: OSI Approved :: GNU General Public License (GPL)',
-               'Programming Language :: Python',
-               'Topic :: Internet',
-               'Topic :: Internet :: WWW/HTTP',
-               'Topic :: Software Development',
-               'Topic :: Software Development :: Internationalization',
-               'Topic :: Software Development :: Libraries',
-               'Topic :: Software Development :: Libraries :: Python Modules',
-               'Topic :: Software Development :: Localization',
-               'Topic :: Text Processing',
-               'Topic :: Text Processing :: Markup',
-               'Topic :: Text Processing :: Markup :: XML']
-
-
-
 if __name__ == '__main__':
     cparser = Extension('itools.xml.parser',
                         sources=['xml/parser.c', 'xml/doctype.c',
                                  'xml/arp.c', 'xml/pyparser.c'],
                         libraries=['glib-2.0'])
 
-    setup(classifiers=classifiers, ext_modules=[cparser])
+    setup(ext_modules=[cparser])

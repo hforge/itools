@@ -20,7 +20,6 @@
 
 # Import from itools
 from itools.datatypes import XMLContent
-from itools.srx import Message, get_segments, translate_message
 from namespaces import get_element_schema, xmlns_uri
 from parser import XMLParser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, TEXT
 from xml import get_start_tag, get_end_tag
@@ -41,6 +40,8 @@ elements_to_keep_spaces = set(['pre'])
 # Code common to "get_units" and "translate"
 ###########################################################################
 def _get_translatable_blocks(events):
+    # XXX We must break this circular dependency
+    from itools.srx import Message
     # XXX this constant must not be a constant
     encoding = 'utf-8'
 
@@ -87,6 +88,8 @@ def _get_translatable_blocks(events):
 # Get Messages
 ###########################################################################
 def get_units(events, filename=None, srx_handler=None):
+    # XXX We must break this circular dependency
+    from itools.srx import translate_message
     keep_spaces = False
     for type, value, line in _get_translatable_blocks(events):
         if type == START_ELEMENT:
@@ -120,6 +123,8 @@ def get_units(events, filename=None, srx_handler=None):
 # Translate
 ###########################################################################
 def translate(events, catalog, srx_handler=None):
+    # XXX We must break this circular dependency
+    from itools.srx import translate_message
     encoding = 'utf-8' # FIXME hardcoded
     doctype = None
     keep_spaces = False

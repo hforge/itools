@@ -25,11 +25,12 @@ from itools.handlers import TextFile, register_handler_class
 
 
 class SRXFile(TextFile):
-    """
+    """ A handler for the Segmentation Rules eXchange format (SRX)
     """
 
-    class_mimetypes = ['text/xml', 'application/xml']
+    class_mimetypes = ['text/x-srx']
     class_extension = 'srx'
+
 
     def _load_state_from_file(self, file):
         """[lang:
@@ -91,7 +92,9 @@ class SRXFile(TextFile):
             elif event == TEXT and (before_break or after_break):
                 regexp = unicode(value, 'utf-8')
 
-
+    #########################################################################
+    # API
+    #########################################################################
     def get_compiled_rules(self, lang):
         """[lang:
             break_no:

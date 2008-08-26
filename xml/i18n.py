@@ -224,7 +224,6 @@ def translate(events, catalog, srx_handler=None):
     for event in _get_translatable_blocks(events):
         type, value, line = event
         if type == DOCUMENT_TYPE:
-            print value
             name, doctype = value
         elif type == START_ELEMENT:
             tag_uri, tag_name, attributes = value

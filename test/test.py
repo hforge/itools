@@ -32,6 +32,7 @@ import test_odf
 import test_pdf
 import test_rest
 import test_rss
+import test_srx
 import test_stl
 import test_tmx
 import test_uri
@@ -44,8 +45,8 @@ import test_xml
 
 test_modules = [test_abnf, test_csv, test_datatypes, test_gettext,
     test_handlers, test_html, test_http, test_i18n, test_ical, test_odf,
-    test_pdf, test_rest, test_rss, test_stl, test_tmx, test_uri, test_vfs,
-    test_web, test_workflow, test_xliff, test_xapian, test_xml]
+    test_pdf, test_rest, test_rss, test_srx, test_stl, test_tmx, test_uri,
+    test_vfs, test_web, test_workflow, test_xliff, test_xapian, test_xml]
 
 
 loader = TestLoader()

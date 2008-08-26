@@ -19,19 +19,25 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools import vfs
 import itools.http
-from itools.web import Server, Root
+from itools import vfs
+from itools.web import BaseView, RootResource, Server
 
+
+class MyRootView(BaseView):
+    access = True
+    def GET(self, resource, context):
+        return 'hello world'
+
+
+class MyRoot(RootResource):
+    default_view_name = 'view'
+    view = MyRootView()
 
 
 class ServerTestCase(TestCase):
 
     def test00_simple(self):
-        class MyRoot(Root):
-            GET__access__ = True
-            def GET(self, context):
-                return 'hello world'
         root = MyRoot()
         server = Server(root)
 ##        server.start()

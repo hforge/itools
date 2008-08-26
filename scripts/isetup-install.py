@@ -29,25 +29,26 @@ treat them with something like a "install_package" function.
 # Import from the Standard Library
 from distutils.version import LooseVersion
 from distutils.versionpredicate import VersionPredicate
-from optparse import OptionParser
 from operator import itemgetter
+from optparse import OptionParser
 from os import sep
 from os.path import join
-import re
 from sys import path, exit
+from xml.parsers.expat import ExpatError
+from xmlrpclib import Server, ProtocolError
 
 # Import from itools
 from itools import __version__
 import itools.http
 from itools.isetup import parse_package_name, download, get_installed_info
-from itools.isetup import get_repository, EXTENSIONS, Dist
-from itools.vfs import exists, is_folder, get_names, make_folder
+from itools.isetup import EXTENSIONS, Dist
+from itools.vfs import exists, get_names, make_folder
 from itools import vfs
 
 
 # See --cache-dir option description
 TMP_DIR = '/tmp/Packages'
-PYPI_REPO = 'http://pypi.python.org/simple/'
+PYPI_REPO = 'http://pypi.python.org/pypi'
 YES = ('y', 'Y', 'yes', 'YES', 'ok', 'Yes', 'yep')
 
 class Enumerate(object):
@@ -96,7 +97,8 @@ def find_installed_package(package_version):
 
 
 def prepare(package_spec):
-    """Work with a few globals variables, like repositories, ...
+    """ global variables used :
+           * repositories
     """
     # Parse the version specifications
     try:
@@ -108,15 +110,32 @@ def prepare(package_spec):
     # Repository listing
     repo_candidates = []
     for repo_str in repositories:
-        # If the repository has the package
-        if exists(join(repo_str, package_version.name)):
-            repo = get_repository(repo_str)
-            # List versions of this package for this repository
-            dists = repo.list_distributions(package_version.name)
-            for dist in dists:
-                if package_version.satisfied_by(dist['version']):
-                    dist['version'] = LooseVersion(dist['version'])
-                    repo_candidates.append(dist)
+        try:
+            repo = Server(repo_str)
+            for repo_ver in repo.package_releases(package_version.name):
+                if package_version.satisfied_by(repo_ver):
+                    releases = repo.release_urls(package_version.name,
+                                                 repo_ver)
+                    # XXX
+                    # Take only acceptable package type and with python version
+                    # compatible
+                    for release in releases:
+                        # We must check following attributes
+                        #release['packagetype'] == 'bdist_egg',
+                        # 'bdist_wininst', 'bdist_rpm', 'bdist_dumb',
+                        # 'bdist_msi'
+                        #release['python_version'] == '2.4', '2.5', 'any',
+                        # 'source'
+                        if release['packagetype'] == 'sdist':
+                            release['name'] = package_version.name
+                            release['version'] = LooseVersion(repo_ver)
+                            release['str_version'] = repo_ver
+                            release['pypi_server'] = repo
+                            release['pypi_location'] = repo_str
+                            repo_candidates.append(release)
+        # Any error related to the CheeseShop server
+        except (IOError, ExpatError, ProtocolError):
+            print "WARNING: %s is not a valid CheeseShop repository" % repo_str
 
     # Cache listing
     if not exists(CACHE_DIR):
@@ -148,32 +167,29 @@ def prepare(package_spec):
 
         if bestmatch_from == 'cache':
             dist_loc = join(CACHE_DIR, bestmatch['file'])
-        elif bestmatch_from == 'repository':
-            try:
-                dist_loc = download(bestmatch['url'], CACHE_DIR)
-            except LookupError:
+            dist = Dist(str(dist_loc))
+
+            if dist == None:
                 if not candidates:
-                    unretrievables.append((prepare_code.NotFound,
-                                           bestmatch['name']))
-                    return prepare_code.NotFound
+                    unretrievables.append((prepare_code.BadArchive,
+                                           package_spec))
+                    return prepare_code.BadArchive
                 else:
                     continue
-        dist = Dist(str(dist_loc))
-        if dist == None:
-            if not candidates:
-                unretrievables.append((prepare_code.BadArchive, package_spec))
-                return prepare_code.BadArchive
-            else:
-                continue
 
-        # At this point the package is thought to be ok
-        # So we can recursvely parse its requirements
-        if not dist.fromsetuptools and dist.has_metadata('Requires'):
-            requirements = dist.get_metadata('Requires').split(',')
-            for requirement in requirements:
-                return_code = prepare(requirement)
-                if return_code != prepare_code.Ok:
-                    unretrievables.append((return_code, requirement))
+            if not dist.fromsetuptools and dist.has_metadata('Requires'):
+                requirements = dist.get_metadata('Requires').split(',')
+
+        elif bestmatch_from == 'repository':
+            pypi_server = bestmatch['pypi_server']
+            release_data = pypi_server.release_data(package_version.name,
+                                                    bestmatch['str_version'])
+            requirements = release_data['requires']
+
+        for requirement in requirements:
+            return_code = prepare(requirement)
+            if return_code != prepare_code.Ok:
+                unretrievables.append((return_code, requirement))
 
 
         installed_package = find_installed_package(package_version)
@@ -209,15 +225,17 @@ def summary(pretend=False, ask=False, force=False):
             print "Will install, in order:"
         print "Note : some packages may install other dependencies themself"
 
-        for status, installed, origin, dist, infos in packages_to_install:
-            print "[%s] %-18.18s [%-12.12s] (from: %s)" % (status,
-                                                            infos['name'],
-                                                            infos['version'],
-                                                            origin),
-            if installed:
-                print " [%-12.12s]" % installed
-            else:
-                print
+        total_download = 0
+        for code, installed, origin, dist, data in packages_to_install:
+            print "[%s] %-14.14s [%-19.19s] (from %s)" % (code,
+                                                          data['name'],
+                                                          data['version'],
+                                                          origin),
+
+            if origin == 'repository':
+                total_download += data['size']
+
+            print installed and "[%-19.19s]" % installed or ''
 
     if len(unretrievables) > 0:
         print
@@ -244,6 +262,10 @@ def summary(pretend=False, ask=False, force=False):
             print "Cannot install the package"
             exit(1)
 
+    #XXX better formating
+    print "%d.%d ko will be downloaded" % ((total_download / 1024),
+                                           (total_download % 1024))
+
     if not pretend:
         if ask and raw_input("Is this ok?(y/N) ") not in YES:
             return
@@ -251,15 +273,24 @@ def summary(pretend=False, ask=False, force=False):
 
 
 def install():
-    for status, installed,origin, dist, infos in packages_to_install:
-        print "installing %s %s" % (infos['name'],\
-                                    infos['version']),
+    for status, installed, origin, dist, data in packages_to_install:
+        print "installing %s %s" % (data['name'],
+                                    data['version'])
+
+        if origin == 'repository':
+           print "Downloading %s ..." % data['url']
+           dist_loc = download(data['url'], CACHE_DIR)
+           dist = Dist(str(dist_loc))
+
         ret = dist.install()
+
         if ret == 0:
-            print " ... OK"
+            print "%s %s has been successfully installed" % (data['name'],
+                                                            data['version'])
             continue
 
-        print " ... Failed: ",
+        print "%s %s failed to install" % (data['name'],
+                                           data['version'])
         if ret == -1:
             print "Unable to extract files from archive"
         else:
@@ -310,7 +341,7 @@ if __name__ == '__main__':
     CACHE_DIR = options.cache_dir
 
     INDEX_URLS = options.index_url
-    repositories = [PYPI_REPO] + INDEX_URLS.split(',')
+    repositories = INDEX_URLS.split(',') + [PYPI_REPO]
 
     return_code = prepare(PACKAGE_SPEC)
 

@@ -20,7 +20,7 @@ from distribution import Dist, ArchiveNotSupported
 from metadata import parse_pkginfo, get_package_version, SetupFile
 from packages import get_installed_info, packages_infos
 from packages_db import PACKAGES_DB
-from repository import parse_package_name, download, get_repository, EXTENSIONS
+from repository import parse_package_name, download, EXTENSIONS
 
 
 __all__ = [
@@ -34,7 +34,6 @@ __all__ = [
     # Repositories functions and classses
     'parse_package_name',
     'download',
-    'get_repository',
     # Distribution class
     'Dist',
     # Exceptions

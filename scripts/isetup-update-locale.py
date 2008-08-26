@@ -27,7 +27,7 @@ import sys
 # Import from itools
 import itools
 from itools.datatypes import FileName
-from itools.gettext import Message, POFile
+from itools.gettext import POFile, POUnit
 from itools.handlers import Python, ConfigFile, get_handler
 from itools.html import XHTMLFile
 import itools.stl
@@ -80,9 +80,9 @@ if __name__ == '__main__':
         if path.endswith('.py') and path != 'utils.py':
             write('.')
             handler = Python(path)
-            for value, references in handler.get_units(
-                                             srx_handler=srx_handler):
-                message = Message([], [value], [u''], references)
+            units = handler.get_units(srx_handler=srx_handler)
+            for value, references in units:
+                message = POUnit([], [value], [u''], references)
                 if len(message.msgid[0]) > 2:
                     po.set_message(message)
     print

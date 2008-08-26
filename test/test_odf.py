@@ -24,7 +24,7 @@ from unittest import TestCase
 
 # Import from itools
 from itools.odf import ODTFile, ODPFile, ODSFile
-from itools.gettext import POFile, Message
+from itools.gettext import POFile, POUnit
 from itools import vfs
 from itools.xml import XMLParser
 from itools.xml.i18n import get_units, translate
@@ -48,7 +48,7 @@ class Test_ODT_File(TestCase):
             u'Itools test', u'sylvain', u'sylvain', u'itools', u'odt', u'odf']
         expected = []
         for msg in expected_messages:
-            expected.append(Message([], [msg], [u'']))
+            expected.append(POUnit([], [msg], [u'']))
         self.assertEqual(messages, expected)
 
 
@@ -72,7 +72,7 @@ class Test_ODT_File(TestCase):
             u'Itools test', u'sylvain', u'sylvain', u'itools', u'odt', u'odf']
         expected =  []
         for msg in expected_messages:
-            expected.append(Message([], [msg], [u'']))
+            expected.append(POUnit([], [msg], [u'']))
         self.assertEqual(messages, expected)
 
 
@@ -114,7 +114,7 @@ class Test_ODP_File(TestCase):
             u'2', u'2', u'2']
         expected = []
         for msg in expected_messages:
-            expected.append(Message([],[msg], [u'']))
+            expected.append(POUnit([],[msg], [u'']))
         self.assertEqual(messages, expected)
 
 
@@ -142,7 +142,7 @@ class Test_ODS_File(TestCase):
                              u'<text:page-count>99</text:page-count>']
         expected = []
         for msg in expected_messages:
-            expected.append(Message([],[msg], [u'']))
+            expected.append(POUnit([],[msg], [u'']))
         self.assertEqual(messages, expected)
 
 
@@ -193,7 +193,7 @@ class Test_ODT_Parser(TestCase):
         content = self.template % content
         events = XMLParser(content)
         messages = list(get_units(events))
-        expected = [Message([], [u'hello world'], [u''])]
+        expected = [POUnit([], [u'hello world'], [u''])]
         self.assertEqual(messages, expected)
 
     def test_table(self):
@@ -231,9 +231,9 @@ class Test_ODT_Parser(TestCase):
         content = self.template % content
         events = XMLParser(content)
         messages = list(get_units(events))
-        expected= [Message([], [u'A'], [u'']), Message([], [u'B'], [u'']),
-                   Message([], [u'C'], [u'']), Message([], [u'D'], [u'']),
-                   Message([], [u'E'], [u'']), Message([], [u'F'], [u''])]
+        expected= [POUnit([], [u'A'], [u'']), POUnit([], [u'B'], [u'']),
+                   POUnit([], [u'C'], [u'']), POUnit([], [u'D'], [u'']),
+                   POUnit([], [u'E'], [u'']), POUnit([], [u'F'], [u''])]
         self.assertEqual(messages, expected)
 
 
@@ -252,7 +252,7 @@ class Test_ODT_Parser(TestCase):
         events = XMLParser(content)
         string = translate(events, po)
         messages = list(get_units(string))
-        self.assertEqual(messages, [Message([], [u'hola mundo'], [u''])])
+        self.assertEqual(messages, [POUnit([], [u'hola mundo'], [u''])])
 
 
 if __name__ == '__main__':

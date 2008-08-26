@@ -27,7 +27,7 @@ from itools.xml import (XMLFile, XMLParser, DocType, XMLError, XML_DECL,
     DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, TEXT, COMMENT, PI, CDATA,
     stream_to_str, get_doctype)
 from itools.xml.i18n import get_units
-from itools.gettext import Message
+from itools.gettext import POUnit
 
 
 class ParserTestCase(TestCase):
@@ -233,7 +233,7 @@ class TranslatableTestCase(TestCase):
         parser = XMLParser(text)
         messages = list(get_units(parser))
 
-        self.assertEqual(messages, [Message([], [u'Hello World'], [u''])])
+        self.assertEqual(messages, [POUnit([], [u'Hello World'], [u''])])
 
 
 

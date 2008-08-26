@@ -23,7 +23,7 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.gettext import POFile, Message
+from itools.gettext import POFile, POUnit
 from itools.xml import XMLParser, XMLError, START_ELEMENT, END_ELEMENT, TEXT
 from itools.xml import stream_to_str
 from itools.html import HTMLFile, XHTMLFile, HTMLParser, sanitize_str
@@ -99,7 +99,7 @@ class i18nTestCase(TestCase):
             '<p>hello world</p>')
 
         messages = list(doc.get_units())
-        self.assertEqual(messages, [Message([], [u'hello world'], [u''])])
+        self.assertEqual(messages, [POUnit([], [u'hello world'], [u''])])
 
 
     def test_case2(self):
@@ -108,7 +108,7 @@ class i18nTestCase(TestCase):
             '<img alt="The beach" src="beach.jpg">')
 
         messages = list(doc.get_units())
-        self.assertEqual(messages, [Message([], [u'The beach'], [u''])])
+        self.assertEqual(messages, [POUnit([], [u'The beach'], [u''])])
 
 
     def test_case3(self):
@@ -120,7 +120,7 @@ class i18nTestCase(TestCase):
             '</html>')
 
         messages = list(doc.get_units())
-        self.assertEqual(messages, [Message([], [u'Change'], [u''])])
+        self.assertEqual(messages, [POUnit([], [u'Change'], [u''])])
 
 
     def test_case4(self):
@@ -250,7 +250,7 @@ class i18nTestCase(TestCase):
 
         messages = list(doc.get_units())
         expected = u'   This is raw text, and every characters should be kept '
-        self.assertEqual(messages, [Message([], [expected], [u''])])
+        self.assertEqual(messages, [POUnit([], [expected], [u''])])
 
 
 ###########################################################################
@@ -294,7 +294,7 @@ class SegmentationTestCase(TestCase):
                 u' <em>innovation</em> on the Internet.')
         msg2 = (u'Developing the acclaimed, <em>open source</em>,'
                 u' <b>Mozilla 1.6</b>.')
-        expected = [Message([], [msg1], [u'']), Message([], [msg2], [u''])]
+        expected = [POUnit([], [msg1], [u'']), POUnit([], [msg2], [u''])]
         self.assertEqual(messages, expected)
 
 
@@ -316,12 +316,12 @@ class SegmentationTestCase(TestCase):
             '</table>')
 
         messages = list(doc.get_units())
-        expected = [Message([], [u'Title'], [u'']),
-                    Message([], [u'Size'], [u'']),
-                    Message([], [u'The good, the bad and the ugly'], [u'']),
-                    Message([], [u'looong'], [u'']),
-                    Message([], [u'Love story'], [u'']),
-                    Message([], [u'even longer'], [u''])]
+        expected = [POUnit([], [u'Title'], [u'']),
+                    POUnit([], [u'Size'], [u'']),
+                    POUnit([], [u'The good, the bad and the ugly'], [u'']),
+                    POUnit([], [u'looong'], [u'']),
+                    POUnit([], [u'Love story'], [u'']),
+                    POUnit([], [u'even longer'], [u''])]
         self.assertEqual(messages, expected)
 
 
@@ -337,9 +337,9 @@ class SegmentationTestCase(TestCase):
             '</body>')
 
         messages = list(doc.get_units())
-        expected = [Message([], [u'this <em>word</em> is nice'], [u'']),
-                    Message([], [u'hello world'], [u'']),
-                    Message([], [u'<br/> bye <em>J. David Ibanez '
+        expected = [POUnit([], [u'this <em>word</em> is nice'], [u'']),
+                    POUnit([], [u'hello world'], [u'']),
+                    POUnit([], [u'<br/> bye <em>J. David Ibanez '
                                  u'Palomar</em>'], [u''])]
         self.assertEqual(messages, expected)
 
@@ -354,7 +354,7 @@ class SegmentationTestCase(TestCase):
             '</form>')
 
         messages = list(doc.get_units())
-        self.assertEqual(messages, [Message([], [u'Change'], [u''])])
+        self.assertEqual(messages, [POUnit([], [u'Change'], [u''])])
 
 
     def test_inline(self):
@@ -366,7 +366,7 @@ class SegmentationTestCase(TestCase):
         messages = doc.get_units()
         messages = list(messages)
 
-        expected = [Message([], [u'Hi <b>everybody, </b><i>how are you ? '
+        expected = [POUnit([], [u'Hi <b>everybody, </b><i>how are you ? '
                                  u'</i>'], [u''])]
         self.assertEqual(messages, expected)
 
@@ -391,8 +391,7 @@ class TranslationTestCase(TestCase):
         doc = XHTMLFile(string=data)
         messages = list(doc.get_units())
 
-        self.assertEqual(messages, [Message([], [u'hello litle world'],
-                                            [u''])])
+        self.assertEqual(messages, [POUnit([], [u'hello litle world'], [u''])])
 
 
     def test_case2(self):
@@ -401,7 +400,7 @@ class TranslationTestCase(TestCase):
         doc = XHTMLFile(string=data)
         messages = list(doc.get_units())
 
-        self.assertEqual(messages, [Message([], [u'The beach'], [u''])])
+        self.assertEqual(messages, [POUnit([], [u'The beach'], [u''])])
 
 
     def test_case3(self):
@@ -411,7 +410,7 @@ class TranslationTestCase(TestCase):
         doc = XHTMLFile(string=data)
         messages = list(doc.get_units())
 
-        self.assertEqual(messages, [Message([], [u'Change'], [u''])])
+        self.assertEqual(messages, [POUnit([], [u'Change'], [u''])])
 
 
     def test_case4(self):
@@ -428,7 +427,7 @@ class TranslationTestCase(TestCase):
         xhtml = XHTMLFile(string=string)
 
         messages = list(xhtml.get_units())
-        self.assertEqual(messages, [Message([], [u'hola mundo'], [u''])])
+        self.assertEqual(messages, [POUnit([], [u'hola mundo'], [u''])])
 
 
     def test_case5(self):
@@ -443,7 +442,7 @@ class TranslationTestCase(TestCase):
         xhtml = XHTMLFile(string=html)
 
         messages = list(xhtml.get_units())
-        self.assertEqual(messages, [Message([], [u'La playa'], [u''])])
+        self.assertEqual(messages, [POUnit([], [u'La playa'], [u''])])
 
 
 class SanitizerTestCase(TestCase):

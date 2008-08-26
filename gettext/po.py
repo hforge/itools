@@ -130,7 +130,7 @@ def unescape(s):
 
 
 
-class Message(object):
+class POUnit(object):
     """An entry in a PO file has the syntax:
 
     #  translator-comments
@@ -143,7 +143,7 @@ class Message(object):
     First the comments (optional), then the message id, and finally the
     message string.
 
-    A 'Message' object keeps this information as:
+    A 'POUnit' object keeps this information as:
 
      => references = {<filename>: [<line number>, ...]}
      => msgid = [<msgid line>, ...]
@@ -390,8 +390,7 @@ class POFile(TextFile):
             msgstr = [msgstr]
 
         id = ''.join(msgid)
-        self.messages[id] = Message(comments, msgid, msgstr, references,
-                                    fuzzy)
+        self.messages[id] = POUnit(comments, msgid, msgstr, references, fuzzy)
 
 
     #######################################################################
@@ -404,7 +403,7 @@ class POFile(TextFile):
 
 
     def get_units(self, srx_handler=None):
-        """Rerturns all the message (objects of the class <Message>).
+        """Rerturns all the message (objects of the class <POUnit>).
         """
         return self.messages.values()
 

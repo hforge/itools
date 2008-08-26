@@ -28,6 +28,7 @@ summarizes this changes.
   ----------------------------   ---------------------------
   catalog.*                      xapian.*
   datatypes.XML                  datatypes.XMLContent
+  gettext.Message                gettext.POUnit
   i18n.Message                   srx.Message
   web.Node                       web.Resource
   web.Root                       web.RootResource

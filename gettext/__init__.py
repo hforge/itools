@@ -22,7 +22,7 @@ from mimetypes import add_type
 # Import from itools
 from domains import register_domain, get_domain, MSG
 from mo import MOFile
-from po import POFile, Message
+from po import POFile, POUnit
 
 
 __all__ = [
@@ -31,7 +31,7 @@ __all__ = [
     'MSG',
     'MOFile',
     'POFile',
-    'Message']
+    'POUnit']
 
 
 add_type('text/x-gettext-translation', '.po')

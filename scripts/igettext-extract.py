@@ -24,7 +24,7 @@ import sys
 # Import from itools
 import itools
 from itools.handlers import get_handler
-from itools.gettext import POFile, Message
+from itools.gettext import POFile, POUnit
 import itools.html
 import itools.stl
 import itools.odf
@@ -78,7 +78,7 @@ if __name__ == '__main__':
                 continue
             # Extract the messages
             for value, references in get_units(srx_handler=srx_handler):
-                message = Message([], [value], [u''], references)
+                message = POUnit([], [value], [u''], references)
                 po.set_message(message)
 
         # XXX Should omit the header?

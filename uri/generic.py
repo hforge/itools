@@ -424,6 +424,8 @@ def encode_query(query):
         else:
             if isinstance(value, unicode):
                 value = value.encode('UTF-8')
+            elif isinstance(value, int):
+                value = str(value)
             line.append('%s=%s' % (key, quote_plus(value)))
     return '&'.join(line)
 

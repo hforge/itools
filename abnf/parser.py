@@ -34,7 +34,7 @@ class Parser(object):
         self.grammar = grammar
         self.start_symbol = start_symbol
         self.token_table = token_table
-        self.symbol_table = symbol_table 
+        self.symbol_table = symbol_table
         self.reduce_table = reduce_table
 
 

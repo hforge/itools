@@ -214,7 +214,7 @@ class Element(ElementSchema):
 
 
 class BlockElement(Element):
-    
+
     is_inline = False
 
 

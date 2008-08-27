@@ -43,7 +43,7 @@ dc_attributes = {
 
 
 class DCElement(ElementSchema):
-    
+
     is_empty = False
     is_inline = False
 

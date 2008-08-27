@@ -692,7 +692,7 @@ class Table(File):
     def update_from_csv(self, data, columns):
         """Update the table by adding record from data
         The input parameters are :
-        
+
         - 'data': the bytes string representation of a CSV.
         - 'columns': the CSV columns used for the mapping between the CSV
           columns and the table schema.

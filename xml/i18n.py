@@ -89,7 +89,7 @@ def _get_translatable_blocks(events):
 ###########################################################################
 def get_units(events, filename=None, srx_handler=None):
     # XXX We must break this circular dependency
-    from itools.srx import translate_message
+    from itools.srx import get_segments
     keep_spaces = False
     for type, value, line in _get_translatable_blocks(events):
         if type == START_ELEMENT:
@@ -113,8 +113,8 @@ def get_units(events, filename=None, srx_handler=None):
                 keep_spaces = False
         elif type == MESSAGE:
             # Segmentation
-            for segment, line_offset in get_segments(value, keep_spaces,
-                                                     srx_handler):
+            segments = get_segments(value, keep_spaces, srx_handler)
+            for segment, line_offset in segments:
                 yield segment, {filename: [line + line_offset]}
 
 

@@ -134,25 +134,13 @@ class ElementSchema(object):
             setattr(self, key, kw[key])
 
 
-    def _get_attr_datatype(self, name):
+    def get_attr_datatype(self, name):
         datatype = self.attributes.get(name)
         if datatype is None:
             message = 'unexpected "%s" attribute for "%s" element'
             raise XMLError, message % (name, self.name)
 
         return datatype
-
-
-    def get_attr_datatype(self, attr_uri, attr_name):
-        if attr_uri is None:
-            if attr_name == 'xmlns':
-                return String
-
-        if attr_uri is None or attr_uri == self.class_uri:
-            return self._get_attr_datatype(attr_name)
-
-        # Foreign attribute
-        return get_namespace(attr_uri).get_attr_datatype(attr_name)
 
 
     #######################################################################
@@ -243,6 +231,25 @@ class XMLNSNamespace(XMLNamespace):
 
 
 xmlns_namespace = XMLNSNamespace(xmlns_uri, 'xmlns')
+
+
+
+
+def get_attr_datatype(tag_uri, tag_name, attr_uri, attr_name):
+    # Namespace declaration
+    if attr_uri == xmlns_uri:
+        return String
+    # Namespace declaration (default)
+    if attr_uri is None and attr_name == 'xmlns':
+        return String
+
+    # Attached attribute
+    if attr_uri is None or attr_uri == tag_uri:
+        element_schema = get_namespace(tag_uri).get_element_schema(tag_name)
+        return element_schema.get_attr_datatype(attr_name)
+
+    # Free attribute
+    return get_namespace(attr_uri).get_attr_datatype(attr_name)
 
 
 

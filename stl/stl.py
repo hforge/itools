@@ -34,7 +34,7 @@ from itools.uri import Path, Reference
 from itools.xml import XMLError, XMLParser, find_end, stream_to_str
 from itools.xml import START_ELEMENT, END_ELEMENT, TEXT, COMMENT
 from itools.xml import xmlns_uri, XMLNamespace, ElementSchema
-from itools.xml import register_namespace, get_namespace, get_element_schema
+from itools.xml import register_namespace, get_namespace, get_attr_datatype
 from itools.html import xhtml_uri
 from itools.html import stream_to_str_as_html, stream_to_str_as_xhtml
 
@@ -323,8 +323,6 @@ def process_start_tag(tag_uri, tag_name, attributes, stack, repeat, encoding):
         if evaluate_if(expression, stack, repeat):
             return None
 
-    element = get_element_schema(tag_uri, tag_name)
-
     # Process attributes
     aux = {}
     for attr_uri, attr_name in attributes:
@@ -337,7 +335,7 @@ def process_start_tag(tag_uri, tag_name, attributes, stack, repeat, encoding):
 
         value = attributes[(attr_uri, attr_name)]
         # Process "${...}" expressions
-        datatype = element.get_attr_datatype(attr_uri, attr_name)
+        datatype = get_attr_datatype(tag_uri, tag_name, attr_uri, attr_name)
         # Boolean attributes
         if issubclass(datatype, Boolean):
             value = substitute_boolean(value, stack, repeat, encoding)

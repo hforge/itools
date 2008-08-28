@@ -72,7 +72,7 @@ class Element(ElementSchema):
         self.translatable_attributes = frozenset([])
 
 
-    def _get_attr_datatype(self, name):
+    def get_attr_datatype(self, name):
         if name not in self.attributes:
             message = 'unexpected "%s" attribute for "%s" element'
             raise XMLError, message % (name, self.name)

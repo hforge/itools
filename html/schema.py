@@ -201,7 +201,7 @@ class Element(ElementSchema):
         self.attributes = frozenset(attributes)
 
 
-    def _get_attr_datatype(self, name):
+    def get_attr_datatype(self, name):
         if name not in self.attributes:
             message = 'unexpected "%s" attribute for "%s" element'
             raise XMLError, message % (name, self.name)
@@ -388,8 +388,7 @@ html_elements = [
 
 
 html_namespace = XMLNamespace(
-    'http://www.w3.org/1999/xhtml', None,
-    html_elements)
+    'http://www.w3.org/1999/xhtml', None, html_elements)
 
 
 ###########################################################################

@@ -19,8 +19,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.datatypes import XMLContent
-from namespaces import get_element_schema, xmlns_uri
+from itools.datatypes import Unicode, XMLContent, is_datatype
+from namespaces import get_element_schema, xmlns_uri, get_attr_datatype
 from parser import XMLParser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, TEXT
 from xml import get_start_tag, get_end_tag
 
@@ -94,10 +94,11 @@ def get_units(events, filename=None, srx_handler=None):
     for type, value, line in _get_translatable_blocks(events):
         if type == START_ELEMENT:
             tag_uri, tag_name, attributes = value
-            element = get_element_schema(tag_uri, tag_name)
             # Attributes
             for attr_uri, attr_name in attributes:
-                if not element.is_translatable(attributes, attr_name):
+                datatype = get_attr_datatype(tag_uri, tag_name, attr_uri,
+                                             attr_name, attributes)
+                if not is_datatype(datatype, Unicode):
                     continue
                 value = attributes[(attr_uri, attr_name)]
                 if not value.strip():
@@ -135,12 +136,13 @@ def translate(events, catalog, srx_handler=None):
             name, doctype = value
         elif type == START_ELEMENT:
             tag_uri, tag_name, attributes = value
-            element = get_element_schema(tag_uri, tag_name)
             # Attributes (translate)
             aux = {}
             for attr_uri, attr_name in attributes:
                 value = attributes[(attr_uri, attr_name)]
-                if element.is_translatable(attributes, attr_name):
+                datatype = get_attr_datatype(tag_uri, tag_name, attr_uri,
+                                             attr_name, attributes)
+                if is_datatype(datatype, Unicode):
                     value = value.strip()
                     if value:
                         value = catalog.gettext(value)

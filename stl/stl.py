@@ -335,7 +335,8 @@ def process_start_tag(tag_uri, tag_name, attributes, stack, repeat, encoding):
 
         value = attributes[(attr_uri, attr_name)]
         # Process "${...}" expressions
-        datatype = get_attr_datatype(tag_uri, tag_name, attr_uri, attr_name)
+        datatype = get_attr_datatype(tag_uri, tag_name, attr_uri, attr_name,
+                                     attributes)
         # Boolean attributes
         if issubclass(datatype, Boolean):
             value = substitute_boolean(value, stack, repeat, encoding)

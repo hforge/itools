@@ -134,28 +134,13 @@ class ElementSchema(object):
             setattr(self, key, kw[key])
 
 
-    def get_attr_datatype(self, name):
+    def get_attr_datatype(self, name, attributes):
         datatype = self.attributes.get(name)
         if datatype is None:
             message = 'unexpected "%s" attribute for "%s" element'
             raise XMLError, message % (name, self.name)
 
         return datatype
-
-
-    #######################################################################
-    # Internationalization
-    def is_translatable(self, attributes, attribute_name):
-        """Some elements may contain text addressed to users, that is, text
-        that could be translated in different human languages, for example
-        the 'p' element of XHTML. This method should return 'True' in that
-        cases, False (the default) otherwise.
-
-        If the parameter 'attribute_name' is given, then we are being asked
-        wether that attribute is or not translatable. An example is the 'alt'
-        attribute of the 'img' elements of XHTML.
-        """
-        return False
 
 
 
@@ -235,7 +220,7 @@ xmlns_namespace = XMLNSNamespace(xmlns_uri, 'xmlns')
 
 
 
-def get_attr_datatype(tag_uri, tag_name, attr_uri, attr_name):
+def get_attr_datatype(tag_uri, tag_name, attr_uri, attr_name, attributes=None):
     # Namespace declaration
     if (attr_uri == xmlns_uri) or (attr_uri is None and attr_name == 'xmlns'):
         return String
@@ -243,7 +228,7 @@ def get_attr_datatype(tag_uri, tag_name, attr_uri, attr_name):
     # Attached attribute
     if attr_uri is None or attr_uri == tag_uri:
         element_schema = get_namespace(tag_uri).get_element_schema(tag_name)
-        return element_schema.get_attr_datatype(attr_name)
+        return element_schema.get_attr_datatype(attr_name, attributes)
 
     # Free attribute
     return get_namespace(attr_uri).get_attr_datatype(attr_name)

@@ -62,25 +62,19 @@ class Element(ElementSchema):
     # Default
     is_empty = False
     is_inline = True
-    #translate_attributes = fronzenset(['name'])
 
 
     def __init__(self, uri, name, attributes, **kw):
         ElementSchema.__init__(self, name, **kw)
         self.class_uri = uri
         self.attributes = frozenset(attributes)
-        self.translatable_attributes = frozenset([])
 
 
-    def get_attr_datatype(self, name):
+    def get_attr_datatype(self, name, attributes):
         if name not in self.attributes:
             message = 'unexpected "%s" attribute for "%s" element'
             raise XMLError, message % (name, self.name)
         return odf_attributes[name]
-
-
-    def is_translatable(self, attributes, attribute_name):
-        return attribute_name in self.translatable_attributes
 
 
 

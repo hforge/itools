@@ -152,7 +152,7 @@ html_attributes = {
     'type': String,
     'usemap': URI,
     'valign': String,
-    'value': Unicode,
+    'value': String,
     'valuetype': String,
     'version': String,
     'vlink': String,
@@ -193,7 +193,6 @@ class Element(ElementSchema):
     # Default
     is_empty = False
     is_inline = True
-    translatable_attributes = frozenset(['title'])
 
 
     def __init__(self, name, attributes, **kw):
@@ -201,15 +200,11 @@ class Element(ElementSchema):
         self.attributes = frozenset(attributes)
 
 
-    def get_attr_datatype(self, name):
+    def get_attr_datatype(self, name, attributes):
         if name not in self.attributes:
             message = 'unexpected "%s" attribute for "%s" element'
             raise XMLError, message % (name, self.name)
         return html_attributes[name]
-
-
-    def is_translatable(self, attributes, attribute_name):
-        return attribute_name in self.translatable_attributes
 
 
 
@@ -232,30 +227,22 @@ class EmptyBlockElement(Element):
 
 
 
-class ImgElement(Element):
-
-    is_inline = True
-    is_empty = True
-    translatable_attributes = frozenset(['alt', 'title'])
-
-
-
 class InputElement(Element):
 
     is_inline = True
     is_empty = True
 
-    def is_translatable(self, attributes, attribute_name):
-        if attribute_name == 'value':
+
+    def get_attr_datatype(self, attr_name, attributes):
+        if attr_name == 'value':
             key1 = (self.class_uri, 'type')
             key2 = (None, 'type')
             if attributes.get(key1) == 'submit':
-                return True
+                return Unicode
             if attributes.get(key2) == 'submit':
-                return True
-            return False
+                return Unicode
 
-        return Element.is_translatable(self, attributes, attribute_name)
+        return Element.get_attr_datatype(self, attr_name, attributes)
 
 
 ###########################################################################
@@ -300,7 +287,7 @@ html_elements = [
     EmptyBlockElement('hr', common_attrs),
     BlockElement('html', i18n_attrs),
     Element('i', common_attrs),
-    ImgElement('img', common_attrs + ['src', 'alt', 'longdesc', 'height',
+    EmptyElement('img', common_attrs + ['src', 'alt', 'longdesc', 'height',
         'width', 'usemap', 'ismap', 'name', 'align', 'border', 'hspace',
         'vspace']),
     InputElement('input', common_attrs + focus_attrs + ['type', 'name',

@@ -18,13 +18,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
+from itools.datatypes import XMLContent
 from itools.handlers import TextFile, register_handler_class
 from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, COMMENT, TEXT
 
-
-
-def protect_content(s):
-    return s.replace('<','&lt;').replace('>','&gt;')
 
 
 doctype = (
@@ -79,10 +76,12 @@ class Translation(object):
             s.append('<trans-unit>\n')
 
         if self.source:
-            s.append(' <source>%s</source>\n' % protect_content(self.source))
+            source = XMLContent.encode(self.source)
+            s.append(' <source>%s</source>\n' % source)
 
         if self.target:
-            s.append(' <target>%s</target>\n' % protect_content(self.target))
+            target = XMLContent.encode(self.target)
+            s.append(' <target>%s</target>\n' % target)
 
         for l in self.notes:
             s.append(l.to_str())
@@ -197,30 +196,26 @@ class XLIFF(TextFile):
     #######################################################################
     # Save
     #######################################################################
-    def xml_header_to_str(self, encoding='UTF-8'):
-        header = ['<?xml version="1.0" encoding="%s"?>\n' % encoding, doctype]
-        return ''.join(header)
-
-
-    def header_to_str(self, encoding='UTF-8'):
-        s = []
-        s.append('<xliff')
-        if self.version:
-            s.append('version="%s"' % self.version)
-        if self.lang:
-            s.append('xml:lang="%s"' % self.lang)
-        s.append('>\n')
-
-        return ' '.join(s)
-
-
     def to_str(self, encoding=None):
-        s = [self.xml_header_to_str(), self.header_to_str()]
+        output = []
+        # The XML declaration
+        output.append('<?xml version="1.0" encoding="%s"?>\n' % encoding)
+        # The Doctype
+        output.append(doctype)
+        # <xliff>
+        if self.lang:
+            template = '<xliff version="%s">\n'
+            output.append(template % self.version)
+        else:
+            template = '<xliff version="%s" xml:lang="%s">\n'
+            output.append(template % (self.version, self.lang))
+        # The files
         for file in self.files:
-            s.append(file.to_str())
-        s.append('</xliff>')
-
-        return '\n'.join(s)
+            output.append(file.to_str())
+        # </xliff>
+        output.append('</xliff>\n')
+        # Ok
+        return ''.join(output)
 
 
     #######################################################################

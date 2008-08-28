@@ -237,10 +237,7 @@ xmlns_namespace = XMLNSNamespace(xmlns_uri, 'xmlns')
 
 def get_attr_datatype(tag_uri, tag_name, attr_uri, attr_name):
     # Namespace declaration
-    if attr_uri == xmlns_uri:
-        return String
-    # Namespace declaration (default)
-    if attr_uri is None and attr_name == 'xmlns':
+    if (attr_uri == xmlns_uri) or (attr_uri is None and attr_name == 'xmlns'):
         return String
 
     # Attached attribute

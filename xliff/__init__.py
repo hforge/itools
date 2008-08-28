@@ -18,12 +18,18 @@
 from mimetypes import add_type
 
 # Import from itools
+from itools.utils import get_abspath
+from itools.xml import register_dtd
 from xliff import XLIFF, Translation, Note, File
 
 
 __all__ = ['XLIFF', 'Translation', 'Note', 'File']
 
 
-
+# Register mime type
 add_type('application/x-xliff', '.xlf')
+
+# Register DTD
+# -//XLIFF//DTD XLIFF//EN
+register_dtd('urn:publicid:-:XLIFF:DTD+XLIFF:EN', get_abspath('xliff.dtd'))
 

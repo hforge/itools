@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE xliff SYSTEM "http://www.oasis-open.org/committees/xliff/documents/xliff.dtd">
+<!DOCTYPE xliff PUBLIC "-//XLIFF//DTD XLIFF//EN"
+  "http://www.oasis-open.org/committees/xliff/documents/xliff.dtd">
 <xliff version="1.0" >
 <file  original="/localizer/gettext"
  product-version="1.1.x"

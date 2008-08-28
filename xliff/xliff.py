@@ -19,14 +19,17 @@
 
 # Import from itools
 from itools.handlers import TextFile, register_handler_class
-from itools.xml import (XMLParser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT,
-                        COMMENT, TEXT)
+from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, COMMENT, TEXT
 
 
 
 def protect_content(s):
     return s.replace('<','&lt;').replace('>','&gt;')
 
+
+doctype = (
+    '<!DOCTYPE xliff PUBLIC "-//XLIFF//DTD XLIFF//EN"\n'
+    '  "http://www.oasis-open.org/committees/xliff/documents/xliff.dtd">\n')
 
 
 class Note(object):
@@ -136,12 +139,7 @@ class XLIFF(TextFile):
     class_mimetypes = ['application/x-xliff']
     class_extension = 'xlf'
 
-
     def new(self):
-        self.document_type = (
-            'xliff',
-            'http://www.oasis-open.org/committees/xliff/documents/xliff.dtd',
-            None, False)
         self.version = '1.0'
         self.lang = None
         self.files = []
@@ -151,10 +149,6 @@ class XLIFF(TextFile):
     # Load
     def _load_state_from_file(self, file):
         self.files = []
-        self.document_type = (
-            'xliff',
-            'http://www.oasis-open.org/committees/xliff/documents/xliff.dtd',
-            None, False)
         for event, value, line_number in XMLParser(file.read()):
             if event == START_ELEMENT:
                 namespace, local_name, attributes = value
@@ -204,11 +198,8 @@ class XLIFF(TextFile):
     # Save
     #######################################################################
     def xml_header_to_str(self, encoding='UTF-8'):
-        s = ['<?xml version="1.0" encoding="%s"?>\n' % encoding]
-        # The document type
-        if self.document_type is not None:
-            s.append('<!DOCTYPE %s SYSTEM "%s">\n' % self.document_type[:2])
-        return ''.join(s)
+        header = ['<?xml version="1.0" encoding="%s"?>\n' % encoding, doctype]
+        return ''.join(header)
 
 
     def header_to_str(self, encoding='UTF-8'):
@@ -235,10 +226,9 @@ class XLIFF(TextFile):
     #######################################################################
     # API
     #######################################################################
-    def build(self, xml_header, version, files):
-        self.document_type = xml_header['document_type']
-        self.files = files
+    def build(self, version, files):
         self.version = version
+        self.files = files
 
 
     def get_languages(self):

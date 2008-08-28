@@ -120,7 +120,6 @@ def is_empty(namespace, name):
 
 class ElementSchema(object):
 
-    class_uri = None
     attributes = {}
 
     # Default Values

@@ -43,9 +43,8 @@ class Element(ElementSchema):
     is_empty = False
     is_inline = True
 
-    def __init__(self, uri, name, attributes, **kw):
+    def __init__(self, name, attributes, **kw):
         ElementSchema.__init__(self, name, **kw)
-        self.class_uri = uri
         self.attributes = frozenset(attributes)
 
 
@@ -57,9 +56,9 @@ class BlockElement(Element):
 
 
 mathml_elements = [
-    BlockElement(mathml_uri, 'math', [])]
+    BlockElement('math', [])]
 xforms_elements = [
-    BlockElement(xforms_uri, 'model', [])]
+    BlockElement('model', [])]
 
 
 xlink_namespace = XMLNamespace(xlink_uri, 'xlink', [])

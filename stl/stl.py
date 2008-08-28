@@ -499,14 +499,9 @@ stl_attributes = {
     'omit-tag': String}
 
 
-class STLElement(ElementSchema):
-
-    class_uri = stl_uri
-
-
 stl_elements = [
-    STLElement('block', is_inline=False),
-    STLElement('inline', is_inline=True)]
+    ElementSchema('block', is_inline=False),
+    ElementSchema('inline', is_inline=True)]
 
 
 

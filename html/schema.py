@@ -186,9 +186,10 @@ cellvalign_attrs = ['valign']
 ###########################################################################
 # Elements
 ###########################################################################
-class Element(ElementSchema):
+html_uri = 'http://www.w3.org/1999/xhtml'
 
-    class_uri = 'http://www.w3.org/1999/xhtml'
+
+class Element(ElementSchema):
 
     # Default
     is_empty = False
@@ -235,7 +236,7 @@ class InputElement(Element):
 
     def get_attr_datatype(self, attr_name, attributes):
         if attr_name == 'value':
-            key1 = (self.class_uri, 'type')
+            key1 = (html_uri, 'type')
             key2 = (None, 'type')
             if attributes.get(key1) == 'submit':
                 return Unicode
@@ -374,8 +375,7 @@ html_elements = [
 
 
 
-html_namespace = XMLNamespace(
-    'http://www.w3.org/1999/xhtml', None, html_elements)
+html_namespace = XMLNamespace(html_uri, None, html_elements)
 
 
 ###########################################################################

@@ -113,6 +113,7 @@ def _get_translatable_blocks(events):
 def get_units(events, filename=None, srx_handler=None):
     # XXX We must break this circular dependency
     from itools.srx import get_segments
+
     keep_spaces = False
     for type, value, line in _get_translatable_blocks(events):
         if type == START_ELEMENT:
@@ -149,14 +150,25 @@ def get_units(events, filename=None, srx_handler=None):
 def translate(events, catalog, srx_handler=None):
     # XXX We must break this circular dependency
     from itools.srx import translate_message
-    encoding = 'utf-8' # FIXME hardcoded
+
+    # Default values
+    encoding = 'utf-8'
     doctype = None
     keep_spaces = False
     namespaces = {}
+
     for event in _get_translatable_blocks(events):
         type, value, line = event
-        if type == DOCUMENT_TYPE:
+
+        # Set the good encoding
+        if type == XML_DECL:
+            encoding = value[1]
+            yield event
+        # Store the current DTD
+        elif type == DOCUMENT_TYPE:
             name, doctype = value
+            yield event
+        # GO !
         elif type == START_ELEMENT:
             tag_uri, tag_name, attributes = value
             # Attributes (translate)
@@ -189,7 +201,8 @@ def translate(events, catalog, srx_handler=None):
         elif type == MESSAGE:
             translation = translate_message(value, catalog, keep_spaces,
                                             srx_handler)
-            for event in XMLParser(translation, namespaces, doctype=doctype):
+            for event in XMLParser(translation.encode(encoding),
+                                   namespaces, doctype=doctype):
                 yield event
         else:
             yield event

@@ -206,7 +206,7 @@ def _clean_message(message, keep_spaces):
     return left, center, right
 
 
-def _split_message(message, srx_handler):
+def _split_message(message, srx_handler=None):
     # Concatenation!
     text = []
     for type, value, line in message:
@@ -274,21 +274,19 @@ def _split_message(message, srx_handler):
         yield current_message
 
 
-def get_segments(message, keep_spaces=False, srx_handler=None):
-    for message in _split_message(message, srx_handler):
-        left, center, right = _clean_message(message, keep_spaces)
-        if center:
-            if center != message:
-                for value, line in get_segments(center, keep_spaces,
-                                                srx_handler):
-                    yield value, line
-            else:
-                if center.to_str():
-                    yield center.to_str(), center.get_line()
+def get_segments(message, keep_spaces, srx_handler=None):
+    for sub_message in _split_message(message, srx_handler):
+        left, center, right = _clean_message(sub_message, keep_spaces)
+        if center != sub_message:
+            for value, line in get_segments(center, keep_spaces,
+                                            srx_handler):
+                yield value, line
+        elif center.to_str():
+            yield center.to_str(), center.get_line()
 
 
 
-def translate_message(message, catalog, keep_spaces, srx_handler=None):
+def translate_message_old(message, catalog, keep_spaces, srx_handler=None):
     """Returns translation's segments.
     segment_dict is a dictionnary which map segments to their corresponding
     translation. This method is recursive.
@@ -307,8 +305,27 @@ def translate_message(message, catalog, keep_spaces, srx_handler=None):
 
 
 
-def _translate_segments(message, translation_dict, keep_spaces,
-                        srx_handler=None):
+def translate_message(message, catalog, keep_spaces, srx_handler=None):
+    translated_message = []
+    for sub_message in _split_message(message, srx_handler):
+        left, center, right = _clean_message(sub_message, keep_spaces)
+        left = left.to_str()
+        right = right.to_str()
+
+        if center != sub_message:
+            center = translate_message(center, catalog, keep_spaces,
+                                       srx_handler)
+        else:
+            center = catalog.gettext(center.to_str())
+        translated_message.extend([left, center, right])
+
+    return u''.join(translated_message)
+
+
+
+
+
+def _translate_segments(message, translation_dict, keep_spaces, srx_handler):
     for seg_struct, line_offset in _split_message(message, srx_handler):
         seg_struct, spaces_pos = \
             _get_enclosing_spaces(seg_struct, keep_spaces)

@@ -15,12 +15,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from python
-from re import match, compile
-# DOTALL is very important to be SRX compliant
-from re import S as DOTALL
+from re import match, compile, DOTALL, MULTILINE
 
 # Import from itools
-from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, TEXT
+from itools.xml import XMLParser, XML_DECL, START_ELEMENT, END_ELEMENT, TEXT
 from itools.handlers import TextFile, register_handler_class
 
 
@@ -33,103 +31,110 @@ class SRXFile(TextFile):
 
 
     def _load_state_from_file(self, file):
-        """[lang:
-            break_no:
-                    [(before_break, after_break),...]
-            break_yes:
-                    [(before_break, after_break),...]
-           ]
-        """
+        # Default values
+        encoding = 'utf-8'
+        self.header = {'segmentsubflows': True,
+                       'cascade': None,
+                       'formathandle_start': False,
+                       'formathandle_end': True,
+                       'formathandle_isolated': False}
         self.language_rules = {}
-        self.language_map = {}
+        self.map_rules = []
 
-        data = file.read()
-        events = XMLParser(data)
+        srx_uri = 'http://www.lisa.org/srx20'
 
-        current_lang = {}
-        current_rule = None
-        rule = [None, None]
-        regexp = u''
-        before_break = False
-        after_break = False
-        for event, value, line in events:
-            if event == START_ELEMENT:
+        for type, value, line in XMLParser(file.read()):
+            if type == XML_DECL:
+                encoding = value[1]
+            elif type == START_ELEMENT:
                 tag_uri, tag_name, attrs = value
-                if tag_name == 'languagerule':
-                    attr_lang = attrs[(None, 'languagerulename')]
-                    self.language_rules[attr_lang] = {}
-                    current_lang = self.language_rules[attr_lang]
-                    current_lang['break_no'] = []
-                    current_lang['break_yes'] = []
-                elif tag_name == 'rule':
-                    break_value = attrs[(None, 'break')]
-                    if break_value == 'no':
-                        current_rule = current_lang['break_no']
-                    elif break_value == 'yes':
-                        current_rule = current_lang['break_yes']
-                elif tag_name == 'beforebreak':
-                    before_break = True
-                elif tag_name == 'afterbreak':
-                    after_break = True
-                elif tag_name == 'languagemap':
-                    language_pattern = attrs[(None, 'languagepattern')]
-                    language_name = attrs[(None, 'languagerulename')]
-                    self.language_map[language_pattern] = language_name
-            elif event == END_ELEMENT:
+                if tag_uri == srx_uri:
+                    # header
+                    if tag_name == 'header':
+                        # segmentsubflows
+                        segmentsubflows = attrs[None, 'segmentsubflows']
+                        self.header['segmentsubflows'] =\
+                            segmentsubflows.lower() != 'no'
+                        # cascade
+                        cascade = attrs[None, 'cascade']
+                        self.header['cascade'] = cascade.lower() != 'no'
+                    # formathandle
+                    elif tag_name == 'formathandle':
+                        type_value = attrs[None, 'type']
+                        include = attrs[None, 'include']
+                        include = include.lower() != 'no'
+                        self.header['formathandle_'+type_value] = include
+                    # languagerule
+                    elif tag_name == 'languagerule':
+                        languagerulename = unicode(
+                                            attrs[None, 'languagerulename'],
+                                            encoding)
+                        current_language =\
+                            self.language_rules[languagerulename] = []
+                    # rule
+                    elif tag_name == 'rule':
+                        current_break = True
+                        current_before_break = None
+                        current_after_break = None
+                        if (None, 'break') in attrs:
+                            break_value = attrs[None, 'break']
+                            current_break = break_value.lower() != 'no'
+                    # languagemap
+                    elif tag_name == 'languagemap':
+                        languagepattern = unicode(
+                            attrs[None, 'languagepattern'], encoding)
+                        languagerulename= unicode(
+                            attrs[None, 'languagerulename'], encoding)
+                        self.map_rules.append((languagepattern,
+                                              languagerulename))
+                current_text = u''
+            elif type == TEXT:
+                current_text = unicode(value, encoding)
+            elif type == END_ELEMENT:
                 tag_uri, tag_name = value
-                if tag_name == 'beforebreak':
-                    rule[0] = regexp
-                    regexp = u''
-                    before_break = False
-                elif tag_name == 'afterbreak':
-                    rule[1] = regexp
-                    regexp = u''
-                    after_break = False
-                elif tag_name == 'rule':
-                    rule = tuple(rule)
-                    current_rule.append(rule)
-                    rule = [None, None]
-            elif event == TEXT and (before_break or after_break):
-                regexp = unicode(value, 'utf-8')
+                if tag_uri == srx_uri:
+                    # beforebreak
+                    if tag_name == 'beforebreak':
+                        current_before_break = current_text
+                    # afterbreak
+                    if tag_name == 'afterbreak':
+                        current_after_break = current_text
+                    # rule
+                    if tag_name == 'rule':
+                        current_language.append((current_break,
+                            current_before_break, current_after_break))
 
     #########################################################################
     # API
     #########################################################################
-    def get_compiled_rules(self, lang):
-        """[lang:
-            break_no:
-                    [exception1, exception2, ...]
-            break_yes:
-                    [rule1, rule2, ...]
-           ]
-        """
-        rules = self.get_rules(lang)
-        break_rules = []
-        except_rules = []
-        for break_rule in rules['break_yes']:
-            before_break, after_break = break_rule
-            before_break = before_break is not None and before_break or '.+?'
-            after_break = after_break is not None and after_break or ''
-            pattern = '%s(?=%s)' % (before_break, after_break)
-            break_rules.append(compile(pattern, DOTALL))
-        for except_rule in rules['break_no']:
-            before_break, after_break = except_rule
-            before_break = before_break is not None and before_break or '.+?'
-            after_break = after_break is not None and after_break or ''
-            pattern = '%s(?=%s)' % (before_break, after_break)
-            except_rules.append(compile(pattern, DOTALL))
-        return {'break_yes': break_rules, 'break_no': except_rules}
+    def get_compiled_rules(self, language):
+        result = []
+        for rule in self.get_rules(language):
+            break_value, before_break, after_break = rule
+            regexp = before_break or '.*?'
+            if after_break:
+                regexp += '(?=%s)' % after_break
+            regexp = compile(regexp, DOTALL | MULTILINE)
+            result.append((break_value, regexp))
+        return result
 
 
     def get_languages(self):
         return self.language_rules.keys()
 
 
-    def get_rules(self, lang):
-        for pattern in self.language_map:
-            if match(pattern, lang):
-                lang = self.language_map[pattern]
-                return self.language_rules[lang]
+    def get_rules(self, language):
+        language_rules = self.language_rules
+        cascade = self.header['cascade']
+
+        result = []
+        for pattern, lang in self.map_rules:
+            if match(pattern, language, DOTALL | MULTILINE):
+                if cascade:
+                    result.extend(language_rules[lang])
+                else:
+                    return language_rules[lang]
+        return result
 
 
 register_handler_class(SRXFile)

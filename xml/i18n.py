@@ -21,7 +21,7 @@
 # Import from itools
 from itools.datatypes import Unicode, XMLContent, is_datatype
 from namespaces import get_element_schema, xmlns_uri, get_attr_datatype
-from parser import XMLParser, DOCUMENT_TYPE, XML_DECL
+from parser import XMLParser, XMLError, DOCUMENT_TYPE, XML_DECL
 from parser import START_ELEMENT, END_ELEMENT, TEXT
 from xml import get_start_tag, get_end_tag
 
@@ -201,9 +201,13 @@ def translate(events, catalog, srx_handler=None):
         elif type == MESSAGE:
             translation = translate_message(value, catalog, keep_spaces,
                                             srx_handler)
-            for event in XMLParser(translation.encode(encoding),
-                                   namespaces, doctype=doctype):
-                yield event
+            try:
+                for event in XMLParser(translation.encode(encoding),
+                                       namespaces, doctype=doctype):
+                    yield event
+            except XMLError:
+                raise XMLError, ('please have a look in your source file, '
+                                 'line ~ %d:\n%s') % (line, value.to_str())
         else:
             yield event
 

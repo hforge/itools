@@ -158,7 +158,10 @@ html_attributes = {
     'vlink': String,
     'vspace': Integer,
     'width': String,
-    'wrap': String, # FIXME Not standard
+    # FIXME Not standard
+    'wrap': String,
+    'quality': String, # <embed>
+    'pluginspage': String, # <embed>
     }
 
 
@@ -371,7 +374,8 @@ html_elements = [
     # for a talk about <embed> see:
     #   http://alistapart.com/articles/byebyeembed
     # FIXME Check the attribute list for <embed>
-    EmptyBlockElement('embed', ['src', 'type']),
+    EmptyBlockElement('embed', ['quality', 'pluginspage', 'src', 'type',
+        'width']),
     ]
 
 

@@ -267,6 +267,7 @@ html_elements = [
     EmptyBlockElement('base', ['href']),
     Element('bdo', common_attrs),
     Element('big', common_attrs),
+    BlockElement('blockquote', common_attrs + ['cite']),
     BlockElement('body', common_attrs + ['onload', 'onunload']),
     EmptyElement('br', core_attrs),
     Element('cite', common_attrs),

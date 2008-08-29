@@ -171,98 +171,72 @@ def _translation_to_struct(segment_translations):
     return seg_struct
 
 
-
-def _do_break(sentence, rules):
-    break_rules = rules['break_yes']
-    except_rules = rules['break_no']
-    exceptions = []
-    for except_rule in except_rules:
-        exception = except_rule.findall(sentence)
-        if exception:
-            exceptions.append(exception[-1])
-    for break_rule in break_rules:
-        match = break_rule.findall(sentence)
-        if match and match[-1] not in exceptions:
-            tail = break_rule.split(sentence)
-            if tail:
-                tail = tail[-1]
-            return match[-1], tail
-
-
-def _split_message(message, srx_handler, keep_spaces):
-    """ We consider a sentence ends by a special punctuation character
-    (dot, colon, semicolon, exclamation or question mark) followed by
-    a space.
-
-    Exceptions to this rule: abbreviations and acronyms.
-
-    This method returns a special structure. This is a list which each
-    sub-list represents a segment. The sub-list contains tuples. Each tuple
-    is an element that can be a format element (e.g. '<em>') or raw text
-    with some other informations (type and id).
-    For example, the message: Text. <text:span>Text2.</text:span>
-    will give :
-
-    [
-      [(TEXT, "Text.", TEXT_ID)],
-      [(START_FORMAT, '<text:span>', 1), (TEXT, 'Text2.', TEXT_ID),
-       (END_FORMAT, </texttest/srx/:span>, 1)]
-    ]
-    """
-    format = 0
-    sub_sentence = ''
-    sub_structure = []
-    stack_id = []
-    offset = 0
-    line_offset = 0
+def _split_message(message, srx_handler):
+    # Concatenation!
+    text = []
+    for type, value, line in message:
+        if type == TEXT:
+            text.append(value)
+    text = ''.join(text)
 
     # Get the rules
     if srx_handler is None:
         srx_handler = SRXFile(get_abspath('srx/srx_example.srx', 'itools'))
-    rules = srx_handler.get_compiled_rules('default')
+    # XXX we must handle the language here!
+    rules = srx_handler.get_compiled_rules('Default')
 
-    # In case of messages which begin with a '\n'
-    if message and message[0][1][0] == '\n':
-        line_offset = 1
+    # Get the breaks
+    breaks = set()
+    no_breaks = set()
+    for break_value, regexp in rules:
+        for match in regexp.finditer(text):
+            pos = match.end()
+            if break_value and pos not in no_breaks:
+                breaks.add(pos)
+            if not break_value and pos not in breaks:
+                no_breaks.add(pos)
+    breaks = list(breaks)
+    breaks.sort()
 
-    for type, atom in message.get_atoms():
+    # And now cut the message
+    forbidden_break = False
+    current_message = Message()
+    current_length = 0
+    for type, value, line in message:
         if type == TEXT:
-            if atom == '\n':
-                if not sub_sentence.strip():
-                    line_offset = max(offset,line_offset)
-                offset += 1
-            sub_sentence += atom
-            cut_sentence = _do_break(sub_sentence, rules)
-            if cut_sentence and not stack_id:
-                before_break, after_break = cut_sentence
-                before_break = _normalize(before_break, keep_spaces)
-                sub_structure.append((TEXT, before_break, TEXT_ID))
-                yield sub_structure, line_offset
-                line_offset = offset
-                sub_sentence = after_break
-                sub_structure = []
+            if forbidden_break:
+                current_message.append_text(value, line)
+                current_length += len(value)
+            else:
+                line_offset = 0
+                for absolute_pos in breaks:
+                    pos = absolute_pos - current_length
+                    if 0 <= pos and pos < len(value):
+                        before = value[:pos]
+                        value = value[pos:]
+                        # Add before to the current message
+                        if before:
+                            current_message.append_text(before,
+                                                        line + line_offset)
+                            current_length += len(before)
+                            line_offset += before.count('\n')
+                        # Send the message if it is not empty
+                        if current_message:
+                            yield current_message
+                            current_message = Message()
+                if value:
+                    current_length += len(value)
+                    current_message.append_text(value, line + line_offset)
         elif type == START_FORMAT:
-            format += 1
-            stack_id.append(format)
-            if sub_sentence:
-                sub_sentence = _normalize(sub_sentence, keep_spaces)
-                sub_structure.append((TEXT, sub_sentence, TEXT_ID))
-                sub_sentence = ''
-            id = format
-            sub_structure.append((START_FORMAT, u''.join(atom), id))
+            forbidden_break = True
+            current_message.append_start_format(value, line)
         elif type == END_FORMAT:
-            if sub_sentence:
-                sub_sentence = _normalize(sub_sentence, keep_spaces)
-                sub_structure.append((TEXT, sub_sentence, TEXT_ID))
-                sub_sentence = ''
-            id = stack_id.pop()
-            sub_structure.append((END_FORMAT, u''.join(atom), id))
-    # Send last sentence
-    if sub_sentence:
-        sub_sentence = _normalize(sub_sentence, keep_spaces)
-        sub_structure.append((TEXT, sub_sentence, TEXT_ID))
-    if sub_structure:
-        yield sub_structure, line_offset
+            forbidden_break = False
+            current_message.append_end_format(value, line)
+
+    # Send the last message
+    if current_message:
+        yield current_message
 
 
 def get_segments(message, keep_spaces=False, srx_handler=None):
@@ -274,8 +248,8 @@ def get_segments(message, keep_spaces=False, srx_handler=None):
     message.
     """
 
-    for segment_structure, line_offset in _split_message(message, srx_handler,
-                                                         keep_spaces):
+    for segment_structure, line_offset in _split_message(message,
+                                                         srx_handler):
         segment_structure = \
             _rm_enclosing_spaces(segment_structure, keep_spaces)
         new_seg_struct = \
@@ -314,8 +288,7 @@ def translate_message(message, catalog, keep_spaces, srx_handler=None):
 
 def _translate_segments(message, translation_dict, keep_spaces,
                         srx_handler=None):
-    for seg_struct, line_offset in _split_message(message, srx_handler,
-                                                         keep_spaces):
+    for seg_struct, line_offset in _split_message(message, srx_handler):
         seg_struct, spaces_pos = \
             _get_enclosing_spaces(seg_struct, keep_spaces)
         new_seg_struct = _rm_enclosing_format(seg_struct, keep_spaces)
@@ -361,12 +334,12 @@ class Message(list):
             list.append(self, (TEXT, text, line))
 
 
-    def append_start_format(self, format, line):
-        self.append((START_FORMAT, format, line))
+    def append_start_format(self, value, line):
+        self.append((START_FORMAT, value, line))
 
 
-    def append_end_format(self, format, line):
-        self.append((END_FORMAT, format, line))
+    def append_end_format(self, value, line):
+        self.append((END_FORMAT, value, line))
 
 
     def get_line(self):

@@ -16,8 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from base import BaseFS
-from datatypes import FileName
+from base import BaseFS, FileName
 import file
 import memfs
 from registry import register_file_system, deregister_file_system

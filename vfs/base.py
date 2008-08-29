@@ -17,11 +17,57 @@
 
 # Import from the Standard Library
 from datetime import datetime
+import mimetypes
 from mimetypes import guess_type
 from urllib import quote
 
 # Import from itools
-from datatypes import FileName
+from itools.datatypes import DataType
+from itools.i18n import has_language
+
+
+class FileName(DataType):
+    """A filename is tuple consisting of a name, a type and a language.
+    """
+    # TODO Consider the compression encoding (gzip, ...)
+    # TODO Consider the character encoding (utf-8, ...)
+
+    @staticmethod
+    def decode(data):
+        parts = data.rsplit('.', 1)
+        # Case 1: name
+        if len(parts) == 1:
+            return data, None, None
+
+        name, ext = parts
+        # Case 2: name.encoding
+        if '.%s' % ext.lower() in mimetypes.encodings_map:
+            return name, ext, None
+
+        if '.' in name:
+            a, b = name.rsplit('.', 1)
+            if '.%s' % b.lower() in mimetypes.types_map and has_language(ext):
+                # Case 3: name.type.language
+                return a, b, ext
+        if '.%s' % ext.lower() in mimetypes.types_map:
+            # Case 4: name.type
+            return name, ext, None
+        elif has_language(ext):
+            # Case 5: name.language
+            return name, None, ext
+
+        # Case 1: name
+        return data, None, None
+
+
+    @staticmethod
+    def encode(value):
+        name, type, language = value
+        if type is not None:
+            name = name + '.' + type
+        if language is not None:
+            name = name + '.' + language
+        return name
 
 
 # Translate compression encoding to mimetype

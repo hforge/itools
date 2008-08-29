@@ -171,6 +171,41 @@ def _translation_to_struct(segment_translations):
     return seg_struct
 
 
+
+def _clean_message(message, keep_spaces):
+    # The results
+    left = Message()
+    center = Message(message)
+    right = Message()
+
+    # Remove the "spaces" TEXT after and before the message
+    while center and center[0][0] == TEXT and center[0][1].strip() == '':
+        left.append(center.pop(0))
+    while center and center[-1][0] == TEXT and center[-1][1].strip() == '':
+        right.insert(0, center.pop())
+
+    # Remove enclosing format
+    while center:
+        if (center[0][0] == START_FORMAT and center[-1][0] == END_FORMAT and
+            center[0][1][1] == center[-1][1][1]):
+            left.append(center.pop(0))
+            right.insert(0, center.pop())
+        else:
+            break
+
+    # Remove eventually the spaces
+    # XXX to brutal!
+    # XXX "line" not valid if \n deleted!
+    if not keep_spaces:
+        new_center = Message()
+        for i, (type, value, line) in enumerate(center):
+            if type == TEXT:
+                value = u' '.join(value.split())
+                center[i] = (type, value, line)
+
+    return left, center, right
+
+
 def _split_message(message, srx_handler):
     # Concatenation!
     text = []
@@ -183,7 +218,7 @@ def _split_message(message, srx_handler):
     if srx_handler is None:
         srx_handler = SRXFile(get_abspath('srx/srx_example.srx', 'itools'))
     # XXX we must handle the language here!
-    rules = srx_handler.get_compiled_rules('Default')
+    rules = srx_handler.get_compiled_rules('en')
 
     # Get the breaks
     breaks = set()
@@ -240,30 +275,16 @@ def _split_message(message, srx_handler):
 
 
 def get_segments(message, keep_spaces=False, srx_handler=None):
-    """This is a generator that iters over the message. First it segment
-    the message and get back the corresponding segments. Then it remove the
-    potentially enclosing format element from the segment. If there was
-    enclosing format, the generator reiterates on the segment as if it
-    was a new message. Indeed, there may be some new segments in this new
-    message.
-    """
-
-    for segment_structure, line_offset in _split_message(message,
-                                                         srx_handler):
-        segment_structure = \
-            _rm_enclosing_spaces(segment_structure, keep_spaces)
-        new_seg_struct = \
-            _rm_enclosing_format(segment_structure, keep_spaces)
-        if new_seg_struct != segment_structure:
-            new_message = _reconstruct_message(new_seg_struct)
-            for segment, new_offset in get_segments(new_message, keep_spaces,
-                                                    srx_handler=None):
-                yield segment, line_offset + new_offset
-        else:
-            segment = _reconstruct_segment(segment_structure,
-                                           keep_spaces)
-            if segment:
-                yield segment, line_offset
+    for message in _split_message(message, srx_handler):
+        left, center, right = _clean_message(message, keep_spaces)
+        if center:
+            if center != message:
+                for value, line in get_segments(center, keep_spaces,
+                                                srx_handler):
+                    yield value, line
+            else:
+                if center.to_str():
+                    yield center.to_str(), center.get_line()
 
 
 
@@ -318,10 +339,6 @@ def _translate_segments(message, translation_dict, keep_spaces,
 class Message(list):
     """A 'Message' object represents a text to be processed. It is a complex
     object instead of just a string to allow us to deal with formatted text.
-
-    A message is made of atoms, an atom is a unit that can not be splitted.
-    It is either a letter or an object that represents a formatted block,
-    like an xml node (e.g. '<em>hello world</em>').
     """
 
     def append_text(self, text, line):
@@ -347,4 +364,13 @@ class Message(list):
             return self[0][2]
         else:
             return None
+
+    def to_str(self):
+        result = []
+        for type, value, line in self:
+            if type == TEXT:
+                result.append(value)
+            else:
+                result.append(value[0])
+        return u''.join(result)
 

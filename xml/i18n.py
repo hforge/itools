@@ -46,6 +46,10 @@ def _get_translatable_blocks(events):
     # Default value
     encoding = 'utf-8'
 
+    # To identify the begin/end format
+    id = 0
+    id_stack = []
+
     message = Message()
     skip_level = 0
     for event in events:
@@ -67,7 +71,10 @@ def _get_translatable_blocks(events):
                     skip_level = 1
                 # Is inline ?
                 elif getattr(schema, 'is_inline', False):
-                    message.append_start_format(get_start_tag(*value), line)
+                    id += 1
+                    id_stack.append(id)
+                    message.append_start_format((get_start_tag(*value), id),
+                                                line)
                     continue
         elif type == END_ELEMENT:
             if skip_level > 0:
@@ -78,10 +85,10 @@ def _get_translatable_blocks(events):
 
                 # Is inline ?
                 if getattr(schema, 'is_inline', False):
-                    message.append_end_format(get_end_tag(*value), line)
+                    message.append_end_format((get_end_tag(*value),
+                                               id_stack.pop()), line)
                     continue
         elif type == TEXT:
-            # XXX A lonely 'empty' TEXT are ignored, is it good ?
             # Not empty ?
             if skip_level == 0 and (value.strip() != '' or message):
                 value = XMLContent.encode(value)
@@ -130,9 +137,9 @@ def get_units(events, filename=None, srx_handler=None):
                 keep_spaces = False
         elif type == MESSAGE:
             # Segmentation
-            segments = get_segments(value, keep_spaces, srx_handler)
-            for segment, line_offset in segments:
-                yield segment, {filename: [line + line_offset]}
+            for segment, line in get_segments(value, keep_spaces,
+                                              srx_handler):
+                yield segment, {filename: [line]}
 
 
 

@@ -158,6 +158,7 @@ html_attributes = {
     'vlink': String,
     'vspace': Integer,
     'width': String,
+    'wrap': String, # FIXME Not standard
     }
 
 
@@ -334,7 +335,7 @@ html_elements = [
             'bgcolor', 'width', 'height']),
     Element('textarea', common_attrs + ['name', 'rows', 'cols', 'disabled',
         'readonly', 'tabindex', 'accesskey', 'onfocus', 'onblur', 'onselect',
-        'onchange']),
+        'onchange', 'wrap']),
     BlockElement('th', common_attrs + cellhalign_attrs + cellvalign_attrs +
         ['abbr', 'axis', 'headers', 'scope', 'rowspan', 'colspan', 'nowrap',
             'bgcolor', 'width', 'height']),

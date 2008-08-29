@@ -20,6 +20,7 @@
 
 # Import from the Standard Library
 from textwrap import wrap
+from re import split
 
 # Import from itools
 from itools.datatypes.primitive import String
@@ -78,24 +79,35 @@ def get_lines(file):
                 name, value = line.split('=', 1)
                 name = name.strip()
                 value = value.strip()
-                if value and value[0] == '"':
-                    if value[-1] == '"' and len(value) > 1:
-                        value = value[1:-1]
-                        yield VAR, (name, value), line_num
-                    else:
-                        yield VAR_START, (name, value[1:]), line_num
-                        state = 1
-                else:
+                # split a value ignoring escaped double quotes
+                # '^"|(?<=[^\\\\])"'
+                groups = split('^"|(?<=[^\\\\])"', value)
+                nb_groups = len(groups)
+                value = ''.join(groups)
+                value = value.replace('\\"','"')
+                if nb_groups > 3:
+                    raise SyntaxError, 'unescaped char, line %d' % line_num
+
+                if nb_groups in (3,1):
                     yield VAR, (name, value), line_num
+                if nb_groups == 2:
+                    yield VAR_START, (name, value), line_num
+                    state = 1
             else:
                 raise SyntaxError, 'unknown line "%d"' % line_num
         elif state == 1:
             # Multiline value
-            if line and line[-1] == '"':
-                yield VAR_END, line[:-1], line_num
+            groups = split('(?<=[^\\\\])"', line)
+            nb_groups = len(groups)
+            value = groups[0]
+            value = value.replace('\\"','"')
+            if nb_groups > 2:
+                raise SyntaxError, 'unescaped char, line %d' % line_num
+            elif nb_groups == 2:
+                yield VAR_END, value, line_num
                 state = 0
-            else:
-                yield VAR_CONT, line, line_num
+            elif nb_groups == 1:
+                yield VAR_CONT, value, line_num
 
         # Next
         line_num += 1

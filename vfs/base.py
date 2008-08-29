@@ -21,7 +21,7 @@ from mimetypes import guess_type
 from urllib import quote
 
 # Import from itools
-from itools.datatypes import FileName
+from datatypes import FileName
 
 
 # Translate compression encoding to mimetype

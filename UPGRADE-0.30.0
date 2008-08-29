@@ -27,6 +27,7 @@ summarizes this changes.
   Before (alphabetical order)    Now
   ----------------------------   ---------------------------
   catalog.*                      xapian.*
+  datatypes.FileName             vfs.FileName
   datatypes.XML                  datatypes.XMLContent
   gettext.Message                gettext.POUnit
   i18n.Message                   srx.Message

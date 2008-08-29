@@ -26,14 +26,14 @@ import sys
 
 # Import from itools
 import itools
-from itools.datatypes import FileName
 from itools.gettext import POFile, POUnit
 from itools.handlers import Python, ConfigFile, get_handler
 from itools.html import XHTMLFile
 import itools.stl
 import itools.srx
 from itools import vfs
-from itools.vfs import WRITE
+from itools.vfs import WRITE, FileName
+
 
 def write(text):
     sys.stdout.write(text)

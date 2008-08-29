@@ -24,14 +24,10 @@ from unittest import TestCase
 import random, decimal
 
 # Import from itools
-from itools.datatypes import (ISOTime, ISOCalendarDate, ISODateTime,
-                              Integer, Decimal, Boolean,
-                              Unicode, URI, Email,
-                              FileName, QName, Tokens,
-                              Enumerate,
-                              XMLContent,
-                              XMLAttribute,
-                              HTTPDate)
+from itools.datatypes import ISOTime, ISOCalendarDate, ISODateTime, HTTPDate
+from itools.datatypes import Integer, Decimal, Boolean, Unicode, URI, Email
+from itools.datatypes import QName, Tokens, Enumerate
+from itools.datatypes import XMLContent, XMLAttribute
 
 
 def datetime_utc2local(dt):
@@ -87,22 +83,6 @@ class BasicTypeTest(TestCase):
         for name, result in {'toto.titi@libre.fr':True,
                              'toto@':False}.iteritems():
             self.assertEqual(Email.is_valid(name), result)
-
-
-    def test_FileName(self):
-        map = {
-            'index': ('index', None, None),
-            'index.html': ('index', 'html', None),
-            'index.html.en': ('index', 'html', 'en'),
-            'index.html.en.gz': ('index.html.en', 'gz', None),
-            'itools.tar': ('itools', 'tar', None),
-            'itools.tar.gz': ('itools.tar', 'gz', None),
-            'toto.en': ('toto', None, 'en'),
-            'toto.gz': ('toto', 'gz', None),
-            }
-        for name, result in map.iteritems():
-            self.assertEqual(FileName.decode(name), result)
-            self.assertEqual(FileName.encode(result), name)
 
 
     def test_QName(self):

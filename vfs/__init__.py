@@ -17,6 +17,7 @@
 
 # Import from itools
 from base import BaseFS
+from datatypes import FileName
 import file
 import memfs
 from registry import register_file_system, deregister_file_system
@@ -29,6 +30,8 @@ from vfs import traverse, READ, WRITE, READ_WRITE, APPEND
 __all__ = [
     'cwd',
     'BaseFS',
+    # Datatypes
+    'FileName',
     # File modes
     'READ',
     'WRITE',

@@ -19,158 +19,8 @@
 from itools.utils import get_abspath
 from srx import SRXFile
 
-
-
-TEXT_ID, TEXT, START_FORMAT, END_FORMAT = range(-1,3)
-
-def _normalize(sentence, keep_spaces=False):
-    """Make a sentence normalizing whitespaces or, if keep_spaces is True; a
-    sentence as raw text.
-    """
-    if keep_spaces:
-        return sentence
-    tmp_sentence1 = sentence.rstrip()
-    tmp_sentence2 = sentence.lstrip()
-    # Normalize: '   text   text2' -> ' text text2'
-    res_sentence = u' '.join(sentence.split())
-    if tmp_sentence1 != sentence:
-        res_sentence = res_sentence + u' '
-    if tmp_sentence2 != sentence:
-        res_sentence = u' ' + res_sentence
-    return res_sentence
-
-
-
-def _rm_enclosing_format(segment_structure, keep_spaces=False):
-    """This function returns a tuple of two elements. The first element is the
-    new segment_structure, then a boolean that indicates whether the
-    segment_structure changed.
-    """
-    first, last = segment_structure[0], segment_structure[-1]
-    n = len(segment_structure)
-
-    # Check there is at least one enclosing format to remove
-    if n <= 1 or first[2] == TEXT_ID or first[2] != last[2]:
-        return segment_structure
-
-    # Make a copy
-    segment_structure = list(segment_structure)
-
-    # Remove enclosing format
-    while n > 1 and first[2] != TEXT_ID and first[2] == last[2]:
-        segment_structure.pop(0)
-        segment_structure.pop()
-        n -= 2
-        # Next (check we did not reach the empty list)
-        if n == 0:
-            break
-        first, last = segment_structure[0], segment_structure[-1]
-
-    return segment_structure
-
-
-
-def _rm_enclosing_spaces(segment_structure, keep_spaces=False):
-    """This function returns a new segment_structure which no longer contains
-    enclosing spaces.
-    """
-    if keep_spaces is True or len(segment_structure) <= 1:
-        return segment_structure
-
-    # We remove all empty element which starts the structure
-    while not segment_structure[0][1].strip():
-        segment_structure.pop(0)
-    # We remove all empty element which finish the structure
-    while not segment_structure[-1][1].strip():
-        segment_structure.pop()
-    return segment_structure
-
-
-
-def _get_enclosing_spaces(segment_structure, keep_spaces=False):
-    """This function returns a new segment_structure which no longer contains
-    enclosing spaces.
-    """
-    nb_left_spaces = nb_right_spaces = 0
-    if keep_spaces is True or len(segment_structure) <= 1:
-        return segment_structure, (nb_left_spaces, nb_right_spaces)
-
-    # We remove all empty element which starts the structure
-    while not segment_structure[nb_left_spaces][1].strip():
-        nb_left_spaces += 1
-    # We remove all empty element which finish the structure
-    while not segment_structure[nb_right_spaces][1].strip():
-        nb_right_spaces +=1
-    segment_structure = _rm_enclosing_spaces(segment_structure, keep_spaces)
-    return segment_structure, (nb_left_spaces, nb_right_spaces)
-
-
-
-def _reinsert_spaces(segment_structure, spaces_positions):
-    """Put spaces in the segment structure.
-    'spaces_positions' is a tuple like (x, y). We insert x spaces in front of
-    the list and y spaces at the end of the list.
-    """
-    nb_left_spaces, nb_right_spaces = spaces_positions
-    for space_position in range(nb_left_spaces):
-        segment_structure.insert(0, (TEXT, u' ', TEXT_ID))
-    for space_position in range(nb_right_spaces):
-        segment_structure.append((TEXT, u' ', TEXT_ID))
-    return segment_structure
-
-
-
-def _reinsert_format(segment_structure, formats):
-    """Re-inject formats into the segment_structure.
-    'formats' is a tuple like (start_format, end_format).
-    """
-    starting, ending = formats
-    segment_structure.insert(0, starting)
-    segment_structure.append(ending)
-    return segment_structure
-
-
-
-def _reconstruct_message(segment_structure):
-    """Take a segment_structure and rebuild a new Message object.
-    """
-    message = Message()
-    for seg_struct in segment_structure:
-        if seg_struct[0] == TEXT:
-            message.append_text(seg_struct[1])
-        elif seg_struct[0] == START_FORMAT:
-            message.append_start_format(seg_struct[1])
-        elif seg_struct[0] == END_FORMAT:
-            message.append_end_format(seg_struct[1])
-    return message
-
-
-
-def _reconstruct_segment(segment_structure, keep_spaces=False):
-    """Take a segment_structure and rebuild a new segment (str).
-    """
-    segment = u''
-    for seg_struct in segment_structure:
-        segment = segment + seg_struct[1]
-    if keep_spaces is False:
-        segment = segment.strip()
-    return segment
-
-
-
-def _translation_to_struct(segment_translations):
-    """_translation_to_struct
-    """
-    seg_struct = segment_translations
-    if segment_translations \
-        and isinstance(segment_translations[0], (str, unicode)):
-        seg_struct = []
-        for translation in segment_translations:
-            translation_tuple = (TEXT, translation, TEXT_ID)
-            seg_struct.append(translation_tuple)
-    return seg_struct
-
-
+# Constants
+TEXT, START_FORMAT, END_FORMAT = range(3)
 
 def _clean_message(message, keep_spaces):
     # The results
@@ -285,26 +135,6 @@ def get_segments(message, keep_spaces, srx_handler=None):
             yield center.to_str(), center.get_line()
 
 
-
-def translate_message_old(message, catalog, keep_spaces, srx_handler=None):
-    """Returns translation's segments.
-    segment_dict is a dictionnary which map segments to their corresponding
-    translation. This method is recursive.
-    """
-    translation_dict = {}
-    for segment, line_offset in get_segments(message, keep_spaces,
-                                             srx_handler):
-        segment_translation = catalog.gettext(segment)
-        translation_dict[segment] = segment_translation
-
-    translation = _translate_segments(message, translation_dict, keep_spaces)
-    translation = list(translation)
-    translation = u''.join(translation)
-
-    return translation.encode('utf-8')
-
-
-
 def translate_message(message, catalog, keep_spaces, srx_handler=None):
     translated_message = []
     for sub_message in _split_message(message, srx_handler):
@@ -320,36 +150,6 @@ def translate_message(message, catalog, keep_spaces, srx_handler=None):
         translated_message.extend([left, center, right])
 
     return u''.join(translated_message)
-
-
-
-
-
-def _translate_segments(message, translation_dict, keep_spaces, srx_handler):
-    for seg_struct, line_offset in _split_message(message, srx_handler):
-        seg_struct, spaces_pos = \
-            _get_enclosing_spaces(seg_struct, keep_spaces)
-        new_seg_struct = _rm_enclosing_format(seg_struct, keep_spaces)
-        if new_seg_struct is seg_struct:
-            segment = _reconstruct_segment(seg_struct, keep_spaces)
-            if segment:
-                raw_segment = _reconstruct_segment(seg_struct, True)
-                translation = translation_dict[segment]
-                translation = raw_segment.replace(segment, translation)
-                yield translation
-        else:
-            start_format = seg_struct.pop(0)
-            end_format = seg_struct.pop()
-            new_message = _reconstruct_message(seg_struct)
-            segment_translations = _translate_segments(new_message,
-                                            translation_dict, keep_spaces)
-            segment_translations = list(segment_translations)
-            seg_struct = _translation_to_struct(segment_translations)
-            formats = (start_format, end_format)
-            seg_struct = _reinsert_format(seg_struct, formats)
-            seg_struct = _reinsert_spaces(seg_struct, spaces_pos)
-            translation = _reconstruct_segment(seg_struct, True)
-            yield translation
 
 
 

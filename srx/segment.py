@@ -189,8 +189,7 @@ def _do_break(sentence, rules):
             return match[-1], tail
 
 
-
-def _split_message(message, keep_spaces=False, srx_handler=None):
+def _split_message(message, srx_handler, keep_spaces):
     """ We consider a sentence ends by a special punctuation character
     (dot, colon, semicolon, exclamation or question mark) followed by
     a space.
@@ -266,7 +265,6 @@ def _split_message(message, keep_spaces=False, srx_handler=None):
         yield sub_structure, line_offset
 
 
-
 def get_segments(message, keep_spaces=False, srx_handler=None):
     """This is a generator that iters over the message. First it segment
     the message and get back the corresponding segments. Then it remove the
@@ -276,8 +274,8 @@ def get_segments(message, keep_spaces=False, srx_handler=None):
     message.
     """
 
-    for segment_structure, line_offset in _split_message(message, keep_spaces,
-                                                         srx_handler):
+    for segment_structure, line_offset in _split_message(message, srx_handler,
+                                                         keep_spaces):
         segment_structure = \
             _rm_enclosing_spaces(segment_structure, keep_spaces)
         new_seg_struct = \
@@ -316,8 +314,8 @@ def translate_message(message, catalog, keep_spaces, srx_handler=None):
 
 def _translate_segments(message, translation_dict, keep_spaces,
                         srx_handler=None):
-    for seg_struct, line_offset in _split_message(message, keep_spaces,
-                                                  srx_handler):
+    for seg_struct, line_offset in _split_message(message, srx_handler,
+                                                         keep_spaces):
         seg_struct, spaces_pos = \
             _get_enclosing_spaces(seg_struct, keep_spaces)
         new_seg_struct = _rm_enclosing_format(seg_struct, keep_spaces)
@@ -353,33 +351,27 @@ class Message(list):
     like an xml node (e.g. '<em>hello world</em>').
     """
 
-    def append_text(self, text):
+    def append_text(self, text, line):
         """The parameter "text" must be an unicode string.
         """
-        # Append
         if self and (self[-1][0] == TEXT):
-            self[-1] = TEXT, self[-1][1] + text
+            last = self[-1]
+            self[-1] = TEXT, last[1] + text, last[2]
         else:
-            list.append(self, (TEXT, text))
+            list.append(self, (TEXT, text, line))
 
 
-    def append_start_format(self, x):
-        list.append(self, (START_FORMAT, x))
+    def append_start_format(self, format, line):
+        self.append((START_FORMAT, format, line))
 
 
-    def append_end_format(self, x):
-        list.append(self, (END_FORMAT, x))
+    def append_end_format(self, format, line):
+        self.append((END_FORMAT, format, line))
 
 
-    def get_atoms(self):
-        """This is a generator that iters over the message and returns each
-        time an atom.
-        """
-        for type, value in self:
-            if type == TEXT:
-                for letter in value:
-                    yield TEXT, letter
-            else:
-                yield type, value
-
+    def get_line(self):
+        if self:
+            return self[0][2]
+        else:
+            return None
 

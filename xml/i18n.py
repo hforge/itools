@@ -21,9 +21,9 @@
 # Import from itools
 from itools.datatypes import Unicode, XMLContent, is_datatype
 from namespaces import get_element_schema, xmlns_uri, get_attr_datatype
-from parser import XMLParser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, TEXT
+from parser import XMLParser, DOCUMENT_TYPE, XML_DECL
+from parser import START_ELEMENT, END_ELEMENT, TEXT
 from xml import get_start_tag, get_end_tag
-
 
 
 ###########################################################################
@@ -42,46 +42,46 @@ elements_to_keep_spaces = set(['pre'])
 def _get_translatable_blocks(events):
     # XXX We must break this circular dependency
     from itools.srx import Message
-    # XXX this constant must not be a constant
+
+    # Default value
     encoding = 'utf-8'
 
     message = Message()
     for event in events:
         type, value, line = event
 
-        # We catch the good events!
-        if type == START_ELEMENT or type == END_ELEMENT:
+        # Set the good encoding
+        if type == XML_DECL:
+            encoding = value[1]
+        # And now, we catch only the good events
+        elif type == START_ELEMENT or type == END_ELEMENT:
             tag_uri, tag_name = value[:2]
             schema = get_element_schema(tag_uri, tag_name)
             # Inline ?
             if getattr(schema, 'is_inline', False):
-                if not message:
-                    message_line = line
                 if type == START_ELEMENT:
-                    message.append_start_format(get_start_tag(*value))
+                    message.append_start_format(get_start_tag(*value), line)
                 else:
-                    message.append_end_format(get_end_tag(*value))
+                    message.append_end_format(get_end_tag(*value), line)
                 continue
         elif type == TEXT:
             # XXX A lonely 'empty' TEXT are ignored, is it good ?
             # Not empty ?
             if value.strip() != '' or message:
-                if not message:
-                    message_line = line
                 value = XMLContent.encode(value)
                 value = unicode(value, encoding)
-                message.append_text(value)
+                message.append_text(value, line)
                 continue
 
         # Not a good event => break + send the event
         if message:
-            yield MESSAGE, message, message_line
+            yield MESSAGE, message, message.get_line()
         message = Message()
 
         yield event
     # Send the last message!
     if message:
-        yield MESSAGE, message, message_line
+        yield MESSAGE, message, message.get_line()
 
 
 ###########################################################################

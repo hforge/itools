@@ -44,14 +44,33 @@ def _clean_message(message, keep_spaces):
             break
 
     # Remove eventually the spaces
-    # XXX to brutal!
-    # XXX "line" not valid if \n deleted!
     if not keep_spaces:
-        new_center = Message()
         for i, (type, value, line) in enumerate(center):
             if type == TEXT:
+                # Begin
+                if i > 0 and value and value[0].isspace():
+                    begin = u' '
+                else:
+                    begin = u''
+
+                # End
+                if i < len(center) - 1 and value[-1].isspace():
+                    end = u' '
+                else:
+                    end = u''
+
+                # Compute the new "line" argument
+                for c in value:
+                    if not c.isspace():
+                        break
+                    if c == '\n':
+                        line += 1
+
+                # Clean
                 value = u' '.join(value.split())
-                center[i] = (type, value, line)
+
+                # Store the new value
+                center[i] = (type, begin + value + end, line)
 
     return left, center, right
 
@@ -62,7 +81,7 @@ def _split_message(message, srx_handler=None):
     for type, value, line in message:
         if type == TEXT:
             text.append(value)
-    text = ''.join(text)
+    text = u''.join(text)
 
     # Get the rules
     if srx_handler is None:
@@ -124,6 +143,9 @@ def _split_message(message, srx_handler=None):
         yield current_message
 
 
+###########################################################################
+# API
+###########################################################################
 def get_segments(message, keep_spaces, srx_handler=None):
     for sub_message in _split_message(message, srx_handler):
         left, center, right = _clean_message(sub_message, keep_spaces)

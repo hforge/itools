@@ -47,6 +47,7 @@ def _get_translatable_blocks(events):
     encoding = 'utf-8'
 
     message = Message()
+    skip_level = 0
     for event in events:
         type, value, line = event
 
@@ -54,20 +55,35 @@ def _get_translatable_blocks(events):
         if type == XML_DECL:
             encoding = value[1]
         # And now, we catch only the good events
-        elif type == START_ELEMENT or type == END_ELEMENT:
-            tag_uri, tag_name = value[:2]
-            schema = get_element_schema(tag_uri, tag_name)
-            # Inline ?
-            if getattr(schema, 'is_inline', False):
-                if type == START_ELEMENT:
+        elif type == START_ELEMENT:
+            if skip_level > 0:
+                skip_level += 1
+            else:
+                tag_uri, tag_name = value[:2]
+                schema = get_element_schema(tag_uri, tag_name)
+
+                # Translatable content ?
+                if not schema.translate_content:
+                    skip_level = 1
+                # Is inline ?
+                elif getattr(schema, 'is_inline', False):
                     message.append_start_format(get_start_tag(*value), line)
-                else:
+                    continue
+        elif type == END_ELEMENT:
+            if skip_level > 0:
+                skip_level -= 1
+            else:
+                tag_uri, tag_name = value[:2]
+                schema = get_element_schema(tag_uri, tag_name)
+
+                # Is inline ?
+                if getattr(schema, 'is_inline', False):
                     message.append_end_format(get_end_tag(*value), line)
-                continue
+                    continue
         elif type == TEXT:
             # XXX A lonely 'empty' TEXT are ignored, is it good ?
             # Not empty ?
-            if value.strip() != '' or message:
+            if skip_level == 0 and (value.strip() != '' or message):
                 value = XMLContent.encode(value)
                 value = unicode(value, encoding)
                 message.append_text(value, line)
@@ -76,7 +92,7 @@ def _get_translatable_blocks(events):
         # Not a good event => break + send the event
         if message:
             yield MESSAGE, message, message.get_line()
-        message = Message()
+            message = Message()
 
         yield event
     # Send the last message!

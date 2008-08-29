@@ -83,7 +83,7 @@ if __name__ == '__main__':
             units = handler.get_units(srx_handler=srx_handler)
             for value, references in units:
                 message = POUnit([], [value], [u''], references)
-                if len(message.msgid[0]) > 2:
+                if len(message.source[0]) > 2:
                     po.set_message(message)
     print
 
@@ -110,7 +110,7 @@ if __name__ == '__main__':
                 raise
             for value, references in messages:
                 message = Message([], [value], [u''], references)
-                if len(message.msgid[0]) > 1:
+                if len(message.source[0]) > 1:
                     po.set_message(message)
         print
 

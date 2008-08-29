@@ -146,8 +146,8 @@ class POUnit(object):
     A 'POUnit' object keeps this information as:
 
      => references = {<filename>: [<line number>, ...]}
-     => msgid = [<msgid line>, ...]
-     => msgstr = [<msgstr line>, ...]
+     => source = [<msgid line>, ...]
+     => target = [<msgstr line>, ...]
      => comments = [<comment line>, ...]
 
     XXX
@@ -158,11 +158,11 @@ class POUnit(object):
     XXX
     """
 
-    def __init__(self, comments, msgid, msgstr, references={}, fuzzy=False):
+    def __init__(self, comments, source, target, references={}, fuzzy=False):
         self.comments = comments
         self.references = references
-        self.msgid = msgid
-        self.msgstr = msgstr
+        self.source = source
+        self.target = target
         self.fuzzy = fuzzy
 
 
@@ -179,24 +179,24 @@ class POUnit(object):
         if self.fuzzy:
             s.append('#, fuzzy\n')
         # The msgid
-        s.append('msgid "%s"\n' % escape(self.msgid[0].encode(encoding)))
-        for string in self.msgid[1:]:
+        s.append('msgid "%s"\n' % escape(self.source[0].encode(encoding)))
+        for string in self.source[1:]:
             s.append('"%s"\n' % escape(string.encode(encoding)))
         # The msgstr
-        s.append('msgstr "%s"\n' % escape(self.msgstr[0].encode(encoding)))
-        for string in self.msgstr[1:]:
+        s.append('msgstr "%s"\n' % escape(self.target[0].encode(encoding)))
+        for string in self.target[1:]:
             s.append('"%s"\n' % escape(string.encode(encoding)))
 
         return ''.join(s)
 
 
     def __repr__(self):
-        msg = "<MESSAGE object msgid=%s msgstr=%s (%s)>"
-        return msg % (self.msgid, self.msgstr, self.references)
+        msg = "<POUnit object source=%s target=%s (%s)>"
+        return msg % (self.source, self.target, self.references)
 
 
     def __eq__(self, other):
-        return (other.msgid==self.msgid) and (other.msgstr==self.msgstr)
+        return (other.source==self.source) and (other.target==self.target)
 
 
 
@@ -240,7 +240,7 @@ class POFile(TextFile):
     #######################################################################
     def next_entry(self, data):
         # Initialize entry information
-        id, comments, msgid, msgstr, fuzzy = None, [], [], [], False
+        id, comments, source, target, fuzzy = None, [], [], [], False
         # Parse entry
         state = 0
         for line_type, value, line_number in get_lines(data):
@@ -258,7 +258,7 @@ class POFile(TextFile):
                     fuzzy = True
                     state = 1
                 elif line_type == MSGID:
-                    msgid.append(value)
+                    source.append(value)
                     state = 2
                 else:
                     raise POSyntaxError(line_number, line_type)
@@ -274,24 +274,24 @@ class POFile(TextFile):
                     comments = []
                     state = 0
                 elif line_type == MSGID:
-                    msgid.append(value)
+                    source.append(value)
                     state = 2
                 else:
                     raise POSyntaxError(line_number, line_type)
             elif state == 2:
                 # Read the message id and wait for the message string
                 if line_type == STRING:
-                    msgid.append(value)
+                    source.append(value)
                 elif line_type == MSGSTR:
-                    msgstr.append(value)
-                    id = ''.join(msgid)
+                    target.append(value)
+                    id = ''.join(source)
                     state = 3
                 else:
                     raise POSyntaxError(line_number, line_type)
             elif state == 3:
                 # Read the message string
                 if line_type == STRING:
-                    msgstr.append(value)
+                    target.append(value)
                     if id == '':
                         # Parse the header
                         # XXX Right now we only get the encoding, we should
@@ -303,15 +303,15 @@ class POFile(TextFile):
                             self.encoding = charset[len('charset='):]
                 elif line_type == BLANK:
                     # End of the entry
-                    yield id, comments, msgid, msgstr, fuzzy, line_number
+                    yield id, comments, source, target, fuzzy, line_number
                     state = 0
-                    id, comments, msgid, msgstr = None, [], [], []
+                    id, comments, source, target = None, [], [], []
                     fuzzy = False
                 elif line_type == COMMENT:
                     # Add entry
-                    self._set_message(msgid, msgstr, comments, {}, fuzzy)
+                    self._set_message(source, target, comments, {}, fuzzy)
                     # Reset
-                    id, comments, msgid, msgstr= None, [], [], []
+                    id, comments, source, target= None, [], [], []
                     fuzzy = False
                     state = 4
                 else:
@@ -322,9 +322,9 @@ class POFile(TextFile):
                     pass
                 elif line_type == BLANK:
                     # End of the entry
-                    yield id, comments, msgid, msgstr, fuzzy, line_number
+                    yield id, comments, source, target, fuzzy, line_number
                     state = 0
-                    id, comments, msgid, msgstr = None, [], [], []
+                    id, comments, source, target = None, [], [], []
                     fuzzy = False
                 else:
                     raise POSyntaxError(line_number, line_type)
@@ -357,18 +357,18 @@ class POFile(TextFile):
 
         # Add entries
         for entry in self.next_entry(data):
-            entry_id, comments, msgid, msgstr, fuzzy, line_number = entry
+            entry_id, comments, source, target, fuzzy, line_number = entry
             # Check for duplicated messages
             if entry_id in self.messages:
                 raise POError, 'msgid at line %d is duplicated' % line_number
 
             # Get the comments and the msgstr in unicode
             comments = [ unicode(x, self.encoding) for x in comments ]
-            msgid = [ unicode(x, self.encoding) for x in msgid ]
-            msgstr = [ unicode(x, self.encoding) for x in msgstr ]
+            source = [ unicode(x, self.encoding) for x in source ]
+            target = [ unicode(x, self.encoding) for x in target ]
 
             # Add the message
-            self._set_message(msgid, msgstr, comments, {}, fuzzy)
+            self._set_message(source, target, comments, {}, fuzzy)
 
 
     def to_str(self, encoding='UTF-8'):
@@ -382,15 +382,15 @@ class POFile(TextFile):
     #######################################################################
     # API / Private
     #######################################################################
-    def _set_message(self, msgid, msgstr=[u''], comments=[], references={},
+    def _set_message(self, source, target=[u''], comments=[], references={},
                      fuzzy=False):
-        if isinstance(msgid, (str, unicode)):
-            msgid = [msgid]
-        if isinstance(msgstr, (str, unicode)):
-            msgstr = [msgstr]
+        if isinstance(source, (str, unicode)):
+            source = [source]
+        if isinstance(target, (str, unicode)):
+            target = [target]
 
-        id = ''.join(msgid)
-        self.messages[id] = POUnit(comments, msgid, msgstr, references, fuzzy)
+        id = ''.join(source)
+        self.messages[id] = POUnit(comments, source, target, references, fuzzy)
 
 
     #######################################################################
@@ -408,27 +408,27 @@ class POFile(TextFile):
         return self.messages.values()
 
 
-    def get_msgstr(self, msgid):
+    def get_msgstr(self, source):
         """Returns the 'msgstr' for the given message id.
         """
-        message = self.messages.get(msgid)
+        message = self.messages.get(source)
         if message:
-            return ''.join(message.msgstr)
+            return ''.join(message.target)
         return None
 
 
-    def gettext(self, msgid):
+    def gettext(self, source):
         """Returns the translation of the given message id.
 
         If the message id is not present in the message catalog, or if it
         is marked as "fuzzy", then the message id is returned.
         """
-        message = self.messages.get(msgid)
+        message = self.messages.get(source)
         if message and not message.fuzzy:
-            msgstr = ''.join(message.msgstr)
-            if msgstr:
-                return msgstr
-        return msgid
+            target = ''.join(message.target)
+            if target:
+                return target
+        return source
 
 
     def set_messages(self, messages):
@@ -437,9 +437,9 @@ class POFile(TextFile):
 
 
     def set_message(self, message):
-        if message.msgid:
+        if message.source:
             self.set_changed()
-            id = ''.join(message.msgid)
+            id = ''.join(message.source)
             self.messages[id] = message
 
 

@@ -109,7 +109,7 @@ if __name__ == '__main__':
                 print '*'
                 raise
             for value, references in messages:
-                message = Message([], [value], [u''], references)
+                message = POUnit([], [value], [u''], references)
                 if len(message.source[0]) > 1:
                     po.set_message(message)
         print

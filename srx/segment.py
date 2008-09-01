@@ -22,6 +22,74 @@ from srx import SRXFile
 # Constants
 TEXT, START_FORMAT, END_FORMAT = range(3)
 
+
+def _remove_spaces(left, center, right, keep_spaces):
+    # Remove all "spaces"!
+    if not keep_spaces:
+        for i, (type, value, line) in enumerate(center):
+            if type == TEXT:
+                # Begin and End
+                if i > 0 and value and value[0].isspace():
+                    begin = u' '
+                else:
+                    begin = u''
+                if i < len(center) - 1 and value[-1].isspace():
+                    end = u' '
+                else:
+                    end = u''
+
+                # Compute the new "line" argument
+                for c in value:
+                    if not c.isspace():
+                        break
+                    if c == '\n':
+                        line += 1
+
+                # Clean
+                value = u' '.join(value.split())
+
+                # And store the new value
+                center[i] = (type, begin + value + end, line)
+    # Move only "spaces" surrounding the center to left and right
+    elif center:
+        # Begin
+        type, value, line = center[0]
+        if type == TEXT:
+            new_start = 0
+            for c in value:
+                if c.isspace():
+                    # Move the character
+                    left.append_text(c, line)
+                    new_start += 1
+                    if c == '\n':
+                        line += 1
+                else:
+                    break
+            center[0] = type, value[new_start:], line
+        # End
+        type, value, line = center[-1]
+        if type == TEXT:
+            new_end = len(value)
+            text = u''
+            for c in reversed(value):
+                if c.isspace():
+                    # Move the character
+                    text = c + text
+                    new_end -= 1
+                else:
+                    break
+            # Append to right
+            if text:
+                value = value[:new_end]
+                if right and right[0][0] == TEXT:
+                    right[0] = (TEXT, text+right[0][1], right[0][2] -
+                                text.count('\n'))
+                else:
+                    right.insert(0, (TEXT, text, line + value.count('\n')))
+                center[-1] = type, value, line
+    return left, center, right
+
+
 def _clean_message(message, keep_spaces):
     # The results
     left = Message()
@@ -44,33 +112,7 @@ def _clean_message(message, keep_spaces):
             break
 
     # Remove eventually the spaces
-    if not keep_spaces:
-        for i, (type, value, line) in enumerate(center):
-            if type == TEXT:
-                # Begin
-                if i > 0 and value and value[0].isspace():
-                    begin = u' '
-                else:
-                    begin = u''
-
-                # End
-                if i < len(center) - 1 and value[-1].isspace():
-                    end = u' '
-                else:
-                    end = u''
-
-                # Compute the new "line" argument
-                for c in value:
-                    if not c.isspace():
-                        break
-                    if c == '\n':
-                        line += 1
-
-                # Clean
-                value = u' '.join(value.split())
-
-                # Store the new value
-                center[i] = (type, begin + value + end, line)
+    left, center, right = _remove_spaces(left, center, right, keep_spaces)
 
     return left, center, right
 
@@ -85,7 +127,7 @@ def _split_message(message, srx_handler=None):
 
     # Get the rules
     if srx_handler is None:
-        srx_handler = SRXFile(get_abspath('srx/srx_example.srx', 'itools'))
+        srx_handler = SRXFile(get_abspath('srx/default.srx', 'itools'))
     # XXX we must handle the language here!
     rules = srx_handler.get_compiled_rules('en')
 
@@ -146,7 +188,7 @@ def _split_message(message, srx_handler=None):
 ###########################################################################
 # API
 ###########################################################################
-def get_segments(message, keep_spaces, srx_handler=None):
+def get_segments(message, keep_spaces=False, srx_handler=None):
     for sub_message in _split_message(message, srx_handler):
         left, center, right = _clean_message(sub_message, keep_spaces)
         if center != sub_message:
@@ -157,7 +199,7 @@ def get_segments(message, keep_spaces, srx_handler=None):
             yield center.to_str(), center.get_line()
 
 
-def translate_message(message, catalog, keep_spaces, srx_handler=None):
+def translate_message(message, catalog, keep_spaces=False, srx_handler=None):
     translated_message = []
     for sub_message in _split_message(message, srx_handler):
         left, center, right = _clean_message(sub_message, keep_spaces)
@@ -180,7 +222,7 @@ class Message(list):
     object instead of just a string to allow us to deal with formatted text.
     """
 
-    def append_text(self, text, line):
+    def append_text(self, text, line=1):
         """The parameter "text" must be an unicode string.
         """
         if self and (self[-1][0] == TEXT):
@@ -190,11 +232,11 @@ class Message(list):
             list.append(self, (TEXT, text, line))
 
 
-    def append_start_format(self, value, line):
+    def append_start_format(self, value, line=1):
         self.append((START_FORMAT, value, line))
 
 
-    def append_end_format(self, value, line):
+    def append_end_format(self, value, line=1):
         self.append((END_FORMAT, value, line))
 
 

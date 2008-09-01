@@ -158,6 +158,12 @@ class Resource(object):
         raise NotImplementedError
 
 
+    def __eq__(self, resource):
+        if not isinstance(resource, Resource):
+            raise TypeError, "cannot compare Resource and %s" % type(resource)
+        return self.get_canonical_path() == resource.get_canonical_path()
+
+
     #######################################################################
     # API / Views
     #######################################################################

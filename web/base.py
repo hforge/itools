@@ -163,6 +163,10 @@ class Node(object):
         return self.get_canonical_path() == node.get_canonical_path()
 
 
+    def __ne__(self, node):
+        return not self.__eq__(node)
+
+
     #######################################################################
     # API / HTTP
     #######################################################################

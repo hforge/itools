@@ -157,6 +157,12 @@ class Node(object):
         raise NotImplementedError
 
 
+    def __eq__(self, node):
+        if not isinstance(node, Node):
+            raise TypeError, "cannot compare Node and %s" % type(node)
+        return self.get_canonical_path() == node.get_canonical_path()
+
+
     #######################################################################
     # API / HTTP
     #######################################################################

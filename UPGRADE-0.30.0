@@ -114,7 +114,33 @@ class:
   class MyClass(Resource):
       view = MyClassView()
 
-(2) The naming has changed.  What before was sometimes called 'node' and
+(2) When a view is not explicitly defined, now the server will use the
+'default view'.  Example:
+
+  # Before
+  class MyClass(Node):
+      def GET(self, context):
+          return context.uri.resolve2(';view')
+
+  # Now
+  class MyClass(Resource):
+      default_view_name = 'view'
+
+This example also illustrates that now we do not recommend to redirect to a
+default view, but to return straight away the response to the client:
+
+  # Before
+  GET / HTTP/1.1
+  HTTP/1.1 302 Found
+
+  GET /;view HTTP/1.1
+  HTTP/1.1 200 OK
+
+  # Now
+  GET / HTTP/1.1
+  HTTP/1.1 200 OK
+
+(3) The naming has changed.  What before was sometimes called 'node' and
 sometimes 'object', is now named 'resource'.  Some attributes of the
 context object have changed their name too.  The table below summarizes
 these changes.
@@ -135,7 +161,7 @@ these changes.
   Node.set_object                Resource.set_resource
   Node.traverse_objects          Resource.traverse_resources
 
-(3) The prototype of the 'Context.get_form_value' method has changed, the
+(4) The prototype of the 'Context.get_form_value' method has changed, the
 order of its optional parameters have been swapped:
 
   # Before
@@ -153,7 +179,7 @@ now available through the views interface.  These methods are:
 
 The 'context.commit' attribute has been dropped.
 
-(4) The access control API has changed too, now the 'is_access_allowed' method
+(5) The access control API has changed too, now the 'is_access_allowed' method
 expects a 'View' instead of a method name.
 
   # Before

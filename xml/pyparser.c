@@ -89,7 +89,7 @@ PyDocType_init (PyDocType * self, PyObject * args, PyObject * kwds)
     doctype_free (self->doctype);
 
   /* Arguments */
-  if (!PyArg_ParseTupleAndKeywords (args, kwds, "|sss", kwlist, &PubidLiteral,
+  if (!PyArg_ParseTupleAndKeywords (args, kwds, "|zzz", kwlist, &PubidLiteral,
                                     &SystemLiteral, &intSubset))
     return -1;
 

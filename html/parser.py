@@ -20,9 +20,50 @@ from HTMLParser import HTMLParser as BaseParser, HTMLParseError
 from warnings import warn
 
 # Import from itools
-from itools.xml import DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, COMMENT, TEXT
-from itools.xml import XMLError
+from itools.xml import DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, COMMENT
+from itools.xml import TEXT, XMLError
 from xhtml import xhtml_uri
+
+
+###########################################################################
+# A DocType ersatz
+###########################################################################
+# XXX The problem is that some DTD for old HTML are written with
+#     a SGML format that does not support our DocType parser.
+#     But we must only have (for these HTML pages) a "to_str" function
+#     So, ...
+class DocType_ersatz(object):
+
+    def __init__(self, PubidLiteral=None, SystemLiteral=None, intSubset=None):
+        self.PubidLiteral = PubidLiteral
+        self.SystemLiteral = SystemLiteral
+        self.intSubset = intSubset
+
+
+    def to_str(self):
+        """Return a 'ready to insert' representation of the doctype
+        """
+        PubidLiteral = self.PubidLiteral
+        SystemLiteral = self.SystemLiteral
+        intSubset = self.intSubset
+
+        result = ''
+
+        # PUBLIC or SYSTEM ?
+        if PubidLiteral or SystemLiteral:
+            if PubidLiteral:
+                result += 'PUBLIC "%s"' % PubidLiteral
+                if SystemLiteral:
+                    result += ' "%s"' % SystemLiteral
+            else:
+                result += 'SYSTEM "%s"' % SystemLiteral
+            if intSubset:
+                result += ' '
+        # intSubset
+        if intSubset:
+            result += '[%s]' % intSubset
+
+        return result
 
 
 # TODO Test the parser with different encodings. The behavior must be
@@ -34,7 +75,8 @@ from xhtml import xhtml_uri
 ###########################################################################
 dtd_TEXT = 0  # PCDATA or CDATA
 dtd_empty = frozenset()
-dtd_fontstyle = frozenset(['tt', 'i', 'b', 'u', 's', 'strike', 'big', 'small'])
+dtd_fontstyle = frozenset(['tt', 'i', 'b', 'u', 's', 'strike', 'big',
+                           'small'])
 dtd_phrase = frozenset(['em', 'strong', 'dfn', 'code', 'samp', 'kbd', 'var',
     'cite', 'abbr', 'acronym'])
 dtd_special = frozenset(['a', 'img', 'applet', 'object', 'font', 'basefont',
@@ -227,10 +269,10 @@ class Parser(BaseParser, object):
                 system_id, value = read_id(value)
         else:
             raise XMLError
-        # Internal subset (FIXME TODO)
-        has_internal_subset = None
+        # XXX Internal subset TODO!!
 
-        value = (name, system_id, public_id, has_internal_subset)
+        value = name, DocType_ersatz(PubidLiteral=public_id,
+                                     SystemLiteral=system_id)
         self.events.append((DOCUMENT_TYPE, value, self.getpos()[0]))
 
 

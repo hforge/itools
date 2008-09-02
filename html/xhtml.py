@@ -25,8 +25,8 @@ from itools.datatypes import XMLContent, XMLAttribute
 from itools.handlers import register_handler_class
 from itools.xml import XMLParser, XML_DECL, DOCUMENT_TYPE, START_ELEMENT
 from itools.xml import END_ELEMENT, TEXT, COMMENT
-from itools.xml import (stream_to_str, get_qname, get_attribute_qname,
-    get_end_tag)
+from itools.xml import stream_to_str, get_qname, get_attribute_qname
+from itools.xml import get_end_tag, get_doctype
 from itools.xml import XMLFile, get_element
 
 
@@ -60,8 +60,8 @@ def stream_to_html(stream, encoding='UTF-8'):
         elif type == XML_DECL:
             pass
         elif type == DOCUMENT_TYPE:
-            # FIXME
-            pass
+            name, doctype = value
+            data.append(get_doctype(name, doctype))
     return ''.join(data)
 
 
@@ -242,7 +242,8 @@ class XHTMLFile(XMLFile):
             '  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">\n'
             '<html xmlns="http://www.w3.org/1999/xhtml">\n'
             '  <head>\n'
-            '    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />\n'
+            '    <meta http-equiv="Content-Type" content="text/html; '
+            'charset=UTF-8" />\n'
             '    <title>%(title)s</title>\n'
             '  </head>\n'
             '  <body></body>\n'

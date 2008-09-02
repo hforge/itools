@@ -18,9 +18,14 @@
 # Import from the Standard Library
 from distutils import core
 from distutils.command.build_py import build_py
+from distutils.command.register import register
+from distutils.command.upload import upload
+from getpass import getpass
 from os import getcwd
 from os.path import exists, join as join_path, sep, splitdrive
+from re import search
 from sys import _getframe, platform
+from urllib2 import HTTPPasswordMgr
 import sys
 
 # Import from itools
@@ -83,16 +88,19 @@ def setup(ext_modules=[]):
         from itools.datatypes import MultiLinesTokens, URI, Email, String
         from itools.datatypes import Tokens
         from itools.handlers import ConfigFile
+        from itools.uri import get_reference
     except ImportError:
         # Are we trying to install itools?
         # FIXME Should use relative imports, by they don't work well yet (see
         # http://bugs.python.org/issue1510172).  This issue is solved with
         # Python 2.6, so we will remove this code once we raise the required
         # Python version to 2.6.
+        # And move next few def/class before setup()
         start_local_import()
         from datatypes import MultiLinesTokens
         from datatypes import String, URI, Email, Tokens
         from handlers import ConfigFile
+        from uri import get_reference
         end_local_import()
 
     class SetupConf(ConfigFile):
@@ -109,7 +117,91 @@ def setup(ext_modules=[]):
                   'provides': Tokens(default=()),
                   'scripts': Tokens(default=()),
                   'source_language': String,
-                  'target_language': String}
+                  'target_language': String,
+                  'repository': URI,
+                  'username': String}
+
+
+    def get_setupconf_repo():
+        repository = ''
+        username = ''
+        password = ''
+
+        config = SetupConf('setup.conf')
+
+        if not config.has_value('repository'):
+            print "Please fill the 'repository' option in setup.conf"
+            sys.exit(0)
+        repository = str(config.get_value('repository'))
+
+        if config.has_value('username'):
+            username = config.get_value('username')
+        while not username:
+            username = raw_input('Username: ')
+
+        while not password:
+            password = getpass('Password (for user %s): ' % username)
+
+        return (repository, username, password)
+
+
+    class iupload(upload):
+
+        def finalize_options(self):
+            # From disutils
+            if self.identity and not self.sign:
+                raise DistutilsOptionError(
+                    "Must use --sign for --identity to have meaning"
+                )
+
+            if 'repository_options' in globals().keys():
+                self.repository = repository_options['repository']
+                self.username = repository_options['username']
+                self.password = repository_options['password']
+                return
+
+            self.repository, self.username, self.password = get_setupconf_repo()
+
+
+    class iregister(register):
+
+        def send_metadata(self):
+            # set up the authentication
+            auth = HTTPPasswordMgr()
+            host = str(get_reference(self.repository).authority)
+            auth.add_password('pypi', host, self.username, self.password)
+
+            # send the info to the server and report the result
+            data = self.build_post_data('submit')
+            code, result = self.post_to_server(data, auth)
+
+            if code == 200:
+                print ('The package has been successfully register to'
+                       ' repository')
+            else:
+                print 'There has been an error while registring the package.'
+                print 'Server responded (%s): %s' % (code, result)
+
+
+        def initialize_options(self):
+            self.repository = None
+            self.show_response = 0
+            self.list_classifiers = 0
+
+            self.repository = ''
+            self.username = ''
+            self.password = ''
+
+
+        def finalize_options(self):
+            global repository_options
+            repository_options = {}
+
+            self.repository, self.username, self.password = get_setupconf_repo()
+
+            repository_options = {'username': self.username,
+                                  'password': self.password,
+                                  'repository': self.repository}
 
 
     config = SetupConf('setup.conf')
@@ -181,6 +273,8 @@ def setup(ext_modules=[]):
                provides = config.get_value('provides'),
                # Scripts
                scripts = scripts,
+               cmdclass = {'iupload': iupload,
+                           'iregister': iregister},
                # C extensions
                ext_modules=ext_modules)
 

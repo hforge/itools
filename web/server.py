@@ -702,6 +702,9 @@ class GET(RequestMethod):
             response.set_header('content-length', 0)
             response.set_body(None)
             return response
+        else:
+            # Everything goes fine so far
+            context.status = 200
 
         # (2) Render
         resource = context.resource
@@ -715,8 +718,6 @@ class GET(RequestMethod):
             # Ok: set status
             if isinstance(context.entity, Reference):
                 context.status = 302
-            else:
-                context.status = 200
 
         # (3) Reset the transaction in any case
         server.abort_transaction(context)
@@ -811,6 +812,9 @@ class POST(RequestMethod):
             context.status = status
             context.view_name = status2name[status]
             context.view = root.get_view(context.view_name)
+        else:
+            # Everything goes fine so far
+            context.status = 200
 
         # (2) Render
         resource = context.resource
@@ -824,8 +828,6 @@ class POST(RequestMethod):
             # Ok: set status
             if isinstance(context.entity, Reference):
                 context.status = 302
-            else:
-                context.status = 200
 
         # (3) Commit the transaction commit
         if context.status < 400:

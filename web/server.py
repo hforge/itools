@@ -763,7 +763,7 @@ class HEAD(GET):
 
     @classmethod
     def set_body(cls, server, context):
-        GET.set_body(cls, server, context)
+        GET.set_body(server, context)
         # Drop the body from the response
         context.response.set_body(None)
 

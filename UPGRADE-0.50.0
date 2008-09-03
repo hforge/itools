@@ -31,6 +31,7 @@ summarizes this changes.
   datatypes.XML                  datatypes.XMLContent
   gettext.Message                gettext.POUnit
   i18n.Message                   srx.Message
+  i18n.Multilingual              (REMOVED)
   web.Node                       web.Resource
   web.Root                       web.RootResource
   xliff.Translation              xliff.XLFUnit

@@ -18,7 +18,7 @@
 # Import from itools
 from accept import AcceptLanguageType, get_accept, select_language
 from accept import init_language_selector
-from base import has_language, get_languages, get_language_name, Multilingual
+from base import has_language, get_languages, get_language_name
 from fuzzy import get_distance, get_similarity, is_similar, get_most_similar
 from locale_ import format_date, format_time, format_datetime
 from oracle import guess_language, is_asian_character, is_punctuation
@@ -48,7 +48,5 @@ __all__ = [
     'has_language',
     'get_languages',
     'get_language_name',
-    # Abstract classes
-    'Multilingual']
-
+    ]
 

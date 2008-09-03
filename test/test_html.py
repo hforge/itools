@@ -23,7 +23,7 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.gettext import POFile, POUnit
+from itools.gettext import POFile
 from itools.xml import XMLParser, XMLError, START_ELEMENT, END_ELEMENT, TEXT
 from itools.xml import stream_to_str
 from itools.html import HTMLFile, XHTMLFile, HTMLParser, sanitize_str
@@ -95,20 +95,18 @@ class i18nTestCase(TestCase):
 
     def test_case1(self):
         """Test element content."""
-        doc = HTMLFile(string=
-            '<p>hello world</p>')
+        doc = HTMLFile(string='<p>hello world</p>')
 
-        messages = list(doc.get_units())
-        self.assertEqual(messages, [POUnit([], [u'hello world'], [u''])])
+        messages = [unit[0] for unit in doc.get_units()]
+        self.assertEqual(messages, [u'hello world'])
 
 
     def test_case2(self):
         """Test simple attribute."""
-        doc = HTMLFile(string=
-            '<img alt="The beach" src="beach.jpg">')
+        doc = HTMLFile(string='<img alt="The beach" src="beach.jpg">')
 
-        messages = list(doc.get_units())
-        self.assertEqual(messages, [POUnit([], [u'The beach'], [u''])])
+        messages = [unit[0] for unit in doc.get_units()]
+        self.assertEqual(messages, [u'The beach'])
 
 
     def test_case3(self):
@@ -119,14 +117,13 @@ class i18nTestCase(TestCase):
             '<input type="submit" value="Change">\n'
             '</html>')
 
-        messages = list(doc.get_units())
-        self.assertEqual(messages, [POUnit([], [u'Change'], [u''])])
+        messages = [unit[0] for unit in doc.get_units()]
+        self.assertEqual(messages, [u'Change'])
 
 
     def test_case4(self):
         """Test translation of an element content"""
-        doc = HTMLFile(string=
-            '<p>hello world</p>')
+        doc = HTMLFile(string='<p>hello world</p>')
 
         p = POFile(string=
             'msgid "hello world"\n'
@@ -137,8 +134,7 @@ class i18nTestCase(TestCase):
 
     def test_case5(self):
         """Test translation of an element content"""
-        doc = HTMLFile(string=
-            '<img alt="The beach" src="beach.jpg">')
+        doc = HTMLFile(string='<img alt="The beach" src="beach.jpg">')
 
         po = POFile(string=
             'msgid "The beach"\n'
@@ -147,15 +143,14 @@ class i18nTestCase(TestCase):
         string = doc.translate(po)
         output = HTMLFile(string=string)
 
-        expected = HTMLFile(string=
-            '<img alt="La playa" src="beach.jpg">')
+        expected = HTMLFile(string='<img alt="La playa" src="beach.jpg">')
         self.assertEqual(output, expected)
 
 
     def test_case6(self):
         """Test translation of an element content"""
         doc = HTMLFile(string=
-            '<input type="text" name="id">\n'
+            '<input type="text" name="id">'
             '<input type="submit" value="Change">')
 
         p = POFile(string=
@@ -165,16 +160,15 @@ class i18nTestCase(TestCase):
         output = HTMLFile(string=doc.translate(p))
 
         expected = HTMLFile(string=
-            '<input type="text" name="id">\n'
+            '<input type="text" name="id">'
             '<input type="submit" value="Cambiar">')
-        self.assertEqual(output, expected)
+        self.assertEqual(output.to_str(), expected.to_str())
 
 
     def test_translation1(self):
         """Test translation with surrounding tags"""
 
-        doc = HTMLFile(string =
-            '<em>hello world</em>')
+        doc = HTMLFile(string='<em>hello world</em>')
 
         p = POFile(string=
             'msgid "hello world"\n'
@@ -197,7 +191,8 @@ class i18nTestCase(TestCase):
             'msgid "It\'s me."\n'
             'msgstr "Es me."')
 
-        self.assertEqual(doc.translate(p), 'Dice: <em>hola mundo. Es me.</em>')
+        self.assertEqual(doc.translate(p),
+                         'Dice: <em>hola mundo. Es me.</em>')
 
 
     def test_translation3(self):
@@ -226,7 +221,7 @@ class i18nTestCase(TestCase):
 
         doc = HTMLFile(string =
             'Say: <em>   hello world. It\'s me.</em>'
-            '      Do you remember me ?  ')
+            '      Do you remember me ? ')
 
         p = POFile(string=
             'msgid "Say:"\n'
@@ -245,12 +240,12 @@ class i18nTestCase(TestCase):
 
     def test_pre(self):
         """Test raw content."""
-        doc = HTMLFile(string = '<pre>   This is raw text, and every '
-                                'characters should be kept </pre>')
+        doc = HTMLFile(string = '<pre>   This is raw text, "     \n"'
+                                ' </pre>')
 
-        messages = list(doc.get_units())
-        expected = u'   This is raw text, and every characters should be kept '
-        self.assertEqual(messages, [POUnit([], [expected], [u''])])
+        messages = [unit[0] for unit in doc.get_units()]
+        expected = u'This is raw text, "     \n"'
+        self.assertEqual(messages, [expected])
 
 
 ###########################################################################
@@ -289,12 +284,12 @@ class SegmentationTestCase(TestCase):
             'acclaimed, <em>open source</em>, <b>Mozilla 1.6</b>.\n'
             '</p>')
 
-        messages = list(doc.get_units())
+        messages = [unit[0] for unit in doc.get_units()]
         msg1 = (u'The Mozilla project maintains <em>choice</em> and'
                 u' <em>innovation</em> on the Internet.')
         msg2 = (u'Developing the acclaimed, <em>open source</em>,'
                 u' <b>Mozilla 1.6</b>.')
-        expected = [POUnit([], [msg1], [u'']), POUnit([], [msg2], [u''])]
+        expected = [msg1, msg2]
         self.assertEqual(messages, expected)
 
 
@@ -315,13 +310,9 @@ class SegmentationTestCase(TestCase):
             '  </tr>\n'
             '</table>')
 
-        messages = list(doc.get_units())
-        expected = [POUnit([], [u'Title'], [u'']),
-                    POUnit([], [u'Size'], [u'']),
-                    POUnit([], [u'The good, the bad and the ugly'], [u'']),
-                    POUnit([], [u'looong'], [u'']),
-                    POUnit([], [u'Love story'], [u'']),
-                    POUnit([], [u'even longer'], [u''])]
+        messages = [unit[0] for unit in doc.get_units()]
+        expected = [u'Title', u'Size', u'The good, the bad and the ugly',
+                    u'looong', u'Love story', u'even longer']
         self.assertEqual(messages, expected)
 
 
@@ -336,11 +327,9 @@ class SegmentationTestCase(TestCase):
             '  bye <em>J. David Ibanez Palomar</em>\n'
             '</body>')
 
-        messages = list(doc.get_units())
-        expected = [POUnit([], [u'this <em>word</em> is nice'], [u'']),
-                    POUnit([], [u'hello world'], [u'']),
-                    POUnit([], [u'<br/> bye <em>J. David Ibanez '
-                                 u'Palomar</em>'], [u''])]
+        messages = [unit[0] for unit in doc.get_units()]
+        expected = [u'this <em>word</em> is nice', u'hello world',
+                    u'<br/> bye <em>J. David Ibanez Palomar</em>']
         self.assertEqual(messages, expected)
 
 
@@ -353,8 +342,8 @@ class SegmentationTestCase(TestCase):
             '  <input type="submit" value="Change" />\n'
             '</form>')
 
-        messages = list(doc.get_units())
-        self.assertEqual(messages, [POUnit([], [u'Change'], [u''])])
+        messages = [unit[0] for unit in doc.get_units()]
+        self.assertEqual(messages, [u'Change'])
 
 
     def test_inline(self):
@@ -363,11 +352,8 @@ class SegmentationTestCase(TestCase):
             'Hi <b>everybody, </b><i>how are you ? </i>'
             '</p>')
 
-        messages = doc.get_units()
-        messages = list(messages)
-
-        expected = [POUnit([], [u'Hi <b>everybody, </b><i>how are you ? '
-                                 u'</i>'], [u''])]
+        messages = [unit[0] for unit in doc.get_units()]
+        expected = [u'Hi <b>everybody, </b><i>how are you ? </i>']
         self.assertEqual(messages, expected)
 
 
@@ -387,20 +373,20 @@ class TranslationTestCase(TestCase):
 
     def test_case1(self):
         """Test element content."""
-        data = self.template % '<p>hello litle world</p>'
+        data = self.template % '<p>hello little world</p>'
         doc = XHTMLFile(string=data)
-        messages = list(doc.get_units())
 
-        self.assertEqual(messages, [POUnit([], [u'hello litle world'], [u''])])
+        messages = [unit[0] for unit in doc.get_units()]
+        self.assertEqual(messages, [u'hello little world'])
 
 
     def test_case2(self):
         """Test simple attribute."""
         data = self.template % '<img alt="The beach" src="beach.jpg" />'
         doc = XHTMLFile(string=data)
-        messages = list(doc.get_units())
 
-        self.assertEqual(messages, [POUnit([], [u'The beach'], [u''])])
+        messages = [unit[0] for unit in doc.get_units()]
+        self.assertEqual(messages, [u'The beach'])
 
 
     def test_case3(self):
@@ -408,9 +394,9 @@ class TranslationTestCase(TestCase):
         data = self.template % ('<input type="text" name="id" />\n'
                                 '<input type="submit" value="Change" />')
         doc = XHTMLFile(string=data)
-        messages = list(doc.get_units())
 
-        self.assertEqual(messages, [POUnit([], [u'Change'], [u''])])
+        messages = [unit[0] for unit in doc.get_units()]
+        self.assertEqual(messages, [u'Change'])
 
 
     def test_case4(self):
@@ -426,8 +412,8 @@ class TranslationTestCase(TestCase):
         string = source.translate(p)
         xhtml = XHTMLFile(string=string)
 
-        messages = list(xhtml.get_units())
-        self.assertEqual(messages, [POUnit([], [u'hola mundo'], [u''])])
+        messages = [unit[0] for unit in xhtml.get_units()]
+        self.assertEqual(messages, [u'hola mundo'])
 
 
     def test_case5(self):
@@ -441,8 +427,8 @@ class TranslationTestCase(TestCase):
         html = xhtml.translate(po)
         xhtml = XHTMLFile(string=html)
 
-        messages = list(xhtml.get_units())
-        self.assertEqual(messages, [POUnit([], [u'La playa'], [u''])])
+        messages = [unit[0] for unit in xhtml.get_units()]
+        self.assertEqual(messages, [u'La playa'])
 
 
 class SanitizerTestCase(TestCase):

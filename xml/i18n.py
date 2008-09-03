@@ -19,11 +19,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.datatypes import Unicode, XMLContent, is_datatype
+from itools.datatypes import Unicode, XMLContent, XMLAttribute, is_datatype
 from namespaces import get_element_schema, xmlns_uri, get_attr_datatype
+from namespaces import is_empty
 from parser import XMLParser, XMLError, DOCUMENT_TYPE, XML_DECL
 from parser import START_ELEMENT, END_ELEMENT, TEXT
-from xml import get_start_tag, get_end_tag
+from xml import get_qname, get_attribute_qname, get_end_tag
 
 
 ###########################################################################
@@ -63,7 +64,7 @@ def _get_translatable_blocks(events):
             if skip_level > 0:
                 skip_level += 1
             else:
-                tag_uri, tag_name = value[:2]
+                tag_uri, tag_name, attributes = value
                 schema = get_element_schema(tag_uri, tag_name)
 
                 # Translatable content ?
@@ -73,7 +74,31 @@ def _get_translatable_blocks(events):
                 elif getattr(schema, 'is_inline', False):
                     id += 1
                     id_stack.append(id)
-                    message.append_start_format((get_start_tag(*value), id),
+
+                    # We must search for translatable attributes
+                    serialization = [(u'<%s' % get_qname(tag_uri, tag_name),
+                                      False)]
+
+                    for attr_uri, attr_name in attributes:
+                        value = attributes[(attr_uri, attr_name)]
+                        qname = get_attribute_qname(attr_uri, attr_name)
+                        value = XMLAttribute.encode(value)
+
+                        datatype = get_attr_datatype(tag_uri, tag_name,
+                                      attr_uri, attr_name, attributes)
+                        if is_datatype(datatype, Unicode):
+                            serialization.append((u' %s="' % qname, False))
+                            serialization.append((u'%s' % value, True))
+                            serialization.append((u'"', False))
+                        else:
+                            serialization.append((u' %s="%s"' % (qname,
+                                                  value), False))
+                    # Close the start tag
+                    if is_empty(tag_uri, tag_name):
+                        serialization.append((u'/>', False))
+                    else:
+                        serialization.append((u'>', False))
+                    message.append_start_format((serialization, id),
                                                 line)
                     continue
         elif type == END_ELEMENT:
@@ -85,7 +110,7 @@ def _get_translatable_blocks(events):
 
                 # Is inline ?
                 if getattr(schema, 'is_inline', False):
-                    message.append_end_format((get_end_tag(*value),
+                    message.append_end_format(([(get_end_tag(*value), False)],
                                                id_stack.pop()), line)
                     continue
         elif type == TEXT:

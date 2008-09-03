@@ -152,13 +152,13 @@ class SentenceTestCase(unittest.TestCase):
 
 
     def test_HTML(self):
-        data = '<a ref="; t. ffff">hello </a>      GOGO'
+        data = '<a href="; t. ffff">hello </a>      GOGO'
 
         segments = []
         for seg, offset in get_units(HTMLParser(data)):
             segments.append(seg)
 
-        result = [u'<a ref="; t. ffff">hello </a> GOGO']
+        result = [u'<a href="; t. ffff">hello </a> GOGO']
         self.assertEqual(list(segments), result)
 
 

@@ -24,7 +24,46 @@ TEXT, START_FORMAT, END_FORMAT = range(3)
 
 
 def _remove_spaces(left, center, right, keep_spaces):
-    # Remove all "spaces"!
+    # Move only "spaces" surrounding the center to left and right
+    if center:
+        # Begin
+        type, value, line = center[0]
+        if type == TEXT:
+            new_start = 0
+            for c in value:
+                if c.isspace():
+                    # Move the character
+                    left.append_text(c, line)
+                    new_start += 1
+                    if c == '\n':
+                        line += 1
+                else:
+                    break
+            center[0] = type, value[new_start:], line
+
+        # End
+        type, value, line = center[-1]
+        if type == TEXT:
+            new_end = len(value)
+            text = u''
+            for c in reversed(value):
+                if c.isspace():
+                    # Move the character
+                    text = c + text
+                    new_end -= 1
+                else:
+                    break
+            # Append to right
+            if text:
+                value = value[:new_end]
+                if right and right[0][0] == TEXT:
+                    right[0] = (TEXT, text+right[0][1], right[0][2] -
+                                text.count('\n'))
+                else:
+                    right.insert(0, (TEXT, text, line + value.count('\n')))
+                center[-1] = type, value, line
+
+    # Remove eventually all "double spaces" in the text
     if not keep_spaces:
         for i, (type, value, line) in enumerate(center):
             if type == TEXT:
@@ -50,43 +89,7 @@ def _remove_spaces(left, center, right, keep_spaces):
 
                 # And store the new value
                 center[i] = (type, begin + value + end, line)
-    # Move only "spaces" surrounding the center to left and right
-    elif center:
-        # Begin
-        type, value, line = center[0]
-        if type == TEXT:
-            new_start = 0
-            for c in value:
-                if c.isspace():
-                    # Move the character
-                    left.append_text(c, line)
-                    new_start += 1
-                    if c == '\n':
-                        line += 1
-                else:
-                    break
-            center[0] = type, value[new_start:], line
-        # End
-        type, value, line = center[-1]
-        if type == TEXT:
-            new_end = len(value)
-            text = u''
-            for c in reversed(value):
-                if c.isspace():
-                    # Move the character
-                    text = c + text
-                    new_end -= 1
-                else:
-                    break
-            # Append to right
-            if text:
-                value = value[:new_end]
-                if right and right[0][0] == TEXT:
-                    right[0] = (TEXT, text+right[0][1], right[0][2] -
-                                text.count('\n'))
-                else:
-                    right.insert(0, (TEXT, text, line + value.count('\n')))
-                center[-1] = type, value, line
+
     return left, center, right
 
 
@@ -111,7 +114,7 @@ def _clean_message(message, keep_spaces):
         else:
             break
 
-    # Remove eventually the spaces
+    # Remove the spaces
     left, center, right = _remove_spaces(left, center, right, keep_spaces)
 
     return left, center, right
@@ -185,34 +188,72 @@ def _split_message(message, srx_handler=None):
         yield current_message
 
 
+def _translate_format(message, catalog):
+    for type, value, line in message:
+        if type != TEXT:
+            for i, (text, translatable) in enumerate(value[0]):
+                if translatable:
+                    text = catalog.gettext(text)
+                    value[0][i] = (text, False)
+
+
 ###########################################################################
 # API
 ###########################################################################
 def get_segments(message, keep_spaces=False, srx_handler=None):
     for sub_message in _split_message(message, srx_handler):
         left, center, right = _clean_message(sub_message, keep_spaces)
+
+        todo = left+right
+
         if center != sub_message:
             for value, line in get_segments(center, keep_spaces,
                                             srx_handler):
                 yield value, line
-        elif center.to_str():
-            yield center.to_str(), center.get_line()
+        else:
+            # Is center good ?
+            for type, value, line in center:
+                if type == TEXT and value.strip():
+                    yield center.to_str(), center.get_line()
+                    break
+            else:
+                # Not good!
+                todo.extend(center)
+
+        # And finally, the units in start / end formats
+        for type, value, line in todo:
+            if type != TEXT:
+                for (text, translatable) in value[0]:
+                    if translatable:
+                        yield text, line
 
 
 def translate_message(message, catalog, keep_spaces=False, srx_handler=None):
     translated_message = []
     for sub_message in _split_message(message, srx_handler):
         left, center, right = _clean_message(sub_message, keep_spaces)
+
+        _translate_format(left, catalog)
         left = left.to_str()
+
+        _translate_format(right, catalog)
         right = right.to_str()
 
         if center != sub_message:
             center = translate_message(center, catalog, keep_spaces,
                                        srx_handler)
         else:
-            center = catalog.gettext(center.to_str())
-        translated_message.extend([left, center, right])
+            # Is center good ?
+            for type, value, line in center:
+                if type == TEXT and value.strip():
+                    center = catalog.gettext(center.to_str())
+                    break
+            else:
+                # Not Good
+                _translate_format(center, catalog)
+                center = center.to_str()
 
+        translated_message.extend([left, center, right])
     return u''.join(translated_message)
 
 
@@ -233,10 +274,16 @@ class Message(list):
 
 
     def append_start_format(self, value, line=1):
+        """value=([(u'...', True), ...], id)
+            True -> is translatable
+            False -> not translatable
+        """
         self.append((START_FORMAT, value, line))
 
 
     def append_end_format(self, value, line=1):
+        """value=idem as start_format
+        """
         self.append((END_FORMAT, value, line))
 
 
@@ -252,6 +299,7 @@ class Message(list):
             if type == TEXT:
                 result.append(value)
             else:
-                result.append(value[0])
+                for text, translatable in value[0]:
+                    result.append(text)
         return u''.join(result)
 

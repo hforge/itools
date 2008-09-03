@@ -27,8 +27,8 @@ import sys
 # Import from itools
 import itools
 from itools.gettext import POFile, POUnit
-from itools.handlers import Python, ConfigFile, get_handler
-from itools.html import XHTMLFile
+from itools.handlers import ConfigFile, get_handler
+import itools.html
 import itools.stl
 import itools.srx
 from itools import vfs
@@ -58,7 +58,7 @@ if __name__ == '__main__':
 
     # Read configuration for languages
     config = ConfigFile('setup.conf')
-    source_language = config.get_value('source_language', default='en')
+    src_language = config.get_value('source_language', default='en')
 
     # The SRX file
     if options.srx is not None:
@@ -74,45 +74,34 @@ if __name__ == '__main__':
         if line.split(sep)[0] not in ('skeleton', 'test'):
             lines.append(line)
 
-    # Process Python files
-    write('* Extract text strings from Python files')
-    for path in lines:
-        if path.endswith('.py') and path != 'utils.py':
-            write('.')
-            handler = Python(path)
-            units = handler.get_units(srx_handler=srx_handler)
-            for value, references in units:
-                message = POUnit([], [value], [u''], references)
-                if len(message.source[0]) > 2:
-                    po.set_message(message)
-    print
+    # Process Python and HTML files
+    write('* Extract text strings')
+    extensions = ['.py', '.xhtml.%s' % src_language, '.xml.%s' % src_language]
 
-    # Process XHTML files
-    paths = []
     for path in lines:
-        name = basename(path)
-        name, extension, language = FileName.decode(name)
-        if extension in ('xhtml', 'xml') and language == source_language:
-            paths.append(path)
-    if paths:
-        write('* Extract text strings from XHTML files')
-        for path in paths:
-            write('.')
-            handler = XHTMLFile(path)
-            try:
-                messages = handler.get_units(srx_handler=srx_handler)
-                messages = list(messages)
-            except:
-                print
-                print '*'
-                print '* Error:', path
-                print '*'
-                raise
-            for value, references in messages:
-                message = POUnit([], [value], [u''], references)
-                if len(message.source[0]) > 1:
-                    po.set_message(message)
-        print
+        # Filter files
+        for extension in extensions:
+            if path.endswith(extension):
+                break
+        else:
+            continue
+        # Get the units
+        write('.')
+        handler = get_handler(path)
+        try:
+            units = handler.get_units(srx_handler=srx_handler)
+            units = list(units)
+        except:
+            print
+            print '*'
+            print '* Error:', path
+            print '*'
+            raise
+
+        for value, references in units:
+            message = POUnit([], [value], [u''], references)
+            if len(message.source[0]) > 1:
+                po.set_message(message)
 
     # Update locale.pot
     if not vfs.exists('locale/locale.pot'):
@@ -130,7 +119,7 @@ if __name__ == '__main__':
     # Update PO files
     folder = vfs.open('locale')
     filenames = set([ x for x in folder.get_names() if x[-3:] == '.po' ])
-    filenames.add('%s.po' % source_language)
+    filenames.add('%s.po' % src_language)
     for language in config.get_value('target_languages', default='').split():
         filenames.add('%s.po' % language)
     filenames = list(filenames)

@@ -31,6 +31,7 @@ from itools.handlers import ConfigFile, get_handler
 import itools.html
 import itools.stl
 import itools.srx
+from itools.uri import Path
 from itools import vfs
 from itools.vfs import WRITE, FileName
 
@@ -98,8 +99,9 @@ if __name__ == '__main__':
             print '*'
             raise
 
-        for value, references in units:
-            message = POUnit([], [value], [u''], references)
+        relative_path = Path('..').resolve2(path)
+        for value, line in units:
+            message = POUnit([], [value], [u''], {relative_path: [line]})
             if len(message.source[0]) > 1:
                 po.set_message(message)
     print

@@ -101,8 +101,9 @@ class ODFFile(OOFile):
 
     def get_units(self, srx_handler=None):
         for filename in ['content.xml', 'meta.xml', 'styles.xml']:
-            for message in get_units(self.get_events(filename), filename,
-                                     srx_handler):
+            events = self.get_events(filename)
+            for message in get_units(events, srx_handler):
+                # FIXME the line number has no sense here
                 yield message
 
 

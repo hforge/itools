@@ -135,7 +135,7 @@ def _get_translatable_blocks(events):
 ###########################################################################
 # Get Messages
 ###########################################################################
-def get_units(events, filename=None, srx_handler=None):
+def get_units(events, srx_handler=None):
     # XXX We must break this circular dependency
     from itools.srx import get_segments
 
@@ -152,7 +152,7 @@ def get_units(events, filename=None, srx_handler=None):
                 value = attributes[(attr_uri, attr_name)]
                 if not value.strip():
                     continue
-                yield value, {filename: [line]}
+                yield value, line
             # Keep spaces
             if tag_name in elements_to_keep_spaces:
                 keep_spaces = True
@@ -163,9 +163,8 @@ def get_units(events, filename=None, srx_handler=None):
                 keep_spaces = False
         elif type == MESSAGE:
             # Segmentation
-            for segment, line in get_segments(value, keep_spaces,
-                                              srx_handler):
-                yield segment, {filename: [line]}
+            for segment in get_segments(value, keep_spaces, srx_handler):
+                yield segment
 
 
 

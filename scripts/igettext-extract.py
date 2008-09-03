@@ -77,8 +77,8 @@ if __name__ == '__main__':
                 sys.stderr.write(message % filename)
                 continue
             # Extract the messages
-            for value, references in get_units(srx_handler=srx_handler):
-                message = POUnit([], [value], [u''], references)
+            for value, line in get_units(srx_handler=srx_handler):
+                message = POUnit([], [value], [u''], {filename: [line]})
                 po.set_message(message)
 
         # XXX Should omit the header?

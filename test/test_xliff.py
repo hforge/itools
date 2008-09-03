@@ -20,7 +20,7 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.xliff import XLIFF
+from itools.xliff import XLFFile
 
 
 
@@ -29,7 +29,7 @@ class TMXTestCase(TestCase):
     def test_input(self):
         """Test input.
         """
-        xliff = XLIFF('tests/gettext_en_es.xlf')
+        xliff = XLFFile('tests/gettext_en_es.xlf')
         xliff.to_str()
 
 

@@ -20,10 +20,10 @@ from mimetypes import add_type
 # Import from itools
 from itools.utils import get_abspath
 from itools.xml import register_dtd
-from xliff import XLIFF, Translation, Note, File
+from xliff import XLFFile, XLFUnit, Note, File
 
 
-__all__ = ['XLIFF', 'Translation', 'Note', 'File']
+__all__ = ['XLFFile', 'XLFUnit', 'Note', 'File']
 
 
 # Register mime type

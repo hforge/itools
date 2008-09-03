@@ -54,7 +54,7 @@ class Note(object):
 
 
 
-class Translation(object):
+class XLFUnit(object):
 
     def __init__(self, attributes):
         self.source = None
@@ -134,7 +134,7 @@ class File(object):
 
 
 
-class XLIFF(TextFile):
+class XLFFile(TextFile):
 
     class_mimetypes = ['application/x-xliff']
     class_extension = 'xlf'
@@ -168,7 +168,7 @@ class XLIFF(TextFile):
                 elif local_name == 'header':
                     notes = []
                 elif local_name == 'trans-unit':
-                    translation = Translation(attributes)
+                    unit = XLFUnit(attributes)
                     notes = []
                 elif local_name == 'note':
                     note = Note(attributes)
@@ -180,12 +180,12 @@ class XLIFF(TextFile):
                 elif local_name == 'header':
                     file.header = notes
                 elif local_name == 'trans-unit':
-                    translation.notes = notes
-                    file.body[translation.source] = translation
+                    unit.notes = notes
+                    file.body[unit.source] = unit
                 elif local_name == 'source':
-                    translation.source = text
+                    unit.source = text
                 elif local_name == 'target':
-                    translation.target = text
+                    unit.target = text
                 elif local_name == 'note':
                     note.text = text
                     notes.append(note)
@@ -247,11 +247,11 @@ class XLIFF(TextFile):
 
     def add_unit(self, filename, source, line):
         file = self.files.setdefault(filename, File(filename, {}))
-        unit = Translation({})
+        unit = XLFUnit({})
         unit.source = source
         file.body[source] = unit
         # FIXME Set the 'line'
 
 
 
-register_handler_class(XLIFF)
+register_handler_class(XLFFile)

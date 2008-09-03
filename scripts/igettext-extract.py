@@ -29,7 +29,7 @@ import itools.html
 import itools.stl
 import itools.odf
 import itools.srx
-from itools.xliff import XLIFF
+from itools.xliff import XLFFile
 
 
 
@@ -57,7 +57,7 @@ if __name__ == '__main__':
     if options.format == 'po':
         cls = POFile
     elif options.format == 'xliff':
-        cls = XLIFF
+        cls = XLFFile
     else:
         parser.error("Available output formats: 'po' (default) and 'xliff'.")
 

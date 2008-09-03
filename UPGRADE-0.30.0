@@ -33,6 +33,8 @@ summarizes this changes.
   i18n.Message                   srx.Message
   web.Node                       web.Resource
   web.Root                       web.RootResource
+  xliff.Translation              xliff.XLFUnit
+  xliff.XLIFF                    xliff.XLFFile
 
 
 Global API

@@ -534,7 +534,7 @@ class Table(File):
 
 
     def save_state_to(self, uri):
-        # TODO: this is a hack, for 0.30 this case should be covered by the
+        # TODO: this is a hack, for 0.50 this case should be covered by the
         # handler's protocol
         File.save_state_to(self, uri)
         if uri == self.uri:

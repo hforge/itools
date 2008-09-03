@@ -36,6 +36,7 @@ def convert(handler, cmdline, use_outfile=False):
     path = mkdtemp('itools')
     # Serialize the handler to a temporary file in the file system
     infile_path = join_path(path, 'infile')
+    # TODO use "with" ASAP
     infile = open(infile_path, 'wb')
     infile.write(handler.to_str())
     infile.close()
@@ -54,22 +55,30 @@ def convert(handler, cmdline, use_outfile=False):
     # Call convert method
     # XXX do not use pipes, not enough buffer to hold stdout
     call(cmdline.split(), stdout=stdout, stderr=stderr, cwd=path)
-    stdout = open(stdout_path).read()
-    stderr = open(stderr_path).read()
+    stdout.close()
+    stdout = open(stdout_path)
+    standard_output = stdout.read()
+    stdout.close()
+    stderr.close()
+    stderr = open(stderr_path)
+    error_output = stderr.read()
+    stderr.close()
 
     if use_outfile is True:
         outfile_path = join_path(path, 'outfile')
         try:
-            outfile = open(outfile_path).read()
+            outfile = open(outfile_path)
+            output = outfile.read()
+            outfile.close()
         except IOError, e:
-            message = stderr or stdout or str(e)
+            message = error_output or standard_output or str(e)
             raise ConversionError, message
 
     vfs.remove(path)
 
     if use_outfile is True:
-        return outfile, stderr
-    return stdout, stderr
+        return output, error_output
+    return standard_output, error_output
 
 
 

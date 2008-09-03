@@ -139,8 +139,8 @@ class XLFFile(TextFile):
     class_mimetypes = ['application/x-xliff']
     class_extension = 'xlf'
 
-    def new(self):
-        self.version = '1.0'
+    def new(self, version='1.0'):
+        self.version = version
         self.lang = None
         self.files = {}
 
@@ -251,6 +251,7 @@ class XLFFile(TextFile):
         unit.source = source
         file.body[source] = unit
         # FIXME Set the 'line'
+        return unit
 
 
 

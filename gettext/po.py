@@ -196,7 +196,7 @@ class POUnit(object):
 
 
     def __eq__(self, other):
-        return (other.source==self.source) and (other.target==self.target)
+        return (other.source == self.source) and (other.target == self.target)
 
 
 

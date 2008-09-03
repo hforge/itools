@@ -48,6 +48,12 @@ has changed.  The required globals namespace has been dropped:
   setup(globals())                setup()
 
 
+itools.csv
+=============
+
+The 'Table.get_field_title' method has been moved to ikaaro.
+
+
 itools.gettext
 ==============
 
@@ -75,7 +81,13 @@ And the "DomainAware" class has dissapeared:
   class MyClass(object):
       ...
 
-(2) TODO
+(2) There are some changes to the 'POFile' API too:
+
+  Before               Now
+  -------------------  ----------------
+  POFile.get_messages  POFile.get_units
+
+
 
 
 itools.stl
@@ -215,29 +227,12 @@ TODO
 
 
 
-itools.csv
-==========
-
-Modifications:
-class Table: - def get_field_title(self, name)
-
-
 itools.gettext
 ==============
-
-Imports:
-+ Message
-
-Modifications:
-class Message: + def __eq__(self, other)
-class Message: + def __repr__(self)
 
 class POFile: ! def set_message: (self, msgid, msgstr=[u''], comments=[],
                                   references={}, fuzzy=False)
                               => (self, message)
-class POFile: + def set_messages(self, messages)
-class POFile: - def get_messages(self)
-           => + def get_units(self) (and return a Message)
 
 
 itools.handlers

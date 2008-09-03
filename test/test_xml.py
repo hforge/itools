@@ -233,7 +233,7 @@ class TranslatableTestCase(TestCase):
         parser = XMLParser(text)
         messages = list(get_units(parser))
 
-        self.assertEqual(messages, [POUnit([], [u'Hello World'], [u''])])
+        self.assertEqual(messages, [(u'Hello World', 1)])
 
 
 

@@ -66,7 +66,7 @@ def _remove_spaces(left, center, right, keep_spaces):
     # Remove eventually all "double spaces" in the text
     if not keep_spaces:
         for i, (type, value, line) in enumerate(center):
-            if type == TEXT:
+            if type == TEXT and value:
                 # Begin and End
                 if i > 0 and value and value[0].isspace():
                     begin = u' '

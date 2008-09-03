@@ -29,59 +29,61 @@ import itools.html
 import itools.stl
 import itools.odf
 import itools.srx
+from itools.xliff import XLIFF
 
 
 
 if __name__ == '__main__':
+    usage = '%prog [OPTIONS] [<file>...]'
     version = 'itools %s' % itools.__version__
     description = ('Extracts the translatable messages from the given source'
                    ' files. Builds a PO file with these messages, and prints'
                    ' to the standard output.')
-    parser = OptionParser('%prog [OPTIONS] [<file>...]',
-                          version=version, description=description)
-
-    parser.add_option('-s', '--srx',
-                      help='Use an other SRX file than the default one.')
-
-
-    parser.add_option('-o', '--output',
-                      help="The output will be written to the given file,"
-                           " instead of printed to the standard output.")
-
-    options, args = parser.parse_args()
+    parser = OptionParser(usage, version=version, description=description)
+    parser.add_option('-f', '--format', default='po', help='Use the given '
+        'output format.  The available options are "po" (default) and '
+        ' "xliff".')
+    parser.add_option('-o', '--output', help='Write the output to the given '
+        'file (instead of to the standard output).')
+    parser.add_option('-s', '--srx', help='Use an other SRX file than the '
+        'default one.')
 
     # Source files
+    options, args = parser.parse_args()
     if len(args) == 0:
         parser.error('Needs at least one source file.')
 
-    # The SRX file
-    if options.srx is not None:
-        srx_handler = get_handler(options.srx)
+    # Format
+    if options.format == 'po':
+        cls = POFile
+    elif options.format == 'xliff':
+        cls = XLIFF
     else:
+        parser.error("Available output formats: 'po' (default) and 'xliff'.")
+
+    # The SRX file
+    if options.srx is None:
         srx_handler = None
+    else:
+        srx_handler = get_handler(options.srx)
+
+    # Make the output handler
+    out_handler = cls()
+    for filename in args:
+        handler = get_handler(filename)
+        try:
+            get_units = handler.get_units
+        except AttributeError:
+            message = 'ERROR: The file "%s" could not be processed\n'
+            sys.stderr.write(message % filename)
+            continue
+        # Extract the messages
+        for source, line in get_units(srx_handler=srx_handler):
+            out_handler.add_unit(filename, source, line)
+    data = out_handler.to_str()
 
     # Output
     if options.output is None:
-        output = sys.stdout
+        print data
     else:
-        output = open(options.output, 'w')
-
-    try:
-        po = POFile()
-        for filename in args:
-            handler = get_handler(filename)
-            try:
-                get_units = handler.get_units
-            except AttributeError:
-                message = 'ERROR: The file "%s" could not be processed\n'
-                sys.stderr.write(message % filename)
-                continue
-            # Extract the messages
-            for source, line in get_units(srx_handler=srx_handler):
-                po.add_unit(filename, source, line)
-
-        # XXX Should omit the header?
-        output.write(po.to_str())
-    finally:
-        if options.output is not None:
-            output.close()
+        open(options.output, 'w').write(data)

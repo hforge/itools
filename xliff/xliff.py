@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.datatypes import XMLContent
+from itools.datatypes import XMLContent, XMLAttribute
 from itools.handlers import TextFile, register_handler_class
 from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, COMMENT, TEXT
 
@@ -68,68 +68,69 @@ class Translation(object):
         if self.attributes != {}:
             att = ['%s="%s"' % (k, self.attributes[k])
                   for k in self.attributes.keys() if k != 'space']
-            s.append('<trans-unit %s ' % '\n'.join(att))
+            s.append('  <trans-unit %s ' % '\n'.join(att))
             if 'space' in self.attributes.keys():
                 s.append('xml:space="%s"' % self.attributes['space'])
             s.append('>\n')
         else:
-            s.append('<trans-unit>\n')
+            s.append('  <trans-unit>\n')
 
         if self.source:
             source = XMLContent.encode(self.source)
-            s.append(' <source>%s</source>\n' % source)
+            s.append('    <source>%s</source>\n' % source)
 
         if self.target:
             target = XMLContent.encode(self.target)
-            s.append(' <target>%s</target>\n' % target)
+            s.append('    <target>%s</target>\n' % target)
 
-        for l in self.notes:
-            s.append(l.to_str())
+        for note in self.notes:
+            s.append(note.to_str())
 
-        s.append('</trans-unit>\n')
+        s.append('  </trans-unit>\n')
         return ''.join(s)
 
 
 
 class File(object):
 
-    def __init__(self, attributes):
-        self.body = {}
+    def __init__(self, original, attributes):
+        self.original = original
         self.attributes = attributes
+        self.body = {}
         self.header = []
 
 
     def to_str(self):
-        s = []
+        output = []
 
         # Opent tag
-        if self.attributes != {}:
-            att = [' %s="%s"' % (k, self.attributes[k])
-                  for k in self.attributes.keys() if k != 'space']
-            s.append('<file %s' % '\n'.join(att))
-            if 'space' in self.attributes.keys():
-                s.append('xml:space="%s"' % self.attributes['space'])
-            s.append('>\n')
-        else:
-            s.append('<file>\n')
+        open_tag = '<file original="%s"%s>\n'
+        attributes = [
+            ' %s="%s"' % (key, XMLAttribute.encode(value))
+            for key, value in self.attributes.items() if key != 'space']
+        if 'space' in self.attributes:
+            attributes.append(' xml:space="%s"' % self.attributes['space'])
+        attributes = ''.join(attributes)
+        open_tag = open_tag % (self.original, attributes)
+        output.append(open_tag)
         # The header
         if self.header:
-            s.append('<header>\n')
-            for l in self.header:
-                s.append(l.to_str())
-            s.append('</header>\n')
+            output.append('<header>\n')
+            for line in self.header:
+                output.append(line.to_str())
+            output.append('</header>\n')
         # The body
-        s.append('<body>\n')
+        output.append('<body>\n')
         if self.body:
             mkeys = self.body.keys()
             mkeys.sort()
-            msgs = '\n'.join([ self.body[m].to_str() for m in mkeys ])
-            s.append(msgs)
-        s.append('</body>\n')
+            msgs = ''.join([ self.body[m].to_str() for m in mkeys ])
+            output.append(msgs)
+        output.append('</body>\n')
         # Close tag
-        s.append('</file>\n')
+        output.append('</file>\n')
 
-        return ''.join(s)
+        return ''.join(output)
 
 
 
@@ -141,13 +142,13 @@ class XLIFF(TextFile):
     def new(self):
         self.version = '1.0'
         self.lang = None
-        self.files = []
+        self.files = {}
 
 
     #######################################################################
     # Load
     def _load_state_from_file(self, file):
-        self.files = []
+        self.files = {}
         for event, value, line_number in XMLParser(file.read()):
             if event == START_ELEMENT:
                 namespace, local_name, attributes = value
@@ -162,7 +163,8 @@ class XLIFF(TextFile):
                     self.version = attributes['version']
                     self.lang = attributes.get('lang', None)
                 elif local_name == 'file':
-                    file = File(attributes)
+                    original = attributes.pop('original')
+                    file = File(original, attributes)
                 elif local_name == 'header':
                     notes = []
                 elif local_name == 'trans-unit':
@@ -174,7 +176,7 @@ class XLIFF(TextFile):
                 namespace, local_name = value
 
                 if local_name == 'file':
-                    self.files.append(file)
+                    self.files[original] = file
                 elif local_name == 'header':
                     file.header = notes
                 elif local_name == 'trans-unit':
@@ -210,7 +212,7 @@ class XLIFF(TextFile):
             template = '<xliff version="%s" xml:lang="%s">\n'
             output.append(template % (self.version, self.lang))
         # The files
-        for file in self.files:
+        for file in self.files.values():
             output.append(file.to_str())
         # </xliff>
         output.append('</xliff>\n')
@@ -241,6 +243,14 @@ class XLIFF(TextFile):
                 targets.append(target)
 
         return ((files_id, sources, targets))
+
+
+    def add_unit(self, filename, source, line):
+        file = self.files.setdefault(filename, File(filename, {}))
+        unit = Translation({})
+        unit.source = source
+        file.body[source] = unit
+        # FIXME Set the 'line'
 
 
 

@@ -431,16 +431,13 @@ class POFile(TextFile):
         return source
 
 
-    def set_messages(self, messages):
-        for message in messages:
-            self.set_message(message)
-
-
-    def set_message(self, message):
-        if message.source:
+    def add_unit(self, filename, source, line):
+        if source:
+            unit = POUnit([], [source], [u''], {filename: [line]})
+            id = ''.join(source)
+            # Change
             self.set_changed()
-            id = ''.join(message.source)
-            self.messages[id] = message
+            self.messages[id] = unit
 
 
 register_handler_class(POFile)

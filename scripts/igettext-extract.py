@@ -24,7 +24,7 @@ import sys
 # Import from itools
 import itools
 from itools.handlers import get_handler
-from itools.gettext import POFile, POUnit
+from itools.gettext import POFile
 import itools.html
 import itools.stl
 import itools.odf
@@ -77,9 +77,8 @@ if __name__ == '__main__':
                 sys.stderr.write(message % filename)
                 continue
             # Extract the messages
-            for value, line in get_units(srx_handler=srx_handler):
-                message = POUnit([], [value], [u''], {filename: [line]})
-                po.set_message(message)
+            for source, line in get_units(srx_handler=srx_handler):
+                po.add_unit(filename, source, line)
 
         # XXX Should omit the header?
         output.write(po.to_str())

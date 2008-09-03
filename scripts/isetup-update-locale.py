@@ -26,7 +26,7 @@ import sys
 
 # Import from itools
 import itools
-from itools.gettext import POFile, POUnit
+from itools.gettext import POFile
 from itools.handlers import ConfigFile, get_handler
 import itools.html
 import itools.stl
@@ -100,10 +100,9 @@ if __name__ == '__main__':
             raise
 
         relative_path = Path('..').resolve2(path)
-        for value, line in units:
-            message = POUnit([], [value], [u''], {relative_path: [line]})
-            if len(message.source[0]) > 1:
-                po.set_message(message)
+        for source, line in units:
+            if len(source) > 1:
+                po.add_unit(relative_path, source, line)
     print
 
     # Update locale.pot

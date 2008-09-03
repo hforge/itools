@@ -102,6 +102,7 @@ if __name__ == '__main__':
             message = POUnit([], [value], [u''], references)
             if len(message.source[0]) > 1:
                 po.set_message(message)
+    print
 
     # Update locale.pot
     if not vfs.exists('locale/locale.pot'):

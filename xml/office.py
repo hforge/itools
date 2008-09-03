@@ -27,66 +27,76 @@ from itools.handlers import File, register_handler_class
 from indexer import xml_to_text
 
 
+class ConversionError(Exception):
+    pass
 
-def convert(handler, cmdline, outfile=None):
-    cmdline = cmdline % 'stdin'
 
-    # Serialize the handler to a temporary file in the file system
+
+def convert(handler, cmdline, use_outfile=False):
     path = mkdtemp('itools')
-    file_path = join_path(path, 'stdin')
-    open(file_path, 'w').write(handler.to_str())
-
+    # Serialize the handler to a temporary file in the file system
+    infile_path = join_path(path, 'infile')
+    infile = open(infile_path, 'wb')
+    infile.write(handler.to_str())
+    infile.close()
     # stdout
     stdout_path = join_path(path, 'stdout')
-    stdout = open(stdout_path, 'w')
-    if outfile is not None:
-        stdout_path = join_path(path, outfile)
+    stdout = open(stdout_path, 'wb')
     # stderr
     stderr_path = join_path(path, 'stderr')
-    stderr = open(stderr_path, 'w')
+    stderr = open(stderr_path, 'wb')
+    # output
+    if use_outfile is True:
+        cmdline = cmdline % ('infile', 'outfile')
+    else:
+        cmdline = cmdline % 'infile'
 
     # Call convert method
-    try:
-        # XXX do not use pipes, not enough buffer to hold stdout
-        call(cmdline.split(), stdout=stdout, stderr=stderr, cwd=path)
-        stdout = open(stdout_path).read()
-        stderr = open(stderr_path).read()
-    finally:
-        vfs.remove(path)
+    # XXX do not use pipes, not enough buffer to hold stdout
+    call(cmdline.split(), stdout=stdout, stderr=stderr, cwd=path)
+    stdout = open(stdout_path).read()
+    stderr = open(stderr_path).read()
 
+    if use_outfile is True:
+        outfile_path = join_path(path, 'outfile')
+        try:
+            outfile = open(outfile_path).read()
+        except IOError, e:
+            message = stderr or stdout or str(e)
+            raise ConversionError, message
+
+    vfs.remove(path)
+
+    if use_outfile is True:
+        return outfile, stderr
     return stdout, stderr
 
 
 
 class OfficeDocument(File):
-
     source_encoding = 'UTF-8'
 
 
-    def to_text(self, outfile=None):
-        stdout, stderr = convert(self, self.source_converter, outfile)
-
+    def to_text(self, use_outfile=False):
+        stdout, stderr = convert(self, self.source_converter, use_outfile)
         if stderr != "":
             return u''
-
         return unicode(stdout, self.source_encoding, 'replace')
 
 
 
 class MSWord(OfficeDocument):
-
     class_mimetypes = ['application/msword']
     class_extension = 'doc'
-    source_converter = 'wvText %s out.txt'
+    source_converter = 'wvText %s %s'
 
 
     def to_text(self):
-        return OfficeDocument.to_text(self, 'out.txt')
+        return OfficeDocument.to_text(self, use_outfile=True)
 
 
 
 class MSExcel(OfficeDocument):
-
     class_mimetypes = ['application/vnd.ms-excel']
     class_extension = 'xls'
     source_converter = 'xlhtml -a -fw -nc -nh -te %s'
@@ -94,16 +104,13 @@ class MSExcel(OfficeDocument):
 
     def to_text(self):
         stdout, stderr = convert(self, self.source_converter)
-
         if stderr != "":
             return u''
-
         return xml_to_text(stdout)
 
 
 
 class MSPowerPoint(OfficeDocument):
-
     class_mimetypes = ['application/vnd.ms-powerpoint']
     class_extension = 'ppt'
     source_converter = 'ppthtml %s'
@@ -111,16 +118,13 @@ class MSPowerPoint(OfficeDocument):
 
     def to_text(self):
         stdout, stderr = convert(self, self.source_converter)
-
         if stderr != "":
             return u''
-
         return xml_to_text(stdout)
 
 
 
 class RTF(OfficeDocument):
-
     class_mimetypes = ['text/rtf']
     class_extenstion = 'rtf'
     source_encoding = 'ISO-8859-1'

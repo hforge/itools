@@ -230,10 +230,10 @@ class TranslatableTestCase(TestCase):
 
     def test_surrounding(self):
         text = '<em>Hello World</em>'
-        parser = XMLParser(text)
-        messages = list(get_units(parser))
+        parser = XMLFile(string=text)
 
-        self.assertEqual(messages, [(u'Hello World', 1)])
+        messages = [unit[0] for unit in parser.get_units()]
+        self.assertEqual(messages, [u'Hello World'])
 
 
 

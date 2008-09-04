@@ -33,9 +33,11 @@ summarizes this changes.
   i18n.Message                   srx.Message
   i18n.Multilingual              (REMOVED)
   tmx.Message                    tmx.TMXUnit
+  tmx.Note                       tmx.TMXNote
   tmx.TMX                        tmx.TMXFile
   web.Node                       web.Resource
   web.Root                       web.RootResource
+  xliff.Note                     xliff.XLFNote
   xliff.Translation              xliff.XLFUnit
   xliff.XLIFF                    xliff.XLFFile
 

@@ -18,10 +18,10 @@
 import mimetypes
 
 # Import from itools
-from tmx import TMXFile, Sentence, TMXUnit, Note
+from tmx import TMXFile, Sentence, TMXUnit, TMXNote
 
 
-__all__ = ['TMXFile', 'Sentence', 'TMXUnit', 'Note']
+__all__ = ['TMXFile', 'Sentence', 'TMXUnit', 'TMXNote']
 
 
 mimetypes.add_type('application/x-tmx', '.tmx')

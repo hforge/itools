@@ -23,28 +23,29 @@ from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, COMMENT, TEXT
 
 
 
-class Note(object):
+# FIXME TMXNote and XLFNote are the same
+class TMXNote(object):
 
-    def __init__(self, text=None, attributes={}):
+    def __init__(self, text='', attributes=None):
+        if attributes is None:
+            attributes = {}
+
         self.text = text
         self.attributes = attributes
 
 
     def to_str(self):
-        s = []
-        if self.attributes != {}:
-            att = [ '%s="%s"' % (k, self.attributes[k])
-                    for k in self.attributes.keys() if k != 'lang' ]
-            s.append('<note %s ' % ' '.join(att))
-            if 'lang' in self.attributes.keys():
-                s.append('xml:lang="%s"' % self.attributes['lang'])
-            s.append('>')
-        else:
-            s.append('<note>')
-
-        s.append(self.text)
-        s.append('</note>\n')
-        return ''.join(s)
+        # Attributes
+        attributes = []
+        for attr_name in self.attributes:
+            attr_value = self.attributes[attr_name]
+            attr_value = XMLContent.encode(attr_value)
+            if attr_name == 'lang':
+                attr_name = 'xml:lang'
+            attributes.append(' %s="%s"' % (attr_name, attr_value))
+        attributes = ''.join(attributes)
+        # Ok
+        return '<note%s>%s</note>\n' % (attributes, self.text)
 
 
 
@@ -141,7 +142,7 @@ class TMXFile(TextFile):
                     default_srclang = attributes['srclang']
                     notes = []
                 elif local_name == 'note':
-                    note = Note(attributes=attributes)
+                    note = TMXNote(attributes=attributes)
                 elif local_name == 'tu':
                     tu = TMXUnit(attributes)
                     notes = []

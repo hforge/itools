@@ -20,7 +20,7 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.tmx import TMX
+from itools.tmx import TMXFile
 
 
 
@@ -29,7 +29,7 @@ class TMXTestCase(TestCase):
     def test_input(self):
         """Test input.
         """
-        tmx = TMX('tests/localizermsgs.tmx')
+        tmx = TMXFile('tests/localizermsgs.tmx')
         tmx.to_str()
 
 

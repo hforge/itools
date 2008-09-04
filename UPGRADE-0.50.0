@@ -32,6 +32,8 @@ summarizes this changes.
   gettext.Message                gettext.POUnit
   i18n.Message                   srx.Message
   i18n.Multilingual              (REMOVED)
+  tmx.Message                    tmx.TMXUnit
+  tmx.TMX                        tmx.TMXFile
   web.Node                       web.Resource
   web.Root                       web.RootResource
   xliff.Translation              xliff.XLFUnit

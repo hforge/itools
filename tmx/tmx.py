@@ -79,7 +79,7 @@ class Sentence(object):
 
 
 
-class Message(object):
+class TMXUnit(object):
 
     def __init__(self, attributes):
         self.attributes = attributes
@@ -110,7 +110,7 @@ class Message(object):
 
 
 
-class TMX(TextFile):
+class TMXFile(TextFile):
 
     class_mimetypes = ['application/x-tmx']
     class_extension = 'tmx'
@@ -152,7 +152,7 @@ class TMX(TextFile):
                 elif local_name == 'note':
                     note = Note(attributes=attributes)
                 elif local_name == 'tu':
-                    tu = Message(attributes)
+                    tu = TMXUnit(attributes)
                     notes = []
                 elif local_name == 'tuv':
                     tuv = Sentence(attributes)
@@ -261,4 +261,4 @@ class TMX(TextFile):
         self.version = version
 
 
-register_handler_class(TMX)
+register_handler_class(TMXFile)

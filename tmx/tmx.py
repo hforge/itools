@@ -68,13 +68,13 @@ class Sentence(object):
             if attr_name != 'lang':
                 attributes.append('%s="%s"' % (attr_name,
                                                self.attributes[attr_name]))
-        s.append('<tuv %s>\n' % ' '.join(attributes))
+        s.append('  <tuv %s>\n' % ' '.join(attributes))
 
         for note in self.notes:
             s.append(note.to_str())
 
-        s.append('<seg>%s</seg>\n' % protect_content(self.text))
-        s.append('</tuv>\n')
+        s.append('  <seg>%s</seg>\n' % protect_content(self.text))
+        s.append('  </tuv>\n')
         return ''.join(s)
 
 
@@ -208,10 +208,10 @@ class TMXFile(TextFile):
         else:
             s.append('<tmx>\n')
 
-        if self.header != {}:
-            attributes = [ '\n%s="%s"' % (k, self.header[k])
-                           for k in self.header.keys() ]
-            s.append('<header %s>\n' % ''.join(attributes))
+        if self.header:
+            attributes = [ ' %s="%s"' % (key, value)
+                           for key, value in self.header.items() ]
+            s.append('<header%s>\n' % ''.join(attributes))
         else:
             s.append('<header>\n')
 
@@ -226,15 +226,15 @@ class TMXFile(TextFile):
     def to_str(self, encoding=None):
         s = [self.xml_header_to_str(),
              self.header_to_str(),
-             '<body>']
+             '<body>\n']
         messages = self.messages
         msgids = messages.keys()
         msgids.sort()
         for msgid in msgids:
             s.append(messages[msgid].to_str())
-        s.append('</body>')
-        s.append('</tmx>')
-        return '\n'.join(s)
+        s.append('</body>\n')
+        s.append('</tmx>\n')
+        return ''.join(s)
 
 
     #######################################################################
@@ -259,6 +259,18 @@ class TMXFile(TextFile):
         self.header = tmx_header
         self.messages = msgs
         self.version = version
+
+
+    def add_unit(self, filename, source, line):
+        # FIXME Use 'filename' and 'line'
+        unit = TMXUnit({})
+        src_lang = self.header['srclang']
+        sentence = Sentence({'lang': src_lang})
+        sentence.text = source
+        unit.msgstr[src_lang] = sentence
+        self.messages[source] = unit
+        return unit
+
 
 
 register_handler_class(TMXFile)

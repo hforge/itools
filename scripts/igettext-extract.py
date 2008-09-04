@@ -29,6 +29,7 @@ import itools.html
 import itools.stl
 import itools.odf
 import itools.srx
+from itools.tmx import TMXFile
 from itools.xliff import XLFFile
 
 
@@ -41,7 +42,7 @@ if __name__ == '__main__':
                    ' to the standard output.')
     parser = OptionParser(usage, version=version, description=description)
     parser.add_option('-f', '--format', default='po', help='Use the given '
-        'output format.  The available options are "po" (default) and '
+        'output format.  The available options are "po" (default), "tmx" and '
         ' "xliff".')
     parser.add_option('-o', '--output', help='Write the output to the given '
         'file (instead of to the standard output).')
@@ -56,10 +57,13 @@ if __name__ == '__main__':
     # Format
     if options.format == 'po':
         cls = POFile
+    elif options.format == 'tmx':
+        cls = TMXFile
     elif options.format == 'xliff':
         cls = XLFFile
     else:
-        parser.error("Available output formats: 'po' (default) and 'xliff'.")
+        parser.error(
+            "available output formats are 'po' (default), 'tmx' and 'xliff'.")
 
     # The SRX file
     if options.srx is None:

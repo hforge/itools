@@ -68,11 +68,12 @@ def convert(handler, cmdline, use_outfile=False):
         outfile_path = join_path(path, 'outfile')
         try:
             outfile = open(outfile_path)
-            output = outfile.read()
-            outfile.close()
         except IOError, e:
             message = error_output or standard_output or str(e)
             raise ConversionError, message
+        else:
+            output = outfile.read()
+            outfile.close()
 
     vfs.remove(path)
 

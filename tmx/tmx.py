@@ -17,14 +17,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
+from itools.datatypes import XMLContent, XMLAttribute
 from itools.handlers import TextFile, register_handler_class
-from itools.xml import (XMLParser, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT,
-                        COMMENT, TEXT)
-
-
-
-def protect_content(s):
-    return s.replace('<','&lt;').replace('>','&gt;')
+from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, COMMENT, TEXT
 
 
 
@@ -73,7 +68,7 @@ class Sentence(object):
         for note in self.notes:
             s.append(note.to_str())
 
-        s.append('  <seg>%s</seg>\n' % protect_content(self.text))
+        s.append('  <seg>%s</seg>\n' % XMLContent.encode(self.text))
         s.append('  </tuv>\n')
         return ''.join(s)
 
@@ -117,8 +112,6 @@ class TMXFile(TextFile):
 
 
     def new(self):
-        self.document_type = (
-            'tmx', 'http://www.lisa.org/tmx/tmx14.dtd', None, False)
         self.version = '1.4'
         self.header = {'o-encoding': 'utf-8', 'srclang': 'en'}
         self.header_notes = {}
@@ -131,8 +124,6 @@ class TMXFile(TextFile):
         self.header = {}
         messages = {}
         self.header_notes = {}
-        self.document_type = (
-            'tmx', 'http://www.lisa.org/tmx/tmx14.dtd', None, False)
         for event, value, line_number in XMLParser(file.read()):
             if event == START_ELEMENT:
                 namespace, local_name, attributes = value
@@ -190,51 +181,35 @@ class TMXFile(TextFile):
 
     #######################################################################
     # Save
-    def xml_header_to_str(self, encoding='UTF-8'):
-        s = []
-        # The XML declaration
-        s.append('<?xml version="1.0" encoding="%s"?>\n' % encoding)
-        # The document type
-        if self.document_type is not None:
-            s.append('<!DOCTYPE %s SYSTEM "%s">\n' % self.document_type[:2])
-
-        return ''.join(s)
-
-
-    def header_to_str(self, encoding='UTF-8'):
-        s = []
-        if self.version:
-            s.append('<tmx version="%s">\n' % self.version)
-        else:
-            s.append('<tmx>\n')
-
-        if self.header:
-            attributes = [ ' %s="%s"' % (key, value)
-                           for key, value in self.header.items() ]
-            s.append('<header%s>\n' % ''.join(attributes))
-        else:
-            s.append('<header>\n')
-
-        if self.header_notes != []:
-            for n in self.header_notes:
-                s.append(n.to_str())
-
-        s.append('</header>\n')
-        return ''.join(s)
-
-
     def to_str(self, encoding=None):
-        s = [self.xml_header_to_str(),
-             self.header_to_str(),
-             '<body>\n']
+        # The XML prolog
+        output = [
+            '<?xml version="1.0" encoding="%s"?>\n' % encoding,
+            '<!DOCTYPE tmx SYSTEM "http://www.lisa.org/tmx/tmx14.dtd">\n']
+
+        # TMX header
+        output.append('<tmx version="%s">\n' % self.version)
+        attributes = [
+            ' %s="%s"' % (key, XMLAttribute.encode(value))
+            for key, value in self.header.items() ]
+        output.append('<header%s>\n' % ''.join(attributes))
+        # TMX header / notes
+        for note in self.header_notes:
+            output.append(note.to_str())
+        output.append('</header>\n')
+
+        # TMX body
+        output.append('<body>\n')
         messages = self.messages
         msgids = messages.keys()
         msgids.sort()
         for msgid in msgids:
-            s.append(messages[msgid].to_str())
-        s.append('</body>\n')
-        s.append('</tmx>\n')
-        return ''.join(s)
+            output.append(messages[msgid].to_str())
+        output.append('</body>\n')
+
+        # Ok
+        output.append('</tmx>\n')
+        return ''.join(output)
 
 
     #######################################################################
@@ -251,14 +226,6 @@ class TMXFile(TextFile):
 
     def get_srclang(self):
         return u'%s' % self.header['srclang']
-
-
-    def build(self, xml_header, version, tmx_header, msgs):
-        self.document_type = xml_header['document_type']
-        self.source_encoding = tmx_header['o-encoding']
-        self.header = tmx_header
-        self.messages = msgs
-        self.version = version
 
 
     def add_unit(self, filename, source, line):

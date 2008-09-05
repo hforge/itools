@@ -47,9 +47,10 @@ gboolean doctype_initialized = FALSE;
 /* Error message */
 gchar *doctype_error_msg = NULL;
 
-/* To store the URN => file names table */
+/* To store the URN  and URI => file names table */
 GStringChunk *doctype_global_strings;
 GHashTable *doctype_URN_table;
+GHashTable *doctype_URI_table;
 
 
 /**************************************************************************
@@ -789,6 +790,7 @@ doctype_initialize (void)
     {
       doctype_global_strings = g_string_chunk_new (64);
       doctype_URN_table = g_hash_table_new (g_str_hash, g_str_equal);
+      doctype_URI_table = g_hash_table_new (g_str_hash, g_str_equal);
 
       doctype_initialized = TRUE;
     }
@@ -799,42 +801,60 @@ gboolean
 doctype_read_external_dtd (DocType * doctype, gchar * PubidLiteral,
                            gchar * SystemLiteral)
 {
-  gchar *filename;
+  gchar *filename=NULL;
   FILE *file;
   GString *err_buffer;
   gchar *error_msg;
   DTD *dtd;
 
-
-  /* No PubidLiteral ? */
-  if (!PubidLiteral)
-    {
-      doctype_error_msg = ONLY_PUBLIC;
-      return ERROR;
-    }
-  /* Store it */
-  doctype->PubidLiteral = g_string_chunk_insert (doctype->strings_storage,
-                                                 PubidLiteral);
-
-  /* We only store the SystemLiteral and ignore it */
+  /* Store the values */
+  if (PubidLiteral)
+      doctype->PubidLiteral = g_string_chunk_insert (doctype->strings_storage,
+                                                     PubidLiteral);
   if (SystemLiteral)
     doctype->SystemLiteral = g_string_chunk_insert (doctype->strings_storage,
                                                     SystemLiteral);
 
-  /* Compute the URN */
-  doctype_compute_urn (PubidLiteral, doctype->buffer);
-
   /* Search for the good file */
-  filename = (gchar *) g_hash_table_lookup (doctype_URN_table,
-                                            doctype->buffer->str);
+
+  /* With PubidLiteral */
+  if (PubidLiteral)
+    {
+      /* Compute the URN */
+      doctype_compute_urn (PubidLiteral, doctype->buffer);
+
+      filename = (gchar *) g_hash_table_lookup (doctype_URN_table,
+                                                doctype->buffer->str);
+    }
+
+  /* With SystemLiteral */
+  if (!filename && SystemLiteral)
+  {
+      /* Search for the good file */
+      filename = (gchar *) g_hash_table_lookup (doctype_URI_table,
+                                                SystemLiteral);
+  }
+
+  /* Not found ! */
   if (!filename)
     {
       err_buffer = g_string_sized_new (256);
       g_string_set_size (err_buffer, 0);
       g_string_append (err_buffer, "'");
-      g_string_append (err_buffer, PubidLiteral);
-      g_string_append (err_buffer, "' => '");
-      g_string_append (err_buffer, doctype->buffer->str);
+      if (PubidLiteral)
+        {
+          g_string_append (err_buffer, PubidLiteral);
+          g_string_append (err_buffer, " (");
+          g_string_append (err_buffer, doctype->buffer->str);
+          g_string_append_c (err_buffer, ')');
+        }
+      else
+        g_string_append (err_buffer, "None");
+      g_string_append_c (err_buffer, '|');
+      if (SystemLiteral)
+        g_string_append (err_buffer, SystemLiteral);
+      else
+        g_string_append (err_buffer, "None");
       g_string_append (err_buffer, "' not found");
 
       error_msg = g_string_chunk_insert (doctype_global_strings,
@@ -1012,17 +1032,26 @@ doctype_get_entity_value (DocType * doctype, gchar * entity_name)
 
 
 void
-doctype_register_dtd (gchar * urn, gchar * filename)
+doctype_register_dtd (gchar * filename, gchar * urn, gchar * uri)
 {
   /* Initialized ? */
   if (!doctype_initialized)
     doctype_initialize ();
 
   /* Append */
-  urn = g_string_chunk_insert (doctype_global_strings, urn);
   filename = g_string_chunk_insert (doctype_global_strings, filename);
-  g_hash_table_insert (doctype_URN_table, (gpointer) urn,
-                       (gpointer) filename);
+  if (urn)
+  {
+    urn = g_string_chunk_insert (doctype_global_strings, urn);
+    g_hash_table_insert (doctype_URN_table, (gpointer) urn,
+                         (gpointer) filename);
+  }
+  if (uri)
+  {
+    uri = g_string_chunk_insert (doctype_global_strings, uri);
+    g_hash_table_insert (doctype_URI_table, (gpointer) uri,
+                         (gpointer) filename);
+  }
 }
 
 
@@ -1035,5 +1064,6 @@ doctype_global_reset (void)
 
       g_string_chunk_free (doctype_global_strings);
       g_hash_table_destroy (doctype_URN_table);
+      g_hash_table_destroy (doctype_URI_table);
     }
 }

@@ -19,6 +19,8 @@ import mimetypes
 
 # Import from itools
 from tmx import TMXFile, Sentence, TMXUnit, TMXNote
+from itools.utils import get_abspath
+from itools.xml import register_dtd
 
 
 __all__ = ['TMXFile', 'Sentence', 'TMXUnit', 'TMXNote']
@@ -26,3 +28,6 @@ __all__ = ['TMXFile', 'Sentence', 'TMXUnit', 'TMXNote']
 
 mimetypes.add_type('application/x-tmx', '.tmx')
 
+# Register DTD
+register_dtd(get_abspath('tmx14.dtd'),
+             uri='http://www.lisa.org/tmx/tmx14.dtd')

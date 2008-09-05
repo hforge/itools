@@ -31,5 +31,6 @@ add_type('application/x-xliff', '.xlf')
 
 # Register DTD
 # -//XLIFF//DTD XLIFF//EN
-register_dtd('urn:publicid:-:XLIFF:DTD+XLIFF:EN', get_abspath('xliff.dtd'))
+register_dtd(get_abspath('xliff.dtd'),
+             urn='urn:publicid:-:XLIFF:DTD+XLIFF:EN')
 

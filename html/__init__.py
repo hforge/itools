@@ -51,26 +51,26 @@ add_type('application/xhtml+xml', '.xhtml')
 
 # Register DTD
 # -//W3C//DTD XHTML 1.0 Strict//EN
-register_dtd('urn:publicid:-:W3C:DTD+XHTML+1.0+Strict:EN',
-             get_abspath('xhtml1-strict.dtd'))
+register_dtd(get_abspath('xhtml1-strict.dtd'),
+             urn='urn:publicid:-:W3C:DTD+XHTML+1.0+Strict:EN')
 
 #-//W3C//DTD XHTML 1.0 Transitional//EN
-register_dtd('urn:publicid:-:W3C:DTD+XHTML+1.0+Transitional:EN',
-             get_abspath('xhtml1-transitional.dtd'))
+register_dtd(get_abspath('xhtml1-transitional.dtd'),
+             urn='urn:publicid:-:W3C:DTD+XHTML+1.0+Transitional:EN')
 
 # -//W3C//DTD XHTML 1.0 Frameset//EN
-register_dtd('urn:publicid:-:W3C:DTD+XHTML+1.0+Frameset:EN',
-             get_abspath('xhtml1-frameset.dtd'))
+register_dtd(get_abspath('xhtml1-frameset.dtd'),
+             urn='urn:publicid:-:W3C:DTD+XHTML+1.0+Frameset:EN')
 
 # -//W3C//ENTITIES Latin 1 for XHTML//EN
-register_dtd('urn:publicid:-:W3C:ENTITIES+Latin+1+for+XHTML:EN',
-             get_abspath('xhtml-lat1.ent'))
+register_dtd(get_abspath('xhtml-lat1.ent'),
+             urn='urn:publicid:-:W3C:ENTITIES+Latin+1+for+XHTML:EN')
 
 # -//W3C//ENTITIES Symbols for XHTML//EN
-register_dtd('urn:publicid:-:W3C:ENTITIES+Symbols+for+XHTML:EN',
-             get_abspath('xhtml-symbol.ent'))
+register_dtd(get_abspath('xhtml-symbol.ent'),
+             urn='urn:publicid:-:W3C:ENTITIES+Symbols+for+XHTML:EN')
 
 # -//W3C//ENTITIES Special for XHTML//EN
-register_dtd('urn:publicid:-:W3C:ENTITIES+Special+for+XHTML:EN',
-             get_abspath('xhtml-special.ent'))
+register_dtd(get_abspath('xhtml-special.ent'),
+             urn='urn:publicid:-:W3C:ENTITIES+Special+for+XHTML:EN')
 

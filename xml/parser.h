@@ -211,7 +211,7 @@ gchar *doctype_get_entity_value (DocType * doctype, gchar * entity_name);
 /***********************************
  * Add a urn/filename in URN table *
  ***********************************/
-void doctype_register_dtd (gchar * urn, gchar * filename);
+void doctype_register_dtd (gchar * filename, gchar * urn, gchar * uri);
 
 
 /*******************************************************

@@ -681,16 +681,26 @@ static PyTypeObject XMLParserType = {
 static PyObject *
 pyparser_register_dtd (PyObject * trash, PyObject * args, PyObject * kwds)
 {
-  static char *kwlist[] = { "urn", "filename", NULL };
-  char *urn, *filename;
+  static char *kwlist[] = { "filename", "urn", "uri" , NULL };
+  char *filename, *urn, *uri;
 
   /* Arguments */
-  if (!PyArg_ParseTupleAndKeywords (args, kwds, "ss", kwlist, &urn,
-                                    &filename))
+  if (!PyArg_ParseTupleAndKeywords (args, kwds, "s|zz", kwlist, &filename,
+                                    &urn, &uri))
     return NULL;
 
+
+  /* Arguments verification */
+  if (!urn && !uri)
+  {
+      PyErr_SetString (PyExc_TypeError,
+                       "urn and uri cannot be simultaneously None");
+      return NULL;
+  }
+
+
   /* Register */
-  doctype_register_dtd (urn, filename);
+  doctype_register_dtd (filename, urn, uri);
 
   Py_RETURN_NONE;
 }
@@ -702,7 +712,7 @@ pyparser_register_dtd (PyObject * trash, PyObject * args, PyObject * kwds)
 
 static PyMethodDef module_methods[] = {
   {"register_dtd", (PyCFunction) pyparser_register_dtd,
-   METH_VARARGS | METH_KEYWORDS, "Register a URN"},
+   METH_VARARGS | METH_KEYWORDS, "Register a URN or a URI"},
   {NULL}                        /* Sentinel */
 };
 

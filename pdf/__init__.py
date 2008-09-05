@@ -16,6 +16,8 @@
 
 # Import from itools
 from pdf import PDFFile
+from itools.utils import get_abspath
+from itools.xml import register_dtd
 
 # Import from reportlab
 try:
@@ -28,3 +30,9 @@ except ImportError:
 
 
 __all__ = ['PDFFile', 'rmltopdf', 'stl_rmltopdf']
+
+
+# Register "rml.dtd"
+register_dtd(get_abspath('rml.dtd'), uri='rml_1_0.dtd')
+register_dtd(get_abspath('rml.dtd'), uri='rml.dtd')
+

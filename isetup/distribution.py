@@ -75,6 +75,13 @@ class Dist(object):
         return self._metadata[metadata]
 
 
+    def safe_get_metadata(self, metadata):
+        self._init_metadata()
+        if not self.has_metadata(metadata):
+            return None
+        return self._metadata[metadata]
+
+
     def install(self):
         cache_dir = self.location[:-len(Path(self.location).get_name())]
         try:

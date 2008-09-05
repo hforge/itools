@@ -119,9 +119,8 @@ def _get_xquery(catalog, query=None, **kw):
                     xqueries.append(_make_PhraseQuery(info['type'], value,
                                                       info['prefix']))
                 else:
-                    # If there is a problem => an empty result
-                    xquery = Query()
-                    break
+                    # If there is a problem, ...
+                    raise ValueError, 'the field "%s" is not indexed' % name
             else:
                 xquery = Query(Query.OP_AND, xqueries)
         else:
@@ -218,16 +217,18 @@ class SearchResults(object):
                     if name in fields:
                         sorter.add(fields[name]['value'])
                     else:
-                        # If there is a problem => an empty result
-                        return []
+                        # If there is a problem, ...
+                        raise ValueError, ('the field "%s" is not indexed'
+                                           % name)
                 enquire.set_sort_by_key_then_relevance(sorter, reverse)
             else:
                 if sort_by in fields:
                     enquire.set_sort_by_value_then_relevance(
                                             fields[sort_by]['value'], reverse)
                 else:
-                    # If there is a problem => an empty result
-                    return []
+                    # If there is a problem, ...
+                    raise ValueError, ('the field "%s" is not indexed' %
+                                       sort_by)
         else:
             enquire.set_sort_by_relevance()
 

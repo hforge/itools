@@ -17,7 +17,7 @@
 
 # Import from isetup
 from distribution import Dist, ArchiveNotSupported
-from metadata import parse_pkginfo, get_package_version, SetupFile
+from metadata import parse_pkginfo, get_package_version, SetupFile, PKGINFOFile
 from packages import get_installed_info, packages_infos
 from packages_db import PACKAGES_DB
 from repository import parse_package_name, download, EXTENSIONS
@@ -28,6 +28,7 @@ __all__ = [
     'parse_pkginfo',
     'get_package_version',
     'SetupFile',
+    'PKGINFOFile',
     # Packages infos functions
     'get_installed_info',
     'packages_infos',

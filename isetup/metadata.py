@@ -20,7 +20,7 @@ from os.path import join
 
 # Import from itools
 from itools.datatypes import String, LanguageTag, Tokens
-from itools.handlers import ConfigFile
+from itools.handlers import ConfigFile, TextFile
 from itools.vfs import exists, is_folder
 
 
@@ -47,7 +47,7 @@ class SetupFile(ConfigFile):
 
 # Note : some .egg-info are directories and not files
 # XXX Implement it by subclassing itools.handlers.TextFile
-def parse_pkginfo(data):
+def parse_pkginfo(data, conservative = False):
     """Return a dict containing information from PKG-INFO formated data
     like .egg-info files.
 
@@ -61,7 +61,7 @@ def parse_pkginfo(data):
         if ': ' in line:
             (key, val) = line.split(': ', 1)
             # Don't record useless attribute
-            if val != 'UNKNOWN':
+            if val != 'UNKNOWN' or conservative:
                 # Comma separated string for lists
                 if key in attributes.keys():
                     if hasattr(attributes[key], 'append'):
@@ -74,6 +74,54 @@ def parse_pkginfo(data):
         elif last_line_key is not None:
             attributes[last_line_key] += '\n'+line
     return attributes
+
+
+class PKGINFOFile(TextFile):
+    """ holds a dict with values of type str or list """
+
+    attrs = {}
+
+
+    def new(self, **kw):
+        if 'attrs' not in kw.keys():
+            return
+
+        attrs = kw['attrs']
+
+        # Check types of values
+        type_error_msg = 'One of the given values is not compatible'
+        list_types = (type([]), type(()))
+        str_types = (type(''),)
+        for key, val in attrs.items():
+            if type(val) in str_types:
+                continue
+            elif type(val) in list_types:
+                for v in val:
+                    if type(v) not in str_types:
+                        raise TypeError, type_error_msg
+
+        # Now attrs is sure
+        self.attrs = attrs
+
+
+    def _load_state_from_file(self, file):
+        self.attrs = parse_pkginfo(file.read(), conservative=True)
+
+
+    def to_str(self):
+        data = ''
+        list_types = (type([]), type(()))
+        str_types = (type(''),)
+        for key, val in self.attrs.items():
+            if type(val) in str_types:
+                data += '%s: %s\n' % (key, val)
+            elif type(val) in list_types:
+                # a new line for each item of the list
+                for v in val:
+                    data += '%s: %s\n' % (key, v)
+
+        return data
+
 
 
 def parse_setupconf(package_dir):

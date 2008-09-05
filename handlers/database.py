@@ -40,6 +40,7 @@ class Database(object):
     def __init__(self):
         # The cache
         self.cache = {}
+        self.use_cache = True
         # The state, for transactions
         self.changed = set()
         self.added = set()
@@ -84,9 +85,11 @@ class Database(object):
         return list(names - set(removed) | set(added))
 
 
-    def get_handler(self, reference, cls=None, cache=True):
+    def get_handler(self, reference, cls=None, cache=None):
         fs, reference = cwd.get_fs_and_reference(reference)
         to_cache = cache
+        if to_cache is None:
+            to_cache = self.use_cache
 
         cache = self.cache
         # Check state
@@ -260,6 +263,18 @@ class Database(object):
                 self.removed.add(source)
             else:
                 self.removed.add(source)
+
+
+    #######################################################################
+    # API / Cache
+    #######################################################################
+    def set_use_cache(self, cache):
+        self.use_cache = bool(cache)
+
+
+    def add_to_cache(self, uri, handler):
+        if self.use_cache is True:
+            self.cache[uri] = handler
 
 
     #######################################################################

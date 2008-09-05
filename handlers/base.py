@@ -93,7 +93,7 @@ class Handler(object):
         return self.database.get_handler_names(uri)
 
 
-    def get_handler(self, reference, cls=None, cache=True):
+    def get_handler(self, reference, cls=None, cache=None):
         database = self.database
         if database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED

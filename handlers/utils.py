@@ -15,9 +15,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-
-src = ur"""ÄÅÁÀÂÃäåáàâãÇçÉÈÊËéèêëÍÌÎÏíìîïÑñÖÓÒÔÕØöóòôõøÜÚÙÛüúùûÝŸýÿ"""
-dst = ur"""AAAAAAaaaaaaCcEEEEeeeeIIIIiiiiNnOOOOOOooooooUUUUuuuuYŸyy"""
+src = (ur"""ÄÅÁÀÂÃĀäåáàâãāÇçÉÈÊËĒéèêëēÍÌÎÏĪíìîïīÑñÖÓÒÔÕØŌöóòôõøōÜÚÙÛŪüúùûū"""
+       ur"""ÝŸȲýÿȳ""")
+dst = (ur"""AAAAAAAaaaaaaaCcEEEEEeeeeeIIIIIiiiiiNnOOOOOOOoooooooUUUUUuuuuu"""
+       ur"""YYYyyy""")
 
 transmap = {}
 for i in range(len(src)):

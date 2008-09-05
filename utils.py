@@ -251,7 +251,7 @@ def setup(ext_modules=[]):
     author_name = config.get_value('author_name')
     # XXX Workaround buggy distutils ("sdist" don't likes unicode strings,
     # and "register" don't likes normal strings).
-    if sys.argv == ['setup.py', 'register']:
+    if 'register' in sys.argv or 'iregister' in sys.argv:
         author_name = unicode(author_name, 'utf-8')
     core.setup(name = package_name,
                version = version,

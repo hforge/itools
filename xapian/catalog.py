@@ -106,6 +106,33 @@ def _get_prefix(number):
 
 
 
+def _get_xquery(catalog, query=None, **kw):
+    fields = catalog._fields
+    # Build the query if it is passed through keyword parameters
+    if query is None:
+        if kw:
+            xqueries = []
+            # name must be indexed
+            for name, value in kw.items():
+                if name in fields:
+                    info = fields[name]
+                    xqueries.append(_make_PhraseQuery(info['type'], value,
+                                                      info['prefix']))
+                else:
+                    # If there is a problem => an empty result
+                    xquery = Query()
+                    break
+            else:
+                xquery = Query(Query.OP_AND, xqueries)
+        else:
+            xquery = Query('')
+    else:
+        xquery = catalog._query2xquery(query)
+
+    return xquery
+
+
+
 class Doc(object):
 
     def __init__(self, xdoc, fields):
@@ -122,9 +149,16 @@ class Doc(object):
 
 class SearchResults(object):
 
-    def __init__(self, enquire, fields):
+    def __init__(self, catalog, xquery):
+        self._catalog = catalog
+        self._xquery = xquery
+
+        # Enquire
+        enquire = Enquire(catalog._db)
+        enquire.set_query(xquery)
         self._enquire = enquire
-        self._fields = fields
+
+        # Max
         max = enquire.get_mset(0,0).get_matches_upper_bound()
         self._max = enquire.get_mset(0, max).size()
 
@@ -136,6 +170,14 @@ class SearchResults(object):
 
     # FIXME Obsolete
     get_n_documents = __len__
+
+
+    def search(self, query=None, **kw):
+        catalog = self._catalog
+
+        xquery = _get_xquery(catalog, query, **kw)
+        return SearchResults(catalog, Query(Query.OP_AND,
+                                            [self._xquery, xquery]))
 
 
     def get_documents(self, sort_by=None, reverse=False, start=0, size=0):
@@ -166,7 +208,7 @@ class SearchResults(object):
         By default all the documents are returned.
         """
         enquire = self._enquire
-        fields = self._fields
+        fields = self._catalog._fields
 
         # sort_by != None
         if sort_by is not None:
@@ -366,32 +408,8 @@ class Catalog(object):
     def search(self, query=None, **kw):
         """Launch a search in the catalog.
         """
-        fields = self._fields
-        # Build the query if it is passed through keyword parameters
-        if query is None:
-            if kw:
-                xqueries = []
-                # name must be indexed
-                for name, value in kw.items():
-                    if name in fields:
-                        info = fields[name]
-                        xqueries.append(_make_PhraseQuery(info['type'], value,
-                                                          info['prefix']))
-                    else:
-                        # If there is a problem => an empty result
-                        xquery = Query()
-                        break
-                else:
-                    xquery = Query(Query.OP_AND, xqueries)
-            else:
-                xquery = Query('')
-        else:
-            xquery = self._query2xquery(query)
-
-        enquire = Enquire(self._db)
-        enquire.set_query(xquery)
-
-        return SearchResults(enquire, fields)
+        xquery = _get_xquery(self, query, **kw)
+        return SearchResults(self, xquery)
 
 
     def get_unique_values(self, name):

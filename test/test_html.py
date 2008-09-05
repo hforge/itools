@@ -329,7 +329,7 @@ class SegmentationTestCase(TestCase):
 
         messages = [unit[0] for unit in doc.get_units()]
         expected = [u'this <em>word</em> is nice', u'hello world',
-                    u'<br/> bye <em>J. David Ibanez Palomar</em>']
+                    u'bye <em>J. David Ibanez Palomar</em>']
         self.assertEqual(messages, expected)
 
 

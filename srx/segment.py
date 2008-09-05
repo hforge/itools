@@ -24,7 +24,7 @@ TEXT, START_FORMAT, END_FORMAT = range(3)
 
 
 def _remove_spaces(left, center, right, keep_spaces):
-    # Move only "spaces" surrounding the center to left and right
+    # (1) Move only "spaces" surrounding the center to left and right
     if center:
         # Begin
         type, value, line = center[0]
@@ -63,7 +63,7 @@ def _remove_spaces(left, center, right, keep_spaces):
                     right.insert(0, (TEXT, text, line + value.count('\n')))
                 center[-1] = type, value, line
 
-    # Remove eventually all "double spaces" in the text
+    # (2) Remove eventually all "double spaces" in the text
     if not keep_spaces:
         for i, (type, value, line) in enumerate(center):
             if type == TEXT and value:
@@ -99,13 +99,24 @@ def _clean_message(message, keep_spaces):
     center = Message(message)
     right = Message()
 
-    # Remove the "spaces" TEXT after and before the message
+    # (1) Remove the "spaces" TEXT before and after the message
     while center and center[0][0] == TEXT and center[0][1].strip() == '':
         left.append(center.pop(0))
     while center and center[-1][0] == TEXT and center[-1][1].strip() == '':
         right.insert(0, center.pop())
 
-    # Remove enclosing format
+    # (2) Remove start/end couples before and after the message
+    while (len(center) >= 2 and center[0][0] == START_FORMAT and
+           center[1][0] == END_FORMAT and center[0][1][1] == center[1][1][1]):
+           left.append(center.pop(0))
+           left.append(center.pop(0))
+    while (len(center) >= 2 and center[-2][0] == START_FORMAT and
+           center[-1][0] == END_FORMAT and
+           center[-2][1][1] == center[-1][1][1]):
+           right.append(center.pop())
+           right.append(center.pop())
+
+    # (3) Remove enclosing format
     while center:
         if (center[0][0] == START_FORMAT and center[-1][0] == END_FORMAT and
             center[0][1][1] == center[-1][1][1]):
@@ -114,7 +125,7 @@ def _clean_message(message, keep_spaces):
         else:
             break
 
-    # Remove the spaces
+    # (4) Remove the spaces
     left, center, right = _remove_spaces(left, center, right, keep_spaces)
 
     return left, center, right
@@ -211,13 +222,13 @@ def get_segments(message, keep_spaces=False, srx_handler=None):
                                             srx_handler):
                 yield value, line
         else:
-            # Is center good ?
+            # Is there a human text in this center ?
             for type, value, line in center:
                 if type == TEXT and value.strip():
                     yield center.to_str(), center.get_line()
                     break
             else:
-                # Not good!
+                # No !
                 todo.extend(center)
 
         # And finally, the units in start / end formats
@@ -243,13 +254,13 @@ def translate_message(message, catalog, keep_spaces=False, srx_handler=None):
             center = translate_message(center, catalog, keep_spaces,
                                        srx_handler)
         else:
-            # Is center good ?
+            # Is there a human text in this center ?
             for type, value, line in center:
                 if type == TEXT and value.strip():
                     center = catalog.gettext(center.to_str())
                     break
             else:
-                # Not Good
+                # No !
                 _translate_format(center, catalog)
                 center = center.to_str()
 

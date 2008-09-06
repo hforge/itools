@@ -141,13 +141,13 @@ class BaseForm(BaseView):
             datatype = schema[name]
             cls = []
             if getattr(datatype, 'mandatory', False):
-                cls.append('field_required')
+                cls.append('field_is_required')
             if submit:
                 try:
                     value = context.get_form_value(name, type=datatype)
                 except FormError:
                     value = context.get_form_value(name)
-                    cls.append('missing')
+                    cls.append('field_is_missing')
             else:
                 value = self.get_value(resource, context, name, datatype)
             if isinstance(datatype, Enumerate):

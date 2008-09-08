@@ -165,7 +165,9 @@ class FolderTestCase(TestCase):
     def test_nocache_change(self):
         """Only can change cached files.
         """
-        file = self.root.get_handler('tests/toto.txt', cache=False)
+        self.database.set_use_cache(False)
+        file = self.root.get_handler('tests/toto.txt')
+        self.database.set_use_cache(True)
         self.assertRaises(RuntimeError, file.set_data, u'Oh dear\n')
 
 

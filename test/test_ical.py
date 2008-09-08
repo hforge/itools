@@ -592,14 +592,14 @@ class icalTableTestCase(unittest.TestCase):
         src.load_state_from_string(content)
         src = StringIO(src.to_str())
         cal = icalendarTable()
-        cal._load_state_from_ical_file(src)
+        cal.load_state_from_ical_file(src)
         self.cal1 = cal
 
         src = icalendar()
         src.load_state_from_string(content2)
         src = StringIO(src.to_str())
         cal = icalendarTable()
-        cal._load_state_from_ical_file(src)
+        cal.load_state_from_ical_file(src)
         self.cal2 = cal
 
 

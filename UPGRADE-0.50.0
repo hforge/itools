@@ -95,6 +95,16 @@ And the "DomainAware" class has dissapeared:
   POFile.get_messages  POFile.get_units
 
 
+itools.ical
+===========
+
+API changes:
+
+  # Before
+  icalendarTable._load_state_from_ical_file
+
+  # Now
+  icalendarTable.load_state_from_ical_file
 
 
 itools.stl
@@ -228,6 +238,13 @@ itools.xml
 (2) The namespaces API has changed.
 
 TODO
+
+
+
+
+
+
+
 
 
 

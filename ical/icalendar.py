@@ -1032,9 +1032,9 @@ class icalendarTable(Table):
 
 
     #########################################################################
-    # Load State
+    # API
     #########################################################################
-    def _load_state_from_ical_file(self, file):
+    def load_state_from_ical_file(self, file):
         """Deserialize an ical file, generally named .ics
         Output data structure is a table.
         """

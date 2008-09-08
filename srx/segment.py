@@ -113,8 +113,8 @@ def _clean_message(message, keep_spaces):
     while (len(center) >= 2 and center[-2][0] == START_FORMAT and
            center[-1][0] == END_FORMAT and
            center[-2][1][1] == center[-1][1][1]):
-           right.append(center.pop())
-           right.append(center.pop())
+           right.insert(0, center.pop())
+           right.insert(0, center.pop())
 
     # (3) Remove enclosing format
     while center:

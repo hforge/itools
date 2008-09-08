@@ -296,7 +296,7 @@ class icalendar(TextFile):
     #########################################################################
     # New
     #########################################################################
-    def _init_ical(self):
+    def reset(self):
         self.properties = {}
         self.components = {}
         self.catalog = MemoryCatalog()
@@ -306,8 +306,6 @@ class icalendar(TextFile):
 
 
     def new(self):
-        self._init_ical()
-
         properties = (
             ('VERSION', {}, u'2.0'),
             ('PRODID', {}, u'-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN')
@@ -323,9 +321,6 @@ class icalendar(TextFile):
     # Load State
     #########################################################################
     def _load_state_from_file(self, file):
-        # Initialize the data structures
-        self._init_ical()
-
         # Read the data and figure out the encoding
         data = file.read()
         encoding = guess_encoding(data)
@@ -1024,8 +1019,8 @@ class icalendarTable(Table):
     schema['type'] = String(index='keyword')
 
 
-    def new(self):
-        Table.new(self)
+    def reset(self):
+        Table.reset(self)
 
         properties = (
             ('VERSION', {}, u'2.0'),
@@ -1043,8 +1038,8 @@ class icalendarTable(Table):
         """Deserialize an ical file, generally named .ics
         Output data structure is a table.
         """
+        self.reset()
         self.set_changed()
-        self.new()
 
         properties = {}
         components = {}

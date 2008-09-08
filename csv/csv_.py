@@ -76,7 +76,7 @@ class CSVFile(TextFile):
     #########################################################################
     # Load & Save
     #########################################################################
-    def new(self, **kw):
+    def reset(self):
         self.lines = []
         self.n_lines = 0
         # Initialize the catalog if needed (Index&Search)
@@ -92,10 +92,11 @@ class CSVFile(TextFile):
                     self.catalog.add_index(column, field)
 
 
-    def _load_state_from_file(self, file):
-        # Initialize
-        self.new()
+    def new(self):
+        pass
 
+
+    def _load_state_from_file(self, file):
         # Read the data, and find out the encoding
         data = file.read()
         self.encoding = guess_encoding(data)

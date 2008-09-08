@@ -52,6 +52,7 @@ class File(Handler):
 
     def __init__(self, ref=None, string=None, **kw):
         if ref is None:
+            self.reset()
             self.dirty = datetime.now()
             if string is not None:
                 # A handler from a byte string
@@ -62,6 +63,10 @@ class File(Handler):
         else:
             # Calculate the URI
             self.uri = get_absolute_reference(ref)
+
+
+    def reset(self):
+        pass
 
 
     def new(self, data=''):
@@ -89,6 +94,7 @@ class File(Handler):
 
 
     def load_state(self):
+        self.reset()
         # TODO Use "with" once we move to Python 2.5 and "urllib.urlopen"
         # supports it
         file = vfs.open(self.uri)
@@ -110,6 +116,7 @@ class File(Handler):
 
     def load_state_from_file(self, file):
         self.set_changed()
+        self.reset()
         self._load_state_from_file(file)
 
 

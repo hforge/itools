@@ -398,7 +398,7 @@ class Table(File):
     #######################################################################
     # Handlers
     #######################################################################
-    def new(self):
+    def reset(self):
         self.records = []
         self.added_records = []
         self.removed_records = []
@@ -411,8 +411,11 @@ class Table(File):
                 self.catalog.add_index(name, field)
 
 
+    def new(self):
+        pass
+
+
     def _load_state_from_file(self, file):
-        self.new()
         # Load the records
         records = self.records
         n = 0

@@ -21,7 +21,7 @@ from rfc822 import Message
 
 # Import from itools
 from itools.datatypes import String, LanguageTag, Tokens
-from itools.handlers import ConfigFile, TextFile
+from itools.handlers import ConfigFile, TextFile, register_handler_class
 from itools.vfs import exists, is_folder
 
 
@@ -110,6 +110,8 @@ class RFC822File(TextFile):
 
 class PKGINFOFile(RFC822File):
 
+    class_mimetypes = ['text/x-egg-info']
+
     schema = {
         'metadata-version': String(default=''),
         'name': String(default=''),
@@ -131,6 +133,9 @@ class PKGINFOFile(RFC822File):
         'provides': String(default=''),
         'obsoletes': String(default=''),
     }
+
+
+register_handler_class(PKGINFOFile)
 
 
 def parse_setupconf(package_dir):

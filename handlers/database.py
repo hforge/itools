@@ -85,11 +85,8 @@ class Database(object):
         return list(names - set(removed) | set(added))
 
 
-    def get_handler(self, reference, cls=None, cache=None):
+    def get_handler(self, reference, cls=None):
         fs, reference = cwd.get_fs_and_reference(reference)
-        to_cache = cache
-        if to_cache is None:
-            to_cache = self.use_cache
 
         cache = self.cache
         # Check state
@@ -150,7 +147,7 @@ class Database(object):
         handler.database = self
         handler.uri = reference
         # Update the cache
-        if to_cache is True:
+        if self.use_cache is True:
             cache[reference] = handler
 
         return handler

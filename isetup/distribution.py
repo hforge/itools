@@ -21,12 +21,13 @@ from os.path import join, split
 from subprocess import call
 from sys import executable
 from tarfile import open as tar_open, is_tarfile, TarError
+from tempfile import TemporaryFile
 from zipfile import ZipFile, error as zip_error, LargeZipFile
 
 # Import from itools
 from itools.uri import Path
 from itools.vfs import exists, make_file
-from metadata import parse_pkginfo
+from metadata import PKGINFOFile
 from repository import EXTENSIONS
 
 
@@ -53,10 +54,9 @@ class Dist(object):
         if self._metadata is None:
             pkg_info = self.bundle.find_lowest_file('PKG-INFO')
             if pkg_info != None:
-                self._metadata = \
-                        parse_pkginfo(self.bundle.read_file(pkg_info))
+                self._metadata = PKGINFOFile(self.bundle.get_file(pkg_info))
             else:
-                self._metadata = {}
+                self._metadata = PKGINFOFile()
             setuppy = self.bundle.find_lowest_file('setup.py')
             if setuppy != None:
                 setuppy_data = self.bundle.read_file(setuppy)
@@ -67,19 +67,19 @@ class Dist(object):
 
     def has_metadata(self, metadata):
         self._init_metadata()
-        return metadata in self._metadata
+        return metadata in self._metadata.attrs.keys()
 
 
     def get_metadata(self, metadata):
         self._init_metadata()
-        return self._metadata[metadata]
+        return self._metadata.attrs[metadata]
 
 
     def safe_get_metadata(self, metadata):
         self._init_metadata()
         if not self.has_metadata(metadata):
             return None
-        return self._metadata[metadata]
+        return self._metadata.attrs[metadata]
 
 
     def install(self):
@@ -143,6 +143,10 @@ class TarBundle(Bundle):
         return self.handle.extractfile(filename).read()
 
 
+    def get_file(self, filename):
+        return self.handle.extractfile(filename)
+
+
 
 class ZipBundle(Bundle):
 
@@ -163,4 +167,10 @@ class ZipBundle(Bundle):
 
     def read_file(self, filename):
         return self.handle.read(filename)
+
+
+    def get_file(self, filename):
+        handler = TemporaryFile()
+        handler.write(self.handle.read(filename))
+        return handler
 

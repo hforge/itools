@@ -25,7 +25,7 @@ from sys import path
 # Import from itools
 from itools.vfs import get_ctime
 from itools.vfs import get_names, exists, is_file, is_folder
-from metadata import get_package_version, parse_setupconf, parse_pkginfo
+from metadata import get_package_version, parse_setupconf, PKGINFOFile
 from packages_db import PACKAGES_DB
 
 
@@ -37,17 +37,15 @@ def get_setupconf(package):
 
 
 def get_egginfo(egginfo):
-    if is_file(egginfo) and egginfo.endswith('.egg-info'):
-        attrs = parse_pkginfo(open(egginfo).read())
-        attrs['name'] = attrs['Name']
-        attrs['version'] = attrs['Version']
-        return attrs
-    elif is_folder(egginfo) and egginfo.endswith('.egg-info'):
-        attrs = parse_pkginfo(open(join(egginfo, 'PKG-INFO')).read())
-        attrs['name'] = attrs['Name']
-        attrs['version'] = attrs['Version']
-        return attrs
-    return None
+    if is_folder(egginfo) and egginfo.endswith('.egg-info'):
+        egginfo = join(egginfo, 'PKG-INFO')
+    elif not (is_file(egginfo) and egginfo.endswith('.egg-info')):
+        return None
+
+    handler = PKGINFOFile(egginfo)
+    handler.load_state()
+    attrs = handler.attrs
+    return attrs
 
 
 def get_minpackage(dir):
@@ -60,12 +58,12 @@ def get_minpackage(dir):
 def can_import(package, origin=None):
     if origin and origin == 'E' and package.has_key('module'):
         test_import = [package['module']]
-    elif 'Provides' in package:
+    elif 'provides' in package:
         test_import = []
-        for provided_module in package['Provides']:
+        for provided_module in package['provides']:
             test_import.append(split_provision(provided_module)[1])
     else:
-        # We can try the name if the project has not filled Provides
+        # We can try the name if the project has not filled provides
         # field
         test_import = [package['name']]
 
@@ -132,11 +130,11 @@ def packages_infos(quiet, module_name=None):
                 if not egg_version.startswith(db_version):
                     continue
                 data = get_egginfo(join(site, egg_info))
-                if module_name and module_name != data['Name']:
+                if module_name and module_name != data['name']:
                     continue
                 data['module'] = db_module
-                add_package(site, (data['Name'], data, 'E'))
-                recorded_packages.append(data['Name'])
+                add_package(site, (data['name'], data, 'E'))
+                recorded_packages.append(data['name'])
                 name_mask.add(db_name)
                 version_mask.add(egg_version)
                 module_mask.add(db_module)
@@ -161,11 +159,9 @@ def packages_infos(quiet, module_name=None):
                     continue
                 # Why the first?
                 data = get_egginfo(join(site, package))
-                if (data['Name'] in recorded_packages or
-                   (module_name and data['Name'] != module_name)):
+                if (data['name'] in recorded_packages or
+                   (module_name and data['name'] != module_name)):
                     continue
-                del data['Name']
-                del data['Version']
                 add_package(site, (data['name'], data, 'E'))
                 recorded_packages.append(data['name'])
                 continue

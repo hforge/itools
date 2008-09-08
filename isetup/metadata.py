@@ -17,6 +17,7 @@
 
 # Import from the Standard Library
 from os.path import join
+from rfc822 import Message
 
 # Import from itools
 from itools.datatypes import String, LanguageTag, Tokens
@@ -45,41 +46,14 @@ class SetupFile(ConfigFile):
     }
 
 
-# Note : some .egg-info are directories and not files
-# XXX Implement it by subclassing itools.handlers.TextFile
-def parse_pkginfo(data, conservative = False):
-    """Return a dict containing information from PKG-INFO formated data
-    like .egg-info files.
-
-    >>> filename = '/usr/lib/python2.5/site-packages/pexpect-2.1.egg-info'
-    >>> parse_pkginfo(open(filename).read())
-    {'Author': 'Noah Spurrier', 'Author-email': 'noah@noah.org', ...}
-    """
-    attributes = {}
-    last_line_key = None
-    for line in data.splitlines():
-        if ': ' in line:
-            (key, val) = line.split(': ', 1)
-            # Don't record useless attribute
-            if val != 'UNKNOWN' or conservative:
-                # Comma separated string for lists
-                if key in attributes.keys():
-                    if hasattr(attributes[key], 'append'):
-                        attributes[key].append(val)
-                    else:
-                        attributes[key] = [val]
-                else:
-                    attributes[key] = val
-                last_line_key = key
-        elif last_line_key is not None:
-            attributes[last_line_key] += '\n'+line
-    return attributes
-
-
-class PKGINFOFile(TextFile):
-    """ holds a dict with values of type str or list """
+class RFC822File(TextFile):
+    """ holds a rfc822 Message """
 
     attrs = {}
+    message = None
+
+    list_types = (type([]), type(()))
+    str_types = (type(''),)
 
 
     def new(self, **kw):
@@ -90,25 +64,35 @@ class PKGINFOFile(TextFile):
 
         # Check types of values
         type_error_msg = 'One of the given values is not compatible'
-        list_types = (type([]), type(()))
-        str_types = (type(''),)
         for key, val in attrs.items():
-            if type(val) in str_types:
-                continue
-            elif type(val) in list_types:
-                for v in val:
-                    if type(v) not in str_types:
-                        raise TypeError, type_error_msg
+            if self.schema is None or self.schema.has_key(key):
+                if type(val) in self.str_types:
+                    continue
+                elif type(val) in self.list_types:
+                    for v in val:
+                        if type(v) not in self.str_types:
+                            raise TypeError, type_error_msg
+            else:
+                del attrs[key]
+
 
         # Now attrs is sure
         self.attrs = attrs
 
 
     def _load_state_from_file(self, file):
-        self.attrs = parse_pkginfo(file.read(), conservative=True)
+        self.attrs = {}
+        self.message = Message(file)
+        for k in self.message.keys():
+            if self.schema is None or self.schema.has_key(k):
+                if len(self.message.getheaders(k)) == 1:
+                    self.attrs[k] = self.message.getheader(k)
+                else:
+                    self.attrs[k] = self.message.getheaders(k)
 
 
     def to_str(self):
+        # XXX test if return str(self.message) is enough
         data = ''
         list_types = (type([]), type(()))
         str_types = (type(''),)
@@ -122,6 +106,31 @@ class PKGINFOFile(TextFile):
 
         return data
 
+
+
+class PKGINFOFile(RFC822File):
+
+    schema = {
+        'metadata-version': String(default=''),
+        'name': String(default=''),
+        'version': String(default=''),
+        'summary': String(default=''),
+        'author-email': String(default=''),
+        'license': String(default=''),
+        'download-url': String(default=''),
+
+        # Optional
+        'description': String(default=''),
+        'keywords': String(default=''),
+        'home-page': String(default=''),
+        'author': String(default=''),
+        'platform': String(default=''),
+        'supported-platform': String(default=''),
+        'classifier': String(default=''),
+        'requires': String(default=''),
+        'provides': String(default=''),
+        'obsoletes': String(default=''),
+    }
 
 
 def parse_setupconf(package_dir):

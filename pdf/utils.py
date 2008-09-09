@@ -26,7 +26,12 @@ from math import floor
 from reportlab.lib import colors
 from reportlab.lib.units import inch, cm, mm, pica
 from reportlab.platypus import Paragraph as Platypus_paragraph
+from reportlab.platypus.flowables import Flowable
+from reportlab.platypus.frames import Frame, ShowBoundaryValue
 from reportlab.platypus.paraparser import ParaFrag
+from copy import deepcopy
+
+FRAME_PADDINGS_KEYS = ('topPadding', 'bottomPadding', 'leftPadding', 'rightPadding')
 
 encoding = 'UTF-8'
 URI = 'http://www.w3.org/1999/xhtml'
@@ -174,6 +179,14 @@ def font_value(str_value, style_size = 12):
     return value
 
 
+def reportlab_value(value, current_value, default=None):
+    size = format_size(value, default)
+    if isinstance(size, str) and size.endswith('%'):
+        size = get_int_value(size[:-1])
+        size = pc_float(size, current_value)
+    return size
+
+
 def format_size(value, default=None):
     """
        Return the reportlab value of value
@@ -276,4 +289,84 @@ class Paragraph(Platypus_paragraph):
                     pages = str(self.context.number_of_pages)
                     self.frags[0].text = self.frags[0].text.replace(self.context.pagetotal, pages)
 
+        width = getattr(self.style, 'width', None)
+        if width is not None:
+            if width.endswith('%'):
+                availWidth = reportlab_value(width, availWidth)
         return Platypus_paragraph.wrap(self, availWidth, availHeight)
+
+
+class Div(Flowable):
+
+    """
+    """
+
+    def __init__(self,  story, frame_attrs=None, height=None, width=None,
+                 pos_x=None, pos_y=None):
+        Flowable.__init__(self)
+        # get on story
+        self.div_story = story
+        # Backup
+        self.copy_div_story = deepcopy(self.div_story)
+
+        # set frame style
+        self.frame_attrs = {'leftPadding': 0, 'bottomPadding': 0,
+                           'rightPadding': 0, 'topPadding': 0,
+                           'showBoundary': 0}
+
+        if frame_attrs is not None:
+            self.frame_attrs.update(frame_attrs)
+
+        border = self.frame_attrs['showBoundary']
+        if isinstance(border, ShowBoundaryValue):
+            border = border[1]
+
+        if border:
+            for padding_attr in FRAME_PADDINGS_KEYS:
+                self.frame_attrs[padding_attr] += border
+        self.frame_width = width
+
+
+    def draw(self):
+        # set position for the frame
+        self.pos_x, self.pos_y = self._get_current_position(self.canv)
+        height = self.drawHeight + self.frame_attrs['leftPadding'] + self.frame_attrs['rightPadding']
+        width = self.drawWidth + self.frame_attrs['topPadding'] + self.frame_attrs['bottomPadding']
+
+        self.frame = Frame(self.pos_x, self.pos_y, width, height, **self.frame_attrs)
+        self.copy_div_story = deepcopy(self.div_story)
+        self.frame.addFromList(self.copy_div_story, self.canv)
+
+
+    def wrap(self, availWidth, availHeight):
+        self.drawWidth = self.width or availWidth
+        self.drawWidth -= self.frame_attrs['leftPadding']
+        self.drawWidth -= self.frame_attrs['rightPadding']
+        self.drawHeight = 0
+        at_top = True
+        for element in self.div_story:
+            if at_top:
+                at_top = False
+            else:
+                self.drawHeight += element.getSpaceBefore()
+            flowHeight = element.wrap(availWidth, availHeight-self.drawHeight)[1]
+            self.drawHeight += flowHeight
+            self.drawHeight += element.getSpaceAfter()
+        self.drawHeight += self.frame_attrs['topPadding']
+        self.drawHeight += self.frame_attrs['bottomPadding']
+        return (self.drawWidth, self.drawHeight)
+
+
+    def _align_frame(self, available_width, hAlign):
+        if hAlign == 'CENTER':
+            self.pox_x = (available_width - self.frame_width) / 2 + self.pos_x
+        elif hAlign == 'RIGHT':
+            self.pos_x = available_width - self.frame_width + self.pox_x
+
+
+    def _get_current_position(self, canv):
+        return (canv._x, canv._y)
+
+
+    def _get_current_absolute_position(self, canv):
+        return canv.absolutePosition(canv._x, canv._y)

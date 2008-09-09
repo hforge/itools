@@ -42,7 +42,7 @@ from style import (build_paragraph_style, get_table_style, makeTocHeaderStyle,
                    get_align, build_inline_style, build_body_style)
 from utils import (FONT, URI, check_image, exist_attribute, font_value,
                    format_size, get_color, get_int_value, normalize,
-                   Paragraph, pc_float, stream_next, join_content)
+                   Paragraph, pc_float, stream_next, join_content, Div)
 
 #Import from the reportlab Library
 from reportlab.lib.pagesizes import LETTER
@@ -464,6 +464,9 @@ def body_stream(stream, _tag_name, _attributes, context):
             elif tag_name == 'nobreak':
                 temp_story = story
                 story = []
+            elif tag_name == 'div':
+                story.append(Div(body_stream(stream, tag_name, attributes,
+                                             context)))
             elif tag_name in PHRASE:
                 story.extend(paragraph_stream(stream, tag_name, attributes,
                                               context))

@@ -22,6 +22,7 @@
 from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT, TA_JUSTIFY
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import cm
+from reportlab.platypus.frames import ShowBoundaryValue
 from utils import (URI, FONT, font_value, format_size, get_color_as_hexa,
                    get_color, get_int_value)
 
@@ -34,15 +35,25 @@ TAB_H_ALIGN = {'left': 'LEFT', 'right': 'RIGHT', 'center': 'CENTER',
 H_ALIGN = ('left', 'right', 'center')
 V_ALIGN = ('top', 'middle', 'bottom')
 
+HEADING = ('h1', 'h2', 'h3', 'h4', 'h5', 'h6')
+
 P_PADDINGS = {'padding-top' : 'spaceBefore', 'padding-bottom': 'spaceAfter',
               'padding-left': 'leftIndent', 'padding-right': 'rightIndent'}
-
-HEADING = ('h1', 'h2', 'h3', 'h4', 'h5', 'h6')
 
 TABLE_PADDINGS = { 'padding-top':'TOPPADDING',
                    'padding-bottom': 'BOTTOMPADDING',
                    'padding-left': 'LEFTPADDING',
                    'padding-right': 'RIGHTPADDING'}
+
+FRAME_PADDINGS = {'padding-top': 'topPadding',
+                  'padding-bottom': 'bottomPadding',
+                  'padding-left': 'leftPadding',
+                  'padding-right': 'rightPadding'}
+
+BODY_MARGINS = {'margin-top': 'topMargin',
+                'margin-bottom': 'bottomMargin',
+                'margin-left': 'leftMargin',
+                'margin-right': 'rightMargin'}
 
 
 def get_align(attributes):
@@ -258,6 +269,53 @@ def build_inline_style(context, tag_name, style_css):
                 style[tag] = attrs
     for tag, attrs in style.iteritems():
         context.tag_stack[0].append((tag, attrs))
+
+
+def frame_padding_style(key, value):
+    style_attr = {}
+    size = format_size(value, None)
+    if size:
+        if key == 'padding':
+            for padding in FRAME_PADDINGS.values():
+                style_attr[padding] = size
+        elif key in FRAME_PADDINGS.keys():
+            style_attr[FRAME_PADDINGS[key]] = size
+    return style_attr
+
+
+def body_margin_style(key, value):
+    style_attr = {}
+    size = format_size(value, None)
+    if size:
+        if key == 'margin':
+            for margin in BODY_MARGINS.values():
+                style_attr[margin] = size
+        elif key in BODY_MARGINS.keys():
+            style_attr[BODY_MARGINS[key]] = size
+    return style_attr
+
+
+def build_body_style(context, style_css):
+    frame_attr = {}
+    border = {}
+    # The default style is Normal
+    parent_style_name = 'Normal'
+    bulletText = None
+
+    for key, value in style_css.iteritems():
+        if key.startswith('border'):
+            border.update(p_border_style(key, value))
+        if key in ('height', 'width'):
+            frame_attr[key] = value
+        elif key.startswith('padding'):
+            frame_attr.update(frame_padding_style(key, value))
+        elif key.startswith('margin'):
+            frame_attr.update(body_margin_style(key, value))
+    if border:
+        sb = ShowBoundaryValue(get_color(border.get('borderColor')),
+                               border.get('borderWidth'))
+        frame_attr['showBoundary'] = sb
+    return frame_attr
 
 
 def get_table_style(style_css, attributes, start, stop):

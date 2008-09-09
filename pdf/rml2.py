@@ -39,7 +39,7 @@ import itools.http
 # Internal import
 from doctemplate import MySimpleDocTemplate, MyDocTemplate
 from style import (build_paragraph_style, get_table_style, makeTocHeaderStyle,
-                   get_align, build_inline_style)
+                   get_align, build_inline_style, build_body_style)
 from utils import (FONT, URI, check_image, exist_attribute, font_value,
                    format_size, get_color, get_int_value, normalize,
                    Paragraph, pc_float, stream_next, join_content)
@@ -79,8 +79,6 @@ PHRASE = ('code', 'em', 'strong')
 FONT_STYLE = ('b', 'big', 'i', 'small', 'tt')
 DEPRECATED = ('u',)
 INLINE = FONT_STYLE + PHRASE + SPECIAL + DEPRECATED
-
-PADDINGS = ('LEFTPADDING', 'RIGHTPADDING', 'BOTTOMPADDING', 'TOPPADDING')
 
 # ERROR MESSAGES
 MSG_TAG_NOT_SUPPORTED = '%s: line %s tag "%s" is currently not supported.'
@@ -122,6 +120,7 @@ class Context(object):
         self.pagenumber = XMLContent.encode('#pagenumber/>')
         self.pagetotal = XMLContent.encode('#pagetotal/>')
         self.multibuild = False
+        self.doc_attr = {'pagesize': LETTER}
 
 
     def init_base_style_sheet(self):
@@ -342,9 +341,9 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
             story = story[:place] + create_toc(context) + story[place:]
 
         # Create doc template
-        doc = MyDocTemplate(pdf_stream, context, pagesize=LETTER)
+        doc = MyDocTemplate(pdf_stream, context, **context.doc_attr)
     else:
-        doc = MySimpleDocTemplate(pdf_stream, context, pagesize=LETTER)
+        doc = MySimpleDocTemplate(pdf_stream, context, **context.doc_attr)
 
     # Record PDF informations
     doc.author = informations.get('author', '')
@@ -418,6 +417,8 @@ def body_stream(stream, _tag_name, _attributes, context):
         stream : parser stream
     """
 
+    body_style = context.get_css_props()
+    context.doc_attr.update(build_body_style(context, body_style))
     temp_story = None
     story = []
     while True:

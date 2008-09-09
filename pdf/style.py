@@ -159,7 +159,7 @@ def p_font_style(key, value, context):
 def p_padding_style(key, value):
     style_attr = {}
     size = format_size(value, None)
-    if size:
+    if size is not None:
         if key == 'padding':
             for padding in P_PADDINGS.values():
                 style_attr[padding] = size
@@ -171,7 +171,7 @@ def p_padding_style(key, value):
 def table_padding_style(key, value, start, stop):
     style = []
     size = format_size(value, None)
-    if size:
+    if size is not None:
         if key == 'padding':
             for padding in TABLE_PADDINGS.values():
                 style.append((padding, start, stop, size))
@@ -232,6 +232,10 @@ def build_paragraph_style(context, element, style_css):
             style_attr.update(p_padding_style(key, value))
         elif key.startswith('line-height'):
             style_attr['leading'] = format_size(value)
+        elif key == 'width':
+            style_attr['width'] = value
+        elif key == 'float':
+            style_attr['float'] = value
 
     # Overload the attributes values
     for key, attr_value in element[1].iteritems():
@@ -274,7 +278,7 @@ def build_inline_style(context, tag_name, style_css):
 def frame_padding_style(key, value):
     style_attr = {}
     size = format_size(value, None)
-    if size:
+    if size is not None:
         if key == 'padding':
             for padding in FRAME_PADDINGS.values():
                 style_attr[padding] = size
@@ -286,7 +290,7 @@ def frame_padding_style(key, value):
 def body_margin_style(key, value):
     style_attr = {}
     size = format_size(value, None)
-    if size:
+    if size is not None:
         if key == 'margin':
             for margin in BODY_MARGINS.values():
                 style_attr[margin] = size
@@ -312,8 +316,8 @@ def build_body_style(context, style_css):
         elif key.startswith('margin'):
             frame_attr.update(body_margin_style(key, value))
     if border:
-        sb = ShowBoundaryValue(get_color(border.get('borderColor')),
-                               border.get('borderWidth'))
+        sb = ShowBoundaryValue(get_color(border.get('borderColor', 'black')),
+                               border.get('borderWidth', 1))
         frame_attr['showBoundary'] = sb
     return frame_attr
 

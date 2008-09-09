@@ -301,8 +301,8 @@ class Div(Flowable):
     """
     """
 
-    def __init__(self,  story, frame_attrs=None, height=None, width=None,
-                 pos_x=None, pos_y=None):
+    def __init__(self, story, height=None, width=None,
+                 pos_x=None, pos_y=None, frame_attrs={}):
         Flowable.__init__(self)
         # get on story
         self.div_story = story
@@ -317,10 +317,14 @@ class Div(Flowable):
         if frame_attrs is not None:
             self.frame_attrs.update(frame_attrs)
 
+        for margin in ('topMargin', 'bottomMargin', 'leftMargin',
+                       'rightMargin'):
+            if self.frame_attrs.has_key(margin):
+                del self.frame_attrs[margin]
+
         border = self.frame_attrs['showBoundary']
         if isinstance(border, ShowBoundaryValue):
-            border = border[1]
-
+            border = border.width
         if border:
             for padding_attr in FRAME_PADDINGS_KEYS:
                 self.frame_attrs[padding_attr] += border

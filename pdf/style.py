@@ -299,7 +299,7 @@ def body_margin_style(key, value):
     return style_attr
 
 
-def build_body_style(context, style_css):
+def build_frame_style(context, style_css):
     frame_attr = {}
     border = {}
     # The default style is Normal
@@ -315,6 +315,7 @@ def build_body_style(context, style_css):
             frame_attr.update(frame_padding_style(key, value))
         elif key.startswith('margin'):
             frame_attr.update(body_margin_style(key, value))
+
     if border:
         sb = ShowBoundaryValue(get_color(border.get('borderColor', 'black')),
                                border.get('borderWidth', 1))

@@ -39,7 +39,7 @@ import itools.http
 # Internal import
 from doctemplate import MySimpleDocTemplate, MyDocTemplate
 from style import (build_paragraph_style, get_table_style, makeTocHeaderStyle,
-                   get_align, build_inline_style, build_body_style)
+                   get_align, build_inline_style, build_frame_style)
 from utils import (FONT, URI, check_image, exist_attribute, font_value,
                    format_size, get_color, get_int_value, normalize,
                    Paragraph, pc_float, stream_next, join_content, Div)
@@ -418,7 +418,7 @@ def body_stream(stream, _tag_name, _attributes, context):
     """
 
     body_style = context.get_css_props()
-    context.doc_attr.update(build_body_style(context, body_style))
+    context.doc_attr.update(build_frame_style(context, body_style))
     temp_story = None
     story = []
     while True:
@@ -465,8 +465,10 @@ def body_stream(stream, _tag_name, _attributes, context):
                 temp_story = story
                 story = []
             elif tag_name == 'div':
+                style = context.get_css_props()
+                div_attrs = build_frame_style(context, style)
                 story.append(Div(body_stream(stream, tag_name, attributes,
-                                             context)))
+                                             context), frame_attrs=div_attrs))
             elif tag_name in PHRASE:
                 story.extend(paragraph_stream(stream, tag_name, attributes,
                                               context))

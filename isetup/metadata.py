@@ -57,27 +57,8 @@ class RFC822File(TextFile):
 
 
     def new(self, **kw):
-        if 'attrs' not in kw.keys():
-            return
-
-        attrs = kw['attrs']
-
-        # Check types of values
-        type_error_msg = 'One of the given values is not compatible'
-        for key, val in attrs.items():
-            if self.schema is None or self.schema.has_key(key):
-                if type(val) in self.str_types:
-                    continue
-                elif type(val) in self.list_types:
-                    for v in val:
-                        if type(v) not in self.str_types:
-                            raise TypeError, type_error_msg
-            else:
-                del attrs[key]
-
-
-        # Now attrs is sure
-        self.attrs = attrs
+        if 'attrs' in kw.keys():
+            self.set_attrs(kw['attrs'])
 
 
     def _load_state_from_file(self, file):
@@ -92,7 +73,6 @@ class RFC822File(TextFile):
 
 
     def to_str(self):
-        # XXX test if return str(self.message) is enough
         data = ''
         list_types = (type([]), type(()))
         str_types = (type(''),)
@@ -105,6 +85,28 @@ class RFC822File(TextFile):
                     data += '%s: %s\n' % (key, v)
 
         return data
+
+
+    #######################################################################
+    # API
+    #######################################################################
+    def set_attrs(self, attrs):
+        # Check types of values
+        type_error_msg = 'One of the given values is not compatible'
+        for key, val in attrs.items():
+            if self.schema is None or self.schema.has_key(key):
+                if type(val) in self.str_types:
+                    continue
+                elif type(val) in self.list_types:
+                    for v in val:
+                        if type(v) not in self.str_types:
+                            raise TypeError, type_error_msg
+            else:
+                del attrs[key]
+
+        # Now attrs is sure
+        self.attrs = attrs
+        self.set_changed()
 
 
 

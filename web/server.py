@@ -183,7 +183,8 @@ class Server(object):
 
 
     def __init__(self, root, address=None, port=None, access_log=None,
-                 error_log=None, debug_log=None, pid_file=None):
+                 error_log=None, debug_log=None, pid_file=None,
+                 auth_type='cookie'):
         if address is None:
             address = ''
         if port is None:
@@ -210,6 +211,8 @@ class Server(object):
             self.debug_log = open(debug_log, 'a+')
         # The pid file
         self.pid_file = pid_file
+        # Authentication option
+        self.auth_type = auth_type
 
 
     def start(self):
@@ -491,15 +494,32 @@ class Server(object):
 
 
     def find_user(self, context):
-        # (1) Read the id/auth cookie
-        cookie = context.get_cookie('__ac')
-        if cookie is None:
-            context.user = None
-            return
+        # (1) Choose the Authentication method
+        if self.auth_type == 'cookie':
+            # (1bis) Read the id/auth cookie
+            cookie = context.get_cookie('__ac')
+            if cookie is None:
+                context.user = None
+                return
 
-        cookie = unquote(cookie)
-        cookie = decodestring(cookie)
-        username, password = cookie.split(':', 1)
+            cookie = unquote(cookie)
+            cookie = decodestring(cookie)
+            username, password = cookie.split(':', 1)
+        elif self.auth_type == 'http_basic':
+            # (1bis) Read the username/password from header
+            request = context.request
+            # Authorization
+            if not request.has_header('Authorization'):
+                return
+
+            authorization = request.get_header('Authorization')
+            # Basic Authorization
+            if 'Basic' in authorization:
+                b64auth = authorization.split()[-1]
+                username, password = decodestring(b64auth).split(':')
+
+        if username is None or password is None:
+            return
 
         # (2) Get the user object
         user = context.root.get_user(username)
@@ -692,6 +712,20 @@ class GET(RequestMethod):
             cls.check_method(server, context)
             # Check the client's cache
             cls.check_cache(server, context)
+        except Unauthorized, error:
+            if server.auth_type == 'http_basic':
+                error_msg = "You are not authorized to see this page."
+                response.set_status(401)
+                basic_header = 'Basic realm="Restricted Area"'
+                response.set_header('WWW-Authenticate', basic_header)
+                response.set_header('content-length', len(error_msg))
+                response.set_body(error_msg)
+                return response
+            else:
+                status = error.code
+                context.status = status
+                context.view_name = status2name[status]
+                context.view = root.get_view(context.view_name)
         except ClientError, error:
             status = error.code
             context.status = status

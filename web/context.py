@@ -25,7 +25,7 @@ from time import strptime
 
 # Import from itools
 from itools.datatypes import String
-from itools.http import Response
+from itools.http import Response, Unauthorized
 from itools.i18n import AcceptLanguageType
 from itools.uri import get_reference
 

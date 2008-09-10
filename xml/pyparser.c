@@ -682,7 +682,7 @@ static PyObject *
 pyparser_register_dtd (PyObject * trash, PyObject * args, PyObject * kwds)
 {
   static char *kwlist[] = { "filename", "urn", "uri" , NULL };
-  char *filename, *urn, *uri;
+  char *filename, *urn=NULL, *uri=NULL;
 
   /* Arguments */
   if (!PyArg_ParseTupleAndKeywords (args, kwds, "s|zz", kwlist, &filename,

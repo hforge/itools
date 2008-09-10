@@ -29,8 +29,7 @@ from itools import vfs
 
 
 def parse_copyright(line):
-    """
-    From a copyright line:
+    """From a copyright line:
 
         Copyright (C) 2005 Toto <toto@example.com>
 

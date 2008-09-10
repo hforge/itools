@@ -17,7 +17,6 @@
 
 # Import from itools
 from itools.datatypes import Enumerate
-from itools.handlers import merge_dics
 from itools.stl import stl
 from context import FormError
 from messages import MSG_MISSING_OR_INVALID
@@ -39,7 +38,7 @@ class BaseView(object):
 
 
     def get_query_schema(self):
-        return merge_dics(self.query_schema)
+        return self.query_schema
 
 
     #######################################################################

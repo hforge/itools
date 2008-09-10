@@ -47,40 +47,42 @@ except ImportError:
 
 # Import from itools
 import itools
+from itools.handlers import merge_dics
 from itools.utils import get_abspath
 from itools import git, vfs
 from itools.datatypes import Unicode, Integer, DateTime
 
 
 # Define list of problems
-code_length = {'title': u'Code length',
-               'keys':
-                  {'lines': u'Number of lines',
-                   'tokens': u'Number of tokens'},
-                'pourcent': False}
+code_length = {
+    'title': u'Code length',
+    'keys': {'lines': u'Number of lines', 'tokens': u'Number of tokens'},
+    'pourcent': False}
 
-aesthetics_problems = {'title': u'Aesthetics (and readibility)',
-                       'keys':
-                           {'tabs':  u'with tabulators',
-                           'bad_indentation': u'bad indented',
-                           'bad_length': u'longer than 79 characters',
-                           'bad_end': u'with trailing whitespaces'},
-                        'pourcent': True}
+aesthetics_problems =
+    {'title': u'Aesthetics (and readibility)',
+     'keys': {'tabs':  u'with tabulators',
+              'bad_indentation': u'bad indented',
+              'bad_length': u'longer than 79 characters',
+              'bad_end': u'with trailing whitespaces'},
+     'pourcent': True}
 
-exception_problems = {'title': u'Exception handling',
-                      'keys':
-                          {'string_exception': u'string exceptions are used',
-                           'except_all': u'all exceptions are catched'},
-                        'pourcent': False}
+exception_problems = {
+    'title': u'Exception handling',
+    'keys': {'string_exception': u'string exceptions are used',
+             'except_all': u'all exceptions are catched'},
+    'pourcent': False}
 
-import_problems = {'title': u'Import problems',
-                   'keys': {'bad_import': 'misplaced imports'},
-                   'pourcent': False}
+import_problems = {
+    'title': u'Import problems',
+    'keys': {'bad_import': 'misplaced imports'},
+    'pourcent': False}
 
-problems = {}
-problems.update(aesthetics_problems['keys'])
-problems.update(exception_problems['keys'])
-problems.update(import_problems['keys'])
+problems = merge_dics(
+    aesthetics_problems['keys'],
+    exception_problems['keys'],
+    import_problems['keys'])
+
 
 
 def analyse_file_pass1(filename):

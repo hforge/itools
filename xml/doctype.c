@@ -165,6 +165,9 @@ doctype_load_urn (gchar * urn, GString * target)
       g_string_append (target, buffer);
     }
 
+  /* And close the file */
+  fclose(file);
+
   return ALL_OK;
 }
 

@@ -15,6 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from the Standard Library
+from base64 import decodestring, encodestring
+
 # Import from itools
 from itools.datatypes import DataType, Integer, String, URI, HTTPDate
 from itools.i18n import AcceptLanguageType
@@ -73,6 +76,30 @@ class ContentType(DataType):
 
 
 
+class Authorization(DataType):
+
+    @staticmethod
+    def decode(data):
+        data = data.lstrip()
+        if data.startswith('Basic '):
+            b64auth = data[len('Basic '):]
+            username, password = decodestring(b64auth).split(':', 1)
+            return 'basic', (username, password)
+        raise NotImplementedError, 'XXX'
+
+
+    @staticmethod
+    def encode(value):
+        method, value = value
+        if method == 'basic':
+            username, password = value
+            if ':' in username:
+                raise ValueError, 'XXX'
+            return 'Basic %s' % encodestring('%s:%s' % value)
+        raise NotImplementedError, 'XXX'
+
+
+
 ###########################################################################
 # RFC 2183 (Content-Disposition)
 ###########################################################################
@@ -121,7 +148,7 @@ headers = {
     'via': String,
     'warning': String,
     # Request headers (HTTP 1.0)
-    'authorization': String,
+    'authorization': Authorization,
     'from': String,
     'if-modified-since': IfModifiedSince,
     'referer': URI,

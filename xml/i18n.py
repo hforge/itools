@@ -23,7 +23,7 @@ from itools.datatypes import Unicode, XMLContent, XMLAttribute, is_datatype
 from namespaces import get_element_schema, xmlns_uri, get_attr_datatype
 from namespaces import is_empty
 from parser import XMLParser, XMLError, DOCUMENT_TYPE, XML_DECL
-from parser import START_ELEMENT, END_ELEMENT, TEXT
+from parser import START_ELEMENT, END_ELEMENT, TEXT, COMMENT
 from xml import get_qname, get_attribute_qname, get_end_tag
 
 
@@ -120,6 +120,12 @@ def _get_translatable_blocks(events):
                 value = unicode(value, encoding)
                 message.append_text(value, line)
                 continue
+        elif type == COMMENT and message:
+            id += 1
+            message.append_start_format(([('<!--%s-->' % value, False)], id),
+                                        line)
+            message.append_end_format(([], id), line)
+            continue
 
         # Not a good event => break + send the event
         if message:

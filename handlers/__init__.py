@@ -42,7 +42,7 @@ from registry import register_handler_class, get_handler_class, get_handler
 from text import TextFile, guess_encoding
 from database import Database, SafeDatabase
 from database import READY, TRANSACTION_PHASE1, TRANSACTION_PHASE2
-from utils import checkid
+from utils import checkid, merge_dics
 
 
 __all__ = [
@@ -72,5 +72,6 @@ __all__ = [
     # Some functions
     'checkid',
     'guess_encoding',
+    'merge_dics',
     ]
 

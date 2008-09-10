@@ -62,3 +62,12 @@ def checkid(id):
     id = id.lower()
     return str(id)
 
+
+def merge_dics(d, *args, **kw):
+    """Merge two or more dictionaries into a NEW dictionary object"""
+    new_d = d.copy()
+    for dic in args:
+        new_d.update(dic)
+    new_d.update(kw)
+    return new_d
+

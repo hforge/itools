@@ -20,9 +20,9 @@ class AccessControl(object):
     overriden.
     """
 
-    def is_access_allowed(self, user, object, view):
+    def is_access_allowed(self, user, resource, view):
         """Returns True if the given user is allowed to access the given
-        method of the given object. False otherwise.
+        method of the given resource. False otherwise.
         """
         # Get the access control definition (default to False)
         if view is None:
@@ -39,7 +39,7 @@ class AccessControl(object):
             if method is None:
                 raise ValueError, 'access control "%s" not defined' % access
 
-            return method(user, object)
+            return method(user, resource)
 
         # Only booleans and strings are allowed
         raise TypeError, 'unexpected value "%s"' % access
@@ -47,5 +47,5 @@ class AccessControl(object):
 
     #########################################################################
     # Basic Controls
-    def is_authenticated(self, user, object=None):
+    def is_authenticated(self, user, resource=None):
         return user is not None

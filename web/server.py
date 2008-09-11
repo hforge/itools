@@ -521,7 +521,7 @@ class Server(object):
         if username is None or password is None:
             return
 
-        # (2) Get the user object and authenticate
+        # (2) Get the user resource and authenticate
         user = context.root.get_user(username)
         if user is not None and user.authenticate(password):
             context.user = user

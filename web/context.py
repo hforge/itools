@@ -49,7 +49,7 @@ class FormError(StandardError):
 class Context(object):
 
     user = None
-    object = None
+    resource = None
 
 
     def __init__(self, request):
@@ -105,7 +105,7 @@ class Context(object):
 
 
     def come_back(self, message, goto=None, keep=[], **kw):
-        """This is a handy method that builds a URI object from some
+        """This is a handy method that builds a resource URI from some
         parameters.  It exists to make short some common patterns.
         """
         # By default we come back to the referrer

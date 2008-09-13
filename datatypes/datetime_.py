@@ -132,7 +132,7 @@ class ISOCalendarDate(DataType):
 
 
 class ISOTime(DataType):
-    """Extended formats (from max. to min. precission): %H:%M:%S, %H:%M, %H
+    """Extended formats (from max. to min. precission): %H:%M:%S, %H:%M
 
     Basic formats: %H%M%S, %H%M, %H
     """
@@ -142,29 +142,30 @@ class ISOTime(DataType):
         if not data:
             return None
 
-        # The hour
+        # Extended formats
+        if ':' in data:
+            parts = data.split(':')
+            n = len(parts)
+            if n > 3:
+                raise ValueError, 'unexpected time value "%s"' % data
+            hour = int(parts[0])
+            minute = int(parts[1])
+            if n == 2:
+                return time(hour, minute)
+            second = int(parts[2])
+            return time(hour, minute, second)
+
+        # Basic formats
         hour = int(data[:2])
         data = data[2:]
         if not data:
             return time(hour)
-
-        # Extended format
-        if data[0] == ':':
-            data = data[1:]
-            minute = int(data[:2])
-            data = data[2:]
-            if not data:
-                return time(hour, minute)
-            # The day
-            second = int(data[1:])
-            return time(hour, minute, second)
-
-        # Basic format
+        # Minute
         minute = int(data[:2])
         data = data[2:]
         if not data:
             return time(hour, minute)
-        # The day
+        # Second
         second = int(data)
         return time(hour, minute, second)
 

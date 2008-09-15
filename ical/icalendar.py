@@ -253,7 +253,7 @@ class Component(object):
 
 
 
-class icalendar(TextFile):
+class iCalendar(TextFile):
     """icalendar structure :
 
         BEGIN:VCALENDAR

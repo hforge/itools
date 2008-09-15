@@ -23,7 +23,7 @@ resources in standard type iCalendar specified in the RFC 2445
 
 # Import from itools
 from gridlayout import get_grid_data
-from icalendar import icalendar
+from icalendar import iCalendar
 from table import Record, icalendarTable
 from types import DateTime, Time
 
@@ -34,6 +34,6 @@ __all__ = [
     'DateTime',
     'Time',
     # Handlers
-    'icalendar',
+    'iCalendar',
     'Record',
     'icalendarTable']

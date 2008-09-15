@@ -23,7 +23,7 @@ from datetime import datetime
 # Import from itools
 from itools.csv import Property
 from itools.datatypes import URI
-from itools.ical import icalendar, icalendarTable
+from itools.ical import iCalendar, icalendarTable
 
 
 # Example with 1 event
@@ -88,18 +88,13 @@ END:VCALENDAR
 class icalTestCase(unittest.TestCase):
 
     def setUp(self):
-        src = icalendar()
-        src.load_state_from_string(content)
-        self.cal1 = src
-
-        src = icalendar()
-        src.load_state_from_string(content2)
-        self.cal2 = src
+        self.cal1 = iCalendar(string=content)
+        self.cal2 = iCalendar(string=content2)
 
 
     def test_new(self):
         """Test new"""
-        cal = icalendar()
+        cal = iCalendar()
 
         properties = []
         for name in cal.properties:
@@ -128,7 +123,7 @@ class icalTestCase(unittest.TestCase):
         expected = ['SUMMARY:This is the summary\n']
 
         property_value = Property('This is the summary')
-        output = icalendar.encode_property('SUMMARY', property_value)
+        output = iCalendar.encode_property('SUMMARY', property_value)
         self.assertEqual(output, expected)
 
         # Property with one parameter
@@ -137,7 +132,7 @@ class icalTestCase(unittest.TestCase):
 
         params = {'MEMBER': ['"mailto:DEV-GROUP@host.com"']}
         value = Property('mailto:darwin@itaapy.com', params)
-        output = icalendar.encode_property('ATTENDEE', value)
+        output = iCalendar.encode_property('ATTENDEE', value)
         self.assertEqual(output, expected)
 
 
@@ -183,7 +178,7 @@ class icalTestCase(unittest.TestCase):
         """
         Test to add property and component to an empty icalendar object.
         """
-        cal = icalendar()
+        cal = iCalendar()
         cal.add_component('VEVENT')
         self.assertEqual(len(cal.get_components('VEVENT')), 1)
 
@@ -585,18 +580,17 @@ class icalTestCase(unittest.TestCase):
         self.assertEqual(conflicts, [(uid1, uid2)])
 
 
+
 class icalTableTestCase(unittest.TestCase):
 
     def setUp(self):
-        src = icalendar()
-        src.load_state_from_string(content)
+        src = iCalendar(string=content)
         src = StringIO(src.to_str())
         cal = icalendarTable()
         cal.load_state_from_ical_file(src)
         self.cal1 = cal
 
-        src = icalendar()
-        src.load_state_from_string(content2)
+        src = iCalendar(string=content2)
         src = StringIO(src.to_str())
         cal = icalendarTable()
         cal.load_state_from_ical_file(src)
@@ -634,7 +628,7 @@ class icalTableTestCase(unittest.TestCase):
         expected = ['SUMMARY:This is the summary\n']
 
         property_value = Property('This is the summary')
-        output = icalendar.encode_property('SUMMARY', property_value)
+        output = iCalendar.encode_property('SUMMARY', property_value)
         self.assertEqual(output, expected)
 
         # Property with one parameter
@@ -643,7 +637,7 @@ class icalTableTestCase(unittest.TestCase):
 
         params = {'MEMBER': ['"mailto:DEV-GROUP@host.com"']}
         value = Property('mailto:darwin@itaapy.com', params)
-        output = icalendar.encode_property('ATTENDEE', value)
+        output = iCalendar.encode_property('ATTENDEE', value)
         self.assertEqual(output, expected)
 
 
@@ -962,8 +956,7 @@ class icalTableTestCase(unittest.TestCase):
         self.assertEqual(len(events), 1)
 
         # Tests with 2 events
-        cal = icalendar()
-        cal.load_state_from_string(content2)
+        cal = iCalendar(string=content2)
         attendee_value = URI.decode('mailto:jdoe@itaapy.com')
 
         events = cal.search_events(ATTENDEE=attendee_value)

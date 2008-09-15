@@ -30,6 +30,7 @@ summarizes this changes.
   datatypes.FileName             vfs.FileName
   datatypes.XML                  datatypes.XMLContent
   gettext.Message                gettext.POUnit
+  ical.icalendar                 ical.iCalendar
   i18n.Message                   srx.Message
   i18n.Multilingual              (REMOVED)
   tmx.Message                    tmx.TMXUnit

@@ -115,15 +115,14 @@ class icalTestCase(unittest.TestCase):
 
 
     def test_property(self):
-        """
-        Test to create, access and encode a property with or without
+        """Test to create, access and encode a property with or without
         parameters.
         """
         # Property without parameter
         expected = ['SUMMARY:This is the summary\n']
 
         property_value = Property('This is the summary')
-        output = iCalendar.encode_property('SUMMARY', property_value)
+        output = self.cal1.encode_property('SUMMARY', property_value)
         self.assertEqual(output, expected)
 
         # Property with one parameter
@@ -132,7 +131,7 @@ class icalTestCase(unittest.TestCase):
 
         params = {'MEMBER': ['"mailto:DEV-GROUP@host.com"']}
         value = Property('mailto:darwin@itaapy.com', params)
-        output = iCalendar.encode_property('ATTENDEE', value)
+        output = self.cal1.encode_property('ATTENDEE', value)
         self.assertEqual(output, expected)
 
 
@@ -620,15 +619,14 @@ class icalTableTestCase(unittest.TestCase):
 
 
     def test_property(self):
-        """
-        Test to create, access and encode a property with or without
+        """Test to create, access and encode a property with or without
         parameters.
         """
         # Property without parameter
         expected = ['SUMMARY:This is the summary\n']
 
         property_value = Property('This is the summary')
-        output = iCalendar.encode_property('SUMMARY', property_value)
+        output = self.cal1.encode_property('SUMMARY', property_value)
         self.assertEqual(output, expected)
 
         # Property with one parameter
@@ -637,7 +635,7 @@ class icalTableTestCase(unittest.TestCase):
 
         params = {'MEMBER': ['"mailto:DEV-GROUP@host.com"']}
         value = Property('mailto:darwin@itaapy.com', params)
-        output = iCalendar.encode_property('ATTENDEE', value)
+        output = self.cal1.encode_property('ATTENDEE', value)
         self.assertEqual(output, expected)
 
 

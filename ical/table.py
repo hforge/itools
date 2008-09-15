@@ -27,7 +27,7 @@ from itools.csv import Property, Record as TableRecord, Table
 from itools.csv import parse_table
 from itools.datatypes import String, Unicode
 from itools.xapian import EqQuery, RangeQuery, OrQuery, AndQuery
-from icalendar import iCalendar
+from base import BaseCalendar
 from types import data_properties, Time
 
 
@@ -171,7 +171,7 @@ class Record(TableRecord):
 
 
 
-class icalendarTable(Table):
+class icalendarTable(BaseCalendar, Table):
     """An icalendarTable is a handler for calendar data, generally used as an
     ical file but here as a table object.
     """
@@ -337,7 +337,7 @@ class icalendarTable(Table):
         # Calendar properties
         for name in self.properties:
             value = self.properties[name]
-            line = iCalendar.encode_property(name, value)
+            line = self.encode_property(name, value)
             lines.append(line[0])
 
         # Calendar components
@@ -361,7 +361,7 @@ class icalendarTable(Table):
                         if name == 'SEQUENCE':
                             value.value += seq
                         name = name.upper()
-                        line = iCalendar.encode_property(name, value)
+                        line = self.encode_property(name, value)
                         lines.extend(line)
                     line = 'END:%s\n' % c_type
                     lines.append(Unicode.encode(line))
@@ -385,8 +385,8 @@ class icalendarTable(Table):
 
     def add_record(self, kw):
         if 'UID' not in kw:
-            uid = iCalendar.generate_uid(kw.get('type', 'UNKNOWN'))
-            kw['UID'] = uid
+            type = kw.get('type', 'UNKNOWN')
+            kw['UID'] = self.generate_uid(type)
 
         id = len(self.records)
         record = Record(id)

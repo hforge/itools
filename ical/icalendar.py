@@ -24,11 +24,12 @@ from operator import itemgetter
 
 # Import from itools
 from itools.csv import MemoryCatalog, Property
-from itools.csv import escape_data, fold_line, parse_table
+from itools.csv import parse_table
 from itools.datatypes import String, Unicode
 from itools.handlers import guess_encoding, TextFile
 from itools.xapian import PhraseQuery, EqQuery, RangeQuery, OrQuery, AndQuery
 from itools.xapian import KeywordField
+from base import BaseCalendar
 from types import data_properties, Time
 
 
@@ -253,7 +254,7 @@ class Component(object):
 
 
 
-class iCalendar(TextFile):
+class iCalendar(BaseCalendar, TextFile):
     """icalendar structure :
 
         BEGIN:VCALENDAR
@@ -434,39 +435,6 @@ class iCalendar(TextFile):
     #########################################################################
     # Save State
     #########################################################################
-    @classmethod
-    def encode_property(cls, name, property_values, encoding='utf-8'):
-        if not isinstance(property_values, list):
-            property_values = [property_values]
-
-        datatype = cls.get_datatype(name)
-
-        lines = []
-        for property_value in property_values:
-            # The parameters
-            parameters = ''
-            for param_name in property_value.parameters:
-                param_value = property_value.parameters[param_name]
-                parameters += ';%s=%s' % (param_name, ','.join(param_value))
-
-            # The value (encode)
-            value = property_value.value
-            if isinstance(datatype, Unicode):
-                value = datatype.encode(value, encoding=encoding)
-            else:
-                value = datatype.encode(value)
-            # The value (escape)
-            value = escape_data(value)
-
-            # Build the line
-            line = '%s%s:%s\n' % (name, parameters, value)
-
-            # Append
-            lines.append(fold_line(line))
-
-        return lines
-
-
     def to_str(self, encoding='UTF-8'):
         lines = []
 
@@ -513,16 +481,6 @@ class iCalendar(TextFile):
                 if key in version:
                     text.append(version[key].value)
         return ' '.join(text)
-
-
-    #######################################################################
-    # To override
-    #######################################################################
-    @classmethod
-    def generate_uid(cls, c_type='UNKNOWN'):
-        """Generate a uid based on c_type and current datetime.
-        """
-        return ' '.join([c_type, datetime.now().isoformat()])
 
 
     #######################################################################

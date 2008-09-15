@@ -182,18 +182,6 @@ class icalendarTable(BaseCalendar, Table):
     schema['type'] = String(index='keyword')
 
 
-    def reset(self):
-        Table.reset(self)
-
-        properties = (
-            ('VERSION', {}, u'2.0'),
-            ('PRODID', {}, u'-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN')
-          )
-        self.properties = {}
-        for name, param, value in properties:
-            self.properties[name] = Property(value, param)
-
-
     #########################################################################
     # API
     #########################################################################
@@ -203,7 +191,6 @@ class icalendarTable(BaseCalendar, Table):
         self.reset()
         self.set_changed()
 
-        properties = {}
         components = {}
 
         # Read the data
@@ -228,29 +215,16 @@ class icalendarTable(BaseCalendar, Table):
         lines = lines[1:]
 
         ###################################################################
-        # Read properties
+        # Skip properties
+        # TODO Currently tables are not able to handler global properties,
+        # we must implement this feature to be able to load from ical files.
         n_line = 0
         for name, value in lines:
             if name == 'BEGIN':
                 break
             elif name == 'END':
                 break
-            elif name == 'VERSION':
-                if 'VERSION' in properties:
-                    raise ValueError, 'VERSION can appear only one time'
-            elif name == 'PRODID':
-                if 'PRODID' in properties:
-                    raise ValueError, 'PRODID can appear only one time'
-            # Add the property
-            properties[name] = value
             n_line += 1
-
-        # The properties VERSION and PRODID are mandatory
-        if 'VERSION' not in properties or 'PRODID' not in properties:
-            raise ValueError, 'PRODID or VERSION parameter missing'
-
-        # Save calendar properties
-        self.properties = properties
 
         lines = lines[n_line:]
 
@@ -335,8 +309,11 @@ class icalendarTable(BaseCalendar, Table):
         lines.append(Unicode.encode(line))
 
         # Calendar properties
-        for name in self.properties:
-            value = self.properties[name]
+        properties = (
+            ('VERSION', u'2.0'),
+            ('PRODID', u'-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN'))
+        for name, value in properties:
+            value = Property(value)
             line = self.encode_property(name, value)
             lines.append(line[0])
 
@@ -373,16 +350,6 @@ class icalendarTable(BaseCalendar, Table):
         return ''.join(lines)
 
 
-    def set_property(self, name, values):
-        """Set values to the given calendar property, removing previous ones.
-
-        name -- name of the property as a string
-        values -- Property[]
-        """
-        self.properties[name] = values
-        self.set_changed()
-
-
     def add_record(self, kw):
         if 'UID' not in kw:
             type = kw.get('type', 'UNKNOWN')
@@ -406,19 +373,6 @@ class icalendarTable(BaseCalendar, Table):
         """Return components with the given uid, None if it doesn't appear.
         """
         return self.search(UID=uid)
-
-
-    def get_property(self, name=None):
-        """Return Property[] for the given icalendar property name
-        or
-        Return icalendar property values as a dict
-            {property_name: Property object, ...}
-
-        *searching only for general properties, not components ones.
-        """
-        if name:
-            return self.properties.get(name, None)
-        return self.properties
 
 
     # Deprecated

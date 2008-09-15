@@ -600,19 +600,6 @@ class icalTableTestCase(unittest.TestCase):
         """Test new"""
         cal = icalendarTable()
 
-        properties = []
-        for name in cal.properties:
-            params = cal.properties[name].parameters
-            value = cal.properties[name].value
-            property = '%s;%s:%s' % (name, params, value)
-            properties.append(property)
-
-        # Test properties
-        expected_properties = [
-            u'VERSION;{}:2.0',
-            u'PRODID;{}:-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN']
-        self.assertEqual(properties, expected_properties)
-
         # Test components
         self.assertEqual(len(cal.get_components()), 0)
         self.assertEqual(cal.get_components('VEVENT'), [])
@@ -641,11 +628,6 @@ class icalTableTestCase(unittest.TestCase):
 
     def test_get_property(self):
         cal = self.cal1
-
-        # icalendar property
-        expected = '2.0'
-        property = cal.get_property('VERSION')
-        self.assertEqual(property.value, expected)
 
         # Component property
         events = cal.get_components('VEVENT')
@@ -686,10 +668,6 @@ class icalTableTestCase(unittest.TestCase):
         cal.add_record({'type': 'VEVENT'})
         self.assertEqual(len(cal.get_components('VEVENT')), 1)
 
-        value = Property('PUBLISH')
-        cal.set_property('METHOD', value)
-        self.assertEqual(cal.get_property('METHOD'), value)
-
 
     def property_to_string(self, prop_name, prop):
         """
@@ -706,24 +684,6 @@ class icalTableTestCase(unittest.TestCase):
     def test_load(self):
         """Test loading a simple calendar."""
         cal = self.cal1
-
-        # Test icalendar properties
-        properties = []
-        for name in cal.properties:
-            property_value = cal.properties[name]
-            # Only property METHOD can occur several times, we give only one
-            if isinstance(property_value, list):
-                property_value = property_value[0]
-            params = property_value.parameters
-            value = property_value.value
-            property = '%s;%s:%s' % (name, params, value)
-            properties.append(property)
-
-        expected_properties = [
-            u'VERSION;{}:2.0',
-            u'METHOD;{}:PUBLISH',
-            u'PRODID;{}:-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN' ]
-        self.assertEqual(properties, expected_properties)
 
         # Test component properties
         properties = []
@@ -777,20 +737,6 @@ class icalTableTestCase(unittest.TestCase):
     def test_load_2(self):
         """Test loading a 2 events calendar."""
         cal = self.cal2
-
-        properties = []
-        for name in cal.properties:
-            params = cal.properties[name].parameters
-            value = cal.properties[name].value
-            property = '%s;%s:%s' % (name, params, value)
-            properties.append(property)
-
-        # Test properties
-        expected_properties = [
-            u'VERSION;{}:2.0',
-            u'METHOD;{}:PUBLISH',
-            u'PRODID;{}:-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN' ]
-        self.assertEqual(properties, expected_properties)
 
         events = []
         for event in cal.get_components('VEVENT'):
@@ -892,19 +838,6 @@ class icalTableTestCase(unittest.TestCase):
         self.assertEqual(str(property[0].value), 'mailto:jdoe@itaapy.com')
         self.assertEqual(property[1].parameters, {'MEMBER': param})
         self.assertEqual(property[1], value[1])
-
-
-    def test_icalendar_set_property(self):
-        """ Test setting a new value to an existant icalendar property"""
-        cal = self.cal1
-
-        name, value = 'VERSION', Property('2.1')
-        cal.set_property(name, value)
-        self.assertEqual(cal.get_property(name), value)
-
-        name, value = 'X-test', Property('test property_xxx')
-        cal.set_property(name, [value, ])
-        self.assertEqual(cal.get_property(name), [value, ])
 
 
     def test_component_set_property(self):

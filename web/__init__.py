@@ -19,7 +19,7 @@
 from access import AccessControl
 from context import Context, get_context, set_context, FormError
 from context import select_language
-from messages import MSG_MISSING_OR_INVALID
+from messages import INFO, ERROR, MSG_MISSING_OR_INVALID
 from resources import Resource, RootResource
 from server import Server
 from views import BaseView, BaseForm, STLView, STLForm
@@ -45,5 +45,7 @@ __all__ = [
     # Exceptions
     'FormError',
     # Messages
+    'INFO',
+    'ERROR',
     'MSG_MISSING_OR_INVALID',
     ]

@@ -18,7 +18,36 @@
 # Import from itools
 from itools.gettext import MSG
 
-MSG_MISSING_OR_INVALID = MSG(
+
+
+class INFO(MSG):
+
+    def __init__(self, message, domain=None, **kw):
+        MSG.__init__(self, message, domain=domain)
+        self.kw = kw
+
+
+    def __call__(self, **kw):
+        if not kw:
+            # Also skipping stl calls
+            raise AttributeError, 'missing variables to substitute'
+        message = MSG.gettext(self, language=None, **kw)
+        # Send a translated copy of this instance
+        return self.__class__(message, domain=self.domain)
+
+
+    def gettext(self, language=None):
+        # Gettext calling was defered
+        return MSG.gettext(self, language=language, **self.kw)
+
+
+
+class ERROR(INFO):
+    pass
+
+
+
+MSG_MISSING_OR_INVALID = ERROR(
     u'Some required fields are missing, or some values are not valid. '
     u'Please correct them and continue.')
 

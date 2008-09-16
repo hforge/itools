@@ -33,22 +33,17 @@ from itools.xml.i18n import get_units, translate
 class Test_ODT_File(TestCase):
 
     def setUp(self):
-        file = vfs.open('odf/Document.odt')
-        self.doc = ODTFile()
-        self.doc.load_state_from_file(file)
+        self.doc = ODTFile('odf/Document.odt')
 
 
     def test_get_msg(self):
-        messages = list(self.doc.get_units())
-        expected_messages = [
+        messages = [unit[0] for unit in self.doc.get_units()]
+        expected = [
             # content.xml
             u'Hello <text:span text:style-name="T1">world</text:span> !',
             # meta.xml
             u'Hello world Document', u'it\'s a very good document',
             u'Itools test', u'sylvain', u'sylvain', u'itools', u'odt', u'odf']
-        expected = []
-        for msg in expected_messages:
-            expected.append(POUnit([], [msg], [u'']))
         self.assertEqual(messages, expected)
 
 
@@ -58,21 +53,17 @@ class Test_ODT_File(TestCase):
                ' !"\nmsgstr "Hola '
                '<text:span text:style-name="T1">mundo</text:span> !"\n')
         po = POFile(string=str)
-        translate_odt_document = self.doc.translate(po)
         # Get the message of the translate document
-        doc2 = ODTFile()
-        doc2.load_state_from_string(translate_odt_document)
-        messages = list(doc2.get_units())
+        translated_doc = self.doc.translate(po)
+        translated_doc = ODTFile(string=translated_doc)
+        messages = [unit[0] for unit in translated_doc.get_units()]
         # Check if allright
-        expected_messages = [
+        expected = [
             # content.xml
             u'Hola <text:span text:style-name="T1">mundo</text:span> !',
             # meta.xml
             u'Hello world Document', u'it\'s a very good document',
             u'Itools test', u'sylvain', u'sylvain', u'itools', u'odt', u'odf']
-        expected =  []
-        for msg in expected_messages:
-            expected.append(POUnit([], [msg], [u'']))
         self.assertEqual(messages, expected)
 
 
@@ -95,14 +86,12 @@ class Test_ODT_File(TestCase):
 class Test_ODP_File(TestCase):
 
     def setUp(self):
-        file = vfs.open('odf/Document.odp')
-        self.doc = ODPFile()
-        self.doc.load_state_from_file(file)
+        self.doc = ODPFile('odf/Document.odp')
 
 
     def test_get_msg(self):
-        messages = list(self.doc.get_units())
-        expected_messages = [
+        messages = [unit[0] for unit in self.doc.get_units()]
+        expected = [
             # content.xml
             u'<text:span text:style-name="T1">Hello </text:span>'
             '<text:span text:style-name="T2">World</text:span>'
@@ -112,9 +101,6 @@ class Test_ODP_File(TestCase):
             u'sylvain', u'sylvain',
             # styles
             u'2', u'2', u'2']
-        expected = []
-        for msg in expected_messages:
-            expected.append(POUnit([],[msg], [u'']))
         self.assertEqual(messages, expected)
 
 
@@ -122,13 +108,11 @@ class Test_ODP_File(TestCase):
 class Test_ODS_File(TestCase):
 
     def setUp(self):
-        file = vfs.open('odf/Document.ods')
-        self.doc = ODSFile()
-        self.doc.load_state_from_file(file)
+        self.doc = ODSFile('odf/Document.ods')
 
     def test_get_msg(self):
-        messages = list(self.doc.get_units())
-        expected_messages = [# content.xml
+        messages = [unit[0] for unit in self.doc.get_units()]
+        expected = [# content.xml
                              u'Chocolate', u'Coffee', u'Tea', u'Price', u'80',
                              u'20', u'40', u'Quantity', u'20', u'30', u'20',
                              u'Quality', u'0', u'50', u'40',
@@ -140,9 +124,6 @@ class Test_ODS_File(TestCase):
                              u'???', u'(', u'???', u')', u',',
                              u'Page <text:page-number>1</text:page-number> / '
                              u'<text:page-count>99</text:page-count>']
-        expected = []
-        for msg in expected_messages:
-            expected.append(POUnit([],[msg], [u'']))
         self.assertEqual(messages, expected)
 
 
@@ -191,10 +172,11 @@ class Test_ODT_Parser(TestCase):
                    '</text:p>'
                    '</office:text>')
         content = self.template % content
-        events = XMLParser(content)
-        messages = list(get_units(events))
-        expected = [POUnit([], [u'hello world'], [u''])]
+        messages = XMLParser(content)
+        messages = [unit[0] for unit in get_units(messages)]
+        expected = [u'hello world']
         self.assertEqual(messages, expected)
+
 
     def test_table(self):
         content = """
@@ -229,11 +211,9 @@ class Test_ODT_Parser(TestCase):
                   """
 
         content = self.template % content
-        events = XMLParser(content)
-        messages = list(get_units(events))
-        expected= [POUnit([], [u'A'], [u'']), POUnit([], [u'B'], [u'']),
-                   POUnit([], [u'C'], [u'']), POUnit([], [u'D'], [u'']),
-                   POUnit([], [u'E'], [u'']), POUnit([], [u'F'], [u''])]
+        messages = XMLParser(content)
+        messages = [unit[0] for unit in get_units(messages)]
+        expected= [u'A', u'B', u'C', u'D', u'E', u'F']
         self.assertEqual(messages, expected)
 
 
@@ -249,10 +229,10 @@ class Test_ODT_Parser(TestCase):
                    '</office:text>')
 
         content = self.template % content
-        events = XMLParser(content)
-        string = translate(events, po)
-        messages = list(get_units(string))
-        self.assertEqual(messages, [POUnit([], [u'hola mundo'], [u''])])
+        messages = XMLParser(content)
+        messages = translate(messages, po)
+        messages = [unit[0] for unit in get_units(messages)]
+        self.assertEqual(messages, [u'hola mundo'])
 
 
 if __name__ == '__main__':

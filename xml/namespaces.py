@@ -121,6 +121,7 @@ def is_empty(namespace, name):
 class ElementSchema(object):
 
     attributes = {}
+    default_datatype = None
 
     # Default Values
     is_empty = False
@@ -135,19 +136,27 @@ class ElementSchema(object):
 
     def get_attr_datatype(self, name, attributes):
         datatype = self.attributes.get(name)
-        if datatype is None:
-            message = 'unexpected "%s" attribute for "%s" element'
-            raise XMLError, message % (name, self.name)
+        if datatype is not None:
+            return datatype
 
-        return datatype
+        if self.default_datatype is not None:
+            return self.default_datatype
+
+        print self.default_datatype
+
+        message = 'unexpected "%s" attribute for "%s" element'
+        raise XMLError, message % (name, self.name)
+
 
 
 
 class XMLNamespace(object):
 
-    def __init__(self, uri, prefix, elements=None, free_attributes=None):
+    def __init__(self, uri, prefix, elements=None, free_attributes=None,
+                 default_datatype=None):
         self.uri = uri
         self.prefix = prefix
+        self.default_datatype = default_datatype
         # Elements
         self.elements = {}
         if elements is not None:
@@ -175,10 +184,12 @@ class XMLNamespace(object):
 
     def get_attr_datatype(self, name):
         datatype = self.free_attributes.get(name)
-        if datatype is None:
-            raise XMLError, 'unexpected attribute "%s"' % name
+        if datatype is not None:
+            return datatype
+        if self.default_datatype is not None:
+            return self.default_datatype
 
-        return datatype
+        raise XMLError, 'unexpected attribute "%s"' % name
 
 
 

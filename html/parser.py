@@ -400,6 +400,8 @@ def make_xml_compatible(stream):
 
 
 def HTMLParser(data):
+    if type(data) is not str:
+        raise TypeError, 'expected a byte string, "%s" found' % type(data)
     try:
         stream = Parser().parse(data)
     except HTMLParseError, message:

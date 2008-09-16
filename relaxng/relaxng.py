@@ -127,7 +127,7 @@ def read_qnames(attrs, context, stream):
         return read_name_class(context, stream.next(), stream)
 
 
-def read_file(context, file):
+def read_file(context, uri, file):
     # Shortcuts
     elements = context['elements']
     references = context['references']
@@ -229,8 +229,9 @@ def read_file(context, file):
                 # <include>
                 elif tag_name == 'include':
                     href = attrs[None, 'href']
-                    include_file = vfs.open(href)
-                    read_file(context, include_file)
+                    include_uri = uri.resolve(href)
+                    include_file = vfs.open(include_uri)
+                    read_file(context, include_uri, include_file)
 
                 # Ignored tags
                 elif tag_name in ['grammar', 'start', 'choice',
@@ -386,15 +387,15 @@ def make_namespaces(context):
                                                       'free_attributes': {}})
                     namespace['free_attributes'][name] = datatype
 
-    result = []
+    result = {}
     prefix2uri = context['prefix']
     for namespace, data in namespaces.iteritems():
         # Find the prefix
         for prefix, uri in prefix2uri.iteritems():
             if uri == namespace:
                 break
-        result.append(XMLNamespace(uri, prefix, data['elements'].values(),
-                      data['free_attributes'], String))
+        result[uri] = (XMLNamespace(uri, prefix, data['elements'].values(),
+                       data['free_attributes'], String))
     return result
 
 
@@ -417,7 +418,7 @@ class RelaxNGFile(TextFile):
                    'prefix' : {}}
 
         # Parse the file
-        read_file(context, file)
+        read_file(context, self.uri, file)
 
         # And make the namespaces
         self.namespaces = make_namespaces(context)
@@ -428,9 +429,13 @@ class RelaxNGFile(TextFile):
     # API Public
     #########################################################################
     def auto_register(self):
-        for namespace in self.namespaces:
-            if not has_namespace(namespace.uri):
+        for uri, namespace in self.namespaces.iteritems():
+            if not has_namespace(uri):
                 register_namespace(namespace)
+
+
+    def get_namespaces(self):
+        return self.namespaces
 
 register_handler_class(RelaxNGFile)
 

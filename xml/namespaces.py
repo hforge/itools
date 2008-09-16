@@ -230,7 +230,8 @@ xmlns_namespace = XMLNSNamespace(xmlns_uri, 'xmlns')
 
 
 
-def get_attr_datatype(tag_uri, tag_name, attr_uri, attr_name, attributes=None):
+def get_attr_datatype(tag_uri, tag_name, attr_uri, attr_name,
+                      attributes=None):
     # Namespace declaration
     if (attr_uri == xmlns_uri) or (attr_uri is None and attr_name == 'xmlns'):
         return String

@@ -19,7 +19,6 @@
 from odf import ODTFile, ODPFile, ODSFile
 from oo import SXWFile, SXCFile, SXIFile
 import schema
-import w3
 
 
 __all__ = [

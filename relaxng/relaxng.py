@@ -20,8 +20,8 @@ from itools.xml import XMLParser, XML_DECL, START_ELEMENT, END_ELEMENT, TEXT
 from itools.xml import XMLNamespace, ElementSchema, xmlns_uri
 from itools.xml import register_namespace
 from itools.xml.namespaces import has_namespace
-from itools.datatypes import (Date, DateTime, Decimal, Integer, QName,
-                              String, Time, Unicode, URI)
+from itools.datatypes import Boolean, Date, DateTime, Decimal, Integer
+from itools.datatypes import QName, String, Time, Unicode, URI
 from itools import vfs
 import itools.http
 
@@ -256,42 +256,58 @@ def read_file(context, uri, file):
 ###########################################################################
 
 # http://www.w3.org/2001/XMLSchema-datatypes
+convert_type_data = {
+    None: String,
+    '': String,
+    'string': Unicode,
+    'boolean': Boolean,
+    'float': Decimal,
+    'double': Decimal,
+    'decimal': Decimal,
+    'dateTime': DateTime,
+    'duration': String,
+    'hexBinary': String,
+    'base64Binary': String,
+    'anyURI': URI,
+    'ID': String,
+    'IDREF': String,
+    'ENTITY': String,
+    'NOTATION': String,
+    'normalizedString': String,
+    'token': String,
+    'language': String,
+    'IDREFS': String,
+    'ENTITIES': String,
+    'NMTOKEN': String,
+    'NMTOKENS': String,
+    'Name': String,
+    'QName': QName,
+    'NCName': String,
+    'integer': Integer,
+    'nonNegativeInteger': Integer,
+    'positiveInteger': Integer,
+    'nonPositiveInteger': Integer,
+    'negativeInteger': Integer,
+    'byte': Integer,
+    'int': Integer,
+    'long': Integer,
+    'short': Integer,
+    'unsignedByte': Integer,
+    'unsignedInt': Integer,
+    'unsignedLong': Integer,
+    'unsignedShort': Integer,
+    'date': Date,
+    'time': Time,
+    'gYearMonth': String,
+    'gYear': String,
+    'gMonthDay': String,
+    'gDay': String,
+    'gMonth': String }
+
 def convert_type(data):
-    # None, default => string
-    if data is None or data == 'string':
-        return String
-    # Complex data => string
-    elif data == '':
-        return String
-    elif data in ['integer', 'nonNegativeInteger', 'positiveInteger',
-                'nonPositiveInteger', 'negativeInteger']:
-        return Integer
-    elif data in ['float', 'double', 'decimal']:
-        return Decimal
-    elif data == 'time':
-        return Time
-    elif data == 'date':
-        return Date
-    elif data == 'dateTime':
-        return DateTime
-    elif data in ['gYearMonth', 'gYear', 'gMonthDay', 'gDay', 'gMonth']:
-        return String
-    elif data == 'boolean':
-        return Boolean
-    elif data == 'anyURI':
-        return URI
-    elif data == 'QName':
-        return QName
-    elif data in ['byte', 'int', 'long', 'short', 'unsignedByte',
-                  'unsignedInt', 'unsignedLong', 'unsignedShort']:
-        return Integer
-    elif data in ['hexBinary', 'base64Binary']:
-        return String
-    # Remains, ...
-    elif data in ['duration', 'ID', 'IDREF', 'ENTITY', 'NOTATION',
-                  'normalizedString', 'token', 'language', 'IDREFS',
-                  'ENTITIES', 'NMTOKEN', 'NMTOKENS', 'Name', 'NCName']:
-        return String
+    datatype = convert_type_data.get(data)
+    if datatype is not None:
+        return datatype
     else:
         raise ValueError, 'relax NG: unexpected datatype "%s"' % data
 

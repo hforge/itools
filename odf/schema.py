@@ -19,6 +19,7 @@
 from itools import get_abspath
 from itools.relaxng import RelaxNGFile
 from itools.xml import register_namespace
+from itools.xml.namespaces import has_namespace
 
 
 ###########################################################################
@@ -48,7 +49,8 @@ for uri, element_name in inline_elements:
     element.is_inline = True
 
 # Register the namespaces
-for namespace in namespaces.itervalues():
-    register_namespace(namespace)
+for uri, namespace in namespaces.iteritems():
+    if not has_namespace(uri):
+        register_namespace(namespace)
 
 

@@ -26,17 +26,18 @@ Requirements
 ------------
 
 Python 2.5.2 or later is required.  The GLib [1] library version 2.12 or
-later is required.
+later is required.  For Windows pywin32 [2] is needed.
 
-For the implementation of RML (itools.pdf) to work the package reportlab [2]
+For the implementation of RML (itools.pdf) to work the package reportlab [3]
 must be installed.
 
-The "itools.xapian" package requires the Xapian [3] library (xapian-core)
+The "itools.xapian" package requires the Xapian [4] library (xapian-core)
 and its Python wrapper (xapian-bindings), version 1.0.7 or later is required.
 
 [1] http://www.gtk.org/
-[2] http://www.reportlab.org/
-[3] http://www.xapian.org/
+[2] http://sourceforge.net/projects/pywin32/
+[3] http://www.reportlab.org/
+[4] http://www.xapian.org/
 
 
 Install

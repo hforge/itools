@@ -24,13 +24,14 @@ Requirements
 ------------
 
 Python 2.4 or later is required.  The GLib [1] library version 2.12 or
-later is required.
+later is required.  For Windows pywin32 [2] is needed.
 
-For the implementation of RML (itools.pdf) to work the package reportlab [2]
+For the implementation of RML (itools.pdf) to work the package reportlab [3]
 must be installed.
 
 [1] http://www.gtk.org/
-[2] http://www.reportlab.org/
+[2] http://sourceforge.net/projects/pywin32/
+[3] http://www.reportlab.org/
 
 
 Install
@@ -38,11 +39,11 @@ Install
 
 If you are reading this instructions you probably have already unpacked
 the itools tarball with the command line:
-    
+
   $ tar xzf itools-X.Y.Z.tar.gz
 
 And changed the working directory this way:
-    
+
   $ cd itools-X.Y.Z
 
 So now to install itools you just need to type this:

@@ -59,8 +59,8 @@ code_length = {
     'keys': {'lines': u'Number of lines', 'tokens': u'Number of tokens'},
     'pourcent': False}
 
-aesthetics_problems =
-    {'title': u'Aesthetics (and readibility)',
+aesthetics_problems = {
+     'title': u'Aesthetics (and readibility)',
      'keys': {'tabs':  u'with tabulators',
               'bad_indentation': u'bad indented',
               'bad_length': u'longer than 79 characters',

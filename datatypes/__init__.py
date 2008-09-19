@@ -17,8 +17,9 @@
 
 # Import from itools
 from base import DataType, is_datatype
-from primitive import Boolean, Decimal, Email, Integer, String, Unicode, URI
+from primitive import Boolean, Decimal, Email, Integer, String, Unicode
 from primitive import Tokens, MultiLinesTokens, Enumerate, DynamicEnumerate
+from primitive import PathDataType, URI
 from primitive import QName, XMLAttribute, XMLContent
 from datetime_ import ISOCalendarDate, ISOTime, ISODateTime, HTTPDate
 from languages import LanguageTag
@@ -37,6 +38,7 @@ __all__ = [
     'String',
     'Boolean',
     'Email',
+    'PathDataType',
     'URI',
     'QName',
     'Tokens',

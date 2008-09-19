@@ -23,7 +23,7 @@ from re import match
 from copy import deepcopy
 
 # Import from itools
-from itools.uri import get_reference
+from itools.uri import Path, get_reference
 from base import DataType
 
 
@@ -115,6 +115,19 @@ class URI(DataType):
     @staticmethod
     def decode(value):
         return get_reference(value)
+
+
+    @staticmethod
+    def encode(value):
+        return str(value)
+
+
+
+class PathDataType(DataType):
+
+    @staticmethod
+    def decode(value):
+        return Path(value)
 
 
     @staticmethod

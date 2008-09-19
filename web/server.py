@@ -184,7 +184,7 @@ class Server(object):
 
     def __init__(self, root, address=None, port=None, access_log=None,
                  error_log=None, debug_log=None, pid_file=None,
-                 auth_type='cookie'):
+                 auth_type='cookie', auth_realm='Restricted Area'):
         if address is None:
             address = ''
         if port is None:
@@ -211,8 +211,9 @@ class Server(object):
             self.debug_log = open(debug_log, 'a+')
         # The pid file
         self.pid_file = pid_file
-        # Authentication option
+        # Authentication options
         self.auth_type = auth_type
+        self.auth_realm = auth_realm
 
 
     def start(self):
@@ -709,7 +710,7 @@ class GET(RequestMethod):
             context.view_name = status2name[status]
             context.view = root.get_view(context.view_name)
             if server.auth_type == 'http_basic':
-                basic_header = 'Basic realm="Restricted Area"'
+                basic_header = 'Basic realm="%s"' % server.auth_realm
                 response.set_header('WWW-Authenticate', basic_header)
         except ClientError, error:
             status = error.code
@@ -832,7 +833,7 @@ class POST(RequestMethod):
             context.view_name = status2name[status]
             context.view = root.get_view(context.view_name)
             if server.auth_type == 'http_basic':
-                basic_header = 'Basic realm="Restricted Area"'
+                basic_header = 'Basic realm="%s"' % server.auth_realm
                 response.set_header('WWW-Authenticate', basic_header)
         except ClientError, error:
             status = error.code

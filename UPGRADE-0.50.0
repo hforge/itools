@@ -2,7 +2,7 @@
 itools 0.50.0
 *************************************************************************
 
-The current upgrade notes are no complete. Thanks to report any problem you
+These upgrade notes may not be complete. Thanks to report any problem you
 find.
 
 New Dependencies
@@ -41,6 +41,8 @@ summarizes this changes.
   xliff.Note                     xliff.XLFNote
   xliff.Translation              xliff.XLFUnit
   xliff.XLIFF                    xliff.XLFFile
+  xml.AbstractNamespace          xml.XMLNamespace
+  xml.set_namespace              xml.register_namespace
 
 
 Global API
@@ -94,6 +96,39 @@ And the "DomainAware" class has dissapeared:
   Before               Now
   -------------------  ----------------
   POFile.get_messages  POFile.get_units
+  POFile.set_message   POFile.add_unit
+  POUnit.msgid         POUnit.source
+  POUnit.msgstr        POUnit.target
+
+
+itools.handlers
+===============
+
+It has been changed how to avoid caching a handler:
+
+  # Before
+  file = folder.get_handler('...', cache=False)
+
+  # Now
+  database = folder.database
+  database.set_use_cache(False)
+  file = folder.get_handler('...')
+  database.set_use_cache(True)
+
+Some other API changes:
+
+  Before               Now
+  -------------------  --------------------
+  Handler.mimetype     Handler.get_mimetype
+  Python.get_messages  Python.get_units
+
+
+itools.i18n
+===========
+
+The segmentation code has been moved to the itools.srx package.  The
+implementation is completely different, now it is based on the SRX
+file format.
 
 
 itools.ical
@@ -106,6 +141,14 @@ API changes:
 
   # Now
   icalendarTable.load_state_from_ical_file
+
+
+itools.handlers
+===============
+
+  Before                Now
+  --------------------  --------------------
+  ODFFile.get_messages  ODFFile.get_units
 
 
 itools.stl
@@ -135,7 +178,7 @@ class:
           ...
 
   # Now
-  from itools.web import Node, BaseView
+  from itools.web import Resource, BaseView
   class MyClassView(BaseView):
       access = True
       def GET(self, resource, context):
@@ -218,6 +261,13 @@ expects a 'View' instead of a method name.
   # Now
   AccessControl.is_access_allowed(user, resource, view)
 
+(6) The only CSS classes defined byt itools.web have been renamed:
+
+  Before           Now
+  --------------   -----------------
+  field_required   field_is_required
+  missing          field_is_missing
+
 
 itools.xml
 ==========
@@ -236,80 +286,72 @@ itools.xml
       name, doctype = value
       print '<!DOCTYPE %s %s>' % (name, doctype.to_str())
 
-(2) The namespaces API has changed.
+(2) The way to define a new XML namespace has changed.  Most notably now
+it is possible to precisely define the attributes of each element.
 
-TODO
+  # Before
+  from itools.xml import AbstractNamespace, set_namespace
+  class MyNamespace(AbstractNamespace):
+      class_uri = myuri
+      class_prefix = myprefix
+      elements_schema = {
+        'a': ...,
+	...
+      }
+      datatypes = {
+        'hfef': ...,
+	...
+      }
+  set_namespace(MyNamespace)
 
-
-
-
-
-
-
-
-
-
-
-
-
-itools.gettext
-==============
-
-class POFile: ! def set_message: (self, msgid, msgstr=[u''], comments=[],
-                                  references={}, fuzzy=False)
-                              => (self, message)
-
-
-itools.handlers
-===============
-
-Modifications:
-class Handler: - def to_text(self)
-class Handler: - mimetype (use get_mimetype)
-class File: + def to_text(self)
-class Python: - def get_messages(self)
-           => + def get_units(self) (and return a Message)
+  # Now
+  from itools.xml import XMLNamespace, ElementSchema, register_namespace
+  myelements = [
+      ElementSchema('a', ['href']),
+      ...
+  ]
+  my_namespace = XMLNamespace(myuri, myprefix, myelements)
+  register_namespace(my_namespace)
 
 
-itools.i18n
-===========
+(3) The public namespaces API has changed too.  These are some of the changes:
 
-Modifications:
+  # Before
+  from itools.xml import get_element_schema
+  get_element_schema(tag_uri, tag_name).get_attr_datatype(att_uri, att_name)
 
-+ def get_segments(message, keep_spaces=False)
-class Message: - def get_segments(self, keep_spaces=None)
-class Message: - def __init__(self)
+  # Now
+  from itools.xml import get_attr_datatype
+  get_attr_datatype(tag_uri, tag_name, att_uri, att_name)
+
+The 'get_attr_datatype' function accepts the optional parameter 'attributes',
+since the datatype of an attribute may depend on other attributes.  The
+example below illustrates this, and also how the 'is_translatable' method
+has been replaced:
+
+  # Before
+  from itools.xml import get_namespace
+  ns = get_namespace(tag_uri)
+  if ns.is_translatable(tag_uri, tag_name, attributes, attr_name):
+      ...
+
+  # Now
+  dt = get_attr_datatype(tag_uri, tag_name, att_uri, att_name, attributes)
+  if isinstance(dt, Unicode):
+      ...
+
+  Before                          Now
+  ------------------------------  -------------------------------
+  AbstractNamespace.get_element   XMLNamespace.get_element_schema
+  AbstractNamespace.get_datatype  XMLNamespace.get_attr_datatype
 
 
-itools.odf
-==========
+(4) There are other API changes.
 
-Modifications:
-class ODFFile: - def get_messages(self)
-            => + def get_units(self) (and return a Message)
+  # Before
+  element = html_doc.get_body()
+  print element.get_body_as_html()
 
-
-itools.xml
-==========
-
-Imports:
-- set_namespace
-- XMLNSNamespace
-- AbstractNamespace
-+ DocType
-
-Modifications:
-! class XMLNamespace: (AbstractNamespace)
-                   => (object)
-class XMLNamespace: - def get_datatype(cls, name)
-class XMLNamespace: + def __init__(self, uri, prefix, elements=None,
-                                   free_attributes=None)
-class XMLNamespace: + def get_element(self, name)
-class XMLNamespace: + def get_free_attribute(self, name)
-
-! class XMLNSNamespace: (AbstractNamespace)
-                     => (XMLNamespace)
-class XMLNSNamespace: - def get_datatype(cls, name)
-class XMLNSNamespace: + def get_free_datatype(self, name)
-
+  # Now
+  print html_doc.get_body_as_html()
 

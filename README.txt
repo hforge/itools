@@ -4,15 +4,15 @@ meta-package for easier development and deployment.
 
 The packages included are:
 
-  itools.abnf             itools.ical             itools.uri
-  itools.csv              itools.isetup           itools.vfs
-  itools.datatypes        itools.odf              itools.web
-  itools.gettext          itools.pdf              itools.workflow
-  itools.git              itools.rest             itools.xapian
-  itools.handlers         itools.rss              itools.xliff
-  itools.html             itools.srx              itools.xml
-  itools.http             itools.stl
-  itools.i18n             itools.tmx
+  itools.abnf             itools.ical             itools.tmx
+  itools.csv              itools.isetup           itools.uri
+  itools.datatypes        itools.odf              itools.vfs
+  itools.gettext          itools.pdf              itools.web
+  itools.git              itools.relaxng          itools.workflow
+  itools.handlers         itools.rest             itools.xapian
+  itools.html             itools.rss              itools.xliff
+  itools.http             itools.srx              itools.xml
+  itools.i18n             itools.stl
 
 The scripts included are:
 
@@ -62,7 +62,7 @@ Unit Tests
 ----------
 
 To run the unit tests just type:
-    
+
   $ cd test
   $ python test.py
 

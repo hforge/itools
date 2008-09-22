@@ -21,7 +21,7 @@ Imports
 The package "itools.catalog" has been replaced by the package "itools.xapian",
 but the API is the same, so only the import sentences must be updated.
 
-Other objects have been renamed accross different packages, the table below
+Other objects have been renamed across different packages, the table below
 summarizes this changes.
 
   Before (alphabetical order)    Now
@@ -79,7 +79,7 @@ changed:
   message = MSG(u'...')
   message.gettext()
 
-And the "DomainAware" class has dissapeared:
+And the "DomainAware" class has disappeared:
 
   # Before
   from itools.gettext import DomainAware

@@ -259,7 +259,7 @@ def read_file(context, uri, file):
 convert_type_data = {
     None: String,
     '': String,
-    'string': Unicode,
+    'string': String,
     'boolean': Boolean,
     'float': Decimal,
     'double': Decimal,

@@ -43,7 +43,7 @@ class Test_ODT_File(TestCase):
             u'Hello <text:span text:style-name="T1">world</text:span> !',
             # meta.xml
             u'Hello world Document', u'it\'s a very good document',
-            u'Itools test', u'sylvain', u'sylvain', u'itools', u'odt', u'odf']
+            u'Itools test', u'sylvain', u'itools', u'odt', u'odf']
         self.assertEqual(messages, expected)
 
 
@@ -63,7 +63,7 @@ class Test_ODT_File(TestCase):
             u'Hola <text:span text:style-name="T1">mundo</text:span> !',
             # meta.xml
             u'Hello world Document', u'it\'s a very good document',
-            u'Itools test', u'sylvain', u'sylvain', u'itools', u'odt', u'odf']
+            u'Itools test', u'sylvain', u'itools', u'odt', u'odf']
         self.assertEqual(messages, expected)
 
 
@@ -98,9 +98,7 @@ class Test_ODP_File(TestCase):
             '<text:span text:style-name="T1"> !</text:span>',
             u'Welcome',
             # meta.xml
-            u'sylvain', u'sylvain',
-            # styles
-            u'2', u'2', u'2']
+            u'sylvain']
         self.assertEqual(messages, expected)
 
 
@@ -117,13 +115,9 @@ class Test_ODS_File(TestCase):
                              u'20', u'40', u'Quantity', u'20', u'30', u'20',
                              u'Quality', u'0', u'50', u'40',
                              # meta.xml
-                             u'sylvain', u'sylvain',
+                             u'sylvain',
                              # styles.xml
-                             u'-', u'-', u'???',
-                             u'Page <text:page-number>1</text:page-number>',
-                             u'???', u'(', u'???', u')', u',',
-                             u'Page <text:page-number>1</text:page-number> / '
-                             u'<text:page-count>99</text:page-count>']
+                             u'Page', u'(', u'???', u')', u',', u'Page', u'/']
         self.assertEqual(messages, expected)
 
 

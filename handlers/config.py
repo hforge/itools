@@ -97,6 +97,9 @@ def get_lines(file):
                 raise SyntaxError, 'unknown line "%d"' % line_num
         elif state == 1:
             # Multiline value
+            if line == '"':
+                yield VAR_END, value, line_num
+                state = 0
             groups = split('(?<=[^\\\\])"', line)
             nb_groups = len(groups)
             value = groups[0]
@@ -177,6 +180,9 @@ def read_block(lines):
         lines.next()
         value = value + '\n' + read_multiline(lines)
         return [], (name, value)
+    elif type == VAR_CONT:
+        lines.next()
+        return None
     else:
         raise SyntaxError, 'unexpected line "%d"' % line_num
 
@@ -302,7 +308,9 @@ class ConfigFile(TextFile):
                 for line in comment:
                     lines.append('# %s\n' % line)
                 if var is not None:
-                    lines.append('%s = %s\n' % var)
+                    name, value = var
+                    value = value.replace('"', '\\"')
+                    lines.append('%s = "%s"\n' % (name, value))
 
         return ''.join(lines)
 

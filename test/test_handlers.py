@@ -23,6 +23,8 @@ from unittest import TestCase
 from itools.csv import Table
 from itools.datatypes import Unicode
 from itools.handlers import get_handler, Database, SafeDatabase, TextFile
+from itools.handlers import ConfigFile
+from itools.uri import get_reference
 from itools import vfs
 
 
@@ -207,6 +209,137 @@ class TextTestCase(TestCase):
     def test_load_file(self):
         handler = get_handler('tests/hello.txt')
         self.assertEqual(handler.data, u'hello world\n')
+
+
+
+class ConfigFileTestCase(TestCase):
+    """ still need to complete the tests with schema """
+
+    def setUp(self):
+        self.config_path = "tests/setup.conf.test"
+        if vfs.exists(self.config_path):
+            vfs.remove(self.config_path)
+
+
+    def tearDown(self):
+        if vfs.exists(self.config_path):
+            vfs.remove(self.config_path)
+
+
+    def _init_test(self, value):
+        # Init data
+        if not vfs.exists(self.config_path):
+            vfs.make_file(self.config_path)
+
+        # Write data
+        config = ConfigFile(ref=self.config_path)
+        config.set_value("test", value)
+        config.save_state()
+
+
+    def test_simple_value(self):
+        # Init data
+        value = "HELLO, WORLD!"
+        self._init_test(value)
+
+        # Read data
+        config2 = ConfigFile(ref=self.config_path)
+        config2_value = config2.get_value("test")
+        vfs.remove(self.config_path)
+
+        # Test data
+        self.assertEqual(config2_value, value)
+
+
+    def test_long_value(self):
+        # Init data
+        value = "HELLO, WORLD!\n\nHELLO WORLD2222"
+        self._init_test(value)
+
+        # Read data
+        config2 = ConfigFile(ref=self.config_path)
+        try:
+            config2_value = config2.get_value("test")
+        except SyntaxError, e:
+            self.fail(e)
+        finally:
+            vfs.remove(self.config_path)
+
+        # Test data
+        self.assertEqual(config2_value, value)
+
+
+    def test_last_line_empty(self):
+        # Init data
+        value = "HELLO, WORLD!\n\n"
+        self._init_test(value)
+
+        # Write data
+        config = ConfigFile(ref=self.config_path)
+        config.set_value("test", value)
+        config.save_state()
+
+        # Read data
+        config2 = ConfigFile(ref=self.config_path)
+        config2_value = config2.get_value("test")
+        vfs.remove(self.config_path)
+
+        # Test data
+        self.assertEqual(config2_value, value)
+
+
+    def test_quote_value(self):
+        # Init data
+        value = "HELLO, \"WORLD\"!"
+        self._init_test(value)
+
+        # Write data
+        config = ConfigFile(ref=self.config_path)
+        try:
+            config.set_value("test", value)
+        except SyntaxError, e:
+            self.fail(e)
+        config.save_state()
+
+        # Read data
+        config2 = ConfigFile(ref=self.config_path)
+        try:
+            config2_value = config2.get_value("test")
+        except SyntaxError, e:
+            self.fail(e)
+        finally:
+            vfs.remove(self.config_path)
+
+        # Test data
+        self.assertEqual(config2_value, value)
+
+
+
+    def test_wrapped_quote_value(self):
+        # Init data
+        value = "\"HELLO, WORLD!\""
+        self._init_test(value)
+
+        # Write data
+        config = ConfigFile(ref=self.config_path)
+        try:
+            config.set_value("test", value)
+        except SyntaxError, e:
+            self.fail(e)
+        config.save_state()
+
+        # Read data
+        config2 = ConfigFile(ref=self.config_path)
+        try:
+            config2_value = config2.get_value("test")
+        except SyntaxError, e:
+            self.fail(e)
+        finally:
+            vfs.remove(self.config_path)
+
+        # Test data
+        self.assertEqual(config2_value, value)
+
 
 
 ###########################################################################

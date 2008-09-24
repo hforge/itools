@@ -157,14 +157,20 @@ class BaseForm(BaseView):
         return namespace
 
 
-    def POST(self, resource, context):
-        # (1) Find out which button has been pressed, if more than one
+    def _get_action(self, resource, context):
+        """ default function to retrieve the name of the action from a form
+        """
         for name in context.get_form_keys():
             if name.startswith(';'):
                 context.form_action = 'action_%s' % name[1:]
                 break
         else:
             context.form_action = 'action'
+
+
+    def POST(self, resource, context):
+        # (1) Find out which button has been pressed, if more than one
+        self._get_action(resource, context)
 
         # (2) Automatically validate and get the form input (from the schema).
         try:

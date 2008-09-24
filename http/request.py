@@ -159,7 +159,12 @@ class Request(Message):
                             if filename:
                                 # Strip the path (for IE).
                                 filename = filename.split('\\')[-1]
-                                mimetype = entity.get_header('content-type')[0]
+                                # Default content-type, see
+                                # http://tools.ietf.org/html/rfc2045#section-5.2
+                                if not entity.has_header('content-type'):
+                                    mimetype = 'text/plain'
+                                else:
+                                    mimetype = entity.get_header('content-type')[0]
                                 self.body[name] = filename, mimetype, body
                         else:
                             if name not in self.body:

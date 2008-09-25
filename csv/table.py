@@ -359,7 +359,9 @@ class Table(File):
     #######################################################################
     schema = {}
 
+
     def get_datatype(self, name):
+        # Table schema
         if name == 'ts':
             return DateTime(multiple=False)
         if name in self.schema:
@@ -367,7 +369,16 @@ class Table(File):
         return String(multiple=True)
 
 
-    def properties_to_dict(self, properties, version=None):
+    def get_record_datatype(self, name):
+        # Record schema
+        if name == 'ts':
+            return DateTime(multiple=False)
+        if name in self.record_schema:
+            return self.record_schema[name]
+        return String(multiple=True)
+
+
+    def properties_to_dict(self, properties, version=None, first=False):
         """Add the given "properties" as Property objects or Property objects
         list to the given dictionnary "version".
         """
@@ -375,7 +386,12 @@ class Table(File):
             version = {}
         # Fix the type
         for name, value in properties.items():
-            datatype = self.get_datatype(name)
+            # Table or record schema
+            if first is True:
+                datatype = self.get_datatype(name)
+            else:
+                datatype = self.get_record_datatype(name)
+
             if getattr(datatype, 'multiple', False) is True:
                 if isinstance(value, list):
                     version[name] = []
@@ -400,12 +416,14 @@ class Table(File):
     # Handlers
     #######################################################################
     def reset(self):
+        self.properties = None
         self.records = []
+        self.added_properties = []
         self.added_records = []
         self.removed_records = []
         # The catalog (for index and search)
         self.catalog = MemoryCatalog()
-        for name, datatype in self.schema.items():
+        for name, datatype in self.record_schema.items():
             index = getattr(datatype, 'index', None)
             if index is not None:
                 field = get_field(index)
@@ -413,12 +431,16 @@ class Table(File):
 
 
     def new(self):
-        pass
+        # Add the properties record
+        properties = self.record_class(-1)
+        properties.append({'ts': Property(datetime.now())})
+        self.properties = properties
 
 
     def _load_state_from_file(self, file):
         # Load the records
         records = self.records
+        properties = self.properties
         n = 0
         version = None
         for name, value, parameters in parse_table(file.read()):
@@ -428,7 +450,13 @@ class Table(File):
                 uid, seq = value.split('/')
                 # Record
                 uid = int(uid)
-                if uid >= n:
+                if uid == -1:
+                    # Tale properties
+                    if properties is None:
+                        properties = self.record_class(uid)
+                        self.properties = properties
+                    record = properties
+                elif uid >= n:
                     # New record
                     records.extend([None] * (uid - n))
                     record = self.record_class(uid)
@@ -440,17 +468,25 @@ class Table(File):
                 # Version
                 if seq == 'DELETED':
                     # Deleted
-                    records[uid] = None
-                    record = None
+                    if uid == -1:
+                        properties = None
+                    else:
+                        records[uid] = None
+                        record = None
                 else:
                     seq = int(seq)
                     if seq > len(record):
                         msg = 'unexpected sequence "%s" for record "%s"'
                         raise ValueError, msg % (seq, uid)
                     record.append(version)
+                # Table or record schema
+                if uid == -1:
+                    get_datatype = self.get_datatype
+                else:
+                    get_datatype = self.get_record_datatype
                 continue
             # Timestamp (ts), Schema, or Something else
-            datatype = self.get_datatype(name)
+            datatype = get_datatype(name)
             value = datatype.decode(value)
             property = Property(value, parameters)
             if getattr(datatype, 'multiple', False) is True:
@@ -469,8 +505,14 @@ class Table(File):
         lines = ['id:%d/%d\n' % (id, seq)]
         names = version.keys()
         names.sort()
+        # Table or record schema
+        if id == -1:
+            get_datatype = self.get_datatype
+        else:
+            get_datatype = self.get_record_datatype
+
         for name in names:
-            datatype = self.get_datatype(name)
+            datatype = get_datatype(name)
             if getattr(datatype, 'multiple', False) is True:
                 properties = version[name]
             else:
@@ -498,6 +540,14 @@ class Table(File):
     def to_str(self):
         lines = []
         id = 0
+        # Properties record
+        if self.properties is not None:
+            seq = 0
+            for version in self.properties:
+                version = self._version_to_str(-1, seq, version)
+                lines.append(version)
+                seq += 1
+        # Common record
         for record in self.records:
             if record is not None:
                 seq = 0
@@ -517,6 +567,12 @@ class Table(File):
     def save_state(self):
         file = self.safe_open(self.uri, 'a')
         try:
+            # Added properties records
+            for seq in self.added_properties:
+                version = self.properties[seq]
+                version = self._version_to_str(-1, seq, version)
+                file.write(version)
+            self.added_properties = []
             # Added records
             for id, seq in self.added_records:
                 version = self.records[id][seq]
@@ -555,7 +611,7 @@ class Table(File):
 
 
     def get_index(self, name):
-        if name not in self.schema:
+        if name not in self.record_schema:
             raise ValueError, 'the field "%s" is not defined' % name
 
         if name not in self.catalog.indexes:
@@ -620,6 +676,25 @@ class Table(File):
         self.catalog.index_document(record, id)
 
 
+    def update_properties(self, **kw):
+        record = self.properties
+        if record is None:
+            # if the record doesn't exist
+            # we create it, it's useful during an update
+            record = self.record_class(-1)
+            version = None
+            self.properties = record
+        else:
+            # Version of record
+            version = record[-1].copy()
+        version = self.properties_to_dict(kw, version, first=True)
+        version['ts'] = Property(datetime.now())
+        # Change
+        self.set_changed()
+        self.added_properties.append(len(record))
+        record.append(version)
+
+
     def del_record(self, id):
         record = self.records[id]
         if record is None:
@@ -654,7 +729,7 @@ class Table(File):
             yield self.get_record(id)
 
 
-    def get_value(self, record, name):
+    def get_record_value(self, record, name):
         """Return the value if name is in record
         else if name is define in the schema
         return [] is name is a multiple, the default value otherwise.
@@ -664,7 +739,31 @@ class Table(File):
         try:
             return getattr(record, name)
         except AttributeError:
-            if self.schema.has_key(name):
+            if name in self.record_schema:
+                datatype = self.get_record_datatype(name)
+                if getattr(datatype, 'multiple', False) is True:
+                    return []
+                else:
+                    return getattr(datatype, 'default')
+
+
+    def get_property(self, name):
+        record = self.properties
+        return record.get_value(name)
+
+
+    def get_property_value(self, name):
+        """Return the value if name is in record
+        else if name is define in the schema
+        return [] is name is a multiple, the default value otherwise.
+        """
+        record = self.properties
+        if name == 'id':
+            return record.id
+        try:
+            return getattr(record, name)
+        except AttributeError:
+            if name in self.record_schema:
                 datatype = self.get_datatype(name)
                 if getattr(datatype, 'multiple', False) is True:
                     return []
@@ -701,7 +800,7 @@ class Table(File):
         - 'columns': the CSV columns used for the mapping between the CSV
           columns and the table schema.
         """
-        schema = self.schema
+        schema = self.record_schema
         for line in parse(data, columns, schema):
             record = {}
             for index, key in enumerate(columns):

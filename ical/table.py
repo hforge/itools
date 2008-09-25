@@ -178,8 +178,8 @@ class icalendarTable(BaseCalendar, Table):
 
     record_class = Record
 
-    schema = data_properties.copy()
-    schema['type'] = String(index='keyword')
+    record_schema = data_properties.copy()
+    record_schema['type'] = String(index='keyword')
 
 
     #########################################################################

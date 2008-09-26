@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from StringIO import StringIO
+from cStringIO import StringIO
 
 # Import from the Python Image Library
 try:
@@ -62,7 +62,7 @@ class Image(File):
         return self.size
 
 
-    def get_thumbnail(self, width, height):
+    def get_thumbnail(self, width, height, format="jpeg"):
         if PILImage is None:
             return None, None
 
@@ -83,8 +83,8 @@ class Image(File):
         # Create the thumbnail if needed
         state_width, state_height = self.size
         if state_width > width or state_height > height:
-            # TODO Improve the quality of the thumbnails by cropping? The only
-            # problem would be the loss of information.
+            # TODO Improve the quality of the thumbnails by cropping?
+            # The only problem would be the loss of information.
             try:
                 im.thumbnail((width, height), PILImage.ANTIALIAS)
             except IOError:
@@ -92,15 +92,15 @@ class Image(File):
                 return None, None
             else:
                 thumbnail = StringIO()
-                im.save(thumbnail, im.format)
+                im.save(thumbnail, format.upper(), quality=80)
                 data = thumbnail.getvalue()
                 thumbnail.close()
         else:
             data = self.to_str()
 
         # Store in the cache and return
-        thumbnails[key] = data, im.format
-        return data, im.format
+        thumbnails[key] = data, format.lower()
+        return data, format.lower()
 
 
 register_handler_class(Image)

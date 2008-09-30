@@ -358,6 +358,7 @@ class Table(File):
     # book, text, path.
     #######################################################################
     schema = {}
+    record_schema = {}
 
 
     def get_datatype(self, name):

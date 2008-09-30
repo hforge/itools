@@ -76,8 +76,8 @@ def _get_translatable_blocks(events):
                     id_stack.append(id)
 
                     # We must search for translatable attributes
-                    serialization = [(u'<%s' % get_qname(tag_uri, tag_name),
-                                      False)]
+                    content = [(u'<%s' % get_qname(tag_uri, tag_name),
+                                False, None)]
 
                     for attr_uri, attr_name in attributes:
                         value = attributes[(attr_uri, attr_name)]
@@ -87,19 +87,19 @@ def _get_translatable_blocks(events):
                         datatype = get_attr_datatype(tag_uri, tag_name,
                                       attr_uri, attr_name, attributes)
                         if is_datatype(datatype, Unicode):
-                            serialization.append((u' %s="' % qname, False))
-                            serialization.append((u'%s' % value, True))
-                            serialization.append((u'"', False))
+                            content.append((u' %s="' % qname, False, None))
+                            # XXX Context
+                            content.append((u'%s' % value, True, None))
+                            content.append((u'"', False, None))
                         else:
-                            serialization.append((u' %s="%s"' % (qname,
-                                                  value), False))
+                            content.append((u' %s="%s"' % (qname, value),
+                                            False, None))
                     # Close the start tag
                     if is_empty(tag_uri, tag_name):
-                        serialization.append((u'/>', False))
+                        content.append((u'/>', False, None))
                     else:
-                        serialization.append((u'>', False))
-                    message.append_start_format((serialization, id),
-                                                line)
+                        content.append((u'>', False, None))
+                    message.append_start_format(content, id, line)
                     continue
         elif type == END_ELEMENT:
             if skip_level > 0:
@@ -110,21 +110,22 @@ def _get_translatable_blocks(events):
 
                 # Is inline ?
                 if getattr(schema, 'is_inline', False):
-                    message.append_end_format(([(get_end_tag(*value), False)],
-                                               id_stack.pop()), line)
+                    message.append_end_format([(get_end_tag(*value), False,
+                                                None)], id_stack.pop(), line)
                     continue
         elif type == TEXT:
             # Not empty ?
             if skip_level == 0 and (value.strip() != '' or message):
                 value = XMLContent.encode(value)
                 value = unicode(value, encoding)
-                message.append_text(value, line)
+                # XXX Context
+                message.append_text(value, line, None)
                 continue
         elif type == COMMENT and message:
             id += 1
-            message.append_start_format(([('<!--%s-->' % value, False)], id),
-                                        line)
-            message.append_end_format(([], id), line)
+            message.append_start_format([('<!--%s-->' % value, False, None)],
+                                        id, line)
+            message.append_end_format([], id, line)
             continue
 
         # Not a good event => break + send the event

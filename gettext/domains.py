@@ -99,18 +99,17 @@ class MSG(object):
     def gettext(self, language=None, **kw):
         message = self.message
         domain = domains.get(self.domain)
-        if domain is None:
-            return message
 
-        # Find out the language (the 'select_language' function must be
-        # built-in)
-        if language is None:
-            languages = domain.get_languages()
-            language = select_language(languages)
+        if domain is not None:
+            # Find out the language
+            if language is None:
+                languages = domain.get_languages()
+                # The 'select_language' function must be built-in
+                language = select_language(languages)
 
-        # Look-up
-        if language is not None:
-            message = domain.gettext(message, language)
+            # Look-up
+            if language is not None:
+                message = domain.gettext(message, language)
 
         # Interpolation
         if kw:

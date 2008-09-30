@@ -172,6 +172,9 @@ no_translate_content_elements = [
     # SVG
     #(svg_uri, 'title'),
     #(svg_uri, 'desc')
+
+    # From translate
+    (text_uri, 'tracked-changes')
     ]
 
 

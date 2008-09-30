@@ -20,7 +20,7 @@ from os.path import join
 from rfc822 import Message
 
 # Import from itools
-from itools.datatypes import String, LanguageTag, Tokens
+from itools.datatypes import String, LanguageTag, Tokens, is_datatype
 from itools.handlers import ConfigFile, TextFile, register_handler_class
 from itools.vfs import exists, is_folder
 
@@ -46,6 +46,7 @@ class SetupFile(ConfigFile):
     }
 
 
+
 class RFC822File(TextFile):
     """ holds a rfc822 Message """
 
@@ -54,7 +55,6 @@ class RFC822File(TextFile):
 
     list_types = (type([]), type(()))
     str_types = (type(''),)
-
 
     def new(self, **kw):
         if 'attrs' in kw.keys():
@@ -65,10 +65,15 @@ class RFC822File(TextFile):
         self.attrs = {}
         self.message = Message(file)
         for k in self.message.keys():
-            if self.schema is None or self.schema.has_key(k):
+            if self.schema is None:
                 if len(self.message.getheaders(k)) == 1:
                     self.attrs[k] = self.message.getheader(k)
                 else:
+                    self.attrs[k] = self.message.getheaders(k)
+            elif self.schema.has_key(k):
+                if is_datatype(self.schema[k], String):
+                    self.attrs[k] = self.message.getheader(k)
+                elif is_datatype(self.schema[k], Tokens):
                     self.attrs[k] = self.message.getheaders(k)
 
 
@@ -94,19 +99,24 @@ class RFC822File(TextFile):
         # Check types of values
         type_error_msg = 'One of the given values is not compatible'
         for key, val in attrs.items():
-            if self.schema is None or self.schema.has_key(key):
-                if type(val) in self.str_types:
-                    continue
-                elif type(val) in self.list_types:
-                    for v in val:
-                        if type(v) not in self.str_types:
-                            raise TypeError, type_error_msg
-            else:
+            if type(val) in self.list_types:
+                for v in val:
+                    if type(v) not in self.str_types:
+                        raise TypeError, type_error_msg
+            elif not (self.schema is None or self.schema.has_key(key)):
                 del attrs[key]
 
         # Now attrs is sure
         self.attrs = attrs
         self.set_changed()
+
+
+    def get_attrs(self):
+        if self.schema is not None:
+            for key in self.schema:
+                if not self.attrs.has_key(key):
+                    self.attrs[key] = self.schema[key].default
+        return self.attrs
 
 
 
@@ -125,15 +135,15 @@ class PKGINFOFile(RFC822File):
 
         # Optional
         'description': String(default=''),
-        'keywords': String(default=''),
+        'keywords': Tokens(default=()),
         'home-page': String(default=''),
         'author': String(default=''),
         'platform': String(default=''),
         'supported-platform': String(default=''),
-        'classifier': String(default=''),
-        'requires': String(default=''),
-        'provides': String(default=''),
-        'obsoletes': String(default=''),
+        'classifiers': Tokens(default=()),
+        'requires': Tokens(default=()),
+        'provides': Tokens(default=()),
+        'obsoletes': Tokens(default=()),
     }
 
 
@@ -178,5 +188,4 @@ def get_package_version(package_name):
             return '?'
     except ImportError:
         return '?'
-
 

@@ -301,7 +301,8 @@ html_elements = [
         'value', 'checked', 'disabled', 'readonly', 'size', 'maxlength',
         'src', 'alt', 'usemap', 'onselect', 'onchange', 'accept', 'align']),
     Element('kbd', common_attrs),
-    Element('label', common_attrs + ['for', 'accesskey', 'onfocus', 'onblur']),
+    Element('label', common_attrs + ['for', 'accesskey', 'onfocus',
+                                     'onblur']),
     BlockElement('legend', common_attrs + ['accesskey', 'align']),
     BlockElement('li', common_attrs + ['type', 'value']),
     EmptyElement('link', common_attrs + ['charset', 'href', 'hreflang',
@@ -320,7 +321,7 @@ html_elements = [
     Element('q', common_attrs + ['cite']),
     Element('samp', common_attrs),
     BlockElement('script', ['id', 'charset', 'type', 'language', 'src',
-        'defer'], translate_content=False),
+        'defer'], skip_content=True),
     # FIXME This is a lie, <select> elements *are* inline
     # TODO Do not use the inline/block for i18n, define instead another
     # variable for this purpose.
@@ -332,7 +333,7 @@ html_elements = [
     Element('sub', common_attrs),
     Element('sup', common_attrs),
     BlockElement('style', i18n_attrs + ['type', 'media', 'title'],
-        translate_content=False),
+        skip_content=True),
     BlockElement('table', common_attrs + ['summary', 'width', 'border',
         'frame', 'rules', 'cellspacing', 'cellpadding', 'align', 'bgcolor']),
     BlockElement('td', common_attrs + cellhalign_attrs + cellvalign_attrs +
@@ -344,8 +345,8 @@ html_elements = [
     BlockElement('th', common_attrs + cellhalign_attrs + cellvalign_attrs +
         ['abbr', 'axis', 'headers', 'scope', 'rowspan', 'colspan', 'nowrap',
             'bgcolor', 'width', 'height']),
-    BlockElement('colgroup', common_attrs + cellhalign_attrs + cellvalign_attrs
-            + ['span', 'width']),
+    BlockElement('colgroup', common_attrs + cellhalign_attrs +
+                             cellvalign_attrs + ['span', 'width']),
     BlockElement('tbody', common_attrs + cellhalign_attrs + cellvalign_attrs),
     BlockElement('tfoot', common_attrs + cellhalign_attrs + cellvalign_attrs),
     BlockElement('thead', common_attrs + cellhalign_attrs + cellvalign_attrs),

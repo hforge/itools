@@ -120,12 +120,13 @@ def is_empty(namespace, name):
 
 class ElementSchema(object):
 
+    # Default values
     attributes = {}
-    default_datatype = None
-
-    # Default Values
     is_empty = False
-    translate_content = True
+
+    # i18n default values
+    default_datatype = None
+    skip_content = False
 
 
     def __init__(self, name, **kw):

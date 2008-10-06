@@ -67,8 +67,8 @@ def _get_translatable_blocks(events):
                 tag_uri, tag_name, attributes = value
                 schema = get_element_schema(tag_uri, tag_name)
 
-                # Translatable content ?
-                if not schema.translate_content:
+                # Skip content ?
+                if schema.skip_content:
                     skip_level = 1
                 # Is inline ?
                 elif getattr(schema, 'is_inline', False):

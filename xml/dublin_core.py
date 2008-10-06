@@ -51,8 +51,8 @@ class DCElement(ElementSchema):
 dc_elements = [
     DCElement('creator'),
     DCElement('description'),
-    DCElement('date', translate_content=False),
-    DCElement('language', translate_content=False),
+    DCElement('date', skip_content=True),
+    DCElement('language', skip_content=True),
     DCElement('subject'),
     DCElement('title'),
     ]

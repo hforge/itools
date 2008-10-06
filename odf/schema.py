@@ -46,7 +46,7 @@ inline_elements = [
     (text_uri, 'span'),
     (text_uri, 'tab')]
 
-no_translate_content_elements = [
+skip_content_elements = [
 
     # Config
     (config_uri, 'config-item'),
@@ -190,9 +190,9 @@ namespaces = rng_file.get_namespaces()
 for uri, element_name in inline_elements:
     element = namespaces[uri].get_element_schema(element_name)
     element.is_inline = True
-for uri, element_name in no_translate_content_elements:
+for uri, element_name in skip_content_elements:
     element = namespaces[uri].get_element_schema(element_name)
-    element.translate_content = False
+    element.skip_content = True
 
 # Register the namespaces
 for uri, namespace in namespaces.iteritems():

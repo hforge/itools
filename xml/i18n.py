@@ -71,7 +71,7 @@ def _get_translatable_blocks(events):
                 if schema.skip_content:
                     skip_level = 1
                 # Is inline ?
-                elif getattr(schema, 'is_inline', False):
+                elif schema.is_inline:
                     id += 1
                     id_stack.append(id)
 
@@ -109,7 +109,7 @@ def _get_translatable_blocks(events):
                 schema = get_element_schema(tag_uri, tag_name)
 
                 # Is inline ?
-                if getattr(schema, 'is_inline', False):
+                if schema.is_inline:
                     message.append_end_format([(get_end_tag(*value), False,
                                                 None)], id_stack.pop(), line)
                     continue

@@ -42,19 +42,13 @@ dc_attributes = {
     'type': None}
 
 
-class DCElement(ElementSchema):
-
-    is_empty = False
-    is_inline = False
-
-
 dc_elements = [
-    DCElement('creator'),
-    DCElement('description'),
-    DCElement('date', skip_content=True),
-    DCElement('language', skip_content=True),
-    DCElement('subject'),
-    DCElement('title'),
+    ElementSchema('creator'),
+    ElementSchema('description'),
+    ElementSchema('date', skip_content=True),
+    ElementSchema('language', skip_content=True),
+    ElementSchema('subject'),
+    ElementSchema('title'),
     ]
 
 

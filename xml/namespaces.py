@@ -123,6 +123,7 @@ class ElementSchema(object):
     # Default values
     attributes = {}
     is_empty = False
+    is_inline = False
 
     # i18n default values
     default_datatype = None

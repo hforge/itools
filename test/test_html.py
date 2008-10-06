@@ -126,6 +126,7 @@ class i18nTestCase(TestCase):
         doc = HTMLFile(string='<p>hello world</p>')
 
         p = POFile(string=
+            'msgctxt "p"\n'
             'msgid "hello world"\n'
             'msgstr "hola mundo"')
 
@@ -137,8 +138,9 @@ class i18nTestCase(TestCase):
         doc = HTMLFile(string='<img alt="The beach" src="beach.jpg">')
 
         po = POFile(string=
+            'msgctxt "img[alt]"\n'
             'msgid "The beach"\n'
-             'msgstr "La playa"')
+            'msgstr "La playa"')
 
         string = doc.translate(po)
         output = HTMLFile(string=string)
@@ -154,6 +156,7 @@ class i18nTestCase(TestCase):
             '<input type="submit" value="Change">')
 
         p = POFile(string=
+            'msgctxt "input[value]"\n'
             'msgid "Change"\n'
             'msgstr "Cambiar"')
 
@@ -171,6 +174,7 @@ class i18nTestCase(TestCase):
         doc = HTMLFile(string='<em>hello world</em>')
 
         p = POFile(string=
+            'msgctxt "em"\n'
             'msgid "hello world"\n'
             'msgstr "hola mundo"')
 
@@ -186,8 +190,10 @@ class i18nTestCase(TestCase):
         p = POFile(string=
             'msgid "Say:"\n'
             'msgstr "Dice:"\n\n'
+            'msgctxt "em"\n'
             'msgid "hello world."\n'
             'msgstr "hola mundo."\n\n'
+            'msgctxt "em"\n'
             'msgid "It\'s me."\n'
             'msgstr "Es me."')
 
@@ -204,8 +210,10 @@ class i18nTestCase(TestCase):
         p = POFile(string=
             'msgid "Say:"\n'
             'msgstr "Dites:"\n\n'
+            'msgctxt "em"\n'
             'msgid "hello world."\n'
             'msgstr "Bonjour monde."\n\n'
+            'msgctxt "em"\n'
             'msgid "It\'s me."\n'
             'msgstr "C\'est moi."\n\n'
             'msgid "Do you remember me ?"\n'
@@ -226,8 +234,10 @@ class i18nTestCase(TestCase):
         p = POFile(string=
             'msgid "Say:"\n'
             'msgstr "Dites:"\n\n'
+            'msgctxt "em"\n'
             'msgid "hello world."\n'
             'msgstr "Bonjour monde."\n\n'
+            'msgctxt "em"\n'
             'msgid "It\'s me."\n'
             'msgstr "C\'est moi."\n\n'
             'msgid "Do you remember me ?"\n'
@@ -402,6 +412,7 @@ class TranslationTestCase(TestCase):
     def test_case4(self):
         """Test translation of an element content"""
         string = (
+            'msgctxt "p"\n'
             'msgid "hello world"\n'
             'msgstr "hola mundo"\n')
         p = POFile(string=string)
@@ -419,6 +430,7 @@ class TranslationTestCase(TestCase):
     def test_case5(self):
         """Test translation of an element content"""
         po = POFile(string=
+            'msgctxt "img[alt]"\n'
             'msgid "The beach"\n'
             'msgstr "La playa"')
         xhtml = XHTMLFile(string=

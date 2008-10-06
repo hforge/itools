@@ -155,7 +155,7 @@ class SentenceTestCase(unittest.TestCase):
         data = '<a href="; t. ffff">hello </a>      GOGO'
 
         segments = []
-        for seg, offset in get_units(HTMLParser(data)):
+        for seg, context, offset in get_units(HTMLParser(data)):
             segments.append(seg)
 
         result = [u'<a href="; t. ffff">hello </a> GOGO']
@@ -167,7 +167,7 @@ class SentenceTestCase(unittest.TestCase):
         result = [u'J. David']
 
         segments = []
-        for seg, offset in get_units(HTMLParser(data)):
+        for seg, context, offset in get_units(HTMLParser(data)):
             segments.append(seg)
 
         self.assertEqual(list(segments), result)
@@ -178,7 +178,7 @@ class SentenceTestCase(unittest.TestCase):
         result = [u'-- toto is here -- *I am*']
 
         segments = []
-        for seg, offset in get_units(HTMLParser(data)):
+        for seg, context, offset in get_units(HTMLParser(data)):
             segments.append(seg)
 
         self.assertEqual(list(segments), result)
@@ -190,7 +190,7 @@ class SentenceTestCase(unittest.TestCase):
                   u'Toto']
 
         segments = []
-        for seg, offset in get_units(HTMLParser(data)):
+        for seg, context, offset in get_units(HTMLParser(data)):
             segments.append(seg)
 
         self.assertEqual(list(segments), result)
@@ -305,7 +305,7 @@ class SentenceTestCase(unittest.TestCase):
         expected = [u'Surrounding format elements should be extracted !']
 
         segments = []
-        for seg, offset in get_units(HTMLParser(data)):
+        for seg, context, offset in get_units(HTMLParser(data)):
             segments.append(seg)
         self.assertEqual(list(segments), expected)
 
@@ -315,7 +315,7 @@ class SentenceTestCase(unittest.TestCase):
         expected = [u'Hello <em> Baby.</em>', u'How are you ?']
 
         segments = []
-        for seg, offset in get_units(HTMLParser(data)):
+        for seg, context, offset in get_units(HTMLParser(data)):
             segments.append(seg)
         self.assertEqual(list(segments), expected)
 
@@ -331,7 +331,7 @@ class SentenceTestCase(unittest.TestCase):
                     u'Another one.', u'This text must be well segmented.']
 
         segments = []
-        for seg, offset in get_units(HTMLParser(data)):
+        for seg, context, offset in get_units(HTMLParser(data)):
             segments.append(seg)
         self.assertEqual(list(segments), expected)
 

@@ -40,6 +40,11 @@ elements_to_keep_spaces = set(['pre'])
 ###########################################################################
 # Common code to "get_units" and "translate"
 ###########################################################################
+def _get_attr_context(tag_name, attr_name):
+    # By default, the context of attribute is "element[name]"
+    return '%s[%s]' % (tag_name, attr_name)
+
+
 def _make_start_format(tag_uri, tag_name, attributes):
     # We must search for translatable attributes
     result = [(u'<%s' % get_qname(tag_uri, tag_name),
@@ -54,10 +59,7 @@ def _make_start_format(tag_uri, tag_name, attributes):
                                      attributes)
         if is_datatype(datatype, Unicode):
             result.append((u' %s="' % qname, False, None))
-
-            # By default, the context of attribute is "element[name]"
-            context = '%s[%s]' % (tag_name, attr_name)
-
+            context = _get_attr_context(tag_name, attr_name)
             result.append((u'%s' % value, True, context))
             result.append((u'"', False, None))
         else:
@@ -178,7 +180,8 @@ def get_units(events, srx_handler=None):
                 value = attributes[(attr_uri, attr_name)]
                 if not value.strip():
                     continue
-                yield value, line
+
+                yield value, _get_attr_context(tag_name, attr_name), line
             # Keep spaces
             if tag_name in elements_to_keep_spaces:
                 keep_spaces = True
@@ -189,10 +192,8 @@ def get_units(events, srx_handler=None):
                 keep_spaces = False
         elif type == MESSAGE:
             # Segmentation
-            for segment, context, line in get_segments(value, keep_spaces,
-                                                       srx_handler):
-                # XXX Context
-                yield segment, line
+            for segment in get_segments(value, keep_spaces, srx_handler):
+                yield segment
 
 
 
@@ -224,7 +225,6 @@ def translate(events, catalog, srx_handler=None):
         elif type == START_ELEMENT:
             tag_uri, tag_name, attributes = value
             # Attributes (translate)
-            aux = {}
             for attr_uri, attr_name in attributes:
                 value = attributes[(attr_uri, attr_name)]
                 datatype = get_attr_datatype(tag_uri, tag_name, attr_uri,
@@ -232,15 +232,16 @@ def translate(events, catalog, srx_handler=None):
                 if is_datatype(datatype, Unicode):
                     value = value.strip()
                     if value:
-                        value = catalog.gettext(value)
+                        context = _get_attr_context(tag_name, attr_name)
+                        value = catalog.gettext(value, context)
                         value = value.encode(encoding)
-                aux[(attr_uri, attr_name)] = value
+                        attributes[(attr_uri, attr_name)] = value
                 # Namespaces
                 # FIXME We must support xmlns="...." too.
                 # FIXME We must consider the end of the declaration
                 if attr_uri == xmlns_uri:
                     namespaces[attr_name] = value
-            yield START_ELEMENT, (tag_uri, tag_name, aux), None
+            yield START_ELEMENT, (tag_uri, tag_name, attributes), None
             # Keep spaces
             if tag_name in elements_to_keep_spaces:
                 keep_spaces = True

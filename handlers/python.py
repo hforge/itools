@@ -34,7 +34,8 @@ class VisitorUnicode(object):
 
     def visitConst(self, const):
         if type(const.value) is unicode:
-            msg = const.value, const.lineno
+            # Context = None
+            msg = const.value, None, const.lineno
             self.messages.append(msg)
 
 

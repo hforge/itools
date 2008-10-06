@@ -215,8 +215,7 @@ def _translate_format(message, catalog):
         if type != TEXT:
             for i, (text, translatable, context) in enumerate(value[0]):
                 if translatable:
-                    # XXX Context
-                    text = catalog.gettext(text)
+                    text = catalog.gettext(text, context)
                     value[0][i] = (text, False, context)
 
 
@@ -272,8 +271,8 @@ def translate_message(message, catalog, keep_spaces=False, srx_handler=None):
             for type, value, line in center:
                 # XXX A more complex test here
                 if type == TEXT and value[0].strip():
-                    # XXX Context
-                    center = catalog.gettext(center.to_str())
+                    center = catalog.gettext(center.to_str(),
+                                             center.get_context())
                     break
             else:
                 # No !

@@ -82,8 +82,8 @@ if __name__ == '__main__':
             sys.stderr.write(message % filename)
             continue
         # Extract the messages
-        for source, line in get_units(srx_handler=srx_handler):
-            out_handler.add_unit(filename, source, line)
+        for source, context, line in get_units(srx_handler=srx_handler):
+            out_handler.add_unit(filename, source, context, line)
     data = out_handler.to_str()
 
     # Output

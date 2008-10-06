@@ -229,7 +229,8 @@ class TMXFile(TextFile):
         return u'%s' % self.header['srclang']
 
 
-    def add_unit(self, filename, source, line):
+    def add_unit(self, filename, source, context, line):
+        # XXX Context must be used!!
         # FIXME Use 'filename' and 'line'
         unit = TMXUnit({})
         src_lang = self.header['srclang']

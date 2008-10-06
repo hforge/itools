@@ -246,7 +246,8 @@ class XLFFile(TextFile):
         return ((files_id, sources, targets))
 
 
-    def add_unit(self, filename, source, line):
+    def add_unit(self, filename, source, context, line):
+        # XXX Context must be used!!
         file = self.files.setdefault(filename, File(filename, {}))
         unit = XLFUnit({})
         unit.source = source

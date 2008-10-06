@@ -32,10 +32,6 @@ from xml import get_qname, get_attribute_qname, get_end_tag
 ###########################################################################
 MESSAGE = 999
 
-# FIXME This information is specific to XHTML, it should be defined at
-# a higher level, not hardcoded here.
-elements_to_keep_spaces = set(['pre'])
-
 
 ###########################################################################
 # Common code to "get_units" and "translate"
@@ -168,6 +164,7 @@ def get_units(events, srx_handler=None):
     from itools.srx import get_segments
 
     keep_spaces = False
+    keep_spaces_level = 0
     for type, value, line in _get_translatable_blocks(events):
         if type == START_ELEMENT:
             tag_uri, tag_name, attributes = value
@@ -182,14 +179,19 @@ def get_units(events, srx_handler=None):
                     continue
 
                 yield value, _get_attr_context(tag_name, attr_name), line
-            # Keep spaces
-            if tag_name in elements_to_keep_spaces:
+            # Keep spaces ?
+            schema = get_element_schema(tag_uri, tag_name)
+            if schema.keep_spaces:
                 keep_spaces = True
+                keep_spaces_level += 1
         elif type == END_ELEMENT:
+            # Keep spaces ?
             tag_uri, tag_name = value
-            # Keep spaces
-            if tag_name in elements_to_keep_spaces:
-                keep_spaces = False
+            schema = get_element_schema(tag_uri, tag_name)
+            if schema.keep_spaces:
+                keep_spaces_level -= 1
+                if keep_spaces_level == 0:
+                    keep_spaces = False
         elif type == MESSAGE:
             # Segmentation
             for segment in get_segments(value, keep_spaces, srx_handler):
@@ -208,6 +210,7 @@ def translate(events, catalog, srx_handler=None):
     encoding = 'utf-8'
     doctype = None
     keep_spaces = False
+    keep_spaces_level = 0
     namespaces = {}
 
     for event in _get_translatable_blocks(events):
@@ -242,15 +245,20 @@ def translate(events, catalog, srx_handler=None):
                 if attr_uri == xmlns_uri:
                     namespaces[attr_name] = value
             yield START_ELEMENT, (tag_uri, tag_name, attributes), None
-            # Keep spaces
-            if tag_name in elements_to_keep_spaces:
+            # Keep spaces ?
+            schema = get_element_schema(tag_uri, tag_name)
+            if schema.keep_spaces:
                 keep_spaces = True
+                keep_spaces_level += 1
         elif type == END_ELEMENT:
             yield event
-            # Keep spaces
+            # Keep spaces ?
             tag_uri, tag_name = value
-            if tag_name in elements_to_keep_spaces:
-                keep_spaces = False
+            schema = get_element_schema(tag_uri, tag_name)
+            if schema.keep_spaces:
+                keep_spaces_level -= 1
+                if keep_spaces_level == 0:
+                    keep_spaces = False
         elif type == MESSAGE:
             translation = translate_message(value, catalog, keep_spaces,
                                             srx_handler)

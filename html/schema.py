@@ -321,7 +321,7 @@ html_elements = [
         'value']),
     BlockElement('p', common_attrs),
     EmptyElement('param', ['id', 'name', 'value', 'valuetype', 'type']),
-    BlockElement('pre', common_attrs),
+    BlockElement('pre', common_attrs, keep_spaces=True),
     Element('q', common_attrs + ['cite']),
     Element('samp', common_attrs),
     BlockElement('script', ['id', 'charset', 'type', 'language', 'src',

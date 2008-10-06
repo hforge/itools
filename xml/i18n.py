@@ -38,8 +38,41 @@ elements_to_keep_spaces = set(['pre'])
 
 
 ###########################################################################
-# Code common to "get_units" and "translate"
+# Common code to "get_units" and "translate"
 ###########################################################################
+def _make_start_format(tag_uri, tag_name, attributes):
+    # We must search for translatable attributes
+    result = [(u'<%s' % get_qname(tag_uri, tag_name),
+               False, None)]
+
+    for attr_uri, attr_name in attributes:
+        value = attributes[(attr_uri, attr_name)]
+        qname = get_attribute_qname(attr_uri, attr_name)
+        value = XMLAttribute.encode(value)
+
+        datatype = get_attr_datatype(tag_uri, tag_name, attr_uri, attr_name,
+                                     attributes)
+        if is_datatype(datatype, Unicode):
+            result.append((u' %s="' % qname, False, None))
+
+            # By default, the context of attribute is "element[name]"
+            context = '%s[%s]' % (tag_name, attr_name)
+
+            result.append((u'%s' % value, True, context))
+            result.append((u'"', False, None))
+        else:
+            result.append((u' %s="%s"' % (qname, value),
+                            False, None))
+    # Close the start tag
+    if is_empty(tag_uri, tag_name):
+        result.append((u'/>', False, None))
+    else:
+        result.append((u'>', False, None))
+
+    return result
+
+
+
 def _get_translatable_blocks(events):
     # XXX We must break this circular dependency
     from itools.srx import Message
@@ -50,6 +83,7 @@ def _get_translatable_blocks(events):
     # To identify the begin/end format
     id = 0
     id_stack = []
+    context_stack = [None]
 
     message = Message()
     skip_level = 0
@@ -67,6 +101,10 @@ def _get_translatable_blocks(events):
                 tag_uri, tag_name, attributes = value
                 schema = get_element_schema(tag_uri, tag_name)
 
+                # Context management
+                if schema.context is not None:
+                    context_stack.append(schema.context)
+
                 # Skip content ?
                 if schema.skip_content:
                     skip_level = 1
@@ -75,31 +113,9 @@ def _get_translatable_blocks(events):
                     id += 1
                     id_stack.append(id)
 
-                    # We must search for translatable attributes
-                    content = [(u'<%s' % get_qname(tag_uri, tag_name),
-                                False, None)]
-
-                    for attr_uri, attr_name in attributes:
-                        value = attributes[(attr_uri, attr_name)]
-                        qname = get_attribute_qname(attr_uri, attr_name)
-                        value = XMLAttribute.encode(value)
-
-                        datatype = get_attr_datatype(tag_uri, tag_name,
-                                      attr_uri, attr_name, attributes)
-                        if is_datatype(datatype, Unicode):
-                            content.append((u' %s="' % qname, False, None))
-                            # XXX Context
-                            content.append((u'%s' % value, True, None))
-                            content.append((u'"', False, None))
-                        else:
-                            content.append((u' %s="%s"' % (qname, value),
-                                            False, None))
-                    # Close the start tag
-                    if is_empty(tag_uri, tag_name):
-                        content.append((u'/>', False, None))
-                    else:
-                        content.append((u'>', False, None))
-                    message.append_start_format(content, id, line)
+                    start_format = _make_start_format(tag_uri, tag_name,
+                                                      attributes)
+                    message.append_start_format(start_format, id, line)
                     continue
         elif type == END_ELEMENT:
             if skip_level > 0:
@@ -107,6 +123,10 @@ def _get_translatable_blocks(events):
             else:
                 tag_uri, tag_name = value[:2]
                 schema = get_element_schema(tag_uri, tag_name)
+
+                # Context management
+                if schema.context is not None:
+                    context_stack.pop()
 
                 # Is inline ?
                 if schema.is_inline:
@@ -118,8 +138,7 @@ def _get_translatable_blocks(events):
             if skip_level == 0 and (value.strip() != '' or message):
                 value = XMLContent.encode(value)
                 value = unicode(value, encoding)
-                # XXX Context
-                message.append_text(value, line, None)
+                message.append_text(value, line, context_stack[-1])
                 continue
         elif type == COMMENT and message:
             id += 1
@@ -170,8 +189,10 @@ def get_units(events, srx_handler=None):
                 keep_spaces = False
         elif type == MESSAGE:
             # Segmentation
-            for segment in get_segments(value, keep_spaces, srx_handler):
-                yield segment
+            for segment, context, line in get_segments(value, keep_spaces,
+                                                       srx_handler):
+                # XXX Context
+                yield segment, line
 
 
 

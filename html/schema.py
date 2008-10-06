@@ -204,6 +204,10 @@ class Element(ElementSchema):
         ElementSchema.__init__(self, name, **kw)
         self.attributes = frozenset(attributes)
 
+        # XXX Test the new context attribut
+        # context = name of element
+        self.context = '%s' % name
+
 
     def get_attr_datatype(self, name, attributes):
         if name not in self.attributes:

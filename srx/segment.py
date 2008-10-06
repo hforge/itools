@@ -230,16 +230,16 @@ def get_segments(message, keep_spaces=False, srx_handler=None):
         todo = left+right
 
         if center != sub_message:
-            # XXX Context
-            for value, line in get_segments(center, keep_spaces,
-                                            srx_handler):
-                yield value, line
+            for value, context, line in get_segments(center, keep_spaces,
+                                                     srx_handler):
+                yield value, context, line
         else:
             # Is there a human text in this center ?
             for type, value, line in center:
                 # XXX A more complex test here
                 if type == TEXT and value[0].strip():
-                    yield center.to_str(), center.get_line()
+                    yield (center.to_str(), center.get_context(),
+                           center.get_line())
                     break
             else:
                 # No !
@@ -248,10 +248,9 @@ def get_segments(message, keep_spaces=False, srx_handler=None):
         # And finally, the units in start / end formats
         for type, value, line in todo:
             if type != TEXT:
-                # XXX Context
                 for (text, translatable, context) in value[0]:
                     if translatable:
-                        yield text, line
+                        yield text, context, line
 
 
 def translate_message(message, catalog, keep_spaces=False, srx_handler=None):
@@ -273,6 +272,7 @@ def translate_message(message, catalog, keep_spaces=False, srx_handler=None):
             for type, value, line in center:
                 # XXX A more complex test here
                 if type == TEXT and value[0].strip():
+                    # XXX Context
                     center = catalog.gettext(center.to_str())
                     break
             else:
@@ -323,6 +323,17 @@ class Message(list):
             return self[0][2]
         else:
             return None
+
+
+    def get_context(self):
+         # Return the first context != None
+         # or None
+        if self:
+            for type, value, line in self:
+                if type == TEXT and value[1] is not None:
+                    return value[1]
+        return None
+
 
     def to_str(self):
         result = []

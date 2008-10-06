@@ -34,7 +34,7 @@ class SentenceTestCase(unittest.TestCase):
         message = Message()
         message.append_text(text)
         segments = []
-        for seg, offset in get_segments(message):
+        for seg, context, offset in get_segments(message):
             segments.append(seg)
         self.assertEqual(list(segments), result)
 
@@ -46,7 +46,7 @@ class SentenceTestCase(unittest.TestCase):
         message = Message()
         message.append_text(text)
         segments = []
-        for seg, offset in get_segments(message):
+        for seg, context, offset in get_segments(message):
             segments.append(seg)
 
         self.assertEqual(list(segments), result)
@@ -59,7 +59,7 @@ class SentenceTestCase(unittest.TestCase):
         message = Message()
         message.append_text(text)
         segments = []
-        for seg, offset in get_segments(message):
+        for seg, context, offset in get_segments(message):
             segments.append(seg)
         self.assertEqual(list(segments), result)
         # 2
@@ -68,7 +68,7 @@ class SentenceTestCase(unittest.TestCase):
         message = Message()
         message.append_text(text)
         segments = []
-        for seg, offset in get_segments(message):
+        for seg, context, offset in get_segments(message):
             segments.append(seg)
         self.assertEqual(list(segments), result)
 
@@ -80,7 +80,7 @@ class SentenceTestCase(unittest.TestCase):
         message = Message()
         message.append_text(text)
         segments = []
-        for seg, offset in get_segments(message):
+        for seg, context, offset in get_segments(message):
             segments.append(seg)
 
         self.assertEqual(list(segments), result)
@@ -93,7 +93,7 @@ class SentenceTestCase(unittest.TestCase):
         message = Message()
         message.append_text(text)
         segments = []
-        for seg, offset in get_segments(message):
+        for seg, context, offset in get_segments(message):
             segments.append(seg)
 
         self.assertEqual(list(segments), result)
@@ -106,7 +106,7 @@ class SentenceTestCase(unittest.TestCase):
         message = Message()
         message.append_text(text)
         segments = []
-        for seg, offset in get_segments(message):
+        for seg, context, offset in get_segments(message):
             segments.append(seg)
 
         self.assertEqual(list(segments), result)
@@ -119,7 +119,7 @@ class SentenceTestCase(unittest.TestCase):
         message = Message()
         message.append_text(text)
         segments = []
-        for seg, offset in get_segments(message):
+        for seg, context, offset in get_segments(message):
             segments.append(seg)
 
         self.assertEqual(list(segments), result)
@@ -132,7 +132,7 @@ class SentenceTestCase(unittest.TestCase):
         message = Message()
         message.append_text(text)
         segments = []
-        for seg, offset in get_segments(message):
+        for seg, context, offset in get_segments(message):
             segments.append(seg)
 
         self.assertEqual(list(segments), result)
@@ -145,7 +145,7 @@ class SentenceTestCase(unittest.TestCase):
         message = Message()
         message.append_text(text)
         segments = []
-        for seg, offset in get_segments(message):
+        for seg, context, offset in get_segments(message):
             segments.append(seg)
 
         self.assertEqual(list(segments), result)
@@ -201,7 +201,7 @@ class SentenceTestCase(unittest.TestCase):
         message.append_text('Hello. ')
 
         segments = []
-        for seg, offset in get_segments(message):
+        for seg, context, offset in get_segments(message):
             segments.append(seg)
         self.assertEqual(list(segments), [u'Hello.'])
 
@@ -219,7 +219,7 @@ class SentenceTestCase(unittest.TestCase):
         message = Message()
         message.append_text(text)
         segments = []
-        for seg, offset in get_segments(message):
+        for seg, context, offset in get_segments(message):
             segments.append(seg)
 
         self.assertEqual(list(segments), result)
@@ -236,7 +236,7 @@ class SentenceTestCase(unittest.TestCase):
         message = Message()
         message.append_text(text)
         segments = []
-        for seg, offset in get_segments(message):
+        for seg, context, offset in get_segments(message):
             segments.append(seg)
 
         self.assertEqual(list(segments), result)
@@ -249,7 +249,7 @@ class SentenceTestCase(unittest.TestCase):
         message = Message()
         message.append_text(text)
         segments = []
-        for seg, offset in get_segments(message):
+        for seg, context, offset in get_segments(message):
             segments.append(seg)
 
         self.assertEqual(list(segments), result)
@@ -264,7 +264,7 @@ class SentenceTestCase(unittest.TestCase):
         message = Message()
         message.append_text(text)
         segments = []
-        for seg, offset in get_segments(message):
+        for seg, context, offset in get_segments(message):
             segments.append(seg)
 
         self.assertEqual(list(segments), result)
@@ -279,7 +279,7 @@ class SentenceTestCase(unittest.TestCase):
         message = Message()
         message.append_text(text)
         segments = []
-        for seg, offset in get_segments(message):
+        for seg, context, offset in get_segments(message):
             segments.append(seg)
 
         self.assertEqual(list(segments), result)
@@ -294,7 +294,7 @@ class SentenceTestCase(unittest.TestCase):
         message = Message()
         message.append_text(text)
         segments = []
-        for seg, offset in get_segments(message, keep_spaces=True):
+        for seg, context, offset in get_segments(message, keep_spaces=True):
             segments.append(seg)
 
         self.assertEqual(list(segments), expected)

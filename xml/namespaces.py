@@ -128,6 +128,7 @@ class ElementSchema(object):
     # i18n default values
     default_datatype = None
     skip_content = False
+    context = None
 
 
     def __init__(self, name, **kw):

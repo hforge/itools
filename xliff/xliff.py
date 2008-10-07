@@ -199,7 +199,7 @@ class XLFFile(TextFile):
     #######################################################################
     # Save
     #######################################################################
-    def to_str(self, encoding=None):
+    def to_str(self, encoding='utf-8'):
         output = []
         # The XML declaration
         output.append('<?xml version="1.0" encoding="%s"?>\n' % encoding)
@@ -218,7 +218,7 @@ class XLFFile(TextFile):
         # </xliff>
         output.append('</xliff>\n')
         # Ok
-        return ''.join(output)
+        return ''.join(output).encode(encoding)
 
 
     #######################################################################

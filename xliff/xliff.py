@@ -134,10 +134,7 @@ class File(object):
         # The body
         output.append('<body>\n')
         if self.body:
-            mkeys = self.body.keys()
-            mkeys.sort()
-            msgs = ''.join([ self.body[m].to_str() for m in mkeys ])
-            output.append(msgs)
+            output.extend([ unit.to_str() for unit in self.body.values() ])
         output.append('</body>\n')
         # Close tag
         output.append('</file>\n')
@@ -196,7 +193,7 @@ class XLFFile(TextFile):
                     file.header = notes
                 elif local_name == 'trans-unit':
                     unit.notes = notes
-                    file.body[unit.source] = unit
+                    file.body[unit.context, unit.source] = unit
                 elif local_name == 'source':
                     unit.source = text
                 elif local_name == 'target':
@@ -271,9 +268,25 @@ class XLFFile(TextFile):
         unit.source = source
         unit.context = context
         unit.line = line
-        file.body[source] = unit
+        file.body[context, source] = unit
         return unit
 
+
+    def gettext(self, source, context=None):
+        """Returns the translation of the given message id.
+
+        If the context /msgid is not present in the message catalog, or if it
+        is marked as "fuzzy", then the message id is returned.
+        """
+
+        key = (context, source)
+
+        for file in self.files.values():
+            if key in file.body:
+                unit = file.body[key]
+                if unit.target:
+                    return unit.target
+        return source
 
 
 register_handler_class(XLFFile)

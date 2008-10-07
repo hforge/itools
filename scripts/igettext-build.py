@@ -28,6 +28,7 @@ import itools.html
 import itools.stl
 import itools.odf
 import itools.srx
+import itools.xliff
 
 
 def build(parser):
@@ -54,7 +55,7 @@ def build(parser):
     except AttributeError:
         print 'Error: Unable to translate "%s", unsupported format.' % source
         return
-    # Load the PO handler (check the API)
+    # Load the Catalog handler (check the API)
     catalog = get_handler(catalog_name)
     try:
         catalog.gettext
@@ -80,9 +81,9 @@ if __name__ == '__main__':
     version = 'itools %s' % itools.__version__
     description = ('Builds a new file from the given source file, but '
         'replacing the translatable messages by the translations found '
-        'in the PO file.')
-    parser = OptionParser('%prog <source file> <PO file>', version=version,
-        description=description)
+        'in the Catalog file.')
+    parser = OptionParser('%prog <source file> <Catalog file>',
+                          version=version, description=description)
 
     parser.add_option('-s', '--srx',
                       help='Use an other SRX file than the default one.')

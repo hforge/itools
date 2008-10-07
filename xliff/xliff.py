@@ -60,6 +60,8 @@ class XLFUnit(object):
     def __init__(self, attributes):
         self.source = None
         self.target = None
+        self.context = None
+        self.line = None
         self.attributes = attributes
         self.notes = []
 
@@ -83,6 +85,15 @@ class XLFUnit(object):
         if self.target:
             target = XMLContent.encode(self.target)
             s.append('    <target>%s</target>\n' % target)
+
+        s.append('    <context-group name="context info">\n')
+        s.append('        <context context-type="linenumber">%d' % self.line)
+        s.append('</context>\n')
+        if self.context is not None:
+            s.append('        <context context-type="x-context">%s' %
+                     self.context)
+            s.append('</context>\n')
+        s.append('    </context-group>\n')
 
         for note in self.notes:
             s.append(note.to_str())
@@ -149,6 +160,7 @@ class XLFFile(TextFile):
     #######################################################################
     # Load
     def _load_state_from_file(self, file):
+        # XXX Warning: we can just load our xliff file
         self.files = {}
         for event, value, line_number in XMLParser(file.read()):
             if event == START_ELEMENT:
@@ -173,6 +185,8 @@ class XLFFile(TextFile):
                     notes = []
                 elif local_name == 'note':
                     note = XLFNote(attributes=attributes)
+                elif local_name == 'context':
+                    context_type = attributes['context-type']
             elif event == END_ELEMENT:
                 namespace, local_name = value
 
@@ -190,6 +204,11 @@ class XLFFile(TextFile):
                 elif local_name == 'note':
                     note.text = text
                     notes.append(note)
+                elif local_name == 'context':
+                    if context_type == 'linenumber':
+                        unit.line = int(text)
+                    elif context_type == 'x-context':
+                        unit.context = text
             elif event == COMMENT:
                 pass
             elif event == TEXT:
@@ -199,7 +218,7 @@ class XLFFile(TextFile):
     #######################################################################
     # Save
     #######################################################################
-    def to_str(self, encoding='utf-8'):
+    def to_str(self, encoding='UTF-8'):
         output = []
         # The XML declaration
         output.append('<?xml version="1.0" encoding="%s"?>\n' % encoding)
@@ -247,12 +266,12 @@ class XLFFile(TextFile):
 
 
     def add_unit(self, filename, source, context, line):
-        # XXX Context must be used!!
         file = self.files.setdefault(filename, File(filename, {}))
         unit = XLFUnit({})
         unit.source = source
+        unit.context = context
+        unit.line = line
         file.body[source] = unit
-        # FIXME Set the 'line'
         return unit
 
 

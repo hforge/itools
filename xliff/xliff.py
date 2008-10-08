@@ -275,8 +275,8 @@ class XLFFile(TextFile):
     def gettext(self, source, context=None):
         """Returns the translation of the given message id.
 
-        If the context /msgid is not present in the message catalog, or if it
-        is marked as "fuzzy", then the message id is returned.
+        If the context /msgid is not present in the message catalog, then the
+        message id is returned.
         """
 
         key = (context, source)

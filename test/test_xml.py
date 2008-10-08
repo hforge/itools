@@ -28,6 +28,7 @@ from itools.xml import (XMLFile, XMLParser, DocType, XMLError, XML_DECL,
     stream_to_str, get_doctype)
 from itools.xml.i18n import get_units
 from itools.gettext import POUnit
+from itools.srx import TEXT as srx_TEXT
 
 
 class ParserTestCase(TestCase):
@@ -233,7 +234,7 @@ class TranslatableTestCase(TestCase):
         parser = XMLFile(string=text)
 
         messages = [unit[0] for unit in parser.get_units()]
-        self.assertEqual(messages, [u'Hello World'])
+        self.assertEqual(messages, [((srx_TEXT, u'Hello World'),)])
 
 
 

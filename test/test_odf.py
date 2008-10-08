@@ -28,6 +28,7 @@ from itools.gettext import POFile, POUnit
 from itools import vfs
 from itools.xml import XMLParser
 from itools.xml.i18n import get_units, translate
+from itools.srx import TEXT, START_FORMAT, END_FORMAT
 
 
 class Test_ODT_File(TestCase):
@@ -38,12 +39,16 @@ class Test_ODT_File(TestCase):
 
     def test_get_msg(self):
         messages = [unit[0] for unit in self.doc.get_units()]
-        expected = [
-            # content.xml
-            u'Hello <text:span text:style-name="T1">world</text:span> !',
-            # meta.xml
-            u'Hello world Document', u'it\'s a very good document',
-            u'Itools test', u'sylvain', u'itools', u'odt', u'odf']
+        expected = [((TEXT, u'Hello '), (START_FORMAT, 1), (TEXT, u'world'),
+                     (END_FORMAT, 1), (TEXT, u' !')),
+                    ((TEXT, u'Hello world Document'),),
+                    ((TEXT, u"it's a very good document"),),
+                    ((TEXT, u'Itools test'),),
+                    ((TEXT, u'sylvain'),),
+                    ((TEXT, u'itools'),),
+                    ((TEXT, u'odt'),),
+                    ((TEXT, u'odf'),)]
+
         self.assertEqual(messages, expected)
 
 
@@ -60,10 +65,17 @@ class Test_ODT_File(TestCase):
         # Check if allright
         expected = [
             # content.xml
-            u'Hola <text:span text:style-name="T1">mundo</text:span> !',
+            ((TEXT, u'Hello '), (START_FORMAT, 1), (TEXT, u'world'),
+             (END_FORMAT, 1), (TEXT, u' !')),
             # meta.xml
-            u'Hello world Document', u'it\'s a very good document',
-            u'Itools test', u'sylvain', u'itools', u'odt', u'odf']
+            ((TEXT, u'Hello world Document'),),
+            ((TEXT, u"it's a very good document"),),
+            ((TEXT, u'Itools test'),),
+            ((TEXT, u'sylvain'),),
+            ((TEXT, u'itools'),),
+            ((TEXT, u'odt'),),
+            ((TEXT, u'odf'),)]
+
         self.assertEqual(messages, expected)
 
 
@@ -91,14 +103,11 @@ class Test_ODP_File(TestCase):
 
     def test_get_msg(self):
         messages = [unit[0] for unit in self.doc.get_units()]
-        expected = [
-            # content.xml
-            u'<text:span text:style-name="T1">Hello </text:span>'
-            '<text:span text:style-name="T2">World</text:span>'
-            '<text:span text:style-name="T1"> !</text:span>',
-            u'Welcome',
-            # meta.xml
-            u'sylvain']
+        expected = [((START_FORMAT, 1), (TEXT, u'Hello '), (END_FORMAT, 1),
+                     (START_FORMAT, 2), (TEXT, u'World'), (END_FORMAT, 2),
+                     (START_FORMAT, 3), (TEXT, u' !'), (END_FORMAT, 3)),
+                    ((TEXT, u'Welcome'),), ((TEXT, u'sylvain'),)]
+
         self.assertEqual(messages, expected)
 
 
@@ -110,14 +119,30 @@ class Test_ODS_File(TestCase):
 
     def test_get_msg(self):
         messages = [unit[0] for unit in self.doc.get_units()]
-        expected = [# content.xml
-                             u'Chocolate', u'Coffee', u'Tea', u'Price', u'80',
-                             u'20', u'40', u'Quantity', u'20', u'30', u'20',
-                             u'Quality', u'0', u'50', u'40',
-                             # meta.xml
-                             u'sylvain',
-                             # styles.xml
-                             u'Page', u'(', u'???', u')', u',', u'Page', u'/']
+        expected = [((TEXT, u'Chocolate'),),
+                    ((TEXT, u'Coffee'),),
+                    ((TEXT, u'Tea'),),
+                    ((TEXT, u'Price'),),
+                    ((TEXT, u'80'),),
+                    ((TEXT, u'20'),),
+                    ((TEXT, u'40'),),
+                    ((TEXT, u'Quantity'),),
+                    ((TEXT, u'20'),),
+                    ((TEXT, u'30'),),
+                    ((TEXT, u'20'),),
+                    ((TEXT, u'Quality'),),
+                    ((TEXT, u'0'),),
+                    ((TEXT, u'50'),),
+                    ((TEXT, u'40'),),
+                    ((TEXT, u'sylvain'),),
+                    ((TEXT, u'Page'),),
+                    ((TEXT, u'('),),
+                    ((TEXT, u'???'),),
+                    ((TEXT, u')'),),
+                    ((TEXT, u','),),
+                    ((TEXT, u'Page'),),
+                    ((TEXT, u'/'),)]
+
         self.assertEqual(messages, expected)
 
 
@@ -168,7 +193,7 @@ class Test_ODT_Parser(TestCase):
         content = self.template % content
         messages = XMLParser(content)
         messages = [unit[0] for unit in get_units(messages)]
-        expected = [u'hello world']
+        expected = [((TEXT, u'hello world'),)]
         self.assertEqual(messages, expected)
 
 
@@ -207,7 +232,13 @@ class Test_ODT_Parser(TestCase):
         content = self.template % content
         messages = XMLParser(content)
         messages = [unit[0] for unit in get_units(messages)]
-        expected= [u'A', u'B', u'C', u'D', u'E', u'F']
+        expected= [((TEXT, u'A'),),
+                   ((TEXT, u'B'),),
+                   ((TEXT, u'C'),),
+                   ((TEXT, u'D'),),
+                   ((TEXT, u'E'),),
+                   ((TEXT, u'F'),)]
+
         self.assertEqual(messages, expected)
 
 
@@ -226,7 +257,7 @@ class Test_ODT_Parser(TestCase):
         messages = XMLParser(content)
         messages = translate(messages, po)
         messages = [unit[0] for unit in get_units(messages)]
-        self.assertEqual(messages, [u'hola mundo'])
+        self.assertEqual(messages, [((TEXT, u'hola mundo'),)])
 
 
 if __name__ == '__main__':

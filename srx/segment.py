@@ -215,8 +215,8 @@ def _translate_format(message, catalog):
         if type != TEXT:
             for i, (text, translatable, context) in enumerate(value[0]):
                 if translatable:
-                    text = catalog.gettext(text, context)
-                    value[0][i] = (text, False, context)
+                    translation = catalog.gettext(((TEXT, text),), context)
+                    value[0][i] = (translation[0][1], True, context)
 
 
 ###########################################################################
@@ -237,19 +237,17 @@ def get_segments(message, keep_spaces=False, srx_handler=None):
             for type, value, line in center:
                 # XXX A more complex test here
                 if type == TEXT and value[0].strip():
-                    yield (center.to_str(), center.get_context(),
+                    yield (center.to_unit(), center.get_context(),
                            center.get_line())
                     break
-            else:
-                # No !
-                todo.extend(center)
+            todo.extend(center)
 
         # And finally, the units in start / end formats
         for type, value, line in todo:
             if type != TEXT:
                 for (text, translatable, context) in value[0]:
                     if translatable:
-                        yield text, context, line
+                        yield ((TEXT, text),), context, line
 
 
 def translate_message(message, catalog, keep_spaces=False, srx_handler=None):
@@ -271,13 +269,15 @@ def translate_message(message, catalog, keep_spaces=False, srx_handler=None):
             for type, value, line in center:
                 # XXX A more complex test here
                 if type == TEXT and value[0].strip():
-                    center = catalog.gettext(center.to_str(),
-                                             center.get_context())
+                    translation = catalog.gettext(center.to_unit(),
+                                                  center.get_context())
+                    for i, (type, value, line) in enumerate(center):
+                        if type == TEXT:
+                            center[i] = (TEXT, (translation[i][1], value[1]),
+                                         line)
                     break
-            else:
-                # No !
-                _translate_format(center, catalog)
-                center = center.to_str()
+            _translate_format(center, catalog)
+            center = center.to_str()
 
         translated_message.extend([left, center, right])
     return u''.join(translated_message)
@@ -343,4 +343,14 @@ class Message(list):
                 for text, translatable, context in value[0]:
                     result.append(text)
         return u''.join(result)
+
+
+    def to_unit(self):
+        result = []
+        for type, value, line in self:
+            if type == TEXT:
+                result.append((TEXT, value[0]))
+            else:
+                result.append((type, value[1]))
+        return tuple(result)
 

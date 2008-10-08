@@ -20,9 +20,13 @@ from mimetypes import add_type
 # Import from itools
 from srx import SRXFile
 from segment import Message, get_segments, translate_message
+from segment import TEXT, START_FORMAT, END_FORMAT
 
 __all__ = [
     'SRXFile',
+    'TEXT',
+    'START_FORMAT',
+    'END_FORMAT',
     'Message',
     'get_segments',
     'translate_message',

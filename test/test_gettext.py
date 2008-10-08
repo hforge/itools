@@ -21,6 +21,7 @@ from unittest import TestCase
 
 # Import from itools
 from itools.gettext import POFile
+from itools.srx import TEXT
 
 
 
@@ -83,8 +84,8 @@ class POTestCase(TestCase):
         po = POFile()
         po.load_state_from_string(content)
 
-        translation = po.gettext('Hello')
-        self.assertEqual(translation, 'Hello')
+        translation = po.gettext(((TEXT, 'Hello'),))
+        self.assertEqual(translation, ((TEXT, 'Hello'),))
 
 
     def test_end_comment(self):
@@ -95,8 +96,8 @@ class POTestCase(TestCase):
         po = POFile()
         po.load_state_from_string(content)
 
-        translation = po.gettext('Hello')
-        self.assertEqual(translation,'Hello')
+        translation = po.gettext(((TEXT, 'Hello'),))
+        self.assertEqual(translation,((TEXT, 'Hello'),))
 
 
 

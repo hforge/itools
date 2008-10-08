@@ -23,7 +23,8 @@ from time import gmtime, strftime, time
 
 # Import from itools
 from itools.handlers import File, TextFile, register_handler_class
-
+from itools.srx import TEXT, START_FORMAT, END_FORMAT
+from itools.xml import XMLParser, TEXT as xml_TEXT, START_ELEMENT, END_ELEMENT
 
 ###########################################################################
 # Exceptions
@@ -462,6 +463,31 @@ class POFile(TextFile):
         return unit
 
 
+    def _encode_source(self, source):
+        result = []
+        for type, value in source:
+            if type == TEXT:
+                result.append(value)
+            elif type == START_FORMAT:
+                result.append(u"<g id='%d'>" % value)
+            elif type == END_FORMAT:
+                result.append(u'</g>')
+        return u''.join(result)
+
+
+    def _decode_target(self, target):
+        result = []
+        for type, value, line in XMLParser(target.encode('UTF-8')):
+            if type == xml_TEXT:
+                result.append((TEXT, unicode(value, 'UTF-8')))
+            elif type == START_ELEMENT:
+                id = int(value[2][None, 'id'])
+                result.append((START_FORMAT, id))
+            else:
+                result.append((END_FORMAT, id))
+        return tuple(result)
+
+
     #######################################################################
     # API / Public
     #######################################################################
@@ -492,11 +518,12 @@ class POFile(TextFile):
         If the context /msgid is not present in the message catalog, or if it
         is marked as "fuzzy", then the message id is returned.
         """
-        message = self.messages.get((context, source))
+
+        message = self.messages.get((context, self._encode_source(source)))
         if message and not message.fuzzy:
             target = ''.join(message.target)
             if target:
-                return target
+                return self._decode_target(target)
         return source
 
 
@@ -506,6 +533,8 @@ class POFile(TextFile):
 
         # Change
         self.set_changed()
+
+        source = self._encode_source(source)
 
         return self._set_message(context, [source], [u''], [],
                                  {filename: [line]})

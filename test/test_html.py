@@ -24,10 +24,11 @@ from unittest import TestCase
 
 # Import from itools
 from itools.gettext import POFile
-from itools.xml import XMLParser, XMLError, START_ELEMENT, END_ELEMENT, TEXT
-from itools.xml import stream_to_str
+from itools.xml import XMLParser, XMLError, START_ELEMENT, END_ELEMENT
+from itools.xml import TEXT as xml_TEXT, stream_to_str
 from itools.html import HTMLFile, XHTMLFile, HTMLParser, sanitize_str
 from itools.html.xhtml import stream_to_html
+from itools.srx import TEXT, START_FORMAT, END_FORMAT
 
 
 
@@ -98,7 +99,7 @@ class i18nTestCase(TestCase):
         doc = HTMLFile(string='<p>hello world</p>')
 
         messages = [unit[0] for unit in doc.get_units()]
-        self.assertEqual(messages, [u'hello world'])
+        self.assertEqual(messages, [((TEXT, u'hello world'),)])
 
 
     def test_case2(self):
@@ -106,7 +107,7 @@ class i18nTestCase(TestCase):
         doc = HTMLFile(string='<img alt="The beach" src="beach.jpg">')
 
         messages = [unit[0] for unit in doc.get_units()]
-        self.assertEqual(messages, [u'The beach'])
+        self.assertEqual(messages, [((TEXT, u'The beach'),)])
 
 
     def test_case3(self):
@@ -118,7 +119,7 @@ class i18nTestCase(TestCase):
             '</html>')
 
         messages = [unit[0] for unit in doc.get_units()]
-        self.assertEqual(messages, [u'Change'])
+        self.assertEqual(messages, [((TEXT, u'Change'),)])
 
 
     def test_case4(self):
@@ -255,7 +256,8 @@ class i18nTestCase(TestCase):
 
         messages = [unit[0] for unit in doc.get_units()]
         expected = u'This is raw text, "     \n"'
-        self.assertEqual(messages, [expected])
+        self.assertEqual(messages,  [((TEXT, u'This is raw text, "     \n"'),)
+                                    ])
 
 
 ###########################################################################
@@ -266,7 +268,7 @@ class SerializationTestCase(TestCase):
     def test_stream_to_html_escape(self):
         parser = XMLParser('<p xmlns="http://www.w3.org/1999/xhtml"></p>')
         events = list(parser)
-        events.insert(1, (TEXT, '<br/>', 0))
+        events.insert(1, (xml_TEXT, '<br/>', 0))
 
         self.assertEqual(
             stream_to_html(events),
@@ -295,11 +297,15 @@ class SegmentationTestCase(TestCase):
             '</p>')
 
         messages = [unit[0] for unit in doc.get_units()]
-        msg1 = (u'The Mozilla project maintains <em>choice</em> and'
-                u' <em>innovation</em> on the Internet.')
-        msg2 = (u'Developing the acclaimed, <em>open source</em>,'
-                u' <b>Mozilla 1.6</b>.')
-        expected = [msg1, msg2]
+        expected = [((TEXT, u'The Mozilla project maintains '),
+                     (START_FORMAT, 1), (TEXT, u'choice'), (END_FORMAT, 1),
+                     (TEXT, u' and '), (START_FORMAT, 2),
+                     (TEXT, u'innovation'), (END_FORMAT, 2),
+                     (TEXT, u' on the Internet.')),
+                    ((TEXT, u'Developing the acclaimed, '),
+                     (START_FORMAT, 3), (TEXT, u'open source'),
+                     (END_FORMAT, 3), (TEXT, u', '), (START_FORMAT, 4),
+                     (TEXT, u'Mozilla 1.6'), (END_FORMAT, 4), (TEXT, u'.'))]
         self.assertEqual(messages, expected)
 
 
@@ -321,8 +327,11 @@ class SegmentationTestCase(TestCase):
             '</table>')
 
         messages = [unit[0] for unit in doc.get_units()]
-        expected = [u'Title', u'Size', u'The good, the bad and the ugly',
-                    u'looong', u'Love story', u'even longer']
+        expected = [((TEXT, u'Title'),), ((TEXT, u'Size'),),
+                    ((TEXT, u'The good, the bad and the ugly'),),
+                    ((TEXT, u'looong'),), ((TEXT, u'Love story'),),
+                    ((TEXT, u'even longer'),)]
+
         self.assertEqual(messages, expected)
 
 
@@ -338,8 +347,12 @@ class SegmentationTestCase(TestCase):
             '</body>')
 
         messages = [unit[0] for unit in doc.get_units()]
-        expected = [u'this <em>word</em> is nice', u'hello world',
-                    u'bye <em>J. David Ibanez Palomar</em>']
+        expected = [((TEXT, u'this '), (START_FORMAT, 1), (TEXT, u'word'),
+                     (END_FORMAT, 1), (TEXT, u' is nice')),
+                    ((TEXT, u'hello world'),), ((TEXT, u'bye '),
+                     (START_FORMAT, 6), (TEXT, u'J. David Ibanez Palomar'),
+                     (END_FORMAT, 6))]
+
         self.assertEqual(messages, expected)
 
 
@@ -353,7 +366,7 @@ class SegmentationTestCase(TestCase):
             '</form>')
 
         messages = [unit[0] for unit in doc.get_units()]
-        self.assertEqual(messages, [u'Change'])
+        self.assertEqual(messages, [((TEXT, u'Change'),)])
 
 
     def test_inline(self):
@@ -363,7 +376,10 @@ class SegmentationTestCase(TestCase):
             '</p>')
 
         messages = [unit[0] for unit in doc.get_units()]
-        expected = [u'Hi <b>everybody, </b><i>how are you ? </i>']
+        expected = [((TEXT, u'Hi '), (START_FORMAT, 1),
+                     (TEXT, u'everybody, '), (END_FORMAT, 1),
+                     (START_FORMAT, 2), (TEXT, u'how are you ? '),
+                     (END_FORMAT, 2))]
         self.assertEqual(messages, expected)
 
 
@@ -387,7 +403,7 @@ class TranslationTestCase(TestCase):
         doc = XHTMLFile(string=data)
 
         messages = [unit[0] for unit in doc.get_units()]
-        self.assertEqual(messages, [u'hello little world'])
+        self.assertEqual(messages, [((TEXT, u'hello little world'),)])
 
 
     def test_case2(self):
@@ -396,7 +412,7 @@ class TranslationTestCase(TestCase):
         doc = XHTMLFile(string=data)
 
         messages = [unit[0] for unit in doc.get_units()]
-        self.assertEqual(messages, [u'The beach'])
+        self.assertEqual(messages, [((TEXT, u'The beach'),)])
 
 
     def test_case3(self):
@@ -406,7 +422,7 @@ class TranslationTestCase(TestCase):
         doc = XHTMLFile(string=data)
 
         messages = [unit[0] for unit in doc.get_units()]
-        self.assertEqual(messages, [u'Change'])
+        self.assertEqual(messages, [((TEXT, u'Change'),)])
 
 
     def test_case4(self):
@@ -424,7 +440,7 @@ class TranslationTestCase(TestCase):
         xhtml = XHTMLFile(string=string)
 
         messages = [unit[0] for unit in xhtml.get_units()]
-        self.assertEqual(messages, [u'hola mundo'])
+        self.assertEqual(messages, [((TEXT, u'hola mundo'),)])
 
 
     def test_case5(self):
@@ -440,7 +456,7 @@ class TranslationTestCase(TestCase):
         xhtml = XHTMLFile(string=html)
 
         messages = [unit[0] for unit in xhtml.get_units()]
-        self.assertEqual(messages, [u'La playa'])
+        self.assertEqual(messages, [((TEXT, u'La playa'),)])
 
 
 class SanitizerTestCase(TestCase):

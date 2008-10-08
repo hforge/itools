@@ -38,6 +38,7 @@ from itools.http import BadRequest, Forbidden, NotFound, Unauthorized
 from itools.i18n import init_language_selector
 from itools.uri import Reference, Path
 from context import Context, get_context, set_context, select_language
+from context import FormError
 from views import BaseView
 
 
@@ -595,19 +596,6 @@ class RequestMethod(object):
 
 
     @classmethod
-    def get_query(cls, context):
-        get_value = context.get_query_value
-        schema = context.view.get_query_schema()
-
-        query = {}
-        for name in schema:
-            datatype = schema[name]
-            query[name] = get_value(name, datatype)
-
-        return query
-
-
-    @classmethod
     def check_access(cls, server, context):
         """Tell whether the user is allowed to access the view on the
         resource.
@@ -726,33 +714,44 @@ class GET(RequestMethod):
             # Everything goes fine so far
             context.status = 200
 
-        # (2) Render
+        # (2) Always deserialize the query
         resource = context.resource
         view = context.view
         try:
-            context.query = cls.get_query(context)
-            context.entity = view.GET(resource, context)
+            context.query = view.get_query(context)
+        except FormError:
+            method = view.on_query_error
         except:
             cls.internal_server_error(server, context)
+            method = None
         else:
-            # Ok: set status
-            if isinstance(context.entity, Reference):
-                context.status = 302
+            method = view.GET
 
-        # (3) Reset the transaction in any case
+        # (3) Render
+        if method is not None:
+            try:
+                context.entity = method(resource, context)
+            except:
+                cls.internal_server_error(server, context)
+            else:
+                # Ok: set status
+                if isinstance(context.entity, Reference):
+                    context.status = 302
+
+        # (4) Reset the transaction in any case
         server.abort_transaction(context)
 
-        # (4) After Traverse hook
+        # (5) After Traverse hook
         try:
             context.site_root.after_traverse(context)
         except:
             cls.internal_server_error(server, context)
 
-        # (8) Build and return the response
+        # (6) Build and return the response
         context.response.set_status(context.status)
         cls.set_body(server, context)
 
-        # (9) Ok
+        # (7) Ok
         return context.response
 
 
@@ -844,26 +843,37 @@ class POST(RequestMethod):
             # Everything goes fine so far
             context.status = 200
 
-        # (2) Render
+        # (2) Always deserialize the query
         resource = context.resource
         view = context.view
         try:
-            context.query = cls.get_query(context)
-            context.entity = view.POST(resource, context)
+            context.query = view.get_query(context)
+        except FormError:
+            method = view.on_query_error
         except:
             cls.internal_server_error(server, context)
+            method = None
         else:
-            # Ok: set status
-            if isinstance(context.entity, Reference):
-                context.status = 302
+            method = view.POST
 
-        # (3) Commit the transaction commit
+        # (3) Render
+        if method is not None:
+            try:
+                context.entity = method(resource, context)
+            except:
+                cls.internal_server_error(server, context)
+            else:
+                # Ok: set status
+                if isinstance(context.entity, Reference):
+                    context.status = 302
+
+        # (4) Commit the transaction commit
         if context.status < 400:
             cls.commit_transaction(server, context)
         else:
             server.abort_transaction(context)
 
-        # (4) Build response, when postponed (useful for POST methods)
+        # (5) Build response, when postponed (useful for POST methods)
         if isinstance(context.entity, (FunctionType, MethodType)):
             try:
                 context.entity = context.entity(context.resource, context)
@@ -871,17 +881,17 @@ class POST(RequestMethod):
                 cls.internal_server_error(server, context)
             server.abort_transaction(context)
 
-        # (5) After Traverse hook
+        # (6) After Traverse hook
         try:
             context.site_root.after_traverse(context)
         except:
             cls.internal_server_error(server, context)
 
-        # (6) Build and return the response
+        # (7) Build and return the response
         context.response.set_status(context.status)
         cls.set_body(server, context)
 
-        # (7) Ok
+        # (8) Ok
         return context.response
 
 

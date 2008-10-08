@@ -22,6 +22,26 @@ from context import FormError
 from messages import MSG_MISSING_OR_INVALID
 
 
+
+def process_form(get_value, schema):
+    values = {}
+    invalid = []
+    missing = []
+    for name in schema:
+        datatype = schema[name]
+        try:
+            value = get_value(name, type=datatype)
+        except FormError, error:
+            value = get_value(name)
+            missing.extend(error.missing)
+            invalid.extend(error.invalid)
+        values[name] = value
+    if missing or invalid:
+        raise FormError(missing, invalid)
+    return values
+
+
+
 class BaseView(object):
 
     # Access Control
@@ -39,6 +59,16 @@ class BaseView(object):
 
     def get_query_schema(self):
         return self.query_schema
+
+
+    def get_query(self, context):
+        get_value = context.get_query_value
+        schema = self.get_query_schema()
+        return process_form(get_value, schema)
+
+
+    def on_query_error(self, resource, context):
+        return 'The query could not be processed.'
 
 
     #######################################################################
@@ -93,23 +123,9 @@ class BaseForm(BaseView):
           {'toto': Unicode(mandatory=True, multiple=False, default=u'toto'),
            'tata': Unicode(mandatory=True, multiple=False, default=u'tata')}
         """
+        get_value = context.get_form_value
         schema = self.get_schema(resource, context)
-
-        values = {}
-        invalid = []
-        missing = []
-        for name in schema:
-            datatype = schema[name]
-            try:
-                value = context.get_form_value(name, type=datatype)
-            except FormError, error:
-                value = context.get_form_value(name)
-                missing.extend(error.missing)
-                invalid.extend(error.invalid)
-            values[name] = value
-        if missing or invalid:
-            raise FormError(missing, invalid)
-        return values
+        return process_form(get_value, schema)
 
 
     def get_value(self, resource, context, name, datatype):
@@ -168,6 +184,11 @@ class BaseForm(BaseView):
             context.form_action = 'action'
 
 
+    def on_form_error(self, resource, context):
+        context.message = MSG_MISSING_OR_INVALID
+        return self.GET
+
+
     def POST(self, resource, context):
         # (1) Find out which button has been pressed, if more than one
         self._get_action(resource, context)
@@ -176,8 +197,7 @@ class BaseForm(BaseView):
         try:
             form = self._get_form(resource, context)
         except FormError:
-            context.message = MSG_MISSING_OR_INVALID
-            return self.GET
+            return self.on_form_error(resource, context)
 
         # (3) Action
         method = getattr(self, context.form_action, None)

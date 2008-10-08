@@ -24,7 +24,7 @@ from itools.xliff import XLFFile
 
 
 
-class TMXTestCase(TestCase):
+class XLIFFTestCase(TestCase):
 
     def test_input(self):
         """Test input.

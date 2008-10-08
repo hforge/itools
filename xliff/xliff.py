@@ -21,6 +21,7 @@
 from itools.datatypes import XMLContent, XMLAttribute
 from itools.handlers import TextFile, register_handler_class
 from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, COMMENT, TEXT
+from itools.srx import TEXT as srx_TEXT, START_FORMAT, END_FORMAT
 
 
 
@@ -79,21 +80,38 @@ class XLFUnit(object):
             s.append('  <trans-unit>\n')
 
         if self.source:
-            source = XMLContent.encode(self.source)
-            s.append('    <source>%s</source>\n' % source)
+            s.append('    <source>')
+            for type, value in self.source:
+                if type == srx_TEXT:
+                    s.append(XMLContent.encode(value))
+                elif type == START_FORMAT:
+                    s.append('<g id="%d">' % value)
+                else:
+                    s.append('</g>')
+            s.append('</source>\n')
 
         if self.target:
-            target = XMLContent.encode(self.target)
-            s.append('    <target>%s</target>\n' % target)
+            s.append('    <target>')
+            for type, value in self.target:
+                if type == srx_TEXT:
+                    s.append(XMLContent.encode(value))
+                elif type == START_FORMAT:
+                    s.append('<g id="%d">' % value)
+                else:
+                    s.append('</g>')
+            s.append('</target>\n')
 
-        s.append('    <context-group name="context info">\n')
-        s.append('        <context context-type="linenumber">%d' % self.line)
-        s.append('</context>\n')
-        if self.context is not None:
-            s.append('        <context context-type="x-context">%s' %
-                     self.context)
-            s.append('</context>\n')
-        s.append('    </context-group>\n')
+        if self.line is not None or self.context is not None:
+            s.append('    <context-group name="context info">\n')
+            if self.line is not None:
+                s.append('        <context context-type="linenumber">%d' %
+                         self.line)
+                s.append('</context>\n')
+            if self.context is not None:
+                s.append('        <context context-type="x-context">%s' %
+                         self.context)
+                s.append('</context>\n')
+            s.append('    </context-group>\n')
 
         for note in self.notes:
             s.append(note.to_str())
@@ -159,6 +177,7 @@ class XLFFile(TextFile):
     def _load_state_from_file(self, file):
         # XXX Warning: we can just load our xliff file
         self.files = {}
+        phrase = None
         for event, value, line_number in XMLParser(file.read()):
             if event == START_ELEMENT:
                 namespace, local_name, attributes = value
@@ -184,6 +203,11 @@ class XLFFile(TextFile):
                     note = XLFNote(attributes=attributes)
                 elif local_name == 'context':
                     context_type = attributes['context-type']
+                elif local_name in ['source', 'target']:
+                    phrase = []
+                elif local_name == 'g':
+                    id = int(attributes['id'])
+                    phrase.append((START_FORMAT, id))
             elif event == END_ELEMENT:
                 namespace, local_name = value
 
@@ -195,9 +219,13 @@ class XLFFile(TextFile):
                     unit.notes = notes
                     file.body[unit.context, unit.source] = unit
                 elif local_name == 'source':
-                    unit.source = text
+                    unit.source = tuple(phrase)
+                    phrase = None
                 elif local_name == 'target':
-                    unit.target = text
+                    unit.target = tuple(phrase)
+                    phrase = None
+                elif local_name == 'g':
+                    phrase.append((END_FORMAT, id))
                 elif local_name == 'note':
                     note.text = text
                     notes.append(note)
@@ -210,6 +238,8 @@ class XLFFile(TextFile):
                 pass
             elif event == TEXT:
                 text = unicode(value, 'UTF-8')
+                if phrase is not None:
+                    phrase.append((srx_TEXT, text))
 
 
     #######################################################################

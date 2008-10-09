@@ -201,12 +201,11 @@ class Element(ElementSchema):
 
 
     def __init__(self, name, attributes, **kw):
+        # By default: context = name of element
+        self.context = '%s' % name
+
         ElementSchema.__init__(self, name, **kw)
         self.attributes = frozenset(attributes)
-
-        # XXX Test the new context attribut
-        # context = name of element
-        self.context = '%s' % name
 
 
     def get_attr_datatype(self, name, attributes):
@@ -262,7 +261,7 @@ html_elements = [
     # XHTML 1.0 strict
     Element('a', common_attrs + ['charset', 'type', 'name', 'href',
         'hreflang', 'rel', 'rev', 'accesskey', 'shape', 'coords', 'tabindex',
-        'onfocus', 'onblur']),
+        'onfocus', 'onblur'], context='link to'),
     Element('abbr', common_attrs),
     Element('acronym', common_attrs),
     EmptyBlockElement('area', common_attrs + ['shape', 'coords', 'href',
@@ -287,12 +286,12 @@ html_elements = [
     BlockElement('fieldset', common_attrs),
     BlockElement('form', common_attrs + ['action', 'method', 'enctype',
         'onsubmit', 'onreset', 'accept', 'accept-charset', 'name', 'target']),
-    BlockElement('h1', common_attrs + ['align']),
-    BlockElement('h2', common_attrs + ['align']),
-    BlockElement('h3', common_attrs + ['align']),
-    BlockElement('h4', common_attrs + ['align']),
-    BlockElement('h5', common_attrs + ['align']),
-    BlockElement('h6', common_attrs + ['align']),
+    BlockElement('h1', common_attrs + ['align'], context='heading'),
+    BlockElement('h2', common_attrs + ['align'], context='heading'),
+    BlockElement('h3', common_attrs + ['align'], context='heading'),
+    BlockElement('h4', common_attrs + ['align'], context='heading'),
+    BlockElement('h5', common_attrs + ['align'], context='heading'),
+    BlockElement('h6', common_attrs + ['align'], context='heading'),
     BlockElement('head', i18n_attrs + ['profile']),
     EmptyBlockElement('hr', common_attrs + ['align', 'noshade', 'size',
         'width']),
@@ -319,7 +318,7 @@ html_elements = [
     BlockElement('ol', common_attrs + ['type', 'compact', 'start']),
     BlockElement('option', common_attrs + ['selected', 'disabled', 'label',
         'value']),
-    BlockElement('p', common_attrs),
+    BlockElement('p', common_attrs, context='paragraph'),
     EmptyElement('param', ['id', 'name', 'value', 'valuetype', 'type']),
     BlockElement('pre', common_attrs, keep_spaces=True),
     Element('q', common_attrs + ['cite']),

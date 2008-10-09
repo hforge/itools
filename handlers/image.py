@@ -50,8 +50,8 @@ class Image(File):
             else:
                 self.size = im.size
 
-        # A cache for thumbnails, where the key is the size and the
-        # value is the thumbnail.
+        # A cache for thumbnails, where the key is the size and the format,
+        # and the value is the thumbnail.
         self.thumbnails = {}
 
 
@@ -68,7 +68,7 @@ class Image(File):
 
         # Check the cache
         thumbnails = self.thumbnails
-        key = (width, height)
+        key = (width, height, format)
         if key in thumbnails:
             return thumbnails[key]
 
@@ -76,7 +76,7 @@ class Image(File):
         data = self.to_str()
         f = StringIO(data)
         try:
-            im = PILImage.open(f)
+            im = PILImage.open(f).convert("RGBA")
         except IOError:
             return None, None
 

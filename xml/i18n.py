@@ -161,7 +161,7 @@ def _get_translatable_blocks(events):
 ###########################################################################
 def get_units(events, srx_handler=None):
     # XXX We must break this circular dependency
-    from itools.srx import get_segments
+    from itools.srx import get_segments, TEXT as srx_TEXT
 
     keep_spaces = False
     keep_spaces_level = 0
@@ -177,8 +177,8 @@ def get_units(events, srx_handler=None):
                 value = attributes[(attr_uri, attr_name)]
                 if not value.strip():
                     continue
-
-                yield value, _get_attr_context(tag_name, attr_name), line
+                unit = ((srx_TEXT, value),)
+                yield unit, _get_attr_context(tag_name, attr_name), line
             # Keep spaces ?
             schema = get_element_schema(tag_uri, tag_name)
             if schema.keep_spaces:
@@ -204,7 +204,7 @@ def get_units(events, srx_handler=None):
 ###########################################################################
 def translate(events, catalog, srx_handler=None):
     # XXX We must break this circular dependency
-    from itools.srx import translate_message
+    from itools.srx import translate_message, TEXT as srx_TEXT
 
     # Default values
     encoding = 'utf-8'
@@ -235,8 +235,10 @@ def translate(events, catalog, srx_handler=None):
                 if is_datatype(datatype, Unicode):
                     value = value.strip()
                     if value:
+                        unit = ((srx_TEXT, value),)
                         context = _get_attr_context(tag_name, attr_name)
-                        value = catalog.gettext(value, context)
+                        unit = catalog.gettext(unit, context)
+                        value = unit[0][1]
                         value = value.encode(encoding)
                         attributes[(attr_uri, attr_name)] = value
                 # Namespaces

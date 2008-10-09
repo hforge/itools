@@ -25,7 +25,6 @@ from compiler import parse, walk
 from text import TextFile
 from registry import register_handler_class
 
-
 class VisitorUnicode(object):
 
     def __init__(self):
@@ -33,9 +32,10 @@ class VisitorUnicode(object):
 
 
     def visitConst(self, const):
+        from itools.srx import TEXT
         if type(const.value) is unicode:
             # Context = None
-            msg = const.value, None, const.lineno
+            msg = ((TEXT, const.value),), None, const.lineno
             self.messages.append(msg)
 
 

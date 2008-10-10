@@ -325,6 +325,7 @@ html_elements = [
     Element('samp', common_attrs),
     BlockElement('script', ['id', 'charset', 'type', 'language', 'src',
         'defer'], skip_content=True),
+    BlockElement('noscript', ['id']),
     # FIXME This is a lie, <select> elements *are* inline
     # TODO Do not use the inline/block for i18n, define instead another
     # variable for this purpose.

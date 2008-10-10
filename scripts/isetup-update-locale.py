@@ -101,8 +101,7 @@ if __name__ == '__main__':
 
         relative_path = Path('..').resolve2(path)
         for source, context, line in units:
-            if len(source) > 1:
-                po.add_unit(relative_path, source, context, line)
+            po.add_unit(relative_path, source, context, line)
     print
 
     # Update locale.pot

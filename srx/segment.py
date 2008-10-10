@@ -214,7 +214,7 @@ def _translate_format(message, catalog):
     for type, value, line in message:
         if type != TEXT:
             for i, (text, translatable, context) in enumerate(value[0]):
-                if translatable:
+                if translatable and text.strip():
                     translation = catalog.gettext(((TEXT, text),), context)
                     value[0][i] = (translation[0][1], True, context)
 
@@ -267,7 +267,7 @@ def get_segments(message, keep_spaces=False, srx_handler=None):
         for type, value, line in todo:
             if type != TEXT:
                 for (text, translatable, context) in value[0]:
-                    if translatable:
+                    if translatable and text.strip():
                         yield ((TEXT, text),), context, line
 
 

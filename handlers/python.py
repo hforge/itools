@@ -33,7 +33,7 @@ class VisitorUnicode(object):
 
     def visitConst(self, const):
         from itools.srx import TEXT
-        if type(const.value) is unicode:
+        if type(const.value) is unicode and const.value.strip():
             # Context = None
             msg = ((TEXT, const.value),), None, const.lineno
             self.messages.append(msg)

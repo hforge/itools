@@ -15,6 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from the Standard Library
+from copy import copy
+
 # Import from itools
 from itools import get_abspath
 from itools.relaxng import RelaxNGFile
@@ -27,6 +30,7 @@ from itools.xml.namespaces import has_namespace
 ###########################################################################
 config_uri = 'urn:oasis:names:tc:opendocument:xmlns:config:1.0'
 dc_uri = 'http://purl.org/dc/elements/1.1/'
+fo_uri = 'urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0'
 form_uri = 'urn:oasis:names:tc:opendocument:xmlns:form:1.0'
 meta_uri = 'urn:oasis:names:tc:opendocument:xmlns:meta:1.0'
 number_uri = 'urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0'
@@ -52,7 +56,7 @@ skip_content_elements = [
     (config_uri, 'config-item'),
 
     # Dublin core
-    (dc_uri, 'creator'),
+    #(dc_uri, 'creator'),
     (dc_uri, 'date'),
     #(dc_uri, 'description'),
     (dc_uri, 'language'),
@@ -69,7 +73,7 @@ skip_content_elements = [
     (meta_uri, 'editing-cycles'),
     (meta_uri, 'editing-duration'),
     (meta_uri, 'generator'),
-    (meta_uri, 'initial-creator'),
+    #(meta_uri, 'initial-creator'),
     #(meta_uri, 'keyword'),
     (meta_uri, 'printed-by'),
     (meta_uri, 'print-date'),
@@ -181,6 +185,11 @@ skip_content_elements = [
 ###########################################################################
 # Make the namespaces
 ###########################################################################
+def duplicate_ns(namespaces, first_uri, second_uri):
+    ns = copy(namespaces[first_uri])
+    ns.uri = second_uri
+    ns.prefix = None
+    namespaces[second_uri] = ns
 
 # Read the Relax NG schema
 rng_file = RelaxNGFile(get_abspath('OpenDocument-strict-schema-v1.1.rng'))
@@ -193,6 +202,12 @@ for uri, element_name in inline_elements:
 for uri, element_name in skip_content_elements:
     element = namespaces[uri].get_element_schema(element_name)
     element.skip_content = True
+
+# The namespaces fo and svg have two names
+fo_uri_2 = 'http://www.w3.org/1999/XSL/Format'
+duplicate_ns(namespaces, fo_uri, fo_uri_2)
+svg_uri_2 = 'http://www.w3.org/2000/svg'
+duplicate_ns(namespaces, svg_uri, svg_uri_2)
 
 # Register the namespaces
 for uri, namespace in namespaces.iteritems():

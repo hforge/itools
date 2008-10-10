@@ -607,7 +607,7 @@ class Table(File):
     # API / Private
     #######################################################################
     def get_analyser(self, name):
-        datatype = self.get_datatype(name)
+        datatype = self.get_record_datatype(name)
         return get_field(datatype.index)
 
 

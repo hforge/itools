@@ -719,8 +719,9 @@ class GET(RequestMethod):
         view = context.view
         try:
             context.query = view.get_query(context)
-        except FormError:
+        except FormError, error:
             method = view.on_query_error
+            context.query_error = error
         except:
             cls.internal_server_error(server, context)
             method = None
@@ -848,8 +849,9 @@ class POST(RequestMethod):
         view = context.view
         try:
             context.query = view.get_query(context)
-        except FormError:
+        except FormError, error:
             method = view.on_query_error
+            context.query_error = error
         except:
             cls.internal_server_error(server, context)
             method = None

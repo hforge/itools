@@ -45,6 +45,7 @@ class Test_ODT_File(TestCase):
                     ((TEXT, u"it's a very good document"),),
                     ((TEXT, u'Itools test'),),
                     ((TEXT, u'sylvain'),),
+                    ((TEXT, u'sylvain'),),
                     ((TEXT, u'itools'),),
                     ((TEXT, u'odt'),),
                     ((TEXT, u'odf'),)]
@@ -71,6 +72,7 @@ class Test_ODT_File(TestCase):
             ((TEXT, u'Hello world Document'),),
             ((TEXT, u"it's a very good document"),),
             ((TEXT, u'Itools test'),),
+            ((TEXT, u'sylvain'),),
             ((TEXT, u'sylvain'),),
             ((TEXT, u'itools'),),
             ((TEXT, u'odt'),),
@@ -106,7 +108,9 @@ class Test_ODP_File(TestCase):
         expected = [((START_FORMAT, 1), (TEXT, u'Hello '), (END_FORMAT, 1),
                      (START_FORMAT, 2), (TEXT, u'World'), (END_FORMAT, 2),
                      (START_FORMAT, 3), (TEXT, u' !'), (END_FORMAT, 3)),
-                    ((TEXT, u'Welcome'),), ((TEXT, u'sylvain'),)]
+                    ((TEXT, u'Welcome'),),
+                    ((TEXT, u'sylvain'),),
+                    ((TEXT, u'sylvain'),)]
 
         self.assertEqual(messages, expected)
 
@@ -119,29 +123,30 @@ class Test_ODS_File(TestCase):
 
     def test_get_msg(self):
         messages = [unit[0] for unit in self.doc.get_units()]
-        expected = [((TEXT, u'Chocolate'),),
-                    ((TEXT, u'Coffee'),),
-                    ((TEXT, u'Tea'),),
-                    ((TEXT, u'Price'),),
-                    ((TEXT, u'80'),),
-                    ((TEXT, u'20'),),
-                    ((TEXT, u'40'),),
-                    ((TEXT, u'Quantity'),),
-                    ((TEXT, u'20'),),
-                    ((TEXT, u'30'),),
-                    ((TEXT, u'20'),),
-                    ((TEXT, u'Quality'),),
-                    ((TEXT, u'0'),),
-                    ((TEXT, u'50'),),
-                    ((TEXT, u'40'),),
-                    ((TEXT, u'sylvain'),),
-                    ((TEXT, u'Page'),),
-                    ((TEXT, u'('),),
-                    ((TEXT, u'???'),),
-                    ((TEXT, u')'),),
-                    ((TEXT, u','),),
-                    ((TEXT, u'Page'),),
-                    ((TEXT, u'/'),)]
+        expected = [((0, u'Chocolate'),),
+                    ((0, u'Coffee'),),
+                    ((0, u'Tea'),),
+                    ((0, u'Price'),),
+                    ((0, u'80'),),
+                    ((0, u'20'),),
+                    ((0, u'40'),),
+                    ((0, u'Quantity'),),
+                    ((0, u'20'),),
+                    ((0, u'30'),),
+                    ((0, u'20'),),
+                    ((0, u'Quality'),),
+                    ((0, u'0'),),
+                    ((0, u'50'),),
+                    ((0, u'40'),),
+                    ((0, u'sylvain'),),
+                    ((0, u'sylvain'),),
+                    ((0, u'Page'),),
+                    ((0, u'('),),
+                    ((0, u'???'),),
+                    ((0, u')'),),
+                    ((0, u','),),
+                    ((0, u'Page'),),
+                    ((0, u'/'),)]
 
         self.assertEqual(messages, expected)
 

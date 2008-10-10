@@ -127,7 +127,7 @@ class i18nTestCase(TestCase):
         doc = HTMLFile(string='<p>hello world</p>')
 
         p = POFile(string=
-            'msgctxt "p"\n'
+            'msgctxt "paragraph"\n'
             'msgid "hello world"\n'
             'msgstr "hola mundo"')
 
@@ -428,7 +428,7 @@ class TranslationTestCase(TestCase):
     def test_case4(self):
         """Test translation of an element content"""
         string = (
-            'msgctxt "p"\n'
+            'msgctxt "paragraph"\n'
             'msgid "hello world"\n'
             'msgstr "hola mundo"\n')
         p = POFile(string=string)

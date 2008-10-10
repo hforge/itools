@@ -158,7 +158,8 @@ class BaseForm(BaseView):
             cls = []
             if getattr(datatype, 'mandatory', False):
                 cls.append('field_is_required')
-            if submit:
+            readonly = getattr(datatype, 'readonly', False)
+            if submit and not readonly:
                 try:
                     value = context.get_form_value(name, type=datatype)
                 except FormError:

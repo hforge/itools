@@ -169,6 +169,8 @@ class BaseForm(BaseView):
                 value = self.get_value(resource, context, name, datatype)
             if isinstance(datatype, Enumerate):
                 value = datatype.get_namespace(value)
+            else:
+                value = datatype.encode(value)
             cls = ' '.join(cls) or None
             namespace[name] = {'name': name, 'value': value, 'class': cls}
         return namespace

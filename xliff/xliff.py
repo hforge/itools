@@ -178,6 +178,7 @@ class XLFFile(TextFile):
         # XXX Warning: we can just load our xliff file
         self.files = {}
         phrase = None
+        id_stack = []
         for event, value, line_number in XMLParser(file.read()):
             if event == START_ELEMENT:
                 namespace, local_name, attributes = value
@@ -207,6 +208,7 @@ class XLFFile(TextFile):
                     phrase = []
                 elif local_name == 'g':
                     id = int(attributes['id'])
+                    id_stack.append(id)
                     phrase.append((START_FORMAT, id))
             elif event == END_ELEMENT:
                 namespace, local_name = value
@@ -225,7 +227,7 @@ class XLFFile(TextFile):
                     unit.target = tuple(phrase)
                     phrase = None
                 elif local_name == 'g':
-                    phrase.append((END_FORMAT, id))
+                    phrase.append((END_FORMAT, id_stack.pop()))
                 elif local_name == 'note':
                     note.text = text
                     notes.append(note)

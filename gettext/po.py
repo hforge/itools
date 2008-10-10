@@ -137,14 +137,16 @@ def encode_source(source):
 
 def decode_target(target):
     result = []
+    id_stack = []
     for type, value, line in XMLParser(target.encode('UTF-8')):
         if type == xml_TEXT:
             result.append((TEXT, unicode(value, 'UTF-8')))
         elif type == START_ELEMENT:
             id = int(value[2][None, 'id'])
+            id_stack.append(id)
             result.append((START_FORMAT, id))
         else:
-            result.append((END_FORMAT, id))
+            result.append((END_FORMAT, id_stack.pop()))
     return tuple(result)
 
 

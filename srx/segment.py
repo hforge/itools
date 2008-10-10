@@ -219,6 +219,27 @@ def _translate_format(message, catalog):
                     value[0][i] = (translation[0][1], True, context)
 
 
+def _translate_message(message, catalog):
+    # Save the formats
+    id2tags = {}
+    for type, value, line in message:
+        if type != TEXT:
+            id = value[1]
+            id2tags[type, id] = (type, value, line)
+
+    # Translation
+    translation = catalog.gettext(message.to_unit(), message.get_context())
+    result = Message()
+    for type, value in translation:
+        if type == TEXT:
+            # The line parameter is not good
+            result.append_text(value)
+        else:
+            result.append(id2tags[type, value])
+
+    return result
+
+
 ###########################################################################
 # API
 ###########################################################################
@@ -269,12 +290,7 @@ def translate_message(message, catalog, keep_spaces=False, srx_handler=None):
             for type, value, line in center:
                 # XXX A more complex test here
                 if type == TEXT and value[0].strip():
-                    translation = catalog.gettext(center.to_unit(),
-                                                  center.get_context())
-                    for i, (type, value, line) in enumerate(center):
-                        if type == TEXT:
-                            center[i] = (TEXT, (translation[i][1], value[1]),
-                                         line)
+                    center = _translate_message(center, catalog)
                     break
             _translate_format(center, catalog)
             center = center.to_str()

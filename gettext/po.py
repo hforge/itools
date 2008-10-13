@@ -459,7 +459,7 @@ class POFile(TextFile):
             target = [ unicode(x, self.encoding) for x in target ]
 
             # Add the message
-            self._set_message(context, source, target, comments, {}, fuzzy)
+            self._set_message(context, source, target, comments, None, fuzzy)
 
 
     def to_str(self, encoding='UTF-8'):
@@ -474,7 +474,7 @@ class POFile(TextFile):
     # API / Private
     #######################################################################
     def _set_message(self, context, source, target=[u''], comments=[],
-                     references={}, fuzzy=False):
+                     reference=None, fuzzy=False):
 
         if context is not None and isinstance(context, (str, unicode)):
             context = [context]
@@ -491,10 +491,19 @@ class POFile(TextFile):
         second_part = ''.join(source)
         key = (first_part, second_part)
 
-        unit = POUnit(comments, context, source, target, references, fuzzy)
-        self.messages[key] = unit
-        return unit
+        # Already this entry ?
+        messages = self.messages
+        if key in messages:
+            unit = messages[key]
+        else:
+            unit = POUnit(comments, context, source, target, {}, fuzzy)
+            messages[key] = unit
 
+        # Add the reference and return
+        if reference is None:
+            return unit
+        unit.references.setdefault(reference[0], []).append(reference[1])
+        return unit
 
 
 
@@ -547,7 +556,7 @@ class POFile(TextFile):
         source = encode_source(source)
 
         return self._set_message(context, [source], [u''], [],
-                                 {filename: [line]})
+                                 (filename, line))
 
 
 

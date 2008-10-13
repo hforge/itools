@@ -77,12 +77,12 @@ skip_content_elements = [
     #(meta_uri, 'keyword'),
     (meta_uri, 'printed-by'),
     (meta_uri, 'print-date'),
-    (meta_uri, 'user-defined'),
+    #(meta_uri, 'user-defined'),
 
     # Number
     (number_uri, 'currency-symbol'),
     (number_uri, 'embedded-text'),
-    (number_uri, 'text'),
+    #(number_uri, 'text'),
 
     # Office
     (office_uri, 'binary-data'),
@@ -129,7 +129,7 @@ skip_content_elements = [
     (text_uri, 'object-count'),
     (text_uri, 'page-continuation'),
     (text_uri, 'page-count'),
-    (text_uri, 'page-number'),
+    #(text_uri, 'page-number'),
     (text_uri, 'page-variable-get'),
     (text_uri, 'page-variable-set'),
     (text_uri, 'paragraph-count'),

@@ -36,6 +36,7 @@ from os.path import join
 from sys import path, exit
 from xml.parsers.expat import ExpatError
 from xmlrpclib import Server, ProtocolError
+import socket
 
 # Import from itools
 from itools import __version__
@@ -110,6 +111,9 @@ def prepare(package_spec):
     # Repository listing
     repo_candidates = []
     for repo_str in repositories:
+        # XXX
+        if not repo_str.startswith('http://'):
+            repo_str = 'http://' + repo_str
         try:
             repo = Server(repo_str)
             for repo_ver in repo.package_releases(package_version.name):
@@ -134,7 +138,7 @@ def prepare(package_spec):
                             release['pypi_location'] = repo_str
                             repo_candidates.append(release)
         # Any error related to the CheeseShop server
-        except (IOError, ExpatError, ProtocolError):
+        except (IOError, ExpatError, ProtocolError, socket.error):
             print "WARNING: %s is not a valid CheeseShop repository" % repo_str
 
     # Cache listing
@@ -170,12 +174,11 @@ def prepare(package_spec):
             dist = Dist(str(dist_loc))
 
             if dist == None:
-                if not candidates:
-                    unretrievables.append((prepare_code.BadArchive,
-                                           package_spec))
-                    return prepare_code.BadArchive
-                else:
+                if candidates:
                     continue
+                unretrievables.append((prepare_code.BadArchive,
+                                       package_spec))
+                return prepare_code.BadArchive
 
             if not dist.fromsetuptools and dist.has_metadata('Requires'):
                 requirements = dist.get_metadata('Requires').split(',')

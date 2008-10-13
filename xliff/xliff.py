@@ -19,10 +19,10 @@
 
 # Import from itools
 from itools.datatypes import XMLContent, XMLAttribute
+from itools.gettext.po import encode_source
 from itools.handlers import TextFile, register_handler_class
 from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, COMMENT, TEXT
 from itools.srx import TEXT as srx_TEXT, START_FORMAT, END_FORMAT
-
 
 
 doctype = (
@@ -81,24 +81,12 @@ class XLFUnit(object):
 
         if self.source:
             s.append('    <source>')
-            for type, value in self.source:
-                if type == srx_TEXT:
-                    s.append(XMLContent.encode(value))
-                elif type == START_FORMAT:
-                    s.append('<g id="%d">' % value)
-                else:
-                    s.append('</g>')
+            s.append(encode_source(self.source))
             s.append('</source>\n')
 
         if self.target:
             s.append('    <target>')
-            for type, value in self.target:
-                if type == srx_TEXT:
-                    s.append(XMLContent.encode(value))
-                elif type == START_FORMAT:
-                    s.append('<g id="%d">' % value)
-                else:
-                    s.append('</g>')
+            s.append(encode_source(self.target))
             s.append('</target>\n')
 
         if self.line is not None or self.context is not None:
@@ -206,7 +194,7 @@ class XLFFile(TextFile):
                     context_type = attributes['context-type']
                 elif local_name in ['source', 'target']:
                     phrase = []
-                elif local_name == 'g':
+                elif local_name in ('g', 'x'):
                     id = int(attributes['id'])
                     id_stack.append(id)
                     phrase.append((START_FORMAT, id))
@@ -226,7 +214,7 @@ class XLFFile(TextFile):
                 elif local_name == 'target':
                     unit.target = tuple(phrase)
                     phrase = None
-                elif local_name == 'g':
+                elif local_name in ('g', 'x'):
                     phrase.append((END_FORMAT, id_stack.pop()))
                 elif local_name == 'note':
                     note.text = text

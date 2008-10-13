@@ -299,7 +299,6 @@ def translate_message(message, catalog, keep_spaces=False, srx_handler=None):
     return u''.join(translated_message)
 
 
-
 class Message(list):
     """A 'Message' object represents a text to be processed. It is a complex
     object instead of just a string to allow us to deal with formatted text.

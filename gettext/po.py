@@ -125,13 +125,19 @@ def get_lines(data):
 
 def encode_source(source):
     result = []
-    for type, value in source:
+    for i, (type, value) in enumerate(source):
         if type == TEXT:
             result.append(value)
         elif type == START_FORMAT:
-            result.append(u"<g id='%d'>" % value)
+            # A lonely tag ?
+            if source[i+1][0] == END_FORMAT:
+                result.append(u"<x id='%d'/>" % value)
+            else:
+                result.append(u"<g id='%d'>" % value)
         elif type == END_FORMAT:
-            result.append(u'</g>')
+            # A lonely tag ?
+            if source[i-1][0] != START_FORMAT:
+                result.append(u'</g>')
     return u''.join(result)
 
 

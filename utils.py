@@ -193,12 +193,10 @@ def setup(ext_modules=[]):
                         print "Password and confirm don't match!"
                 while not data['email']:
                     data['email'] = raw_input('EMail: ')
-                from pprint import pprint
-                pprint(data)
                 code, result = self.post_to_server(data)
                 error_msg = ('Your are now registred, unless the server '
-                             'admini sets up a email-confirmation system\n'
-                             'In this case check your emails, and follow'
+                             'admin set up a email-confirmation system\n'
+                             'In this case check your emails, and follow '
                              'the intructions')
                 if code != 200:
                     print 'Server response (%s): %s' % (code, result)

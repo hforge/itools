@@ -25,7 +25,7 @@ from getpass import getpass
 from os import getcwd
 from os.path import exists, join as join_path, sep, splitdrive
 from re import search
-from sys import _getframe, platform
+from sys import _getframe, platform, exit
 from urllib2 import HTTPPasswordMgr
 import sys
 
@@ -203,9 +203,9 @@ def setup(ext_modules=[]):
                              'the intructions')
                 if code != 200:
                     print 'Server response (%s): %s' % (code, result)
+                    exit(1)
                 else:
                     print error_msg
-                return
 
             # Get the password
             while not self.password:
@@ -225,6 +225,7 @@ def setup(ext_modules=[]):
             else:
                 print 'There has been an error while registring the package.'
                 print 'Server responded (%s): %s' % (code, result)
+                exit(1)
 
 
         def initialize_options(self):

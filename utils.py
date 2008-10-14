@@ -17,6 +17,7 @@
 
 # Import from the Standard Library
 from distutils import core
+from distutils.errors import DistutilsOptionError
 from distutils.command.build_py import build_py
 from distutils.command.register import register
 from distutils.command.upload import upload
@@ -122,50 +123,92 @@ def setup(ext_modules=[]):
                   'username': String}
 
 
-    def get_setupconf_repo():
-        repository = ''
-        username = ''
-        password = ''
-
-        config = SetupConf('setup.conf')
-
-        if not config.has_value('repository'):
-            print "Please fill the 'repository' option in setup.conf"
-            sys.exit(0)
-        repository = str(config.get_value('repository'))
-
-        if config.has_value('username'):
-            username = config.get_value('username')
-        while not username:
-            username = raw_input('Username: ')
-
-        while not password:
-            password = getpass('Password (for user %s): ' % username)
-
-        return (repository, username, password)
-
-
     class iupload(upload):
 
+        DEFAULT_REPOSITORY = 'http://pypi.python.org/pypi'
+
+        user_options = [
+            ('username=', 'u', 'username used to log in or to register'),
+            ('repository=', 'r',
+             "url of repository [default: %s]" % DEFAULT_REPOSITORY),
+            ]
+        boolean_options = ['show-response', 'sign']
+
+
+        def initialize_options(self):
+            self.username = ''
+            self.password = ''
+            self.repository = ''
+            self.show_response = 0
+            self.sign = False
+            self.identity = None
+
+
         def finalize_options(self):
-            # From disutils
-            if self.identity and not self.sign:
-                raise DistutilsOptionError(
-                    "Must use --sign for --identity to have meaning"
-                )
+            config = SetupConf('setup.conf')
 
-            if 'repository_options' in globals().keys():
-                self.repository = repository_options['repository']
-                self.username = repository_options['username']
-                self.password = repository_options['password']
-                return
+            if self.repository == self.DEFAULT_REPOSITORY:
+                if config.has_value('repository'):
+                    self.repository = config.get_value('repository')
+            elif self.repository is None:
+                self.repository = self.DEFAULT_REPOSITORY
+            if not self.username:
+                if config.has_value('username'):
+                    self.username = config.get_value('username')
+                else:
+                    raise DistutilsOptionError("Please give a username")
+            # Get the password
+            while not self.password:
+                self.password = getpass('Password: ')
 
-            self.repository, self.username, self.password = get_setupconf_repo()
 
 
     class iregister(register):
 
+        DEFAULT_REPOSITORY = 'http://pypi.python.org/pypi'
+
+        user_options = [
+            ('repository=', 'r',
+                "url of repository [default: %s]" % DEFAULT_REPOSITORY),
+            ('username=', 'u', 'username used to log in or to register'),
+            ('create-user', None, 'create a new user'),
+            ]
+
+        boolean_options = ['create-user']
+
         def send_metadata(self):
+            if self.create_user:
+                data = {':action': 'user'}
+                data['name'] = self.username
+                data['password'] = data['email'] = ''
+                data['confirm'] = None
+                while data['password'] != data['confirm']:
+                    while not data['password']:
+                        data['password'] = getpass('Password: ')
+                    while not data['confirm']:
+                        data['confirm'] = getpass(' Confirm: ')
+                    if data['password'] != data['confirm']:
+                        data['password'] = ''
+                        data['confirm'] = None
+                        print "Password and confirm don't match!"
+                while not data['email']:
+                    data['email'] = raw_input('EMail: ')
+                from pprint import pprint
+                pprint(data)
+                code, result = self.post_to_server(data)
+                error_msg = ('Your are now registred, unless the server '
+                             'admini sets up a email-confirmation system\n'
+                             'In this case check your emails, and follow'
+                             'the intructions')
+                if code != 200:
+                    print 'Server response (%s): %s' % (code, result)
+                else:
+                    print error_msg
+                return
+
+            # Get the password
+            while not self.password:
+                self.password = getpass('Password: ')
             # set up the authentication
             auth = HTTPPasswordMgr()
             host = str(get_reference(self.repository).authority)
@@ -184,24 +227,27 @@ def setup(ext_modules=[]):
 
 
         def initialize_options(self):
-            self.repository = None
-            self.show_response = 0
-            self.list_classifiers = 0
+            self.create_user = False
+            self.show_response = False
+            self.list_classifiers = []
 
-            self.repository = ''
+            self.repository = None
             self.username = ''
             self.password = ''
 
 
         def finalize_options(self):
-            global repository_options
-            repository_options = {}
-
-            self.repository, self.username, self.password = get_setupconf_repo()
-
-            repository_options = {'username': self.username,
-                                  'password': self.password,
-                                  'repository': self.repository}
+            config = SetupConf('setup.conf')
+            if self.repository == self.DEFAULT_REPOSITORY:
+                if config.has_value('repository'):
+                    self.repository = config.get_value('repository')
+            elif self.repository is None:
+                self.repository = self.DEFAULT_REPOSITORY
+            if not self.username:
+                if config.has_value('username'):
+                    self.username = config.get_value('username')
+                else:
+                    raise DistutilsOptionError("Please give a username")
 
 
     config = SetupConf('setup.conf')

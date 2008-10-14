@@ -57,7 +57,6 @@ So now to install itools you just need to type this:
   $ python setup.py install
 
 
-
 Unit Tests
 ----------
 
@@ -69,31 +68,29 @@ To run the unit tests just type:
 If there are errors, please report either to the issue tracker or to
 the mailing list:
 
-  - http://bugs.ikaaro.org
-  - http://mail.ikaaro.org/mailman/listinfo/itools
-
+  - http://bugs.hforge.org/
+  - http://www.hforge.org/community
 
 
 Documentation
 -------------
 
 The documentation is distributed as a separate package, itools-docs.
-The PDF file can be downloaded from http://www.ikaaro.org/itools
-
+The PDF file can be downloaded from http://www.hforge.org/itools
 
 
 Resources
 ---------
 
 Home
-http://www.ikaaro.org/itools
+http://www.hforge.org/itools
 
 Mailing list
-http://www.ikaaro.org/community/
-http://archives.ikaaro.org/index.cgi?list=itools
+http://www.hforge.org/community/
+http://archives.hforge.org/index.cgi?list=itools
 
 Bug Tracker
-http://bugs.ikaaro.org
+http://bugs.hforge.org
 
 
 Copyright

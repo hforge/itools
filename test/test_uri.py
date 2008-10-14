@@ -426,13 +426,13 @@ class ReferenceTestCase(TestCase):
 
     def test_http(self):
         """http references are generic."""
-        ref = get_reference('http://ikaaro.org')
+        ref = get_reference('http://hforge.org')
         self.assert_(isinstance(ref, Reference))
 
 
     def test_ftp(self):
         """references with unknow scheme are generic."""
-        ref = get_reference('http://ikaaro.org')
+        ref = get_reference('http://hforge.org')
         self.assert_(isinstance(ref, Reference))
 
 

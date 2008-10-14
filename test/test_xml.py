@@ -71,21 +71,21 @@ class ParserTestCase(TestCase):
 
 
     def test_attributes(self):
-        data = '<a href="http://www.ikaaro.org">'
+        data = '<a href="http://www.hforge.org">'
         token = START_ELEMENT
-        value = None, 'a', {(None, 'href'): 'http://www.ikaaro.org'}
+        value = None, 'a', {(None, 'href'): 'http://www.hforge.org'}
         self.assertEqual(XMLParser(data).next(), (token, value, 1))
 
 
     def test_attributes_single_quote(self):
-        data = "<a href='http://www.ikaaro.org'>"
+        data = "<a href='http://www.hforge.org'>"
         token = START_ELEMENT
-        value = None, 'a', {(None, 'href'): 'http://www.ikaaro.org'}
+        value = None, 'a', {(None, 'href'): 'http://www.hforge.org'}
         self.assertEqual(XMLParser(data).next(), (token, value, 1))
 
 
     def test_attributes_no_quote(self):
-        data = "<a href=http://www.ikaaro.org>"
+        data = "<a href=http://www.hforge.org>"
         self.assertRaises(XMLError, XMLParser(data).next)
 
 

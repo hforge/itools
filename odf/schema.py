@@ -177,7 +177,7 @@ skip_content_elements = [
     #(svg_uri, 'title'),
     #(svg_uri, 'desc')
 
-    # From translate
+    # From translate (the only tag with elements)
     (text_uri, 'tracked-changes')
     ]
 

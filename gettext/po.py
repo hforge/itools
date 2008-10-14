@@ -142,18 +142,56 @@ def encode_source(source):
 
 
 def decode_target(target):
+    # Prepare the regexp
+    re_tags = compile('<(.*?)>')
+    re_g_start = compile("^g id='(.*?)'$")
+    re_g_end = compile("^/g$")
+    re_x = compile("^x id='(.*?)'/$")
+
+    # Parse !
     result = []
     id_stack = []
-    for type, value, line in XMLParser(target.encode('UTF-8')):
-        if type == xml_TEXT:
-            result.append((TEXT, unicode(value, 'UTF-8')))
-        elif type == START_ELEMENT:
-            id = int(value[2][None, 'id'])
-            id_stack.append(id)
-            result.append((START_FORMAT, id))
-        else:
-            result.append((END_FORMAT, id_stack.pop()))
-    return tuple(result)
+    tag = True
+    text = ''
+    for block in re_tags.split(target):
+        tag = not tag
+        if tag:
+            # "<g id='...'>"
+            sre = re_g_start.match(block)
+            if sre:
+                id = int(sre.groups()[0])
+                id_stack.append(id)
+                if text:
+                    result.append((TEXT, text))
+                    text = ''
+                result.append((START_FORMAT, id))
+                continue
+            # "</g>"
+            sre = re_g_end.match(block)
+            if sre:
+                if text:
+                    result.append((TEXT, text))
+                    text = ''
+                result.append((END_FORMAT, id_stack.pop()))
+                continue
+            # "<x id='...'>"
+            sre = re_x.match(block)
+            if sre:
+                id = int(sre.groups()[0])
+                if text:
+                    result.append((TEXT, text))
+                    text = ''
+                result.append((START_FORMAT, id))
+                result.append((END_FORMAT, id))
+                continue
+            # Something else
+            text += '<%s>' % block
+            continue
+        text += block
+    # Push the last text
+    if text:
+        result.append((TEXT, text))
+    return result
 
 
 

@@ -129,6 +129,7 @@ def setup(ext_modules=[]):
 
         user_options = [
             ('username=', 'u', 'username used to log in or to register'),
+            ('password=', 'p', 'password'),
             ('repository=', 'r',
              "url of repository [default: %s]" % DEFAULT_REPOSITORY),
             ]
@@ -171,6 +172,7 @@ def setup(ext_modules=[]):
             ('repository=', 'r',
                 "url of repository [default: %s]" % DEFAULT_REPOSITORY),
             ('username=', 'u', 'username used to log in or to register'),
+            ('password=', 'p', 'password'),
             ('create-user', None, 'create a new user'),
             ]
 
@@ -180,7 +182,8 @@ def setup(ext_modules=[]):
             if self.create_user:
                 data = {':action': 'user'}
                 data['name'] = self.username
-                data['password'] = data['email'] = ''
+                data['password'] = self.password
+                data['email'] = ''
                 data['confirm'] = None
                 while data['password'] != data['confirm']:
                     while not data['password']:

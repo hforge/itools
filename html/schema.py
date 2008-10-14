@@ -245,10 +245,9 @@ class InputElement(Element):
         if attr_name == 'value':
             key1 = (html_uri, 'type')
             key2 = (None, 'type')
-            if attributes.get(key1) == 'submit':
-                return Unicode
-            if attributes.get(key2) == 'submit':
-                return Unicode
+            if (attributes.get(key1) == 'submit' or
+                attributes.get(key2) == 'submit'):
+                return Unicode(context='button')
 
         return Element.get_attr_datatype(self, attr_name, attributes)
 

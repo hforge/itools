@@ -27,7 +27,11 @@ def is_datatype(type, base_type):
 
 class DataType(object):
 
+    # Default value
     default = None
+
+    # I18n part
+    context = None
 
 
     def __init__(self, **kw):

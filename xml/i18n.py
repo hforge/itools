@@ -36,10 +36,12 @@ MESSAGE = 999
 ###########################################################################
 # Common code to "get_units" and "translate"
 ###########################################################################
-def _get_attr_context(tag_name, attr_name):
-    # By default, the context of attribute is "element[name]"
-    return '%s[%s]' % (tag_name, attr_name)
-
+def _get_attr_context(datatype, tag_name, attr_name):
+    if datatype.context is None:
+        # By default, the context of attribute is "element[name]"
+        return '%s[%s]' % (tag_name, attr_name)
+    else:
+        return datatype.context
 
 def _make_start_format(tag_uri, tag_name, attributes):
     # We must search for translatable attributes
@@ -55,7 +57,7 @@ def _make_start_format(tag_uri, tag_name, attributes):
                                      attributes)
         if is_datatype(datatype, Unicode):
             result.append((u' %s="' % qname, False, None))
-            context = _get_attr_context(tag_name, attr_name)
+            context = _get_attr_context(datatype, tag_name, attr_name)
             result.append((u'%s' % value, True, context))
             result.append((u'"', False, None))
         else:
@@ -178,7 +180,8 @@ def get_units(events, srx_handler=None):
                 if not value.strip():
                     continue
                 unit = ((srx_TEXT, value),)
-                yield unit, _get_attr_context(tag_name, attr_name), line
+                yield (unit, _get_attr_context(datatype, tag_name, attr_name),
+                       line)
             # Keep spaces ?
             schema = get_element_schema(tag_uri, tag_name)
             if schema.keep_spaces:
@@ -236,7 +239,8 @@ def translate(events, catalog, srx_handler=None):
                     value = value.strip()
                     if value:
                         unit = ((srx_TEXT, value),)
-                        context = _get_attr_context(tag_name, attr_name)
+                        context = _get_attr_context(datatype,tag_name,
+                                                    attr_name)
                         unit = catalog.gettext(unit, context)
                         value = unit[0][1]
                         value = value.encode(encoding)

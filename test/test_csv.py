@@ -367,10 +367,8 @@ class TableTestCase(TestCase):
 
         output = unfold_lines(input)
 
-        i = 0
-        for line in output:
+        for i, line in enumerate(output):
             self.assertEqual(line, expected[i])
-            i = i + 1
 
 
     def test_de_serialize(self):

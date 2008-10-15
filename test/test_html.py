@@ -157,7 +157,7 @@ class i18nTestCase(TestCase):
             '<input type="submit" value="Change">')
 
         p = POFile(string=
-            'msgctxt "input[value]"\n'
+            'msgctxt "button"\n'
             'msgid "Change"\n'
             'msgstr "Cambiar"')
 

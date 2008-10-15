@@ -218,7 +218,8 @@ class CSVTestCase(TestCase):
         handler = Things(string=data)
         handler.load_state_from_string(data)
         self.assertEqual(handler.search(date=Date.decode('2005-01-01')), [])
-        self.assertEqual(handler.search(date=Date.decode('2005-10-10')), [0,2])
+        self.assertEqual(handler.search(date=Date.decode('2005-10-10')),
+                         [0,2])
 
 
     def test_index_new_row(self):
@@ -226,7 +227,8 @@ class CSVTestCase(TestCase):
         handler = Things()
         handler.load_state_from_string(data)
         handler.add_row(['flower', Date.decode('2005-05-10')])
-        self.assertEqual(handler.search(date=Date.decode('2005-05-10')), [1,3])
+        self.assertEqual(handler.search(date=Date.decode('2005-05-10')),
+                         [1,3])
 
 
     def test_index_del_row(self):
@@ -325,8 +327,8 @@ lastname:Rousseau
 
 class Agenda(Table):
 
-    schema = {'firstname': Unicode(index='text', multiple=False),
-              'lastname': Unicode(multiple=False)}
+    record_schema = {'firstname': Unicode(index='text', multiple=False),
+                     'lastname': Unicode(multiple=False)}
 
 
 class TableTestCase(TestCase):

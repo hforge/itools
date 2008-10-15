@@ -352,12 +352,11 @@ class Table(File):
     # Hash with field names and its types
     # Example: {'firstname': Unicode, 'lastname': Unicode, 'age': Integer}
     # To index some fields the schema should be declared as:
-    # schema = {'firstname': Unicode, 'lastname': Unicode,
-    #           'age': Integer(index='<analyser>')}
+    # record_schema = {'firstname': Unicode, 'lastname': Unicode,
+    #                  'age': Integer(index='<analyser>')}
     # where <analyser> is an itools.xapian analyser or derivate: keyword,
     # book, text, path.
     #######################################################################
-    schema = {}
     record_schema = {}
 
 
@@ -365,8 +364,8 @@ class Table(File):
         # Table schema
         if name == 'ts':
             return DateTime(multiple=False)
-        if name in self.schema:
-            return self.schema[name]
+        if name in self.record_schema:
+            return self.record_schema[name]
         return String(multiple=True)
 
 
@@ -801,11 +800,11 @@ class Table(File):
         - 'columns': the CSV columns used for the mapping between the CSV
           columns and the table schema.
         """
-        schema = self.record_schema
-        for line in parse(data, columns, schema):
+        record_schema = self.record_schema
+        for line in parse(data, columns, record_schema):
             record = {}
             for index, key in enumerate(columns):
-                if key in schema:
+                if key in record_schema:
                     record[key] = line[index]
             self.add_record(record)
 

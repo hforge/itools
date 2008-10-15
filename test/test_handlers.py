@@ -31,8 +31,8 @@ from itools import vfs
 
 class Agenda(Table):
 
-    schema = {'firstname': Unicode(index='text', multiple=False),
-              'lastname': Unicode(multiple=False)}
+    record_schema = {'firstname': Unicode(index='text', multiple=False),
+                     'lastname': Unicode(multiple=False)}
 
 
 
@@ -116,7 +116,8 @@ class FolderTestCase(TestCase):
         folder = self.root.get_handler('tests')
         folder.del_handler('toto.txt')
         folder.set_handler('toto.txt', TextFile())
-        self.assertRaises(Exception, folder.set_handler, 'toto.txt', TextFile())
+        self.assertRaises(Exception, folder.set_handler, 'toto.txt',
+                          TextFile())
 
 
     def test_remove_abort(self):

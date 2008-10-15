@@ -81,6 +81,7 @@ def get_version(mname=None):
     return None
 
 
+DEFAULT_REPOSITORY = 'http://pypi.python.org/pypi'
 
 def setup(ext_modules=[]):
     mname = _getframe(1).f_globals.get('__name__')
@@ -125,15 +126,13 @@ def setup(ext_modules=[]):
 
     class iupload(upload):
 
-        DEFAULT_REPOSITORY = 'http://pypi.python.org/pypi'
-
         user_options = [
             ('username=', 'u', 'username used to log in or to register'),
             ('password=', 'p', 'password'),
             ('repository=', 'r',
              "url of repository [default: %s]" % DEFAULT_REPOSITORY),
             ]
-        boolean_options = ['show-response', 'sign']
+        boolean_options = []
 
 
         def initialize_options(self):
@@ -148,11 +147,11 @@ def setup(ext_modules=[]):
         def finalize_options(self):
             config = SetupConf('setup.conf')
 
-            if self.repository == self.DEFAULT_REPOSITORY:
+            if self.repository == DEFAULT_REPOSITORY:
                 if config.has_value('repository'):
                     self.repository = config.get_value('repository')
             elif self.repository is None:
-                self.repository = self.DEFAULT_REPOSITORY
+                self.repository = DEFAULT_REPOSITORY
             if not self.username:
                 if config.has_value('username'):
                     self.username = config.get_value('username')
@@ -165,8 +164,6 @@ def setup(ext_modules=[]):
 
 
     class iregister(register):
-
-        DEFAULT_REPOSITORY = 'http://pypi.python.org/pypi'
 
         user_options = [
             ('repository=', 'r',
@@ -240,11 +237,11 @@ def setup(ext_modules=[]):
 
         def finalize_options(self):
             config = SetupConf('setup.conf')
-            if self.repository == self.DEFAULT_REPOSITORY:
+            if self.repository == DEFAULT_REPOSITORY:
                 if config.has_value('repository'):
                     self.repository = config.get_value('repository')
             elif self.repository is None:
-                self.repository = self.DEFAULT_REPOSITORY
+                self.repository = DEFAULT_REPOSITORY
             if not self.username:
                 if config.has_value('username'):
                     self.username = config.get_value('username')

@@ -170,40 +170,11 @@ def setup(ext_modules=[]):
                 "url of repository [default: %s]" % DEFAULT_REPOSITORY),
             ('username=', 'u', 'username used to log in or to register'),
             ('password=', 'p', 'password'),
-            ('create-user', None, 'create a new user'),
             ]
 
-        boolean_options = ['create-user']
+        boolean_options = []
 
         def send_metadata(self):
-            if self.create_user:
-                data = {':action': 'user'}
-                data['name'] = self.username
-                data['password'] = self.password
-                data['email'] = ''
-                data['confirm'] = None
-                while data['password'] != data['confirm']:
-                    while not data['password']:
-                        data['password'] = getpass('Password: ')
-                    while not data['confirm']:
-                        data['confirm'] = getpass(' Confirm: ')
-                    if data['password'] != data['confirm']:
-                        data['password'] = ''
-                        data['confirm'] = None
-                        print "Password and confirm don't match!"
-                while not data['email']:
-                    data['email'] = raw_input('EMail: ')
-                code, result = self.post_to_server(data)
-                error_msg = ('Your are now registred, unless the server '
-                             'admin set up a email-confirmation system\n'
-                             'In this case check your emails, and follow '
-                             'the intructions')
-                if code != 200:
-                    print 'Server response (%s): %s' % (code, result)
-                    exit(1)
-                else:
-                    print error_msg
-
             # Get the password
             while not self.password:
                 self.password = getpass('Password: ')
@@ -222,11 +193,13 @@ def setup(ext_modules=[]):
             else:
                 print 'There has been an error while registring the package.'
                 print 'Server responded (%s): %s' % (code, result)
-                exit(1)
+                if code == 401:
+                    exit(2)
+                else:
+                    exit(3)
 
 
         def initialize_options(self):
-            self.create_user = False
             self.show_response = False
             self.list_classifiers = []
 

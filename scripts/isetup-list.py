@@ -31,26 +31,14 @@ if __name__ == '__main__':
     description = ("List available python packages from site-packages")
     parser = OptionParser(usage, version=version, description=description)
 
-    parser.add_option("-q", "--quiet",
-                      dest="quiet", default=False, action="store_true",
-                      help="Will produce less output (don't test import)")
-
 
     (options, args) = parser.parse_args()
 
 
-    for site, packages in packages_infos(options.quiet):
+    for site, packages in packages_infos():
         print "packages in %s" % site
         for name, data, origin in packages:
-            print "%s %-20.20s %-25.25s" % (origin,
-                                              name,
-                                              data['version']),
-
-            if options.quiet:
-                print
-            else:
-                print data['is_imported'] and " OK" or " NOT OK"
-        print
+            print "%s %-20.20s %-25.25s" % (origin, name, data['version'])
 
     print "The first letter tells from where data is read:"
     print "  E: .egg-info, M: standard package, S: itools package"

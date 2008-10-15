@@ -55,28 +55,7 @@ def get_minpackage(dir):
     return None
 
 
-def can_import(package, origin=None):
-    if origin and origin == 'E' and package.has_key('module'):
-        test_import = [package['module']]
-    elif 'provides' in package:
-        test_import = []
-        for provided_module in package['provides']:
-            test_import.append(split_provision(provided_module)[1])
-    else:
-        # We can try the name if the project has not filled provides
-        # field
-        test_import = [package['name']]
-
-    try:
-        for module in test_import:
-            __import__(module)
-    except:
-        return False
-    else:
-        return True
-
-
-def get_installed_info(dir, package_name, check_import=False):
+def get_installed_info(dir, package_name):
     package = {}
 
     info = get_setupconf(join(dir, package_name))
@@ -98,7 +77,7 @@ def get_installed_info(dir, package_name, check_import=False):
     return info
 
 
-def packages_infos(quiet, module_name=None):
+def packages_infos(module_name=None):
     # find the site-packages absolute path
     sites = set([])
     for dir in path:
@@ -184,8 +163,4 @@ def packages_infos(quiet, module_name=None):
     for site in packages:
         packages[site].sort(cmp=lambda a, b: cmp(a.upper(),b.upper()),
                       key=itemgetter(0))
-        if not quiet:
-            for name, package, origin in packages[site]:
-                package['is_imported'] = can_import(package, origin)
         yield (site, packages[site])
-

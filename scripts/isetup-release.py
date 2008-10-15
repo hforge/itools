@@ -33,10 +33,6 @@ if __name__ == "__main__":
     description = ("Automate the release process work (register, upload)")
     parser = OptionParser('%prog', version=version, description=description)
 
-    parser.add_option("-q", "--quiet",
-                      dest="quiet", default=False, action="store_true",
-                      help="Will produce less output (don't test import)")
-
     parser.add_option("-u", "--username",
                   dest="username", default=None,
                   help="username used to log in the server")
@@ -69,7 +65,6 @@ if __name__ == "__main__":
         optionalargs.extend(['-r', options.repository])
 
     # Call iregister
-    print baseargs + ['iregister'] + passwordargs + optionalargs
     ret = call(baseargs + ['iregister'] + passwordargs + optionalargs)
     if ret != 0:
         print "Stopping: command iregister failed"

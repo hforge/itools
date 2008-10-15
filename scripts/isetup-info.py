@@ -31,24 +31,32 @@ if __name__ == '__main__':
     description = ("Print available informations for a python package")
     parser = OptionParser(usage, version=version, description=description)
 
+    parser.add_option("-l", "--list",
+                      dest="list", default=False, action="store_true",
+                      help="List available python packages from site-packages")
+
     (options, args) = parser.parse_args()
 
-    if len(args) != 1:
+    if len(args) != 1 and not options.list:
         parser.error('Please enter a package name')
 
-    module_name = args[0]
+    module_name = args[0] if not options.list else None
 
     found = False
 
     for site, packages in packages_infos(module_name):
-        print "package found in %s" % site
+        if options.list:
+            print "packages in %s" % site
+        else:
+            print "package found in %s" % site
         for name, data, origin in packages:
             found = True
-            print "%s %-20.20s %-25.25s" % (origin,
-                                              name,
-                                              data['version']),
+            print "%s %-20.20s %-25.25s" % (origin, name, data['version'])
 
-        print
+        if options.list:
+            print
+            continue
+
         for key in data:
             if type(data[key]) in [type([]), type(())]:
                 for val in data[key]:

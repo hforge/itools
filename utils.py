@@ -305,10 +305,10 @@ def setup(ext_modules=[]):
 
 pythons_import = __import__
 
-def local_import(name, globals={}, locals={}, fromlist=[]):
+def local_import(name, globals={}, locals={}, fromlist=[], level=-1):
     if name.startswith('itools.'):
         name = name[7:]
-    return pythons_import(name, globals, locals, fromlist)
+    return pythons_import(name, globals, locals, fromlist, level)
 
 
 def start_local_import():

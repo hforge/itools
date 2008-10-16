@@ -38,7 +38,8 @@ from file import File
 from folder import Folder
 from image import Image
 from python import Python
-from registry import register_handler_class, get_handler_class, get_handler
+from registry import register_handler_class, get_handler_class_by_mimetype
+from registry import get_handler_class, get_handler
 from text import TextFile, guess_encoding
 from database import Database, SafeDatabase
 from database import READY, TRANSACTION_PHASE1, TRANSACTION_PHASE2
@@ -66,6 +67,7 @@ __all__ = [
     'TRANSACTION_PHASE1',
     'TRANSACTION_PHASE2',
     # Registry
+    'get_handler_class_by_mimetype',
     'get_handler_class',
     'register_handler_class',
     'get_handler',

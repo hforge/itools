@@ -26,8 +26,7 @@ def register_handler_class(handler_class):
         handler_classes[mimetype] = handler_class
 
 
-def get_handler_class(uri):
-    mimetype = vfs.get_mimetype(uri)
+def get_handler_class_by_mimetype(mimetype):
     if mimetype is not None:
         if mimetype in handler_classes:
             return handler_classes[mimetype]
@@ -36,12 +35,21 @@ def get_handler_class(uri):
         if main_type in handler_classes:
             return handler_classes[main_type]
 
-    if vfs.is_file(uri):
-        from file import File
-        return File
-    elif vfs.is_folder(uri):
-        from folder import Folder
-        return Folder
+    raise ValueError
+
+
+def get_handler_class(uri):
+    mimetype = vfs.get_mimetype(uri)
+
+    try:
+        return get_handler_class_by_mimetype(mimetype)
+    except ValueError:
+        if vfs.is_file(uri):
+            from file import File
+            return File
+        elif vfs.is_folder(uri):
+            from folder import Folder
+            return Folder
 
     raise ValueError
 
@@ -50,6 +58,8 @@ def get_handler(uri):
     """Returns a resource handler from a uri reference.
     """
     if vfs.exists(uri):
-        return get_handler_class(uri)(uri)
+        handler_class = get_handler_class(uri)
+        new_handler = handler_class(uri)
+        return new_handler
 
     raise LookupError, 'the resource "%s" does not exist' % uri

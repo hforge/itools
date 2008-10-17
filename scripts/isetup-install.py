@@ -121,8 +121,8 @@ def prepare(package_spec):
                     releases = repo.release_urls(package_version.name,
                                                  repo_ver)
                     # XXX
-                    # Take only acceptable package type and with python version
-                    # compatible
+                    # Take only acceptable package type and with python
+                    # version compatible
                     for release in releases:
                         # We must check following attributes
                         #release['packagetype'] == 'bdist_egg',
@@ -139,7 +139,8 @@ def prepare(package_spec):
                             repo_candidates.append(release)
         # Any error related to the CheeseShop server
         except (IOError, ExpatError, ProtocolError, socket.error):
-            print "WARNING: %s is not a valid CheeseShop repository" % repo_str
+            print ("WARNING: %s is not a valid CheeseShop repository" %
+                   repo_str)
 
     # Cache listing
     if not exists(CACHE_DIR):
@@ -308,8 +309,8 @@ if __name__ == '__main__':
     description = ("Install package from url")
     parser = OptionParser(usage, version=version, description=description)
 
-    parser.add_option("-i", "--index-url",
-                  dest="index_url", default="",
+    parser.add_option("-r", "--repository",
+                  dest="repository", default="",
                   help="comma separated list of packages index url")
 
     parser.add_option("-c", "--cache-dir",
@@ -343,7 +344,7 @@ if __name__ == '__main__':
 
     CACHE_DIR = options.cache_dir
 
-    INDEX_URLS = options.index_url
+    INDEX_URLS = options.repository
     repositories = INDEX_URLS.split(',') + [PYPI_REPO]
 
     return_code = prepare(PACKAGE_SPEC)

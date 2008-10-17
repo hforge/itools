@@ -23,9 +23,9 @@ from datetime import datetime, timedelta
 from operator import itemgetter
 
 # Import from itools
-from itools.csv import Property, Record as TableRecord, Table
-from itools.csv import parse_table
+from itools.csv import parse_table, Property, Record as TableRecord, Table
 from itools.datatypes import String, Unicode
+from itools.handlers import merge_dics
 from itools.xapian import EqQuery, RangeQuery, OrQuery, AndQuery
 from base import BaseCalendar
 from types import data_properties, Time
@@ -178,8 +178,10 @@ class icalendarTable(BaseCalendar, Table):
 
     record_class = Record
 
-    record_schema = data_properties.copy()
-    record_schema['type'] = String(index='keyword')
+    record_schema = merge_dics(
+        data_properties,
+        type=String(index='keyword'),
+    )
 
 
     #########################################################################

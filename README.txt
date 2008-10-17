@@ -16,10 +16,10 @@ The packages included are:
 
 The scripts included are:
 
-  igettext-build.py       isetup-build.py         isetup-info.py
-  igettext-extract.py     isetup-copyright.py     isetup-install.py
-  igettext-merge.py       isetup-list.py
-  isetup-quality.py       isetup-update-locale.py
+  igettext-build.py       isetup-cache-list.py    isetup-quality.py
+  igettext-extract.py     isetup-copyright.py     isetup-release.py
+  igettext-merge.py       isetup-info.py          isetup-update-locale.py
+  isetup-build.py         isetup-install.py
 
 
 Requirements

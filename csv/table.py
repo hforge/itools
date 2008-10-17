@@ -357,6 +357,7 @@ class Table(File):
     # where <analyser> is an itools.xapian analyser or derivate: keyword,
     # book, text, path.
     #######################################################################
+    schema = {}
     record_schema = {}
 
 

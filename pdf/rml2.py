@@ -97,14 +97,13 @@ class Context(object):
     def __init__(self):
         self.tmp_dir = tempfile.mkdtemp()
         self.init_base_style_sheet()
-        v_globals = globals()
-        self.image_not_found_path = get_abspath(v_globals, 'missing.png')
+        self.image_not_found_path = get_abspath('missing.png')
         self.toc_place = None
         self.cpt_toc_ref = 0
         self.toc_high_level = 3
         self.current_object_path = []
         self.css = None
-        css_file = get_abspath(v_globals, 'html.css')
+        css_file = get_abspath('html.css')
         self.add_css_from_file(css_file)
         self.anchor = []
         socket.setdefaulttimeout(10)
@@ -205,10 +204,10 @@ class Context(object):
     def path_on_start_event(self, tag_name, attributes):
         if isinstance(tag_name, str):
             tag_path = tag_name
-            o_id = attributes.get((URI, 'id'), None)
+            o_id = attributes.get((None, 'id'), None)
             if o_id is not None:
                 tag_path += '#%s' % o_id
-            o_class = attributes.get((URI, 'class'), None)
+            o_class = attributes.get((None, 'class'), None)
             if o_class is not None:
                 tag_path += '.%s' % o_class
             self.current_object_path.append(tag_path)
@@ -372,10 +371,10 @@ def head_stream(stream, _tag_name, _attributes, context):
             content = []
             if tag_name == 'meta':
                 if exist_attribute(attributes, ['name']):
-                    name = attributes.get((URI, 'name'))
+                    name = attributes.get((None, 'name'))
                     if exist_attribute(attributes, ['content']):
                         if name in names:
-                            attr_content = attributes.get((URI, 'content'))
+                            attr_content = attributes.get((None, 'content'))
                             if name == 'keywords':
                                 attr_content = attr_content.split(',')
                                 keywords = ''.join(attr_content).split(' ')
@@ -386,10 +385,10 @@ def head_stream(stream, _tag_name, _attributes, context):
                 continue
             elif tag_name == 'link':
                 if exist_attribute(attributes, ['rel', 'type', 'href']):
-                    rel = attributes.get((URI, 'rel'))
-                    type = attributes.get((URI, 'type'))
+                    rel = attributes.get((None, 'rel'))
+                    type = attributes.get((None, 'type'))
                     if rel == 'stylesheet' and type == 'text/css':
-                        context.add_css_from_file(attributes[(URI, 'href')])
+                        context.add_css_from_file(attributes[(None, 'href')])
             elif tag_name == 'style':
                 continue
             else:
@@ -456,7 +455,7 @@ def body_stream(stream, _tag_name, _attributes, context):
                 story.append(table_stream(stream, tag_name, attributes,
                                           context))
             elif tag_name == 'toc':
-                level = attributes.get((URI, 'level'), None)
+                level = attributes.get((None, 'level'), None)
                 if level is not None:
                     context.toc_high_level = get_int_value(level)
                 context.toc_place = len(story)
@@ -510,7 +509,7 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context,
     end_tag = False
     style_p = context.get_css_props()
 
-    style_attr_value = elt_attributes.get((URI, 'style'))
+    style_attr_value = elt_attributes.get((None, 'style'))
     if style_attr_value:
         context.add_style_attribute(style_attr_value)
     skip = False
@@ -709,12 +708,12 @@ def list_stream(stream, _tag_name, attributes, context, id=0):
     end_tag = False
 
     if _tag_name == 'ul':
-        bullet = get_bullet(attributes.get((URI, 'type'), 'disc'))
+        bullet = get_bullet(attributes.get((None, 'type'), 'disc'))
     else:
         bullet = "<bullet bulletIndent='-0.4cm'><seq id='%s'>.</bullet>"
         bullet = bullet % strid
         if exist_attribute(attributes, ['type']):
-            attrs['type'] = attributes.get((URI, 'type'))
+            attrs['type'] = attributes.get((None, 'type'))
             seq = "<seqFormat id='%s' value='%s'/>" % (strid, attrs['type'])
             prefix.append(seq)
         else:
@@ -844,15 +843,15 @@ def tr_stream(stream, _tag_name, attributes, table, context):
                 cont = paragraph_stream(stream, tag_name, attributes, context)
                 table.push_content(cont)
                 if exist_attribute(attributes, ['width']):
-                    width = attributes.get((URI, 'width'))
+                    width = attributes.get((None, 'width'))
                     table.add_colWidth(width)
                 if exist_attribute(attributes, ['height']):
-                    width = attributes.get((URI, 'height'))
+                    width = attributes.get((None, 'height'))
                     table.add_lineHeight(width)
                 if exist_attribute(attributes, ['colspan', 'rowspan'],
                                    at_least=True):
-                    rowspan = attributes.get((URI, 'rowspan'))
-                    colspan = attributes.get((URI, 'colspan'))
+                    rowspan = attributes.get((None, 'rowspan'))
+                    colspan = attributes.get((None, 'colspan'))
                     stop = table.process_span(rowspan, colspan)
                 else:
                     stop = table.get_current()
@@ -933,15 +932,15 @@ def create_hr(attributes, context):
     attrs['width'] = '100%'
     for key in ('width', 'thickness', 'spaceBefore', 'spaceAfter'):
         if exist_attribute(attributes, [key]):
-            attrs[key] = format_size(attributes.get((URI, key)))
+            attrs[key] = format_size(attributes.get((None, key)))
 
     if exist_attribute(attributes, ['lineCap']):
-        line_cap = attributes.get((URI, 'lineCap'))
+        line_cap = attributes.get((None, 'lineCap'))
         if line_cap not in ('butt', 'round', 'square'):
             line_cap = 'butt'
         attrs['lineCap'] = line_cap
     if exist_attribute(attributes, ['color']):
-        attrs['color'] = get_color(attributes.get((URI, 'color')))
+        attrs['color'] = get_color(attributes.get((None, 'color')))
     attrs.update(get_align(attributes))
     return HRFlowable(**attrs)
 
@@ -952,9 +951,9 @@ def create_img(attributes, context, check_dimension=False):
         If check_dimension is true and the width and the height attributes
         are not set we return None
     """
-    filename = attributes.get((URI, 'src'), None)
-    width = format_size(attributes.get((URI, 'width'), None))
-    height = format_size(attributes.get((URI, 'height'), None))
+    filename = attributes.get((None, 'src'), None)
+    width = format_size(attributes.get((None, 'width'), None))
+    height = format_size(attributes.get((None, 'height'), None))
     if filename is None:
         print u'/!\ Filename is None'
         return None
@@ -1191,7 +1190,7 @@ class Table_Content(object):
 ##############################################################################
 def build_attributes(tag_name, attributes, context):
     context.tag_stack.append([])
-    style_attr_value = attributes.get((URI, 'style'))
+    style_attr_value = attributes.get((None, 'style'))
     if style_attr_value:
         context.add_style_attribute(style_attr_value)
     style_css = context.get_css_props()
@@ -1200,13 +1199,13 @@ def build_attributes(tag_name, attributes, context):
     if tag_name == 'a':
         attrs = build_anchor_attributes(attributes, context)
     elif tag_name == 'big':
-        attrs = {(URI, 'size'): font_value('120%')}
+        attrs = {(None, 'size'): font_value('120%')}
     elif tag_name == 'img':
         attrs = build_img_attributes(attributes, context)
     elif tag_name == 'small':
-        attrs = {(URI, 'size'): font_value('80%')}
+        attrs = {(None, 'size'): font_value('80%')}
     elif tag_name in ('code', 'tt'):
-        attrs = {(URI, 'face'): FONT['monospace']}
+        attrs = {(None, 'face'): FONT['monospace']}
     else:
         attrs = {}
     return attrs
@@ -1217,27 +1216,27 @@ def build_anchor_attributes(attributes, context):
     attrs = {}
     if exist_attribute(attributes, ['href']):
         flag = True
-        href = XMLContent.encode(attributes.get((URI, 'href')))
+        href = XMLContent.encode(attributes.get((None, 'href')))
         # Reencode the entities because the a tags
         # are decoded again by the reportlab para parser.
         if href.startswith('#'):
             ref = href[1:]
             if ref not in context.list_anchor:
-                attrs2 = {(URI, 'name'): ref}
+                attrs2 = {(None, 'name'): ref}
                 context.tag_stack[-1].append(('a',  attrs2))
-        attrs[(URI, 'href')] = href
+        attrs[(None, 'href')] = href
     if exist_attribute(attributes, ['id', 'name'], at_least=True):
-        name = attributes.get((URI, 'id'), attributes.get((URI, 'name')))
+        name = attributes.get((None, 'id'), attributes.get((None, 'name')))
         if name:
             if flag:
-                attrs2 = {(URI, 'name'): name}
+                attrs2 = {(None, 'name'): name}
                 context.tag_stack[-1].append(('a',  attrs2))
             else:
                 flag = True
-                attrs[(URI, 'name')] = name
+                attrs[(None, 'name')] = name
             context.list_anchor.append(name)
     if not flag:
-        attrs[(URI, 'name')] = '_invalid_syntax_:('
+        attrs[(None, 'name')] = '_invalid_syntax_:('
     return attrs
 
 
@@ -1248,11 +1247,11 @@ def build_img_attributes(attributes, context):
         key = key[1]
         if key == 'src':
             file_path, itools_img = check_image(attr_value, context)
-            attrs[(URI, 'src')] = file_path
+            attrs[(None, 'src')] = file_path
         elif key == 'width':
-            attrs[(URI, 'width')] = format_size(attr_value)
+            attrs[(None, 'width')] = format_size(attr_value)
         elif key == 'height':
-            attrs[(URI, 'height')] = format_size(attr_value)
+            attrs[(None, 'height')] = format_size(attr_value)
 
     exist_width = exist_attribute(attrs, ['width'])
     exist_height = exist_attribute(attrs, ['height'])
@@ -1260,8 +1259,8 @@ def build_img_attributes(attributes, context):
         width, height = itools_img.get_size()
         width = width * 1.0
         height = height * 1.0
-        tup_width = (URI, 'width')
-        tup_height = (URI, 'height')
+        tup_width = (None, 'width')
+        tup_height = (None, 'height')
         # Calculate sizes to resize
         if exist_width:
             element = attrs[tup_width]

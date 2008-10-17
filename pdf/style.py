@@ -58,10 +58,10 @@ BODY_MARGINS = {'margin-top': 'topMargin',
 
 def get_align(attributes):
     attrs = {}
-    hAlign = attributes.get((URI, 'align'), None)
+    hAlign = attributes.get((None, 'align'), None)
     if hAlign in H_ALIGN:
         attrs['hAlign'] = hAlign.upper()
-    vAlign = attributes.get((URI, 'valign'), None)
+    vAlign = attributes.get((None, 'valign'), None)
     if vAlign in V_ALIGN:
         attrs['vAlign'] = vAlign.upper()
     return attrs
@@ -102,11 +102,11 @@ def table_border_style(border, start, stop):
 def inline_color_style(key, value, context):
     style = None
     if key == 'color':
-        style = ('span', {(URI, key): get_color_as_hexa(value)})
+        style = ('span', {(None, key): get_color_as_hexa(value)})
     elif key in ('background-color'):
-        style = ('span', {(URI, 'backColor'): get_color_as_hexa(value)})
+        style = ('span', {(None, 'backColor'): get_color_as_hexa(value)})
     return style
-    
+
 
 def inline_text_style(key, value, context):
     style = None
@@ -119,14 +119,14 @@ def inline_text_style(key, value, context):
 def inline_font_style(key, value, context):
     style = None
     if key == 'font-family':
-        style = ('span', {(URI, 'fontName'): FONT.get(value, 'Helvetica')})
+        style = ('span', {(None, 'fontName'): FONT.get(value, 'Helvetica')})
     elif key == 'font-style':
         if value in ('italic', 'oblique'):
             style = ('i', {})
         elif value != 'normal':
             print 'Warning font-style not valid'
     elif key == 'font-size':
-        style = ('span', {(URI, 'fontSize'): font_value(value)})
+        style = ('span', {(None, 'fontSize'): font_value(value)})
     elif key == 'font-weight':
         if len(value):
             if value[0].isalpha() and value in ('bold', 'bolder'):
@@ -338,9 +338,9 @@ def get_table_style(style_css, attributes, start, stop):
             table_style.extend(table_align_style(key, value, start, stop))
 
     for key, value in attributes.iteritems():
-        if key == (URI, 'border') and start == (0, 0) and stop == (-1,-1):
+        if key == (None, 'border') and start == (0, 0) and stop == (-1,-1):
             border.update(p_border_style('border-width', value))
-        if key[0] == URI and key[1] in ATTR_TO_STYLE.keys():
+        if key[0] == None and key[1] in ATTR_TO_STYLE.keys():
             function, style_key = ATTR_TO_STYLE[key[1]]
             table_style.extend(function(style_key, value, start, stop))
     table_style.extend(table_border_style(border, start, stop))

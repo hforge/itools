@@ -53,80 +53,93 @@ class FunctionTestCase(unittest.TestCase):
         data = '<p>TXT <i>TEXT<u>TEXT</u></i></p>'
         stream = XMLParser(data, NAMESPACES)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, context)
+        context.path_on_start_event('p', {})
+        para = paragraph_stream(stream, 'p', {}, context)[0]
         self.assertEqual(para.text, '<para>TXT <i>TEXT<u>TEXT</u></i></para>')
 
         data = '<p>TXT <i>TEXT<u>TEXT</u>TEXT</i></p>'
         stream = XMLParser(data, NAMESPACES)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, context)
+        context.path_on_start_event('p', {})
+        para = paragraph_stream(stream, 'p', {}, context)[0]
         goodanswer = '<para>TXT <i>TEXT<u>TEXT</u>TEXT</i></para>'
         self.assertEqual(para.text, goodanswer)
 
         data = '<p>TXT <i>TEXT<u>TEXT</u></i>TEXT</p>'
         stream = XMLParser(data, NAMESPACES)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, context)
+        context.path_on_start_event('p', {})
+        para = paragraph_stream(stream, 'p', {}, context)[0]
         goodanswer = '<para>TXT <i>TEXT<u>TEXT</u></i>TEXT</para>'
         self.assertEqual(para.text, goodanswer)
 
         data = '<p>TXT <i>TEXT<u>TEXT</u>TEXT</i>TEXT</p>'
         stream = XMLParser(data, NAMESPACES)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, context)
+        context.path_on_start_event('p', {})
+        para = paragraph_stream(stream, 'p', {}, context)[0]
         goodanswer = '<para>TXT <i>TEXT<u>TEXT</u>TEXT</i>TEXT</para>'
         self.assertEqual(para.text, goodanswer)
 
         data = '<p>TXT <i><u>TXT</u></i></p>'
         stream = XMLParser(data, NAMESPACES)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, context)
+        context.path_on_start_event('p', {})
+        para = paragraph_stream(stream, 'p', {}, context)[0]
         self.assertEqual(para.text, '<para>TXT <i><u>TXT</u></i></para>')
 
         data = '<p><i>TEXT<u>TEXT</u></i></p>'
         stream = XMLParser(data, NAMESPACES)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, context)
+        context.path_on_start_event('p', {})
+        para = paragraph_stream(stream, 'p', {}, context)[0]
         self.assertEqual(para.text, '<para><i>TEXT<u>TEXT</u></i></para>')
 
         data = '<p><i>TEXT<u>TEXT</u>TEXT</i></p>'
         stream = XMLParser(data, NAMESPACES)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, context)
+        context.path_on_start_event('p', {})
+        para = paragraph_stream(stream, 'p', {}, context)[0]
         self.assertEqual(para.text, '<para><i>TEXT<u>TEXT</u>TEXT</i></para>')
 
         data = '<p><i>TEXT<u>TEXT</u></i>TEXT</p>'
         stream = XMLParser(data, NAMESPACES)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, context)
+        context.path_on_start_event('p', {})
+        para = paragraph_stream(stream, 'p', {}, context)[0]
         self.assertEqual(para.text, '<para><i>TEXT<u>TEXT</u></i>TEXT</para>')
 
         data = '<p><i>TEXT<u>TEXT</u>TEXT</i>TEXT</p>'
         stream = XMLParser(data, NAMESPACES)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, context)
+        context.path_on_start_event('p', {})
+        para = paragraph_stream(stream, 'p', {}, context)[0]
         goodanswer = '<para><i>TEXT<u>TEXT</u>TEXT</i>TEXT</para>'
         self.assertEqual(para.text, goodanswer)
 
         data = '<p><i><u>TXT</u></i></p>'
         stream = XMLParser(data, NAMESPACES)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, context)
+        context.path_on_start_event('p', {})
+        para = paragraph_stream(stream, 'p', {}, context)[0]
         self.assertEqual(para.text, '<para><i><u>TXT</u></i></para>')
 
         data = '<p>TEXT<sup>TEXT</sup></p>'
         stream = XMLParser(data, NAMESPACES)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, context)
-        self.assertEqual(para.text, '<para>TEXT<super>TEXT</super></para>')
+        context.path_on_start_event('p', {})
+        para = paragraph_stream(stream, 'p', {}, context)[0]
+        self.assertEqual(para.text,
+          '<para>TEXT<super><font fontSize="7.2">TEXT</font></super></para>')
 
 
     def test_formatting_using_span(self):
         context = Context()
-        data = '<p><span style="color: #FF9000">clear syntax</span></p>'
+        data = '<p><span style="color: #ff9000">clear syntax</span></p>'
         stream = XMLParser(data, NAMESPACES)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, context)
+        context.path_on_start_event('p', {})
+        para = paragraph_stream(stream, 'p', {}, context)[0]
         goodanswer = '<para><font color="#ff9000">clear syntax</font></para>'
         self.assertEqual(para.text, goodanswer)
 
@@ -134,7 +147,8 @@ class FunctionTestCase(unittest.TestCase):
         data += '</span>essai</p>'
         stream = XMLParser(data, NAMESPACES)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, context)
+        context.path_on_start_event('p', {})
+        para = paragraph_stream(stream, 'p', {}, context)[0]
         goodanswer = '<para>essai<font color="#ff0000"> essai essai'
         goodanswer += '</font>essai</para>'
         self.assertEqual(para.text, goodanswer)
@@ -143,7 +157,8 @@ class FunctionTestCase(unittest.TestCase):
         data += '</span>essai</p>'
         stream = XMLParser(data, NAMESPACES)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, context)
+        context.path_on_start_event('p', {})
+        para = paragraph_stream(stream, 'p', {}, context)[0]
         goodanswer = '<para>essai <font color="#00ff00">essai essai'
         goodanswer += '</font>essai</para>'
         self.assertEqual(para.text, goodanswer)
@@ -152,7 +167,8 @@ class FunctionTestCase(unittest.TestCase):
         data += 'essai</span> essai</p>'
         stream = XMLParser(data, NAMESPACES)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, context)
+        context.path_on_start_event('p', {})
+        para = paragraph_stream(stream, 'p', {}, context)[0]
         goodanswer = '<para>essai <font color="#0000ff">essai essai</font>'
         goodanswer += ' essai</para>'
         self.assertEqual(para.text, goodanswer)
@@ -161,7 +177,8 @@ class FunctionTestCase(unittest.TestCase):
         data += '<span style="color: #00DD45;">span</span> span</span>.</p>'
         stream = XMLParser(data, NAMESPACES)
         stream.next()
-        para = paragraph_stream(stream, 'p', {}, context)
+        context.path_on_start_event('p', {})
+        para = paragraph_stream(stream, 'p', {}, context)[0]
         goodanswer = '<para>Span <font color="#ff0000">span span <font '
         goodanswer += 'color="#00dd45">span</font> span</font>.</para>'
         self.assertEqual(para.text, goodanswer)

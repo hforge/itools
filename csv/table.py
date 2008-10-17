@@ -364,8 +364,8 @@ class Table(File):
         # Table schema
         if name == 'ts':
             return DateTime(multiple=False)
-        if name in self.record_schema:
-            return self.record_schema[name]
+        if name in self.schema:
+            return self.schema[name]
         return String(multiple=True)
 
 

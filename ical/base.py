@@ -37,7 +37,7 @@ class BaseCalendar(object):
         if not isinstance(property_values, list):
             property_values = [property_values]
 
-        datatype = self.get_datatype(name)
+        datatype = self.get_record_datatype(name)
 
         lines = []
         for property_value in property_values:

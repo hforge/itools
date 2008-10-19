@@ -225,7 +225,7 @@ class icalTestCase(unittest.TestCase):
         event = cal.get_components('VEVENT')[0]
         version = event.get_version()
         for prop_name in version:
-            datatype = cal.get_datatype(prop_name)
+            datatype = cal.get_record_datatype(prop_name)
             if datatype.multiple is False:
                 prop = version[prop_name]
                 property = self.property_to_string(prop_name, prop)
@@ -293,7 +293,7 @@ class icalTestCase(unittest.TestCase):
             for prop_name in version:
                 if prop_name == 'DTSTAMP':
                     continue
-                datatype = cal.get_datatype(prop_name)
+                datatype = cal.get_record_datatype(prop_name)
                 if datatype.multiple is False:
                     prop = version[prop_name]
                     property = self.property_to_string(prop_name, prop)

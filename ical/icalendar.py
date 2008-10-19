@@ -283,7 +283,7 @@ class iCalendar(BaseCalendar, TextFile):
 
 
     @classmethod
-    def get_datatype(cls, name):
+    def get_record_datatype(cls, name):
         # Overriden schema
         if name in cls.schema:
             return cls.schema[name]
@@ -331,7 +331,7 @@ class iCalendar(BaseCalendar, TextFile):
         lines = []
         for name, value, parameters in parse_table(data):
             # Deserialize
-            datatype = self.get_datatype(name)
+            datatype = self.get_record_datatype(name)
             if isinstance(datatype, Unicode):
                 value = datatype.decode(value, encoding=encoding)
             else:
@@ -412,7 +412,7 @@ class iCalendar(BaseCalendar, TextFile):
                 if prop_name == 'UID':
                     uid = prop_value.value
                 else:
-                    datatype = self.get_datatype(prop_name)
+                    datatype = self.get_record_datatype(prop_name)
                     if datatype.multiple is False:
                         # Check the property has not yet being found
                         if prop_name in c_properties:
@@ -492,7 +492,7 @@ class iCalendar(BaseCalendar, TextFile):
         a list with this value.
         """
         for name, value in properties.items():
-            datatype = self.get_datatype(name)
+            datatype = self.get_record_datatype(name)
             if datatype.multiple is False:
                 if isinstance(value, list):
                     msg = 'property "%s" requires only one value' % name
@@ -589,7 +589,7 @@ class iCalendar(BaseCalendar, TextFile):
         name -- name of the property as a string
         values -- Property[]
         """
-        datatype = self.get_datatype(name)
+        datatype = self.get_record_datatype(name)
         if datatype.multiple is False:
             # If the property can occur only once, set the first value of the
             # list, ignoring others
@@ -652,7 +652,7 @@ class iCalendar(BaseCalendar, TextFile):
                 # Test filter
                 expected = kw.get(filter)
                 property_value = version[filter]
-                datatype = self.get_datatype(filter)
+                datatype = self.get_record_datatype(filter)
                 if datatype.multiple is False:
                     if property_value.value != expected:
                         break

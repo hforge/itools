@@ -692,7 +692,7 @@ class icalTableTestCase(unittest.TestCase):
         for prop_name in version:
             if prop_name in ('ts', 'id', 'type', 'UID', 'SEQUENCE'):
                 continue
-            datatype = cal.get_datatype(prop_name)
+            datatype = cal.get_record_datatype(prop_name)
             if getattr(datatype, 'multiple', False) is False:
                 prop = version[prop_name]
                 property = self.property_to_string(prop_name, prop)
@@ -748,7 +748,7 @@ class icalTableTestCase(unittest.TestCase):
                     continue
                 if prop_name == 'DTSTAMP':
                     continue
-                datatype = cal.get_datatype(prop_name)
+                datatype = cal.get_record_datatype(prop_name)
                 if getattr(datatype, 'multiple', False) is False:
                     prop = version[prop_name]
                     property = self.property_to_string(prop_name, prop)

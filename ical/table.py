@@ -202,7 +202,7 @@ class icalendarTable(BaseCalendar, Table):
         lines = []
         for name, value, parameters in parse_table(data):
             # Timestamp (ts), Schema, or Something else
-            datatype = self.get_datatype(name)
+            datatype = self.get_record_datatype(name)
             value = datatype.decode(value)
             property = Property(value, parameters)
             # Append
@@ -283,7 +283,7 @@ class icalendarTable(BaseCalendar, Table):
                 if prop_name == 'UID':
                     uid = prop_value.value
                 else:
-                    datatype = self.get_datatype(prop_name)
+                    datatype = self.get_record_datatype(prop_name)
 
                     if getattr(datatype, 'multiple', False) is True:
                         value = c_properties.setdefault(prop_name, [])
@@ -427,7 +427,7 @@ class icalendarTable(BaseCalendar, Table):
                 # Test filter
                 expected = kw.get(filter)
                 value = version[filter]
-                datatype = self.get_datatype(filter)
+                datatype = self.get_record_datatype(filter)
 
                 if getattr(datatype, 'multiple', False) is True:
                     value = [ isinstance(x, Property) and x or Property(x)

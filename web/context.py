@@ -96,6 +96,16 @@ class Context(object):
             self.accept_language = AcceptLanguageType.decode('')
 
 
+    def get_abspath(self, resource):
+        """Return the absolute path of the resource, from the site root
+        currently published.  In other words, use this method to make links.
+        """
+        # FIXME This method should give an error if the given resource is
+        # not within the site root.
+        site_root = self.site_root
+        return '/%s' % site_root.get_pathto(resource)
+
+
     #######################################################################
     # API / Redirect
     #######################################################################

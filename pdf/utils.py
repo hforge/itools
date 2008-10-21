@@ -31,10 +31,10 @@ from reportlab.platypus.frames import Frame, ShowBoundaryValue
 from reportlab.platypus.paraparser import ParaFrag
 from copy import deepcopy
 
-FRAME_PADDINGS_KEYS = ('topPadding', 'bottomPadding', 'leftPadding', 'rightPadding')
+FRAME_PADDINGS_KEYS = ('topPadding', 'bottomPadding', 'leftPadding',
+                       'rightPadding')
 
 encoding = 'UTF-8'
-URI = 'http://www.w3.org/1999/xhtml'
 
 
 def stream_next(stream):
@@ -96,7 +96,8 @@ def get_color_as_hexa(value, default='#000000'):
             value = '#%s%s%s' % (r, g, b)
     else:
         # Warning getAllNamedColors() uses a singleton
-        value = '#%02x%02x%02x' % colors.toColor(value, colors.black).bitmap_rgb()
+        value = ('#%02x%02x%02x' %
+                 colors.toColor(value, colors.black).bitmap_rgb())
     return value
 
 
@@ -275,7 +276,8 @@ class Paragraph(Platypus_paragraph):
                 self.frags[0].text = self.save_before_change
 
             page_num = self.context.pagenumber
-            is_pagetotal = not self.frags[0].text.find(self.context.pagetotal) < 0
+            is_pagetotal = (
+                    not self.frags[0].text.find(self.context.pagetotal) < 0)
             is_pagenumber = not self.frags[0].text.find(page_num) < 0
             if is_pagenumber or is_pagetotal:
                 if self.save_before_change is None:
@@ -287,7 +289,9 @@ class Paragraph(Platypus_paragraph):
                                                                     page)
                 if is_pagetotal:
                     pages = str(self.context.number_of_pages)
-                    self.frags[0].text = self.frags[0].text.replace(self.context.pagetotal, pages)
+                    self.frags[0].text = (
+                      self.frags[0].text.replace(self.context.pagetotal,
+                                                 pages))
 
         width = getattr(self.style, 'width', None)
         if width is not None:
@@ -334,10 +338,13 @@ class Div(Flowable):
     def draw(self):
         # set position for the frame
         self.pos_x, self.pos_y = self._get_current_position(self.canv)
-        height = self.drawHeight + self.frame_attrs['leftPadding'] + self.frame_attrs['rightPadding']
-        width = self.drawWidth + self.frame_attrs['topPadding'] + self.frame_attrs['bottomPadding']
+        height = (self.drawHeight + self.frame_attrs['leftPadding'] +
+                  self.frame_attrs['rightPadding'])
+        width = (self.drawWidth + self.frame_attrs['topPadding'] +
+                 self.frame_attrs['bottomPadding'])
 
-        self.frame = Frame(self.pos_x, self.pos_y, width, height, **self.frame_attrs)
+        self.frame = Frame(self.pos_x, self.pos_y, width, height,
+                           **self.frame_attrs)
         self.copy_div_story = deepcopy(self.div_story)
         self.frame.addFromList(self.copy_div_story, self.canv)
 
@@ -353,7 +360,8 @@ class Div(Flowable):
                 at_top = False
             else:
                 self.drawHeight += element.getSpaceBefore()
-            flowHeight = element.wrap(availWidth, availHeight-self.drawHeight)[1]
+            flowHeight = element.wrap(availWidth,
+                                      availHeight-self.drawHeight)[1]
             self.drawHeight += flowHeight
             self.drawHeight += element.getSpaceAfter()
         self.drawHeight += self.frame_attrs['topPadding']

@@ -20,11 +20,12 @@ import unittest
 
 # Import from itools
 from itools.pdf import rmltopdf
-from itools.pdf import (rml2topdf_test, normalize, paragraph_stream,
-                        Context, get_color)
-from itools.pdf.rml import (rmltopdf_test, normalize as normalize1,
-                            stream_next, get_color as get_color1,
+from itools.pdf.rml import (rmltopdf_test, normalize as normalize,
+                            stream_next, get_color as get_color,
                             get_page_size_orientation)
+from itools.pdf.rml2 import (rml2topdf_test, normalize as normalize2,
+                             paragraph_stream, Context,
+                             get_color as get_color2)
 from itools.xml import XMLParser, START_ELEMENT, TEXT
 
 # Import from the reportlab library
@@ -43,21 +44,21 @@ class FunctionTestCase(unittest.TestCase):
 
     def test_normalize(self):
         s = u''
-        _s = normalize1(s)
+        _s = normalize(s)
         self.assertEqual(_s, u'')
 
         s = u''
-        _s = normalize1(s, True)
+        _s = normalize(s, True)
         self.assertEqual(_s, u'')
 
         s = u' '
-        _s = normalize1(s, True)
+        _s = normalize(s, True)
         self.assertEqual(_s, u' ')
 
         s = u'\t \t   foo \t \t is \t \t \t not \t      \t bar \t \t \t'
-        _s = normalize1(s, False)
+        _s = normalize(s, False)
         self.assertEqual(_s, u'foo is not bar')
-        _s = normalize1(s, True)
+        _s = normalize(s, True)
         self.assertEqual(_s, u' foo is not bar ')
 
 
@@ -168,25 +169,25 @@ class FunctionTestCase(unittest.TestCase):
 
     def test_get_color(self):
         black = Color(0, 0, 0)
-        color = get_color1('teal')
+        color = get_color('teal')
         rgb1 = color.rgb()
         rgb2 = getattr(colors, 'teal').rgb()
         self.assertEqual(rgb1, rgb2)
 
-        color = get_color1('teal55')
+        color = get_color('teal55')
         self.assertEqual(color.rgb(), black.rgb())
 
-        color = get_color1('(1, 0, 1)')
+        color = get_color('(1, 0, 1)')
         self.assertEqual(color.rgb(), (1.0, 0.0, 1.0))
 
-        color = get_color1('[1,0,0,0]')
+        color = get_color('[1,0,0,0]')
         cmyk_color = CMYKColor(1, 0, 0, 0)
         self.assertEqual(color.rgb(), cmyk_color.rgb())
 
-        color = get_color1('[1,0]')
+        color = get_color('[1,0]')
         self.assertEqual(color.rgb(), black.rgb())
 
-        color = get_color1("PCMYKColor(0,50,85,20,spotName='PANTONE 288 CV')")
+        color = get_color("PCMYKColor(0,50,85,20,spotName='PANTONE 288 CV')")
         self.assertEqual(color.rgb(), black.rgb())
 
 
@@ -398,19 +399,19 @@ class rml2_FunctionTestCase(unittest.TestCase):
 
     def test_normalize(self):
         s = ''
-        _s = normalize(s)
+        _s = normalize2(s)
         self.assertEqual(_s, u'')
 
         s = ' '
-        _s = normalize(s)
+        _s = normalize2(s)
         self.assertEqual(_s, u'')
 
         s = '\t \t   foo \t \t is \t \t \t not \t      \t bar \t \t \t'
-        _s = normalize(s)
+        _s = normalize2(s)
         self.assertEqual(_s, u'foo is not bar')
 
         s = 'Hello \t &nbsp; \t Jo'
-        _s = normalize(s)
+        _s = normalize2(s)
         self.assertEqual(_s, u'Hello &nbsp; Jo')
 
 
@@ -608,11 +609,11 @@ class rml2_ColorTestCase(unittest.TestCase):
 
     def test_hexa_simple(self):
         str = '#abc'
-        color = get_color(str)
+        color = get_color2(str)
         self.assertEqual(color.hexval(), '0xaabbcc')
 
         str = '#aabbcc'
-        color = get_color(str)
+        color = get_color2(str)
         self.assertEqual(color.hexval(), '0xaabbcc')
 
 
@@ -621,39 +622,39 @@ class rml2_ColorTestCase(unittest.TestCase):
                      ('purple', '0x800080'),
                      ('cyan', '0x00ffff')):
             name, expected = data
-            color = get_color(name)
+            color = get_color2(name)
             self.assertEqual(color.hexval(), expected)
 
 
     def test_rgb(self):
         str = 'rgb(230, 100, 180)'
-        color = get_color(str)
+        color = get_color2(str)
         self.assertEqual(color.hexval(), '0xe664b4')
 
 
     def test_wrong_color(self):
         str = ''
-        color = get_color(str)
+        color = get_color2(str)
         self.assertEqual(color.hexval(), '0x000000')
 
         str = '#'
-        color = get_color(str)
+        color = get_color2(str)
         self.assertEqual(color.hexval(), '0x000000')
 
         str = '#abt'
-        color = get_color(str)
+        color = get_color2(str)
         self.assertEqual(color.hexval(), '0x000000')
 
         str = '#aabbtt'
-        color = get_color(str)
+        color = get_color2(str)
         self.assertEqual(color.hexval(), '0x000000')
 
         str = 'cian'
-        color = get_color(str)
+        color = get_color2(str)
         self.assertEqual(color.hexval(), '0x000000')
 
         str = 'rgb(230, 100, 1800)'
-        color = get_color(str)
+        color = get_color2(str)
         self.assertEqual(color.hexval(), '0x000000')
 
 

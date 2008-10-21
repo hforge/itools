@@ -23,7 +23,7 @@ from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT, TA_JUSTIFY
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import cm
 from reportlab.platypus.frames import ShowBoundaryValue
-from utils import (URI, FONT, font_value, format_size, get_color_as_hexa,
+from utils import (FONT, font_value, format_size, get_color_as_hexa,
                    get_color, get_int_value)
 
 P_ALIGNMENTS = {'left': TA_LEFT, 'right': TA_RIGHT, 'center': TA_CENTER,

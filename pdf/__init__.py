@@ -19,17 +19,20 @@ from pdf import PDFFile
 from itools.utils import get_abspath
 from itools.xml import register_dtd
 
-# Import from reportlab
+# There are imports from ReportLab in these imports, so, ...
 try:
     from rml import rmltopdf, stl_rmltopdf
-    from rml2 import (rml2topdf, rml2topdf_test, paragraph_stream,
-                      Context)
-    from utils import normalize, get_color
+    from rml2 import rml2topdf, stl_rml2topdf
 except ImportError:
     print 'You need to install the package "reportlab" to get RML working.'
-    def rmltopdf(*args, **kw):
+
+    # Not implemented, ...
+    def not_implemented(*args, **kw):
         raise NotImplementedError, 'the package "reportlab" must be installed'
-    stl_rmltopdf = rmltopdf
+    rmltopdf = not_implemented
+    stl_rmltopdf = not_implemented
+    rml2topdf = not_implemented
+    stl_rml2topdf = not_implemented
 
 
 __all__ = ['PDFFile', 'rmltopdf', 'stl_rmltopdf',

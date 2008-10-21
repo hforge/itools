@@ -28,6 +28,7 @@ from sys import _getframe
 # Import from itools
 from itools import get_abspath
 from itools.datatypes import XMLContent
+from itools.html import xhtml_uri
 from itools.stl import set_prefix
 from itools.uri import Path
 from itools.uri.uri import get_cwd
@@ -40,7 +41,7 @@ import itools.http
 from doctemplate import MySimpleDocTemplate, MyDocTemplate
 from style import (build_paragraph_style, get_table_style, makeTocHeaderStyle,
                    get_align, build_inline_style, build_frame_style)
-from utils import (FONT, URI, check_image, exist_attribute, font_value,
+from utils import (FONT, check_image, exist_attribute, font_value,
                    format_size, get_color, get_int_value, normalize,
                    Paragraph, pc_float, stream_next, join_content, Div)
 
@@ -57,8 +58,16 @@ from reportlab.platypus import (XPreformatted, PageBreak, Image, Indenter,
 from reportlab.platypus.flowables import HRFlowable
 from reportlab.platypus.tableofcontents import TableOfContents
 
-#import the graphication css parser
+# Import the graphication css parser
 import css
+
+
+######################################################################
+# Initialization
+######################################################################
+
+# URI of a RML2 tags, for the moment, it's xhtml
+rml2_uri = xhtml_uri
 
 # CJK font registration
 # register font for simplified Chinese
@@ -90,6 +99,66 @@ HEADING = ('h1', 'h2', 'h3', 'h4', 'h5', 'h6')
 EMPTY_TAGS = ('br', 'img', 'toc', 'pagebreak', 'pagenumber')
 
 
+
+######################################################################
+# Public API
+######################################################################
+def rml2topdf(filename):
+    """
+      Main function: produces a pdf file from a html-like xml document
+
+      filename: source file
+    """
+
+    import time
+    t0 = time.time()
+    iostream = StringIO()
+    namespaces = {None: rml2_uri}
+    fd = vfs.open(filename)
+    stream = XMLParser(fd.read(), namespaces)
+    fd.close()
+    here = get_cwd().path
+    prefix = here.resolve2(Path(filename))
+    stream = set_prefix(stream, prefix)
+    document_stream(stream, iostream, filename, False)
+    t1 = time.time()
+    print u'Time spent %s s' % (t1 - t0)
+
+    return iostream.getvalue()
+
+
+def stl_rml2topdf(handler, namespace):
+    # XXX TODO
+    pass
+
+
+######################################################################
+# Public test API
+######################################################################
+def rml2topdf_test(value, raw=False):
+    """
+      If raw is False, value is the test file path
+      otherwise it is the string representation of a xml document
+    """
+
+    namespaces = {None: rml2_uri}
+    if raw is False:
+        input = vfs.open(value)
+        data = input.read()
+        input.close()
+    else:
+        data = value
+    stream = XMLParser(data, namespaces)
+    if raw is False:
+        here = get_cwd().path
+        prefix = here.resolve2(Path(value))
+        stream = set_prefix(stream, prefix)
+    return document_stream(stream, StringIO(), 'test', True)
+
+
+######################################################################
+# Private API
+######################################################################
 
 class Context(object):
 
@@ -223,49 +292,6 @@ class Context(object):
 
 
 
-def rml2topdf_test(value, raw=False):
-    """
-      If raw is False, value is the test file path
-      otherwise it is the string representation of a xml document
-    """
-
-    namespaces = {None: URI}
-    if raw is False:
-        input = vfs.open(value)
-        data = input.read()
-        input.close()
-    else:
-        data = value
-    stream = XMLParser(data, namespaces)
-    if raw is False:
-        here = get_cwd().path
-        prefix = here.resolve2(Path(value))
-        stream = set_prefix(stream, prefix)
-    return document_stream(stream, StringIO(), 'test', True)
-
-
-def rml2topdf(filename):
-    """
-      Main function: produces a pdf file from a html-like xml document
-
-      filename: source file
-    """
-
-    import time
-    t0 = time.time()
-    iostream = StringIO()
-    namespaces = {None: URI}
-    fd = vfs.open(filename)
-    stream = XMLParser(fd.read(), namespaces)
-    fd.close()
-    here = get_cwd().path
-    prefix = here.resolve2(Path(filename))
-    stream = set_prefix(stream, prefix)
-    document_stream(stream, iostream, filename, False)
-    t1 = time.time()
-    print u'Time spent %s s' % (t1 - t0)
-
-    return iostream.getvalue()
 
 
 def document_stream(stream, pdf_stream, document_name, is_test=False):

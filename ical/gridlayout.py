@@ -36,7 +36,7 @@ default_template_fd.load_state_from_string(template_string)
 # Template to display events with timetables
 template_string = """
   <td xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:stl="http://xml.itools.org/namespaces/stl"
+      xmlns:stl="http://www.hforge.org/xml-namespaces/stl"
     colspan="${cell/colspan}" rowspan="${cell/rowspan}"
     valign="top" class="color${cell/content/cal}">
       <a stl:if="cell/newurl" class="add_event" href="${cell/newurl}">
@@ -342,9 +342,11 @@ def render_namespace(items, times, with_new_url):
             if with_new_url is True:
                 # Add start time to url used to add events
                 if cell.start:
-                    new_url = '%sstart_time=%s' % (url, Time.encode(cell.start))
+                    new_url = '%sstart_time=%s' % (url,
+                                                   Time.encode(cell.start))
                 if cell.end:
-                    new_url = '%s&end_time=%s' %(new_url, Time.encode(cell.end))
+                    new_url = '%s&end_time=%s' %(new_url,
+                                                 Time.encode(cell.end))
             ns_cell['newurl'] = new_url
             ns_cells.append(ns_cell)
         ns_rows.append({'cells': ns_cells})
@@ -399,7 +401,8 @@ def get_grid_data(data, grid, start_date=None, templates=(None, None),
 
     ######################################################################
     # Build_timegrids_collection with given data:
-    #   (events_with_time, headers, grid, events_without_time, start_date=None)
+    #   (events_with_time, headers, grid, events_without_time,
+    #    start_date=None)
     today = date.today()
     if start_date:
         current_date = start_date
@@ -411,7 +414,8 @@ def get_grid_data(data, grid, start_date=None, templates=(None, None),
 
     cols = []
     for i in range(len(events_with_time)):
-        table, ncols = render_namespace(events_with_time[i], grid, with_new_url)
+        table, ncols = render_namespace(events_with_time[i], grid,
+                                        with_new_url)
         if headers is not None:
             if current_date == today:
                 h_class = 'cal_day_selected'

@@ -89,7 +89,7 @@ class STLTestCase(unittest.TestCase):
 
     def test_if(self):
         handler = XMLFile(string=
-            '<img xmlns:stl="http://xml.itools.org/namespaces/stl"'
+            '<img xmlns:stl="http://www.hforge.org/xml-namespaces/stl"'
             '  stl:if="img" />')
         namespace = {'img': False}
         stream = stl(handler, namespace)
@@ -100,7 +100,7 @@ class STLTestCase(unittest.TestCase):
 
     def test_if_not(self):
         handler = XMLFile(string=
-            '<img xmlns:stl="http://xml.itools.org/namespaces/stl"'
+            '<img xmlns:stl="http://www.hforge.org/xml-namespaces/stl"'
             '  stl:if="not img" />')
         namespace = {'img': True}
         stream = stl(handler, namespace)
@@ -111,7 +111,7 @@ class STLTestCase(unittest.TestCase):
 
     def test_repeat(self):
         handler = XMLFile(string=
-            '<option xmlns:stl="http://xml.itools.org/namespaces/stl"'
+            '<option xmlns:stl="http://www.hforge.org/xml-namespaces/stl"'
             '  stl:repeat="option options" />')
         namespace = {'options': []}
         stream = stl(handler, namespace)

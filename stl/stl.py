@@ -40,7 +40,7 @@ from itools.html import stream_to_str_as_html, stream_to_str_as_xhtml
 
 
 
-stl_uri = 'http://xml.itools.org/namespaces/stl'
+stl_uri = 'http://www.hforge.org/xml-namespaces/stl'
 
 
 ########################################################################
@@ -408,8 +408,8 @@ def process(events, start, end, stack, repeat_stack, encoding):
                 attributes = attributes.copy()
                 expression = attributes.pop(stl_if)
                 if evaluate_if(expression, stack, repeat_stack):
-                    x = process_start_tag(tag_uri, tag_name, attributes, stack,
-                                          repeat_stack, encoding)
+                    x = process_start_tag(tag_uri, tag_name, attributes,
+                                          stack, repeat_stack, encoding)
                     if x is None:
                         skip.add(find_end(events, i))
                     else:
@@ -419,8 +419,8 @@ def process(events, start, end, stack, repeat_stack, encoding):
             # nothing
             else:
                 if tag_uri != stl_uri:
-                    x = process_start_tag(tag_uri, tag_name, attributes, stack,
-                                          repeat_stack, encoding)
+                    x = process_start_tag(tag_uri, tag_name, attributes,
+                                          stack, repeat_stack, encoding)
                     if x is None:
                         skip.add(find_end(events, i))
                     else:

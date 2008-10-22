@@ -29,7 +29,7 @@ from sys import _getframe
 from itools import get_abspath
 from itools.datatypes import XMLContent
 from itools.html import xhtml_uri
-from itools.stl import set_prefix
+from itools.stl import set_prefix, stl
 from itools.uri import Path
 from itools.uri.uri import get_cwd
 from itools.vfs import vfs
@@ -110,26 +110,45 @@ def rml2topdf(filename):
       filename: source file
     """
 
-    import time
-    t0 = time.time()
-    iostream = StringIO()
-    namespaces = {None: rml2_uri}
+    # Read the input
+    none_ns = {None: rml2_uri}
     fd = vfs.open(filename)
-    stream = XMLParser(fd.read(), namespaces)
+    stream = XMLParser(fd.read(), none_ns)
     fd.close()
+
+    # Prefix the stream
     here = get_cwd().path
     prefix = here.resolve2(Path(filename))
     stream = set_prefix(stream, prefix)
+
+    # Make the PDF
+    iostream = StringIO()
     document_stream(stream, iostream, filename, False)
-    t1 = time.time()
-    print u'Time spent %s s' % (t1 - t0)
 
     return iostream.getvalue()
 
 
-def stl_rml2topdf(handler, namespace):
-    # XXX TODO
-    pass
+def stl_rml2topdf(filename, namespace):
+
+    # Make the input stream
+    none_ns  = {None: rml2_uri}
+    fd = vfs.open(filename)
+    stream = XMLParser(fd.read(), none_ns)
+    fd.close()
+
+    # Compute the prefix
+    here = get_cwd().path
+    prefix = here.resolve2(Path(filename))
+
+    # Throw all in the stl
+    stream = stl(prefix=prefix, namespace=namespace, events=stream)
+
+    # Make the PDF
+    iostream = StringIO()
+    document_stream(stream, iostream, filename, False)
+
+    return iostream.getvalue()
+
 
 
 ######################################################################
@@ -305,9 +324,9 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
 
     story = []
     context = Context()
-    state = 0
     informations = {}
 
+    state = 0
     while True:
         event, value, line_number = stream_next(stream)
         if event == None:

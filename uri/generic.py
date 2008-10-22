@@ -411,8 +411,6 @@ def encode_query(query, schema=None):
     The value expected is a dictonary like {'a': 1, 'b': 2}.
     The value returned is a byte string like "a=1&b=2".
     """
-    from itools.datatypes import String
-
     if schema is None:
         schema = {}
 
@@ -431,15 +429,17 @@ def encode_query(query, schema=None):
             continue
 
         # A list
-        datatype = schema.get(key, String)
+        datatype = schema.get(key)
         if isinstance(value, list):
             for x in value:
-                x = datatype.encode(x)
+                if datatype is not None:
+                    x = datatype.encode(x)
                 line.append('%s=%s' % (key, quote_plus(x)))
             continue
 
         # A singleton
-        value = datatype.encode(value)
+        if datatype is not None:
+            value = datatype.encode(value)
         line.append('%s=%s' % (key, quote_plus(value)))
 
     return '&'.join(line)

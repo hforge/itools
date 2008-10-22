@@ -20,6 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     © 2008 Itaapy.
 -->
 
+<!-- STATE: Warning, for the moment, this file is only a draft -->
+
 <grammar
     xmlns="http://relaxng.org/ns/structure/1.0"
     xmlns:pml="http://www.hforge.org/xml-namespaces/pml"

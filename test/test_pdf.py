@@ -23,7 +23,7 @@ from itools.pdf import rmltopdf
 from itools.pdf.rml import (rmltopdf_test, normalize as normalize,
                             stream_next, get_color as get_color,
                             get_page_size_orientation)
-from itools.pdf.rml2 import (rml2topdf_test, normalize as normalize2,
+from itools.pdf.pml import (pmltopdf_test, normalize as normalize2,
                              paragraph_stream, Context,
                              get_color as get_color2)
 from itools.xml import XMLParser, START_ELEMENT, TEXT
@@ -393,9 +393,9 @@ class GlobalTestCase(unittest.TestCase):
 
 
 ######################################################################
-# RML2 part
+# PML part
 ######################################################################
-class rml2_FunctionTestCase(unittest.TestCase):
+class pml_FunctionTestCase(unittest.TestCase):
 
     def test_normalize(self):
         s = ''
@@ -552,16 +552,16 @@ class rml2_FunctionTestCase(unittest.TestCase):
 
 
 
-class rml2_HtmlTestCase(unittest.TestCase):
+class pml_HtmlTestCase(unittest.TestCase):
 
     def test_empty_body(self):
         data = '<html><body></body></html>'
-        story, stylesheet = rml2topdf_test(data, raw=True)
+        story, stylesheet = pmltopdf_test(data, raw=True)
         self.assertEqual(len(story), 0)
 
     def test_paragraph1(self):
         data = '<html><body><p>hello  world</p></body></html>'
-        story, stylesheet = rml2topdf_test(data, raw=True)
+        story, stylesheet = pmltopdf_test(data, raw=True)
         self.assertEqual(len(story), 1)
 
 
@@ -569,17 +569,17 @@ class rml2_HtmlTestCase(unittest.TestCase):
         data = '<html><body><h1>title</h1><p>hello  world</p>'
         data += '<h2>subtitle1</h2><p>Hello</p><h2>subtitle 2</h2>'
         data += '<p>WORLD     <br/>       </p>;)</body></html>'
-        story, stylesheet = rml2topdf_test(data, raw=True)
+        story, stylesheet = pmltopdf_test(data, raw=True)
         self.assertEqual(len(story), 6)
 
 
     def test_paragraph3(self):
-        story, stylesheet = rml2topdf_test('rml2/paragraph.xml')
+        story, stylesheet = pmltopdf_test('pml/paragraph.xml')
         self.assertEqual(len(story), 10)
 
 
     def test_list(self):
-        story, stylesheet = rml2topdf_test('rml2/list.xml')
+        story, stylesheet = pmltopdf_test('pml/list.xml')
         self.assertEqual(len(story), 184)
 
 
@@ -587,24 +587,24 @@ class rml2_HtmlTestCase(unittest.TestCase):
         data = """
         <html>
             <body>
-                <p>hello  world <img src="rml2/itools_powered.gif"
+                <p>hello  world <img src="pml/itools_powered.gif"
                                      alt="itools" />
                 </p>
-                <img src="rml2/itools_powered.jpeg" alt="itools" />
-                <p><img src="rml2/itools_powered.png" alt="itools" /></p>
+                <img src="pml/itools_powered.jpeg" alt="itools" />
+                <p><img src="pml/itools_powered.png" alt="itools" /></p>
             </body>
         </html>"""
-        story, stylesheet = rml2topdf_test(data, raw=True)
+        story, stylesheet = pmltopdf_test(data, raw=True)
         self.assertEqual(len(story), 3)
 
 
     def test_table(self):
-        story, stylesheet = rml2topdf_test('rml2/table.xml')
+        story, stylesheet = pmltopdf_test('pml/table.xml')
         self.assertEqual(len(story), 1)
 
 
 
-class rml2_ColorTestCase(unittest.TestCase):
+class pml_ColorTestCase(unittest.TestCase):
 
 
     def test_hexa_simple(self):

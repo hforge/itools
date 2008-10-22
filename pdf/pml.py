@@ -66,8 +66,8 @@ import css
 # Initialization
 ######################################################################
 
-# URI of a RML2 tags, for the moment, it's xhtml
-rml2_uri = 'http://www.hforge.org/xml-namespaces/pml'
+# URI of a PML tags, for the moment, it's xhtml
+pml_uri = 'http://www.hforge.org/xml-namespaces/pml'
 
 # CJK font registration
 # register font for simplified Chinese
@@ -103,7 +103,7 @@ EMPTY_TAGS = ('br', 'img', 'toc', 'pagebreak', 'pagenumber')
 ######################################################################
 # Public API
 ######################################################################
-def rml2topdf(filename):
+def pmltopdf(filename):
     """
       Main function: produces a pdf file from a html-like xml document
 
@@ -111,7 +111,7 @@ def rml2topdf(filename):
     """
 
     # Read the input
-    none_ns = {None: rml2_uri}
+    none_ns = {None: pml_uri}
     fd = vfs.open(filename)
     stream = XMLParser(fd.read(), none_ns)
     fd.close()
@@ -128,10 +128,10 @@ def rml2topdf(filename):
     return iostream.getvalue()
 
 
-def stl_rml2topdf(filename, namespace):
+def stl_pmltopdf(filename, namespace):
 
     # Make the input stream
-    none_ns  = {None: rml2_uri}
+    none_ns  = {None: pml_uri}
     fd = vfs.open(filename)
     stream = XMLParser(fd.read(), none_ns)
     fd.close()
@@ -154,13 +154,13 @@ def stl_rml2topdf(filename, namespace):
 ######################################################################
 # Public test API
 ######################################################################
-def rml2topdf_test(value, raw=False):
+def pmltopdf_test(value, raw=False):
     """
       If raw is False, value is the test file path
       otherwise it is the string representation of a xml document
     """
 
-    namespaces = {None: rml2_uri}
+    namespaces = {None: pml_uri}
     if raw is False:
         input = vfs.open(value)
         data = input.read()

@@ -23,7 +23,7 @@ from itools.xml import register_dtd, register_namespace
 # There are imports from ReportLab in these imports, so, ...
 try:
     from rml import rmltopdf, stl_rmltopdf
-    from rml2 import rml2topdf, stl_rml2topdf
+    from pml import pmltopdf, stl_pmltopdf
 except ImportError:
     print 'You need to install the package "reportlab" to get RML working.'
 
@@ -32,13 +32,12 @@ except ImportError:
         raise NotImplementedError, 'the package "reportlab" must be installed'
     rmltopdf = not_implemented
     stl_rmltopdf = not_implemented
-    rml2topdf = not_implemented
-    stl_rml2topdf = not_implemented
+    pmltopdf = not_implemented
+    stl_pmltopdf = not_implemented
 
 
 __all__ = ['PDFFile', 'rmltopdf', 'stl_rmltopdf',
-           'rml2topdf', 'rml2topdf_test', 'normalize', 'paragraph_stream',
-           'param']
+                      'pmltopdf', 'stl_pmltopdf']
 
 # Register "rml.dtd"
 register_dtd(get_abspath('rml.dtd'), uri='rml_1_0.dtd')

@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright (C) 2008 David Versmisse <david.versmisse@itaapy.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+    PML RelaxNG schema
+    © 2008 Itaapy.
+-->
+
+<grammar
+    xmlns="http://relaxng.org/ns/structure/1.0"
+    xmlns:pml="http://www.hforge.org/xml-namespaces/pml"
+    datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+
+<start>
+  <ref name="html" />
+</start>
+
+<define name="html">
+  <element name="pml:html">
+    <optional><ref name="head" /></optional>
+    <ref name="body" />
+  </element>
+</define>
+
+<define name="head">
+  <element name="pml:head">
+    <optional><ref name="title" /></optional>
+    <optional><ref name="link" /></optional>
+    <optional><ref name="style" /></optional>
+    <optional><ref name="template" /></optional>
+  </element>
+</define>
+
+<define name="title">
+  <element name="pml:title">
+    <text />
+  </element>
+</define>
+
+<define name="link">
+  <element name="pml:link">
+    <attribute name="pml:rel"><data type="string"/></attribute>
+  </element>
+</define>
+
+<!-- TODO -->
+<define name="style">
+  <element name="pml:style">
+    <empty />
+  </element>
+</define>
+
+<!-- TODO -->
+<define name="template">
+  <element name="pml:template">
+    <empty />
+  </element>
+</define>
+
+<define name="body">
+  <element name="pml:body">
+    <zeroOrMore><ref name="p" /></zeroOrMore>
+    <zeroOrMore><ref name="img" /></zeroOrMore>
+    <zeroOrMore><ref name="b" /></zeroOrMore>
+    <zeroOrMore><ref name="i" /></zeroOrMore>
+    <zeroOrMore><ref name="u" /></zeroOrMore>
+    <zeroOrMore><ref name="hX" /></zeroOrMore>
+    <zeroOrMore><ref name="super" /></zeroOrMore>
+    <zeroOrMore><ref name="sub" /></zeroOrMore>
+    <zeroOrMore><ref name="font" /></zeroOrMore>
+    <zeroOrMore><ref name="ol" /></zeroOrMore>
+    <zeroOrMore><ref name="ul" /></zeroOrMore>
+    <zeroOrMore><ref name="pre" /></zeroOrMore>
+    <zeroOrMore><ref name="dl" /></zeroOrMore>
+    <zeroOrMore><ref name="table" /></zeroOrMore>
+  </element>
+</define>
+
+<define name="p">
+  <element name="pml:p">
+    <text />
+    <zeroOrMore><ref name="b" /></zeroOrMore>
+    <zeroOrMore><ref name="i" /></zeroOrMore>
+    <zeroOrMore><ref name="u" /></zeroOrMore>
+    <zeroOrMore><ref name="super" /></zeroOrMore>
+    <zeroOrMore><ref name="sub" /></zeroOrMore>
+    <zeroOrMore><ref name="font" /></zeroOrMore>
+    <zeroOrMore><ref name="link" /></zeroOrMore>
+    <zeroOrMore><ref name="a" /></zeroOrMore>
+    <zeroOrMore><ref name="br" /></zeroOrMore>
+  </element>
+</define>
+
+<define name="img">
+  <element name="pml:img">
+    <empty />
+  </element>
+</define>
+
+<define name="b">
+  <element name="pml:b">
+    <text />
+  </element>
+</define>
+
+<define name="i">
+  <element name="pml:i">
+    <text />
+  </element>
+</define>
+
+<define name="u">
+  <element name="pml:u">
+    <text />
+  </element>
+</define>
+
+<define name="super">
+  <element name="pml:super">
+    <zeroOrMore><ref name="b" /></zeroOrMore>
+    <zeroOrMore><ref name="i" /></zeroOrMore>
+    <zeroOrMore><ref name="u" /></zeroOrMore>
+    <zeroOrMore><ref name="font" /></zeroOrMore>
+  </element>
+</define>
+
+<define name="sub">
+  <element name="pml:sub">
+    <zeroOrMore><ref name="b" /></zeroOrMore>
+    <zeroOrMore><ref name="i" /></zeroOrMore>
+    <zeroOrMore><ref name="u" /></zeroOrMore>
+    <zeroOrMore><ref name="font" /></zeroOrMore>
+  </element>
+</define>
+
+<define name="font">
+  <element name="pml:font">
+    <text />
+    <zeroOrMore><ref name="b" /></zeroOrMore>
+    <zeroOrMore><ref name="i" /></zeroOrMore>
+    <zeroOrMore><ref name="u" /></zeroOrMore>
+    <zeroOrMore><ref name="super" /></zeroOrMore>
+    <zeroOrMore><ref name="sub" /></zeroOrMore>
+  </element>
+</define>
+
+<define name="ol">
+  <element name="pml:ol">
+    <zeroOrMore><ref name="li" /></zeroOrMore>
+  </element>
+</define>
+
+<define name="ul">
+  <element name="pml:ul">
+    <zeroOrMore><ref name="li" /></zeroOrMore>
+  </element>
+</define>
+
+<define name="li">
+  <element name="pml:li">
+    <text />
+  </element>
+</define>
+
+<define name="pre">
+  <element name="pml:pre">
+    <text />
+    <zeroOrMore><ref name="b" /></zeroOrMore>
+    <zeroOrMore><ref name="i" /></zeroOrMore>
+    <zeroOrMore><ref name="u" /></zeroOrMore>
+    <zeroOrMore><ref name="font" /></zeroOrMore>
+    <zeroOrMore><ref name="super" /></zeroOrMore>
+    <zeroOrMore><ref name="sub" /></zeroOrMore>
+    <zeroOrMore><ref name="link" /></zeroOrMore>
+    <zeroOrMore><ref name="a" /></zeroOrMore>
+  </element>
+</define>
+
+<define name="dl">
+  <element name="pml:dl">
+    <zeroOrMore><ref name="dt" /></zeroOrMore>
+    <zeroOrMore><ref name="dd" /></zeroOrMore>
+  </element>
+</define>
+
+<define name="dt">
+  <element name="pml:dt">
+    <zeroOrMore><ref name="p" /></zeroOrMore>
+    <zeroOrMore><ref name="pre" /></zeroOrMore>
+  </element>
+</define>
+
+<define name="dd">
+  <element name="pml:dd">
+    <zeroOrMore><ref name="p" /></zeroOrMore>
+    <zeroOrMore><ref name="pre" /></zeroOrMore>
+    <zeroOrMore><ref name="ol" /></zeroOrMore>
+    <zeroOrMore><ref name="ul" /></zeroOrMore>
+  </element>
+</define>
+
+<define name="table">
+  <element name="pml:table">
+    <optional><ref name="thead" /></optional>
+    <zeroOrMore><ref name="tr" /></zeroOrMore>
+  </element>
+</define>
+
+<define name="thead">
+  <element name="pml:thead">
+    <zeroOrMore><ref name="tr" /></zeroOrMore>
+  </element>
+</define>
+
+<define name="tr">
+  <element name="pml:tr">
+    <zeroOrMore><ref name="th" /></zeroOrMore>
+    <zeroOrMore><ref name="td" /></zeroOrMore>
+  </element>
+</define>
+
+<define name="th">
+  <element name="pml:th">
+    <text />
+    <zeroOrMore><ref name="ol" /></zeroOrMore>
+    <zeroOrMore><ref name="ul" /></zeroOrMore>
+    <zeroOrMore><ref name="pre" /></zeroOrMore>
+    <zeroOrMore><ref name="dl" /></zeroOrMore>
+    <zeroOrMore><ref name="table" /></zeroOrMore>
+    <zeroOrMore><ref name="img" /></zeroOrMore>
+    <zeroOrMore><ref name="hX" /></zeroOrMore>
+    <zeroOrMore><ref name="p" /></zeroOrMore>
+  </element>
+</define>
+
+<define name="td">
+  <element name="pml:td">
+  </element>
+</define>
+
+<!-- TODO -->
+<define name="a">
+  <element name="pml:a">
+  </element>
+</define>
+
+<define name="br">
+  <element name="pml:br">
+    <empty />
+  </element>
+</define>
+
+<define name="hX">
+  <choice>
+    <ref name="h1" />
+    <ref name="h2" />
+    <ref name="h3" />
+  </choice>
+</define>
+
+<define name="h1">
+  <element name="pml:h1">
+    <text />
+  </element>
+</define>
+
+<define name="h2">
+  <element name="pml:h2">
+    <text />
+  </element>
+</define>
+
+<define name="h3">
+  <element name="pml:h3">
+    <text />
+  </element>
+</define>
+
+</grammar>

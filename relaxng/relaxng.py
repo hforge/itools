@@ -345,7 +345,11 @@ def make_namespaces(context):
         while refs:
             new_refs = []
             for ref in refs:
-                ref = references[ref]
+                try:
+                    ref = references[ref]
+                except KeyError:
+                    raise KeyError, ('the define "%s" is missing in your '
+                                     'relax NG file') % ref
                 attributes.extend(ref['attributes'])
                 new_refs.extend(ref['refs'])
                 is_empty = is_empty and ref['is_empty']
@@ -369,7 +373,11 @@ def make_namespaces(context):
             while refs:
                 new_refs = []
                 for ref in refs:
-                    ref = references[ref]
+                    try:
+                        ref = references[ref]
+                    except KeyError:
+                        raise KeyError, ('the define "%s" is missing in your '
+                                         'relax NG file') % ref
                     new_refs.extend(ref['refs'])
 
                     ref_data = ref['data']

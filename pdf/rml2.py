@@ -67,7 +67,7 @@ import css
 ######################################################################
 
 # URI of a RML2 tags, for the moment, it's xhtml
-rml2_uri = xhtml_uri
+rml2_uri = 'http://www.hforge.org/xml-namespaces/pml'
 
 # CJK font registration
 # register font for simplified Chinese

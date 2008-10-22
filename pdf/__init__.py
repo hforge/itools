@@ -17,7 +17,8 @@
 # Import from itools
 from pdf import PDFFile
 from itools.utils import get_abspath
-from itools.xml import register_dtd
+from itools.relaxng import RelaxNGFile
+from itools.xml import register_dtd, register_namespace
 
 # There are imports from ReportLab in these imports, so, ...
 try:
@@ -39,8 +40,11 @@ __all__ = ['PDFFile', 'rmltopdf', 'stl_rmltopdf',
            'rml2topdf', 'rml2topdf_test', 'normalize', 'paragraph_stream',
            'param']
 
-
 # Register "rml.dtd"
 register_dtd(get_abspath('rml.dtd'), uri='rml_1_0.dtd')
 register_dtd(get_abspath('rml.dtd'), uri='rml.dtd')
+
+# Read the Relax NG schema of PML and register its namespace
+rng_file = RelaxNGFile(get_abspath('PML-schema.rng'))
+rng_file.auto_register()
 

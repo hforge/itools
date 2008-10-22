@@ -401,7 +401,8 @@ def decode_query(data):
     return query
 
 
-def encode_query(query):
+
+def encode_query(query, schema=None):
     """This method encodes a query as defined by the
     "application/x-www-form-urlencoded" content type (see
     http://www.w3.org/TR/REC-html40/interact/forms.html#h-17.13.4.1 for
@@ -410,27 +411,37 @@ def encode_query(query):
     The value expected is a dictonary like {'a': 1, 'b': 2}.
     The value returned is a byte string like "a=1&b=2".
     """
+    from itools.datatypes import String
+
+    if schema is None:
+        schema = {}
+
     line = []
-    for key, value in query.items():
+    for key in query:
+        value = query[key]
         key = quote_plus(key)
+
+        # XXX As of the application/x-www-form-urlencoded content type,
+        # it has not sense to have a parameter without a value, so
+        # "?a&b=1" should be the same as "?b=1" (check the spec).
+        # But for the tests defined by RFC2396 to pass, we must preserve
+        # these empty parameters.
         if value is None:
-            # XXX As of the application/x-www-form-urlencoded content type,
-            # it has not sense to have a parameter without a value, so
-            # "?a&b=1" should be the same as "?b=1" (check the spec).
-            # But for the tests defined by RFC2396 to pass, we must preserve
-            # these empty parameters.
             line.append(key)
-        elif isinstance(value, list):
+            continue
+
+        # A list
+        datatype = schema.get(key, String)
+        if isinstance(value, list):
             for x in value:
-                if isinstance(x, unicode):
-                    x = x.encode('UTF-8')
+                x = datatype.encode(x)
                 line.append('%s=%s' % (key, quote_plus(x)))
-        else:
-            if isinstance(value, unicode):
-                value = value.encode('UTF-8')
-            elif isinstance(value, int):
-                value = str(value)
-            line.append('%s=%s' % (key, quote_plus(value)))
+            continue
+
+        # A singleton
+        value = datatype.encode(value)
+        line.append('%s=%s' % (key, quote_plus(value)))
+
     return '&'.join(line)
 
 

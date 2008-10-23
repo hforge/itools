@@ -47,7 +47,7 @@ class EqQuery(object):
 
 
     def __repr__(self):
-        return "<%s.%s(%s=%r)>" % (self.__module__, self.__class__.__name__,
+        return "<%s.%s(%r, %r)>" % (self.__module__, self.__class__.__name__,
                                    self.name, self.value)
 
 
@@ -69,7 +69,7 @@ class RangeQuery(object):
 
 
     def __repr__(self):
-        return "<%s.%s(%s=[%r:%r])>" % (self.__module__,
+        return "<%s.%s(%r, %r, %r)>" % (self.__module__,
                                         self.__class__.__name__, self.name,
                                         self.left, self.right)
 
@@ -112,7 +112,7 @@ class PhraseQuery(object):
 
 
     def __repr__(self):
-        return "<%s.%s(%s=%r)>" % (self.__module__, self.__class__.__name__,
+        return "<%s.%s(%r, %r)>" % (self.__module__, self.__class__.__name__,
                                    self.name, self.value)
 
 

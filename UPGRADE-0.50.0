@@ -52,7 +52,7 @@ The prototype for the functions "get_abspath", "get_version" and "setup"
 has changed.  The required globals namespace has been dropped:
 
   Before                          Now
-  -----------------------------   -------------
+  -----------------------------   ------------------
   get_abspath(globals(), '...')   get_abspath('...')
   get_version(globals())          get_version()
   setup(globals())                setup()
@@ -61,7 +61,16 @@ has changed.  The required globals namespace has been dropped:
 itools.csv
 =============
 
-The 'Table.get_field_title' method has been moved to ikaaro.
+(1) Some methods and class variables (for the Table class) have been
+renamed:
+
+  Before                          Now
+  -----------------------------   -------------------------
+  Table.schema                    Table.record_schema
+  Table.get_datatype              Table.get_record_datatype
+  Table.get_value                 Table.get_record_value
+
+(2) The 'Table.get_field_title' method has been moved to ikaaro.
 
 
 itools.gettext
@@ -137,9 +146,11 @@ itools.ical
 API changes:
 
   # Before
+  iCalendar.get_datatype
   icalendarTable._load_state_from_ical_file
 
   # Now
+  iCalendar.get_record_datatype
   icalendarTable.load_state_from_ical_file
 
 
@@ -154,7 +165,15 @@ itools.handlers
 itools.stl
 ==========
 
-Now the STL attributes must always be prefixed:
+(1) The URI has changed:
+
+  # Before
+  xmlns:stl="http://xml.itools.org/namespaces/stl"
+
+  # Now
+  xmlns:stl="http://www.hforge.org/xml-namespaces/stl"
+
+(2) Now the STL attributes must always be prefixed:
 
   # Before
   <stl:block repeat="...">

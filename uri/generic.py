@@ -628,11 +628,20 @@ class Reference(object):
         query = copy(self.query)
         for key in kw:
             value = kw[key]
+            # If value is 'None', remove the key
             if value is None:
                 if key in query:
                     del query[key]
-            else:
-                query[key] = value
+                continue
+            # Coerce
+            value_type = type(value)
+            if value_type is int:
+                value = str(value)
+            elif value_type is not str:
+                raise TypeError, 'unexepected %s value' % type
+            # Update
+            query[key] = value
+        # Ok
         return Reference(self.scheme, self.authority, self.path, query,
                          self.fragment)
 

@@ -637,6 +637,8 @@ class Reference(object):
             value_type = type(value)
             if value_type is int:
                 value = str(value)
+            elif value_type is unicode:
+                value = value.encode('utf-8')
             elif value_type is not str:
                 raise TypeError, 'unexepected %s value' % type
             # Update

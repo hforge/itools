@@ -227,7 +227,8 @@ class STLView(BaseView):
     def GET(self, resource, context):
         # Check there is a template defined
         if self.template is None:
-            raise NotImplementedError
+            msg = "%s is missing the 'template' variable"
+            raise NotImplementedError, msg % repr(self.__class__)
 
         # Get the namespace
         namespace = self.get_namespace(resource, context)

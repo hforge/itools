@@ -254,7 +254,9 @@ def check_image(filename, context):
         print u'image not valid : %s' % filename
         filename = context.image_not_found_path
         im = ItoolsImage(filename)
-    return filename, im
+        x, y = im.get_size()
+
+    return filename, (x, y)
 
 
 

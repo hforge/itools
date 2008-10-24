@@ -1023,8 +1023,8 @@ def create_img(attributes, context, check_dimension=False):
 def build_image(filename, width, height, context):
     # determines behavior of both arguments(width, height)
     kind = 'direct'
-    file_path, itools_img = check_image(filename, context)
-    x, y = itools_img.get_size()
+    file_path, size = check_image(filename, context)
+    x, y = size
     #FIXME not like html
     if height or width:
         if isinstance(width, str) and width.endswith('%'):
@@ -1287,11 +1287,10 @@ def build_anchor_attributes(attributes, context):
 
 def build_img_attributes(attributes, context):
     attrs = {}
-    itools_img = None
     for key, attr_value in attributes.iteritems():
         key = key[1]
         if key == 'src':
-            file_path, itools_img = check_image(attr_value, context)
+            file_path, size = check_image(attr_value, context)
             attrs[(None, 'src')] = file_path
         elif key == 'width':
             attrs[(None, 'width')] = format_size(attr_value)
@@ -1301,7 +1300,7 @@ def build_img_attributes(attributes, context):
     exist_width = exist_attribute(attrs, ['width'])
     exist_height = exist_attribute(attrs, ['height'])
     if exist_width or exist_height:
-        width, height = itools_img.get_size()
+        width, height = size
         width = width * 1.0
         height = height * 1.0
         tup_width = (None, 'width')

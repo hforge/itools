@@ -209,7 +209,8 @@ class BaseForm(BaseView):
         # (3) Action
         method = self.get_action_method(resource, context)
         if method is None:
-            raise NotImplementedError
+            msg = "the '%s' method is not defined"
+            raise NotImplementedError, msg % context.form_action
         goto = method(resource, context, form)
 
         # (4) Return

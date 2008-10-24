@@ -187,6 +187,10 @@ class BaseForm(BaseView):
             context.form_action = 'action'
 
 
+    def get_action_method(self, resource, context):
+        return getattr(self, context.form_action, None)
+
+
     def on_form_error(self, resource, context):
         context.message = MSG_MISSING_OR_INVALID
         return self.GET
@@ -203,7 +207,7 @@ class BaseForm(BaseView):
             return self.on_form_error(resource, context)
 
         # (3) Action
-        method = getattr(self, context.form_action, None)
+        method = self.get_action_method(resource, context)
         if method is None:
             raise NotImplementedError
         goto = method(resource, context, form)

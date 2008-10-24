@@ -381,7 +381,7 @@ html_elements = [
     #   http://alistapart.com/articles/byebyeembed
     # FIXME Check the attribute list for <embed>
     EmptyBlockElement('embed', ['quality', 'pluginspage', 'src', 'type',
-        'width']),
+        'width', 'height']),
     ]
 
 

@@ -32,7 +32,7 @@ from itools.datatypes import Boolean, String, URI, is_datatype
 from itools.gettext import MSG
 from itools.uri import Path, Reference
 from itools.xml import XMLError, XMLParser, find_end, stream_to_str
-from itools.xml import START_ELEMENT, END_ELEMENT, TEXT, COMMENT
+from itools.xml import DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, TEXT, COMMENT
 from itools.xml import xmlns_uri, XMLNamespace, ElementSchema
 from itools.xml import register_namespace, get_namespace, get_attr_datatype
 from itools.html import xhtml_uri
@@ -272,7 +272,8 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
 
 
 
-def stl(document=None, namespace={}, prefix=None, events=None, mode='events'):
+def stl(document=None, namespace={}, prefix=None, events=None, mode='events',
+        skip=(DOCUMENT_TYPE,)):
     # Input
     encoding = 'utf-8'
     if events is None:
@@ -291,7 +292,7 @@ def stl(document=None, namespace={}, prefix=None, events=None, mode='events'):
     repeat = NamespaceStack()
 
     # Process
-    stream = process(events, 0, len(events), stack, repeat, encoding)
+    stream = process(events, 0, len(events), stack, repeat, encoding, skip)
 
     # Return
     if mode == 'events':
@@ -353,7 +354,7 @@ def process_start_tag(tag_uri, tag_name, attributes, stack, repeat, encoding):
     return START_ELEMENT, (tag_uri, tag_name, aux), None
 
 
-def process(events, start, end, stack, repeat_stack, encoding):
+def process(events, start, end, stack, repeat_stack, encoding, skip_events):
     skip = set()
     i = start
     while i < end:
@@ -362,8 +363,6 @@ def process(events, start, end, stack, repeat_stack, encoding):
             stream = substitute(value, stack, repeat_stack, encoding)
             for event, value, kk in stream:
                 yield event, value, line
-        elif event == COMMENT:
-            yield event, value, line
         elif event == START_ELEMENT:
             tag_uri, tag_name, attributes = value
             # stl:repeat
@@ -398,7 +397,7 @@ def process(events, start, end, stack, repeat_stack, encoding):
                     if x is not None:
                         yield x
                     for y in process(events, i, loop_end, loop_stack,
-                                     loop_repeat, encoding):
+                                     loop_repeat, encoding, skip_events):
                         yield y
                     if x is not None:
                         yield events[loop_end]
@@ -429,8 +428,8 @@ def process(events, start, end, stack, repeat_stack, encoding):
             tag_uri, tag_name = value
             if tag_uri != stl_uri and i not in skip:
                 yield event, value, line
-        else:
-            yield events[i]
+        elif event not in skip_events:
+            yield event, value, line
         # Next
         i += 1
 

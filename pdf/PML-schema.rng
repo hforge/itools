@@ -83,6 +83,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <zeroOrMore><ref name="i" /></zeroOrMore>
     <zeroOrMore><ref name="u" /></zeroOrMore>
     <zeroOrMore><ref name="hX" /></zeroOrMore>
+    <zeroOrMore><ref name="hr" /></zeroOrMore>
     <zeroOrMore><ref name="super" /></zeroOrMore>
     <zeroOrMore><ref name="sub" /></zeroOrMore>
     <zeroOrMore><ref name="font" /></zeroOrMore>
@@ -92,6 +93,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <zeroOrMore><ref name="dl" /></zeroOrMore>
     <zeroOrMore><ref name="table" /></zeroOrMore>
     <zeroOrMore><ref name="div" /></zeroOrMore>
+    <zeroOrMore><ref name="pagebreak" /></zeroOrMore>
   </element>
 </define>
 
@@ -377,6 +379,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 <define name="pagetotal">
   <element name="pml:pagenumber">
+    <empty />
+  </element>
+</define>
+
+<define name="pagebreak">
+  <element name="pml:pagebreak">
+    <empty />
+  </element>
+</define>
+
+<define name="hr">
+  <element name="pml:hr">
     <empty />
   </element>
 </define>

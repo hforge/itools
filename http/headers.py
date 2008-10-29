@@ -78,9 +78,15 @@ class ContentType(DataType):
 
 class Authorization(DataType):
 
+    # While not strictly authorized by RFC 2617, some clients (like
+    # http://validator.w3.org/checklink) send an 'Authorization' header
+    # with an empty value.  So we support this.
+
     @staticmethod
     def decode(data):
         data = data.lstrip()
+        if data == '':
+            return None, None
         if data.startswith('Basic '):
             b64auth = data[len('Basic '):]
             username, password = decodestring(b64auth).split(':', 1)
@@ -91,6 +97,8 @@ class Authorization(DataType):
     @staticmethod
     def encode(value):
         method, value = value
+        if method is None and value is None:
+            return ''
         if method == 'basic':
             username, password = value
             if ':' in username:

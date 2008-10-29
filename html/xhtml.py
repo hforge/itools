@@ -66,8 +66,8 @@ def stream_to_html(stream, encoding='UTF-8'):
 
 
 def set_content_type(stream, content_type):
-    key1 = (xhtml_uri, 'http-equiv')
-    key2 = (xhtml_uri, 'content')
+    key1 = (None, 'http-equiv')
+    key2 = (None, 'content')
     for event in stream:
         type, value, line = event
         if type == START_ELEMENT:
@@ -84,8 +84,8 @@ def set_content_type(stream, content_type):
                     attributes = {}
                     attributes[key1] = 'Content-Type'
                     attributes[key2] = content_type
-                    yield START_ELEMENT, (xhtml_uri, 'meta', attributes), line
-                    yield END_ELEMENT, (xhtml_uri, 'meta'), line
+                    yield START_ELEMENT, (None, 'meta', attributes), line
+                    yield END_ELEMENT, (None, 'meta'), line
                     continue
         elif type == END_ELEMENT:
             ns_uri, name = value

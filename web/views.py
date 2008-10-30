@@ -167,10 +167,11 @@ class BaseForm(BaseView):
                     cls.append('field_is_missing')
             else:
                 value = self.get_value(resource, context, name, datatype)
-            if isinstance(datatype, Enumerate):
-                value = datatype.get_namespace(value)
-            else:
-                value = datatype.encode(value)
+            if 'field_is_missing' not in cls:
+                if isinstance(datatype, Enumerate):
+                    value = datatype.get_namespace(value)
+                else:
+                    value = datatype.encode(value)
             cls = ' '.join(cls) or None
             namespace[name] = {'name': name, 'value': value, 'class': cls}
         return namespace

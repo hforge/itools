@@ -22,13 +22,14 @@ from marshal import dumps, loads
 from xapian import Database, WritableDatabase, DB_CREATE, DB_OPEN
 from xapian import Document, Enquire, Query, TermGenerator, QueryParser, Stem
 from xapian import MultiValueSorter, sortable_serialise, sortable_unserialise
+from xapian import QueryParser
 
 # Import from itools
 from itools.uri import get_absolute_reference
 from base import CatalogAware
 from fields import get_field
 from queries import (EqQuery, RangeQuery, PhraseQuery, AndQuery, OrQuery,
-                     NotQuery)
+                     NotQuery, StartQuery)
 
 
 
@@ -487,6 +488,24 @@ class Catalog(object):
             else:
                 # If there is a problem => an empty result
                 return Query()
+        elif query_class is StartQuery:
+            # StartQuery, the field must must indexed
+            name = query.name
+            if name in fields:
+                info = fields[name]
+                prefix= info['prefix']
+                field_type = info['type']
+
+                query_parser = QueryParser()
+                query_parser.set_database(self._db)
+                return query_parser.parse_query(_encode(field_type,
+                                                        query.value)+'*',
+                                                query_parser.FLAG_WILDCARD,
+                                                prefix)
+            else:
+                # If there is a problem => an empty result
+                return Query()
+
         # And, Or, Not
         i2x = self._query2xquery
         if query_class is AndQuery:
@@ -495,6 +514,7 @@ class Catalog(object):
             return Query(Query.OP_OR, [i2x(q) for q in query.atoms])
         elif query_class is NotQuery:
             return Query(Query.OP_AND_NOT, Query(''), i2x(query.query))
+
 
 
 

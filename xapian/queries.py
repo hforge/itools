@@ -194,3 +194,19 @@ class NotQuery(object):
                     sub_results[d.__number__] = 1
 
         return sub_results
+
+
+class StartQuery(object):
+    """Warning, for xapian/catalog"""
+
+    def __init__(self, name, value):
+        self.name = name
+        self.value = value
+
+    def search(self, catalog):
+        raise NotImplementedError
+
+    def __repr__(self):
+        return "<%s.%s(%r, %r)>" % (self.__module__, self.__class__.__name__,
+                                   self.name, self.value)
+

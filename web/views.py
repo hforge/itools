@@ -203,7 +203,8 @@ class BaseForm(BaseView):
         # (2) Automatically validate and get the form input (from the schema).
         try:
             form = self._get_form(resource, context)
-        except FormError:
+        except FormError, error:
+            context.form_error = error
             return self.on_form_error(resource, context)
 
         # (3) Action

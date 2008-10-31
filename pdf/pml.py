@@ -23,12 +23,11 @@
 from cStringIO import StringIO
 import tempfile
 import socket
-from sys import _getframe
+import copy
 
 # Import from itools
 from itools import get_abspath
 from itools.datatypes import XMLContent
-from itools.html import xhtml_uri
 from itools.stl import set_prefix, stl
 from itools.uri import Path
 from itools.uri.uri import get_cwd
@@ -46,6 +45,7 @@ from utils import (FONT, check_image, exist_attribute, font_value,
                    Paragraph, pc_float, stream_next, join_content, Div)
 
 #Import from the reportlab Library
+import reportlab
 from reportlab.lib.pagesizes import LETTER
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import cm
@@ -200,7 +200,11 @@ class Context(object):
         self.style_tag_stack = []
         self.num_id = 0
         self.header = None
+        # True if the header as been encapsulated inside a table
+        self.header_as_table = False
         self.footer = None
+        # True if the footer as been encapsulated inside a table
+        self.footer_as_table = False
         self.current_page = 0
         self.number_of_pages = 0
         # set tag substution
@@ -305,6 +309,44 @@ class Context(object):
         self.current_object_path.pop()
 
 
+    def check_image(self, path):
+        if path in self.check_img_cache:
+            return self.check_img_cache[path]
+        data = check_image(path, self)
+        self.check_img_cache[path] = data
+        return data
+
+
+    def has_header(self):
+        return self.header != None
+
+
+    def get_header(self):
+        if self.header_as_table is False:
+            self.header = [Table([[self.header]])]
+            self.header_as_table = True
+        return self.header
+
+
+    def get_header_copy(self):
+        return copy.deepcopy(self.header)
+
+
+    def has_footer(self):
+        return self.footer != None
+
+
+    def get_footer(self):
+        if self.footer_as_table is False:
+            self.footer = [Table([[self.footer]])]
+            self.footer_as_table = True
+        return self.footer
+
+
+    def get_footer_copy(self):
+        return copy.deepcopy(self.footer)
+
+
     def __del__(self):
         if vfs.exists(self.tmp_dir):
             vfs.remove(self.tmp_dir)
@@ -321,6 +363,10 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
 
         Childs : template, stylesheet, story
     """
+
+    # Reportlab, HACK to prevent too many open files error with inline images
+    previous_imageReaderFlags = reportlab.rl_config.imageReaderFlags
+    reportlab.rl_config.imageReaderFlags = -1
 
     story = []
     context = Context()
@@ -399,6 +445,9 @@ def document_stream(stream, pdf_stream, document_name, is_test=False):
         doc.multiBuild(story)
     else:
         doc.build(story)
+
+    # Reportlab, HACK to prevent too many open files error with inline images
+    reportlab.rl_config.imageReaderFlags = previous_imageReaderFlags
 
     if is_test == True:
         return test_data

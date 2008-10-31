@@ -52,6 +52,8 @@ class MySimpleDocTemplate(BaseDocTemplate):
         template_attrs = {'id': 'now', 'frames': [self.main_frame],
                           'pagesize': kw['pagesize']}
         page_template = PageTemplate(**template_attrs)
+        self.platypus_header_calculate = False
+        self.platypus_header_height = None
         self.platypus_footer = None
         self.context = context
         self.addPageTemplates([page_template])
@@ -69,36 +71,40 @@ class MySimpleDocTemplate(BaseDocTemplate):
 
     def beforePage(self):
         self.context.current_page += 1
-        # if margin is changed then we restore the main frame to initial value
-        if self.main_frame_change:
-            self.main_frame.__init__(**self.main_frame_attr)
-            self.main_frame_change = False
-        if self.context.header:
-            self.context.header = [Table([[self.context.header]])]
+        if self.context.has_header():
             # HEADER
+            header = self.context.get_header()
             self.canv.saveState()
 
             # calculate height
-            element = self.context.header[0]
-            height = element.wrap(self.width_available, self.pagesize[1])[1]
-            height += self.frame_attr['topPadding']
-            height += self.frame_attr['bottomPadding']
+            if self.platypus_header_calculate is False:
+                element = header[0]
+                height = element.wrap(self.width_available, self.pagesize[1])[1]
+                height += self.frame_attr['topPadding']
+                height += self.frame_attr['bottomPadding']
+                self.platypus_header_height = height
 
+            height = self.platypus_header_height
             # calculate coordinates
             x = self.leftMargin
             y = self.pagesize[1] - height
 
             # resize margin if the frame is too big
-            if self.topMargin < height:
-                self.topMargin = height
-                # calculate self.width and self.height
-                self._calc()
-                # reset the main frame with new margin
-                self.main_frame.__init__(self.leftMargin, self.bottomMargin,
-                                         self.width, self.height,
-                                         id='normal',
-                                         showBoundary=self.showBoundary)
-                self.main_frame_change = True
+            if self.platypus_header_calculate is False:
+                if self.topMargin < height:
+                    self.platypus_header_calculate = True
+                    self.topMargin = height
+                    # calculate self.width and self.height
+                    self._calc()
+                    # reset the main frame with new margin
+                    self.main_frame_attr['x1'] = self.leftMargin
+                    self.main_frame_attr['y1'] = self.bottomMargin
+                    self.main_frame_attr['width'] = self.width
+                    self.main_frame_attr['height'] = self.height
+                    self.main_frame.__init__(**self.main_frame_attr)
+                else:
+                    # frame is centered in top margin
+                    y -= (self.topMargin - height) / 2
             else:
                 # frame is centered in top margin
                 y -= (self.topMargin - height) / 2
@@ -106,18 +112,16 @@ class MySimpleDocTemplate(BaseDocTemplate):
             # create a frame which will contain all platypus objects defined
             # in the footer
             fh = Frame(x, y, self.width_available, height, **self.frame_attr)
-            fh.addFromList(copy.deepcopy(self.context.header), self.canv)
+            fh.addFromList(self.context.get_header_copy(), self.canv)
             self.canv.restoreState()
 
-        if self.context.footer and self.platypus_footer is None:
-            self.platypus_footer = [Table([[self.context.footer]])]
-
-        if self.platypus_footer is not None:
+        if self.context.has_footer():
             # FOOTER
+            footer = self.context.get_footer()
             self.canv.saveState()
 
             # calculate height
-            element = self.platypus_footer[0]
+            element = footer[0]
             height = element.wrap(self.width_available, self.pagesize[1])[1]
             height += self.frame_attr['topPadding']
             height += self.frame_attr['bottomPadding']
@@ -132,11 +136,11 @@ class MySimpleDocTemplate(BaseDocTemplate):
                 # calculate self.width and self.height
                 self._calc()
                 # reset the main frame with new margin
-                self.main_frame.__init__(self.leftMargin, self.bottomMargin,
-                                         self.width, self.height,
-                                         id='normal',
-                                         showBoundary=self.showBoundary)
-                self.main_frame_change = True
+                self.main_frame_attr['x1'] = self.leftMargin
+                self.main_frame_attr['y1'] = self.bottomMargin
+                self.main_frame_attr['width'] = self.width
+                self.main_frame_attr['height'] = self.height
+                self.main_frame.__init__(**self.main_frame_attr)
             else:
                 # frame is centered in bottom margin
                 y = (self.bottomMargin - height) / 2
@@ -144,10 +148,9 @@ class MySimpleDocTemplate(BaseDocTemplate):
             # create a frame which will contain all platypus objects defined
             # in the footer
             ff = Frame(x, y, self.width_available, height, **self.frame_attr)
-            footer = self.context.footer
-            copy_footer = copy.deepcopy(footer)
-            ff.addFromList(copy_footer, self.canv)
+            ff.addFromList(self.context.get_footer_copy(), self.canv)
             self.canv.restoreState()
+
 
 
 class MyDocTemplate(MySimpleDocTemplate):

@@ -21,10 +21,10 @@ from datetime import datetime
 
 # Import from itools
 from itools.handlers import TextFile, register_handler_class
-from itools.xml import (XMLParser, XML_DECL, START_ELEMENT, END_ELEMENT,
-        TEXT)
-from itools.datatypes import (is_datatype, Unicode, URI, Integer, String,
-        HTTPDate)
+from itools.xml import XMLParser, XML_DECL, START_ELEMENT, END_ELEMENT
+from itools.xml import TEXT, CDATA
+from itools.datatypes import is_datatype, Unicode, URI, Integer, String
+from itools.datatypes import HTTPDate
 
 
 # RSS channel elements definition
@@ -128,7 +128,7 @@ class RSSFile(TextFile):
                     value = decode_element(local_name, data, encoding)
                     stack[-1][local_name] = value
                     data = None
-            elif event == TEXT:
+            elif event == TEXT or event == CDATA:
                 if data is not None:
                     data += value
             elif event == XML_DECL:

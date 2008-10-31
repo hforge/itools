@@ -91,7 +91,12 @@ class Database(object):
         cache = self.cache
         # Check state
         if reference in self.added:
-            return cache[reference]
+            handler = cache[reference]
+            # cls is good ?
+            if cls is not None and not isinstance(handler, cls):
+                raise LookupError, ('conflict with a handler of type "%s"' %
+                                     handler.__class__)
+            return handler
 
         if reference in self.removed:
             raise LookupError, 'the resource "%s" does not exist' % reference
@@ -123,6 +128,10 @@ class Database(object):
         # Lookup the cache
         if reference in cache:
             handler = cache[reference]
+            # cls is good ?
+            if cls is not None and not isinstance(handler, cls):
+                raise LookupError, ('conflict with a handler of type "%s"' %
+                                     handler.__class__)
             # Not yet loaded or new
             if handler.timestamp is None:
                 return handler
@@ -165,7 +174,8 @@ class Database(object):
             raise ValueError, 'unexpected folder (only files can be "set")'
 
         if handler.uri is not None:
-            raise ValueError, 'only new files can be added, try to clone first'
+            raise ValueError, ('only new files can be added, '
+                               'try to clone first')
 
         if self.has_handler(reference):
             raise RuntimeError, MSG_URI_IS_BUSY % reference
@@ -214,7 +224,8 @@ class Database(object):
         if isinstance(handler, Folder):
             # Folder
             for name in handler.get_handler_names():
-                self.copy_handler(source.resolve2(name), target.resolve2(name))
+                self.copy_handler(source.resolve2(name),
+                                  target.resolve2(name))
         else:
             # File
             handler = handler.clone()
@@ -240,7 +251,8 @@ class Database(object):
         if isinstance(handler, Folder):
             # Folder
             for name in handler.get_handler_names():
-                self.move_handler(source.resolve2(name), target.resolve2(name))
+                self.move_handler(source.resolve2(name),
+                                  target.resolve2(name))
         else:
             # Load if needed
             if handler.timestamp is None and handler.dirty is None:

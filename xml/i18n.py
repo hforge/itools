@@ -43,7 +43,7 @@ def _get_attr_context(datatype, tag_name, attr_name):
     else:
         return datatype.context
 
-def _make_start_format(tag_uri, tag_name, attributes):
+def _make_start_format(tag_uri, tag_name, attributes, encoding):
     # We must search for translatable attributes
     result = [(u'<%s' % get_qname(tag_uri, tag_name),
                False, None)]
@@ -58,6 +58,7 @@ def _make_start_format(tag_uri, tag_name, attributes):
         if is_datatype(datatype, Unicode):
             result.append((u' %s="' % qname, False, None))
             context = _get_attr_context(datatype, tag_name, attr_name)
+            value = Unicode.decode(value, encoding=encoding)
             result.append((u'%s' % value, True, context))
             result.append((u'"', False, None))
         else:
@@ -114,7 +115,7 @@ def _get_translatable_blocks(events):
                     id_stack.append(id)
 
                     start_format = _make_start_format(tag_uri, tag_name,
-                                                      attributes)
+                                                      attributes, encoding)
                     message.append_start_format(start_format, id, line)
                     continue
         elif type == END_ELEMENT:

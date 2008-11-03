@@ -258,35 +258,43 @@ class Server(object):
             peer = conn.getpeername()
             self.log_debug('%s:%s => IN' % peer)
 
-        # Read
         try:
+            # Read
             loader.next()
         except StopIteration:
-            response = self.handle_request(request)
-            # Log access
-            self.log_access(conn, request, response)
-            # Ready to send response
-            poll.register(fileno, POLL_WRITE)
-            response = response.to_str()
-            requests[fileno] = conn, response
+            # We are done
+            try:
+                response = self.handle_request(request)
+            except:
+                # Unexpected error
+                # FIXME Send a response to the client (InternalServer, etc.)?
+                self.log_error()
+                conn.close()
+                return
         except BadRequest:
+            # Error loading
             response = Response(status_code=400)
             response.set_body('Bad Request')
-            # Log access
             self.log_error()
-            self.log_access(conn, request, response)
-            # Ready to send response
-            poll.register(fileno, POLL_WRITE)
-            response = response.to_str()
-            requests[fileno] = conn, response
         except:
+            # Unexpected error
+            # FIXME Send a response to the client (BadRequest, etc.)?
             self.log_error()
-            # FIXME Send a response to the client
-            # (BadRequest, etc.)?
             conn.close()
+            return
         else:
+            # Not finished
             requests[fileno] = conn, request, loader
             poll.register(fileno, POLL_READ)
+            return
+
+        # We have a response to send
+        # Log access
+        self.log_access(conn, request, response)
+        # Ready to send response
+        poll.register(fileno, POLL_WRITE)
+        response = response.to_str()
+        requests[fileno] = conn, response
 
 
     def send_response(self, poll, fileno, requests):

@@ -20,8 +20,9 @@ from copy import copy
 
 # Import from itools
 from itools import get_abspath
+from itools.datatypes import String
 from itools.relaxng import RelaxNGFile
-from itools.xml import register_namespace
+from itools.xml import register_namespace, ElementSchema
 from itools.xml.namespaces import has_namespace
 
 
@@ -36,8 +37,9 @@ meta_uri = 'urn:oasis:names:tc:opendocument:xmlns:meta:1.0'
 number_uri = 'urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0'
 office_uri = 'urn:oasis:names:tc:opendocument:xmlns:office:1.0'
 presentation_uri = 'urn:oasis:names:tc:opendocument:xmlns:presentation:1.0'
-text_uri = 'urn:oasis:names:tc:opendocument:xmlns:text:1.0'
+style_uri = 'urn:oasis:names:tc:opendocument:xmlns:style:1.0'
 svg_uri = 'urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0'
+text_uri = 'urn:oasis:names:tc:opendocument:xmlns:text:1.0'
 
 inline_elements = [
     (text_uri, 'page-count'),
@@ -182,6 +184,12 @@ skip_content_elements = [
     ]
 
 
+# XXX These elements appear in openDocuments but they are neither in the doc,
+# nor the relaxNG file!
+unknown_elements = [
+    (style_uri, 'list-level-label-alignment')
+    ]
+
 ###########################################################################
 # Make the namespaces
 ###########################################################################
@@ -202,6 +210,12 @@ for uri, element_name in inline_elements:
 for uri, element_name in skip_content_elements:
     element = namespaces[uri].get_element_schema(element_name)
     element.skip_content = True
+for uri, element_name in unknown_elements:
+    elements = namespaces[uri].elements
+    if element_name in elements:
+        raise ValueError, 'element "%s" is defined twice' % element_name
+    elements[element_name] = ElementSchema(element_name,
+                                           default_datatype=String)
 
 # The namespaces fo and svg have two names
 fo_uri_2 = 'http://www.w3.org/1999/XSL/Format'

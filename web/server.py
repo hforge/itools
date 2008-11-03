@@ -42,14 +42,17 @@ from context import FormError
 from views import BaseView
 
 
-# TODO Support multiple threads
+# Some constants
+POLLIN, POLLPRI, POLLOUT, POLLERR, POLLHUP, POLLNVAL = 1, 2, 4, 8, 16, 32
+POLL_READ = POLLIN | POLLPRI | POLLERR | POLLHUP | POLLNVAL
+POLL_WRITE = POLLOUT | POLLERR | POLLHUP | POLLNVAL
+
 
 ###########################################################################
 # Some pre-historic systems (e.g. Windows and MacOS) don't implement
 # the "poll" sytem call. The code below is a wrapper around the "select"
 # system call that implements the poll's API.
 ###########################################################################
-POLLIN, POLLPRI, POLLOUT, POLLERR, POLLHUP, POLLNVAL = 1, 2, 4, 8, 16, 32
 try:
     from select import poll as Poll
 except ImportError:
@@ -217,6 +220,98 @@ class Server(object):
         self.auth_realm = auth_realm
 
 
+    def new_connection(self, ear, poll, requests):
+        """Registers the connection to read the new request.
+        """
+        # Get the connection and client address
+        try:
+            conn, client_address = ear.accept()
+        except SocketError:
+            return
+
+        # Debug
+        if self.debug_log is not None:
+            peer = conn.getpeername()
+            self.log_debug('%s:%s => New connection' % peer)
+
+        # Set non-blocking mode
+        conn.setblocking(0)
+        # Register the connection
+        fileno = conn.fileno()
+        poll.register(fileno, POLL_READ)
+        # Build and store the request
+        request = Request()
+        wrapper = SocketWrapper(conn)
+        loader = request.non_blocking_load(wrapper)
+        requests[fileno] = conn, request, loader
+
+
+    def load_request(self, poll, fileno, requests):
+        """Loads the request, and when it is done, handles it.
+        """
+        # Load request
+        poll.unregister(fileno)
+        conn, request, loader = requests.pop(fileno)
+
+        # Debug
+        if self.debug_log is not None:
+            peer = conn.getpeername()
+            self.log_debug('%s:%s => IN' % peer)
+
+        # Read
+        try:
+            loader.next()
+        except StopIteration:
+            response = self.handle_request(request)
+            # Log access
+            self.log_access(conn, request, response)
+            # Ready to send response
+            poll.register(fileno, POLL_WRITE)
+            response = response.to_str()
+            requests[fileno] = conn, response
+        except BadRequest:
+            response = Response(status_code=400)
+            response.set_body('Bad Request')
+            # Log access
+            self.log_error()
+            self.log_access(conn, request, response)
+            # Ready to send response
+            poll.register(fileno, POLL_WRITE)
+            response = response.to_str()
+            requests[fileno] = conn, response
+        except:
+            self.log_error()
+            # FIXME Send a response to the client
+            # (BadRequest, etc.)?
+            conn.close()
+        else:
+            requests[fileno] = conn, request, loader
+            poll.register(fileno, POLL_READ)
+
+
+    def send_response(self, poll, fileno, requests):
+        poll.unregister(fileno)
+        conn, response = requests.pop(fileno)
+
+        # Debug
+        if self.debug_log is not None:
+            peer = conn.getpeername()
+            self.log_debug('%s:%s => OUT' % peer)
+
+        # Send the response
+        try:
+            n = conn.send(response)
+        except SocketError:
+            conn.close()
+        else:
+            response = response[n:]
+            if response:
+                poll.register(fileno, POLL_WRITE)
+                requests[fileno] = conn, response
+            else:
+                conn.close()
+
+
     def start(self):
         # Language negotiation
         init_language_selector(select_language)
@@ -239,8 +334,6 @@ class Server(object):
         requests = {ear_fileno: None}
 
         # Set-up polling object
-        POLL_READ = POLLIN | POLLPRI | POLLERR | POLLHUP | POLLNVAL
-        POLL_WRITE = POLLOUT | POLLERR | POLLHUP | POLLNVAL
         poll = Poll()
         poll.register(ear_fileno, POLL_READ)
 
@@ -261,81 +354,11 @@ class Server(object):
                 for fileno, event in poll.poll():
                     if event & POLLIN or event & POLLPRI:
                         if fileno == ear_fileno:
-                            # New request
-                            try:
-                                conn, client_address = ear.accept()
-                            except SocketError:
-                                continue
-                            # Debug
-                            if self.debug_log is not None:
-                                peer = conn.getpeername()
-                                self.log_debug('%s:%s => New connection' % peer)
-                            # Set non-blocking mode
-                            conn.setblocking(0)
-                            # Register the connection
-                            fileno = conn.fileno()
-                            poll.register(fileno, POLL_READ)
-                            # Build and store the request
-                            request = Request()
-                            wrapper = SocketWrapper(conn)
-                            loader = request.non_blocking_load(wrapper)
-                            requests[fileno] = conn, request, loader
+                            self.new_connection(ear, poll, requests)
                         else:
-                            # Load request
-                            poll.unregister(fileno)
-                            conn, request, loader = requests.pop(fileno)
-                            # Debug
-                            if self.debug_log is not None:
-                                peer = conn.getpeername()
-                                self.log_debug('%s:%s => IN' % peer)
-                            # Read
-                            try:
-                                loader.next()
-                            except StopIteration:
-                                response = self.handle_request(request)
-                                # Log access
-                                self.log_access(conn, request, response)
-                                # Ready to send response
-                                poll.register(fileno, POLL_WRITE)
-                                response = response.to_str()
-                                requests[fileno] = conn, response
-                            except BadRequest:
-                                response = Response(status_code=400)
-                                response.set_body('Bad Request')
-                                # Log access
-                                self.log_error()
-                                self.log_access(conn, request, response)
-                                # Ready to send response
-                                poll.register(fileno, POLL_WRITE)
-                                response = response.to_str()
-                                requests[fileno] = conn, response
-                            except:
-                                self.log_error()
-                                # FIXME Send a response to the client
-                                # (BadRequest, etc.)?
-                                conn.close()
-                            else:
-                                requests[fileno] = conn, request, loader
-                                poll.register(fileno, POLL_READ)
+                            self.load_request(poll, fileno, requests)
                     elif event & POLLOUT:
-                        poll.unregister(fileno)
-                        conn, response = requests.pop(fileno)
-                        # Debug
-                        if self.debug_log is not None:
-                            peer = conn.getpeername()
-                            self.log_debug('%s:%s => OUT' % peer)
-                        # Send the response
-                        try:
-                            n = conn.send(response)
-                        except SocketError:
-                            conn.close()
-                        else:
-                            response = response[n:]
-                            if response:
-                                poll.register(fileno, POLL_WRITE)
-                                requests[fileno] = conn, response
-                            else:
-                                conn.close()
+                        self.send_response(poll, fileno, requests)
                     elif event & POLLERR:
                         self.log_debug('ERROR CONDITION')
                         poll.unregister(fileno)

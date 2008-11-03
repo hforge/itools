@@ -30,6 +30,7 @@ from headers import get_type
 from message import Message
 
 
+
 class Request(Message):
 
     def new(self, method='GET', uri='/'):
@@ -92,11 +93,6 @@ class Request(Message):
         self.method = method
         self.request_uri = get_reference(request_uri)
         self.http_version = http_version
-        # Check we support the method
-        if method not in ['GET', 'HEAD', 'POST', 'PUT', 'LOCK', 'UNLOCK']:
-            # Not Implemented (501)
-            message = 'request method "%s" not yet implemented'
-            raise NotImplemented, message % method
 
         # Load headers
         headers = self.headers = {}

@@ -263,12 +263,13 @@ class Server(object):
             loader.next()
         except StopIteration:
             # We are done
+            context = Context(request)
             try:
-                response = self.handle_request(request)
+                response = self.handle_request(context)
             except:
                 # Unexpected error
                 # FIXME Send a response to the client (InternalServer, etc.)?
-                self.log_error()
+                self.log_error(context)
                 conn.close()
                 return
         except BadRequest:
@@ -569,8 +570,9 @@ class Server(object):
     ########################################################################
     # Request handling: main functions
     ########################################################################
-    def handle_request(self, request):
+    def handle_request(self, context):
         # (1) Get the class that will handle the request
+        request = context.request
         method = methods.get(request.method)
         if method is None:
             # FIXME Return the right response
@@ -578,7 +580,6 @@ class Server(object):
             raise NotImplementedError, message % request.method
 
         # (2) Initialize the context
-        context = Context(request)
         self.init_context(context)
 
         # (3) Pass control to the Get method class

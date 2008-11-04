@@ -206,11 +206,10 @@ def build_paragraph_style(context, element, style_css):
     bulletText = None
 
     style_attr['autoLeading'] = 'max'
-    style_attr['borderPadding'] = 0.1 * cm
+    style_attr['borderPadding'] = 0.1 * cm # TODO Check if it's correct
     style_attr['leading'] = 0.3 * cm
 
     #FIXME must be moved in default css
-
     style_attr['spaceBefore'] = 0.3 * cm
     style_attr['spaceAfter'] = 0.3 * cm
     for key, value in style_css.iteritems():
@@ -245,11 +244,15 @@ def build_paragraph_style(context, element, style_css):
             parent_style_name = attr_value
         elif key == 'bulletText':
             bulletText = attr_value
+        elif key == 'style':
+            # TODO parse inline style attribute
+            continue
 
     if element[0] in HEADING + ('toctitle', ):
         parent_style_name = element[0]
     style_name = parent_style_name
     parent_style = context.get_style(parent_style_name)
+
     return (ParagraphStyle(style_name, parent=parent_style, **style_attr),
             bulletText)
 
@@ -299,7 +302,7 @@ def body_margin_style(key, value):
     return style_attr
 
 
-def build_frame_style(context, style_css):
+def build_frame_style(context, style_css, inline_attributes={}):
     frame_attr = {}
     border = {}
     # The default style is Normal

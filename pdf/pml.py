@@ -559,7 +559,7 @@ def body_stream(stream, _tag_name, _attributes, context):
                 story = []
             elif tag_name == 'div':
                 style = context.get_css_props()
-                div_attrs = build_frame_style(context, style)
+                div_attrs = build_frame_style(context, style, attributes)
                 story.append(Div(body_stream(stream, tag_name, attributes,
                                              context), frame_attrs=div_attrs))
             elif tag_name in PHRASE:
@@ -690,7 +690,7 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context,
                         if tmp[-1] == '\n':
                             content[-1] = tmp.rstrip('\n')
             if tag_name == elt_tag_name:
-                if content:
+                if content and content != ['']: # Avoid empty paragraph
                     elt = (elt_tag_name, elt_attributes)
                     para = create_paragraph(context, elt, content, style_p)
                     story.append(para)
@@ -885,6 +885,8 @@ def table_stream(stream, _tag_name, attributes, context):
     start = (0, 0)
     stop = (-1, -1)
     content.add_attributes(get_align(attributes))
+
+    # Get the CSS style
     style_css = context.get_css_props()
     content.extend_style(get_table_style(style_css, attributes, start, stop))
 

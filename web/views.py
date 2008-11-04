@@ -192,8 +192,7 @@ class BaseForm(BaseView):
 
 
     def on_form_error(self, resource, context):
-        error = context.form_error
-        context.message = str(error)
+        context.message = context.form_error.get_message()
         return self.GET
 
 

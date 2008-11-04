@@ -25,10 +25,10 @@ from time import strptime
 
 # Import from itools
 from itools.datatypes import String
-from itools.gettext import MSG
 from itools.http import Response, Unauthorized
 from itools.i18n import AcceptLanguageType
 from itools.uri import get_reference
+from messages import ERROR
 
 
 
@@ -41,12 +41,16 @@ class FormError(StandardError):
           self.invalid = invalid or []
 
 
-    def __str__(self):
-        error = MSG(u'${missing} field(s) are missing and ${invalid} '
-                    u'field(s) are invalid')
+    def get_message(self):
+        msg = (u'${missing} field(s) are missing and ${invalid} field(s) '
+               u'are invalid')
         missing = len(self.missing)
         invalid = len(self.invalid)
-        return error.gettext(missing=missing, invalid=invalid)
+        return ERROR(msg, missing=missing, invalid=invalid)
+
+
+    def __str__(self):
+        return self.get_message().gettext()
 
 
 

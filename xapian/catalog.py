@@ -359,9 +359,15 @@ class Catalog(object):
                     self._prefix_nb += 1
                 fields[name] = info
                 fields_modified = True
-            # Verifications
-            #else:
-            # XXX Question: must we verify if the informations are the same?
+            # Or verifications, ...
+            else:
+                info = fields[name]
+                if ((field.is_stored != ('is_stored' in info)) or
+                    (field.is_indexed != ('is_indexed' in info))):
+                    raise ValueError, (('You have already used the name "%s" '
+                                        'for a field, but with an other '
+                                        'is_stored/is_indexed combination') %
+                                        name)
 
             # doc_fields can be greater than doc_values
             if doc_values.get(name) is None:
@@ -370,7 +376,6 @@ class Catalog(object):
                 else:
                     raise IndexError, 'the first value is compulsory'
 
-            info = fields[name]
 
             # Is stored ?
             if field.is_stored:
@@ -489,7 +494,7 @@ class Catalog(object):
                 # If there is a problem => an empty result
                 return Query()
         elif query_class is StartQuery:
-            # StartQuery, the field must must indexed
+            # StartQuery, the field must be indexed
             name = query.name
             if name in fields:
                 info = fields[name]

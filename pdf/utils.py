@@ -233,7 +233,7 @@ def get_color(value):
 ##############################################################################
 def check_image(filename, context):
     if vfs.exists(filename) is False:
-        print u"/!\ The filename '%s' doesn't exist" % filename
+        print u"(WW) The filename '%s' doesn't exist" % filename
         filename = context.image_not_found_path
     im = None
     if filename.startswith('http://'):

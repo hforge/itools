@@ -1049,11 +1049,11 @@ def create_img(attributes, context, check_dimension=False):
     width = format_size(attributes.get((None, 'width'), None))
     height = format_size(attributes.get((None, 'height'), None))
     if filename is None:
-        print u'/!\ Filename is None'
+        print u'(WW) Filename is None'
         return None
 
     if check_dimension and width == None and height == None:
-        print u'/!\ Cannot add an image inside a td without predefined size'
+        print u'(WW) Cannot add an image inside a td without predefined size'
         return None
 
     try:

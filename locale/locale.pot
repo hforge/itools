@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2008-08-19 16:08+CET\n"
+"POT-Creation-Date: 2008-11-04 17:11+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,92 +15,250 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../xapian/fields.py:157
+#: ../xml/i18n.py:59
+msgid " %s=\""
+msgstr ""
+
+#: ../xml/i18n.py:65
+msgid " %s=\"%s\""
+msgstr ""
+
+#: ../xml/i18n.py:63
+msgid "\""
+msgstr ""
+
+#: ../rest/rest.py:79
+#: ../rest/rest.py:100
+#: ../rest/rest.py:155
+#: ../rest/rest.py:177
+#: ../rest/parser.py:109
+#: ../rest/parser.py:371
+msgid "#"
+msgstr ""
+
+#: ../web/context.py:45
+msgid "${missing} field(s) are missing and ${invalid} field(s) are invalid"
+msgstr ""
+
+#: ../xml/i18n.py:62
+#: ../tmx/tmx.py:229
+msgid "%s"
+msgstr ""
+
+#: ../xapian/fields.py:158
 msgid "%s%s"
 msgstr ""
 
-#: ../ical/icalendar.py:1030
+#: ../pdf/pml.py:1056
+msgid "(WW) Cannot add an image inside a td without predefined size"
+msgstr ""
+
+#: ../pdf/pml.py:1052
+msgid "(WW) Filename is None"
+msgstr ""
+
+#: ../pdf/utils.py:236
+msgid "(WW) The filename '%s' doesn't exist"
+msgstr ""
+
+#: ../rest/parser.py:102
+#: ../rest/parser.py:103
+#: ../rest/parser.py:278
+#: ../rest/parser.py:311
+#: ../rest/parser.py:317
+#: ../rest/parser.py:324
+#: ../rest/parser.py:324
+msgid "*"
+msgstr ""
+
+#: ../handlers/utils.py:48
+#: ../handlers/utils.py:49
+#: ../handlers/utils.py:53
+#: ../handlers/utils.py:54
+#: ../rest/parser.py:104
+#: ../rest/parser.py:105
+msgid "-"
+msgstr ""
+
+#: ../ical/table.py:316
+#: ../ical/icalendar.py:312
 msgid "-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN"
 msgstr ""
 
-#: ../ical/icalendar.py:1029
+#: ../handlers/utils.py:48
+#: ../rest/parser.py:106
+#: ../rest/parser.py:107
+msgid "."
+msgstr ""
+
+#: ../rest/parser.py:235
+msgid ".."
+msgstr ""
+
+#: ../xml/i18n.py:69
+msgid "/>"
+msgstr ""
+
+#: ../pdf/rml.py:2016
+msgid "0"
+msgstr ""
+
+#: ../pdf/rml.py:2015
+msgid "1"
+msgstr ""
+
+#: ../ical/table.py:315
+#: ../ical/icalendar.py:311
 msgid "2.0"
 msgstr ""
 
-#: ../i18n/base.py:54
+#: ../rest/parser.py:156
+msgid ":"
+msgstr ""
+
+#: ../rest/parser.py:150
+msgid "::"
+msgstr ""
+
+#: ../xml/i18n.py:48
+msgid "<%s"
+msgstr ""
+
+#: ../gettext/po.py:140
+msgid "</g>"
+msgstr ""
+
+#: ../gettext/po.py:136
+msgid "<g id='%d'>"
+msgstr ""
+
+#: ../gettext/po.py:134
+msgid "<x id='%d'/>"
+msgstr ""
+
+#: ../xml/i18n.py:71
+msgid ">"
+msgstr ""
+
+#: ../i18n/base.py:56
 msgid "???"
 msgstr ""
 
-#: ../handlers/utils.py:20
-msgid "AAAAAAaaaaaaCcEEEEeeeeIIIIiiiiNnOOOOOOooooooUUUUuuuuYŸyy"
+#: ../handlers/utils.py:48
+msgid "@"
 msgstr ""
 
-#: ../scripts/isetup-quality.py:60
+#: ../handlers/utils.py:21
+msgid "AAAAAAAaaaaaaaCcEEEEEeeeeeIIIIIiiiiiNnOOOOOOOoooooooUUUUUuuuuuYYYyyy"
+msgstr ""
+
+#: ../handlers/utils.py:29
+msgid "AE"
+msgstr ""
+
+#: ../scripts/isetup-quality.py:63
 msgid "Aesthetics (and readibility)"
 msgstr ""
 
-#: ../scripts/isetup-quality.py:54
+#: ../scripts/isetup-quality.py:58
 msgid "Code length"
 msgstr ""
 
-#: ../scripts/isetup-quality.py:501
+#: ../scripts/isetup-quality.py:505
 msgid "Error, your project must be versioned with GIT."
 msgstr ""
 
 #: ../csv/table.py:280
-msgid "Error: Field %s must be unique, value %s is already used."
-msgstr ""
-
-#: ../scripts/isetup-quality.py:68
-msgid "Exception handling"
-msgstr ""
-
-#: ../scripts/isetup-quality.py:74
-msgid "Import problems"
-msgstr ""
-
-#: ../i18n/segment.py:19
-msgid "Inc"
-msgstr ""
-
-#: ../scripts/isetup-quality.py:56
-msgid "Number of lines"
-msgstr ""
-
-#: ../scripts/isetup-quality.py:57
-msgid "Number of tokens"
-msgstr ""
-
-#: ../scripts/isetup-quality.py:493
-msgid "Options --worse and --show-lines are mutually exclusive."
-msgstr ""
-
-#: ../scripts/isetup-quality.py:491
-msgid "Please give at least one file to analyse."
-msgstr ""
-
-#: ../scripts/isetup-quality.py:504
-msgid "Please install matplotlib."
-msgstr ""
-
-#: ../web/messages.py:21
-msgid "Some required fields are missing, or some values are not valid. Please correct them and continue."
-msgstr ""
-
-#: ../scripts/isetup-quality.py:495
-msgid "The option --show-lines takes one file in parameter."
-msgstr ""
-
-#: ../scripts/isetup-quality.py:284
-msgid "This file is perfect !"
-msgstr ""
-
-#: ../pdf/rml.py:1440
-msgid "X%sX"
+msgid "Error: Field \"$field\" must be unique, value \"$value\" is already used."
 msgstr ""
 
 #: ../scripts/isetup-quality.py:71
+msgid "Exception handling"
+msgstr ""
+
+#: ../scripts/isetup-quality.py:77
+msgid "Import problems"
+msgstr ""
+
+#: ../scripts/isetup-quality.py:59
+msgid "Number of lines"
+msgstr ""
+
+#: ../scripts/isetup-quality.py:59
+msgid "Number of tokens"
+msgstr ""
+
+#: ../handlers/utils.py:31
+msgid "OE"
+msgstr ""
+
+#: ../scripts/isetup-quality.py:497
+msgid "Options --worse and --show-lines are mutually exclusive."
+msgstr ""
+
+#: ../scripts/isetup-quality.py:495
+msgid "Please give at least one file to analyse."
+msgstr ""
+
+#: ../scripts/isetup-quality.py:508
+msgid "Please install matplotlib."
+msgstr ""
+
+#: ../web/messages.py:51
+msgid "Some required fields are missing, or some values are not valid. Please correct them and continue."
+msgstr ""
+
+#: ../scripts/isetup-quality.py:499
+msgid "The option --show-lines takes one file in parameter."
+msgstr ""
+
+#: ../scripts/isetup-quality.py:288
+msgid "This file is perfect !"
+msgstr ""
+
+#: ../pdf/rml.py:1441
+msgid "X%sX"
+msgstr ""
+
+#: ../rest/parser.py:288
+#: ../rest/parser.py:292
+msgid "["
+msgstr ""
+
+#: ../rest/parser.py:361
+msgid "]"
+msgstr ""
+
+#: ../handlers/utils.py:48
+#: ../rest/parser.py:299
+#: ../rest/parser.py:349
+#: ../rest/parser.py:368
+msgid "_"
+msgstr ""
+
+#: ../rest/parser.py:283
+#: ../rest/parser.py:331
+#: ../rest/parser.py:337
+#: ../rest/parser.py:337
+#: ../rest/parser.py:344
+#: ../rest/parser.py:391
+msgid "`"
+msgstr ""
+
+#: ../handlers/utils.py:28
+msgid "ae"
+msgstr ""
+
+#: ../i18n/oracle.py:77
+msgid "al"
+msgstr ""
+
+#: ../scripts/isetup-quality.py:73
 msgid "all exceptions are catched"
+msgstr ""
+
+#: ../i18n/oracle.py:78
+msgid "an"
 msgstr ""
 
 #: ../i18n/oracle.py:79
@@ -111,11 +269,15 @@ msgstr ""
 msgid "are"
 msgstr ""
 
+#: ../i18n/oracle.py:81
+msgid "as"
+msgstr ""
+
 #: ../i18n/oracle.py:82
 msgid "aux"
 msgstr ""
 
-#: ../scripts/isetup-quality.py:63
+#: ../scripts/isetup-quality.py:65
 msgid "bad indented"
 msgstr ""
 
@@ -131,6 +293,10 @@ msgstr ""
 msgid "con"
 msgstr ""
 
+#: ../i18n/oracle.py:86
+msgid "de"
+msgstr ""
+
 #: ../i18n/oracle.py:87
 msgid "del"
 msgstr ""
@@ -143,12 +309,25 @@ msgstr ""
 msgid "donc"
 msgstr ""
 
+#: ../i18n/oracle.py:90
+#: ../i18n/oracle.py:149
+msgid "du"
+msgstr ""
+
+#: ../i18n/oracle.py:91
+msgid "el"
+msgstr ""
+
 #: ../i18n/oracle.py:92
 msgid "elle"
 msgstr ""
 
 #: ../i18n/oracle.py:93
 msgid "elles"
+msgstr ""
+
+#: ../i18n/oracle.py:94
+msgid "es"
 msgstr ""
 
 #: ../i18n/oracle.py:95
@@ -159,7 +338,11 @@ msgstr ""
 msgid "está"
 msgstr ""
 
-#: ../pdf/rml.py:2015
+#: ../i18n/oracle.py:97
+msgid "et"
+msgstr ""
+
+#: ../pdf/rml.py:2016
 msgid "false"
 msgstr ""
 
@@ -171,19 +354,59 @@ msgstr ""
 msgid "hay"
 msgstr ""
 
+#: ../i18n/oracle.py:100
+msgid "he"
+msgstr ""
+
+#: ../i18n/oracle.py:101
+msgid "i"
+msgstr ""
+
+#: ../i18n/oracle.py:102
+msgid "il"
+msgstr ""
+
 #: ../i18n/oracle.py:103
 msgid "ils"
+msgstr ""
+
+#: ../pdf/utils.py:254
+msgid "image not valid : %s"
+msgstr ""
+
+#: ../i18n/oracle.py:104
+msgid "in"
+msgstr ""
+
+#: ../i18n/oracle.py:105
+msgid "is"
+msgstr ""
+
+#: ../i18n/oracle.py:106
+msgid "it"
+msgstr ""
+
+#: ../i18n/oracle.py:107
+msgid "je"
 msgstr ""
 
 #: ../i18n/oracle.py:108
 msgid "las"
 msgstr ""
 
+#: ../i18n/oracle.py:109
+msgid "le"
+msgstr ""
+
 #: ../i18n/oracle.py:111
 msgid "les"
 msgstr ""
 
-#: ../scripts/isetup-quality.py:64
+#: ../i18n/oracle.py:110
+msgid "lo"
+msgstr ""
+
+#: ../scripts/isetup-quality.py:66
 msgid "longer than 79 characters"
 msgstr ""
 
@@ -195,12 +418,41 @@ msgstr ""
 msgid "mais"
 msgstr ""
 
+#: ../i18n/oracle.py:114
+#: ../pdf/rml.py:2016
+msgid "no"
+msgstr ""
+
 #: ../i18n/oracle.py:115
 msgid "nous"
 msgstr ""
 
 #: ../i18n/oracle.py:116
 msgid "nueva"
+msgstr ""
+
+#: ../i18n/oracle.py:117
+msgid "o"
+msgstr ""
+
+#: ../handlers/utils.py:30
+msgid "oe"
+msgstr ""
+
+#: ../i18n/oracle.py:118
+msgid "of"
+msgstr ""
+
+#: ../i18n/oracle.py:119
+msgid "on"
+msgstr ""
+
+#: ../i18n/oracle.py:120
+msgid "or"
+msgstr ""
+
+#: ../i18n/oracle.py:121
+msgid "où"
 msgstr ""
 
 #: ../i18n/oracle.py:122
@@ -227,8 +479,16 @@ msgstr ""
 msgid "she"
 msgstr ""
 
-#: ../scripts/isetup-quality.py:70
+#: ../handlers/utils.py:32
+msgid "ss"
+msgstr ""
+
+#: ../scripts/isetup-quality.py:72
 msgid "string exceptions are used"
+msgstr ""
+
+#: ../i18n/oracle.py:128
+msgid "su"
 msgstr ""
 
 #: ../i18n/oracle.py:129
@@ -251,8 +511,20 @@ msgstr ""
 msgid "this"
 msgstr ""
 
-#: ../pdf/rml.py:2014
+#: ../i18n/oracle.py:134
+msgid "to"
+msgstr ""
+
+#: ../pdf/rml.py:2015
 msgid "true"
+msgstr ""
+
+#: ../i18n/oracle.py:135
+msgid "tu"
+msgstr ""
+
+#: ../i18n/oracle.py:136
+msgid "un"
 msgstr ""
 
 #: ../i18n/oracle.py:137
@@ -275,15 +547,19 @@ msgstr ""
 msgid "where"
 msgstr ""
 
-#: ../scripts/isetup-quality.py:62
+#: ../scripts/isetup-quality.py:64
 msgid "with tabulators"
 msgstr ""
 
-#: ../scripts/isetup-quality.py:65
+#: ../scripts/isetup-quality.py:67
 msgid "with trailing whitespaces"
 msgstr ""
 
-#: ../pdf/rml.py:2014
+#: ../i18n/oracle.py:142
+msgid "y"
+msgstr ""
+
+#: ../pdf/rml.py:2015
 msgid "yes"
 msgstr ""
 
@@ -295,6 +571,124 @@ msgstr ""
 msgid "your"
 msgstr ""
 
+#: ../rest/parser.py:294
+#: ../rest/parser.py:384
+msgid "|"
+msgstr ""
+
+#: ../i18n/oracle.py:44
+msgid "¡"
+msgstr ""
+
+#: ../i18n/oracle.py:45
+msgid "¿"
+msgstr ""
+
 #: ../handlers/utils.py:19
-msgid "ÄÅÁÀÂÃäåáàâãÇçÉÈÊËéèêëÍÌÎÏíìîïÑñÖÓÒÔÕØöóòôõøÜÚÙÛüúùûÝŸýÿ"
+msgid "ÄÅÁÀÂÃĀäåáàâãāÇçÉÈÊËĒéèêëēÍÌÎÏĪíìîïīÑñÖÓÒÔÕØŌöóòôõøōÜÚÙÛŪüúùûūÝŸȲýÿȳ"
+msgstr ""
+
+#: ../handlers/utils.py:29
+msgid "Æ"
+msgstr ""
+
+#: ../handlers/utils.py:32
+#: ../i18n/oracle.py:47
+msgid "ß"
+msgstr ""
+
+#: ../i18n/oracle.py:76
+msgid "à"
+msgstr ""
+
+#: ../i18n/oracle.py:46
+msgid "ä"
+msgstr ""
+
+#: ../handlers/utils.py:28
+msgid "æ"
+msgstr ""
+
+#: ../i18n/oracle.py:48
+msgid "ç"
+msgstr ""
+
+#: ../i18n/oracle.py:49
+msgid "ê"
+msgstr ""
+
+#: ../i18n/oracle.py:50
+msgid "í"
+msgstr ""
+
+#: ../i18n/oracle.py:51
+msgid "ñ"
+msgstr ""
+
+#: ../i18n/oracle.py:53
+msgid "ó"
+msgstr ""
+
+#: ../i18n/oracle.py:52
+msgid "ö"
+msgstr ""
+
+#: ../i18n/oracle.py:55
+msgid "ú"
+msgstr ""
+
+#: ../i18n/oracle.py:54
+msgid "ü"
+msgstr ""
+
+#: ../handlers/utils.py:31
+msgid "Œ"
+msgstr ""
+
+#: ../handlers/utils.py:30
+msgid "œ"
+msgstr ""
+
+#: ../i18n/oracle.py:68
+msgid "、"
+msgstr ""
+
+#: ../i18n/oracle.py:69
+msgid "。"
+msgstr ""
+
+#: ../i18n/oracle.py:62
+msgid "が"
+msgstr ""
+
+#: ../i18n/oracle.py:60
+msgid "で"
+msgstr ""
+
+#: ../i18n/oracle.py:66
+msgid "と"
+msgstr ""
+
+#: ../i18n/oracle.py:61
+msgid "に"
+msgstr ""
+
+#: ../i18n/oracle.py:58
+msgid "の"
+msgstr ""
+
+#: ../i18n/oracle.py:59
+msgid "は"
+msgstr ""
+
+#: ../i18n/oracle.py:63
+msgid "へ"
+msgstr ""
+
+#: ../i18n/oracle.py:65
+msgid "や"
+msgstr ""
+
+#: ../i18n/oracle.py:64
+msgid "を"
 msgstr ""

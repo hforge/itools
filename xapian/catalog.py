@@ -28,8 +28,19 @@ from xapian import QueryParser
 from itools.uri import get_absolute_reference
 from base import CatalogAware
 from fields import get_field
-from queries import (EqQuery, RangeQuery, PhraseQuery, AndQuery, OrQuery,
-                     NotQuery, StartQuery)
+from queries import EqQuery, RangeQuery, PhraseQuery, AndQuery, OrQuery
+from queries import NotQuery, StartQuery
+
+
+# Constants
+FLAG_WILDCARD = QueryParser.FLAG_WILDCARD
+OP_AND = Query.OP_AND
+OP_AND_NOT = Query.OP_AND_NOT
+OP_OR = Query.OP_OR
+OP_PHRASE= Query.OP_PHRASE
+OP_VALUE_RANGE = Query.OP_VALUE_RANGE
+OP_VALUE_GE = Query.OP_VALUE_GE
+OP_VALUE_LE = Query.OP_VALUE_LE
 
 
 
@@ -82,14 +93,14 @@ def _make_PhraseQuery(field_type, value, prefix):
         stemmer = Stem('en')
         for word in field.split(value):
             words.append(prefix+stemmer(word[0]))
-        return Query(Query.OP_PHRASE, words)
+        return Query(OP_PHRASE, words)
 
     # A common field or a new field
     field = get_field(field_type)
     words = []
     for word in field.split(value):
         words.append(prefix+word[0])
-    return Query(Query.OP_PHRASE, words)
+    return Query(OP_PHRASE, words)
 
 
 
@@ -123,7 +134,7 @@ def _get_xquery(catalog, query=None, **kw):
                     # If there is a problem, ...
                     raise ValueError, 'the field "%s" is not indexed' % name
             else:
-                xquery = Query(Query.OP_AND, xqueries)
+                xquery = Query(OP_AND, xqueries)
         else:
             xquery = Query('')
     else:
@@ -176,8 +187,7 @@ class SearchResults(object):
         catalog = self._catalog
 
         xquery = _get_xquery(catalog, query, **kw)
-        return SearchResults(catalog, Query(Query.OP_AND,
-                                            [self._xquery, xquery]))
+        return SearchResults(catalog, Query(OP_AND, [self._xquery, xquery]))
 
 
     def get_documents(self, sort_by=None, reverse=False, start=0, size=0):
@@ -479,14 +489,14 @@ class Catalog(object):
                 left = query.left
                 right = query.right
                 if left is not None and right is not None:
-                    return Query(Query.OP_VALUE_RANGE, value,
+                    return Query(OP_VALUE_RANGE, value,
                                  _encode(field_type, query.left),
                                  _encode(field_type, query.right))
                 elif left is not None and right is None:
-                    return Query(Query.OP_VALUE_GE, value,
+                    return Query(OP_VALUE_GE, value,
                                  _encode(field_type, query.left))
                 elif left is None and right is not None:
-                    return Query(Query.OP_VALUE_LE, value,
+                    return Query(OP_VALUE_LE, value,
                                  _encode(field_type, query.right))
                 else:
                     return Query('')
@@ -503,9 +513,9 @@ class Catalog(object):
 
                 query_parser = QueryParser()
                 query_parser.set_database(self._db)
-                return query_parser.parse_query(_encode(field_type,
-                                                        query.value)+'*',
-                                                query_parser.FLAG_WILDCARD,
+
+                query_string = _encode(field_type, query.value) + '*'
+                return query_parser.parse_query(query_string, FLAG_WILDCARD,
                                                 prefix)
             else:
                 # If there is a problem => an empty result
@@ -514,12 +524,11 @@ class Catalog(object):
         # And, Or, Not
         i2x = self._query2xquery
         if query_class is AndQuery:
-            return Query(Query.OP_AND, [i2x(q) for q in query.atoms])
+            return Query(OP_AND, [ i2x(q) for q in query.atoms ])
         elif query_class is OrQuery:
-            return Query(Query.OP_OR, [i2x(q) for q in query.atoms])
+            return Query(OP_OR, [ i2x(q) for q in query.atoms ])
         elif query_class is NotQuery:
-            return Query(Query.OP_AND_NOT, Query(''), i2x(query.query))
-
+            return Query(OP_AND_NOT, Query(''), i2x(query.query))
 
 
 

@@ -19,7 +19,6 @@
 from itools.datatypes import Enumerate
 from itools.stl import stl
 from context import FormError
-from messages import MSG_MISSING_OR_INVALID
 
 
 
@@ -193,7 +192,8 @@ class BaseForm(BaseView):
 
 
     def on_form_error(self, resource, context):
-        context.message = MSG_MISSING_OR_INVALID
+        error = context.form_error
+        context.message = str(error)
         return self.GET
 
 

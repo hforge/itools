@@ -20,9 +20,8 @@ from marshal import dumps, loads
 
 # Import from xapian
 from xapian import Database, WritableDatabase, DB_CREATE, DB_OPEN
-from xapian import Document, Enquire, Query, TermGenerator, QueryParser, Stem
+from xapian import Document, Enquire, Query, TermGenerator, Stem
 from xapian import MultiValueSorter, sortable_serialise, sortable_unserialise
-from xapian import QueryParser
 
 # Import from itools
 from itools.uri import get_absolute_reference
@@ -33,7 +32,6 @@ from queries import NotQuery, StartQuery
 
 
 # Constants
-FLAG_WILDCARD = QueryParser.FLAG_WILDCARD
 OP_AND = Query.OP_AND
 OP_AND_NOT = Query.OP_AND_NOT
 OP_OR = Query.OP_OR
@@ -511,12 +509,13 @@ class Catalog(object):
                 prefix= info['prefix']
                 field_type = info['type']
 
-                query_parser = QueryParser()
-                query_parser.set_database(self._db)
+                # Get all the terms starting with "value"
+                terms = self._db.allterms(prefix + _encode(field_type,
+                                                           query.value))
+                terms = [term.term for term in terms]
 
-                query_string = _encode(field_type, query.value) + '*'
-                return query_parser.parse_query(query_string, FLAG_WILDCARD,
-                                                prefix)
+                # And return a "OR" query
+                return Query(OP_OR, terms)
             else:
                 # If there is a problem => an empty result
                 return Query()

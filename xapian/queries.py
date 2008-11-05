@@ -142,7 +142,9 @@ class PhraseQuery(BaseQuery):
 class AndQuery(BaseQuery):
 
     def __init__(self, *args):
-        self.atoms = args
+        self.atoms = [ x for x in args if not isinstance(x, AllQuery) ]
+        if len(self.atoms) == 0 and len(args) > 0:
+            self.atoms = [AllQuery()]
 
 
     def search(self, catalog):
@@ -166,7 +168,12 @@ class AndQuery(BaseQuery):
 class OrQuery(BaseQuery):
 
     def __init__(self, *args):
-        self.atoms = args
+        for x in args:
+            if isinstance(x, AllQuery):
+                self.atoms = [x]
+                break
+        else:
+            self.atoms = args
 
 
     def search(self, catalog):

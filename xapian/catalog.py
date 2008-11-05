@@ -28,7 +28,7 @@ from itools.uri import get_absolute_reference
 from base import CatalogAware
 from fields import get_field
 from queries import EqQuery, RangeQuery, PhraseQuery, AndQuery, OrQuery
-from queries import NotQuery, StartQuery
+from queries import AllQuery, NotQuery, StartQuery
 
 
 # Constants
@@ -466,67 +466,80 @@ class Catalog(object):
         """
         query_class = query.__class__
         fields = self._fields
+
+        # All Query
+        if query_class is AllQuery:
+            return Query('')
+
+        # EqQuery = PhraseQuery, the field must be indexed
         if query_class is EqQuery or query_class is PhraseQuery:
-            # EqQuery = PhraseQuery, the field must be indexed
             name = query.name
-            if name in fields:
-                info = fields[name]
-                return _make_PhraseQuery(info['type'], query.value,
-                                         info['prefix'])
-            else:
-                # If there is a problem => an empty result
+            # If there is a problem => an empty result
+            if name not in fields:
                 return Query()
-        elif query_class is RangeQuery:
-            # RangeQuery, the field must be stored
+            info = fields[name]
+            return _make_PhraseQuery(info['type'], query.value,
+                                     info['prefix'])
+
+        # RangeQuery, the field must be stored
+        if query_class is RangeQuery:
             name = query.name
-            if name in fields:
-                info = fields[name]
-                field_type = info['type']
-                value = info['value']
-
-                left = query.left
-                right = query.right
-                if left is not None and right is not None:
-                    return Query(OP_VALUE_RANGE, value,
-                                 _encode(field_type, query.left),
-                                 _encode(field_type, query.right))
-                elif left is not None and right is None:
-                    return Query(OP_VALUE_GE, value,
-                                 _encode(field_type, query.left))
-                elif left is None and right is not None:
-                    return Query(OP_VALUE_LE, value,
-                                 _encode(field_type, query.right))
-                else:
-                    return Query('')
-            else:
-                # If there is a problem => an empty result
-                return Query()
-        elif query_class is StartQuery:
-            # StartQuery, the field must be indexed
-            name = query.name
-            if name in fields:
-                info = fields[name]
-                prefix= info['prefix']
-                field_type = info['type']
-
-                # Get all the terms starting with "value"
-                terms = self._db.allterms(prefix + _encode(field_type,
-                                                           query.value))
-                terms = [term.term for term in terms]
-
-                # And return a "OR" query
-                return Query(OP_OR, terms)
-            else:
-                # If there is a problem => an empty result
+            # If there is a problem => an empty result
+            if name not in fields:
                 return Query()
 
-        # And, Or, Not
+            info = fields[name]
+            field_type = info['type']
+            value = info['value']
+
+            left = query.left
+            right = query.right
+
+            # Case 1: no limits, return everything
+            if left is None and right is None:
+                return Query('')
+
+            # Case 2: left limit only
+            if right is None:
+                return Query(OP_VALUE_GE, value, _encode(field_type, left))
+
+            # Case 3: right limit only
+            if left is None:
+                return Query(OP_VALUE_LE, value, _encode(field_type, right))
+
+            # Case 4: left and right
+            return Query(OP_VALUE_RANGE, value, _encode(field_type, left),
+                         _encode(field_type, right))
+
+        # StartQuery, the field must be indexed
+        if query_class is StartQuery:
+            name = query.name
+            # If there is a problem => an empty result
+            if name not in fields:
+                return Query()
+            info = fields[name]
+            prefix= info['prefix']
+            field_type = info['type']
+
+            # Get all the terms starting with "value"
+            terms = self._db.allterms(prefix + _encode(field_type,
+                                                       query.value))
+            terms = [term.term for term in terms]
+
+            # And return a "OR" query
+            return Query(OP_OR, terms)
+
+        # And
         i2x = self._query2xquery
         if query_class is AndQuery:
             return Query(OP_AND, [ i2x(q) for q in query.atoms ])
-        elif query_class is OrQuery:
+
+        # Or
+        if query_class is OrQuery:
             return Query(OP_OR, [ i2x(q) for q in query.atoms ])
-        elif query_class is NotQuery:
+
+        # Not
+        if query_class is NotQuery:
             return Query(OP_AND_NOT, Query(''), i2x(query.query))
 
 

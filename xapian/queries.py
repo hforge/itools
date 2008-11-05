@@ -28,7 +28,29 @@ To build a query:
 """
 
 
-class EqQuery(object):
+
+class BaseQuery(object):
+
+    def __repr__(self):
+        return "<%s.%s(%s)>" % (
+            self.__module__,
+            self.__class__.__name__,
+            self.__repr_parameters__())
+
+
+
+class AllQuery(BaseQuery):
+
+    def search(self, catalog):
+        return catalog.search()
+
+
+    def __repr_parameters__(self):
+        return ''
+
+
+
+class EqQuery(BaseQuery):
 
     def __init__(self, name, value):
         self.name = name
@@ -48,13 +70,12 @@ class EqQuery(object):
         return documents
 
 
-    def __repr__(self):
-        return "<%s.%s(%r, %r)>" % (self.__module__, self.__class__.__name__,
-                                   self.name, self.value)
+    def __repr_parameters__(self):
+        return "%r, %r" % (self.name, self.value)
 
 
 
-class RangeQuery(object):
+class RangeQuery(BaseQuery):
 
     def __init__(self, name, left, right):
         self.name = name
@@ -70,14 +91,12 @@ class RangeQuery(object):
         return index.search_range(self.left, self.right)
 
 
-    def __repr__(self):
-        return "<%s.%s(%r, %r, %r)>" % (self.__module__,
-                                        self.__class__.__name__, self.name,
-                                        self.left, self.right)
+    def __repr_parameters__(self):
+        return "%r, %r, %r" % (self.name, self.left, self.right)
 
 
 
-class PhraseQuery(object):
+class PhraseQuery(BaseQuery):
 
     def __init__(self, name, value):
         self.name = name
@@ -113,15 +132,14 @@ class PhraseQuery(object):
         return documents
 
 
-    def __repr__(self):
-        return "<%s.%s(%r, %r)>" % (self.__module__, self.__class__.__name__,
-                                   self.name, self.value)
+    def __repr_parameters__(self):
+        return "%r, %r" % (self.name, self.value)
 
 
 ############################################################################
 # Boolean or complex searches
 ############################################################################
-class AndQuery(object):
+class AndQuery(BaseQuery):
 
     def __init__(self, *args):
         self.atoms = args
@@ -140,13 +158,12 @@ class AndQuery(object):
         return documents
 
 
-    def __repr__(self):
-        return "<%s.%s(%s)>" % (self.__module__, self.__class__.__name__,
-                                ', '.join([repr(x) for x in self.atoms]))
+    def __repr_parameters__(self):
+        return ', '.join([ repr(x) for x in self.atoms ])
 
 
 
-class OrQuery(object):
+class OrQuery(BaseQuery):
 
     def __init__(self, *args):
         self.atoms = args
@@ -165,48 +182,41 @@ class OrQuery(object):
         return documents
 
 
-    def __repr__(self):
-        return "<%s.%s(%s)>" % (self.__module__, self.__class__.__name__,
-                                ', '.join([repr(x) for x in self.atoms]))
+    def __repr_parameters__(self):
+        return ', '.join([ repr(x) for x in self.atoms ])
 
 
 
-class NotQuery(object):
+class NotQuery(BaseQuery):
 
     def __init__(self, query):
         self.query = query
 
 
     def search(self, catalog):
-        from catalog import Catalog
-
         all_documents = catalog.search()
         not_documents = self.query.search(catalog)
         sub_results = {}
 
-        if isinstance(catalog, Catalog):
-            for d in all_documents.get_documents():
-                if not_documents.has_key(d.__number__) is False:
-                    sub_results[d.__number__] = 1
-        else:
-            for d in all_documents:
-                if (d.__number__ in not_documents) is False:
-                    sub_results[d.__number__] = 1
+        for d in all_documents:
+            if (d.__number__ in not_documents) is False:
+                sub_results[d.__number__] = 1
 
         return sub_results
 
 
-class StartQuery(object):
-    """Warning, for xapian/catalog"""
+
+class StartQuery(BaseQuery):
 
     def __init__(self, name, value):
         self.name = name
         self.value = value
 
+
     def search(self, catalog):
+        # TODO To be implemented for itools.csv and others
         raise NotImplementedError
 
-    def __repr__(self):
-        return "<%s.%s(%r, %r)>" % (self.__module__, self.__class__.__name__,
-                                   self.name, self.value)
 
+    def __repr_parameters__(self):
+        return "%r, %r" % (self.name, self.value)

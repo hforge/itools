@@ -194,6 +194,10 @@ def setup(ext_modules=[]):
                 print 'There has been an error while registring the package.'
                 print 'Server responded (%s): %s' % (code, result)
                 if code == 401:
+                    if result == 'Unauthorized':
+                        print 'Perhaps your username/password is wrong.'
+                        print ('Are you registered with "isetup-release.py'
+                               ' -a"?')
                     exit(2)
                 else:
                     exit(3)

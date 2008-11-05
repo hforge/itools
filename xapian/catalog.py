@@ -117,28 +117,28 @@ def _get_prefix(number):
 
 
 def _get_xquery(catalog, query=None, **kw):
-    fields = catalog._fields
-    # Build the query if it is passed through keyword parameters
-    if query is None:
-        if kw:
-            xqueries = []
-            # name must be indexed
-            for name, value in kw.items():
-                if name in fields:
-                    info = fields[name]
-                    xqueries.append(_make_PhraseQuery(info['type'], value,
-                                                      info['prefix']))
-                else:
-                    # If there is a problem, ...
-                    raise ValueError, 'the field "%s" is not indexed' % name
-            else:
-                xquery = Query(OP_AND, xqueries)
-        else:
-            xquery = Query('')
-    else:
-        xquery = catalog._query2xquery(query)
+    # Case 1: a query is given
+    if query is not None:
+        return catalog._query2xquery(query)
 
-    return xquery
+    # Case 2: nothing has been specified, return everything
+    if not kw:
+        return Query('')
+
+    # Case 3: build the query from the keyword parameters
+    fields = catalog._fields
+    xqueries = []
+    for name in kw:
+        # 'name' must be indexed
+        if name not in fields:
+            raise ValueError, 'the field "%s" is not indexed' % name
+
+        # Ok
+        info = fields[name]
+        query = _make_PhraseQuery(info['type'], kw[name], info['prefix'])
+        xqueries.append(query)
+
+    return Query(OP_AND, xqueries)
 
 
 

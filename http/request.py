@@ -87,9 +87,14 @@ class Request(Message):
             # FIXME What should we do here?
             msg = 'unable to read the request line, unexpected end-of-file'
             raise BadRequest, msg
+
         # Parse the request line
         self.request_line = line
-        method, request_uri, http_version = line.split()
+        try:
+            method, request_uri, http_version = line.split()
+        except ValueError:
+            msg = 'the request line "%s" is malformed' % line
+            raise BadRequest, msg
         self.method = method
         self.request_uri = get_reference(request_uri)
         self.http_version = http_version
@@ -160,7 +165,8 @@ class Request(Message):
                                 if not entity.has_header('content-type'):
                                     mimetype = 'text/plain'
                                 else:
-                                    mimetype = entity.get_header('content-type')[0]
+                                    mimetype = entity.get_header(
+                                                  'content-type')[0]
                                 self.body[name] = filename, mimetype, body
                         else:
                             if name not in self.body:

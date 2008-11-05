@@ -28,8 +28,8 @@ Requirements
 Python 2.5.2 or later is required.  The GLib [1] library version 2.12 or
 later is required.  For Windows pywin32 [2] is needed.
 
-For the implementation of RML (itools.pdf) to work the package reportlab [3]
-must be installed.
+To get the "PDF Markup Language" (PML) working the package reportlab 2.2
+or later [3] must be installed.
 
 The "itools.xapian" package requires the Xapian [4] library (xapian-core)
 and its Python wrapper (xapian-bindings), version 1.0.7 or later is required.

@@ -350,6 +350,71 @@ def get_table_style(style_css, attributes, start, stop):
     return table_style
 
 
+def get_hr_style_from_css(css):
+    available_css_attrs = ('width', 'border-width', 'color', 'margin-top',
+                           'margin-bottom', 'float', 'border-style')
+    float_mapping = {'left': 'LEFT', 'right': 'RIGTH', 'none': 'CENTER'}
+
+    attrs = {}
+    for key, value in css.iteritems():
+        if key in available_css_attrs:
+            if key  == 'width':
+                attrs['width'] = format_size(value)
+            elif key == 'border-width':
+                attrs['thickness'] = format_size(value)
+            elif key == 'color':
+                attrs['color'] = get_color(value)
+            elif key == 'margin-top':
+                attr_value = format_size(value)
+                if attr_value is not None:
+                    attrs['spaceBefore'] = attr_value
+            elif key == 'margin-bottom':
+                attr_value = format_size(value)
+                if attr_value is not None:
+                    attrs['spaceAfter'] = attr_value
+            elif key == 'float':
+                attrs['hAlign'] = float_mapping.get(value, 'CENTER')
+            elif key == 'border-style':
+                dash = None
+                if value == 'solid':
+                    dash = None
+                elif value == 'dashed':
+                    dash = [5, 5]
+                elif value == 'dotted':
+                    dash = [2, 2]
+                attrs['dash'] = dash
+
+    return attrs
+
+def get_hr_style(style_css, attributes):
+    """Build Reportlab HR style from CSS properties
+
+    available properties are
+    CSS                 Reportlab
+    --------------------------------
+    - width             width
+    - border-width      thickness
+    - color             color
+    - margin-top        spaceBefore
+    - margin-bottom     spaceAfter
+    - float             hAlign
+    - border-style      dash
+
+    TODO
+    Reportlab attribute vAlign
+    """
+
+    # CSS
+    attrs = get_hr_style_from_css(style_css)
+    # Overload with local attributes
+    # TODO
+
+    if 'width' not in attrs:
+        attrs['width'] = '100%'
+
+    return attrs
+
+
 def makeTocHeaderStyle(level, delta, epsilon, fontName='Times-Roman'):
     """
         Make a header style for different levels.

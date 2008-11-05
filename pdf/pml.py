@@ -39,7 +39,8 @@ import itools.http
 # Internal import
 from doctemplate import MySimpleDocTemplate, MyDocTemplate
 from style import (build_paragraph_style, get_table_style, makeTocHeaderStyle,
-                   get_align, build_inline_style, build_frame_style)
+                   get_align, build_inline_style, build_frame_style,
+                   get_hr_style)
 from utils import (FONT, check_image, exist_attribute, font_value,
                    format_size, get_color, get_int_value, normalize,
                    Paragraph, pc_float, stream_next, join_content, Div)
@@ -760,9 +761,10 @@ def hr_stream(stream, _tag_name, _attributes, context):
         #### END ELEMENT ####
         elif event == END_ELEMENT:
             tag_uri, tag_name = value
+            css_attributes = context.get_css_props()
             context.path_on_end_event()
             if tag_name == _tag_name:
-                return create_hr(_attributes, context)
+                return create_hr(_attributes, css_attributes, context)
 
 
 def img_stream(stream, _tag_name, _attributes, context):
@@ -1019,25 +1021,12 @@ def create_toc(context):
     return story
 
 
-def create_hr(attributes, context):
+def create_hr(attributes, css_attributes, context):
     """
         Create a reportlab hr widget
     """
+    attrs = get_hr_style(css_attributes, attributes)
 
-    attrs = {}
-    attrs['width'] = '100%'
-    for key in ('width', 'thickness', 'spaceBefore', 'spaceAfter'):
-        if exist_attribute(attributes, [key]):
-            attrs[key] = format_size(attributes.get((None, key)))
-
-    if exist_attribute(attributes, ['lineCap']):
-        line_cap = attributes.get((None, 'lineCap'))
-        if line_cap not in ('butt', 'round', 'square'):
-            line_cap = 'butt'
-        attrs['lineCap'] = line_cap
-    if exist_attribute(attributes, ['color']):
-        attrs['color'] = get_color(attributes.get((None, 'color')))
-    attrs.update(get_align(attributes))
     return HRFlowable(**attrs)
 
 

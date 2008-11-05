@@ -19,6 +19,7 @@
 from datetime import datetime
 
 # Import from itools
+from itools import __version__
 from itools.datatypes import HTTPDate
 from cookies import Cookie, SetCookieDataType
 from headers import get_type
@@ -115,7 +116,7 @@ class Response(Message):
         date = datetime.now()
         data.append('Date: %s\r\n' % HTTPDate.encode(date))
         # Server:
-        data.append('Server: itools.web\r\n')
+        data.append('Server: itools/%s\r\n' % __version__)
         # User defined headers
         for name in self.headers:
             if name not in ['date', 'server']:
@@ -177,8 +178,8 @@ class Response(Message):
 
 
     def del_cookie(self, name):
-        self.set_cookie(name, 'deleted', expires='Wed, 31-Dec-97 23:59:59 GMT',
-                        max_age='0')
+        self.set_cookie(name, 'deleted',
+                        expires='Wed, 31-Dec-97 23:59:59 GMT', max_age='0')
 
 
     def get_cookie(self, name):

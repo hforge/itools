@@ -35,6 +35,7 @@ from urllib import unquote
 # Import from itools
 from itools.http import Request, Response, ClientError, NotModified
 from itools.http import BadRequest, Forbidden, NotFound, Unauthorized
+from itools.http import HTTPError, NotImplemented
 from itools.i18n import init_language_selector
 from itools.uri import Reference, Path
 from context import Context, get_context, set_context, select_language
@@ -266,9 +267,12 @@ class Server(object):
             context = Context(request)
             try:
                 response = self.handle_request(context)
+            except HTTPError, exception:
+                response = Response(status_code=exception.code)
+                response.body = exception.title
+                self.log_error(context)
             except:
                 # Unexpected error
-                # FIXME Send a response to the client (InternalServer, etc.)?
                 self.log_error(context)
                 conn.close()
                 return
@@ -380,7 +384,8 @@ class Server(object):
                         if fileno in requests:
                             del requests[fileno]
                     elif event & POLLNVAL:
-                        self.log_debug('INVALID REQUEST (descriptor not open)')
+                        self.log_debug(
+                             'INVALID REQUEST (descriptor not open)')
                         # XXX Is this right?
                         poll.unregister(fileno)
                         if fileno in requests:
@@ -577,7 +582,7 @@ class Server(object):
         if method is None:
             # FIXME Return the right response
             message = 'the request method "%s" is not implemented'
-            raise NotImplementedError, message % request.method
+            raise NotImplemented, message % request.method
 
         # (2) Initialize the context
         self.init_context(context)

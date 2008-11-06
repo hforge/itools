@@ -159,7 +159,8 @@ class SocketWrapper(object):
         except:
             return None
         if not data:
-            raise EOFError
+            # Send the data read so far
+            raise EOFError, buffer
         while data:
             buffer += data
             # Hit

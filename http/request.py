@@ -83,10 +83,9 @@ class Request(Message):
             while line is None:
                 yield None
                 line = file.readline()
-        except EOFError:
-            # FIXME What should we do here?
-            msg = 'unable to read the request line, unexpected end-of-file'
-            raise BadRequest, msg
+        except EOFError, e:
+            msg = 'failed to read the request line, just got %s'
+            raise BadRequest, msg % repr(e.message)
 
         # Parse the request line
         self.request_line = line

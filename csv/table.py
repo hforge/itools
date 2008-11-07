@@ -412,7 +412,6 @@ class Table(File):
         return version
 
 
-
     #######################################################################
     # Handlers
     #######################################################################
@@ -731,21 +730,36 @@ class Table(File):
 
 
     def get_record_value(self, record, name):
-        """Return the value if name is in record
-        else if name is define in the schema
-        return [] is name is a multiple, the default value otherwise.
+        """This is the preferred method for accessing record values.  It
+        returns the value for the given record object and name.
+
+        If the record has not a value with the given name, returns the
+        default value.
         """
+        # The 'id' is a particular case
         if name == 'id':
             return record.id
-        try:
-            return getattr(record, name)
-        except AttributeError:
-            if name in self.record_schema:
-                datatype = self.get_record_datatype(name)
-                if getattr(datatype, 'multiple', False) is True:
-                    return []
-                else:
-                    return getattr(datatype, 'default')
+
+        # Get the property
+        property = record.get_property(name)
+
+        # Miss: return the default value
+        if property is None:
+            # FIXME Probably we should raise an exception here
+            if name not in self.record_schema:
+                return None
+            # Get the dataype
+            datatype = self.get_record_datatype(name)
+            # Return the default value
+            is_multiple = getattr(datatype, 'multiple', False)
+            if is_multiple:
+                # FIXME Probably we should check whether the datatype defines
+                # a default value.
+                return []
+            return getattr(datatype, 'default')
+
+        # Hit
+        return property.value
 
 
     def get_property(self, name):

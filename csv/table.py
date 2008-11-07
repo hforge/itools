@@ -395,30 +395,29 @@ class Table(File):
         """
         if version is None:
             version = {}
-        # Fix the type
-        for name, value in properties.items():
-            # Table or record schema
-            if first is True:
-                datatype = self.get_datatype(name)
-            else:
-                datatype = self.get_record_datatype(name)
 
-            if getattr(datatype, 'multiple', False) is True:
+        # The variable 'first' defines whether we are talking about the
+        # table properties (True) or a about records (False).
+        if first is True:
+            get_datatype = self.get_datatype
+        else:
+            get_datatype = self.get_record_datatype
+
+        # Fix the type
+        to_property = lambda x: x if isinstance(x, Property) else Property(x)
+        for name in properties:
+            value = properties[name]
+            datatype = get_datatype(name)
+            is_multiple = getattr(datatype, 'multiple', False)
+
+            # Transform values to properties
+            if is_multiple:
                 if type(value) is list:
-                    version[name] = []
-                    for x in value:
-                        if isinstance(x, Property):
-                            version[name].append(x)
-                        else:
-                            version[name].append(Property(x))
-                elif isinstance(value, Property):
-                    version[name] = [value]
+                    version[name] = [ to_property(x) for x in value ]
                 else:
-                    version[name] = [Property(value)]
-            elif not isinstance(value, Property):
-                version[name] = Property(value)
+                    version[name] = [to_property(value)]
             else:
-                version[name] = value
+                version[name] = to_property(value)
         return version
 
 
@@ -672,6 +671,7 @@ class Table(File):
         for name in kw:
             datatype = self.get_record_datatype(name)
             if getattr(datatype, 'unique', False) is True:
+                search = self.search(EqQuery(name, kw[name]))
                 if len(self.search(EqQuery(name, kw[name]))) > 0:
                     raise UniqueError(name, kw[name])
         # Add version to record
@@ -698,7 +698,7 @@ class Table(File):
         for name in kw:
             datatype = self.get_record_datatype(name)
             if getattr(datatype, 'unique', False) is True:
-                search = self.search(EqQuery(name, str(kw[name])))
+                search = self.search(EqQuery(name, kw[name]))
                 if search and (search[0] != self.records[id]):
                     raise UniqueError(name, kw[name])
         # Version of record

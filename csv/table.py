@@ -318,7 +318,7 @@ class Record(list):
                 self.__class__.__name__, name)
 
         property = version[name]
-        if isinstance(property, list):
+        if type(property) is list:
             return [ x.value for x in property ]
         return property.value
 
@@ -338,7 +338,7 @@ class Record(list):
             return None
 
         property = version[name]
-        if isinstance(property, list):
+        if type(property) is list:
             return [ x.value for x in property ]
         return property.value
 
@@ -394,7 +394,7 @@ class Table(File):
                 datatype = self.get_record_datatype(name)
 
             if getattr(datatype, 'multiple', False) is True:
-                if isinstance(value, list):
+                if type(value) is list:
                     version[name] = []
                     for x in value:
                         if isinstance(x, Property):

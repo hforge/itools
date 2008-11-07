@@ -808,7 +808,7 @@ class Table(File):
                 if x.parameters.get('language') == language:
                     return x.value
             # Not found
-            return None
+            return getattr(datatype, 'default')
 
         # Hit
         if type(property) is list:

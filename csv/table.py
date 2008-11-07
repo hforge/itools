@@ -359,7 +359,8 @@ class Table(File):
     #######################################################################
     schema = {}
     record_schema = {}
-    parameters_schema = {}
+    parameters_schema = {
+        'language': String(multiple=False)}
 
 
     def get_datatype(self, name):

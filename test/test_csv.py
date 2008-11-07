@@ -22,7 +22,7 @@ from unittest import TestCase
 
 # Import from itools
 from itools.datatypes import Boolean, Date, Integer, Unicode, URI, String
-from itools.csv import CSVFile, Table
+from itools.csv import CSVFile, Table, UniqueError
 from itools.csv.table import unfold_lines
 from itools import vfs
 from itools.xapian import AndQuery, OrQuery, EqQuery
@@ -317,11 +317,13 @@ agenda_file = """id:0/0
 ts:2007-07-13T17:19:21
 firstname:Karl
 lastname:Marx
+email:karl@itaapy.com
 
 id:1/0
 ts:2007-07-14T16:43:49
 firstname:Jean-Jacques
 lastname:Rousseau
+email:jacques@itaapy.com
 """
 
 
@@ -329,7 +331,8 @@ class Agenda(Table):
 
     record_schema = {
         'firstname': Unicode(index='text', multiple=False),
-        'lastname': Unicode(multiple=False)}
+        'lastname': Unicode(multiple=False),
+        'email': Unicode(index='keyword', multiple=False, unique=True)}
 
 
 books_file = """id:0/0
@@ -445,6 +448,16 @@ class TableTestCase(TestCase):
         self.assertEqual(len(ids), 1)
         # Clean
         vfs.remove('tests/agenda')
+
+
+    def test_unique(self):
+        agenda = Agenda(string=agenda_file)
+        email = 'karl@itaapy.com'
+        # Add
+        record = {'firstname': 'Karl', 'lastname': 'Smith', 'email': email}
+        self.assertRaises(UniqueError, agenda.add_record, record)
+        # Update
+        self.assertRaises(UniqueError, agenda.update_record, 1, email=email)
 
 
     def test_parameters_bad(self):

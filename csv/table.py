@@ -670,7 +670,7 @@ class Table(File):
     def add_record(self, kw):
         # Check for duplicate
         for name in kw:
-            datatype = self.get_datatype(name)
+            datatype = self.get_record_datatype(name)
             if getattr(datatype, 'unique', False) is True:
                 if len(self.search(EqQuery(name, kw[name]))) > 0:
                     raise UniqueError(name, kw[name])
@@ -696,7 +696,7 @@ class Table(File):
             raise LookupError, msg % id
         # Check for duplicate
         for name in kw:
-            datatype = self.get_datatype(name)
+            datatype = self.get_record_datatype(name)
             if getattr(datatype, 'unique', False) is True:
                 search = self.search(EqQuery(name, str(kw[name])))
                 if search and (search[0] != self.records[id]):

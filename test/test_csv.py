@@ -21,7 +21,7 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.datatypes import Boolean, Date, Integer, Unicode, URI
+from itools.datatypes import Boolean, Date, Integer, Unicode, URI, String
 from itools.csv import CSVFile, Table
 from itools.csv.table import unfold_lines
 from itools import vfs
@@ -327,8 +327,34 @@ lastname:Rousseau
 
 class Agenda(Table):
 
-    record_schema = {'firstname': Unicode(index='text', multiple=False),
-                     'lastname': Unicode(multiple=False)}
+    record_schema = {
+        'firstname': Unicode(index='text', multiple=False),
+        'lastname': Unicode(multiple=False)}
+
+
+books_file = """id:0/0
+ts:2007-07-13T17:19:21
+title;language=de:Das Kapital
+title;language=es:El Capital
+"""
+
+
+books_file_bad = """id:0/0
+ts:2007-07-13T17:19:21
+title;language=de:Das Kapital
+title;language=es,fr:El Capital
+"""
+
+
+class Books(Table):
+
+    record_schema = {
+        'title': Unicode(multiple=True),
+        'author': Unicode}
+
+    parameters_schema = {
+        'language': String(multiple=False)}
+
 
 
 class TableTestCase(TestCase):
@@ -417,6 +443,17 @@ class TableTestCase(TestCase):
         self.assertEqual(len(ids), 1)
         # Clean
         vfs.remove('tests/agenda')
+
+
+    def test_parameters_bad(self):
+        self.assertRaises(ValueError, Books, string=books_file_bad)
+
+
+    def test_parameters_good(self):
+        table = Books(string=books_file)
+        record_0 = table.get_record(0)
+        value = table.get_record_value(record_0, 'title', language='es')
+        self.assertEqual(value, u'El Capital')
 
 
 

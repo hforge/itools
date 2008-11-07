@@ -359,6 +359,7 @@ class Table(File):
     #######################################################################
     schema = {}
     record_schema = {}
+    parameters_schema = {}
 
 
     def get_datatype(self, name):
@@ -485,6 +486,24 @@ class Table(File):
                 else:
                     get_datatype = self.get_record_datatype
                 continue
+
+            # Deserialize the parameters
+            get_param_type = self.parameters_schema.get
+            for param_name in parameters.keys():
+                param_value = parameters[param_name]
+                param_type = get_param_type(param_name, String)
+                # Decode
+                param_value = [ param_type.decode(x) for x in param_value ]
+                # Multiple or single
+                is_multiple = getattr(param_type, 'multiple', True)
+                if not is_multiple:
+                    if len(param_value) > 1:
+                        msg = 'parameter "%s" must be a singleton'
+                        raise ValueError, msg % param_name
+                    param_value = param_value[0]
+                # Update
+                parameters[param_name] = param_value
+
             # Timestamp (ts), Schema, or Something else
             datatype = get_datatype(name)
             value = datatype.decode(value)

@@ -149,15 +149,6 @@ def get_int_value(value, default=0):
 ##############################################################################
 # reportlab
 ##############################################################################
-FONT = {'monospace': 'Courier', 'times-new-roman': 'Times-Roman',
-        'arial': 'Helvetica', 'serif': 'Times',
-        'sans-serif': 'Helvetica', 'helvetica': 'Helvetica',
-        'symbol': 'Symbol',
-        'STSong-Light': 'STSong-Light', # cn
-        'HeiseiMin-W3': 'HeiseiMin-W3', # jp
-        'HYSMyeongJo-Medium': 'HYSMyeongJo-Medium' # kr
-        }
-
 FONTSIZE = {'xx-small': 20, 'x-small': 40, 'smaller': 60, 'small':80,
             'medium':100, 'large': 120, 'larger': 140, 'x-large': 160,
             'xx-large': 180}

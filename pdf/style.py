@@ -23,7 +23,7 @@ from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT, TA_JUSTIFY
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import cm
 from reportlab.platypus.frames import ShowBoundaryValue
-from utils import (FONT, font_value, format_size, get_color_as_hexa,
+from utils import (font_value, format_size, get_color_as_hexa,
                    get_color, get_int_value)
 
 P_ALIGNMENTS = {'left': TA_LEFT, 'right': TA_RIGHT, 'center': TA_CENTER,
@@ -65,6 +65,30 @@ def get_align(attributes):
     if vAlign in V_ALIGN:
         attrs['vAlign'] = vAlign.upper()
     return attrs
+
+
+#######################################################################
+# FONT
+#######################################################################
+FONT_NAME = {'monospace': 'Courier', 'times-new-roman': 'Times-Roman',
+             'arial': 'Helvetica', 'serif': 'Times',
+             'sans-serif': 'Helvetica', 'helvetica': 'Helvetica',
+             'symbol': 'Symbol',
+             'stsong-light': 'STSong-Light', # cn
+             'heiseimin-w3': 'HeiseiMin-W3', # jp
+             'hysmyeongjo-medium': 'HYSMyeongJo-Medium' # kr
+             }
+
+def get_font_name(search_name, default='helvetica'):
+    # Maximize the possibility to match the font name
+    name = search_name.lower()
+    if name in FONT_NAME:
+        return FONT_NAME.get(name)
+    elif default and default in FONT_NAME:
+        # FIXME The default fontname must be pick up from the CSS
+        return FONT_NAME.get(default)
+    # Fallback to the serif font name
+    return FONT_NAME.get('serif')
 
 
 def p_border_style(key, value):
@@ -119,7 +143,7 @@ def inline_text_style(key, value, context):
 def inline_font_style(key, value, context):
     style = None
     if key == 'font-family':
-        style = ('span', {(None, 'fontName'): FONT.get(value, 'Helvetica')})
+        style = ('span', {(None, 'fontName'): get_font_name(value)})
     elif key == 'font-style':
         if value in ('italic', 'oblique'):
             style = ('i', {})
@@ -139,7 +163,7 @@ def inline_font_style(key, value, context):
 def p_font_style(key, value, context):
     style_attr = {}
     if key == 'font-family':
-        style_attr['fontName'] = FONT.get(value, 'Helvetica')
+        style_attr['fontName'] = get_font_name(value)
     elif key == 'font-style':
         if value in ('italic', 'oblique'):
             context.style_tag_stack.append(('i'))
@@ -339,6 +363,12 @@ def get_table_style(style_css, attributes, start, stop):
             table_style.extend(table_bg_style(key, value, start, stop))
         elif key.endswith('align'):
             table_style.extend(table_align_style(key, value, start, stop))
+        elif key == 'font-family':
+            rl_value = get_font_name(value)
+            table_style.extend([('FONT', start, stop, rl_value)])
+        elif key == 'line-height':
+            rl_value = format_size(value)
+            table_style.extend([('LEADING', start, stop, rl_value)])
 
     for key, value in attributes.iteritems():
         if key == (None, 'border') and start == (0, 0) and stop == (-1,-1):
@@ -347,6 +377,7 @@ def get_table_style(style_css, attributes, start, stop):
             function, style_key = ATTR_TO_STYLE[key[1]]
             table_style.extend(function(style_key, value, start, stop))
     table_style.extend(table_border_style(border, start, stop))
+
     return table_style
 
 
@@ -385,6 +416,7 @@ def get_hr_style_from_css(css):
                 attrs['dash'] = dash
 
     return attrs
+
 
 def get_hr_style(style_css, attributes):
     """Build Reportlab HR style from CSS properties

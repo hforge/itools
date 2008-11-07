@@ -40,12 +40,12 @@ import itools.http
 from doctemplate import MySimpleDocTemplate, MyDocTemplate
 from style import (build_paragraph_style, get_table_style, makeTocHeaderStyle,
                    get_align, build_inline_style, build_frame_style,
-                   get_hr_style)
-from utils import (FONT, check_image, exist_attribute, font_value,
-                   format_size, get_color, get_int_value, normalize,
+                   get_hr_style, get_font_name)
+from utils import (check_image, exist_attribute, font_value,
+                   format_size, get_int_value, normalize,
                    Paragraph, pc_float, stream_next, join_content, Div)
 
-#Import from the reportlab Library
+# Import from the reportlab Library
 import reportlab
 from reportlab.lib.pagesizes import LETTER
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -1290,7 +1290,7 @@ def build_attributes(tag_name, attributes, context):
     elif tag_name == 'small':
         attrs = {(None, 'size'): font_value('80%')}
     elif tag_name in ('code', 'tt'):
-        attrs = {(None, 'face'): FONT['monospace']}
+        attrs = {(None, 'face'): get_font_name('monospace')}
     else:
         attrs = {}
     return attrs

@@ -729,7 +729,7 @@ class Table(File):
             yield self.get_record(id)
 
 
-    def get_record_value(self, record, name):
+    def get_record_value(self, record, name, language=None):
         """This is the preferred method for accessing record values.  It
         returns the value for the given record object and name.
 
@@ -757,6 +757,20 @@ class Table(File):
                 # a default value.
                 return []
             return getattr(datatype, 'default')
+
+        # Multilingual
+        if language is not None:
+            # Check it is multiple
+            datatype = self.get_record_datatype(name)
+            is_multiple = getattr(datatype, 'multiple', False)
+            if not is_multiple:
+                raise ValueError, 'multilingual properties must be multiple'
+            # Find out the property with the language
+            for x in property:
+                if x.parameters.get('language') == language:
+                    return x.value
+            # Not found
+            return None
 
         # Hit
         if type(property) is list:

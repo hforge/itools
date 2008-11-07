@@ -759,6 +759,8 @@ class Table(File):
             return getattr(datatype, 'default')
 
         # Hit
+        if type(property) is list:
+            return [ x.value for x in property ]
         return property.value
 
 

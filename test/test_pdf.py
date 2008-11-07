@@ -24,8 +24,8 @@ from itools.pdf.rml import (rmltopdf_test, normalize as normalize,
                             stream_next, get_color as get_color,
                             get_page_size_orientation)
 from itools.pdf.pml import (pmltopdf_test, normalize as normalize2,
-                             paragraph_stream, Context,
-                             get_color as get_color2)
+                             paragraph_stream, Context)
+from itools.pdf.utils import get_color as get_color2
 from itools.xml import XMLParser, START_ELEMENT, TEXT
 
 # Import from the reportlab library

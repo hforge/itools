@@ -360,8 +360,10 @@ class Books(Table):
 class TableTestCase(TestCase):
 
     def tearDown(self):
-        if vfs.exists('tests/agenda'):
-            vfs.remove('tests/agenda')
+        for name in ['agenda', 'books']:
+            name = 'tests/%s' % name
+            if vfs.exists(name):
+                vfs.remove(name)
 
 
     def test_unfolding(self):
@@ -449,8 +451,20 @@ class TableTestCase(TestCase):
         self.assertRaises(ValueError, Books, string=books_file_bad)
 
 
-    def test_parameters_good(self):
+    def test_parameters_load(self):
         table = Books(string=books_file)
+        record_0 = table.get_record(0)
+        value = table.get_record_value(record_0, 'title', language='es')
+        self.assertEqual(value, u'El Capital')
+
+
+    def test_parameters_save(self):
+        table = Books(string=books_file)
+        table.save_state_to('tests/books')
+        # Load
+        table = Books('tests/books')
+        table.load_state()
+        # Test
         record_0 = table.get_record(0)
         value = table.get_record_value(record_0, 'title', language='es')
         self.assertEqual(value, u'El Capital')

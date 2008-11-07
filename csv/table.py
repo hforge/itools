@@ -380,6 +380,14 @@ class Table(File):
         return String(multiple=True)
 
 
+    def get_parameter_datatype(self, name):
+        # Record schema
+        schema = self.parameters_schema
+        if name in schema:
+            return schema[name]
+        return String
+
+
     def properties_to_dict(self, properties, version=None, first=False):
         """Add the given "properties" as Property objects or Property objects
         list to the given dictionnary "version".
@@ -488,10 +496,9 @@ class Table(File):
                 continue
 
             # Deserialize the parameters
-            get_param_type = self.parameters_schema.get
             for param_name in parameters.keys():
                 param_value = parameters[param_name]
-                param_type = get_param_type(param_name, String)
+                param_type = self.get_parameter_datatype(param_name)
                 # Decode
                 param_value = [ param_type.decode(x) for x in param_value ]
                 # Multiple or single
@@ -530,6 +537,7 @@ class Table(File):
         else:
             get_datatype = self.get_record_datatype
 
+        # Loop
         for name in names:
             datatype = get_datatype(name)
             if getattr(datatype, 'multiple', False) is True:
@@ -540,18 +548,28 @@ class Table(File):
                 if property.value is None:
                     continue
                 lines.append(name)
+                # Parameters
                 pnames = property.parameters.keys()
                 pnames.sort()
                 for pname in pnames:
                     pvalues = property.parameters[pname]
-                    pvalues = ','.join(pvalues)
+                    pdatatype = self.get_parameter_datatype(pname)
+                    is_multiple = getattr(pdatatype, 'multiple', True)
+                    if is_multiple:
+                        pvalues = [ pdatatype.encode(x) for x in pvalues ]
+                        pvalues = ','.join(pvalues)
+                    else:
+                        pvalues = pdatatype.encode(pvalues)
                     lines.append(';%s=%s' % (pname, pvalues))
+                # Value
                 value = datatype.encode(property.value)
                 if isinstance(value, Integer):
                     value = str(value)
                 # Escape the value
                 value = escape_data(value)
                 lines.append(':%s\n' % fold_line(value))
+
+        # Ok
         lines.append('\n')
         return ''.join(lines)
 

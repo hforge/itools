@@ -21,7 +21,7 @@
 from datetime import datetime
 
 # Import from itools
-from itools.datatypes import DateTime, String, Integer
+from itools.datatypes import DateTime, String, Integer, Unicode, is_datatype
 from itools.handlers import File
 from itools import vfs
 from itools.xapian import AndQuery, EqQuery, PhraseQuery, get_field
@@ -411,7 +411,14 @@ class Table(File):
             is_multiple = getattr(datatype, 'multiple', False)
 
             # Transform values to properties
-            if is_multiple:
+            if is_datatype(datatype, Unicode):
+                language = value.parameters['language']
+                version.setdefault(name, [])
+                version[name] = [
+                    x for x in version[name]
+                    if x.parameters['language'] != language ]
+                version[name].append(value)
+            elif is_multiple:
                 if type(value) is list:
                     version[name] = [ to_property(x) for x in value ]
                 else:

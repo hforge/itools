@@ -70,7 +70,38 @@ renamed:
   Table.get_datatype              Table.get_record_datatype
   Table.get_value                 Table.get_record_value
 
-(2) The 'Table.get_field_title' method has been moved to ikaaro.
+(2) Now table fields with a 'Unicode' datatype are considered to be
+multilingual, and must be defined as 'multiple' to work.
+
+This means that any 'Unicode' field in existing applications should be
+revised, and either change to another datatype (like 'String') if they
+are not multilingual, or add the 'multiple' parameter.
+
+For example:
+
+  # Before
+  schema = {
+      'title': Unicode,
+      'url': Unicode,
+      ...
+
+  # Now
+  record_schema = {
+      'title': Unicode(multiple=True),
+      'url': String,
+      ...
+
+Also, table files for unicode fields must be upgraded, since they are
+required to have the 'language' parameter:
+
+  # Before
+  title:hello world
+
+  # Now
+  title;language=en:hello world
+
+
+(3) The 'Table.get_field_title' method has been moved to ikaaro.
 
 
 itools.gettext

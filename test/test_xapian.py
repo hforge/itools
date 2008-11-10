@@ -25,7 +25,7 @@ import re
 # Import from itools
 from itools import vfs
 from itools.xapian import make_catalog, Catalog, CatalogAware
-from itools.xapian import AndQuery, RangeQuery, EqQuery, NotQuery
+from itools.xapian import AndQuery, RangeQuery, PhraseQuery, NotQuery
 from itools.xapian import BoolField, KeywordField, TextField, IntegerField
 
 
@@ -278,12 +278,12 @@ class CatalogTestCase(TestCase):
         results = catalog.search(query)
         self.assertEqual(results.get_n_documents(), 4)
         # Not Query (1/2)
-        query = NotQuery(EqQuery('data', 'lion'))
+        query = NotQuery(PhraseQuery('data', 'lion'))
         results = catalog.search(query)
         self.assertEqual(results.get_n_documents(), 27)
         # Not Query (2/2)
-        query1 = EqQuery('data', 'mouse')
-        query2 = NotQuery(EqQuery('data', 'lion'))
+        query1 = PhraseQuery('data', 'mouse')
+        query2 = NotQuery(PhraseQuery('data', 'lion'))
         query = AndQuery(query1, query2)
         results = catalog.search(query)
         self.assertEqual(results.get_n_documents(), 2)

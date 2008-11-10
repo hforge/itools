@@ -20,10 +20,10 @@
 """
 To build a query:
 
-  from itools.xapian import EqQuery, AndQuery
-  s1 = EqQuery('format', 'Actu')
-  s2 = EqQuery('archive', True)
-  s3 = EqQuery('workflow_state', 'public')
+  from itools.xapian import PhraseQuery, AndQuery
+  s1 = PhraseQuery('format', 'Actu')
+  s2 = PhraseQuery('archive', True)
+  s3 = PhraseQuery('workflow_state', 'public')
   query = AndQuery(s1, s2, s3)
 """
 
@@ -47,31 +47,6 @@ class AllQuery(BaseQuery):
 
     def __repr_parameters__(self):
         return ''
-
-
-
-class EqQuery(BaseQuery):
-
-    def __init__(self, name, value):
-        self.name = name
-        self.value = value
-
-
-    def search(self, catalog):
-        index = catalog.get_index(self.name)
-        if index is None:
-            return {}
-
-        documents = index.search_word(self.value)
-        # Calculate the weight
-        for doc_number in documents:
-            documents[doc_number] = len(documents[doc_number])
-
-        return documents
-
-
-    def __repr_parameters__(self):
-        return "%r, %r" % (self.name, self.value)
 
 
 

@@ -26,7 +26,7 @@ from operator import itemgetter
 from itools.csv import parse_table, Property, Record as TableRecord, Table
 from itools.datatypes import String, Unicode
 from itools.handlers import merge_dics
-from itools.xapian import EqQuery, RangeQuery, OrQuery, AndQuery
+from itools.xapian import PhraseQuery, RangeQuery, OrQuery, AndQuery
 from base import BaseCalendar
 from types import data_properties, Time
 
@@ -473,7 +473,7 @@ class icalendarTable(BaseCalendar, Table):
         dtstart = str(dtstart)
         dtend = str(dtend)
         query = AndQuery(
-            EqQuery('type', 'VEVENT'),
+            PhraseQuery('type', 'VEVENT'),
             OrQuery(RangeQuery('DTSTART', dtstart, dtend),
                     RangeQuery('DTEND', dtstart_limit, dtend_limit),
                     AndQuery(RangeQuery('DTSTART', None, dtstart),
@@ -525,7 +525,8 @@ class icalendarTable(BaseCalendar, Table):
         dtstart = datetime(selected_date.year, selected_date.month,
                            selected_date.day)
         dtend = dtstart + timedelta(days=1) - resolution
-        return self.search_events_in_range(dtstart, dtend, sortby=sortby, **kw)
+        return self.search_events_in_range(dtstart, dtend, sortby=sortby,
+                                           **kw)
 
 
     # Test if any event corresponds to a given date

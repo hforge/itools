@@ -27,7 +27,7 @@ from xapian import MultiValueSorter, sortable_serialise, sortable_unserialise
 from itools.uri import get_absolute_reference
 from base import CatalogAware
 from fields import get_field
-from queries import EqQuery, RangeQuery, PhraseQuery, AndQuery, OrQuery
+from queries import RangeQuery, PhraseQuery, AndQuery, OrQuery
 from queries import AllQuery, NotQuery, StartQuery
 
 
@@ -471,8 +471,8 @@ class Catalog(object):
         if query_class is AllQuery:
             return Query('')
 
-        # EqQuery = PhraseQuery, the field must be indexed
-        if query_class is EqQuery or query_class is PhraseQuery:
+        # PhraseQuery, the field must be indexed
+        if query_class is PhraseQuery:
             name = query.name
             # If there is a problem => an empty result
             if name not in fields:

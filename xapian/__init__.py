@@ -19,7 +19,7 @@ from base import CatalogAware
 from catalog import Catalog, make_catalog
 from fields import BaseField, register_field, get_field
 from fields import BoolField, KeywordField, IntegerField, TextField
-from queries import EqQuery, RangeQuery, PhraseQuery, AndQuery, OrQuery
+from queries import RangeQuery, PhraseQuery, AndQuery, OrQuery
 from queries import AllQuery, NotQuery, StartQuery
 
 
@@ -36,7 +36,6 @@ __all__ = [
     'register_field',
     'get_field',
     # Queries
-    'EqQuery',
     'RangeQuery',
     'PhraseQuery',
     'AndQuery',

@@ -25,7 +25,7 @@ from itools.datatypes import Boolean, Date, Integer, Unicode, URI, String
 from itools.csv import CSVFile, Table, UniqueError
 from itools.csv.table import unfold_lines
 from itools import vfs
-from itools.xapian import AndQuery, OrQuery, EqQuery
+from itools.xapian import AndQuery, OrQuery, PhraseQuery
 
 
 TEST_DATA_1 = """python,http://python.org/,52343,2003-10-23
@@ -264,16 +264,16 @@ class CSVTestCase(TestCase):
         result1 = handler.search(name='dde', country='sweden')
         self.assertEqual(result1, [5, 6])
 
-        q1 = OrQuery(EqQuery('name', 'dde'), EqQuery('name', 'fse'))
-        q2 = EqQuery('country', 'france')
+        q1 = OrQuery(PhraseQuery('name', 'dde'), PhraseQuery('name', 'fse'))
+        q2 = PhraseQuery('country', 'france')
         q3 = AndQuery(q1, q2)
         result2 = handler.search(q3)
         self.assertEqual(result2, [4])
 
         # previous results as query items
-        q1 = OrQuery(EqQuery('name', 'dde'), EqQuery('name', 'fse'))
-        q2 = OrQuery(EqQuery('country', 'poland'),
-                     EqQuery('country', 'france'))
+        q1 = OrQuery(PhraseQuery('name', 'dde'), PhraseQuery('name', 'fse'))
+        q2 = OrQuery(PhraseQuery('country', 'poland'),
+                     PhraseQuery('country', 'france'))
         q = AndQuery(q1, q2)
         result5 = handler.search(q)
         self.assertEqual(result5, [1, 4])

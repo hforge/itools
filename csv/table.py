@@ -24,7 +24,7 @@ from datetime import datetime
 from itools.datatypes import DateTime, String, Integer, Unicode, is_datatype
 from itools.handlers import File
 from itools import vfs
-from itools.xapian import AndQuery, EqQuery, PhraseQuery, get_field
+from itools.xapian import AndQuery, PhraseQuery, get_field
 from memory import MemoryCatalog
 from parser import parse
 
@@ -679,8 +679,8 @@ class Table(File):
         for name in kw:
             datatype = self.get_record_datatype(name)
             if getattr(datatype, 'unique', False) is True:
-                search = self.search(EqQuery(name, kw[name]))
-                if len(self.search(EqQuery(name, kw[name]))) > 0:
+                search = self.search(PhraseQuery(name, kw[name]))
+                if len(self.search(PhraseQuery(name, kw[name]))) > 0:
                     raise UniqueError(name, kw[name])
         # Add version to record
         id = len(self.records)
@@ -706,7 +706,7 @@ class Table(File):
         for name in kw:
             datatype = self.get_record_datatype(name)
             if getattr(datatype, 'unique', False) is True:
-                search = self.search(EqQuery(name, kw[name]))
+                search = self.search(PhraseQuery(name, kw[name]))
                 if search and (search[0] != self.records[id]):
                     raise UniqueError(name, kw[name])
         # Version of record

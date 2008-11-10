@@ -27,7 +27,7 @@ from itools.csv import MemoryCatalog, Property
 from itools.csv import parse_table
 from itools.datatypes import String, Unicode
 from itools.handlers import guess_encoding, TextFile
-from itools.xapian import PhraseQuery, EqQuery, RangeQuery, OrQuery, AndQuery
+from itools.xapian import PhraseQuery, RangeQuery, OrQuery, AndQuery
 from itools.xapian import KeywordField
 from base import BaseCalendar
 from types import data_properties, Time
@@ -368,7 +368,8 @@ class iCalendar(BaseCalendar, TextFile):
             n_line += 1
 
         # The properties VERSION and PRODID are mandatory
-        if 'VERSION' not in self.properties or 'PRODID' not in self.properties:
+        if ('VERSION' not in self.properties or
+            'PRODID' not in self.properties):
             raise ValueError, 'PRODID or VERSION parameter missing'
 
         lines = lines[n_line:]
@@ -688,7 +689,8 @@ class iCalendar(BaseCalendar, TextFile):
         dtstart = datetime(selected_date.year, selected_date.month,
                            selected_date.day)
         dtend = dtstart + timedelta(days=1) - resolution
-        return self.search_events_in_range(dtstart, dtend, sortby=sortby, **kw)
+        return self.search_events_in_range(dtstart, dtend, sortby=sortby,
+                                           **kw)
 
 
     def search_events_in_range(self, dtstart, dtend, sortby=None, **kw):
@@ -713,7 +715,7 @@ class iCalendar(BaseCalendar, TextFile):
         dtstart = str(dtstart)
         dtend = str(dtend)
         query = AndQuery(
-            EqQuery('type', 'VEVENT'),
+            PhraseQuery('type', 'VEVENT'),
             OrQuery(RangeQuery('dtstart', dtstart, dtend),
                     RangeQuery('dtend', dtstart_limit, dtend_limit),
                     AndQuery(RangeQuery('dtstart', None, dtstart),

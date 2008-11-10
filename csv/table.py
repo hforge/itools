@@ -378,6 +378,7 @@ class Table(File):
             return DateTime(multiple=False)
         if name in self.record_schema:
             return self.record_schema[name]
+        # FIXME Probably we should raise an exception here
         return String(multiple=True)
 
 
@@ -787,39 +788,42 @@ class Table(File):
 
         # Get the property
         property = record.get_property(name)
+        datatype = self.get_record_datatype(name)
 
-        # Miss: return the default value
-        if property is None:
-            # FIXME Probably we should raise an exception here
-            if name not in self.record_schema:
-                return None
-            # Get the dataype
-            datatype = self.get_record_datatype(name)
-            # Return the default value
-            is_multiple = getattr(datatype, 'multiple', False)
-            if is_multiple:
+        # Multilingual properties
+        if is_datatype(datatype, Unicode):
+            # Default
+            if property is None:
+                return datatype.default
+            # Language negotiation ('select_language' must be available)
+            if language is None:
+                languages = [ x.parameters['language'] for x in property ]
+                language = select_language(languages)
+            # Miss: default
+            if language is None:
+                # XXX Should send any value?
+                return datatype.default
+            # Hit
+            for x in property:
+                if x.parameters['language'] == language:
+                    return x.value
+            # Default
+            return datatype.default
+
+        # Multiple values
+        is_multiple = getattr(datatype, 'multiple', False)
+        if is_multiple:
+            # Default
+            if property is None:
                 # FIXME Probably we should check whether the datatype defines
                 # a default value.
                 return []
-            return getattr(datatype, 'default')
-
-        # Multilingual
-        if language is not None:
-            # Check it is multiple
-            datatype = self.get_record_datatype(name)
-            is_multiple = getattr(datatype, 'multiple', False)
-            if not is_multiple:
-                raise ValueError, 'multilingual properties must be multiple'
-            # Find out the property with the language
-            for x in property:
-                if x.parameters.get('language') == language:
-                    return x.value
-            # Not found
-            return getattr(datatype, 'default')
-
-        # Hit
-        if type(property) is list:
+            # Hit
             return [ x.value for x in property ]
+
+        # Simple properties
+        if property is None:
+            return datatype.default
         return property.value
 
 

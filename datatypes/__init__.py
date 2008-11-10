@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from base import DataType, is_datatype
+from base import DataType, is_datatype, copy_datatype
 from primitive import Boolean, Decimal, Email, Integer, String, Unicode
 from primitive import Tokens, MultiLinesTokens, Enumerate, DynamicEnumerate
 from primitive import PathDataType, URI
@@ -29,8 +29,10 @@ from datetime_ import ISODateTime as DateTime
 
 
 __all__ = [
-    # Abstract clases
+    # Abstract clases & helper functions
     'DataType',
+    'is_datatype',
+    'copy_datatype',
     # DataTypes
     'Integer',
     'Decimal',

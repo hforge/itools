@@ -15,13 +15,26 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-def is_datatype(type, base_type):
-    """Returns True if 'type' is of 'base_type'.
+def is_datatype(datatype, base_type):
+    """Returns True if 'datatype' is of 'base_type'.
     """
     try:
-        return issubclass(type, base_type)
+        return issubclass(datatype, base_type)
     except TypeError:
-        return isinstance(type, base_type)
+        return isinstance(datatype, base_type)
+
+
+def copy_datatype(datatype, **kw):
+    # Class
+    if type(datatype) is type:
+        return datatype(**kw)
+
+    # Instance
+    # FIXME Use 'merge_dics'
+    dict = datatype.__dict__.copy()
+    for key in kw:
+        dict[key] = kw[key]
+    return datatype.__class__(**kw)
 
 
 

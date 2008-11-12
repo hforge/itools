@@ -264,6 +264,16 @@ def parse_table(data):
         yield name, value, parameters
 
 
+
+###########################################################################
+# Helper functions
+###########################################################################
+def is_multilingual(datatype):
+    is_multiple = getattr(datatype, 'multiple', False)
+    return is_datatype(datatype, Unicode) and is_multiple
+
+
+
 ###########################################################################
 # UniqueError
 ###########################################################################
@@ -412,7 +422,7 @@ class Table(File):
             is_multiple = getattr(datatype, 'multiple', False)
 
             # Transform values to properties
-            if is_datatype(datatype, Unicode):
+            if is_multilingual(datatype):
                 language = value.parameters['language']
                 version.setdefault(name, [])
                 version[name] = [
@@ -791,7 +801,7 @@ class Table(File):
         datatype = self.get_record_datatype(name)
 
         # Multilingual properties
-        if is_datatype(datatype, Unicode):
+        if is_multilingual(datatype):
             # Default
             if property is None:
                 return datatype.default

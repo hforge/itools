@@ -184,12 +184,12 @@ class SocketWrapper(object):
 class Server(object):
 
     access_log = None
-    error_log = None
-    debug_log = None
+    event_log = None
+    debug = False
 
 
     def __init__(self, root, address=None, port=None, access_log=None,
-                 error_log=None, debug_log=None, pid_file=None,
+                 event_log=None, debug=False, pid_file=None,
                  auth_type='cookie', auth_realm='Restricted Area'):
         if address is None:
             address = ''
@@ -205,16 +205,14 @@ class Server(object):
             self.access_log_path = access_log
             self.access_log = open(access_log, 'a+')
         # Error log
-        if error_log is None:
-            self.error_log_path = None
-            self.error_log = sys.stderr
+        if event_log is None:
+            self.event_log_path = None
+            self.event_log = sys.stderr
         else:
-            self.error_log_path = error_log
-            self.error_log = open(error_log, 'a+')
+            self.event_log_path = event_log
+            self.event_log = open(event_log, 'a+')
         # Debug log
-        if debug_log is not None:
-            self.debug_log_path = debug_log
-            self.debug_log = open(debug_log, 'a+')
+        self.debug = debug
         # The pid file
         self.pid_file = pid_file
         # Authentication options
@@ -232,7 +230,7 @@ class Server(object):
             return
 
         # Debug
-        if self.debug_log is not None:
+        if self.debug:
             peer = conn.getpeername()
             self.log_debug('%s:%s => New connection' % peer)
 
@@ -256,7 +254,7 @@ class Server(object):
         conn, request, loader = requests.pop(fileno)
 
         # Debug
-        if self.debug_log is not None:
+        if self.debug:
             peer = conn.getpeername()
             self.log_debug('%s:%s => IN' % peer)
 
@@ -308,7 +306,7 @@ class Server(object):
         conn, response = requests.pop(fileno)
 
         # Debug
-        if self.debug_log is not None:
+        if self.debug:
             peer = conn.getpeername()
             self.log_debug('%s:%s => OUT' % peer)
 
@@ -403,8 +401,8 @@ class Server(object):
         # Close files
         if self.access_log is not None:
             self.access_log.close()
-        if self.error_log is not None:
-            self.error_log.close()
+        if self.event_log is not None:
+            self.event_log.close()
         # Remove pid file
         if self.pid_file is not None:
             remove_file(self.pid_file)
@@ -445,7 +443,7 @@ class Server(object):
 
 
     def log_error(self, context=None):
-        log = self.error_log
+        log = self.event_log
         if log is None:
             return
 
@@ -471,8 +469,8 @@ class Server(object):
 
         # Check the file has not been removed
         if fstat(log.fileno())[3] == 0:
-            log = open(self.error_log_path, 'a+')
-            self.error_log = log
+            log = open(self.event_log_path, 'a+')
+            self.event_log = log
 
         # Write
         log.write(data)
@@ -482,17 +480,17 @@ class Server(object):
 
 
     def log_debug(self, message):
-        log = self.debug_log
-        if log is None:
+        if not self.debug:
             return
 
         # The data to write
         data = '%s %s\n' % (datetime.now(), message)
 
         # Check the file has not been removed
+        log = self.event_log
         if fstat(log.fileno())[3] == 0:
-            log = open(self.debug_log_path, 'a+')
-            self.debug_log = log
+            log = open(self.event_log_path, 'a+')
+            self.event_log = log
 
         # Write
         log.write(data)

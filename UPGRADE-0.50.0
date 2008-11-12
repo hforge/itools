@@ -416,3 +416,17 @@ has been replaced:
   # Now
   print html_doc.get_body_as_html()
 
+
+itools.catalog / itools.xapian
+==============================
+
+EqQuery has been removed, PhraseQuery must be used instead. The result is the
+same.
+
+  Before                          Now
+  ------------------------------  -------------------------------
+  query = EqQuery('id', 'foo')    query = PhraseQuery('id', 'foo')
+
+
+
+

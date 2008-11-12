@@ -210,20 +210,20 @@ def is_asian_character(c):
     # http://en.wikipedia.org/wiki/Template:Unicode_chart_Hangul_Compatibility_Jamo
     # Hangul Compatibility Jamo
     # Range: 3130–318F
-    if code >= 12592 and code <= 12687:
-        return True
+    #if code >= 12592 and code <= 12687:
+    #    return True
 
     # http://en.wikipedia.org/wiki/Template:Unicode_chart_Hangul_Jamo
     # Hangul Jamo
     # Range: 1100–11FF
-    if code >= 4352 and code <= 4607:
-        return True
+    #if code >= 4352 and code <= 4607:
+    #    return True
 
     # http://en.wikipedia.org/wiki/Template:Unicode_chart_Hangul_Syllables
     # Hangul Syllables
     # Range: AC00–D7AF
-    if code >= 44032 and code <= 55215:
-        return True
+    #if code >= 44032 and code <= 55215:
+    #    return True
 
     # http://en.wikipedia.org/wiki/Template:Unicode_chart_Hiragana
     # Hiragana

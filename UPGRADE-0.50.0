@@ -19,7 +19,7 @@ Imports
 =======
 
 The package "itools.catalog" has been replaced by the package "itools.xapian",
-but the API is the same, so only the import sentences must be updated.
+but the changes to the API are minimal (see section below).
 
 Other objects have been renamed across different packages, the table below
 summarizes this changes.
@@ -330,6 +330,17 @@ expects a 'View' instead of a method name.
   missing          field_is_missing
 
 
+itools.xapian (was itools.catalog)
+==================================
+
+EqQuery has been removed, PhraseQuery must be used instead.  The results
+should be the same.
+
+  Before                          Now
+  ------------------------------  -------------------------------
+  query = EqQuery('id', 'foo')    query = PhraseQuery('id', 'foo')
+
+
 itools.xml
 ==========
 
@@ -415,18 +426,5 @@ has been replaced:
 
   # Now
   print html_doc.get_body_as_html()
-
-
-itools.catalog / itools.xapian
-==============================
-
-EqQuery has been removed, PhraseQuery must be used instead. The result is the
-same.
-
-  Before                          Now
-  ------------------------------  -------------------------------
-  query = EqQuery('id', 'foo')    query = PhraseQuery('id', 'foo')
-
-
 
 

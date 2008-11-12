@@ -263,6 +263,7 @@ html_elements = [
         'onfocus', 'onblur'], context='link to'),
     Element('abbr', common_attrs),
     Element('acronym', common_attrs),
+    BlockElement('address', common_attrs),
     EmptyBlockElement('area', common_attrs + ['shape', 'coords', 'href',
         'nohref', 'alt', 'tabindex', 'accesskey', 'onfocus', 'onblur']),
     Element('b', common_attrs),

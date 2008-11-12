@@ -828,14 +828,13 @@ class icalTableTestCase(unittest.TestCase):
         # property ATTENDEE
         name = 'ATTENDEE'
         value = event.get_property(name)
-        param = ['"mailto:DEV-GROUP@host2.com"']
-        value.append(Property('mailto:darwin@itaapy.com',
-                              {'MEMBER': param}))
+        member = '"mailto:DEV-GROUP@host2.com"'
+        value.append(Property('mailto:darwin@itaapy.com', MEMBER=[member]))
         cal.update_record(event.id, **{name: value})
 
         property = event.get_property(name)
         self.assertEqual(str(property[0].value), 'mailto:jdoe@itaapy.com')
-        self.assertEqual(property[1].parameters, {'MEMBER': param})
+        self.assertEqual(property[1].parameters, {'MEMBER': [member]})
         self.assertEqual(property[1], value[1])
 
 
@@ -850,7 +849,7 @@ class icalTableTestCase(unittest.TestCase):
 
         member = '"mailto:DEV-GROUP@host2.com"'
         value = [
-            Property(URI.decode('mailto:darwin@itaapy.com'), MEMBER=[param]),
+            Property(URI.decode('mailto:darwin@itaapy.com'), MEMBER=[member]),
             Property(URI.decode('mailto:jdoe@itaapy.com')),
             Property(URI.decode('mailto:jsmith@itaapy.com'))]
         cal.update_record(event.id, ATTENDEE=value)

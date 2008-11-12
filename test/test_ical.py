@@ -129,8 +129,8 @@ class icalTestCase(unittest.TestCase):
         expected = ['ATTENDEE;MEMBER="mailto:DEV-GROUP@host.com":'
                     'mailto:darwin@itaapy.com\n']
 
-        params = {'MEMBER': ['"mailto:DEV-GROUP@host.com"']}
-        value = Property('mailto:darwin@itaapy.com', params)
+        member = '"mailto:DEV-GROUP@host.com"'
+        value = Property('mailto:darwin@itaapy.com', MEMBER=[member])
         output = self.cal1.encode_property('ATTENDEE', value)
         self.assertEqual(output, expected)
 
@@ -160,8 +160,8 @@ class icalTestCase(unittest.TestCase):
         properties['MYADD'] = Property(u'Résumé à crêtes')
         value = Property(u'Property added by calling add_property')
         properties['DESCRIPTION'] = value
-        param = '"mailto:DEV-GROUP@host2.com"'
-        value = Property('mailto:darwin@itaapy.com', {'MEMBER': [param]})
+        member = '"mailto:DEV-GROUP@host2.com"'
+        value = Property('mailto:darwin@itaapy.com', MEMBER=[member])
         properties['ATTENDEE'] = value
         uid = cal.add_component('VEVENT', **properties)
 
@@ -373,13 +373,13 @@ class icalTestCase(unittest.TestCase):
         # property ATTENDEE
         name = 'ATTENDEE'
         value = event.get_property_values(name)
-        param = ['"mailto:DEV-GROUP@host2.com"']
-        value.append(Property('mailto:darwin@itaapy.com', {'MEMBER': param}))
+        member = '"mailto:DEV-GROUP@host2.com"'
+        value.append(Property('mailto:darwin@itaapy.com', MEMBER=[member]))
         cal.update_component(event.uid, **{name: value})
 
         property = event.get_property_values(name)
         self.assertEqual(str(property[0].value), 'mailto:jdoe@itaapy.com')
-        self.assertEqual(property[1].parameters, {'MEMBER': param})
+        self.assertEqual(property[1].parameters, {'MEMBER': [member]})
         self.assertEqual(property[1], value[1])
 
 
@@ -404,14 +404,13 @@ class icalTestCase(unittest.TestCase):
         cal.update_component(event.uid, **{name: value})
         self.assertEqual(event.get_property_values(name), value)
 
-        name, value = 'ATTENDEE', []
-        param = ['"mailto:DEV-GROUP@host2.com"']
-        value.append(Property(URI.decode('mailto:darwin@itaapy.com'),
-                              {'MEMBER': param}))
-        value.append(Property(URI.decode('mailto:jdoe@itaapy.com')))
-        value.append(Property(URI.decode('mailto:jsmith@itaapy.com')))
-        cal.update_component(event.uid, **{name: value})
-        self.assertEqual(event.get_property_values(name), value)
+        member = '"mailto:DEV-GROUP@host2.com"'
+        value = [
+            Property(URI.decode('mailto:darwin@itaapy.com'), MEMBER=[member]),
+            Property(URI.decode('mailto:jdoe@itaapy.com')),
+            Property(URI.decode('mailto:jsmith@itaapy.com'))]
+        cal.update_component(event.uid, ATTENDEE=value)
+        self.assertEqual(event.get_property_values('ATTENDEE'), value)
 
 
     def test_search_events(self):
@@ -620,8 +619,8 @@ class icalTableTestCase(unittest.TestCase):
         expected = ['ATTENDEE;MEMBER="mailto:DEV-GROUP@host.com":'
                     'mailto:darwin@itaapy.com\n']
 
-        params = {'MEMBER': ['"mailto:DEV-GROUP@host.com"']}
-        value = Property('mailto:darwin@itaapy.com', params)
+        member = '"mailto:DEV-GROUP@host.com"'
+        value = Property('mailto:darwin@itaapy.com', MEMBER=[member])
         output = self.cal1.encode_property('ATTENDEE', value)
         self.assertEqual(output, expected)
 
@@ -646,8 +645,8 @@ class icalTableTestCase(unittest.TestCase):
         properties['MYADD'] = Property(u'Résumé à crêtes')
         value = Property(u'Property added by calling add_property')
         properties['DESCRIPTION'] = value
-        param = '"mailto:DEV-GROUP@host2.com"'
-        value = Property('mailto:darwin@itaapy.com', {'MEMBER': [param]})
+        member = '"mailto:DEV-GROUP@host2.com"'
+        value = Property('mailto:darwin@itaapy.com', MEMBER=[member])
         properties['ATTENDEE'] = value
         properties['type'] = 'VEVENT'
         uid = cal.add_record(properties).UID
@@ -849,14 +848,13 @@ class icalTableTestCase(unittest.TestCase):
         cal.update_record(event.id, **{name: value})
         self.assertEqual(event.get_property(name), value)
 
-        name, value = 'ATTENDEE', []
-        param = ['"mailto:DEV-GROUP@host2.com"']
-        value.append(Property(URI.decode('mailto:darwin@itaapy.com'),
-                              {'MEMBER': param}))
-        value.append(Property(URI.decode('mailto:jdoe@itaapy.com')))
-        value.append(Property(URI.decode('mailto:jsmith@itaapy.com')))
-        cal.update_record(event.id, **{name: value})
-        self.assertEqual(event.get_property(name), value)
+        member = '"mailto:DEV-GROUP@host2.com"'
+        value = [
+            Property(URI.decode('mailto:darwin@itaapy.com'), MEMBER=[param]),
+            Property(URI.decode('mailto:jdoe@itaapy.com')),
+            Property(URI.decode('mailto:jsmith@itaapy.com'))]
+        cal.update_record(event.id, ATTENDEE=value)
+        self.assertEqual(event.get_property('ATTENDEE'), value)
 
 
     def test_search_events(self):

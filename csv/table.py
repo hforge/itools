@@ -294,9 +294,9 @@ class Property(object):
 
     __slots__ = ['value', 'parameters']
 
-    def __init__(self, value, parameters={}):
+    def __init__(self, value, **kw):
         self.value = value
-        self.parameters = parameters
+        self.parameters = kw
 
 
 
@@ -522,7 +522,7 @@ class Table(File):
             # Timestamp (ts), Schema, or Something else
             datatype = get_datatype(name)
             value = datatype.decode(value)
-            property = Property(value, parameters)
+            property = Property(value, **parameters)
             if getattr(datatype, 'multiple', False) is True:
                 version.setdefault(name, []).append(property)
             elif name in version:

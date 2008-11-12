@@ -204,7 +204,7 @@ class icalendarTable(BaseCalendar, Table):
             # Timestamp (ts), Schema, or Something else
             datatype = self.get_record_datatype(name)
             value = datatype.decode(value)
-            property = Property(value, parameters)
+            property = Property(value, **parameters)
             # Append
             lines.append((name, property))
 

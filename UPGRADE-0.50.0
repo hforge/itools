@@ -70,7 +70,18 @@ renamed:
   Table.get_datatype              Table.get_record_datatype
   Table.get_value                 Table.get_record_value
 
-(2) Now table fields with a 'Unicode' datatype are considered to be
+(2) The 'Property' class now takes keyword parameters for the property
+parameters:
+
+  # Before
+  Property(u'hello', {'language': 'en'})
+  Property(value, parameters)
+
+  # Now
+  Property(u'hello', language='en')
+  Property(value, **parameters)
+
+(3) Now table fields with a 'Unicode' datatype are considered to be
 multilingual, and must be defined as 'multiple' to work.
 
 This means that any 'Unicode' field in existing applications should be
@@ -101,7 +112,7 @@ required to have the 'language' parameter:
   title;language=en:hello world
 
 
-(3) The 'Table.get_field_title' method has been moved to ikaaro.
+(4) The 'Table.get_field_title' method has been moved to ikaaro.
 
 
 itools.gettext

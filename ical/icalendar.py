@@ -308,11 +308,10 @@ class iCalendar(BaseCalendar, TextFile):
 
     def new(self):
         properties = (
-            ('VERSION', {}, u'2.0'),
-            ('PRODID', {}, u'-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN')
-          )
-        for name, param, value in properties:
-            self.properties[name] = Property(value, param)
+            ('VERSION', u'2.0'),
+            ('PRODID', u'-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN'))
+        for name, value in properties:
+            self.properties[name] = Property(value)
 
         # The encoding
         self.encoding = 'UTF-8'
@@ -337,7 +336,7 @@ class iCalendar(BaseCalendar, TextFile):
             else:
                 value = datatype.decode(value)
             # Build the value (a Property instance)
-            value = Property(value, parameters)
+            value = Property(value, **parameters)
             # Append
             lines.append((name, value))
 

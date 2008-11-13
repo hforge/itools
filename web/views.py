@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.datatypes import Enumerate
+from itools.datatypes import Enumerate, is_datatype
 from itools.stl import stl
 from context import FormError
 
@@ -154,20 +154,30 @@ class BaseForm(BaseView):
         namespace = {}
         for name in schema:
             datatype = schema[name]
+            is_mandatory = getattr(datatype, 'mandatory', False)
+            is_readonly = getattr(datatype, 'readonly', False)
+            is_multiple = getattr(datatype, 'multiple', False)
+
             cls = []
-            if getattr(datatype, 'mandatory', False):
+            if is_mandatory:
                 cls.append('field_is_required')
-            readonly = getattr(datatype, 'readonly', False)
-            if submit and not readonly:
+            if submit and not is_readonly:
                 try:
                     value = context.get_form_value(name, type=datatype)
                 except FormError:
                     value = context.get_form_value(name)
                     cls.append('field_is_missing')
+                else:
+                    if is_datatype(datatype, Enumerate):
+                        value = datatype.get_namespace(value)
+                    elif is_multiple:
+                        # XXX Done for table multilingual fields (fragile)
+                        value = value[0]
+                    else:
+                        value = datatype.encode(value)
             else:
                 value = self.get_value(resource, context, name, datatype)
-            if 'field_is_missing' not in cls:
-                if isinstance(datatype, Enumerate):
+                if is_datatype(datatype, Enumerate):
                     value = datatype.get_namespace(value)
                 else:
                     value = datatype.encode(value)

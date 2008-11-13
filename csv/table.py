@@ -357,6 +357,7 @@ class Record(list):
 class Table(File):
 
     record_class = Record
+    incremental_save = True
 
     #######################################################################
     # Hash with field names and its types
@@ -620,6 +621,12 @@ class Table(File):
     # Save (use append for scalability)
     #######################################################################
     def save_state(self):
+        if self.incremental_save is False:
+            File.save_state(self)
+            self.incremental_save = True
+            return
+
+        # Incremental Save
         file = self.safe_open(self.uri, 'a')
         try:
             # Added properties records

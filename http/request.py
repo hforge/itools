@@ -225,6 +225,8 @@ class Request(Message):
 
     def get_cookie(self, name):
         cookies = self.get_header('cookie')
+        if cookies is None:
+            return None
         return cookies.get(name)
 
 

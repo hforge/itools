@@ -105,7 +105,7 @@ class FileFS(BaseFS):
     @staticmethod
     def make_folder(reference):
         path = str(reference.path)
-        mkdir(path)
+        makedirs(path)
 
 
     @staticmethod

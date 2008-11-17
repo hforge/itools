@@ -46,16 +46,9 @@ stl_uri = 'http://www.hforge.org/xml-namespaces/stl'
 ########################################################################
 # Exceptions
 ########################################################################
-class STLSyntaxError(XMLError):
+class STLError(StandardError):
     pass
 
-
-class STLNameError(NameError):
-    pass
-
-
-class STLTypeError(TypeError):
-    pass
 
 
 ########################################################################
@@ -132,13 +125,13 @@ def lookup(namespace, name):
     if isinstance(namespace, dict):
         if name in namespace:
             return namespace[name]
-        raise STLNameError, 'name "%s" not found in the namespace' % name
+        raise STLError, 'name "%s" not found in the namespace' % name
 
     # Instance
     try:
         return getattr(namespace, name)
     except AttributeError:
-        raise STLNameError, 'name "%s" not found in the namespace' % name
+        raise STLError, 'name "%s" not found in the namespace' % name
 
 
 
@@ -153,10 +146,10 @@ class NamespaceStack(list):
         for namespace in stack:
             try:
                 return lookup(namespace, name)
-            except STLNameError:
+            except STLError:
                 pass
 
-        raise STLNameError, 'name "%s" not found in the namespace' % name
+        raise STLError, 'name "%s" not found in the namespace' % name
 
 
     def __getslice__(self, a, b):

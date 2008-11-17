@@ -50,6 +50,9 @@ class STLError(StandardError):
     pass
 
 
+ERR_EXPR_VALUE = "unexpected value for the '${%s}' expression"
+
+
 
 ########################################################################
 # Expressions
@@ -256,6 +259,8 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
                     yield TEXT, value.encode(encoding), 0
                 elif isinstance(value, (list, GeneratorType, XMLParser)):
                     for x in value:
+                        if type(x) is not tuple:
+                            raise STLError, ERR_EXPR_VALUE % expression
                         yield x
                 elif type(value) is unicode:
                     yield TEXT, value.encode(encoding), 0

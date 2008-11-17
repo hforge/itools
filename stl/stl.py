@@ -128,13 +128,17 @@ def evaluate_repeat(expression, stack, repeat_stack):
 def lookup(namespace, name):
     """Looks for a variable in a namespace (an instance, a mapping, etc..)
     """
+    # Mapping
     if isinstance(namespace, dict):
         if name in namespace:
             return namespace[name]
-    elif hasattr(namespace, name):
-        return getattr(namespace, name)
+        raise STLNameError, 'name "%s" not found in the namespace' % name
 
-    raise STLNameError, 'name "%s" not found in the namespace' % name
+    # Instance
+    try:
+        return getattr(namespace, name)
+    except AttributeError:
+        raise STLNameError, 'name "%s" not found in the namespace' % name
 
 
 

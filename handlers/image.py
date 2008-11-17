@@ -45,7 +45,7 @@ class Image(File):
             f = StringIO(self.data)
             try:
                 im = PILImage.open(f)
-            except IOError:
+            except (IOError, OverflowError):
                 self.size = 0, 0
             else:
                 self.size = im.size

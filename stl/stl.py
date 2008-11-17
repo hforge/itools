@@ -128,9 +128,7 @@ def evaluate_repeat(expression, stack, repeat_stack):
 def lookup(namespace, name):
     """Looks for a variable in a namespace (an instance, a mapping, etc..)
     """
-    if hasattr(namespace, 'stl_lookup'):
-        return namespace.stl_lookup(name)
-    elif isinstance(namespace, dict):
+    if isinstance(namespace, dict):
         if name in namespace:
             return namespace[name]
     elif hasattr(namespace, name):

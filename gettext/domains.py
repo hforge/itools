@@ -85,15 +85,17 @@ def gettext(domain_name, message, language=None, **kw):
 
 class MSG(object):
 
-    __slots__ = ['message', 'domain']
+    __slots__ = ['message', 'domain', 'kw']
 
-    def __init__(self, message, domain=None):
+    def __init__(self, message, domain=None, **kw):
         if domain is None:
             domain = _getframe(1).f_globals.get('__name__')
             domain = domain.split('.', 1)[0]
 
         self.message = message
         self.domain = domain
+        # XXX Used by the subclass 'INFO' (from itools.web)
+        self.kw = kw
 
 
     def gettext(self, language=None, **kw):

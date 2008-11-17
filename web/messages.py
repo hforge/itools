@@ -22,11 +22,6 @@ from itools.gettext import MSG
 
 class INFO(MSG):
 
-    def __init__(self, message, domain=None, **kw):
-        MSG.__init__(self, message, domain=domain)
-        self.kw = kw
-
-
     def __call__(self, **kw):
         if not kw:
             # Also skipping stl calls

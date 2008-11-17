@@ -260,7 +260,7 @@ html_elements = [
     # XHTML 1.0 strict
     Element('a', common_attrs + ['charset', 'type', 'name', 'href',
         'hreflang', 'rel', 'rev', 'accesskey', 'shape', 'coords', 'tabindex',
-        'onfocus', 'onblur'], context='link to'),
+        'target', 'onfocus', 'onblur'], context='link to'),
     Element('abbr', common_attrs),
     Element('acronym', common_attrs),
     BlockElement('address', common_attrs),

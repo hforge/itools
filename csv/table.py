@@ -685,7 +685,7 @@ class Table(File):
     #######################################################################
     # API / Public
     #######################################################################
-    def get_record(self, id, sequence=-1):
+    def get_record(self, id):
         if id >= len(self.records):
             return None
         return self.records[id]

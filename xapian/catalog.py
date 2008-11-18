@@ -20,7 +20,7 @@ from marshal import dumps, loads
 
 # Import from xapian
 from xapian import Database, WritableDatabase, DB_CREATE, DB_OPEN
-from xapian import Document, Enquire, Query, TermGenerator, Stem
+from xapian import Document, Enquire, Query, TermGenerator
 from xapian import MultiValueSorter, sortable_serialise, sortable_unserialise
 
 # Import from itools
@@ -65,35 +65,13 @@ def _decode(field_type, data):
 
 
 def _index(xdoc, field_type, value, prefix):
-    # text
-    if field_type == 'text':
-        # XXX TEST: we use an english stemmer in all cases
-        field = get_field('text')
-        stemmer = Stem('en')
-        for term in field.split(value):
-            xdoc.add_posting(prefix+stemmer(term[0]), term[1])
-        #indexer = TermGenerator()
-        #indexer.set_document(xdoc)
-        #indexer.index_text(value, 1, prefix)
-    # A common field or a new field
-    else:
-        field = get_field(field_type)
-        for term in field.split(value):
-            xdoc.add_posting(prefix+term[0], term[1])
+    field = get_field(field_type)
+    for term in field.split(value):
+        xdoc.add_posting(prefix+term[0], term[1])
 
 
 
 def _make_PhraseQuery(field_type, value, prefix):
-    if field_type == 'text':
-        # XXX TEST
-        field = get_field('text')
-        words = []
-        stemmer = Stem('en')
-        for word in field.split(value):
-            words.append(prefix+stemmer(word[0]))
-        return Query(OP_PHRASE, words)
-
-    # A common field or a new field
     field = get_field(field_type)
     words = []
     for word in field.split(value):

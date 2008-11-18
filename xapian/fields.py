@@ -153,14 +153,14 @@ class TextField(BaseField):
                         state = 1
 
                 else: # CJK
-                    # c.lower() -> ASCII in CJK mode
+                    c = c.lower()
                     if previous_cjk:
-                        yield u'%s%s' % (previous_cjk, c.lower()), position
+                        yield u'%s%s' % (previous_cjk, c), position
                         position += 1
                         state = 3
                     else:
                         state = 2
-                    previous_cjk = c.lower()
+                    previous_cjk = c
 
         # Last word
         if state == 1:

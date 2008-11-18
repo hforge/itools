@@ -686,9 +686,10 @@ class Table(File):
     # API / Public
     #######################################################################
     def get_record(self, id):
-        if id >= len(self.records):
+        try:
+            return self.records[id]
+        except IndexError:
             return None
-        return self.records[id]
 
 
     def add_record(self, kw):

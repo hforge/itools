@@ -672,6 +672,10 @@ class iCalendar(BaseCalendar, TextFile):
         return self.components.get(uid)
 
 
+    def get_record_value(self, record, name):
+        return record.get_value(name)
+
+
     def get_component_by_uid(self, uid):
         """Return components with the given uid, None if it doesn't appear.
         """

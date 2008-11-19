@@ -15,10 +15,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from stl import STLError, stl, set_prefix
+from stl import STLError, STLTemplate, stl, set_prefix
 
 
 __all__ = [
     'STLError',
     'stl',
+    'STLTemplate',
     'set_prefix']

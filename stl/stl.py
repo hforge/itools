@@ -252,7 +252,10 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
                 # Send back
                 if value is None:
                     continue
-                if isinstance(value, MSG):
+                if isinstance(value, STLTemplate):
+                    for x in value.render():
+                        yield x
+                elif isinstance(value, MSG):
                     value = value.gettext()
                     yield TEXT, value.encode(encoding), 0
                 elif isinstance(value, (list, GeneratorType, XMLParser)):
@@ -485,3 +488,29 @@ def resolve_pointer(value, offset):
 
     return value
 
+
+###########################################################################
+# Templates
+###########################################################################
+
+class STLTemplate(object):
+
+    def __init__(self):
+        """To be overriden.  It should accept and keep the information
+        required by 'get_template' and 'get_namespace'.
+        """
+        raise NotImplementedError
+
+
+    def get_template(self):
+        raise NotImplementedError
+
+
+    def get_namespace(self):
+        return {}
+
+
+    def render(self):
+        template = self.get_template()
+        namespace = self.get_namespace()
+        return stl(template, namespace)

@@ -20,7 +20,7 @@ from mimetypes import add_type
 
 # Import from itools
 from itools.utils import get_abspath
-from itools.xml import register_dtd
+from itools.xml import register_dtd, DocType
 from html import HTMLFile
 from parser import HTMLParser
 from xhtml import XHTMLFile, xhtml_uri
@@ -43,6 +43,7 @@ __all__ = [
     'sanitize_str',
     # Constants
     'xhtml_uri',
+    'xhtml_doctype',
     ]
 
 
@@ -74,3 +75,8 @@ register_dtd(get_abspath('xhtml-symbol.ent'),
 register_dtd(get_abspath('xhtml-special.ent'),
              urn='urn:publicid:-:W3C:ENTITIES+Special+for+XHTML:EN')
 
+
+
+xhtml_doctype = DocType(
+    '-//W3C//DTD XHTML 1.0 Strict//EN',
+    'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd')

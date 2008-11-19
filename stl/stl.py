@@ -28,19 +28,17 @@ from re import compile
 from types import GeneratorType
 
 # Import from itools
-from itools.datatypes import Boolean, String, URI, is_datatype
+from itools.datatypes import Boolean, URI, is_datatype
 from itools.gettext import MSG
 from itools.uri import Path, Reference
 from itools.xml import XMLError, XMLParser, find_end, stream_to_str
 from itools.xml import DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, TEXT, COMMENT
-from itools.xml import xmlns_uri, XMLNamespace, ElementSchema
-from itools.xml import register_namespace, get_namespace, get_attr_datatype
+from itools.xml import xmlns_uri
+from itools.xml import get_attr_datatype
 from itools.html import xhtml_uri
 from itools.html import stream_to_str_as_html, stream_to_str_as_xhtml
+from schema import stl_uri
 
-
-
-stl_uri = 'http://www.hforge.org/xml-namespaces/stl'
 
 
 ########################################################################
@@ -486,37 +484,4 @@ def resolve_pointer(value, offset):
                 return str(value)
 
     return value
-
-
-########################################################################
-# The XML namespace handler
-########################################################################
-
-stl_attributes = {
-    'repeat': String,
-    'if': String,
-    'omit-tag': String}
-
-
-class STLElement(ElementSchema):
-
-    attributes = stl_attributes
-
-
-stl_elements = [
-    STLElement('block', is_inline=False),
-    STLElement('inline', is_inline=True)]
-
-
-
-stl_namespace = XMLNamespace(
-    stl_uri, 'stl',
-    stl_elements,
-    stl_attributes)
-
-
-###########################################################################
-# Register
-###########################################################################
-register_namespace(stl_namespace)
 

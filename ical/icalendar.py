@@ -437,9 +437,7 @@ class iCalendar(BaseCalendar, TextFile):
     #########################################################################
     def to_str(self, encoding='UTF-8'):
         lines = []
-
-        line = 'BEGIN:VCALENDAR\n'
-        lines.append(Unicode.encode(line))
+        lines.append('BEGIN:VCALENDAR\n')
 
         # Calendar properties
         for key in self.properties:
@@ -453,7 +451,7 @@ class iCalendar(BaseCalendar, TextFile):
             for sequence in component.get_sequences():
                 version = component.versions[sequence]
                 # Begin
-                line = 'BEGIN:%s\n' % c_type
+                line = u'BEGIN:%s\n' % c_type
                 lines.append(Unicode.encode(line))
                 # UID, SEQUENCE
                 lines.append('UID:%s\n' % uid)
@@ -464,11 +462,10 @@ class iCalendar(BaseCalendar, TextFile):
                     line = self.encode_property(key, value, encoding)
                     lines.extend(line)
                 # End
-                line = 'END:%s\n' % c_type
+                line = u'END:%s\n' % c_type
                 lines.append(Unicode.encode(line))
 
-        line = 'END:VCALENDAR\n'
-        lines.append(Unicode.encode(line))
+        lines.append('END:VCALENDAR\n')
 
         return ''.join(lines)
 

@@ -250,12 +250,11 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
                 start = (i + 1)
                 state = 0
                 # Send back
+                if isinstance(value, STLTemplate):
+                    value = value.render()
                 if value is None:
                     continue
-                if isinstance(value, STLTemplate):
-                    for x in value.render():
-                        yield x
-                elif isinstance(value, MSG):
+                if isinstance(value, MSG):
                     value = value.gettext()
                     yield TEXT, value.encode(encoding), 0
                 elif isinstance(value, (list, GeneratorType, XMLParser)):
@@ -502,6 +501,10 @@ class STLTemplate(object):
         raise NotImplementedError
 
 
+    def show(self):
+        return True
+
+
     def get_template(self):
         raise NotImplementedError
 
@@ -511,6 +514,9 @@ class STLTemplate(object):
 
 
     def render(self):
+        if self.show() is False:
+            return None
+
         template = self.get_template()
         namespace = self.get_namespace()
         return stl(template, namespace)

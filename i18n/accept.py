@@ -69,21 +69,6 @@ class AcceptLanguage(dict):
         return language
 
 
-    def get_top_language(self):
-        # NOTE The result of this method may be ambiguous, if there are
-        # several languages with the same, top, quality.
-        top_language = None
-        top_quality = self.get('', 0)
-        for language in self:
-            if language == '':
-                continue
-            quality = self[language]
-            if quality > top_quality:
-                top_quality = quality
-                top_language = language
-        return top_language
-
-
 
 class AcceptLanguageType(object):
 

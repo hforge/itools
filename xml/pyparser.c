@@ -114,12 +114,31 @@ PyDocType_to_str (PyDocType * self, PyObject * trash1, PyObject * trash2)
 }
 
 
+static PyObject *
+PyDocType_copy (PyDocType * self, PyObject * trash1, PyObject * trash2)
+{
+  Py_INCREF (self);
+  return (PyObject *) self;
+}
+
+
+static PyObject *
+PyDocType_deepcopy (PyDocType * self, PyObject * args, PyObject * trash1)
+{
+  Py_INCREF (self);
+  return (PyObject *) self;
+}
+
+
 /********************************
  * Declaration of PyDocTypeType *
  ********************************/
 static PyMethodDef PyDocType_methods[] = {
   {"to_str", (PyCFunction) PyDocType_to_str, METH_NOARGS, "Return a 'ready "
    "to insert' representation of the doctype"},
+  {"__copy__", (PyCFunction) PyDocType_copy, METH_NOARGS, "copy handler"},
+  {"__deepcopy__", (PyCFunction) PyDocType_copy, METH_VARARGS, "deepcopy "
+   "handler"},
   {NULL}                        /* Sentinel */
 };
 
@@ -681,8 +700,8 @@ static PyTypeObject XMLParserType = {
 static PyObject *
 pyparser_register_dtd (PyObject * trash, PyObject * args, PyObject * kwds)
 {
-  static char *kwlist[] = { "filename", "urn", "uri" , NULL };
-  char *filename, *urn=NULL, *uri=NULL;
+  static char *kwlist[] = { "filename", "urn", "uri", NULL };
+  char *filename, *urn = NULL, *uri = NULL;
 
   /* Arguments */
   if (!PyArg_ParseTupleAndKeywords (args, kwds, "s|zz", kwlist, &filename,
@@ -692,11 +711,11 @@ pyparser_register_dtd (PyObject * trash, PyObject * args, PyObject * kwds)
 
   /* Arguments verification */
   if (!urn && !uri)
-  {
+    {
       PyErr_SetString (PyExc_TypeError,
                        "urn and uri cannot be simultaneously None");
       return NULL;
-  }
+    }
 
 
   /* Register */

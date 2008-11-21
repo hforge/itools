@@ -27,7 +27,7 @@ class AccessControl(object):
         # Get the access control definition (default to False)
         if view is None:
             return False
-        access = view.access
+        access = view.get_access(resource)
 
         # Private (False) or Public (True)
         if isinstance(access, bool):

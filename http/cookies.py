@@ -79,7 +79,7 @@ def read_parameter(data):
     data = read_char('=', data)
     white, data = read_white_space(data)
     # value
-    if data[0] == '"':
+    if data and data[0] == '"':
         value, data = read_quoted_string(data)
     else:
         value, data = read_opaque(data, ';')

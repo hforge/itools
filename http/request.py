@@ -191,7 +191,6 @@ class Request(Message):
     def get_remote_ip(self):
         return self.headers.get('x-forwarded-for', None)
 
-    remote_ip = property(get_remote_ip, None, None, '')
 
     ########################################################################
     # The Form

@@ -20,7 +20,7 @@ from marshal import dumps, loads
 
 # Import from xapian
 from xapian import Database, WritableDatabase, DB_CREATE, DB_OPEN
-from xapian import Document, Enquire, Query, TermGenerator
+from xapian import Document, Enquire, Query
 from xapian import MultiValueSorter, sortable_serialise, sortable_unserialise
 
 # Import from itools
@@ -489,23 +489,33 @@ class Catalog(object):
             return Query(OP_VALUE_RANGE, value, _encode(field_type, left),
                          _encode(field_type, right))
 
-        # StartQuery, the field must be indexed
+        # StartQuery, the field must be stored
         if query_class is StartQuery:
             name = query.name
+            value = query.value
             # If there is a problem => an empty result
             if name not in fields:
                 return Query()
+
             info = fields[name]
-            prefix= info['prefix']
-            field_type = info['type']
+            value_nb = info['value']
 
-            # Get all the terms starting with "value"
-            terms = self._db.allterms(prefix + _encode(field_type,
-                                                       query.value))
-            terms = [term.term for term in terms]
+            value = _encode(info['type'], value)
+            if value:
+                # end_value = the word after value: toto => totp
+                end_value = value[:-1] + unichr(ord(value[-1]) + 1)
 
-            # And return a "OR" query
-            return Query(OP_OR, terms)
+                # good = {x / x >= value}
+                good = Query(OP_VALUE_GE, value_nb, value)
+
+                # bad = {x / x >= end_value}
+                bad = Query(OP_VALUE_GE, value_nb, end_value)
+
+                # Return {x / x in good but x not in bad}
+                return Query(OP_AND_NOT, good, bad)
+            else:
+                # If value == '', we return everything
+                return Query('')
 
         # And
         i2x = self._query2xquery

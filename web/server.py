@@ -426,7 +426,9 @@ class Server(object):
             return
 
         # The data to write
-        host, port = conn.getpeername()
+        host = request.get_remote_ip()
+        if host is None:
+            host, port = conn.getpeername()
         namespace = (host, strftime('%d/%b/%Y:%H:%M:%S %Z'),
                      request.request_line, response.status,
                      response.get_content_length())

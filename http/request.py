@@ -188,6 +188,11 @@ class Request(Message):
     referrer = property(get_referrer, None, None, '')
 
 
+    def get_remote_ip(self):
+        return self.headers.get('x-forwarded-for', None)
+
+    remote_ip = property(get_remote_ip, None, None, '')
+
     ########################################################################
     # The Form
     def get_form(self):

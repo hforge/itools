@@ -204,6 +204,8 @@ headers = {
     'set-cookie': SetCookieDataType,
     # RFC 2183
     'content-disposition': ContentDisposition,
+    # mod_proxy
+    'x-forwarded-for': String,
     }
 
 

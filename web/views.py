@@ -43,16 +43,12 @@ def process_form(get_value, schema):
 
 class BaseView(object):
 
+    # Access Control
+    access = False
 
     def __init__(self, **kw):
         for key in kw:
             setattr(self, key, kw[key])
-
-
-    # Access Control
-    access = False
-    def get_access(self, resource):
-        return self.access
 
 
     #######################################################################

@@ -268,5 +268,9 @@ class File(Handler):
         raise NotImplementedError
 
 
+    def is_empty(self):
+        raise NotImplementedError
+
+
 
 register_handler_class(File)

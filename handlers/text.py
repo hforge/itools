@@ -68,4 +68,9 @@ class TextFile(File):
         return unicode(self.to_str(), 'utf-8')
 
 
+    def is_empty(self):
+        self.to_text().strip() == u""
+
+
+
 register_handler_class(TextFile)

@@ -291,4 +291,20 @@ class XHTMLFile(XMLFile):
         self.events = events
 
 
+    def is_empty(self):
+        body = self.get_body()
+        if body is None:
+            return True
+        for type, value, line in body.events:
+            if type == TEXT:
+                if value.replace('&nbsp;', '').strip():
+                    return False
+            elif type == START_ELEMENT:
+                tag_uri, tag_name, attributes = value
+                if tag_name == 'img':
+                    return False
+        return True
+
+
+
 register_handler_class(XHTMLFile)

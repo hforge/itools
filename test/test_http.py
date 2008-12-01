@@ -145,6 +145,19 @@ class CookieTestCase(TestCase):
         self.assertEqual(CookieDataType.decode(cookie), expected)
 
 
+    #######################################################################
+    # Common cases
+    #######################################################################
+    def test_last_is_empty(self):
+        cookie = 'areYourCookiesEnabled='
+        expected = {'areyourcookiesenabled': Cookie('')}
+        self.assertEqual(CookieDataType.decode(cookie), expected)
+
+
+    def test_ends_with_semicolon(self):
+        cookie = 'language="en";'
+        expected = {'language': Cookie('en')}
+        self.assertEqual(CookieDataType.decode(cookie), expected)
 
 
 

@@ -168,11 +168,12 @@ class CookieDataType(DataType):
             path = domain = None
             # White Space
             white, data = read_white_space(data)
-            # Parameters
+            # Seperator (;)
             if data:
-                # Seperator (;)
                 data = read_char(';', data)
                 white, data = read_white_space(data)
+            # Parameters
+            if data:
                 # Parameter
                 value, rest = read_parameter(data)
                 name, value = value

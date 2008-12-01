@@ -33,6 +33,7 @@ summarizes this changes.
   ical.icalendar                 ical.iCalendar
   i18n.Message                   srx.Message
   i18n.Multilingual              (REMOVED)
+  stl.STLNameError               stl.STLError
   tmx.Message                    tmx.TMXUnit
   tmx.Note                       tmx.TMXNote
   tmx.TMX                        tmx.TMXFile
@@ -208,6 +209,8 @@ itools.stl
   # Now
   <stl:block stl:repeat="...">
 
+(3) The 'stl_lookup' method has been dropped, use dictionaries instead.
+
 
 itools.web
 ==========
@@ -313,6 +316,15 @@ expects a 'View' instead of a method name.
   --------------   -----------------
   field_required   field_is_required
   missing          field_is_missing
+
+(7) The prototype for the server class has changed, after the unification
+of the error and debug logs:
+
+  # Before
+  Server(..., error_log=error_log, debug_log=debug_log, ...)
+
+  # Now
+  Server(..., event_log=event_log, debug=True, ...)
 
 
 itools.xapian (was itools.catalog)

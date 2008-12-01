@@ -1,5 +1,5 @@
 
-itools 0.50.0 (2008/XX/XX)
+itools 0.50.0 (2008/12/XX)
 ==========================
 
 itools is a Python library, it groups a number of packages into a single
@@ -18,7 +18,7 @@ meta-package for easier development and deployment:
 The "itools.catalog" package, which provided an index&search engine, has
 been replaced by "itools.xapian".  The new package is a wrapper around
 the Xapian [1] engine; it provides the same API of "itools.catalog",
-only the speed is different.
+only the scalability is different.
 
 The new package "itools.isetup" provides the infrastructure required by
 the new "isetup-cache-list.py", "isetup-info.py", "isetup-install.py"
@@ -26,11 +26,16 @@ and "isetup-release.py" scripts.  Together they make up a toolset to
 manage the Python packages installed in a Python environment.
 
 Other new packages are "itools.srx", with a partial implementation of
-the "Segmentation Rules eXchange" format [2].  And "itools.relaxng",
-with a partial implementation of "Relax NG" [3].
+the "Segmentation Rules eXchange" format [2]; and "itools.relaxng",
+with a partial implementation of "Relax NG" [3].  The ODF support has
+been substantially improved, in particular through the use of RelaxNG.
+The support of multilinugual formats like PO and XLIFF has been
+improved too, with new features like placeables and context handling.
+These changes have been sponsored by NLNet [4], as part of the ODF
+Converter project [5].
 
 The itools.pdf package includes the new PDF Markup Language (PML), which
-renders the itools implementation of RML [4] obsolete.
+renders the itools implementation of RML [6] obsolete.
 
 The XML parser has been rewritten to provide a more complete and
 accurate support of the standard.  There have been also significant
@@ -38,11 +43,6 @@ changes to the API, specially to the definition and handling of XML
 namespaces.
 
 The "itools.web" package has seen major architecture and API changes.
-The ODF support has been substantially improved, in particular through
-the use of RelaxNG.  The support of multilinugual formats like PO and
-XLIFF has been improved with new features like placeables and context
-handling.
-
 Almost every other package has seen API or implementation modifications
 to different degrees.  Check the upgrade notes and documentation for
 further details.
@@ -52,7 +52,9 @@ Now Python 2.5.2 version or later is required, Python 2.6 is supported.
 [1] http://www.xapian.org/
 [2] http://www.lisa.org/Segmentation-Rules-e.40.0.html
 [3] http://relaxng.org/
-[4] http://www.reportlab.com/docs/RML_UserGuide_1_0.pdf
+[4] XXX
+[5] XXX
+[6] http://www.reportlab.com/docs/RML_UserGuide_1_0.pdf
 
 
 Resources

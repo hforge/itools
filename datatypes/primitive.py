@@ -76,6 +76,11 @@ class Unicode(DataType):
         return value.encode(encoding)
 
 
+    @staticmethod
+    def is_empty(value):
+        return value.strip() == u''
+
+
 
 class String(DataType):
 

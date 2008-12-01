@@ -74,3 +74,13 @@ class DataType(object):
         this method will check that it is not a negative number.
         """
         return True
+
+
+    @staticmethod
+    def is_empty(value):
+        """Checks whether the given value is empty or not.
+
+        For example, a text string made of white spaces may be considered
+        as empty.  (NOTE This is used by the multilingual code.)
+        """
+        return value is None

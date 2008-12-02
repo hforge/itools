@@ -154,10 +154,11 @@ FONTSIZE = {'xx-small': 20, 'x-small': 40, 'smaller': 60, 'small':80,
             'xx-large': 180}
 
 
-SIZE = {'in': inch, 'cm': cm, 'mm': mm, 'pica': pica, 'px': 1}
+# 16px = 12pt
+SIZE = {'in': inch, 'cm': cm, 'mm': mm, 'pica': pica, 'px': 1, 'pt': 4/3}
 
 
-def font_value(str_value, style_size = 12):
+def font_value(str_value, style_size=12):
     style_size = 12  # TODO : replace default_value by current stylesheet size
     if str_value[0].isalpha():
         ratio = FONTSIZE.get(str_value, 100)
@@ -165,8 +166,13 @@ def font_value(str_value, style_size = 12):
     elif str_value.endswith('%'):
         ratio = get_int_value(str_value.rstrip('%'), 100)
         value = pc_float(ratio, style_size)
-    else:
+    elif str_value.endswith('pt'):
         value = str_value.rstrip('pt')
+        ratio = SIZE['pt']
+        value = get_int_value(value, style_size) * ratio
+    else:
+        # px
+        value = str_value.rstrip('px')
         value = get_int_value(value, style_size)
     return value
 

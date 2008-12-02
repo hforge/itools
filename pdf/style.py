@@ -247,6 +247,10 @@ def build_paragraph_style(context, element, style_css):
     #FIXME must be moved in default css
     style_attr['spaceBefore'] = 0.3 * cm
     style_attr['spaceAfter'] = 0.3 * cm
+    # Leading
+    leading_forced = False
+    font_size = None
+
     for key, value in style_css.iteritems():
         if key == 'color':
             style_attr['textColor'] = get_color_as_hexa(value)
@@ -261,10 +265,14 @@ def build_paragraph_style(context, element, style_css):
         elif element[0] not in ('td', 'th') and key.startswith('border'):
             style_attr.update(p_border_style(key, value))
         elif key.startswith('font'):
-            style_attr.update(p_font_style(key, value, context))
+            font_style = p_font_style(key, value, context)
+            if 'fontSize' in font_style:
+                font_size = font_style['fontSize']
+            style_attr.update(font_style)
         elif key.startswith('padding'):
             style_attr.update(p_padding_style(key, value))
         elif key.startswith('line-height'):
+            leading_forced = True
             style_attr['leading'] = format_size(value)
         elif key == 'width':
             style_attr['width'] = value
@@ -287,6 +295,13 @@ def build_paragraph_style(context, element, style_css):
         parent_style_name = element[0]
     style_name = parent_style_name
     parent_style = context.get_style(parent_style_name)
+
+    # Calulate the leading
+    if leading_forced is False and font_size:
+        # Reportlab UserGuide
+        # a good rule of thumb is to make this 20% larger than the point size
+        # But we choose to use a ratio of 33%
+        style_attr['leading'] = font_size * 1.33
 
     return (ParagraphStyle(style_name, parent=parent_style, **style_attr),
             bulletText)
@@ -489,18 +504,11 @@ def table_css_border_to_rl_table_style(style, start, stop):
     return table_style
 
 
-def get_table_style(style_css, attributes, start, stop):
-    table_style = []
-    # bufferize the border
-    border_css_buffer = {}
-    border_css = {}
 
+def _get_table_style(style_css, start, stop):
+    table_style = []
     for key, value in style_css.iteritems():
-        if key.startswith('border'):
-            border_value = compute_table_border(key, value)
-            if border_value:
-                border_css_buffer[key] = border_value
-        elif key.startswith('padding'):
+        if key.startswith('padding'):
             table_style.extend(table_padding_style(key, value, start, stop))
         elif key.startswith('background'):
             table_style.extend(table_bg_style(key, value, start, stop))
@@ -513,19 +521,48 @@ def get_table_style(style_css, attributes, start, stop):
             rl_value = format_size(value)
             table_style.extend([('LEADING', start, stop, rl_value)])
 
-    #for key, value in attributes.iteritems():
-    #    #if key == (None, 'border') and start == (0, 0) and stop == (-1,-1):
-    #    #    border.update(p_border_style('border-width', value))
-    #    if key[0] == None and key[1] in ATTR_TO_STYLE.keys():
-    #        function, style_key = ATTR_TO_STYLE[key[1]]
-    #        table_style.extend(function(style_key, value, start, stop))
+    return table_style
+
+
+def _get_table_style_border_only(style_css, start, stop):
+    border = {}
+    for key, value in style_css.iteritems():
+        if key.startswith('border'):
+            border_value = compute_table_border(key, value)
+            if border_value:
+                border[key] = border_value
+    return border
+
+
+def get_table_style(style_css, attributes, start, stop):
+    table_style = []
+    # bufferize the border
+    border_css_buffer = {}
+    border_css = {}
+
+    table_style = _get_table_style(style_css, start, stop)
+    border_css_buffer = _get_table_style_border_only(style_css, start, stop)
+
+    for key1, value in attributes.iteritems():
+        key1 = key1[1]
+        if key1 == 'style':
+            style_css2 = {}
+            for data in value.split(';'):
+                if not data:
+                    continue
+                key, value = data.split(':') # FIXME to do more robust
+                style_css2[key] = value
+        table_style.extend(_get_table_style(style_css, start, stop))
+        border_css_buffer.update(_get_table_style_border_only(style_css,
+                                                              start, stop))
 
     keys = border_css_buffer.keys()
     keys.sort()
     # revert keys to avoid css inheritance
     for key in keys:
         border_css.update(border_css_buffer[key])
-    table_style.extend(table_css_border_to_rl_table_style(border_css, start, stop))
+    table_style.extend(table_css_border_to_rl_table_style(border_css, start,
+                                                          stop))
 
     return table_style
 

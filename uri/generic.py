@@ -367,8 +367,7 @@ class Path(list):
 # XXX The Python functions 'cgi.parse_qs' and 'urllib.urlencode' provide
 # similar functionality, maybe we should just be a thin wrapper around
 # them.
-
-def decode_query(data):
+def decode_query(data, schema=None):
     """Decodes a query as defined by the "application/x-www-form-urlencoded"
     content type.
 
@@ -380,6 +379,9 @@ def decode_query(data):
     """
     query = {}
     if data:
+        if schema is None:
+            schema = {}
+
         for x in data.split('&'):
             if x:
                 if '=' in x:
@@ -389,6 +391,9 @@ def decode_query(data):
                     key, value = x, None
 
                 key = unquote_plus(key)
+                datatype = schema.get(key)
+                if datatype is not None:
+                    value = datatype.decode(value)
                 if key in query:
                     old_value = query[key]
                     if isinstance(old_value, list):

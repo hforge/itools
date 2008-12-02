@@ -452,6 +452,8 @@ class Catalog(object):
         # PhraseQuery, the field must be indexed
         if query_class is PhraseQuery:
             name = query.name
+            if type(name) is not str:
+                raise TypeError, "unexpected '%s'" % type(name)
             # If there is a problem => an empty result
             if name not in fields:
                 return Query()

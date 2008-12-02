@@ -344,7 +344,11 @@ def build_frame_style(context, style_css, inline_attributes={}):
     parent_style_name = 'Normal'
     bulletText = None
 
-    for key, value in style_css.iteritems():
+    keys = style_css.keys()
+    keys.sort()
+    # revert keys to avoid css inheritance
+    for key in keys:
+        value = style_css[key]
         if key.startswith('border'):
             border.update(p_border_style(key, value))
         if key in ('height', 'width'):

@@ -47,7 +47,7 @@ from utils import (check_image, exist_attribute, font_value,
 
 # Import from the reportlab Library
 import reportlab
-from reportlab.lib.pagesizes import LETTER
+from reportlab.lib.pagesizes import LETTER, A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import cm
 # CJK
@@ -212,7 +212,7 @@ class Context(object):
         self.pagenumber = XMLContent.encode('#pagenumber/>')
         self.pagetotal = XMLContent.encode('#pagetotal/>')
         self.multibuild = False
-        self.doc_attr = {'pagesize': LETTER}
+        self.doc_attr = {'pagesize': A4} # FIXME Should be customizable
 
 
     def init_base_style_sheet(self):

@@ -17,7 +17,9 @@
 
 # Import from itools
 from itools.datatypes import Enumerate, is_datatype
+from itools.handlers import merge_dics
 from itools.stl import stl
+from itools.uri import decode_query
 from context import FormError
 
 
@@ -191,7 +193,14 @@ class BaseForm(BaseView):
         """
         for name in context.get_form_keys():
             if name.startswith(';'):
-                context.form_action = 'action_%s' % name[1:]
+                action = 'action_%s' % name[1:]
+                # Save the query of the action into context.form_query
+                if '?' in action:
+                    action, query = action.split('?')
+                    # Deserialize query using action specific schema
+                    schema = getattr(self, '%s_query_schema' % action, None)
+                    context.form_query = decode_query(query, schema)
+                context.form_action = action
                 break
         else:
             context.form_action = 'action'

@@ -284,6 +284,8 @@ class Context(object):
         if vfs.exists(filename):
             data = vfs.open(filename).read()
             self.add_current_style(data)
+        else:
+            print u'(WW) CSS filename "%s" does not exist' % filename
 
 
     def get_css_props(self):
@@ -1226,21 +1228,27 @@ class Table_Content(object):
 
     # Set colomn and line size
     def add_colWidth(self, value):
-        list_lenth = len(self.colWidths)
+        list_length = len(self.colWidths)
         platypus_value = format_size(value)
-        if not self.current_y and list_lenth <= self.current_x:
-            none_list = [ None for x in xrange(list_lenth, self.current_x+1) ]
+        if not self.current_y and list_length <= self.current_x:
+            none_list = [ None for x in xrange(list_length, self.current_x+1) ]
             self.colWidths.extend(none_list)
+
+        # Colspan one the first cell
+        # FIXME To improve
+        if list_length <= self.current_x:
+            self.colWidths.extend([None])
+
         if self.colWidths[self.current_x] is None\
             or platypus_value > self.colWidths[self.current_x]:
             self.colWidths[self.current_x] = platypus_value
 
 
     def add_lineHeight(self, value):
-        list_lenth = len(self.rowHeights)
+        list_length = len(self.rowHeights)
         platypus_value = format_size(value)
-        if list_lenth <= self.current_y:
-            none_list = [ None for y in xrange(list_lenth, self.current_y+1) ]
+        if list_length <= self.current_y:
+            none_list = [ None for y in xrange(list_length, self.current_y+1) ]
             self.rowHeights.extend(none_list)
         if self.rowHeights[self.current_y] is None\
             or platypus_value > self.rowHeights[self.current_y]:

@@ -97,27 +97,38 @@ def p_border_style(key, value):
         tab = value.split()
         for element in tab:
             size = format_size(element, None)
-            if size:
+            if size is not None:
                 style_attrs['borderWidth'] = size
                 continue
             color = get_color_as_hexa(element, None)
-            if color:
+            if color is not None:
+                style_attrs['borderColor'] = color
+                continue
+    elif key == 'border-bottom':
+        tab = value.split()
+        for element in tab:
+            size = format_size(element, None)
+            if size is not None:
+                style_attrs['borderWidth'] = size
+                continue
+            color = get_color_as_hexa(element, None)
+            if color is not None:
                 style_attrs['borderColor'] = color
                 continue
     elif key == 'border-color':
         color = get_color_as_hexa(value, None)
-        if color:
+        if color is not None:
             style_attrs['borderColor'] = color
     elif key == 'border-width':
         size = format_size(value, None)
-        if size:
+        if size is not None:
             style_attrs['borderWidth'] = size
     return style_attrs
 
 
 def table_border_style(border, start, stop):
     width = border.get('borderWidth', None)
-    if width is not None and width > 0:
+    if width is not None and width >= 0:
         color = get_color(border.get('borderColor', 'grey'))
         return [('GRID', start, stop, width, color)]
     return []
@@ -350,13 +361,141 @@ def build_frame_style(context, style_css, inline_attributes={}):
     return frame_attr
 
 
+def compute_border_style(value):
+    border_value = value.strip().lower()
+    dash = None
+    if border_value == 'solid':
+        dash = None
+    elif border_value == 'dashed':
+        dash = [5, 5]
+    elif border_value == 'dotted':
+        dash = [2, 2]
+    return dash
+
+
+def _calculate_table_border(value):
+    """INPUT border: 1px solid red
+    Calculate the 3 attributes
+    width, style, color"""
+    css_value = value.strip()
+    if css_value.endswith(';'):
+        css_value = css_value[:-1]
+    values = value.split()
+    if len(values) == 3:
+        # 1px solid red
+        width, style, color = values
+        width = format_size(width, 1)
+        style = compute_border_style(style)
+        color = get_color_as_hexa(color)
+    else:
+        # Not well formed
+        return None
+
+    return (width, style, color)
+
+
+def _compute_table_border_full(value):
+    values = _calculate_table_border(value)
+    if values is None:
+        return None
+    width, style, color = values
+    return {# top
+            'border-top-color': color,
+            'border-top-width': width,
+            'border-top-style': style,
+            # right
+            'border-right-color': color,
+            'border-right-width': width,
+            'border-right-style': style,
+            # bottom
+            'border-bottom-color': color,
+            'border-bottom-width': width,
+            'border-bottom-style': style,
+            # left
+            'border-left-color': color,
+            'border-left-width': width,
+            'border-left-style': style,
+            }
+
+
+def compute_table_border(key, value):
+    """Key is one of these values
+    border
+    border-XXX-width
+    border-XXX-style
+    border-XXX-color
+    width XXX equals to top, right, bottom, left
+
+    with border equals to
+    border-top + border-right + border-bottom + border-left
+    """
+
+    if key == 'border':
+        # explode the key in sub key
+        # border-top
+        # border-right
+        # border-bottom
+        # border-left
+        return _compute_table_border_full(value)
+    elif key in ('border-top-width',
+                 'border-right-width',
+                 'border-bottom-width',
+                 'border-left-width'):
+        return {key: format_size(value, 1)}
+    elif key in ('border-top-style',
+                 'border-right-style',
+                 'border-bottom-style',
+                 'border-left-style'):
+        return {key: compute_border_style(value)}
+    elif key in ('border-top-color',
+                 'border-right-color',
+                 'border-bottom-color',
+                 'border-left-color'):
+        return {key: get_color_as_hexa(value)}
+    return None
+
+
+def table_css_border_to_rl_table_style(style, start, stop):
+    buffer = {}
+    map = {'border-top': 'LINEABOVE',
+           'border-right': 'LINEAFTER',
+           'border-bottom': 'LINEBELOW',
+           'border-left': 'LINEBEFORE'}
+
+    for key, value in style.iteritems():
+        start_key = key.rsplit('-', 1)[0]
+        rl_key = map.get(start_key, None)
+        if rl_key is None:
+            continue
+        # width, color
+        buffer.setdefault(rl_key, [-1, -1])
+        if key.endswith('width'):
+            buffer[rl_key][0] = value
+        elif key.endswith('color'):
+            buffer[rl_key][1] = value
+        # DASHED TODO
+
+    table_style = []
+    for key, value in buffer.iteritems():
+        width, color = value
+        if width == 0:
+            continue
+        table_style.append((key, start, stop, width, color))
+
+    return table_style
+
+
 def get_table_style(style_css, attributes, start, stop):
     table_style = []
-    border = {}
+    # bufferize the border
+    border_css_buffer = {}
+    border_css = {}
 
     for key, value in style_css.iteritems():
         if key.startswith('border'):
-            border.update(p_border_style(key, value))
+            border_value = compute_table_border(key, value)
+            if border_value:
+                border_css_buffer[key] = border_value
         elif key.startswith('padding'):
             table_style.extend(table_padding_style(key, value, start, stop))
         elif key.startswith('background'):
@@ -370,13 +509,19 @@ def get_table_style(style_css, attributes, start, stop):
             rl_value = format_size(value)
             table_style.extend([('LEADING', start, stop, rl_value)])
 
-    for key, value in attributes.iteritems():
-        if key == (None, 'border') and start == (0, 0) and stop == (-1,-1):
-            border.update(p_border_style('border-width', value))
-        if key[0] == None and key[1] in ATTR_TO_STYLE.keys():
-            function, style_key = ATTR_TO_STYLE[key[1]]
-            table_style.extend(function(style_key, value, start, stop))
-    table_style.extend(table_border_style(border, start, stop))
+    #for key, value in attributes.iteritems():
+    #    #if key == (None, 'border') and start == (0, 0) and stop == (-1,-1):
+    #    #    border.update(p_border_style('border-width', value))
+    #    if key[0] == None and key[1] in ATTR_TO_STYLE.keys():
+    #        function, style_key = ATTR_TO_STYLE[key[1]]
+    #        table_style.extend(function(style_key, value, start, stop))
+
+    keys = border_css_buffer.keys()
+    keys.sort()
+    # revert keys to avoid css inheritance
+    for key in keys:
+        border_css.update(border_css_buffer[key])
+    table_style.extend(table_css_border_to_rl_table_style(border_css, start, stop))
 
     return table_style
 

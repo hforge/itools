@@ -294,8 +294,12 @@ class XHTMLFile(XMLFile):
     def is_empty(self):
         body = self.get_body()
         if body is None:
-            return True
-        for type, value, line in body.events:
+            # Fragments do not have a body
+            events = self.events
+        else:
+            events = body.events
+
+        for type, value, line in events:
             if type == TEXT:
                 if value.replace('&nbsp;', '').strip():
                     return False

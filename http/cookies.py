@@ -16,8 +16,8 @@
 
 # Import from itools
 from itools.datatypes import DataType
-from parsing import (read_char, read_opaque, read_quoted_string, read_token,
-    read_white_space)
+from parsing import lookup_char, read_char, read_opaque, read_quoted_string
+from parsing import read_token, read_white_space
 
 """
 Partial implementation of HTTP Cookies.
@@ -76,7 +76,11 @@ def read_parameter(data):
     name = name.lower()
     # =
     white, data = read_white_space(data)
-    data = read_char('=', data)
+    if lookup_char('=', data) is False:
+        # Garbage, try to recover from error (may fail)
+        garbage, data = read_opaque(data, ';')
+        return None, data
+    data = data[1:]
     white, data = read_white_space(data)
     # value
     if data and data[0] == '"':

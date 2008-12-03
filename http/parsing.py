@@ -27,6 +27,11 @@ ctls_tspecials = ctls | tspecials
 white_space = ' \t'
 
 
+def lookup_char(char, data):
+    return (data and data[0] == char)
+
+
+
 def read_char(char, data):
     if not data:
         raise ValueError, 'unexpected end-of-data'

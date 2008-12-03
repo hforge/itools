@@ -160,6 +160,12 @@ class CookieTestCase(TestCase):
         self.assertEqual(CookieDataType.decode(cookie), expected)
 
 
+    def test_garbage(self):
+        cookie = 'a=1; toto; b=2'
+        expected = {'a': Cookie('1'), 'b': Cookie('2')}
+        self.assertEqual(CookieDataType.decode(cookie), expected)
+
+
 
 if __name__ == '__main__':
     unittest.main()

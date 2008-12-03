@@ -196,8 +196,7 @@ def setup(ext_modules=[]):
                 if code == 401:
                     if result == 'Unauthorized':
                         print 'Perhaps your username/password is wrong.'
-                        print ('Are you registered with "isetup-release.py'
-                               ' -a"?')
+                        print 'Are you registered with "isetup-register.py"?'
                     exit(2)
                 else:
                     exit(3)

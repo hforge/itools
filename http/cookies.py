@@ -164,49 +164,44 @@ class CookieDataType(DataType):
 
     @staticmethod
     def decode(data):
-        # Cookies
-        cookies = {}
+        # Parse the cookie string
+        parameters = []
         while data:
+            # parameter whitespace
             value, data = read_parameter(data)
-            cookie_name, cookie_value = value
-            path = domain = None
-            # White Space
             white, data = read_white_space(data)
-            # Seperator (;)
+            # ; whitespace
             if data:
                 data = read_char(';', data)
                 white, data = read_white_space(data)
-            # Parameters
-            if data:
-                # Parameter
-                value, rest = read_parameter(data)
-                name, value = value
+            # Skip garbage
+            if value is None:
+                continue
+            # Ok
+            parameters.append(value)
+
+        # Cookies
+        cookies = {}
+        n = len(parameters)
+        index = 0
+        while index < n:
+            cookie_name, cookie_value = parameters[index]
+            cookie = Cookie(cookie_value)
+            cookies[cookie_name] = cookie
+            # Next
+            index += 1
+            # $path
+            if index < n:
+                name, value = parameters[index]
                 if name == '$path':
-                    path = value
-                    white, data = read_white_space(rest)
-                    if data:
-                        # Separator (;)
-                        data = read_char(';', data)
-                        white, data = read_white_space(data)
-                        # Parameter
-                        value, rest = read_parameter(data)
-                        if name == '$domain':
-                            domain = value
-                            white, data = read_white_space(rest)
-                            if data:
-                                # Separator (;)
-                                data = read_char(';', data)
-                                white, data = read_white_space(data)
-                elif name == '$domain':
-                    domain = value
-                    white, data = read_white_space(rest)
-                    if data:
-                        # Separator (;)
-                        data = read_char(';', data)
-                        white, data = read_white_space(data)
-            # Set
-            cookies[cookie_name] = Cookie(cookie_value, path=path,
-                                          domain=domain)
+                    cookie.path = value
+                    index += 1
+            # $domain
+            if index < n:
+                name, value = parameters[index]
+                if name == '$domain':
+                    cookie.domain = value
+                    index += 1
 
         return cookies
 

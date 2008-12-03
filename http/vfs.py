@@ -80,11 +80,14 @@ class HTTPFS(BaseFS):
     def get_size(cls, reference):
         response = HTTPFS._head(reference)
         size = response.getheader('content-length')
+        if size is None:
+            return 0
         return long(size)
 
 
     @staticmethod
     def open(reference, mode=None):
+        # TODO Check whether 'urlopen' has a redirection limit
         reference = str(reference)
         return urlopen(reference)
 

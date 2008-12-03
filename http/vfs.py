@@ -29,15 +29,16 @@ from itools.uri import get_reference
 class HTTPFS(BaseFS):
 
     @staticmethod
-    def _head(reference):
+    def _head(reference, nredirects=20):
         conn = HTTPConnection(str(reference.authority))
-        # XXX Add the query
+        # FIXME Add the query
         conn.request('HEAD', str(reference.path))
         response = conn.getresponse()
-        if response.status == FOUND:
-            # Follow the redirection
+        # Follow the redirection
+        if response.status == FOUND and nredirects > 0:
             location = response.getheader('location')
-            return HTTPFS._head(get_reference(location))
+            location = get_reference(location)
+            return HTTPFS._head(location, nredirects - 1)
 
         return response
 

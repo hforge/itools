@@ -21,9 +21,10 @@ the Xapian [1] engine; it provides the same API of "itools.catalog",
 only the scalability is different.
 
 The new package "itools.isetup" provides the infrastructure required by
-the new "isetup-cache-list.py", "isetup-info.py", "isetup-install.py"
-and "isetup-release.py" scripts.  Together they make up a toolset to
-manage the Python packages installed in a Python environment.
+the new "isetup-cache-list.py", "isetup-info.py", "isetup-install.py",
+"isetup-register.py" and "isetup-release.py" scripts.  Together they
+make up a toolset to manage the Python packages installed in a Python
+environment.
 
 Other new packages are "itools.srx", with a partial implementation of
 the "Segmentation Rules eXchange" format [2]; and "itools.relaxng",

@@ -19,69 +19,70 @@
 # Import from Standard Library
 from getpass import getpass
 from optparse import OptionParser
-from subprocess import call
-from sys import executable
+from urllib import urlencode
+from urllib2 import urlopen
 
 # Import from itools
 from itools import __version__
 from itools.utils import DEFAULT_REPOSITORY
-from itools.vfs import exists
 
 
-def release(options):
-    # Check 'setup.py' exists
-    if not exists('setup.py'):
-        print ('setup.py not found, please execute isetup-release.py from '
-               'the package directory')
-        return
+def register_user(username, options):
+    repository = options.repository or DEFAULT_REPOSITORY
 
-    # Prepare the arguments
-    baseargs = [executable, 'setup.py']
-
-    # Read the password
+    # Password
     password = getpass('Password: ')
     if not password:
-        print 'Error: no password given, aborting.'
+        print 'Error: no password was given, aborting.'
         return
-    args = ['-p', password]
-
-    # Username and repository
-    if options.username is not None:
-        args.extend(['-u', options.username])
-
-    if options.repository is not None:
-        args.extend(['-r', options.repository])
-
-    # Call iregister
-    ret = call(baseargs + ['iregister'] + args)
-    if ret != 0:
-        print "Error: command iregister failed."
+    confirm = getpass('Confirm password: ')
+    if password != confirm:
+        print "Error: password and confirm don't match, aborting."
         return
 
-    # Call iupload
-    ret = call(baseargs + ['sdist', 'iupload'] + args)
-    if ret != 0:
-        print "Error: command iupload failed."
+    # Email
+    email = raw_input('EMail: ')
+
+    # Add the new user
+    data = {':action': 'user',
+            'name': username,
+            'password': password,
+            'confirm': confirm,
+            'email': email}
+    try:
+        resp = urlopen(repository, urlencode(data))
+    except Exception, exception:
+        print 'Server error: [%s]: %s' % (exception.__class__, str(exception))
         return
+
+    # Result
+    if resp.code != 200:
+        print 'Server error (%s)' % resp.code
+        return
+
+    print ('Your are now registered, unless the server admin set up a'
+           ' email-confirmation system.\n'
+           'In this case check your emails, and follow instructions'
+           '\n'
+           '"Execute isetup-release.py again to register package')
+
 
 
 if __name__ == '__main__':
     # Define the command line parser
-    usage = '%prog [OPTIONS]'
+    usage = '%prog [OPTIONS] username'
     version = 'itools %s' % __version__
-    description = 'Upload a new package version to the server.'
+    description = 'Registers a new user into the server.'
     parser = OptionParser(usage, version=version, description=description)
-    parser.add_option(
-        '-u', '--username', dest='username', default=None,
-        help='username used to log in the server')
     parser.add_option(
         '-r', '--repository', dest='repository', default=None,
         help='url to the package server [default: %s]' % DEFAULT_REPOSITORY)
 
     # Parse the command line
     options, args = parser.parse_args()
-    if len(args) != 0:
+    if len(args) != 1:
         parser.error('incorrect number of arguments')
+    username = args[0]
 
     # Action
-    release(options)
+    register_user(username, options)

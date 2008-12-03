@@ -614,7 +614,10 @@ parser_read_CDSect (Parser * parser, TextEvent * event)
         {
           if (move_cursor (parser) == ']')
             {
-              if (move_cursor (parser) == '>')
+              while (move_cursor (parser) == ']')
+                g_string_append_c (parser->buffer1, ']');
+
+              if (parser->cursor_char == '>')
                 {
                   /* Read '>' */
                   move_cursor (parser);

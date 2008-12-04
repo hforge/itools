@@ -67,10 +67,31 @@ def get_abspath(local_path, mname=None):
 
 
 
+###########################################################################
+# Basic types
+###########################################################################
+class frozenlist(list):
 
-############################################################################
+    def __init__(self, *args):
+        """The constructor prototype is different from that of the 'list'
+        type.  This is because it is intended to be used as a constructor,
+        and not as a coerce function.
+        """
+        list.__init__(self, args)
+
+
+    def append(self, item):
+        raise NotImplementedError, 'frozenlists are not mutable'
+
+
+    def extend(self, alist):
+        raise NotImplementedError, 'frozenlists are not mutable'
+
+
+
+###########################################################################
 # Our all powerful setup
-############################################################################
+###########################################################################
 def get_version(mname=None):
     if mname is None:
         mname = _getframe(1).f_globals.get('__name__')
@@ -301,10 +322,10 @@ def setup(ext_modules=[]):
 
 
 
-############################################################################
+###########################################################################
 # XXX Work-around the fact that Python does not implements (yet) relative
 # imports (see PEP 328).
-############################################################################
+###########################################################################
 
 pythons_import = __import__
 

@@ -72,6 +72,9 @@ def get_abspath(local_path, mname=None):
 ###########################################################################
 class frozenlist(list):
 
+    __slots__ = []
+
+
     def __init__(self, *args):
         """The constructor prototype is different from that of the 'list'
         type.  This is because it is intended to be used as a constructor,
@@ -80,12 +83,86 @@ class frozenlist(list):
         list.__init__(self, args)
 
 
+    #######################################################################
+    # Mutable operations must raise 'TypeError'
+    #######################################################################
+    def __delitem__(self, index):
+        raise TypeError, 'frozenlists are not mutable'
+
+
+    def __delslice__(self, left, right):
+        raise TypeError, 'frozenlists are not mutable'
+
+
+    def __iadd__(self, alist):
+        raise TypeError, 'frozenlists are not mutable'
+
+
+    def __imul__(self, alist):
+        raise TypeError, 'frozenlists are not mutable'
+
+
+    def __setitem__(self, index, value):
+        raise TypeError, 'frozenlists are not mutable'
+
+
+    def __setslice__(self, left, right, value):
+        raise TypeError, 'frozenlists are not mutable'
+
+
     def append(self, item):
-        raise NotImplementedError, 'frozenlists are not mutable'
+        raise TypeError, 'frozenlists are not mutable'
 
 
     def extend(self, alist):
-        raise NotImplementedError, 'frozenlists are not mutable'
+        raise TypeError, 'frozenlists are not mutable'
+
+
+    def insert(self, index, value):
+        raise TypeError, 'frozenlists are not mutable'
+
+
+    def pop(self, index=-1):
+        raise TypeError, 'frozenlists are not mutable'
+
+
+    def remove(self, value):
+        raise TypeError, 'frozenlists are not mutable'
+
+
+    def reverse(self):
+        raise TypeError, 'frozenlists are not mutable'
+
+
+    def sort(self, cmp=None, key=None, reverse=False):
+        raise TypeError, 'frozenlists are not mutable'
+
+
+    #######################################################################
+    # Non-mutable operations
+    #######################################################################
+    def __add__(self, alist):
+        alist = list(self) + alist
+        return frozenlist(*alist)
+
+
+    def __hash__(self):
+        # TODO Implement frozenlists hash-ability
+        raise NotImplementedError, 'frozenlists not yet hashable'
+
+
+    def __mul__(self, factor):
+        alist = list(self) * factor
+        return frozenlist(*alist)
+
+
+    def __rmul__(self, factor):
+        alist = list(self) * factor
+        return frozenlist(*alist)
+
+
+    def __repr__(self):
+        return 'frozenlist(%s)' % ', '.join([ repr(x) for x in self ])
 
 
 

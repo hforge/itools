@@ -26,6 +26,7 @@ from operator import itemgetter
 from itools.csv import parse_table, Property, Record as TableRecord, Table
 from itools.datatypes import String, Unicode
 from itools.handlers import merge_dics
+from itools.utils import frozenlist
 from itools.xapian import PhraseQuery, RangeQuery, OrQuery, AndQuery
 from base import BaseCalendar
 from types import data_properties, Time
@@ -81,8 +82,8 @@ class Record(TableRecord):
         return self.get_property('DTEND').value
 
 
-    def get_ns_event(self, day, resource_name=None, conflicts_list=[],
-                     timetable=None, grid=False,
+    def get_ns_event(self, day, resource_name=None,
+                     conflicts_list=frozenlist(), timetable=None, grid=False,
                      starts_on=True, ends_on=True, out_on=True):
         """Specify the namespace given on views to represent an event.
 

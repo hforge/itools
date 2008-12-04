@@ -28,6 +28,7 @@ from itools.datatypes import String
 from itools.http import Response, Unauthorized
 from itools.i18n import AcceptLanguageType
 from itools.uri import get_reference
+from itools.utils import frozenlist
 from messages import ERROR
 
 
@@ -121,7 +122,7 @@ class Context(object):
         self.response.redirect(reference, status)
 
 
-    def come_back(self, message, goto=None, keep=[], **kw):
+    def come_back(self, message, goto=None, keep=frozenlist(), **kw):
         """This is a handy method that builds a resource URI from some
         parameters.  It exists to make short some common patterns.
         """
@@ -181,7 +182,7 @@ class Context(object):
 
 
     # FIXME Obsolete since 0.20.4, to be removed by the next major release
-    def get_form_values(self, name, default=[], type=None):
+    def get_form_values(self, name, default=frozenlist(), type=None):
         request = self.request
         if request.has_parameter(name):
             value = request.get_parameter(name)

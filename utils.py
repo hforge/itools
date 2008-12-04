@@ -181,7 +181,7 @@ def get_version(mname=None):
 
 DEFAULT_REPOSITORY = 'http://pypi.python.org/pypi'
 
-def setup(ext_modules=[]):
+def setup(ext_modules=frozenlist()):
     mname = _getframe(1).f_globals.get('__name__')
     version = get_version(mname)
     try:
@@ -406,7 +406,7 @@ def setup(ext_modules=[]):
 
 pythons_import = __import__
 
-def local_import(name, globals={}, locals={}, fromlist=[], level=-1):
+def local_import(name, globals={}, locals={}, fromlist=frozenlist(), level=-1):
     if name.startswith('itools.'):
         name = name[7:]
     return pythons_import(name, globals, locals, fromlist, level)

@@ -19,10 +19,7 @@ def is_datatype(datatype, base_type):
     # TODO obsolete now all datatypes are classes
     """Returns True if 'datatype' is of 'base_type'.
     """
-    try:
-        return issubclass(datatype, base_type)
-    except TypeError:
-        return isinstance(datatype, base_type)
+    return issubclass(datatype, base_type)
 
 
 def copy_datatype(datatype, **kw):

@@ -24,6 +24,7 @@ from copy import deepcopy
 
 # Import from itools
 from itools.uri import Path, get_reference
+from itools.utils import freeze
 from base import DataType
 
 
@@ -201,7 +202,7 @@ class MultiLinesTokens(DataType):
 class Enumerate(String):
 
     is_enumerate = True
-    options = []
+    options = freeze([])
 
 
     @classmethod

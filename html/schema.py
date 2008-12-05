@@ -260,7 +260,7 @@ html_elements = [
     # XHTML 1.0 strict
     Element('a', common_attrs + ['charset', 'type', 'name', 'href',
         'hreflang', 'rel', 'rev', 'accesskey', 'shape', 'coords', 'tabindex',
-        'target', 'onfocus', 'onblur'], context='link to'),
+        'target', 'onfocus', 'onblur'], context='link'),
     Element('abbr', common_attrs),
     Element('acronym', common_attrs),
     BlockElement('address', common_attrs),
@@ -342,13 +342,13 @@ html_elements = [
         'frame', 'rules', 'cellspacing', 'cellpadding', 'align', 'bgcolor']),
     BlockElement('td', common_attrs + cellhalign_attrs + cellvalign_attrs +
         ['abbr', 'axis', 'headers', 'scope', 'rowspan', 'colspan', 'nowrap',
-            'bgcolor', 'width', 'height']),
+         'bgcolor', 'width', 'height'], context='table cell'),
     Element('textarea', common_attrs + ['name', 'rows', 'cols', 'disabled',
         'readonly', 'tabindex', 'accesskey', 'onfocus', 'onblur', 'onselect',
         'onchange', 'wrap']),
     BlockElement('th', common_attrs + cellhalign_attrs + cellvalign_attrs +
         ['abbr', 'axis', 'headers', 'scope', 'rowspan', 'colspan', 'nowrap',
-            'bgcolor', 'width', 'height']),
+         'bgcolor', 'width', 'height'], context='table cell'),
     BlockElement('colgroup', common_attrs + cellhalign_attrs +
                              cellvalign_attrs + ['span', 'width']),
     BlockElement('tbody', common_attrs + cellhalign_attrs + cellvalign_attrs),

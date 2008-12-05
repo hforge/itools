@@ -75,14 +75,6 @@ class frozenlist(list):
     __slots__ = []
 
 
-    def __init__(self, *args):
-        """The constructor prototype is different from that of the 'list'
-        type.  This is because it is intended to be used as a constructor,
-        and not as a coerce function.
-        """
-        list.__init__(self, args)
-
-
     #######################################################################
     # Mutable operations must raise 'TypeError'
     #######################################################################
@@ -143,7 +135,7 @@ class frozenlist(list):
     #######################################################################
     def __add__(self, alist):
         alist = list(self) + alist
-        return frozenlist(*alist)
+        return frozenlist(alist)
 
 
     def __hash__(self):
@@ -153,16 +145,27 @@ class frozenlist(list):
 
     def __mul__(self, factor):
         alist = list(self) * factor
-        return frozenlist(*alist)
+        return frozenlist(alist)
 
 
     def __rmul__(self, factor):
         alist = list(self) * factor
-        return frozenlist(*alist)
+        return frozenlist(alist)
 
 
     def __repr__(self):
-        return 'frozenlist(%s)' % ', '.join([ repr(x) for x in self ])
+        return 'frozenlist([%s])' % ', '.join([ repr(x) for x in self ])
+
+
+
+def freeze(value):
+    value_type = type(value)
+    if value_type is list:
+        return frozenlist(value)
+    if value_type is dict:
+        # TODO Implement 'frozendict'
+        raise NotImplementedError, 'frozendicts not yet implemented'
+    raise TypeError, 'unable to freeze "%s"' % value_type
 
 
 
@@ -181,7 +184,7 @@ def get_version(mname=None):
 
 DEFAULT_REPOSITORY = 'http://pypi.python.org/pypi'
 
-def setup(ext_modules=frozenlist()):
+def setup(ext_modules=freeze([])):
     mname = _getframe(1).f_globals.get('__name__')
     version = get_version(mname)
     try:

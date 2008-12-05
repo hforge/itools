@@ -19,7 +19,7 @@ from UserDict import UserDict
 
 import sys
 from os.path import isdir, join, exists, abspath
-from itools.utils import frozenlist
+from itools.utils import freeze
 
 
 def selector_split(string, single_class=True):
@@ -285,7 +285,7 @@ class CssProperties(UserDict):
             return default
 
 
-    def get_list(self, key, default=frozenlist()):
+    def get_list(self, key, default=freeze([])):
         """Like dict.get, but splits the result as a comma-separated list."""
         return [x.strip() for x in self.get(key, default).split(",")]
 

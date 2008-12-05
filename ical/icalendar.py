@@ -27,7 +27,7 @@ from itools.csv import MemoryCatalog, Property
 from itools.csv import parse_table
 from itools.datatypes import String, Unicode
 from itools.handlers import guess_encoding, TextFile
-from itools.utils import frozenlist
+from itools.utils import freeze
 from itools.xapian import PhraseQuery, RangeQuery, OrQuery, AndQuery
 from itools.xapian import KeywordField
 from base import BaseCalendar
@@ -165,9 +165,9 @@ class Component(object):
         return self.get_property('DTEND').value
 
 
-    def get_ns_event(self, day, resource_name=None,
-                     conflicts_list=frozenlist(), timetable=None, grid=False,
-                     starts_on=True, ends_on=True, out_on=True):
+    def get_ns_event(self, day, resource_name=None, conflicts_list=freeze([]),
+                     timetable=None, grid=False, starts_on=True, ends_on=True,
+                     out_on=True):
         """Specify the namespace given on views to represent an event.
 
         day: date selected XXX not used for now

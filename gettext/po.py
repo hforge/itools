@@ -24,7 +24,7 @@ from time import gmtime, strftime, time
 # Import from itools
 from itools.handlers import File, TextFile, register_handler_class
 from itools.srx import TEXT, START_FORMAT, END_FORMAT
-from itools.utils import frozenlist
+from itools.utils import freeze
 from itools.xml import XMLParser, TEXT as xml_TEXT, START_ELEMENT, END_ELEMENT
 
 
@@ -513,8 +513,8 @@ class POFile(TextFile):
     #######################################################################
     # API / Private
     #######################################################################
-    def _set_message(self, context, source, target=frozenlist(u''),
-                     comments=frozenlist(), reference=None, fuzzy=False):
+    def _set_message(self, context, source, target=freeze([u'']),
+                     comments=freeze([]), reference=None, fuzzy=False):
 
         if context is not None and isinstance(context, (str, unicode)):
             context = [context]

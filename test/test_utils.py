@@ -19,34 +19,33 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.utils import frozenlist
+from itools.utils import freeze, frozenlist
+
+
+a_frozen_list = freeze([1, 2, 3])
 
 
 class FrozenlistTestCase(TestCase):
 
-    def test_init(self):
-        """Test the different ways to create a frozenlist.
-        """
-        self.assertEqual(frozenlist(1, 2, 3), [1, 2, 3])
+    def test_freeze(self):
+        alist = [1, 2, 3]
+        self.assertEqual(freeze(alist), alist)
 
 
     #######################################################################
     # Mutable operations must raise 'TypeError'
     #######################################################################
     def test_append(self):
-        alist = frozenlist()
-        self.assertRaises(TypeError, alist.append, 5)
+        self.assertRaises(TypeError, a_frozen_list.append, 5)
 
 
     def test_extend(self):
-        alist = frozenlist()
-        self.assertRaises(TypeError, alist.extend, [1,2,3])
+        self.assertRaises(TypeError, a_frozen_list.extend, [1,2,3])
 
 
     def test_del_item(self):
-        alist = frozenlist(1, 2, 3)
         try:
-            del alist[0]
+            del a_frozen_list[0]
         except TypeError:
             pass
         else:
@@ -54,9 +53,8 @@ class FrozenlistTestCase(TestCase):
 
 
     def test_del_slice(self):
-        alist = frozenlist(1, 2, 3)
         try:
-            del alist[0:2]
+            del a_frozen_list[0:2]
         except TypeError:
             pass
         else:
@@ -64,9 +62,9 @@ class FrozenlistTestCase(TestCase):
 
 
     def test_incremental_add(self):
-        alist = frozenlist(1, 2, 3)
+        a_frozen_list = freeze([1, 2, 3])
         try:
-            alist += [4, 5]
+            a_frozen_list += [4, 5]
         except TypeError:
             pass
         else:
@@ -74,9 +72,9 @@ class FrozenlistTestCase(TestCase):
 
 
     def test_incremental_mul(self):
-        alist = frozenlist(1, 2, 3)
+        a_frozen_list = freeze([1, 2, 3])
         try:
-            alist *= 2
+            a_frozen_list *= 2
         except TypeError:
             pass
         else:
@@ -84,9 +82,8 @@ class FrozenlistTestCase(TestCase):
 
 
     def test_setitem(self):
-        alist = frozenlist(1, 2, 3)
         try:
-            alist[1] = 5
+            a_frozen_list[1] = 5
         except TypeError:
             pass
         else:
@@ -94,9 +91,8 @@ class FrozenlistTestCase(TestCase):
 
 
     def test_setslice(self):
-        alist = frozenlist(1, 2, 3)
         try:
-            alist[0:2] = [5]
+            a_frozen_list[0:2] = [5]
         except TypeError:
             pass
         else:
@@ -104,28 +100,23 @@ class FrozenlistTestCase(TestCase):
 
 
     def test_insert(self):
-        alist = frozenlist()
-        self.assertRaises(TypeError, alist.insert, 0, 1)
+        self.assertRaises(TypeError, a_frozen_list.insert, 0, 1)
 
 
     def test_pop(self):
-        alist = frozenlist(1, 2, 3)
-        self.assertRaises(TypeError, alist.pop)
+        self.assertRaises(TypeError, a_frozen_list.pop)
 
 
     def test_remove(self):
-        alist = frozenlist(1, 2, 3)
-        self.assertRaises(TypeError, alist.remove, 1)
+        self.assertRaises(TypeError, a_frozen_list.remove, 1)
 
 
     def test_reverse(self):
-        alist = frozenlist(1, 2, 3)
-        self.assertRaises(TypeError, alist.reverse)
+        self.assertRaises(TypeError, a_frozen_list.reverse)
 
 
     def test_sort(self):
-        alist = frozenlist(1, 2, 3)
-        self.assertRaises(TypeError, alist.sort)
+        self.assertRaises(TypeError, a_frozen_list.sort)
 
 
     #######################################################################
@@ -136,34 +127,33 @@ class FrozenlistTestCase(TestCase):
         must preserve the type of the left argument.
         """
         # frozenlist + frozenlist
-        alist = frozenlist() + frozenlist()
+        alist = freeze([]) + freeze([])
         self.assert_(isinstance(alist, frozenlist))
         # frozenlist + list
-        alist = frozenlist() + []
+        alist = freeze([]) + []
         self.assert_(isinstance(alist, frozenlist))
         # list + frozenlist
-        alist = [] + frozenlist()
+        alist = [] + freeze([])
         self.assert_(not isinstance(alist, frozenlist))
 
 
     def test_equality(self):
-        self.assertEqual(frozenlist(1, 2, 3), [1, 2, 3])
+        self.assertEqual(freeze([1, 2, 3]), [1, 2, 3])
 
 
     def test_multiplication(self):
         # frozenlist * n
-        alist = frozenlist(1, 2) * 2
+        alist = freeze([1, 2]) * 2
         self.assert_(isinstance(alist, frozenlist))
         self.assertEqual(alist, [1, 2, 1, 2])
         # n * frozenlist
-        alist = 2 * frozenlist(1, 2)
+        alist = 2 * freeze([1, 2])
         self.assert_(isinstance(alist, frozenlist))
         self.assertEqual(alist, [1, 2, 1, 2])
 
 
     def test_representation(self):
-        alist = frozenlist(1, 2)
-        self.assertEqual(repr(alist), 'frozenlist(1, 2)')
+        self.assertEqual(repr(a_frozen_list), 'frozenlist([1, 2, 3])')
 
 
 

@@ -148,7 +148,7 @@ html_attributes = {
     'tabindex': Integer,
     'target': String,
     'text': String,
-    'title': Unicode,
+    'title': Unicode(context="title attribute"),
     'type': String,
     'usemap': URI,
     'valign': String,

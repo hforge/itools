@@ -130,7 +130,7 @@ class BaseForm(BaseView):
 
 
     def get_value(self, resource, context, name, datatype):
-        return datatype.default
+        return datatype.get_default()
 
 
     def build_namespace(self, resource, context):

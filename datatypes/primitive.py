@@ -100,6 +100,7 @@ class Boolean(DataType):
 
     default = False
 
+
     @staticmethod
     def decode(value):
         return bool(int(value))

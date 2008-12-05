@@ -371,9 +371,9 @@ class ConfigFile(TextFile):
             if default is not None:
                 return default
             elif type is not None and getattr(type, 'default', None):
-                return type.default
+                return type.get_default()
             elif self.schema is not None and name in self.schema:
-                return self.schema[name].default
+                return self.schema[name].get_default()
             return None
 
         # Get the line

@@ -213,7 +213,7 @@ class Request(Message):
 
         # Default
         if default is None:
-            return type.default
+            return type.get_default()
         return default
 
 

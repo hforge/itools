@@ -115,7 +115,7 @@ class RFC822File(TextFile):
         if self.schema is not None:
             for key in self.schema:
                 if not self.attrs.has_key(key):
-                    self.attrs[key] = self.schema[key].default
+                    self.attrs[key] = self.schema[key].get_default()
         return self.attrs
 
 

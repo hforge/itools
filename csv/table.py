@@ -812,7 +812,7 @@ class Table(File):
         if is_multilingual(datatype):
             # Default
             if property is None:
-                return datatype.default
+                return datatype.get_default()
             # Language negotiation ('select_language' must be available)
             if language is None:
                 languages = [ x.parameters['language'] for x in property ]
@@ -820,13 +820,13 @@ class Table(File):
             # Miss: default
             if language is None:
                 # XXX Should send any value?
-                return datatype.default
+                return datatype.get_default()
             # Hit
             for x in property:
                 if x.parameters['language'] == language:
                     return x.value
             # Default
-            return datatype.default
+            return datatype.get_default()
 
         # Multiple values
         is_multiple = getattr(datatype, 'multiple', False)
@@ -841,7 +841,7 @@ class Table(File):
 
         # Simple properties
         if property is None:
-            return datatype.default
+            return datatype.get_default()
         return property.value
 
 

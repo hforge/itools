@@ -230,7 +230,7 @@ class Context(object):
 
         # Deserialize
         if value is None:
-            return type.default
+            return type.get_default()
         return type.decode(value)
 
 
@@ -314,9 +314,7 @@ def get_form_value(form, name, type=String, default=None):
     # Figure out the default value
     is_multiple = getattr(type, 'multiple', False)
     if default is None:
-        default = type.default
-        if is_multiple and not isinstance(default, list):
-            default = []
+        default = type.get_default()
 
     # Missing
     is_mandatory = getattr(type, 'mandatory', False)

@@ -425,3 +425,34 @@ has been replaced:
   print html_doc.get_body_as_html()
 
 
+itools.datatypes
+================
+
+The "default" value of a datatype must not be used directly, because you could
+alter a mutable object. Call the "get_default()" accessor:
+
+  Before                          Now
+  ------------------------------  -------------------------------
+  datatype.default                datatype.get_default()
+
+In order to avoid altering the default value, we have started to write
+"freezed" versions of mutable objects like lists and dictionaries. Currently
+only lists are supported:
+
+  >>> from itools.utils import freeze
+  >>> freeze([])
+  frozenlist([])
+
+This will prevent default values or constants at large to be altered.
+
+We have written the "frozenlist" class as a derivate of the built-in list but
+preventing any change to the state of the list.
+
+When you set a datatype as multiple ("multiple=True" argument), you will
+receive an empty list as the default value. To receive your own initialized
+list as the default value, just set "default" as before:
+
+  Unicode(multiple=True, default=freeze([u'']))
+
+Freezing a mutable object is a good custom. Tuples have another semantic in
+Python.

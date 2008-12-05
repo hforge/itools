@@ -52,6 +52,18 @@ class DataType(object):
             setattr(self, key, kw[key])
 
 
+    @classmethod
+    def get_default(cls):
+        default = cls.default
+        if getattr(cls, 'multiple', False) is True:
+            if isinstance(default, list):
+                return list(default)
+            else:
+                # Change "default" explicitely to have an initialized list
+                return []
+        return default
+
+
     @staticmethod
     def decode(data):
         """Deserializes the given byte string to a value with a type.

@@ -428,7 +428,7 @@ has been replaced:
 itools.datatypes
 ================
 
-The "default" value of a datatype must not be used directly, because you could
+(1) The "default" value of a datatype must not be used directly, because you could
 alter a mutable object. Call the "get_default()" accessor:
 
   Before                          Now
@@ -448,7 +448,7 @@ This will prevent default values or constants at large to be altered.
 We have written the "frozenlist" class as a derivate of the built-in list but
 preventing any change to the state of the list.
 
-When you set a datatype as multiple ("multiple=True" argument), you will
+(2) When you set a datatype as multiple ("multiple=True" argument), you will
 receive an empty list as the default value. To receive your own initialized
 list as the default value, just set "default" as before:
 
@@ -456,3 +456,17 @@ list as the default value, just set "default" as before:
 
 Freezing a mutable object is a good custom. Tuples have another semantic in
 Python.
+
+(3) Now all datatypes are classes, even when you set arguments. A new class is
+dynamically generated to store your own values. It should not affect your code
+in any way. Continue to use "is_datatype" for now.
+
+(4) The DynamicEnumerate class has disappeared. The Enumerate class is now
+able to do the same job:
+
+  Before                               Now
+  -----------------------------------  -------------------------------
+  DynamicEnumerate(resource=resource)  Enumerate(resource=resource)
+
+If you have inherited from DynamicEnumerate and wrote instance methods, just
+turn them into class methods using "classmethod".

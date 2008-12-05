@@ -243,28 +243,7 @@ class Enumerate(String):
 
 
 
-class DynamicEnumerate(Enumerate):
-
-    def get_options(self):
-        raise NotImplementedError
-
-
-    def is_valid(self, name):
-        options = self.get_options()
-        return enumerate_is_valid(options, name)
-
-
-    def get_namespace(self, name):
-        options = self.get_options()
-        return enumerate_get_namespace(options, name)
-
-
-    def get_value(self, name, default=None):
-        options = self.get_options()
-        return enumerate_get_value(options, name, default)
-
-
-
+# TODO suppress now there is a single Enumerate class?
 def enumerate_is_valid(options, name):
     for option in options:
         if name == option['name']:

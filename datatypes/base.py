@@ -16,6 +16,7 @@
 
 
 def is_datatype(datatype, base_type):
+    # TODO obsolete now all datatypes are classes
     """Returns True if 'datatype' is of 'base_type'.
     """
     try:
@@ -47,9 +48,12 @@ class DataType(object):
     context = None
 
 
-    def __init__(self, **kw):
+    def __new__(cls, **kw):
+        class_name = "%s(%s)" % (cls.__name__, kw)
+        new_datatype = type(class_name, (cls,), kw)
         for key in kw:
-            setattr(self, key, kw[key])
+            setattr(new_datatype, key, kw[key])
+        return new_datatype
 
 
     @classmethod

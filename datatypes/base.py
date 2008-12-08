@@ -60,9 +60,8 @@ class DataType(object):
         if cls.multiple:
             if isinstance(default, list):
                 return list(default)
-            else:
-                # Change "default" explicitely to have an initialized list
-                return []
+            # Change "default" explicitely to have an initialized list
+            return []
         return default
 
 

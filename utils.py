@@ -22,10 +22,10 @@ from distutils.command.build_py import build_py
 from distutils.command.register import register
 from distutils.command.upload import upload
 from getpass import getpass
-from os import getcwd
+from os import getcwd, fork, setsid, open as os_open, devnull, dup2, O_RDWR
 from os.path import exists, join as join_path, sep, splitdrive
 from re import search
-from sys import _getframe, platform, exit
+from sys import _getframe, platform, exit, stdin, stdout, stderr
 from urllib2 import HTTPPasswordMgr
 import sys
 
@@ -64,6 +64,29 @@ def get_abspath(local_path, mname=None):
         mpath = mpath.replace(sep, '/')
 
     return mpath
+
+
+
+def become_daemon():
+    try:
+        pid = fork()
+    except OSError:
+        print 'unable to fork'
+        exit(1)
+
+    if pid == 0:
+        # Daemonize
+        setsid()
+        # We redirect only the 3 first descriptors
+        file_desc = os_open(devnull, O_RDWR)
+        stdin.close()
+        dup2(file_desc, 0)
+        stdout.flush()
+        dup2(file_desc, 1)
+        stderr.flush()
+        dup2(file_desc, 2)
+    else:
+        exit()
 
 
 
@@ -409,7 +432,8 @@ def setup(ext_modules=freeze([])):
 
 pythons_import = __import__
 
-def local_import(name, globals={}, locals={}, fromlist=frozenlist(), level=-1):
+def local_import(name, globals={}, locals={}, fromlist=frozenlist(),
+                 level=-1):
     if name.startswith('itools.'):
         name = name[7:]
     return pythons_import(name, globals, locals, fromlist, level)

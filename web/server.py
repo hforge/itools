@@ -31,6 +31,7 @@ import sys
 from time import strftime
 from traceback import print_exc
 from urllib import unquote
+from warnings import warn
 
 # Import from itools
 from itools.http import Request, Response, ClientError, NotModified
@@ -778,7 +779,12 @@ class GET(RequestMethod):
                     context.status = 302
 
         # (4) Reset the transaction in any case
-        server.abort_transaction(context)
+        if getattr(context, 'commit', False) is True:
+            # FIXME To be removed one day.
+            cls.commit_transaction(server, context)
+            warn("Use of 'context.commit' is strongly discouraged.")
+        else:
+            server.abort_transaction(context)
 
         # (5) After Traverse hook
         try:

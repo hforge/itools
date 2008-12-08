@@ -299,7 +299,8 @@ now available through the views interface.  These methods are:
   Context.build_form_namespace(schema, method=None)
   Context.check_form_input(schema)
 
-The 'context.commit' attribute has been dropped.
+Now the 'context.commit' attribute is only available for 'GET' methods, but
+its usage is strongly discouraged.
 
 (5) The access control API has changed too, now the 'is_access_allowed' method
 expects a 'View' instead of a method name.

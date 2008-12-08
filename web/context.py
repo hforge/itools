@@ -312,7 +312,6 @@ def select_language(languages):
 #######################################################################
 def get_form_value(form, name, type=String, default=None):
     # Figure out the default value
-    is_multiple = getattr(type, 'multiple', False)
     if default is None:
         default = type.get_default()
 
@@ -327,7 +326,7 @@ def get_form_value(form, name, type=String, default=None):
         return default
 
     # Multiple values
-    if is_multiple:
+    if type.multiple:
         value = form.get(name)
         if not isinstance(value, list):
             value = [value]

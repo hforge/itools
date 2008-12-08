@@ -17,7 +17,6 @@
 
 # Import from itools
 from itools.datatypes import Enumerate, is_datatype
-from itools.handlers import merge_dics
 from itools.stl import stl
 from itools.uri import decode_query
 from context import FormError
@@ -158,7 +157,6 @@ class BaseForm(BaseView):
             datatype = schema[name]
             is_mandatory = getattr(datatype, 'mandatory', False)
             is_readonly = getattr(datatype, 'readonly', False)
-            is_multiple = getattr(datatype, 'multiple', False)
 
             cls = []
             if is_mandatory:
@@ -172,7 +170,7 @@ class BaseForm(BaseView):
                 else:
                     if is_datatype(datatype, Enumerate):
                         value = datatype.get_namespace(value)
-                    elif is_multiple:
+                    elif datatype.multiple:
                         # XXX Done for table multilingual fields (fragile)
                         value = value[0]
                     else:

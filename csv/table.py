@@ -269,8 +269,7 @@ def parse_table(data):
 # Helper functions
 ###########################################################################
 def is_multilingual(datatype):
-    is_multiple = getattr(datatype, 'multiple', False)
-    return is_datatype(datatype, Unicode) and is_multiple
+    return is_datatype(datatype, Unicode) and datatype.multiple
 
 
 
@@ -420,7 +419,6 @@ class Table(File):
         for name in properties:
             value = properties[name]
             datatype = get_datatype(name)
-            is_multiple = getattr(datatype, 'multiple', False)
 
             # Transform values to properties
             if is_multilingual(datatype):
@@ -430,7 +428,7 @@ class Table(File):
                     x for x in version[name]
                     if x.parameters['language'] != language ]
                 version[name].append(value)
-            elif is_multiple:
+            elif datatype.multiple:
                 if type(value) is list:
                     version[name] = [ to_property(x) for x in value ]
                 else:
@@ -521,8 +519,7 @@ class Table(File):
                 # Decode
                 param_value = [ param_type.decode(x) for x in param_value ]
                 # Multiple or single
-                is_multiple = getattr(param_type, 'multiple', True)
-                if not is_multiple:
+                if not param_type.multiple:
                     if len(param_value) > 1:
                         msg = 'parameter "%s" must be a singleton'
                         raise ValueError, msg % param_name
@@ -573,8 +570,7 @@ class Table(File):
                 for pname in pnames:
                     pvalues = property.parameters[pname]
                     pdatatype = self.get_parameter_datatype(pname)
-                    is_multiple = getattr(pdatatype, 'multiple', True)
-                    if is_multiple:
+                    if pdatatype.multiple:
                         pvalues = [ pdatatype.encode(x) for x in pvalues ]
                         pvalues = ','.join(pvalues)
                     else:
@@ -829,8 +825,7 @@ class Table(File):
             return datatype.get_default()
 
         # Multiple values
-        is_multiple = getattr(datatype, 'multiple', False)
-        if is_multiple:
+        if datatype.multiple:
             # Default
             if property is None:
                 # FIXME Probably we should check whether the datatype defines

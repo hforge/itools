@@ -386,8 +386,7 @@ class ConfigFile(TextFile):
                 type = self.schema.get(name, String)
 
         # Multiple values
-        is_multiple = getattr(type, 'multiple', False)
-        if is_multiple:
+        if type.multiple:
             value = value.split()
             values = [ type.decode(x) for x in value ]
             return values

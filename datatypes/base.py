@@ -40,6 +40,7 @@ class DataType(object):
 
     # Default value
     default = None
+    multiple = False
 
     # I18n part
     context = None
@@ -56,7 +57,7 @@ class DataType(object):
     @classmethod
     def get_default(cls):
         default = cls.default
-        if getattr(cls, 'multiple', False) is True:
+        if cls.multiple:
             if isinstance(default, list):
                 return list(default)
             else:

@@ -172,7 +172,7 @@ def pmltopdf_test(value, raw=False):
     if raw is False:
         here = get_cwd().path
         prefix = here.resolve2(Path(value))
-        stream = set_prefix(stream, prefix)
+        stream = set_prefix(stream, prefix, ns_uri=pml_uri)
     return document_stream(stream, StringIO(), 'test', True)
 
 

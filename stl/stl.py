@@ -438,7 +438,7 @@ def process(events, start, end, stack, repeat_stack, encoding, skip_events):
 ########################################################################
 # Set prefix
 ########################################################################
-def set_prefix(stream, prefix):
+def set_prefix(stream, prefix, ns_uri=xhtml_uri):
     if isinstance(prefix, str):
         prefix = Path(prefix)
 
@@ -450,7 +450,7 @@ def set_prefix(stream, prefix):
             aux = {}
             for attr_uri, attr_name in attributes:
                 value = attributes[(attr_uri, attr_name)]
-                if tag_uri == xhtml_uri and attr_uri in (None, xhtml_uri):
+                if tag_uri == ns_uri and attr_uri in (None, ns_uri):
                     # <... src="X" />
                     if attr_name == 'src':
                         value = resolve_pointer(value, prefix)

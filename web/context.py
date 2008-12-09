@@ -57,7 +57,7 @@ class FormError(StandardError):
         elif missing:
             msg = u"There are ${miss} field(s) missing."
         elif invalid:
-            msg = u"There are ${miss} field(s) invalid."
+            msg = u"There are ${inv} field(s) invalid."
         else:
             # We should never be here
             msg = u"Everything looks fine (strange)."

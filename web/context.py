@@ -45,15 +45,14 @@ class FormError(StandardError):
 
 
     def get_message(self):
+        # Custom message
+        if self.message is not None:
+            return self.message
+
+        # Default message
         missing = len(self.missing)
         invalid = len(self.invalid)
-        # The message
-        if self.message is not None:
-            # Custom message
-            msg = self.message
-            if isinstance(msg, MSG):
-                msg = msg.gettext()
-        elif missing and invalid:
+        if missing and invalid:
             msg = u"There are ${miss} field(s) missing and ${inv} invalid."
         elif missing:
             msg = u"There are ${miss} field(s) missing."

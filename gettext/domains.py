@@ -94,7 +94,7 @@ class MSG(object):
 
         self.message = message
         self.domain = domain
-        # XXX Used by the subclass 'INFO' (from itools.web)
+        # FIXME Used by the subclass 'INFO' (from itools.web)
         self.kw = kw
 
 
@@ -118,4 +118,3 @@ class MSG(object):
             return Template(message).substitute(kw)
 
         return message
-

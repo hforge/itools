@@ -175,7 +175,7 @@ class i18nTestCase(TestCase):
         doc = HTMLFile(string='<em>hello world</em>')
 
         p = POFile(string=
-            'msgctxt "em"\n'
+            'msgctxt "emphasis"\n'
             'msgid "hello world"\n'
             'msgstr "hola mundo"')
 
@@ -191,10 +191,10 @@ class i18nTestCase(TestCase):
         p = POFile(string=
             'msgid "Say:"\n'
             'msgstr "Dice:"\n\n'
-            'msgctxt "em"\n'
+            'msgctxt "emphasis"\n'
             'msgid "hello world."\n'
             'msgstr "hola mundo."\n\n'
-            'msgctxt "em"\n'
+            'msgctxt "emphasis"\n'
             'msgid "It\'s me."\n'
             'msgstr "Es me."')
 
@@ -211,10 +211,10 @@ class i18nTestCase(TestCase):
         p = POFile(string=
             'msgid "Say:"\n'
             'msgstr "Dites:"\n\n'
-            'msgctxt "em"\n'
+            'msgctxt "emphasis"\n'
             'msgid "hello world."\n'
             'msgstr "Bonjour monde."\n\n'
-            'msgctxt "em"\n'
+            'msgctxt "emphasis"\n'
             'msgid "It\'s me."\n'
             'msgstr "C\'est moi."\n\n'
             'msgid "Do you remember me ?"\n'
@@ -235,10 +235,10 @@ class i18nTestCase(TestCase):
         p = POFile(string=
             'msgid "Say:"\n'
             'msgstr "Dites:"\n\n'
-            'msgctxt "em"\n'
+            'msgctxt "emphasis"\n'
             'msgid "hello world."\n'
             'msgstr "Bonjour monde."\n\n'
-            'msgctxt "em"\n'
+            'msgctxt "emphasis"\n'
             'msgid "It\'s me."\n'
             'msgstr "C\'est moi."\n\n'
             'msgid "Do you remember me ?"\n'

@@ -237,14 +237,12 @@ class WorkflowAware(object):
 
         # Get the current state
         state = workflow.states[self.workflow_state]
+        if transname not in state.transitions:
+            error = "transition '%s' is invalid from state '%s'"
+            raise WorkflowError, error % (transname, self.workflow_state)
 
-        try:
-            # Get the new state name
-            state = state.transitions[transname].state_to
-        except KeyError:
-            raise WorkflowError, \
-                  "transition '%s' is invalid from state '%s'" \
-                  % (transname, self.workflow_state)
+        # Get the new state name
+        state = state.transitions[transname].state_to
 
         # call app-specific leave- state  handler if any
         name = 'onleave_%s' % self.workflow_state

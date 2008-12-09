@@ -37,7 +37,7 @@ def process_form(get_value, schema):
             invalid.extend(error.invalid)
         values[name] = value
     if missing or invalid:
-        raise FormError(missing, invalid)
+        raise FormError(missing=missing, invalid=invalid)
     return values
 
 

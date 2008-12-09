@@ -25,6 +25,7 @@ from time import strptime
 
 # Import from itools
 from itools.datatypes import String
+from itools.gettext import MSG
 from itools.http import Response, Unauthorized
 from itools.i18n import AcceptLanguageType
 from itools.uri import get_reference
@@ -37,23 +38,32 @@ class FormError(StandardError):
     """Raised when a form is invalid (missing or invalid fields).
     """
 
-    def __init__(self, missing=None, invalid=None):
-          self.missing = missing or []
-          self.invalid = invalid or []
+    def __init__(self, message=None, missing=freeze([]), invalid=freeze([])):
+        self.message = message
+        self.missing = missing
+        self.invalid = invalid
 
 
     def get_message(self):
         missing = len(self.missing)
         invalid = len(self.invalid)
-        if missing and invalid:
+        # The message
+        if self.message is not None:
+            # Custom message
+            msg = self.message
+            if isinstance(msg, MSG):
+                msg = msg.gettext()
+        elif missing and invalid:
             msg = u"There are ${miss} field(s) missing and ${inv} invalid."
         elif missing:
             msg = u"There are ${miss} field(s) missing."
         elif invalid:
             msg = u"There are ${miss} field(s) invalid."
         else:
-            msg = u"Everything looks fine."
+            # We should never be here
+            msg = u"Everything looks fine (strange)."
 
+        # Ok
         return ERROR(msg, miss=missing, inv=invalid)
 
 

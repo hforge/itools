@@ -639,10 +639,6 @@ class pml_ColorTestCase(unittest.TestCase):
         color = get_color2(str)
         self.assertEqual(color.hexval(), '0x000000')
 
-        str = '#'
-        color = get_color2(str)
-        self.assertEqual(color.hexval(), '0x000000')
-
         str = '#abt'
         color = get_color2(str)
         self.assertEqual(color.hexval(), '0x000000')
@@ -652,10 +648,6 @@ class pml_ColorTestCase(unittest.TestCase):
         self.assertEqual(color.hexval(), '0x000000')
 
         str = 'cian'
-        color = get_color2(str)
-        self.assertEqual(color.hexval(), '0x000000')
-
-        str = 'rgb(230, 100, 1800)'
         color = get_color2(str)
         self.assertEqual(color.hexval(), '0x000000')
 

@@ -91,9 +91,9 @@ DEPRECATED = ('u',)
 INLINE = FONT_STYLE + PHRASE + SPECIAL + DEPRECATED
 
 # ERROR MESSAGES
-MSG_TAG_NOT_SUPPORTED = '%s: line %s tag "%s" is currently not supported.'
-MSG_WARNING_DTD = '%s: line %s tag "%s" is unapproprieted here.'
-MSG_ROW_ERROR = 'Table error : too many row at its line: %s'
+MSG_TAG_NOT_SUPPORTED = '(WW) %s: line %s tag "%s" is currently not supported.'
+MSG_WARNING_DTD = '(WW) %s: line %s tag "%s" is unapproprieted here.'
+MSG_ROW_ERROR = '(EE) Table : too many row at its line: %s'
 
 HEADING = ('h1', 'h2', 'h3', 'h4', 'h5', 'h6')
 
@@ -908,7 +908,7 @@ def table_stream(stream, _tag_name, attributes, context):
                 content.next_line()
             elif tag_name == 'thead':
                 if len(content.content):
-                    print 'Warning data are already pushed'
+                    print '(WW) Data are already pushed'
             else:
                 print MSG_WARNING_DTD % ('document', line_number, tag_name)
 

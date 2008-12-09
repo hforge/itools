@@ -72,8 +72,8 @@ def join_content(data):
     return data
 
 
-def get_color_as_hexa(value, default='#000000'):
-    value = value.strip()
+def get_color_as_hexa(str_value, default='#000000'):
+    value = str_value.strip()
     if value.startswith('rgb'):
         value = value.lstrip('rgb(').rstrip(')').split(',')
         value = [ int(i) for i in value ]
@@ -84,16 +84,19 @@ def get_color_as_hexa(value, default='#000000'):
                 if i < 256:
                     tmp.append('%02x' % i)
                 else:
-                    print 'Warning the color "%s" is not well formed ' % hex
+                    print '(WW) the color "%s" is not well formed ' % str_value
                     return default
         value = '#%s' % ''.join(tmp)
     elif value.startswith('#'):
-        if len(value) == 4:
+        value_length = len(value)
+        if value_length == 4:
             # #aba -> #aabbaa
             r = value[1] * 2
             g = value[2] * 2
             b = value[3] * 2
             value = '#%s%s%s' % (r, g, b)
+        elif value_length != 7:
+            print '(WW) the color "%s" is not well formed ' % str_value
     else:
         # Warning getAllNamedColors() uses a singleton
         value = ('#%02x%02x%02x' %

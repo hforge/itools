@@ -159,7 +159,7 @@ def inline_font_style(key, value, context):
         if value in ('italic', 'oblique'):
             style = ('i', {})
         elif value != 'normal':
-            print 'Warning font-style not valid'
+            print '(WW) font-style not valid'
     elif key == 'font-size':
         style = ('span', {(None, 'fontSize'): font_value(value)})
     elif key == 'font-weight':
@@ -179,7 +179,7 @@ def p_font_style(key, value, context):
         if value in ('italic', 'oblique'):
             context.style_tag_stack.append(('i'))
         elif value != 'normal':
-            print 'Warning font-style not valid'
+            print '(WW) font-style not valid'
     elif key == 'font-size':
         style_attr['fontSize'] = font_value(value)
     elif key == 'font-weight':

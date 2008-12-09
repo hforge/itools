@@ -43,11 +43,18 @@ class FormError(StandardError):
 
 
     def get_message(self):
-        msg = (u'${missing} field(s) are missing and ${invalid} field(s) '
-               u'are invalid')
         missing = len(self.missing)
         invalid = len(self.invalid)
-        return ERROR(msg, missing=missing, invalid=invalid)
+        if missing and invalid:
+            msg = u"There are ${miss} field(s) missing and ${inv} invalid."
+        elif missing:
+            msg = u"There are ${miss} field(s) missing."
+        elif invalid:
+            msg = u"There are ${miss} field(s) invalid."
+        else:
+            msg = u"Everything looks fine."
+
+        return ERROR(msg, miss=missing, inv=invalid)
 
 
     def __str__(self):

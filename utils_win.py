@@ -16,9 +16,12 @@
 
 # Import from the Standard Library
 from os import getpid
-from win32api import OpenProcess
-from win32con import PROCESS_QUERY_INFORMATION, PROCESS_VM_READ
-from win32process import GetProcessTimes, GetProcessMemoryInfo
+try:
+    from win32api import OpenProcess
+    from win32con import PROCESS_QUERY_INFORMATION, PROCESS_VM_READ
+    from win32process import GetProcessTimes, GetProcessMemoryInfo
+except ImportError:
+    print 'Warning: win32 is not installed'
 
 
 

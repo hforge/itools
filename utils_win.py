@@ -16,40 +16,39 @@
 
 # Import from the Standard Library
 from os import getpid
-import win32process
-import win32api
+from win32api import OpenProcess
 from win32con import PROCESS_QUERY_INFORMATION, PROCESS_VM_READ
+from win32process import GetProcessTimes, GetProcessMemoryInfo
+
+
 
 def get_win32_handle(pid):
-    """
-    Return the windows handle for a pid
+    """Return the windows handle for a pid.
     """
     mask = PROCESS_QUERY_INFORMATION | PROCESS_VM_READ
-    handle = win32api.OpenProcess(mask, False, pid)
-    return handle
+    return OpenProcess(mask, False, pid)
 
 
 def get_time_spent(mode='both', since=0.0):
-    """
-    Return the time spent by the current process in MICRO SECONDS
+    """Return the time spent by the current process in microseconds:
 
     mode user -> time in user mode
     mode system -> time in system mode
     mode both -> time in user mode + time in system mode
     """
     handle = get_win32_handle(getpid())
-    data = win32process.GetProcessTimes(handle)
+    data = GetProcessTimes(handle)
     if mode == 'system':
-            return data['KernelTime'] / 10000000.0 - since
+        return data['KernelTime'] / 10000000.0 - since
     elif mode == 'user':
-            return data['UserTime'] / 10000000.0 - since
-    else:
-            # both
-            return (data['KernelTime'] + data['UserTime']) / 10000000.0 - since
+        return data['UserTime'] / 10000000.0 - since
+
+    # Both
+    return (data['KernelTime'] + data['UserTime']) / 10000000.0 - since
 
 
 def vmsize(scale={'kB': 1024.0, 'mB': 1024.0*1024.0,
                   'KB': 1024.0, 'MB': 1024.0*1024.0}):
     handle = get_win32_handle(getpid())
-    m = win32process.GetProcessMemoryInfo(handle)
+    m = GetProcessMemoryInfo(handle)
     return m["WorkingSetSize"]

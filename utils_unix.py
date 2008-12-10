@@ -16,10 +16,7 @@
 
 # Import from the Standard Library
 from os import getpid
-import resource
-
-# Import from itools
-import git
+from resource import getrusage, RUSAGE_SELF
 
 
 def vmsize(scale={'kB': 1024.0, 'mB': 1024.0*1024.0,
@@ -31,21 +28,20 @@ def vmsize(scale={'kB': 1024.0, 'mB': 1024.0*1024.0,
     # convert Vm value to bytes
     return float(status[1]) * scale[status[2]]
 
+
 def get_time_spent(mode='both', since=0.0):
-    """
-    Return the time spent by the current process in SECONDS
+    """Return the time spent by the current process in seconds.
 
     mode user -> time in user mode
     mode system -> time in system mode
     mode both -> time in user mode + time in system mode
     """
-
-    data = resource.getrusage(resource.RUSAGE_SELF)
+    data = getrusage(RUSAGE_SELF)
 
     if mode == 'system':
         return data[1] - since
     elif mode == 'user':
         return data[0] - since
-    else:
-        # both
-        return data[0] + data[1] - since
+
+    # Both
+    return data[0] + data[1] - since

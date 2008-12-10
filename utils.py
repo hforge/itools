@@ -22,7 +22,7 @@ from distutils.command.build_py import build_py
 from distutils.command.register import register
 from distutils.command.upload import upload
 from getpass import getpass
-from os import getcwd, fork, setsid, open as os_open, devnull, dup2, O_RDWR
+from os import getcwd, open as os_open, devnull, dup2, O_RDWR
 from os.path import exists, join as join_path, sep, splitdrive
 from re import search
 from sys import _getframe, platform, exit, stdin, stdout, stderr
@@ -32,10 +32,11 @@ import sys
 # Import from itools
 import git
 
+
 if platform[:3] == 'win':
-    from utils_win import vmsize, get_time_spent
+    from utils_win import get_time_spent, vmsize
 else:
-    from utils_unix import vmsize, get_time_spent
+    from utils_unix import get_time_spent, vmsize
 
 
 
@@ -68,6 +69,9 @@ def get_abspath(local_path, mname=None):
 
 
 def become_daemon():
+    # FIXME This does not work on Windows
+    from os import fork, setsid
+
     try:
         pid = fork()
     except OSError:

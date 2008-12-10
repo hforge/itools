@@ -1,4 +1,4 @@
-<html>
+<html xmlns="http://www.hforge.org/xml-namespaces/pml">
   <head>
     <style>
       p#first
@@ -31,6 +31,7 @@
       This paragraph
       contains      <a href="about:blank">a lot of spaces</a>
       in this xml source.
+      <img src="itools_powered.png" />
     </p>
     <!--<p>This paragraph contains a lot of spaces in this xml source.</p>-->
     <p class="essai">

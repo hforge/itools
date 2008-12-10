@@ -18,7 +18,7 @@
 from pdf import PDFFile
 from itools.utils import get_abspath
 from itools.relaxng import RelaxNGFile
-from itools.xml import register_dtd, register_namespace
+from itools.xml import register_dtd
 
 # There are imports from ReportLab in these imports, so, ...
 try:

@@ -21,33 +21,34 @@
 
 # Import from the Standard Library
 from cStringIO import StringIO
-import tempfile
-import socket
+from types import FileType
 import copy
+import socket
+import tempfile
 
 # Import from itools
 from itools import get_abspath
 from itools.datatypes import XMLContent
-from itools.stl import set_prefix, stl
+from itools.stl import set_prefix
 from itools.uri import Path
 from itools.uri.uri import get_cwd
 from itools.vfs import vfs
-from itools.xml import (XMLParser, START_ELEMENT, END_ELEMENT, TEXT,
-                        get_end_tag)
+from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, TEXT
+from itools.xml import get_end_tag, XMLFile
 import itools.http
 
 # Internal import
 from doctemplate import MySimpleDocTemplate, MyDocTemplate
-from style import (build_paragraph_style, get_table_style, makeTocHeaderStyle,
-                   get_align, build_inline_style, build_frame_style,
-                   get_hr_style, get_font_name)
-from utils import (check_image, exist_attribute, font_value,
-                   format_size, get_int_value, normalize,
-                   Paragraph, pc_float, stream_next, join_content, Div)
+from style import build_paragraph_style, get_table_style, makeTocHeaderStyle
+from style import get_align, build_inline_style, build_frame_style
+from style import get_hr_style, get_font_name
+from utils import check_image, exist_attribute, font_value
+from utils import format_size, get_int_value, normalize
+from utils import Paragraph, pc_float, stream_next, join_content, Div
 
 # Import from the reportlab Library
 import reportlab
-from reportlab.lib.pagesizes import LETTER, A4
+from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import cm
 # CJK
@@ -104,81 +105,116 @@ EMPTY_TAGS = ('br', 'img', 'toc', 'pagebreak', 'pagenumber')
 ######################################################################
 # Public API
 ######################################################################
-def pmltopdf(filename):
+def pmltopdf(document, path=None):
     """
-      Main function: produces a pdf file from a html-like xml document
-
-      filename: source file
+    document: string buffer or open file descriptor
+    path: the path of the document
     """
 
-    # Read the input
-    none_ns = {None: pml_uri}
-    fd = vfs.open(filename)
-    stream = XMLParser(fd.read(), none_ns)
-    fd.close()
+    # Input
+    if isinstance(document, str):
+        data = document
+    else:
+        # Try to get the path from the file
+        if path is None and isinstance(document, FileType):
+            path = document.name
+        data = document.read()
 
-    # Prefix the stream
-    here = get_cwd().path
-    prefix = here.resolve2(Path(filename))
-    stream = set_prefix(stream, prefix)
+    events = XMLParser(data, {None: pml_uri})
 
-    # Make the PDF
-    iostream = StringIO()
-    document_stream(stream, iostream, filename, False)
+    if path:
+        here = get_cwd().path
+        prefix = here.resolve2(Path(path))
+        stream = set_prefix(events, prefix, ns_uri=pml_uri)
 
-    return iostream.getvalue()
+    return make_pdf(events)
 
 
-def stl_pmltopdf(filename, namespace):
+def stl_pmltopdf(document, namespace={}, path=None):
+    """
+    document: XMLFile, events, XMLParser, generator
+    path: the path of the document
+    """
 
-    # Make the input stream
-    none_ns  = {None: pml_uri}
-    fd = vfs.open(filename)
-    stream = XMLParser(fd.read(), none_ns)
-    fd.close()
+    if isinstance(document, XMLFile):
+        events = document.events
+        # Try to get the path from the file
+        if path is None:
+            path = document.uri
+    else:
+        events = document
 
-    # Compute the prefix
-    here = get_cwd().path
-    prefix = here.resolve2(Path(filename))
+    if path:
+        here = get_cwd().path
+        prefix = here.resolve2(Path(path))
+        events = set_prefix(events, prefix, ns_uri=pml_uri)
 
-    # Throw all in the stl
-    stream = stl(prefix=prefix, namespace=namespace, events=stream)
-
-    # Make the PDF
-    iostream = StringIO()
-    document_stream(stream, iostream, filename, False)
-
-    return iostream.getvalue()
+    return make_pdf(events)
 
 
 
 ######################################################################
 # Public test API
 ######################################################################
-def pmltopdf_test(value, raw=False):
+def pmltopdf_test(document, path=None):
     """
-      If raw is False, value is the test file path
-      otherwise it is the string representation of a xml document
+    document: string buffer or open file descriptor
+    path: the path of the document
     """
 
-    namespaces = {None: pml_uri}
-    if raw is False:
-        input = vfs.open(value)
-        data = input.read()
-        input.close()
+    # Input
+    if isinstance(document, str):
+        data = document
     else:
-        data = value
-    stream = XMLParser(data, namespaces)
-    if raw is False:
+        # Try to get the path from the file
+        if path is None and isinstance(document, FileType):
+            path = document.name
+        data = document.read()
+        # Should we close the file descriptor ?
+        document.close()
+
+    events = XMLParser(data, {None: pml_uri})
+
+    if path:
         here = get_cwd().path
-        prefix = here.resolve2(Path(value))
-        stream = set_prefix(stream, prefix, ns_uri=pml_uri)
-    return document_stream(stream, StringIO(), 'test', True)
+        prefix = here.resolve2(Path(path))
+        events = set_prefix(events, prefix, ns_uri=pml_uri)
+
+    return document_stream(events, StringIO(), True)
+
+
+def stl_pmltopdf_test(document, namespace={}, path=None):
+    """
+    document: XMLFile, events, XMLParser, generator
+    path: the path of the document
+    """
+
+    if isinstance(document, XMLFile):
+        events = document.events
+        # Try to get the path from the file
+        if path is None:
+            path = str(document.uri.path)
+    else:
+        events = document
+
+    if path:
+        here = get_cwd().path
+        prefix = here.resolve2(Path(path))
+        events = set_prefix(events, prefix, ns_uri=pml_uri)
+
+    return document_stream(events, StringIO(), True)
 
 
 ######################################################################
 # Private API
 ######################################################################
+def make_pdf(stream, is_test=False):
+    """Make the PDF"""
+    iostream = StringIO()
+    document_stream(stream, iostream, is_test)
+
+    return iostream.getvalue()
+
 
 class Context(object):
 
@@ -356,13 +392,10 @@ class Context(object):
 
 
 
-
-
-def document_stream(stream, pdf_stream, document_name, is_test=False):
+def document_stream(stream, pdf_stream, is_test=False):
     """
         stream : parser stream
         pdf_stream : reportlab write the pdf into pdf_stream.
-        document_name : name of the source file
 
         Childs : template, stylesheet, story
     """

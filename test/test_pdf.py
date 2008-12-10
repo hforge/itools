@@ -20,13 +20,15 @@ import unittest
 
 # Import from itools
 from itools.pdf import rmltopdf
-from itools.pdf.rml import (rmltopdf_test, normalize as normalize,
-                            stream_next, get_color as get_color,
-                            get_page_size_orientation)
-from itools.pdf.pml import (pmltopdf_test, normalize as normalize2,
-                             paragraph_stream, Context)
+from itools.pdf.pml import normalize as normalize2
+from itools.pdf.pml import paragraph_stream, Context
+from itools.pdf.pml import pmltopdf_test, stl_pmltopdf_test
+from itools.pdf.rml import get_page_size_orientation
+from itools.pdf.rml import rmltopdf_test, normalize as normalize
+from itools.pdf.rml import stream_next, get_color as get_color
 from itools.pdf.utils import get_color as get_color2
-from itools.xml import XMLParser, START_ELEMENT, TEXT
+from itools.vfs import vfs
+from itools.xml import XMLParser, START_ELEMENT, TEXT, XMLFile
 
 # Import from the reportlab library
 from reportlab.lib.units import inch, cm
@@ -501,7 +503,7 @@ class pml_FunctionTestCase(unittest.TestCase):
           '<para>TEXT<super><font fontSize="7.2">TEXT</font></super></para>')
 
 
-    # FIXME paragraph_stream is buggy
+    ## FIXME paragraph_stream is buggy
     #def test_formatting_using_span(self):
     #    context = Context()
     #    data = '<p><span style="color: #ff9000">clear syntax</span></p>'
@@ -558,12 +560,13 @@ class pml_HtmlTestCase(unittest.TestCase):
 
     def test_empty_body(self):
         data = '<html><body></body></html>'
-        story, stylesheet = pmltopdf_test(data, raw=True)
+        story, stylesheet = pmltopdf_test(data)
         self.assertEqual(len(story), 0)
+
 
     def test_paragraph1(self):
         data = '<html><body><p>hello  world</p></body></html>'
-        story, stylesheet = pmltopdf_test(data, raw=True)
+        story, stylesheet = pmltopdf_test(data)
         self.assertEqual(len(story), 1)
 
 
@@ -571,17 +574,37 @@ class pml_HtmlTestCase(unittest.TestCase):
         data = '<html><body><h1>title</h1><p>hello  world</p>'
         data += '<h2>subtitle1</h2><p>Hello</p><h2>subtitle 2</h2>'
         data += '<p>WORLD     <br/>       </p>;)</body></html>'
-        story, stylesheet = pmltopdf_test(data, raw=True)
+        story, stylesheet = pmltopdf_test(data)
         self.assertEqual(len(story), 6)
 
 
     def test_paragraph3(self):
-        story, stylesheet = pmltopdf_test('pml/paragraph.xml')
+        handler = XMLFile(ref='pml/paragraph.xml')
+        story, stylesheet = stl_pmltopdf_test(handler)
         self.assertEqual(len(story), 10)
 
 
+    def test_paragraph4(self):
+        handler = vfs.open('pml/paragraph.xml')
+        story, stylesheet = pmltopdf_test(handler)
+        self.assertEqual(len(story), 10)
+
+
+    def test_paragraph_cjk(self):
+        handler = vfs.open('pml/paragraph_cjk.xml')
+        story, stylesheet = pmltopdf_test(handler)
+        self.assertEqual(len(story), 12)
+
+
+    def test_span(self):
+        handler = vfs.open('pml/span.xml')
+        story, stylesheet = pmltopdf_test(handler)
+        self.assertEqual(len(story), 9)
+
+
     def test_list(self):
-        story, stylesheet = pmltopdf_test('pml/list.xml')
+        handler = XMLFile(ref='pml/list.xml')
+        story, stylesheet = stl_pmltopdf_test(handler)
         self.assertEqual(len(story), 163)
 
 
@@ -596,12 +619,13 @@ class pml_HtmlTestCase(unittest.TestCase):
                 <p><img src="pml/itools_powered.png" alt="itools" /></p>
             </body>
         </html>"""
-        story, stylesheet = pmltopdf_test(data, raw=True)
+        story, stylesheet = pmltopdf_test(data)
         self.assertEqual(len(story), 3)
 
 
     def test_table(self):
-        story, stylesheet = pmltopdf_test('pml/table.xml')
+        handler = XMLFile(ref='pml/table.xml')
+        story, stylesheet = stl_pmltopdf_test(handler, path='pml/table.xml')
         self.assertEqual(len(story), 1)
 
 

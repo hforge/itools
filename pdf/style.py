@@ -19,12 +19,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Internal import
+from utils import font_value, format_size, get_color_as_hexa
+from utils import get_color, get_int_value
+
+# Import from the reportlab Library
 from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT, TA_JUSTIFY
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import cm
 from reportlab.platypus.frames import ShowBoundaryValue
-from utils import (font_value, format_size, get_color_as_hexa,
-                   get_color, get_int_value)
 
 P_ALIGNMENTS = {'left': TA_LEFT, 'right': TA_RIGHT, 'center': TA_CENTER,
               'justify': TA_JUSTIFY}
@@ -54,6 +57,7 @@ BODY_MARGINS = {'margin-top': 'topMargin',
                 'margin-bottom': 'bottomMargin',
                 'margin-left': 'leftMargin',
                 'margin-right': 'rightMargin'}
+
 
 
 def get_align(attributes):

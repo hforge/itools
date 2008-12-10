@@ -84,8 +84,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <zeroOrMore><ref name="u" /></zeroOrMore>
     <zeroOrMore><ref name="hX" /></zeroOrMore>
     <zeroOrMore><ref name="hr" /></zeroOrMore>
-    <zeroOrMore><ref name="super" /></zeroOrMore>
+    <zeroOrMore><ref name="sup" /></zeroOrMore>
     <zeroOrMore><ref name="sub" /></zeroOrMore>
+    <zeroOrMore><ref name="tt" /></zeroOrMore>
     <zeroOrMore><ref name="font" /></zeroOrMore>
     <zeroOrMore><ref name="ol" /></zeroOrMore>
     <zeroOrMore><ref name="ul" /></zeroOrMore>
@@ -103,8 +104,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <zeroOrMore><ref name="b" /></zeroOrMore>
     <zeroOrMore><ref name="i" /></zeroOrMore>
     <zeroOrMore><ref name="u" /></zeroOrMore>
-    <zeroOrMore><ref name="super" /></zeroOrMore>
+    <zeroOrMore><ref name="big" /></zeroOrMore>
+    <zeroOrMore><ref name="small" /></zeroOrMore>
+    <zeroOrMore><ref name="sup" /></zeroOrMore>
     <zeroOrMore><ref name="sub" /></zeroOrMore>
+    <zeroOrMore><ref name="tt" /></zeroOrMore>
     <zeroOrMore><ref name="font" /></zeroOrMore>
     <zeroOrMore><ref name="link" /></zeroOrMore>
     <zeroOrMore><ref name="a" /></zeroOrMore>
@@ -138,8 +142,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   </element>
 </define>
 
-<define name="super">
-  <element name="pml:super">
+<define name="big">
+  <element name="pml:big">
+    <zeroOrMore><ref name="b" /></zeroOrMore>
+    <zeroOrMore><ref name="i" /></zeroOrMore>
+    <zeroOrMore><ref name="u" /></zeroOrMore>
+    <zeroOrMore><ref name="font" /></zeroOrMore>
+  </element>
+</define>
+
+<define name="small">
+  <element name="pml:small">
+    <zeroOrMore><ref name="b" /></zeroOrMore>
+    <zeroOrMore><ref name="i" /></zeroOrMore>
+    <zeroOrMore><ref name="u" /></zeroOrMore>
+    <zeroOrMore><ref name="font" /></zeroOrMore>
+  </element>
+</define>
+
+<define name="sup">
+  <element name="pml:sup">
     <zeroOrMore><ref name="b" /></zeroOrMore>
     <zeroOrMore><ref name="i" /></zeroOrMore>
     <zeroOrMore><ref name="u" /></zeroOrMore>
@@ -156,13 +178,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   </element>
 </define>
 
+<define name="tt">
+  <element name="pml:tt">
+    <zeroOrMore><ref name="b" /></zeroOrMore>
+    <zeroOrMore><ref name="i" /></zeroOrMore>
+    <zeroOrMore><ref name="u" /></zeroOrMore>
+    <zeroOrMore><ref name="font" /></zeroOrMore>
+  </element>
+</define>
+
 <define name="font">
   <element name="pml:font">
     <text />
     <zeroOrMore><ref name="b" /></zeroOrMore>
     <zeroOrMore><ref name="i" /></zeroOrMore>
     <zeroOrMore><ref name="u" /></zeroOrMore>
-    <zeroOrMore><ref name="super" /></zeroOrMore>
+    <zeroOrMore><ref name="sup" /></zeroOrMore>
     <zeroOrMore><ref name="sub" /></zeroOrMore>
   </element>
 </define>
@@ -194,8 +225,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <zeroOrMore><ref name="i" /></zeroOrMore>
     <zeroOrMore><ref name="u" /></zeroOrMore>
     <zeroOrMore><ref name="font" /></zeroOrMore>
-    <zeroOrMore><ref name="super" /></zeroOrMore>
+    <zeroOrMore><ref name="sup" /></zeroOrMore>
     <zeroOrMore><ref name="sub" /></zeroOrMore>
+    <zeroOrMore><ref name="tt" /></zeroOrMore>
     <zeroOrMore><ref name="link" /></zeroOrMore>
     <zeroOrMore><ref name="a" /></zeroOrMore>
     <zeroOrMore><ref name="pagenumber" /></zeroOrMore>
@@ -328,8 +360,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <zeroOrMore><ref name="b" /></zeroOrMore>
     <zeroOrMore><ref name="i" /></zeroOrMore>
     <zeroOrMore><ref name="u" /></zeroOrMore>
-    <zeroOrMore><ref name="super" /></zeroOrMore>
+    <zeroOrMore><ref name="sup" /></zeroOrMore>
     <zeroOrMore><ref name="sub" /></zeroOrMore>
+    <zeroOrMore><ref name="tt" /></zeroOrMore>
     <zeroOrMore><ref name="font" /></zeroOrMore>
     <zeroOrMore><ref name="link" /></zeroOrMore>
     <zeroOrMore><ref name="a" /></zeroOrMore>
@@ -343,8 +376,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <zeroOrMore><ref name="b" /></zeroOrMore>
     <zeroOrMore><ref name="i" /></zeroOrMore>
     <zeroOrMore><ref name="u" /></zeroOrMore>
-    <zeroOrMore><ref name="super" /></zeroOrMore>
+    <zeroOrMore><ref name="sup" /></zeroOrMore>
     <zeroOrMore><ref name="sub" /></zeroOrMore>
+    <zeroOrMore><ref name="tt" /></zeroOrMore>
     <zeroOrMore><ref name="font" /></zeroOrMore>
     <zeroOrMore><ref name="link" /></zeroOrMore>
     <zeroOrMore><ref name="a" /></zeroOrMore>
@@ -360,8 +394,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <zeroOrMore><ref name="b" /></zeroOrMore>
     <zeroOrMore><ref name="i" /></zeroOrMore>
     <zeroOrMore><ref name="u" /></zeroOrMore>
-    <zeroOrMore><ref name="super" /></zeroOrMore>
+    <zeroOrMore><ref name="sup" /></zeroOrMore>
     <zeroOrMore><ref name="sub" /></zeroOrMore>
+    <zeroOrMore><ref name="tt" /></zeroOrMore>
     <zeroOrMore><ref name="font" /></zeroOrMore>
     <zeroOrMore><ref name="link" /></zeroOrMore>
     <zeroOrMore><ref name="a" /></zeroOrMore>

@@ -19,22 +19,28 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from the Standard Library
+from math import floor
+from copy import deepcopy
+
+# Import from itools
 from itools.datatypes import Unicode, Integer
 from itools.handlers import Image as ItoolsImage
 from itools.vfs import vfs
-from math import floor
+
+# Import from the reportlab Library
 from reportlab.lib import colors
 from reportlab.lib.units import inch, cm, mm, pica
 from reportlab.platypus import Paragraph as Platypus_paragraph
 from reportlab.platypus.flowables import Flowable
 from reportlab.platypus.frames import Frame, ShowBoundaryValue
 from reportlab.platypus.paraparser import ParaFrag
-from copy import deepcopy
 
 FRAME_PADDINGS_KEYS = ('topPadding', 'bottomPadding', 'leftPadding',
                        'rightPadding')
 
 encoding = 'UTF-8'
+
 
 
 def stream_next(stream):

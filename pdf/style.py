@@ -556,9 +556,9 @@ def get_table_style(style_css, attributes, start, stop):
                     continue
                 key, value = data.split(':') # FIXME to do more robust
                 style_css2[key] = value
-        table_style.extend(_get_table_style(style_css, start, stop))
-        border_css_buffer.update(_get_table_style_border_only(style_css,
-                                                              start, stop))
+            table_style.extend(_get_table_style(style_css, start, stop))
+            border_css_buffer.update(_get_table_style_border_only(style_css2,
+                                                                  start, stop))
 
     keys = border_css_buffer.keys()
     keys.sort()

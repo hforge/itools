@@ -29,7 +29,7 @@ import tempfile
 # Import from itools
 from itools import get_abspath
 from itools.datatypes import XMLContent
-from itools.stl import set_prefix
+from itools.stl import set_prefix, stl
 from itools.uri import Path
 from itools.uri.uri import get_cwd
 from itools.vfs import vfs
@@ -139,10 +139,13 @@ def stl_pmltopdf(document, namespace={}, path=None):
     if isinstance(document, XMLFile):
         events = document.events
         # Try to get the path from the file
-        if path is None:
-            path = document.uri
+        if path is None and document.uri:
+            path = str(document.uri.path)
     else:
         events = document
+
+    if namespace:
+        events = stl(events=events, namespace=namespace)
 
     if path:
         here = get_cwd().path
@@ -196,6 +199,9 @@ def stl_pmltopdf_test(document, namespace={}, path=None):
             path = str(document.uri.path)
     else:
         events = document
+
+    if namespace:
+        events = stl(events=events, namespace=namespace)
 
     if path:
         here = get_cwd().path
@@ -640,8 +646,6 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context,
     style_p = context.get_css_props()
 
     style_attr_value = elt_attributes.get((None, 'style'))
-    if style_attr_value:
-        context.add_style_attribute(style_attr_value)
     skip = False
     place = 0
     if prefix is not None:

@@ -19,11 +19,7 @@
 # Import from the Standard Library
 from time import mktime, timezone
 from datetime import date, datetime, time
-try:
-    from email.utils import parsedate_tz, mktime_tz, formatdate
-except ImportError:
-    # Python 2.4
-    from email.Utils import parsedate_tz, mktime_tz, formatdate
+from email.utils import parsedate_tz, mktime_tz, formatdate
 
 # Import from itools
 from base import DataType

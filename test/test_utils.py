@@ -22,6 +22,9 @@ from unittest import TestCase
 from itools.utils import freeze, frozenlist
 
 
+###########################################################################
+# Frozen lists
+###########################################################################
 a_frozen_list = freeze([1, 2, 3])
 
 
@@ -34,7 +37,10 @@ class FrozenlistTestCase(TestCase):
 
     #######################################################################
     # Mutable operations must raise 'TypeError'
-    #######################################################################
+    def test_setattr(self):
+        self.assertRaises(AttributeError, setattr, a_frozen_list,  'x', 69)
+
+
     def test_append(self):
         self.assertRaises(TypeError, a_frozen_list.append, 5)
 
@@ -43,7 +49,7 @@ class FrozenlistTestCase(TestCase):
         self.assertRaises(TypeError, a_frozen_list.extend, [1,2,3])
 
 
-    def test_del_item(self):
+    def test_delitem(self):
         try:
             del a_frozen_list[0]
         except TypeError:
@@ -121,7 +127,6 @@ class FrozenlistTestCase(TestCase):
 
     #######################################################################
     # Test semantics of non-mutable operations
-    #######################################################################
     def test_concatenation(self):
         """Like set objects, the concatenation of a frozenlist and a list
         must preserve the type of the left argument.
@@ -154,6 +159,74 @@ class FrozenlistTestCase(TestCase):
 
     def test_representation(self):
         self.assertEqual(repr(a_frozen_list), 'frozenlist([1, 2, 3])')
+
+
+
+###########################################################################
+# Frozen dicts
+###########################################################################
+a_frozen_dict = freeze({'a': 5, 'b': 3})
+
+
+class FrozendictTestCase(TestCase):
+
+    def test_freeze(self):
+        a_dict = {'a': 5, 'b': 3}
+        self.assertEqual(freeze(a_dict), a_dict)
+
+
+    #######################################################################
+    # Mutable operations must raise 'TypeError'
+    def test_setattr(self):
+        self.assertRaises(AttributeError, setattr, a_frozen_dict,  'x', 69)
+
+
+    def test_delitem(self):
+        try:
+            del a_frozen_dict['a']
+        except TypeError:
+            pass
+        else:
+            self.assert_(False)
+
+
+    def test_setitem(self):
+        try:
+            a_frozen_dict['c'] = 69
+        except TypeError:
+            pass
+        else:
+            self.assert_(False)
+
+
+    def test_clear(self):
+        self.assertRaises(TypeError, a_frozen_dict.clear)
+
+
+    def test_pop(self):
+        self.assertRaises(TypeError, a_frozen_dict.pop, 'a')
+
+
+    def test_popitem(self):
+        self.assertRaises(TypeError, a_frozen_dict.popitem)
+
+
+    def test_setdefault(self):
+        self.assertRaises(TypeError, a_frozen_dict.setdefault, 'x', 69)
+
+
+    def test_update(self):
+        self.assertRaises(TypeError, a_frozen_dict.update, {'a': 5})
+
+
+    #######################################################################
+    # Test semantics of non-mutable operations
+    def test_equality(self):
+        self.assertEqual(freeze({'a': 69, 'b': 88}), {'a': 69, 'b': 88})
+
+
+    def test_representation(self):
+        self.assertEqual(repr(a_frozen_dict), "frozendict({'a': 5, 'b': 3})")
 
 
 

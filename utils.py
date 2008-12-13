@@ -104,7 +104,6 @@ class frozenlist(list):
 
     #######################################################################
     # Mutable operations must raise 'TypeError'
-    #######################################################################
     def __delitem__(self, index):
         raise TypeError, 'frozenlists are not mutable'
 
@@ -159,7 +158,6 @@ class frozenlist(list):
 
     #######################################################################
     # Non-mutable operations
-    #######################################################################
     def __add__(self, alist):
         alist = list(self) + alist
         return frozenlist(alist)
@@ -185,13 +183,60 @@ class frozenlist(list):
 
 
 
+class frozendict(dict):
+
+    __slots__ = []
+
+
+    #######################################################################
+    # Mutable operations must raise 'TypeError'
+    def __delitem__(self, index):
+        raise TypeError, 'frozendicts are not mutable'
+
+
+    def __setitem__(self, key, value):
+        raise TypeError, 'frozendicts are not mutable'
+
+
+    def clear(self):
+        raise TypeError, 'frozendicts are not mutable'
+
+
+    def pop(self, key, default=None):
+        raise TypeError, 'frozendicts are not mutable'
+
+
+    def popitem(self):
+        raise TypeError, 'frozendicts are not mutable'
+
+
+    def setdefault(self, key, default=None):
+        raise TypeError, 'frozendicts are not mutable'
+
+
+    def update(self, a_dict=None, **kw):
+        raise TypeError, 'frozendicts are not mutable'
+
+
+    #######################################################################
+    # Non-mutable operations
+    def __hash__(self):
+        # TODO Implement frozendicts hash-ability
+        raise NotImplementedError, 'frozendicts not yet hashable'
+
+
+    def __repr__(self):
+        aux = [ "%s: %s" % (repr(k), repr(v)) for k, v in self.items() ]
+        return 'frozendict({%s})' % ', '.join(aux)
+
+
+
 def freeze(value):
     value_type = type(value)
     if value_type is list:
         return frozenlist(value)
     if value_type is dict:
-        # TODO Implement 'frozendict'
-        raise NotImplementedError, 'frozendicts not yet implemented'
+        return frozendict(value)
     raise TypeError, 'unable to freeze "%s"' % value_type
 
 

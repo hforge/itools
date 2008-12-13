@@ -242,8 +242,8 @@ class POUnit(object):
     XXX
     """
 
-    def __init__(self, comments, context, source, target, references={},
-                 fuzzy=False):
+    def __init__(self, comments, context, source, target,
+                 references=freeze({}), fuzzy=False):
         self.comments = comments
         self.references = references
         self.context = context

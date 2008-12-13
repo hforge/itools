@@ -481,8 +481,8 @@ def setup(ext_modules=freeze([])):
 
 pythons_import = __import__
 
-def local_import(name, globals={}, locals={}, fromlist=frozenlist(),
-                 level=-1):
+def local_import(name, globals=frozendict(), locals=frozendict(),
+                 fromlist=frozenlist(), level=-1):
     if name.startswith('itools.'):
         name = name[7:]
     return pythons_import(name, globals, locals, fromlist, level)

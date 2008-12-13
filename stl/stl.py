@@ -37,6 +37,7 @@ from itools.xml import xmlns_uri
 from itools.xml import get_attr_datatype
 from itools.html import xhtml_uri
 from itools.html import stream_to_str_as_html, stream_to_str_as_xhtml
+from itools.utils import freeze
 from schema import stl_uri
 
 
@@ -272,8 +273,8 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
 
 
 
-def stl(document=None, namespace={}, prefix=None, events=None, mode='events',
-        skip=(DOCUMENT_TYPE,)):
+def stl(document=None, namespace=freeze({}), prefix=None, events=None,
+        mode='events', skip=(DOCUMENT_TYPE,)):
     # Input
     encoding = 'utf-8'
     if events is None:

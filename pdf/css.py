@@ -15,10 +15,12 @@ Released under the terms of the GPL, version 3.
 $Id: css.py 45 2007-11-29 17:40:52Z andrew $
 """
 
+# Import from the Standard Library
 from UserDict import UserDict
-
 import sys
 from os.path import isdir, join, exists, abspath
+
+# Import from itools
 from itools.utils import freeze
 
 
@@ -219,7 +221,7 @@ class CssRule(object):
     }
 
 
-    def __init__(self, selector, properties={}):
+    def __init__(self, selector, properties=freeze({})):
 
         """
         Constructor.

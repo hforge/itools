@@ -19,15 +19,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Internal import
+# Import from itools
+from itools.utils import freeze
 from utils import font_value, format_size, get_color_as_hexa
 from utils import get_color, get_int_value
 
-# Import from the reportlab Library
+# Import from reportlab
 from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT, TA_JUSTIFY
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import cm
 from reportlab.platypus.frames import ShowBoundaryValue
+
 
 P_ALIGNMENTS = {'left': TA_LEFT, 'right': TA_RIGHT, 'center': TA_CENTER,
               'justify': TA_JUSTIFY}
@@ -356,7 +358,7 @@ def body_margin_style(key, value):
     return style_attr
 
 
-def build_frame_style(context, style_css, inline_attributes={}):
+def build_frame_style(context, style_css, inline_attributes=freeze({})):
     frame_attr = {}
     border = {}
     # The default style is Normal

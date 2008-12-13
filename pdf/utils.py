@@ -26,9 +26,10 @@ from copy import deepcopy
 # Import from itools
 from itools.datatypes import Unicode, Integer
 from itools.handlers import Image as ItoolsImage
+from itools.utils import freeze
 from itools.vfs import vfs
 
-# Import from the reportlab Library
+# Import from reportlab
 from reportlab.lib import colors
 from reportlab.lib.units import inch, cm, mm, pica
 from reportlab.platypus import Paragraph as Platypus_paragraph
@@ -310,11 +311,8 @@ class Paragraph(Platypus_paragraph):
 
 class Div(Flowable):
 
-    """
-    """
-
-    def __init__(self, story, height=None, width=None,
-                 pos_x=None, pos_y=None, frame_attrs={}):
+    def __init__(self, story, height=None, width=None, pos_x=None, pos_y=None,
+                 frame_attrs=freeze({})):
         Flowable.__init__(self)
         # get on story
         self.div_story = story

@@ -29,14 +29,14 @@ import tempfile
 # Import from itools
 from itools import get_abspath
 from itools.datatypes import XMLContent
+import itools.http
 from itools.stl import set_prefix, stl
 from itools.uri import Path
 from itools.uri.uri import get_cwd
+from itools.utils import freeze
 from itools.vfs import vfs
 from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, TEXT
 from itools.xml import get_end_tag, XMLFile
-import itools.http
-
 # Internal import
 from doctemplate import MySimpleDocTemplate, MyDocTemplate
 from style import build_paragraph_style, get_table_style, makeTocHeaderStyle
@@ -46,7 +46,7 @@ from utils import check_image, exist_attribute, font_value
 from utils import format_size, get_int_value, normalize
 from utils import Paragraph, pc_float, stream_next, join_content, Div
 
-# Import from the reportlab Library
+# Import from reportlab
 import reportlab
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -54,7 +54,6 @@ from reportlab.lib.units import cm
 # CJK
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.cidfonts import UnicodeCIDFont
-
 from reportlab.platypus import (XPreformatted, PageBreak, Image, Indenter,
                                 Table, tableofcontents)
 from reportlab.platypus.flowables import HRFlowable
@@ -130,7 +129,7 @@ def pmltopdf(document, path=None):
     return make_pdf(events)
 
 
-def stl_pmltopdf(document, namespace={}, path=None):
+def stl_pmltopdf(document, namespace=freeze({}), path=None):
     """
     document: XMLFile, events, XMLParser, generator
     path: the path of the document
@@ -186,7 +185,7 @@ def pmltopdf_test(document, path=None):
     return document_stream(events, StringIO(), True)
 
 
-def stl_pmltopdf_test(document, namespace={}, path=None):
+def stl_pmltopdf_test(document, namespace=freeze({}), path=None):
     """
     document: XMLFile, events, XMLParser, generator
     path: the path of the document
@@ -1411,7 +1410,7 @@ def build_img_attributes(attributes, context):
 ##############################################################################
 # Internal Functions                                                         #
 ##############################################################################
-def build_start_tag(tag_name, attrs={}):
+def build_start_tag(tag_name, attrs=freeze({})):
     """
         Create the XML start tag from his name and his attributes
         span => font (map)

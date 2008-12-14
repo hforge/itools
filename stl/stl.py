@@ -28,7 +28,7 @@ from re import compile
 from types import GeneratorType
 
 # Import from itools
-from itools.datatypes import Boolean, URI, is_datatype
+from itools.datatypes import Boolean, URI
 from itools.gettext import MSG
 from itools.uri import Path, Reference
 from itools.xml import XMLError, XMLParser, find_end, stream_to_str
@@ -340,7 +340,7 @@ def process_start_tag(tag_uri, tag_name, attributes, stack, repeat, encoding):
         datatype = get_attr_datatype(tag_uri, tag_name, attr_uri, attr_name,
                                      attributes)
         # Boolean attributes
-        if is_datatype(datatype, Boolean):
+        if issubclass(datatype, Boolean):
             value = substitute_boolean(value, stack, repeat, encoding)
             if value is True:
                 aux[(attr_uri, attr_name)] = attr_name

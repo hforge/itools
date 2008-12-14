@@ -23,8 +23,7 @@ from datetime import datetime
 from itools.handlers import TextFile, register_handler_class
 from itools.xml import XMLParser, XML_DECL, START_ELEMENT, END_ELEMENT
 from itools.xml import TEXT, CDATA
-from itools.datatypes import is_datatype, Unicode, URI, Integer, String
-from itools.datatypes import HTTPDate
+from itools.datatypes import Unicode, URI, Integer, String, HTTPDate
 
 
 # RSS channel elements definition
@@ -61,7 +60,7 @@ schema = {'title': Unicode,
 # Encode rss element according to its type (by schema)
 def decode_element(name, value, encoding='UTF-8'):
     type = schema.get(name, String)
-    if is_datatype(type, Unicode):
+    if issubclass(type, Unicode):
         return type.decode(value, encoding)
     return type.decode(value)
 
@@ -69,7 +68,7 @@ def decode_element(name, value, encoding='UTF-8'):
 # Decode rss element according to its type (by schema)
 def encode_element(name, value, encoding='UTF-8'):
     type = schema.get(name, String)
-    if is_datatype(type, Unicode):
+    if issubclass(type, Unicode):
         return type.encode(value, encoding)
     return type.encode(value)
 

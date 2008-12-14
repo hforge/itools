@@ -21,7 +21,7 @@
 from datetime import datetime
 
 # Import from itools
-from itools.datatypes import DateTime, String, Integer, Unicode, is_datatype
+from itools.datatypes import DateTime, String, Integer, Unicode
 from itools.handlers import File
 from itools import vfs
 from itools.xapian import AndQuery, PhraseQuery, get_field
@@ -269,7 +269,7 @@ def parse_table(data):
 # Helper functions
 ###########################################################################
 def is_multilingual(datatype):
-    return is_datatype(datatype, Unicode) and datatype.multiple
+    return issubclass(datatype, Unicode) and datatype.multiple
 
 
 

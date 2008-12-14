@@ -20,7 +20,7 @@ from os.path import join
 from rfc822 import Message
 
 # Import from itools
-from itools.datatypes import String, LanguageTag, Tokens, is_datatype
+from itools.datatypes import String, LanguageTag, Tokens
 from itools.handlers import ConfigFile, TextFile, register_handler_class
 from itools.vfs import exists, is_folder
 
@@ -71,9 +71,9 @@ class RFC822File(TextFile):
                 else:
                     self.attrs[k] = self.message.getheaders(k)
             elif self.schema.has_key(k):
-                if is_datatype(self.schema[k], String):
+                if issubclass(self.schema[k], String):
                     self.attrs[k] = self.message.getheader(k)
-                elif is_datatype(self.schema[k], Tokens):
+                elif issubclass(self.schema[k], Tokens):
                     self.attrs[k] = self.message.getheaders(k)
 
 

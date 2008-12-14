@@ -19,7 +19,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.datatypes import Unicode, XMLContent, XMLAttribute, is_datatype
+from itools.datatypes import Unicode, XMLContent, XMLAttribute
 from namespaces import get_element_schema, xmlns_uri, get_attr_datatype
 from namespaces import is_empty
 from parser import XMLParser, XMLError, DOCUMENT_TYPE, XML_DECL
@@ -55,7 +55,7 @@ def _make_start_format(tag_uri, tag_name, attributes, encoding):
 
         datatype = get_attr_datatype(tag_uri, tag_name, attr_uri, attr_name,
                                      attributes)
-        if is_datatype(datatype, Unicode):
+        if issubclass(datatype, Unicode):
             result.append((u' %s="' % qname, False, None))
             context = _get_attr_context(datatype, tag_name, attr_name)
             value = Unicode.decode(value, encoding=encoding)
@@ -175,7 +175,7 @@ def get_units(events, srx_handler=None):
             for attr_uri, attr_name in attributes:
                 datatype = get_attr_datatype(tag_uri, tag_name, attr_uri,
                                              attr_name, attributes)
-                if not is_datatype(datatype, Unicode):
+                if not issubclass(datatype, Unicode):
                     continue
                 value = attributes[(attr_uri, attr_name)]
                 if not value.strip():
@@ -236,7 +236,7 @@ def translate(events, catalog, srx_handler=None):
                 value = attributes[(attr_uri, attr_name)]
                 datatype = get_attr_datatype(tag_uri, tag_name, attr_uri,
                                              attr_name, attributes)
-                if is_datatype(datatype, Unicode):
+                if issubclass(datatype, Unicode):
                     value = value.strip()
                     if value:
                         unit = ((srx_TEXT, value),)

@@ -19,7 +19,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.datatypes import String, Integer, is_datatype
+from itools.datatypes import String, Integer
 from itools.handlers import TextFile, guess_encoding, register_handler_class
 from itools.xapian import AndQuery, PhraseQuery, get_field
 from memory import MemoryCatalog

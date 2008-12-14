@@ -460,7 +460,7 @@ Python.
 
 (3) Now all datatypes are classes, even when you set arguments. A new class is
 dynamically generated to store your own values. It should not affect your code
-in any way. Continue to use "is_datatype" for now.
+in any way.
 
 (4) The DynamicEnumerate class has disappeared. The Enumerate class is now
 able to do the same job:

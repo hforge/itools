@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.datatypes import Enumerate, is_datatype
+from itools.datatypes import Enumerate
 from itools.stl import stl
 from itools.uri import decode_query
 from context import FormError
@@ -168,7 +168,7 @@ class BaseForm(BaseView):
                     value = context.get_form_value(name)
                     cls.append('field_is_missing')
                 else:
-                    if is_datatype(datatype, Enumerate):
+                    if issubclass(datatype, Enumerate):
                         value = datatype.get_namespace(value)
                     elif datatype.multiple:
                         # XXX Done for table multilingual fields (fragile)
@@ -177,7 +177,7 @@ class BaseForm(BaseView):
                         value = datatype.encode(value)
             else:
                 value = self.get_value(resource, context, name, datatype)
-                if is_datatype(datatype, Enumerate):
+                if issubclass(datatype, Enumerate):
                     value = datatype.get_namespace(value)
                 else:
                     value = datatype.encode(value)

@@ -19,7 +19,34 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.utils import freeze, frozenlist
+from itools.utils import freeze, frozenlist, frozendict
+
+
+###########################################################################
+# Freeze
+###########################################################################
+class FreezeTestCase(TestCase):
+
+    def test_freeze_list(self):
+        a_list = [1, 2, 3]
+        a_frozen_list = freeze(a_list)
+        self.assertEqual(a_frozen_list, a_list)
+        self.assert_(isinstance(a_frozen_list, frozenlist))
+
+
+    def test_freeze_dict(self):
+        a_dict = {'a': 5, 'b': 3}
+        a_frozen_dict = freeze(a_dict)
+        self.assertEqual(a_frozen_dict, a_dict)
+        self.assert_(isinstance(a_frozen_dict, frozendict))
+
+
+    def test_freeze_set(self):
+        a_set = set('abc')
+        a_frozen_set = freeze(a_set)
+        self.assertEqual(a_frozen_set, a_set)
+        self.assert_(isinstance(a_frozen_set, frozenset))
+
 
 
 ###########################################################################
@@ -30,9 +57,12 @@ a_frozen_list = freeze([1, 2, 3])
 
 class FrozenlistTestCase(TestCase):
 
-    def test_freeze(self):
-        alist = [1, 2, 3]
-        self.assertEqual(freeze(alist), alist)
+    def test_inheritance(self):
+        self.assert_(isinstance(a_frozen_list, list))
+
+
+    def test_identity(self):
+        self.assert_(freeze(a_frozen_list) is a_frozen_list)
 
 
     #######################################################################
@@ -170,9 +200,12 @@ a_frozen_dict = freeze({'a': 5, 'b': 3})
 
 class FrozendictTestCase(TestCase):
 
-    def test_freeze(self):
-        a_dict = {'a': 5, 'b': 3}
-        self.assertEqual(freeze(a_dict), a_dict)
+    def test_inheritance(self):
+        self.assert_(isinstance(a_frozen_dict, dict))
+
+
+    def test_identity(self):
+        self.assert_(freeze(a_frozen_dict) is a_frozen_dict)
 
 
     #######################################################################

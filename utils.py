@@ -232,11 +232,18 @@ class frozendict(dict):
 
 
 def freeze(value):
+    # Freeze
     value_type = type(value)
     if value_type is list:
         return frozenlist(value)
     if value_type is dict:
         return frozendict(value)
+    if value_type is set:
+        return frozenset(value)
+    # Already frozen
+    if isinstance(value, (frozenlist, frozendict, frozenset)):
+        return value
+    # Error
     raise TypeError, 'unable to freeze "%s"' % value_type
 
 

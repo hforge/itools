@@ -16,7 +16,6 @@ $Id: css.py 45 2007-11-29 17:40:52Z andrew $
 """
 
 # Import from the Standard Library
-from UserDict import UserDict
 import sys
 from os.path import isdir, join, exists, abspath
 
@@ -262,7 +261,7 @@ class CssRule(object):
 
 
 
-class CssProperties(UserDict):
+class CssProperties(dict):
 
     """
     Like a dictionary, except it has things like get_int and get_list methods.

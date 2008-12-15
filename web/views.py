@@ -165,8 +165,11 @@ class BaseForm(BaseView):
                 try:
                     value = context.get_form_value(name, type=datatype)
                 except FormError:
-                    value = context.get_form_value(name)
                     cls.append('field_is_missing')
+                    if issubclass(datatype, Enumerate):
+                        value = datatype.get_namespace(None)
+                    else:
+                        value = context.get_form_value(name)
                 else:
                     if issubclass(datatype, Enumerate):
                         value = datatype.get_namespace(value)

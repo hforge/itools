@@ -180,7 +180,7 @@ parser_stream_push (Parser * parser, gchar * data)
   /* Prepare the stream */
   *stream = data;
 
-  /* And prepare the first caracter */
+  /* And prepare the first character */
   move_cursor (parser);
 }
 
@@ -238,7 +238,7 @@ h_str_tree_traverse (HStrTree * tree, gchar chr)
 
   child = tree->children[idx];
 
-  /* New ? */
+  /* New ? */
   if (!child)
     {
       child = h_str_tree_new ();
@@ -370,10 +370,10 @@ parser_initialize (void)
 
       /* Set the default entities */
       g_hash_table_insert (parser_default_entities, "lt", "&#60;");
-      g_hash_table_insert (parser_default_entities, "gt", ">");
+      g_hash_table_insert (parser_default_entities, "gt", "&#62;");
       g_hash_table_insert (parser_default_entities, "amp", "&#38;");
-      g_hash_table_insert (parser_default_entities, "apos", "'");
-      g_hash_table_insert (parser_default_entities, "quot", "\"");
+      g_hash_table_insert (parser_default_entities, "apos", "&#39;");
+      g_hash_table_insert (parser_default_entities, "quot", "&#34;");
 
       G_UNLOCK (parser_global_strings);
 

@@ -170,6 +170,7 @@ def prepare(package_spec):
         # Iterate over candidates until "usable" package found
         bestmatch_version, bestmatch_from, bestmatch = candidates.pop()
 
+        requirements = []
         if bestmatch_from == 'cache':
             dist_loc = join(CACHE_DIR, bestmatch['file'])
             dist = Dist(str(dist_loc))

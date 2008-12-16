@@ -54,7 +54,8 @@ class Dist(object):
         if self._metadata is None:
             pkg_info = self.bundle.find_lowest_file('PKG-INFO')
             if pkg_info != None:
-                self._metadata = PKGINFOFile(self.bundle.get_file(pkg_info))
+                data = self.bundle.get_file(pkg_info).read()
+                self._metadata = PKGINFOFile(string=data)
             else:
                 self._metadata = PKGINFOFile()
             setuppy = self.bundle.find_lowest_file('setup.py')

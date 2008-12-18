@@ -57,6 +57,8 @@ def _encode(field_type, value):
 def _decode(field_type, data):
     # integer
     if field_type == 'integer':
+        if data == '':
+            return None
         return int(sortable_unserialise(data))
     # A common field or a new field
     field = get_field(field_type)

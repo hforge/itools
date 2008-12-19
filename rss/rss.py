@@ -48,6 +48,7 @@ rss_item_elements = {
 # RSS tags types for encode and decode
 schema = {'title': Unicode,
           'link': URI,
+          'guid': URI,
           'description': Unicode,
           'copyright': Unicode,
           'pubDate': HTTPDate,

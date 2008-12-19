@@ -250,17 +250,23 @@ class STLView(BaseView):
         return {}
 
 
-    def GET(self, resource, context):
+    def get_template(self, resource, context):
         # Check there is a template defined
         if self.template is None:
             msg = "%s is missing the 'template' variable"
             raise NotImplementedError, msg % repr(self.__class__)
+        # XXX a handler actually
+        return resource.get_resource(self.template)
+
+
+    def GET(self, resource, context):
+        # Get the template
+        template = self.get_template(resource, context)
 
         # Get the namespace
         namespace = self.get_namespace(resource, context)
 
         # Ok
-        template = resource.get_resource(self.template)
         return stl(template, namespace)
 
 

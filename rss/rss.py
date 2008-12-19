@@ -24,6 +24,8 @@ from itools.handlers import TextFile, register_handler_class
 from itools.xml import XMLParser, XML_DECL, START_ELEMENT, END_ELEMENT
 from itools.xml import TEXT, CDATA
 from itools.datatypes import Unicode, URI, Integer, String, HTTPDate
+from itools.datatypes import XMLContent
+
 
 
 # RSS channel elements definition
@@ -67,10 +69,15 @@ def decode_element(name, value, encoding='UTF-8'):
 
 # Decode rss element according to its type (by schema)
 def encode_element(name, value, encoding='UTF-8'):
+    # Encode
     type = schema.get(name, String)
     if issubclass(type, Unicode):
-        return type.encode(value, encoding)
-    return type.encode(value)
+        result = type.encode(value, encoding)
+    else:
+        result = type.encode(value)
+
+    # To XML
+    return XMLContent.encode(result)
 
 
 

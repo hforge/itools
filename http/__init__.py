@@ -18,8 +18,8 @@
 from exceptions import HTTPError, ClientError, ServerError
 from exceptions import NotModified
 from exceptions import BadRequest, Unauthorized, Forbidden, NotFound
-from exceptions import (InternalServerError, NotImplemented, BadGateway,
-                        ServiceUnavailable)
+from exceptions import InternalServerError, NotImplemented, BadGateway
+from exceptions import ServiceUnavailable, MethodNotAllowed
 from request import Request
 from response import Response
 import vfs
@@ -27,18 +27,19 @@ import vfs
 
 __all__ = [
     # Exceptions
-    'HTTPError',
-    'NotModified',
-    'ClientError',
-    'BadRequest',
-    'Unauthorized',
-    'Forbidden',
-    'NotFound',
-    'ServerError',
-    'InternalServerError',
-    'NotImplemented',
     'BadGateway',
+    'BadRequest',
+    'ClientError',
+    'Forbidden',
+    'HTTPError',
+    'InternalServerError',
+    'MethodNotAllowed',
+    'NotFound',
+    'NotImplemented',
+    'NotModified',
+    'ServerError',
     'ServiceUnavailable',
+    'Unauthorized',
     # Classes
     'Request',
     'Response']

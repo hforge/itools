@@ -19,7 +19,6 @@
 
 # Import from the Standard Library
 from base64 import decodestring
-from copy import copy
 from datetime import datetime
 from os import fstat, getpid, remove as remove_file
 from types import FunctionType, MethodType
@@ -36,12 +35,11 @@ from warnings import warn
 # Import from itools
 from itools.http import Request, Response, ClientError, NotModified
 from itools.http import BadRequest, Forbidden, NotFound, Unauthorized
-from itools.http import HTTPError, NotImplemented
+from itools.http import HTTPError, NotImplemented, MethodNotAllowed
 from itools.i18n import init_language_selector
-from itools.uri import Reference, Path
-from context import Context, get_context, set_context, select_language
+from itools.uri import Reference
+from context import Context, set_context, select_language
 from context import FormError
-from views import BaseView
 
 
 # Some constants

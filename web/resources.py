@@ -57,8 +57,6 @@ class Resource(object):
 
         return parent_path.resolve2(self.name)
 
-    abspath = property(get_abspath, None, None, '')
-
 
     def get_canonical_path(self):
         if self.parent is None:

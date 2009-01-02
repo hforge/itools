@@ -41,6 +41,8 @@ class FileName(DataType):
 
         name, ext = parts
         # Case 2: name.encoding
+        if '.%s' % ext in mimetypes.encodings_map:
+            return name, ext, None
         if '.%s' % ext.lower() in mimetypes.encodings_map:
             return name, ext, None
 

@@ -41,6 +41,7 @@ class DatatypesTestCase(TestCase):
             'itools.tar.gz': ('itools.tar', 'gz', None),
             'toto.en': ('toto', None, 'en'),
             'toto.gz': ('toto', 'gz', None),
+            'toto.Z': ('toto', 'Z', None),
             }
         for name, result in map.iteritems():
             self.assertEqual(FileName.decode(name), result)

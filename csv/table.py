@@ -813,9 +813,11 @@ class Table(File):
             if language is None:
                 languages = [ x.parameters['language'] for x in property ]
                 language = select_language(languages)
+                if language is None and languages:
+                    # Pick up one at random (FIXME)
+                    language = languages[0]
             # Miss: default
             if language is None:
-                # XXX Should send any value?
                 return datatype.get_default()
             # Hit
             for x in property:

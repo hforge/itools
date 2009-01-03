@@ -42,18 +42,15 @@ def get_metadata(reference='HEAD'):
     lines = popen('git cat-file commit %s' % reference).readlines()
     # The commit id
     commit_id = lines[0].strip().split()[1]
-    # The author
+    # The committer
     for line in lines:
-        if line.startswith('author'):
-            author = line
-            break
-    else:
-        raise ValueError, ("cannot find the commit author, "
-            "please report the output of 'git cat-file commit %s'" % reference)
-    # The timestamp
-    timestamp = datetime.fromtimestamp(int(author.strip().split()[-2]))
+        if line.startswith('committer'):
+            timestamp = datetime.fromtimestamp(int(line.strip().split()[-2]))
+            return commit_id, timestamp
 
-    return commit_id, timestamp
+    msg = "committer not found, check the output of 'git cat-file commit %s'"
+    raise ValueError, msg % reference
+
 
 
 def get_branch_name():

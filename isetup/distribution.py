@@ -16,11 +16,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from Standard Library
-from os import execl, makedirs, chdir, getcwd
+from os import makedirs, chdir, getcwd
 from os.path import join, split
 from subprocess import call
 from sys import executable
-from tarfile import open as tar_open, is_tarfile, TarError
+from tarfile import open as tar_open, TarError
 from tempfile import TemporaryFile
 from zipfile import ZipFile, error as zip_error, LargeZipFile
 

@@ -28,7 +28,7 @@ def copy_datatype(datatype, **kw):
         return datatype(**kw)
 
     # Instance
-    # FIXME Use 'merge_dics'
+    # FIXME Use 'merge_dicts'
     dict = datatype.__dict__.copy()
     for key in kw:
         dict[key] = kw[key]

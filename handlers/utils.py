@@ -63,11 +63,15 @@ def checkid(id):
     return str(id)
 
 
-def merge_dics(d, *args, **kw):
-    """Merge two or more dictionaries into a NEW dictionary object"""
+def merge_dicts(d, *args, **kw):
+    """Merge two or more dictionaries into a new dictionary object.
+    """
     new_d = d.copy()
     for dic in args:
         new_d.update(dic)
     new_d.update(kw)
     return new_d
+
+# FIXME Remove by the next major release, 0.60
+merge_dics = merge_dicts
 

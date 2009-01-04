@@ -25,6 +25,7 @@ Lists packages in the cache.
 # Import from the Standard Library
 from optparse import OptionParser
 from os.path import join
+from tempfile import gettempdir
 
 # Import from itools
 from itools import __version__
@@ -33,7 +34,7 @@ from itools.isetup import parse_package_name, Dist
 from itools.isetup import ArchiveNotSupported, EXTENSIONS
 
 
-TMP_DIR = 'Packages'
+TMP_DIR = '%s/Packages' % gettempdir()
 
 if __name__ == '__main__':
     # command line parsing
@@ -70,5 +71,4 @@ if __name__ == '__main__':
             if dist.has_metadata('Name') and dist.has_metadata('Version'):
                 name = dist.get_metadata('Name')
                 version = dist.get_metadata('Version')
-                print "* %-20.20s Version: %-25.25s" % (name,
-                                                       version)
+                print "* %-20.20s Version: %-25.25s" % (name, version)

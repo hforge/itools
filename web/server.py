@@ -604,6 +604,14 @@ class Server(object):
 # The Request Methods
 ###########################################################################
 
+status2name = {
+    401: 'unauthorized',
+    403: 'forbidden',
+    404: 'not_found',
+    405: 'forbidden',
+}
+
+
 class RequestMethod(object):
 
     @classmethod
@@ -655,7 +663,27 @@ class RequestMethod(object):
 
 
     @classmethod
+    def check_cache(cls, server, context):
+        """Implement cache if your method supports it.
+        Most methods don't, hence the default implementation.
+        """
+        pass
+
+
+    @classmethod
+    def check_transaction(cls, server, context):
+        """Return True if your method is supposed to change the state.
+        """
+        raise NotImplementedError
+
+
+    @classmethod
     def commit_transaction(cls, server, context):
+        # Check conditions are met
+        if not cls.check_transaction(server, context) is True:
+            server.abort_transaction(context)
+            return
+
         # Hook: before commit
         try:
             server.before_commit()
@@ -690,27 +718,6 @@ class RequestMethod(object):
         server.log_error(context)
         context.status = 500
         context.entity = server.root.internal_server_error(context)
-
-
-
-status2name = {
-    401: 'unauthorized',
-    403: 'forbidden',
-    404: 'not_found',
-    405: 'forbidden',
-}
-
-
-class GET(RequestMethod):
-
-    @classmethod
-    def check_method(cls, server, context):
-        # Get the method
-        method = getattr(context.view, 'GET', None)
-        if method is None:
-            raise MethodNotAllowed
-
-        context.view_method = method
 
 
     @classmethod
@@ -763,7 +770,9 @@ class GET(RequestMethod):
             cls.internal_server_error(server, context)
             method = None
         else:
-            method = view.GET
+            # GET, POST...
+            method_name = cls.__name__
+            method = getattr(view, method_name)
 
         # (3) Render
         if method is not None:
@@ -776,26 +785,42 @@ class GET(RequestMethod):
                 if isinstance(context.entity, Reference):
                     context.status = 302
 
-        # (4) Reset the transaction in any case
-        if getattr(context, 'commit', False) is True:
-            # FIXME To be removed one day.
-            cls.commit_transaction(server, context)
-            warn("Use of 'context.commit' is strongly discouraged.")
-        else:
+        # (4) Commit the transaction
+        cls.commit_transaction(server, context)
+
+        # (5) Build response, when postponed (useful for POST methods)
+        if isinstance(context.entity, (FunctionType, MethodType)):
+            try:
+                context.entity = context.entity(context.resource, context)
+            except:
+                cls.internal_server_error(server, context)
             server.abort_transaction(context)
 
-        # (5) After Traverse hook
+        # (6) After Traverse hook
         try:
             context.site_root.after_traverse(context)
         except:
             cls.internal_server_error(server, context)
 
-        # (6) Build and return the response
+        # (7) Build and return the response
         context.response.set_status(context.status)
         cls.set_body(server, context)
 
-        # (7) Ok
+        # (8) Ok
         return context.response
+
+
+
+class GET(RequestMethod):
+
+    @classmethod
+    def check_method(cls, server, context):
+        # Get the method
+        method = getattr(context.view, 'GET', None)
+        if method is None:
+            raise MethodNotAllowed
+
+        context.view_method = method
 
 
     @classmethod
@@ -818,6 +843,16 @@ class GET(RequestMethod):
         # Cache: check modification time
         if mtime <= if_modified_since:
             raise NotModified
+
+
+    @classmethod
+    def check_transaction(cls, server, context):
+        # GET is not expected to change the state
+        if getattr(context, 'commit', False) is True:
+            # FIXME To be removed one day.
+            warn("Use of 'context.commit' is strongly discouraged.")
+            return True
+        return False
 
 
 
@@ -856,87 +891,8 @@ class POST(RequestMethod):
 
 
     @classmethod
-    def handle_request(cls, server, context):
-        response = context.response
-        root = context.root
-
-        # (1) Find out the requested resource and view
-        try:
-            # The requested resource and view
-            cls.find_resource(server, context)
-            cls.find_view(server, context)
-            # Access Control
-            cls.check_access(server, context)
-            # Check the request method is supported
-            cls.check_method(server, context)
-        except Unauthorized, error:
-            status = error.code
-            context.status = status
-            context.view_name = status2name[status]
-            context.view = root.get_view(context.view_name)
-            if server.auth_type == 'http_basic':
-                basic_header = 'Basic realm="%s"' % server.auth_realm
-                response.set_header('WWW-Authenticate', basic_header)
-        except ClientError, error:
-            status = error.code
-            context.status = status
-            context.view_name = status2name[status]
-            context.view = root.get_view(context.view_name)
-        else:
-            # Everything goes fine so far
-            context.status = 200
-
-        # (2) Always deserialize the query
-        resource = context.resource
-        view = context.view
-        try:
-            context.query = view.get_query(context)
-        except FormError, error:
-            method = view.on_query_error
-            context.query_error = error
-        except:
-            cls.internal_server_error(server, context)
-            method = None
-        else:
-            method = view.POST
-
-        # (3) Render
-        if method is not None:
-            try:
-                context.entity = method(resource, context)
-            except:
-                cls.internal_server_error(server, context)
-            else:
-                # Ok: set status
-                if isinstance(context.entity, Reference):
-                    context.status = 302
-
-        # (4) Commit the transaction commit
-        if context.status < 400:
-            cls.commit_transaction(server, context)
-        else:
-            server.abort_transaction(context)
-
-        # (5) Build response, when postponed (useful for POST methods)
-        if isinstance(context.entity, (FunctionType, MethodType)):
-            try:
-                context.entity = context.entity(context.resource, context)
-            except:
-                cls.internal_server_error(server, context)
-            server.abort_transaction(context)
-
-        # (6) After Traverse hook
-        try:
-            context.site_root.after_traverse(context)
-        except:
-            cls.internal_server_error(server, context)
-
-        # (7) Build and return the response
-        context.response.set_status(context.status)
-        cls.set_body(server, context)
-
-        # (8) Ok
-        return context.response
+    def check_transaction(cls, server, context):
+        return context.status < 400
 
 
 

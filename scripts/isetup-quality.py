@@ -47,7 +47,7 @@ except ImportError:
 
 # Import from itools
 import itools
-from itools.handlers import merge_dics
+from itools.handlers import merge_dicts
 from itools.utils import get_abspath
 from itools import git, vfs
 from itools.datatypes import Unicode, Integer, DateTime
@@ -78,7 +78,7 @@ import_problems = {
     'keys': {'bad_import': 'misplaced imports'},
     'pourcent': False}
 
-problems = merge_dics(
+problems = merge_dicts(
     aesthetics_problems['keys'],
     exception_problems['keys'],
     import_problems['keys'])

@@ -16,23 +16,13 @@
 
 
 def is_datatype(datatype, base_type):
-    # TODO obsolete now all datatypes are classes
-    """Returns True if 'datatype' is of 'base_type'.
-    """
+    # TODO To be removed by 0.60
     return issubclass(datatype, base_type)
 
 
 def copy_datatype(datatype, **kw):
-    # Class
-    if type(datatype) is type:
-        return datatype(**kw)
-
-    # Instance
-    # FIXME Use 'merge_dics'
-    dict = datatype.__dict__.copy()
-    for key in kw:
-        dict[key] = kw[key]
-    return datatype.__class__(**kw)
+    # TODO To be removed by 0.60
+    return datatype(**kw)
 
 
 

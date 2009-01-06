@@ -25,7 +25,7 @@ from operator import itemgetter
 # Import from itools
 from itools.csv import parse_table, Property, Record as TableRecord, Table
 from itools.datatypes import String, Unicode
-from itools.handlers import merge_dics
+from itools.handlers import merge_dicts
 from itools.utils import freeze
 from itools.xapian import PhraseQuery, RangeQuery, OrQuery, AndQuery
 from base import BaseCalendar
@@ -108,9 +108,17 @@ class Record(TableRecord):
 ##          XXX url: url to access edit_event_form on current event
         """
         properties = self.get_property
+
+        summary = properties('SUMMARY')
+        if summary:
+            summary = summary.value
+        organizer = properties('ORGANIZER')
+        if organizer:
+            organizer = organizer.value
+
         ns = {}
-        ns['SUMMARY'] = properties('SUMMARY').value
-        ns['ORGANIZER'] = properties('ORGANIZER').value
+        ns['SUMMARY'] = summary or u'no title'
+        ns['ORGANIZER'] = organizer
 
         ###############################################################
         # Set dtstart and dtend values using '...' for events which
@@ -179,10 +187,20 @@ class icalendarTable(BaseCalendar, Table):
 
     record_class = Record
 
-    record_schema = merge_dics(
+    record_schema = merge_dicts(
         data_properties,
         type=String(index='keyword'),
     )
+
+
+    def get_parameter_datatype(self, name):
+        """ Default parameter type is multiple for ical.
+        """
+        # Record schema
+        schema = self.parameters_schema
+        if name in schema:
+            return schema[name]
+        return String(multiple=True)
 
 
     #########################################################################

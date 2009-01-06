@@ -34,6 +34,7 @@ from optparse import OptionParser
 from os import sep
 from os.path import join
 from sys import path, exit
+from tempfile import gettempdir
 from xml.parsers.expat import ExpatError
 from xmlrpclib import Server, ProtocolError
 import socket
@@ -48,7 +49,7 @@ from itools import vfs
 
 
 # See --cache-dir option description
-TMP_DIR = '/tmp/Packages'
+TMP_DIR = '%s/Packages' % gettempdir()
 PYPI_REPO = 'http://pypi.python.org/pypi'
 YES = ('y', 'Y', 'yes', 'YES', 'ok', 'Yes', 'yep')
 

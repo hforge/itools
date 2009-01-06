@@ -27,6 +27,7 @@ from itools.handlers import File
 from itools import vfs
 from itools.xapian import make_catalog
 from itools.xapian import AndQuery, PhraseQuery, CatalogAware
+from csv_ import CSVFile
 from parser import parse
 
 
@@ -877,3 +878,34 @@ class Table(File):
                     record[key] = line[index]
             self.add_record(record)
 
+
+    def to_csv(self, columns, separator=None, language=None):
+        """Export the table to CSV handler.
+        As table columns are unordered, the order comes from the "columns"
+        parameter.
+        separator: join multiple values with this string
+        language: affects multilingual columns
+        """
+        csv = CSVFile()
+
+        for record in self.get_records():
+            line = []
+            for column in columns:
+                datatype = self.get_record_datatype(column)
+                value = self.get_record_value(record, column,
+                                              language=language)
+                if not is_multilingual(datatype) and datatype.multiple:
+                    if separator is not None:
+                        values = [datatype.encode(v) for v in value]
+                        data = separator.join(values)
+                    else:
+                        # TODO represent multiple values
+                        message = ("multiple values are not supported, "
+                                   "use a separator")
+                        raise NotImplementedError, message
+                else:
+                    data = datatype.encode(value)
+                line.append(data)
+            csv.add_row(line)
+
+        return csv

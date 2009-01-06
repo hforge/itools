@@ -704,13 +704,12 @@ class RequestMethod(object):
     def set_body(cls, server, context):
         response = context.response
         body = context.entity
-        if body is None:
-            response.set_body(body)
-        elif isinstance(body, str):
-            response.set_header('content-length', len(body))
-            response.set_body(body)
-        elif isinstance(body, Reference):
+        if isinstance(body, Reference):
             context.redirect(body)
+            return
+        response.set_body(body)
+        length = response.get_content_length()
+        response.set_header('content-length', length)
 
 
     @classmethod

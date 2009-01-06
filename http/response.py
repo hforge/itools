@@ -154,6 +154,12 @@ class Response(Message):
     def set_body(self, body):
         if isinstance(body, unicode):
             body = body.encode('UTF-8')
+        elif isinstance(body, str):
+            pass
+        elif body is None:
+            pass
+        else:
+            raise ValueError, 'body of type %s not supported' % type(body)
         self.body = body
 
 

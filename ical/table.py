@@ -193,6 +193,16 @@ class icalendarTable(BaseCalendar, Table):
     )
 
 
+    def get_parameter_datatype(self, name):
+        """ Default parameter type is multiple for ical.
+        """
+        # Record schema
+        schema = self.parameters_schema
+        if name in schema:
+            return schema[name]
+        return String(multiple=True)
+
+
     #########################################################################
     # API
     #########################################################################

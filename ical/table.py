@@ -108,9 +108,17 @@ class Record(TableRecord):
 ##          XXX url: url to access edit_event_form on current event
         """
         properties = self.get_property
+
+        summary = properties('SUMMARY')
+        if summary:
+            summary = summary.value
+        organizer = properties('ORGANIZER')
+        if organizer:
+            organizer = organizer.value
+
         ns = {}
-        ns['SUMMARY'] = properties('SUMMARY').value
-        ns['ORGANIZER'] = properties('ORGANIZER').value
+        ns['SUMMARY'] = summary or u'no title'
+        ns['ORGANIZER'] = organizer
 
         ###############################################################
         # Set dtstart and dtend values using '...' for events which

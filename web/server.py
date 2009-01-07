@@ -891,7 +891,7 @@ class POST(RequestMethod):
 
     @classmethod
     def check_transaction(cls, server, context):
-        return context.status < 400
+        return getattr(context, 'commit', True) and context.status < 400
 
 
 

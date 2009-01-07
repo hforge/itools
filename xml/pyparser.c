@@ -122,14 +122,6 @@ PyDocType_copy (PyDocType * self, PyObject * trash1, PyObject * trash2)
 }
 
 
-static PyObject *
-PyDocType_deepcopy (PyDocType * self, PyObject * args, PyObject * trash1)
-{
-  Py_INCREF (self);
-  return (PyObject *) self;
-}
-
-
 /********************************
  * Declaration of PyDocTypeType *
  ********************************/
@@ -579,15 +571,24 @@ XMLParser_init (XMLParser * self, PyObject * args, PyObject * kwds)
             else
               prefix = PyString_AsString (py_prefix);
 
-            /* Keept the URI. */
+            /* Keep the URI. */
             uri = PyString_AsString (py_uri);
+
+            /* prefix and uri should be two strings */
+            if (!prefix || !uri)
+              {
+                PyErr_SetString (PyExc_TypeError, "argument 2 must be a "
+                                 "dictionary of {None or string: string}");
+                return -1;
+              }
 
             /* And add the namespace */
             parser_add_namespace (parser, prefix, uri);
           }
       else
         {
-          PyErr_SetString (PyExc_TypeError, "argument 2 must be dictionnary");
+          PyErr_SetString (PyExc_TypeError, "argument 2 must be a "
+                           "dictionary of {None or string: string}");
           return -1;
         }
     }

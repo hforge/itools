@@ -912,7 +912,7 @@ class POST(RequestMethod):
                     context.status = 302
 
         # (4) Commit the transaction commit
-        if context.status < 400:
+        if getattr(context, 'commit', True) is True and context.status < 400:
             cls.commit_transaction(server, context)
         else:
             server.abort_transaction(context)

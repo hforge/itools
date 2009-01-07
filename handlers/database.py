@@ -26,9 +26,9 @@ from thread import allocate_lock, get_ident
 # Import from itools
 from itools.uri import get_reference, get_absolute_reference, Path
 from itools.vfs import vfs
-from itools.vfs import cwd, READ, WRITE, READ_WRITE, APPEND
+from itools.vfs import cwd, WRITE, READ_WRITE, APPEND
 from folder import Folder
-from messages import *
+import messages
 from registry import get_handler_class
 
 
@@ -105,7 +105,7 @@ class Database(object):
         if not fs.exists(reference):
             # Check errors
             if reference in self.changed:
-                raise RuntimeError, MSG_CONFLICT
+                raise RuntimeError, messages.MSG_CONFLICT
             # Clean the cache
             if reference in cache:
                 del cache[reference]
@@ -115,7 +115,7 @@ class Database(object):
         if fs.is_folder(reference):
             # Check errors
             if reference in self.changed:
-                raise RuntimeError, MSG_CONFLICT
+                raise RuntimeError, messages.MSG_CONFLICT
             # Clean the cache
             if reference in cache:
                 del cache[reference]
@@ -138,13 +138,15 @@ class Database(object):
             # Timestamp cannot be more recent than mtime
             mtime = fs.get_mtime(reference)
             if handler.timestamp > mtime:
-                raise RuntimeError, "file's timestamp does not match mtime"
+                message = "file %s: timestamp (%s) does not match mtime (%s)"
+                raise RuntimeError, message % (handler.uri, handler.timestamp,
+                                               mtime)
             # Handler loaded and up-to-date
             if handler.timestamp == mtime:
                 return handler
             # Conflict, file modified both in filesystem and memory
             if handler.dirty is not None:
-                raise RuntimeError, MSG_CONFLICT
+                raise RuntimeError, messages.MSG_CONFLICT
             # Remove from cache
             del cache[reference]
 
@@ -178,7 +180,7 @@ class Database(object):
                                'try to clone first')
 
         if self.has_handler(reference):
-            raise RuntimeError, MSG_URI_IS_BUSY % reference
+            raise RuntimeError, messages.MSG_URI_IS_BUSY % reference
 
         reference = get_absolute_reference(reference)
         self.cache[reference] = handler
@@ -218,7 +220,7 @@ class Database(object):
 
         # Check the target is free
         if self.has_handler(target):
-            raise RuntimeError, MSG_URI_IS_BUSY % target
+            raise RuntimeError, messages.MSG_URI_IS_BUSY % target
 
         handler = self.get_handler(source)
         if isinstance(handler, Folder):
@@ -245,7 +247,7 @@ class Database(object):
 
         # Check the target is free
         if self.has_handler(target):
-            raise RuntimeError, MSG_URI_IS_BUSY % target
+            raise RuntimeError, messages.MSG_URI_IS_BUSY % target
 
         handler = self.get_handler(source)
         if isinstance(handler, Folder):

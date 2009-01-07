@@ -20,7 +20,7 @@ import sys
 from os.path import isdir, join, exists, abspath
 
 # Import from itools
-from itools.utils import freeze
+from itools.core import freeze
 
 
 def selector_split(string, single_class=True):

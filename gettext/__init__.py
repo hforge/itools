@@ -20,6 +20,7 @@
 from mimetypes import add_type
 
 # Import from itools
+from itools.core import get_abspath
 from domains import register_domain, get_domain, MSG
 from mo import MOFile
 from po import POFile, POUnit
@@ -38,3 +39,7 @@ add_type('text/x-gettext-translation', '.po')
 add_type('text/x-gettext-translation-template', '.pot')
 add_type('application/x-gettext-translation', '.mo')
 add_type('application/x-gettext-translation', '.gmo')
+
+# Register the itools domain
+path = get_abspath('../locale')
+register_domain('itools', path)

@@ -23,10 +23,10 @@ from datetime import datetime, timedelta
 from operator import itemgetter
 
 # Import from itools
+from itools.core import freeze
 from itools.csv import parse_table, Property, Record as TableRecord, Table
 from itools.datatypes import String, Unicode
 from itools.handlers import merge_dicts
-from itools.utils import freeze
 from itools.xapian import PhraseQuery, RangeQuery, OrQuery, AndQuery
 from base import BaseCalendar
 from types import data_properties, Time

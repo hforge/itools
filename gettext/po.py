@@ -22,9 +22,9 @@ from re import compile
 from time import gmtime, strftime, time
 
 # Import from itools
+from itools.core import freeze
 from itools.handlers import File, TextFile, register_handler_class
 from itools.srx import TEXT, START_FORMAT, END_FORMAT
-from itools.utils import freeze
 from itools.xml import XMLParser, TEXT as xml_TEXT, START_ELEMENT, END_ELEMENT
 
 

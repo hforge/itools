@@ -23,8 +23,8 @@ from re import match
 from copy import deepcopy
 
 # Import from itools
+from itools.core import freeze
 from itools.uri import Path, get_reference
-from itools.utils import freeze
 from base import DataType
 
 

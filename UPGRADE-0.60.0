@@ -1,0 +1,26 @@
+*************************************************************************
+itools 0.60.0
+*************************************************************************
+
+These upgrade notes may not be complete. Thanks to report any problem you
+find.
+
+New Dependencies
+================
+
+The minimum required version of Python has been raised to 2.6
+
+
+Imports
+=======
+
+See the table below for the imports to update.
+
+  Before (alphabetical order)    Now
+  ----------------------------   ---------------------------
+  utils.freeze                   core.freeze
+  utils.frozendict               core.frozendict
+  utils.frozenlist               core.frozenlist
+  utils.get_abspath              core.get_abspath
+  utils.SetupConf                isetup.SetupConf
+

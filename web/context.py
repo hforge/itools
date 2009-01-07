@@ -24,12 +24,12 @@ from thread import get_ident, allocate_lock
 from time import strptime
 
 # Import from itools
+from itools.core import freeze
 from itools.datatypes import String
 from itools.gettext import MSG
 from itools.http import Response, Unauthorized
 from itools.i18n import AcceptLanguageType
 from itools.uri import get_reference
-from itools.utils import freeze
 from messages import ERROR
 
 

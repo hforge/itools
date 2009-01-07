@@ -17,6 +17,11 @@
 
 # Import from the Standard Library
 from distutils.core import Extension
+from imp import load_module, PKG_DIRECTORY
+from os import getcwd
+
+# Import local itools first, otherwise installing the first time won't work.
+load_module('itools', None, getcwd(), ('', '', PKG_DIRECTORY))
 
 # Import from itools
 from utils import setup

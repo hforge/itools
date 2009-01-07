@@ -22,49 +22,23 @@ from distutils.command.build_py import build_py
 from distutils.command.register import register
 from distutils.command.upload import upload
 from getpass import getpass
-from os import getcwd, open as os_open, devnull, dup2, O_RDWR
-from os.path import exists, join as join_path, sep, splitdrive
-from re import search
+from os import open as os_open, devnull, dup2, O_RDWR
+from os.path import exists, join as join_path
 from sys import _getframe, platform, exit, stdin, stdout, stderr
 from urllib2 import HTTPPasswordMgr
 import sys
 
 # Import from itools
+from core import freeze, get_abspath
 import git
+from isetup import SetupConf
+from uri import get_reference
 
 
 if platform[:3] == 'win':
     from utils_win import get_time_spent, vmsize
 else:
     from utils_unix import get_time_spent, vmsize
-
-
-
-def get_abspath(local_path, mname=None):
-    """Returns the absolute path to the required file.
-    """
-    if mname is None:
-        mname = _getframe(1).f_globals.get('__name__')
-
-    if mname == '__main__' or mname == '__init__':
-        mpath = getcwd()
-    else:
-        module = sys.modules[mname]
-        if hasattr(module, '__path__'):
-            mpath = module.__path__[0]
-        elif '.' in mname:
-            mpath = sys.modules[mname[:mname.rfind('.')]].__path__[0]
-        else:
-            mpath = mname
-
-    drive, mpath = splitdrive(mpath)
-    mpath = drive + join_path(mpath, local_path)
-
-    # Make it working with Windows. Internally we use always the "/".
-    if sep == '\\':
-        mpath = mpath.replace(sep, '/')
-
-    return mpath
 
 
 
@@ -95,160 +69,6 @@ def become_daemon():
 
 
 ###########################################################################
-# Basic types
-###########################################################################
-class frozenlist(list):
-
-    __slots__ = []
-
-
-    #######################################################################
-    # Mutable operations must raise 'TypeError'
-    def __delitem__(self, index):
-        raise TypeError, 'frozenlists are not mutable'
-
-
-    def __delslice__(self, left, right):
-        raise TypeError, 'frozenlists are not mutable'
-
-
-    def __iadd__(self, alist):
-        raise TypeError, 'frozenlists are not mutable'
-
-
-    def __imul__(self, alist):
-        raise TypeError, 'frozenlists are not mutable'
-
-
-    def __setitem__(self, index, value):
-        raise TypeError, 'frozenlists are not mutable'
-
-
-    def __setslice__(self, left, right, value):
-        raise TypeError, 'frozenlists are not mutable'
-
-
-    def append(self, item):
-        raise TypeError, 'frozenlists are not mutable'
-
-
-    def extend(self, alist):
-        raise TypeError, 'frozenlists are not mutable'
-
-
-    def insert(self, index, value):
-        raise TypeError, 'frozenlists are not mutable'
-
-
-    def pop(self, index=-1):
-        raise TypeError, 'frozenlists are not mutable'
-
-
-    def remove(self, value):
-        raise TypeError, 'frozenlists are not mutable'
-
-
-    def reverse(self):
-        raise TypeError, 'frozenlists are not mutable'
-
-
-    def sort(self, cmp=None, key=None, reverse=False):
-        raise TypeError, 'frozenlists are not mutable'
-
-
-    #######################################################################
-    # Non-mutable operations
-    def __add__(self, alist):
-        alist = list(self) + alist
-        return frozenlist(alist)
-
-
-    def __hash__(self):
-        # TODO Implement frozenlists hash-ability
-        raise NotImplementedError, 'frozenlists not yet hashable'
-
-
-    def __mul__(self, factor):
-        alist = list(self) * factor
-        return frozenlist(alist)
-
-
-    def __rmul__(self, factor):
-        alist = list(self) * factor
-        return frozenlist(alist)
-
-
-    def __repr__(self):
-        return 'frozenlist([%s])' % ', '.join([ repr(x) for x in self ])
-
-
-
-class frozendict(dict):
-
-    __slots__ = []
-
-
-    #######################################################################
-    # Mutable operations must raise 'TypeError'
-    def __delitem__(self, index):
-        raise TypeError, 'frozendicts are not mutable'
-
-
-    def __setitem__(self, key, value):
-        raise TypeError, 'frozendicts are not mutable'
-
-
-    def clear(self):
-        raise TypeError, 'frozendicts are not mutable'
-
-
-    def pop(self, key, default=None):
-        raise TypeError, 'frozendicts are not mutable'
-
-
-    def popitem(self):
-        raise TypeError, 'frozendicts are not mutable'
-
-
-    def setdefault(self, key, default=None):
-        raise TypeError, 'frozendicts are not mutable'
-
-
-    def update(self, a_dict=None, **kw):
-        raise TypeError, 'frozendicts are not mutable'
-
-
-    #######################################################################
-    # Non-mutable operations
-    def __hash__(self):
-        # TODO Implement frozendicts hash-ability
-        raise NotImplementedError, 'frozendicts not yet hashable'
-
-
-    def __repr__(self):
-        aux = [ "%s: %s" % (repr(k), repr(v)) for k, v in self.items() ]
-        return 'frozendict({%s})' % ', '.join(aux)
-
-
-
-def freeze(value):
-    # Freeze
-    value_type = type(value)
-    if value_type is list:
-        return frozenlist(value)
-    if value_type is dict:
-        return frozendict(value)
-    if value_type is set:
-        return frozenset(value)
-    # Already frozen
-    if isinstance(value, (frozenlist, frozendict, frozenset)):
-        return value
-    # Error
-    raise TypeError, 'unable to freeze "%s"' % value_type
-
-
-
-###########################################################################
 # Our all powerful setup
 ###########################################################################
 def get_version(mname=None):
@@ -263,147 +83,111 @@ def get_version(mname=None):
 
 DEFAULT_REPOSITORY = 'http://pypi.python.org/pypi'
 
+
+class iupload(upload):
+
+    user_options = [
+        ('username=', 'u', 'username used to log in or to register'),
+        ('password=', 'p', 'password'),
+        ('repository=', 'r',
+         "url of repository [default: %s]" % DEFAULT_REPOSITORY),
+        ]
+    boolean_options = []
+
+
+    def initialize_options(self):
+        self.username = ''
+        self.password = ''
+        self.repository = ''
+        self.show_response = 0
+        self.sign = False
+        self.identity = None
+
+
+    def finalize_options(self):
+        config = SetupConf('setup.conf')
+
+        if self.repository == DEFAULT_REPOSITORY:
+            if config.has_value('repository'):
+                self.repository = config.get_value('repository')
+        elif self.repository is None:
+            self.repository = DEFAULT_REPOSITORY
+        if not self.username:
+            if config.has_value('username'):
+                self.username = config.get_value('username')
+            else:
+                raise DistutilsOptionError("Please give a username")
+        # Get the password
+        while not self.password:
+            self.password = getpass('Password: ')
+
+
+
+class iregister(register):
+
+    user_options = [
+        ('repository=', 'r',
+            "url of repository [default: %s]" % DEFAULT_REPOSITORY),
+        ('username=', 'u', 'username used to log in or to register'),
+        ('password=', 'p', 'password'),
+        ]
+
+    boolean_options = []
+
+    def send_metadata(self):
+        # Get the password
+        while not self.password:
+            self.password = getpass('Password: ')
+        # set up the authentication
+        auth = HTTPPasswordMgr()
+        host = str(get_reference(self.repository).authority)
+        auth.add_password('pypi', host, self.username, self.password)
+
+        # send the info to the server and report the result
+        data = self.build_post_data('submit')
+        code, result = self.post_to_server(data, auth)
+
+        if code == 200:
+            print ('The package has been successfully register to'
+                   ' repository')
+        else:
+            print 'There has been an error while registring the package.'
+            print 'Server responded (%s): %s' % (code, result)
+            if code == 401:
+                if result == 'Unauthorized':
+                    print 'Perhaps your username/password is wrong.'
+                    print 'Are you registered with "isetup-register.py"?'
+                exit(2)
+            else:
+                exit(3)
+
+
+    def initialize_options(self):
+        self.show_response = False
+        self.list_classifiers = []
+
+        self.repository = None
+        self.username = ''
+        self.password = ''
+
+
+    def finalize_options(self):
+        config = SetupConf('setup.conf')
+        if self.repository == DEFAULT_REPOSITORY:
+            if config.has_value('repository'):
+                self.repository = config.get_value('repository')
+        elif self.repository is None:
+            self.repository = DEFAULT_REPOSITORY
+        if not self.username:
+            if config.has_value('username'):
+                self.username = config.get_value('username')
+            else:
+                raise DistutilsOptionError("Please give a username")
+
+
 def setup(ext_modules=freeze([])):
     mname = _getframe(1).f_globals.get('__name__')
     version = get_version(mname)
-    try:
-        from itools.datatypes import MultiLinesTokens, URI, Email, String
-        from itools.datatypes import Tokens
-        from itools.handlers import ConfigFile
-        from itools.uri import get_reference
-    except ImportError:
-        # Are we trying to install itools?
-        # FIXME Should use relative imports, by they don't work well yet (see
-        # http://bugs.python.org/issue1510172).  This issue is solved with
-        # Python 2.6, so we will remove this code once we raise the required
-        # Python version to 2.6.
-        # And move next few def/class before setup()
-        start_local_import()
-        from datatypes import MultiLinesTokens
-        from datatypes import String, URI, Email, Tokens
-        from handlers import ConfigFile
-        from uri import get_reference
-        end_local_import()
-
-    class SetupConf(ConfigFile):
-        schema = {'name': String,
-                  'title': String,
-                  'url': URI,
-                  'author_name': String,
-                  'author_email': Email,
-                  'license': String,
-                  'description': String,
-                  'classifiers': MultiLinesTokens(default=()),
-                  'packages': Tokens(default=()),
-                  'requires': Tokens(default=()),
-                  'provides': Tokens(default=()),
-                  'scripts': Tokens(default=()),
-                  'source_language': String,
-                  'target_language': String,
-                  'repository': URI,
-                  'username': String}
-
-
-    class iupload(upload):
-
-        user_options = [
-            ('username=', 'u', 'username used to log in or to register'),
-            ('password=', 'p', 'password'),
-            ('repository=', 'r',
-             "url of repository [default: %s]" % DEFAULT_REPOSITORY),
-            ]
-        boolean_options = []
-
-
-        def initialize_options(self):
-            self.username = ''
-            self.password = ''
-            self.repository = ''
-            self.show_response = 0
-            self.sign = False
-            self.identity = None
-
-
-        def finalize_options(self):
-            config = SetupConf('setup.conf')
-
-            if self.repository == DEFAULT_REPOSITORY:
-                if config.has_value('repository'):
-                    self.repository = config.get_value('repository')
-            elif self.repository is None:
-                self.repository = DEFAULT_REPOSITORY
-            if not self.username:
-                if config.has_value('username'):
-                    self.username = config.get_value('username')
-                else:
-                    raise DistutilsOptionError("Please give a username")
-            # Get the password
-            while not self.password:
-                self.password = getpass('Password: ')
-
-
-
-    class iregister(register):
-
-        user_options = [
-            ('repository=', 'r',
-                "url of repository [default: %s]" % DEFAULT_REPOSITORY),
-            ('username=', 'u', 'username used to log in or to register'),
-            ('password=', 'p', 'password'),
-            ]
-
-        boolean_options = []
-
-        def send_metadata(self):
-            # Get the password
-            while not self.password:
-                self.password = getpass('Password: ')
-            # set up the authentication
-            auth = HTTPPasswordMgr()
-            host = str(get_reference(self.repository).authority)
-            auth.add_password('pypi', host, self.username, self.password)
-
-            # send the info to the server and report the result
-            data = self.build_post_data('submit')
-            code, result = self.post_to_server(data, auth)
-
-            if code == 200:
-                print ('The package has been successfully register to'
-                       ' repository')
-            else:
-                print 'There has been an error while registring the package.'
-                print 'Server responded (%s): %s' % (code, result)
-                if code == 401:
-                    if result == 'Unauthorized':
-                        print 'Perhaps your username/password is wrong.'
-                        print 'Are you registered with "isetup-register.py"?'
-                    exit(2)
-                else:
-                    exit(3)
-
-
-        def initialize_options(self):
-            self.show_response = False
-            self.list_classifiers = []
-
-            self.repository = None
-            self.username = ''
-            self.password = ''
-
-
-        def finalize_options(self):
-            config = SetupConf('setup.conf')
-            if self.repository == DEFAULT_REPOSITORY:
-                if config.has_value('repository'):
-                    self.repository = config.get_value('repository')
-            elif self.repository is None:
-                self.repository = DEFAULT_REPOSITORY
-            if not self.username:
-                if config.has_value('username'):
-                    self.username = config.get_value('username')
-                else:
-                    raise DistutilsOptionError("Please give a username")
-
 
     config = SetupConf('setup.conf')
 
@@ -478,28 +262,4 @@ def setup(ext_modules=freeze([])):
                            'iregister': iregister},
                # C extensions
                ext_modules=ext_modules)
-
-
-
-###########################################################################
-# XXX Work-around the fact that Python does not implements (yet) relative
-# imports (see PEP 328).
-###########################################################################
-
-pythons_import = __import__
-
-def local_import(name, globals=frozendict(), locals=frozendict(),
-                 fromlist=frozenlist(), level=-1):
-    if name.startswith('itools.'):
-        name = name[7:]
-    return pythons_import(name, globals, locals, fromlist, level)
-
-
-def start_local_import():
-    __builtins__['__import__'] = local_import
-
-
-def end_local_import():
-    __builtins__['__import__'] = pythons_import
-
 

@@ -28,6 +28,7 @@ from re import compile
 from types import GeneratorType
 
 # Import from itools
+from itools.core import freeze
 from itools.datatypes import Boolean, URI
 from itools.gettext import MSG
 from itools.uri import Path, Reference
@@ -37,7 +38,6 @@ from itools.xml import xmlns_uri
 from itools.xml import get_attr_datatype
 from itools.html import xhtml_uri
 from itools.html import stream_to_str_as_html, stream_to_str_as_xhtml
-from itools.utils import freeze
 from schema import stl_uri
 
 

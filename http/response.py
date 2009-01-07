@@ -19,7 +19,6 @@
 from datetime import datetime
 
 # Import from itools
-from itools import __version__
 from itools.datatypes import HTTPDate
 from cookies import Cookie, SetCookieDataType
 from headers import get_type
@@ -106,6 +105,7 @@ class Response(Message):
 
 
     def to_str(self):
+        from itools import __version__
         data = []
         # The status line
         status_code = self.status

@@ -23,11 +23,11 @@ from datetime import datetime, timedelta
 from operator import itemgetter
 
 # Import from itools
+from itools.core import freeze
 from itools.csv import MemoryCatalog, Property
 from itools.csv import parse_table
 from itools.datatypes import String, Unicode
 from itools.handlers import guess_encoding, TextFile
-from itools.utils import freeze
 from itools.xapian import PhraseQuery, RangeQuery, OrQuery, AndQuery
 from itools.xapian import KeywordField
 from base import BaseCalendar

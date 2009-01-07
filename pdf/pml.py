@@ -28,12 +28,12 @@ import tempfile
 
 # Import from itools
 from itools import get_abspath
+from itools.core import freeze
 from itools.datatypes import XMLContent
 import itools.http
 from itools.stl import set_prefix, stl
 from itools.uri import Path
 from itools.uri.uri import get_cwd
-from itools.utils import freeze
 from itools.vfs import vfs
 from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, TEXT
 from itools.xml import get_end_tag, XMLFile

@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2006, 2008 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2008 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,8 +15,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from utils import get_version
+from freeze import freeze, frozendict, frozenlist
+from utils import get_abspath
 
 
-__version__ = get_version()
+__all__ = [
+    'freeze',
+    'frozendict',
+    'frozenlist',
+    'get_abspath',
+   ]
 

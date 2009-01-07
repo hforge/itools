@@ -20,7 +20,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.utils import freeze
+from itools.core import freeze
 from utils import font_value, format_size, get_color_as_hexa
 from utils import get_color, get_int_value
 

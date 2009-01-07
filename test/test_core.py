@@ -19,7 +19,7 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.utils import freeze, frozenlist, frozendict
+from itools.core import freeze, frozenlist, frozendict
 
 
 ###########################################################################

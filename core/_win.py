@@ -50,8 +50,14 @@ def get_time_spent(mode='both', since=0.0):
     return (data['KernelTime'] + data['UserTime']) / 10000000.0 - since
 
 
+
 def vmsize(scale={'kB': 1024.0, 'mB': 1024.0*1024.0,
                   'KB': 1024.0, 'MB': 1024.0*1024.0}):
     handle = get_win32_handle(getpid())
     m = GetProcessMemoryInfo(handle)
     return m["WorkingSetSize"]
+
+
+
+def become_daemon():
+    raise NotImplementedError, 'become_daemon not yet implemented for Windows'

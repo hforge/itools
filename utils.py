@@ -22,9 +22,8 @@ from distutils.command.build_py import build_py
 from distutils.command.register import register
 from distutils.command.upload import upload
 from getpass import getpass
-from os import open as os_open, devnull, dup2, O_RDWR
 from os.path import exists, join as join_path
-from sys import _getframe, platform, exit, stdin, stdout, stderr
+from sys import _getframe, exit
 from urllib2 import HTTPPasswordMgr
 import sys
 
@@ -33,39 +32,6 @@ from core import freeze, get_abspath
 import git
 from isetup import SetupConf
 from uri import get_reference
-
-
-if platform[:3] == 'win':
-    from utils_win import get_time_spent, vmsize
-else:
-    from utils_unix import get_time_spent, vmsize
-
-
-
-def become_daemon():
-    # FIXME This does not work on Windows
-    from os import fork, setsid
-
-    try:
-        pid = fork()
-    except OSError:
-        print 'unable to fork'
-        exit(1)
-
-    if pid == 0:
-        # Daemonize
-        setsid()
-        # We redirect only the 3 first descriptors
-        file_desc = os_open(devnull, O_RDWR)
-        stdin.close()
-        dup2(file_desc, 0)
-        stdout.flush()
-        dup2(file_desc, 1)
-        stderr.flush()
-        dup2(file_desc, 2)
-    else:
-        exit()
-
 
 
 ###########################################################################

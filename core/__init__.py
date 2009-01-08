@@ -17,6 +17,13 @@
 # Import from itools
 from freeze import freeze, frozendict, frozenlist
 from utils import get_abspath
+from sys import platform
+
+if platform[:3] == 'win':
+    from _win import become_daemon, get_time_spent, vmsize
+else:
+    from _unix import become_daemon, get_time_spent, vmsize
+
 
 
 __all__ = [
@@ -24,5 +31,9 @@ __all__ = [
     'frozendict',
     'frozenlist',
     'get_abspath',
+    # System specific functions
+    'become_daemon',
+    'get_time_spent',
+    'vmsize',
    ]
 

@@ -18,9 +18,12 @@ See the table below for the imports to update.
 
   Before (alphabetical order)    Now
   ----------------------------   ---------------------------
+  utils.become_daemon            core.become_daemon
   utils.freeze                   core.freeze
   utils.frozendict               core.frozendict
   utils.frozenlist               core.frozenlist
   utils.get_abspath              core.get_abspath
+  utils.get_time_spent           core.get_time_spent
   utils.SetupConf                isetup.SetupConf
+  utils.vmsize                   core.vmsize
 

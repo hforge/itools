@@ -15,8 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from os import getpid
+from os import devnull, dup2, fork, getpid, open as os_open, O_RDWR, setsid
 from resource import getrusage, RUSAGE_SELF
+from sys import exit, stdin, stdout, stderr
 
 
 def vmsize(scale={'kB': 1024.0, 'mB': 1024.0*1024.0,
@@ -45,3 +46,26 @@ def get_time_spent(mode='both', since=0.0):
 
     # Both
     return data[0] + data[1] - since
+
+
+def become_daemon():
+    try:
+        pid = fork()
+    except OSError:
+        print 'unable to fork'
+        exit(1)
+
+    if pid == 0:
+        # Daemonize
+        setsid()
+        # We redirect only the 3 first descriptors
+        file_desc = os_open(devnull, O_RDWR)
+        stdin.close()
+        dup2(file_desc, 0)
+        stdout.flush()
+        dup2(file_desc, 1)
+        stderr.flush()
+        dup2(file_desc, 2)
+    else:
+        exit()
+

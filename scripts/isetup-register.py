@@ -24,7 +24,7 @@ from urllib2 import urlopen
 
 # Import from itools
 from itools import __version__
-from itools.utils import DEFAULT_REPOSITORY
+from itools.isetup import DEFAULT_REPOSITORY
 
 
 def register_user(username, options):

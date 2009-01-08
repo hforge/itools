@@ -17,21 +17,14 @@
 
 # Import from the Standard Library
 from distutils import core
-from distutils.errors import DistutilsOptionError
-from distutils.command.build_py import build_py
-from distutils.command.register import register
-from distutils.command.upload import upload
-from getpass import getpass
 from os.path import exists, join as join_path
-from sys import _getframe, exit
-from urllib2 import HTTPPasswordMgr
+from sys import _getframe
 import sys
 
 # Import from itools
 from core import freeze, get_abspath
 import git
-from isetup import SetupConf
-from uri import get_reference
+from isetup import SetupConf, iupload, iregister
 
 
 ###########################################################################
@@ -45,110 +38,6 @@ def get_version(mname=None):
     if exists(path):
         return open(path).read().strip()
     return None
-
-
-DEFAULT_REPOSITORY = 'http://pypi.python.org/pypi'
-
-
-class iupload(upload):
-
-    user_options = [
-        ('username=', 'u', 'username used to log in or to register'),
-        ('password=', 'p', 'password'),
-        ('repository=', 'r',
-         "url of repository [default: %s]" % DEFAULT_REPOSITORY),
-        ]
-    boolean_options = []
-
-
-    def initialize_options(self):
-        self.username = ''
-        self.password = ''
-        self.repository = ''
-        self.show_response = 0
-        self.sign = False
-        self.identity = None
-
-
-    def finalize_options(self):
-        config = SetupConf('setup.conf')
-
-        if self.repository == DEFAULT_REPOSITORY:
-            if config.has_value('repository'):
-                self.repository = config.get_value('repository')
-        elif self.repository is None:
-            self.repository = DEFAULT_REPOSITORY
-        if not self.username:
-            if config.has_value('username'):
-                self.username = config.get_value('username')
-            else:
-                raise DistutilsOptionError("Please give a username")
-        # Get the password
-        while not self.password:
-            self.password = getpass('Password: ')
-
-
-
-class iregister(register):
-
-    user_options = [
-        ('repository=', 'r',
-            "url of repository [default: %s]" % DEFAULT_REPOSITORY),
-        ('username=', 'u', 'username used to log in or to register'),
-        ('password=', 'p', 'password'),
-        ]
-
-    boolean_options = []
-
-    def send_metadata(self):
-        # Get the password
-        while not self.password:
-            self.password = getpass('Password: ')
-        # set up the authentication
-        auth = HTTPPasswordMgr()
-        host = str(get_reference(self.repository).authority)
-        auth.add_password('pypi', host, self.username, self.password)
-
-        # send the info to the server and report the result
-        data = self.build_post_data('submit')
-        code, result = self.post_to_server(data, auth)
-
-        if code == 200:
-            print ('The package has been successfully register to'
-                   ' repository')
-        else:
-            print 'There has been an error while registring the package.'
-            print 'Server responded (%s): %s' % (code, result)
-            if code == 401:
-                if result == 'Unauthorized':
-                    print 'Perhaps your username/password is wrong.'
-                    print 'Are you registered with "isetup-register.py"?'
-                exit(2)
-            else:
-                exit(3)
-
-
-    def initialize_options(self):
-        self.show_response = False
-        self.list_classifiers = []
-
-        self.repository = None
-        self.username = ''
-        self.password = ''
-
-
-    def finalize_options(self):
-        config = SetupConf('setup.conf')
-        if self.repository == DEFAULT_REPOSITORY:
-            if config.has_value('repository'):
-                self.repository = config.get_value('repository')
-        elif self.repository is None:
-            self.repository = DEFAULT_REPOSITORY
-        if not self.username:
-            if config.has_value('username'):
-                self.username = config.get_value('username')
-            else:
-                raise DistutilsOptionError("Please give a username")
 
 
 def setup(ext_modules=freeze([])):

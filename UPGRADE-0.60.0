@@ -19,6 +19,7 @@ See the table below for the imports to update.
   Before (alphabetical order)    Now
   ----------------------------   ---------------------------
   utils.become_daemon            core.become_daemon
+  utils.DEFAULT_REPOSITORY       isetup.DEFAULT_REPOSITORY
   utils.freeze                   core.freeze
   utils.frozendict               core.frozendict
   utils.frozenlist               core.frozenlist

@@ -19,6 +19,7 @@
 from mimetypes import add_type
 
 # Import from isetup
+from commands import DEFAULT_REPOSITORY, iregister, iupload
 from distribution import Dist, ArchiveNotSupported
 from handlers import SetupConf
 from metadata import get_package_version, SetupFile, RFC822File, PKGINFOFile
@@ -29,6 +30,9 @@ from repository import parse_package_name, download, EXTENSIONS
 
 __all__ = [
     'SetupConf',
+    'DEFAULT_REPOSITORY',
+    'iregister',
+    'iupload',
     # Metadata functions
     'parse_pkginfo',
     'get_package_version',

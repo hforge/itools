@@ -24,7 +24,7 @@ from operator import itemgetter
 
 # Import from itools
 from itools.csv import parse_table, Property, Record as TableRecord, Table
-from itools.datatypes import String, Unicode
+from itools.datatypes import Integer, String, Unicode
 from itools.handlers import merge_dicts
 from itools.utils import freeze
 from itools.xapian import PhraseQuery, RangeQuery, OrQuery, AndQuery
@@ -190,6 +190,7 @@ class icalendarTable(BaseCalendar, Table):
     record_schema = merge_dicts(
         data_properties,
         type=String(index='keyword'),
+        inner=Integer(multiple=True),
     )
 
 
@@ -252,6 +253,7 @@ class icalendarTable(BaseCalendar, Table):
         ###################################################################
         # Read components
         c_type = None
+        c_inner_type = None
         uid = None
         records = self.records
         id = 0
@@ -261,14 +263,20 @@ class icalendarTable(BaseCalendar, Table):
             if prop_name in ('PRODID', 'VERSION'):
                 raise ValueError, 'PRODID and VERSION must appear before '\
                                   'any component'
-            if c_type is None:
-                if prop_name == 'BEGIN':
+            if prop_name == 'BEGIN':
+                if c_type is None:
                     c_type = prop_value.value
                     c_properties = {}
+                    c_inner_components = []
+                else:
+                    # Inner component like DAYLIGHT or STANDARD
+                    c_inner_type = prop_value.value
+                    c_inner_properties = {}
                 continue
 
             if prop_name == 'END':
-                if prop_value.value == c_type:
+                value = prop_value.value
+                if value == c_type:
                     if uid is None:
                         raise ValueError, 'UID is not present'
 
@@ -278,6 +286,11 @@ class icalendarTable(BaseCalendar, Table):
                     sequence = c_properties.get('SEQUENCE', None)
                     c_properties['SEQUENCE'] = sequence or Property(0)
                     c_properties['ts'] = Property(datetime.now())
+                    # Add ids of inner components
+                    if c_inner_components:
+                        c_inner_components = [Property(x)
+                                              for x in c_inner_components]
+                        c_properties['inner'] = c_inner_components
                     record.append(c_properties)
                     if uid in uids:
                         n = uids[uid] + 1
@@ -293,27 +306,53 @@ class icalendarTable(BaseCalendar, Table):
                     uid = None
                     if n == 0:
                         id = id + 1
-                #elif prop_value.value in component_list:
-                #    raise ValueError, '%s component can NOT be inserted '\
-                #          'into %s component' % (prop_value.value, c_type)
-                else:
-                    raise ValueError, 'Inner components are not managed yet'
-            else:
-                if prop_name == 'UID':
-                    uid = prop_value.value
-                else:
-                    datatype = self.get_record_datatype(prop_name)
 
+                # Inner component
+                elif value == c_inner_type:
+                    record = self.get_record(id) or Record(id)
+                    c_inner_properties['type'] = Property(c_inner_type)
+                    sequence = c_inner_properties.get('SEQUENCE', None)
+                    c_inner_properties['SEQUENCE'] = sequence or Property(0)
+                    c_inner_properties['ts'] = Property(datetime.now())
+                    record.append(c_inner_properties)
+                    c_inner_components.append(id)
+                    self.added_records.append((id, 0))
+                    records.append(record)
+                    # Next
+                    c_inner_type = None
+                    id = id + 1
+                else:
+                    raise ValueError, 'Component %s found, %s expected' \
+                                      % (value, c_inner_type)
+            else:
+                datatype = self.get_record_datatype(prop_name)
+                if c_inner_type is None:
+                    if prop_name in ('UID', 'TZID'):
+                        uid = prop_value.value
+                    else:
+                        if getattr(datatype, 'multiple', False) is True:
+                            value = c_properties.setdefault(prop_name, [])
+                            value.append(prop_value)
+                        else:
+                            # Check the property has not yet being found
+                            if prop_name in c_properties:
+                                raise ValueError, \
+                                      "property '%s' can occur only once" % name
+                            # Set the property
+                            c_properties[prop_name] = prop_value
+                else:
+                    # Inner component properties
                     if getattr(datatype, 'multiple', False) is True:
-                        value = c_properties.setdefault(prop_name, [])
+                        value = c_inner_properties.setdefault(prop_name, [])
                         value.append(prop_value)
                     else:
                         # Check the property has not yet being found
-                        if prop_name in c_properties:
-                            raise ValueError, \
-                                  "property '%s' can occur only once" % name
+                        if prop_name in c_inner_properties:
+                            msg = ('the property %s can be assigned only one'
+                                   ' value' % prop_name)
+                            raise ValueError, msg
                         # Set the property
-                        c_properties[prop_name] = prop_value
+                        c_inner_properties[prop_name] = prop_value
 
         # Index the records
         for record in records:
@@ -343,9 +382,14 @@ class icalendarTable(BaseCalendar, Table):
             if record is not None:
                 seq = 0
                 c_type = record.type
+                # Ignore some components (like DAYLIGHT, STANDARD, ...)
+                # keeping only VEVENT, VTIMEZONE, V.., and x-name ones
+                if not c_type.startswith('V') and not c_type.startswith('X'):
+                    continue
                 for version in record:
                     line = 'BEGIN:%s\n' % c_type
                     lines.append(Unicode.encode(line))
+                    line = ''
                     # Properties
                     names = version.keys()
                     names.sort()
@@ -358,8 +402,12 @@ class icalendarTable(BaseCalendar, Table):
                             value = version[name]
                         if name == 'SEQUENCE':
                             value.value += seq
-                        name = name.upper()
-                        line = self.encode_property(name, value)
+                        # Insert inner components
+                        elif name == 'inner':
+                            line = self.encode_inner_components(name, value)
+                        else:
+                            name = name.upper()
+                            line = self.encode_property(name, value)
                         lines.extend(line)
                     line = 'END:%s\n' % c_type
                     lines.append(Unicode.encode(line))

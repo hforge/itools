@@ -440,20 +440,23 @@ class iCalendar(BaseCalendar, TextFile):
                     if prop_name in ('UID', 'TZID'):
                         uid = prop_value.value
                     else:
-                        if datatype.multiple is False:
+                        if getattr(datatype, 'multiple', False) is True:
+                            value = c_properties.setdefault(prop_name, [])
+                            value.append(prop_value)
+                        else:
                             # Check the property has not yet being found
                             if prop_name in c_properties:
-                                msg = ('the property %s can be assigned only one'
-                                       ' value' % prop_name)
+                                msg = ('the property %s can be assigned only '
+                                       'one value' % prop_name)
                                 raise ValueError, msg
                             # Set the property
                             c_properties[prop_name] = prop_value
-                        else:
-                            value = c_properties.setdefault(prop_name, [])
-                            value.append(prop_value)
                 else:
                     # Inner component properties
-                    if datatype.multiple is False:
+                    if getattr(datatype, 'multiple', False) is True:
+                        value = c_inner_properties.setdefault(prop_name, [])
+                        value.append(prop_value)
+                    else:
                         # Check the property has not yet being found
                         if prop_name in c_inner_properties:
                             msg = ('the property %s can be assigned only one'
@@ -461,9 +464,6 @@ class iCalendar(BaseCalendar, TextFile):
                             raise ValueError, msg
                         # Set the property
                         c_inner_properties[prop_name] = prop_value
-                    else:
-                        value = c_inner_properties.setdefault(prop_name, [])
-                        value.append(prop_value)
 
         ###################################################################
         # Index components

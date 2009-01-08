@@ -33,6 +33,38 @@ class BaseCalendar(object):
         return ' '.join([c_type, datetime.now().isoformat()])
 
 
+    def encode_inner_components(self, name, property_values, encoding='utf-8'):
+        lines = []
+        for property_value in property_values:
+            record = self.get_record(property_value.value)
+            if record is not None:
+                seq = 0
+                c_type = record.type
+                for version in record:
+                    line = 'BEGIN:%s\n' % c_type
+                    lines.append(Unicode.encode(line))
+                    # Properties
+                    names = version.keys()
+                    names.sort()
+                    for name in names:
+                        if name in ('id', 'ts', 'type'):
+                            continue
+                        elif name == 'DTSTAMP':
+                            value = version['ts']
+                        else:
+                            value = version[name]
+                        if name == 'SEQUENCE':
+                            value.value += seq
+                        else:
+                            name = name.upper()
+                            line = self.encode_property(name, value)
+                        lines.extend(line)
+                    line = 'END:%s\n' % c_type
+                    lines.append(Unicode.encode(line))
+                    seq += 1
+        return lines
+
+
     def encode_property(self, name, property_values, encoding='utf-8'):
         if not isinstance(property_values, list):
             property_values = [property_values]

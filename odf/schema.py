@@ -19,7 +19,7 @@
 from copy import copy
 
 # Import from itools
-from itools import get_abspath
+from itools.core import get_abspath
 from itools.datatypes import String
 from itools.relaxng import RelaxNGFile
 from itools.xml import register_namespace, ElementSchema

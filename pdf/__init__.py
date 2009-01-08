@@ -15,8 +15,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
+from itools.core import get_abspath
 from pdf import PDFFile
-from itools.utils import get_abspath
 from itools.relaxng import RelaxNGFile
 from itools.xml import register_dtd
 

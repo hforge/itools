@@ -47,8 +47,8 @@ except ImportError:
 
 # Import from itools
 import itools
+from itools.core import get_abspath
 from itools.handlers import merge_dicts
-from itools.utils import get_abspath
 from itools import git, vfs
 from itools.datatypes import Unicode, Integer, DateTime
 

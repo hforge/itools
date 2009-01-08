@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.utils import get_abspath
+from itools.core import get_abspath
 from srx import SRXFile
 
 # Constants

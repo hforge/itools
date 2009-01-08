@@ -18,8 +18,8 @@
 import mimetypes
 
 # Import from itools
+from itools.core import get_abspath
 from tmx import TMXFile, Sentence, TMXUnit, TMXNote
-from itools.utils import get_abspath
 from itools.xml import register_dtd
 
 

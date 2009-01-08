@@ -27,8 +27,7 @@ import socket
 import tempfile
 
 # Import from itools
-from itools import get_abspath
-from itools.core import freeze
+from itools.core import freeze, get_abspath
 from itools.datatypes import XMLContent
 import itools.http
 from itools.stl import set_prefix, stl

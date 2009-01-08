@@ -73,6 +73,7 @@ class Component(object):
         self.c_type = c_type
         self.uid = uid
         self.versions = {}
+        self.c_inner_components = []
 
 
     #######################################################################
@@ -420,7 +421,7 @@ class iCalendar(BaseCalendar, TextFile):
                     else:
                         component = Component(c_type, uid)
                         component.add_version(c_properties)
-                        # XXX TODO add c_inner_components
+                        component.c_inner_components = c_inner_components
                         self.components[uid] = component
                     # Next
                     c_type = None
@@ -462,8 +463,9 @@ class iCalendar(BaseCalendar, TextFile):
                             msg = ('the property %s can be assigned only one'
                                    ' value' % prop_name)
                             raise ValueError, msg
-                        # Set the property
-                        c_inner_properties[prop_name] = prop_value
+                        value = prop_value
+                    # Set the property
+                    c_inner_properties[prop_name] = value
 
         ###################################################################
         # Index components
@@ -501,6 +503,22 @@ class iCalendar(BaseCalendar, TextFile):
                     value = version[key]
                     line = self.encode_property(key, value, encoding)
                     lines.extend(line)
+                # Insert inner components
+                for c_inner_component in component.c_inner_components:
+                    c_inner_type = c_inner_component.c_inner_type
+                    # sequence not supported into inner components
+                    version = c_inner_component.versions[0]
+                    # Begin
+                    line = u'BEGIN:%s\n' % c_inner_type
+                    lines.append(Unicode.encode(line))
+                    # Properties
+                    for key in version:
+                        value = version[key]
+                        line = self.encode_property(key, value, encoding)
+                        lines.extend(line)
+                    # End
+                    line = u'END:%s\n' % c_inner_type
+                    lines.append(Unicode.encode(line))
                 # End
                 line = u'END:%s\n' % c_type
                 lines.append(Unicode.encode(line))

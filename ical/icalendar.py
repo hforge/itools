@@ -68,10 +68,12 @@ class Component(object):
         """Initialize the component.
 
         c_type -- type of component as a string (i.e. 'VEVENT')
+        uid -- uid of a VEVENT, tzid of a VTIMEZONE
         """
         self.c_type = c_type
         self.uid = uid
         self.versions = {}
+        self.c_inner_components = []
 
 
     #######################################################################
@@ -255,6 +257,18 @@ class Component(object):
 
 
 
+class InnerComponent(Component):
+
+    def __init__(self, c_inner_type):
+        """Initialize the component.
+
+        c_inner_type -- type of component as a string (i.e. 'DAYLIGHT')
+        """
+        self.c_inner_type = c_inner_type
+        self.versions = {}
+
+
+
 class iCalendar(BaseCalendar, TextFile):
     """icalendar structure :
 
@@ -377,20 +391,27 @@ class iCalendar(BaseCalendar, TextFile):
         ###################################################################
         # Read components
         c_type = None
+        c_inner_type = None
         uid = None
 
         for prop_name, prop_value in lines[:-1]:
             if prop_name in ('PRODID', 'VERSION'):
                 raise ValueError, 'PRODID and VERSION must appear before '\
                                   'any component'
-            if c_type is None:
-                if prop_name == 'BEGIN':
+            if prop_name == 'BEGIN':
+                if c_type is None:
                     c_type = prop_value.value
                     c_properties = {}
+                    c_inner_components = []
+                else:
+                    # Inner component like DAYLIGHT or STANDARD
+                    c_inner_type = prop_value.value
+                    c_inner_properties = {}
                 continue
 
             if prop_name == 'END':
-                if prop_value.value == c_type:
+                value = prop_value.value
+                if value == c_type:
                     if uid is None:
                         raise ValueError, 'UID is not present'
 
@@ -400,31 +421,51 @@ class iCalendar(BaseCalendar, TextFile):
                     else:
                         component = Component(c_type, uid)
                         component.add_version(c_properties)
+                        component.c_inner_components = c_inner_components
                         self.components[uid] = component
                     # Next
                     c_type = None
                     uid = None
-                #elif prop_value.value in component_list:
-                #    raise ValueError, '%s component can NOT be inserted '\
-                #          'into %s component' % (prop_value.value, c_type)
+                # Inner component
+                elif value == c_inner_type:
+                    inner_component = InnerComponent(c_inner_type)
+                    inner_component.add_version(c_inner_properties)
+                    c_inner_components.append(inner_component)
+                    c_inner_type = None
                 else:
-                    raise ValueError, 'Inner components are not managed yet'
+                    raise ValueError, 'Component %s found, %s expected' \
+                                      % (value, c_inner_type)
             else:
-                if prop_name == 'UID':
-                    uid = prop_value.value
+                datatype = self.get_record_datatype(prop_name)
+                if c_inner_type is None:
+                    if prop_name in ('UID', 'TZID'):
+                        uid = prop_value.value
+                    else:
+                        if getattr(datatype, 'multiple', False) is True:
+                            value = c_properties.setdefault(prop_name, [])
+                            value.append(prop_value)
+                        else:
+                            # Check the property has not yet being found
+                            if prop_name in c_properties:
+                                msg = ('the property %s can be assigned only '
+                                       'one value' % prop_name)
+                                raise ValueError, msg
+                            # Set the property
+                            c_properties[prop_name] = prop_value
                 else:
-                    datatype = self.get_record_datatype(prop_name)
-                    if datatype.multiple is False:
+                    # Inner component properties
+                    if getattr(datatype, 'multiple', False) is True:
+                        value = c_inner_properties.setdefault(prop_name, [])
+                        value.append(prop_value)
+                    else:
                         # Check the property has not yet being found
-                        if prop_name in c_properties:
+                        if prop_name in c_inner_properties:
                             msg = ('the property %s can be assigned only one'
                                    ' value' % prop_name)
                             raise ValueError, msg
-                        # Set the property
-                        c_properties[prop_name] = prop_value
-                    else:
-                        value = c_properties.setdefault(prop_name, [])
-                        value.append(prop_value)
+                        value = prop_value
+                    # Set the property
+                    c_inner_properties[prop_name] = value
 
         ###################################################################
         # Index components
@@ -462,6 +503,22 @@ class iCalendar(BaseCalendar, TextFile):
                     value = version[key]
                     line = self.encode_property(key, value, encoding)
                     lines.extend(line)
+                # Insert inner components
+                for c_inner_component in component.c_inner_components:
+                    c_inner_type = c_inner_component.c_inner_type
+                    # sequence not supported into inner components
+                    version = c_inner_component.versions[0]
+                    # Begin
+                    line = u'BEGIN:%s\n' % c_inner_type
+                    lines.append(Unicode.encode(line))
+                    # Properties
+                    for key in version:
+                        value = version[key]
+                        line = self.encode_property(key, value, encoding)
+                        lines.extend(line)
+                    # End
+                    line = u'END:%s\n' % c_inner_type
+                    lines.append(Unicode.encode(line))
                 # End
                 line = u'END:%s\n' % c_type
                 lines.append(Unicode.encode(line))

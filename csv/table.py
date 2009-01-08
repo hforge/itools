@@ -809,7 +809,7 @@ class Table(File):
             # Default
             if property is None:
                 return datatype.get_default()
-            # Language negotiation ('select_language' must be available)
+            # Language negotiation ('select_language' is a built-in)
             if language is None:
                 languages = [ x.parameters['language'] for x in property ]
                 language = select_language(languages)

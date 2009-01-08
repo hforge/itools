@@ -18,6 +18,10 @@ See the table below for the imports to update.
 
   Before (alphabetical order)    Now
   ----------------------------   ---------------------------
+  isetup.get_package_version     NOT EXPORTED
+  isetup.PACKAGES_DB             NOT EXPORTED
+  isetup.RFC822File              NOT EXPORTED
+  isetup.SetupFile               NOT EXPORTED
   utils.become_daemon            core.become_daemon
   utils.DEFAULT_REPOSITORY       isetup.DEFAULT_REPOSITORY
   utils.freeze                   core.freeze
@@ -27,4 +31,3 @@ See the table below for the imports to update.
   utils.get_time_spent           core.get_time_spent
   utils.SetupConf                isetup.SetupConf
   utils.vmsize                   core.vmsize
-

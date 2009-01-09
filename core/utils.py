@@ -47,3 +47,13 @@ def get_abspath(local_path, mname=None):
     return mpath
 
 
+
+def merge_dicts(d, *args, **kw):
+    """Merge two or more dictionaries into a new dictionary object.
+    """
+    new_d = d.copy()
+    for dic in args:
+        new_d.update(dic)
+    new_d.update(kw)
+    return new_d
+

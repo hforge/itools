@@ -18,10 +18,11 @@ See the table below for the imports to update.
 
   Before (alphabetical order)    Now
   ----------------------------   ---------------------------
-  isetup.get_package_version     NOT EXPORTED
-  isetup.PACKAGES_DB             NOT EXPORTED
-  isetup.RFC822File              NOT EXPORTED
-  isetup.SetupFile               NOT EXPORTED
+  handlers.merge_dicts           core.merge_dicts
+  isetup.get_package_version     ** NOT EXPORTED **
+  isetup.PACKAGES_DB             ** NOT EXPORTED **
+  isetup.RFC822File              ** NOT EXPORTED **
+  isetup.SetupFile               ** NOT EXPORTED **
   utils.become_daemon            core.become_daemon
   utils.DEFAULT_REPOSITORY       isetup.DEFAULT_REPOSITORY
   utils.freeze                   core.freeze

@@ -43,7 +43,7 @@ from registry import get_handler_class, get_handler
 from text import TextFile, guess_encoding
 from database import Database, SafeDatabase
 from database import READY, TRANSACTION_PHASE1, TRANSACTION_PHASE2
-from utils import checkid, merge_dicts, merge_dics
+from utils import checkid
 
 
 __all__ = [
@@ -74,7 +74,5 @@ __all__ = [
     # Some functions
     'checkid',
     'guess_encoding',
-    'merge_dicts',
-    'merge_dics', # FIXME Remove by the next major release, 0.60
     ]
 

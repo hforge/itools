@@ -15,6 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from the Standard Library
+from warnings import warn
+
 
 src = (ur"""ÄÅÁÀÂÃĀäåáàâãāÇçÉÈÊËĒéèêëēÍÌÎÏĪíìîïīÑñÖÓÒÔÕØŌöóòôõøōÜÚÙÛŪüúùûū"""
        ur"""ÝŸȲýÿȳ""")
@@ -73,5 +76,7 @@ def merge_dicts(d, *args, **kw):
     return new_d
 
 # FIXME Remove by the next major release, 0.60
-merge_dics = merge_dicts
+def merge_dics(d, *args, **kw):
+    warn("The 'merge_dics' function is deprecated, use 'merge_dicts'.")
+    return merge_dicts(d, *args, **kw)
 

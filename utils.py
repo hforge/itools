@@ -22,22 +22,9 @@ from sys import _getframe
 import sys
 
 # Import from itools
-from core import freeze, get_abspath
+from core import freeze
 import git
-from isetup import SetupConf, iupload, iregister
-
-
-###########################################################################
-# Our all powerful setup
-###########################################################################
-def get_version(mname=None):
-    if mname is None:
-        mname = _getframe(1).f_globals.get('__name__')
-
-    path = get_abspath('version.txt', mname=mname)
-    if exists(path):
-        return open(path).read().strip()
-    return None
+from isetup import SetupConf, iupload, iregister, get_version
 
 
 def setup(ext_modules=freeze([])):

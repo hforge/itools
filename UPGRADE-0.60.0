@@ -30,5 +30,6 @@ See the table below for the imports to update.
   utils.frozenlist               core.frozenlist
   utils.get_abspath              core.get_abspath
   utils.get_time_spent           core.get_time_spent
+  utils.get_version              isetup.get_version
   utils.SetupConf                isetup.SetupConf
   utils.vmsize                   core.vmsize

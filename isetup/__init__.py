@@ -25,6 +25,7 @@ from handlers import SetupConf
 from metadata import PKGINFOFile
 from packages import get_installed_info, packages_infos
 from repository import parse_package_name, download, EXTENSIONS
+from utils import get_version
 
 
 __all__ = [
@@ -34,6 +35,7 @@ __all__ = [
     'download',
     'EXTENSIONS',
     'get_installed_info',
+    'get_version',
     'iregister',
     'iupload',
     'packages_infos',

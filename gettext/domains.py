@@ -16,7 +16,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from string import Template
 from sys import _getframe
 from types import ModuleType
 
@@ -77,7 +76,7 @@ def gettext(domain_name, message, language=None, **kw):
 
     # Interpolation
     if kw:
-        return Template(message).substitute(kw)
+        return message.format(**kw)
 
     return message
 
@@ -115,6 +114,6 @@ class MSG(object):
 
         # Interpolation
         if kw:
-            return Template(message).substitute(kw)
+            return message.format(**kw)
 
         return message

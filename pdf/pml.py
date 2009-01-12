@@ -129,7 +129,7 @@ def pmltopdf(document, path=None):
     return make_pdf(events)
 
 
-def stl_pmltopdf(document, namespace=freeze({}), path=None):
+def stl_pmltopdf(document, namespace=freeze({}), path=None, mode='pdf'):
     """
     document: XMLFile, events, XMLParser, generator
     path: the path of the document
@@ -151,7 +151,11 @@ def stl_pmltopdf(document, namespace=freeze({}), path=None):
         prefix = here.resolve2(Path(path))
         events = set_prefix(events, prefix, ns_uri=pml_uri)
 
-    return make_pdf(events)
+    if mode == 'events':
+        return events
+    elif mode == 'pdf':
+        return make_pdf(events)
+    raise ValueError, 'unexpected mode "%s"' % mode
 
 
 

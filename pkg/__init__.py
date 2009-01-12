@@ -18,7 +18,7 @@
 # Import from the Standard Library
 from mimetypes import add_type
 
-# Import from isetup
+# Import from itools
 from commands import DEFAULT_REPOSITORY, iregister, iupload
 from distribution import Dist, ArchiveNotSupported
 from handlers import SetupConf

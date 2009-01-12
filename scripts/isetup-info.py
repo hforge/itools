@@ -21,7 +21,7 @@ from optparse import OptionParser
 
 # Import from itools
 from itools import __version__
-from itools.isetup import packages_infos
+from itools.pkg import packages_infos
 
 
 if __name__ == '__main__':

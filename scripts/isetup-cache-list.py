@@ -29,9 +29,9 @@ from tempfile import gettempdir
 
 # Import from itools
 from itools import __version__
+from itools.pkg import parse_package_name, Dist
+from itools.pkg import ArchiveNotSupported, EXTENSIONS
 from itools.vfs import exists, open, get_names, make_folder
-from itools.isetup import parse_package_name, Dist
-from itools.isetup import ArchiveNotSupported, EXTENSIONS
 
 
 TMP_DIR = '%s/Packages' % gettempdir()

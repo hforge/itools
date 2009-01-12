@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from isetup import get_version
+from pkg import get_version
 
 
 __version__ = get_version()

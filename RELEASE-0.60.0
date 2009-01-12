@@ -7,9 +7,9 @@ meta-package for easier development and deployment:
 
   itools.abnf             itools.i18n             itools.stl
   itools.core             itools.ical             itools.tmx
-  itools.csv              itools.isetup           itools.uri
-  itools.datatypes        itools.odf              itools.vfs
-  itools.gettext          itools.pdf              itools.web
+  itools.csv              itools.odf              itools.uri
+  itools.datatypes        itools.pdf              itools.vfs
+  itools.gettext          itools.pkg              itools.web
   itools.git              itools.relaxng          itools.workflow
   itools.handlers         itools.rest             itools.xapian
   itools.html             itools.rss              itools.xliff

@@ -24,7 +24,7 @@ from sys import executable
 
 # Import from itools
 from itools import __version__
-from itools.isetup import DEFAULT_REPOSITORY
+from itools.pkg import DEFAULT_REPOSITORY
 from itools.vfs import exists
 
 

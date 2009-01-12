@@ -24,7 +24,7 @@ import sys
 # Import from itools
 from core import freeze
 import git
-from isetup import SetupConf, iupload, iregister, get_version
+from pkg import SetupConf, iupload, iregister, get_version
 
 
 def setup(ext_modules=freeze([])):

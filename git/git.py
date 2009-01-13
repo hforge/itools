@@ -17,6 +17,7 @@
 # Import from the Standard Library
 from datetime import datetime
 from os import popen
+from subprocess import Popen, PIPE
 
 
 def is_available():
@@ -34,12 +35,14 @@ def get_filenames():
     return [ x.strip() for x in popen('git ls-files').readlines() ]
 
 
-def get_metadata(reference='HEAD'):
+def get_metadata(reference='HEAD', cwd=None):
     """Returns some metadata about the given commit reference.
 
     For now only the commit id and the timestamp are returned.
     """
-    lines = popen('git cat-file commit %s' % reference).readlines()
+    command = ['git', 'cat-file', 'commit', reference]
+    pipe = Popen(command, cwd=cwd, stdout=PIPE).stdout
+    lines = pipe.readlines()
 
     # Default values
     metadata = {

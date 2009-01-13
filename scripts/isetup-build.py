@@ -55,8 +55,8 @@ def get_version():
         version_name = branch_name
 
     # Get the timestamp
-    head_id, head_timestamp = git.get_metadata()
-    tag_id, tag_timestamp = git.get_metadata(version_name)
+    head_id, head_timestamp = git.get_metadata()['committer']
+    tag_id, tag_timestamp = git.get_metadata(version_name)['committer']
 
     if not tags or tag_id != head_id:
         timestamp = head_timestamp.strftime('%Y%m%d%H%M')

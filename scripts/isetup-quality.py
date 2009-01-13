@@ -360,7 +360,8 @@ def create_graph():
         filenames = [ x for x in filenames if x.endswith('.py') ]
         # We get code quality for this files
         stats, files_db = analyse(filenames)
-        commitid, date_time = git.get_metadata()
+        metadata = git.get_metadata()
+        date_time = metadata['committer'][1]
         commit_date = date(date_time.year, date_time.month, date_time.day)
         if not statistics.has_key(commit_date):
             statistics[commit_date] = stats

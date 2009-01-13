@@ -40,16 +40,46 @@ def get_metadata(reference='HEAD'):
     For now only the commit id and the timestamp are returned.
     """
     lines = popen('git cat-file commit %s' % reference).readlines()
-    # The commit id
-    commit_id = lines[0].strip().split()[1]
-    # The committer
-    for line in lines:
-        if line.startswith('committer'):
-            timestamp = datetime.fromtimestamp(int(line.strip().split()[-2]))
-            return commit_id, timestamp
 
-    msg = "committer not found, check the output of 'git cat-file commit %s'"
-    raise ValueError, msg % reference
+    # Default values
+    metadata = {
+        'tree': None,
+        'parent': None,
+        'author': (None, None),
+        'committer': (None, None),
+        'message': []}
+
+    # Parse the data (with a simple automaton)
+    state = 0
+    for line in lines:
+        if state == 0:
+            # Heading
+            line = line.strip()
+            if not line:
+                state = 1
+                continue
+            key, value = line.split(' ', 1)
+            if key == 'tree':
+                metadata['tree'] = value
+            elif key == 'parent':
+                metadata['parent'] = value
+            elif key == 'author':
+                name, ts, tz = value.rsplit(' ', 2)
+                ts = datetime.fromtimestamp(int(ts))
+                metadata['author'] = (name, ts)
+            elif key == 'committer':
+                name, ts, tz = value.rsplit(' ', 2)
+                ts = datetime.fromtimestamp(int(ts))
+                metadata['committer'] = (name, ts)
+        else:
+            # Message
+            metadata['message'].append(line)
+
+    # Post-process message
+    metadata['message'] = ''.join(metadata['message'])
+
+    # Ok
+    return metadata
 
 
 

@@ -210,13 +210,12 @@ def p_padding_style(key, value):
 
 
 def table_padding_style(key, value, start, stop):
+    """Calculate the Reportlab padding from the html one
+    Note that only the padding-X attributes are allowed"""
     style = []
     size = format_size(value, None)
     if size is not None:
-        if key == 'padding':
-            for padding in TABLE_PADDINGS.values():
-                style.append((padding, start, stop, size))
-        elif key in TABLE_PADDINGS.keys():
+        if key in TABLE_PADDINGS.keys():
             style.append((TABLE_PADDINGS[key], start, stop, size))
     return style
 
@@ -284,6 +283,10 @@ def build_paragraph_style(context, element, style_css):
             style_attr['width'] = value
         elif key == 'float':
             style_attr['float'] = value
+        elif key == 'text-transform':
+            if value in ('uppercase', 'lowercase'):
+                style_attr['textTransform'] = value
+
 
     # Overload the attributes values
     for key, attr_value in element[1].iteritems():

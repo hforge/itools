@@ -183,6 +183,11 @@ skip_content_elements = [
     (text_uri, 'tracked-changes')
     ]
 
+contexts = [
+    (text_uri, 'p', 'paragraph'),
+    (text_uri, 'h', 'heading'),
+]
+
 
 # XXX These elements appear in openDocuments but they are neither in the doc,
 # nor the relaxNG file!
@@ -216,6 +221,9 @@ for uri, element_name in unknown_elements:
         raise ValueError, 'element "%s" is defined twice' % element_name
     elements[element_name] = ElementSchema(element_name,
                                            default_datatype=String)
+for uri, element_name, context in contexts:
+    element = namespaces[uri].get_element_schema(element_name)
+    element.context = context
 
 # The namespaces fo and svg have two names
 fo_uri_2 = 'http://www.w3.org/1999/XSL/Format'

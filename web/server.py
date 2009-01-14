@@ -28,7 +28,7 @@ from socket import socket as Socket, error as SocketError
 from socket import AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR
 import sys
 from time import strftime
-from traceback import print_exc
+from traceback import format_exc
 from urllib import unquote
 from warnings import warn
 
@@ -443,59 +443,56 @@ class Server(object):
         log.flush()
 
 
-    def log_error(self, context=None):
+    def log_event(self, service, summary, details=None):
         log = self.event_log
         if log is None:
             return
 
-        # The separator
-        lines = []
-        lines.append('\n')
-        lines.append('%s\n' % ('*' * 78))
-        # The date
-        lines.append('DATE: %s\n' % datetime.now())
-        # The request data
-        if context is not None:
-            # The URI and user
-            user = context.user
-            lines.append('URI : %s\n' % str(context.uri))
-            lines.append('USER: %s\n' % (user and user.name or None))
-            lines.append('\n')
-            # The request
-            request = context.request
-            lines.append(request.request_line_to_str())
-            lines.append(request.headers_to_str())
-        lines.append('\n')
-        data = ''.join(lines)
-
-        # Check the file has not been removed
+        # Check the log file has not been removed
         if fstat(log.fileno())[3] == 0:
             log = open(self.event_log_path, 'a+')
             self.event_log = log
 
-        # Write
-        log.write(data)
-        print_exc(file=log) # FIXME Should be done before to reduce the risk
-                            # of the log file being removed.
+        # Summary
+        log.write('%s [%s] %s\n' % (datetime.now(), service, summary))
+        if details is None:
+            log.flush()
+            return
+
+        # Details
+        lines = [ ('  %s\n' % x) for x in details.splitlines() ]
+        log.write(''.join(lines) + '\n')
         log.flush()
+
+
+    def log_error(self, context=None):
+        if context is None:
+            summary = ''
+            details = ''
+        else:
+            # The summary
+            user = context.user
+            if user is None:
+                summary = str(context.uri)
+            else:
+                summary = '%s (user: %s)' % (context.uri, user.name)
+            # Details, the headers
+            request = context.request
+            details = (
+                request.request_line_to_str()
+                + request.headers_to_str()
+                + '\n')
+
+        # The traceback
+        details = details + format_exc()
+
+        # Log
+        self.log_event('http', summary, details)
 
 
     def log_debug(self, message):
-        if not self.debug:
-            return
-
-        # The data to write
-        data = '%s %s\n' % (datetime.now(), message)
-
-        # Check the file has not been removed
-        log = self.event_log
-        if fstat(log.fileno())[3] == 0:
-            log = open(self.event_log_path, 'a+')
-            self.event_log = log
-
-        # Write
-        log.write(data)
-        log.flush()
+        if self.debug:
+            self.log_event('loop', message)
 
 
     ########################################################################

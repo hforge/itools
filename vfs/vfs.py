@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 # Copyright (C) 2006-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2009 David Versmisse <david.versmisse@itaapy.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,15 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from registry import get_file_system
-from folders import Folder
-
-
-# Constants
-READ = 'r'
-WRITE = 'w'
-READ_WRITE = 'rw'
-APPEND = 'a'
+from folder import Folder, READ
 
 
 cwd = Folder()
@@ -81,7 +74,7 @@ def remove(reference):
     return cwd.remove(reference)
 
 
-def open(reference, mode=None):
+def open(reference, mode=READ):
     return cwd.open(reference, mode)
 
 
@@ -93,11 +86,13 @@ def move(source, target):
     return cwd.move(source, target)
 
 
-##########################################################################
-# Folders only
 def get_names(reference):
     return cwd.get_names(reference)
 
 
 def traverse(reference):
     return cwd.traverse(reference)
+
+
+def mount_archive(reference):
+    return cwd.mount_archive(reference)

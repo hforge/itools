@@ -24,9 +24,6 @@ from unittest import TestCase
 # Import from itools
 from itools import vfs
 from itools.vfs import APPEND, WRITE, FileName
-from itools.vfs.file import FileFS
-from itools.vfs.registry import get_file_system
-
 
 
 class DatatypesTestCase(TestCase):
@@ -196,20 +193,6 @@ class FileTestCase(TestCase):
         vfs.remove('tests/toto.txt')
 
 
-class FSTestCase(TestCase):
-
-    def test_linux(self):
-        # file://home/toto.txt
-        fs = get_file_system('file')
-        self.assertEqual(fs, FileFS)
-
-
-    def test_windows(self):
-        # c:\toto.txt
-        fs = get_file_system('c')
-        self.assertEqual(fs, FileFS)
-
-
 
 class FoldersTestCase(TestCase):
 
@@ -282,176 +265,12 @@ class CopyTestCase(TestCase):
 
 
 
-class MemFSTestCase(TestCase):
-    """
-    Test the whole API for the filesystem layer, "mem://..."
-    """
-
-    def setUp(self):
-        vfs.make_folder('mem:tmp')
-        fh = vfs.make_file('mem:tmp/blah.txt')
-        fh.write("BLAH!!!")
-        fh.close()
-
-
-    def tearDown(self):
-        if vfs.exists('mem:tmp'):
-            vfs.remove('mem:tmp')
-
-
-    def test00_existence(self):
-        exists = vfs.exists('mem:fdsfsf')
-        self.assertEqual(exists, False)
-
-        # All the following should be synonyms
-        exists = vfs.exists('mem:tmp')
-        self.assertEqual(exists, True)
-        exists = vfs.exists('mem://tmp')
-        self.assertEqual(exists, True)
-        exists = vfs.exists('mem:///tmp')
-        self.assertEqual(exists, True)
-
-
-    def test01_type_checking(self):
-        is_file = vfs.is_file('mem:tmp/blah.txt')
-        self.assertEqual(is_file, True)
-        is_file = vfs.is_file('mem:tmp')
-        self.assertEqual(is_file, False)
-        is_folder = vfs.is_folder('mem:tmp')
-        self.assertEqual(is_folder, True)
-        is_folder = vfs.is_folder('mem:tmp/blah.txt')
-        self.assertEqual(is_folder, False)
-        mimetype = vfs.get_mimetype('mem:tmp/blah.txt')
-        self.assertEqual(mimetype, 'text/plain')
-
-
-    def test10_creation(self):
-        fh = vfs.make_file('mem:testfile.txt')
-        fh.write("one\n")
-        fh.close()
-        self.assertEqual(vfs.is_file('mem:testfile.txt'), True)
-        url = 'mem:test/dir'
-        vfs.make_folder(url)
-        self.assertEqual(vfs.is_folder(url), True)
-        url = 'mem:dir1/dir2/dir3/file1'
-        fh = vfs.make_file(url)
-        fh.write("this is file1")
-        fh.close()
-        self.assertEqual(vfs.is_file(url), True)
-
-        # this should raise an OSError because it's trying to make a file out
-        # of an existing folder
-        url = 'mem:dir1/dir2/dir3'
-        self.assertRaises(OSError, vfs.make_file, url)
-
-        # this should raise an OSError because it's trying to make a file in
-        # another file
-        url = 'mem:dir1/dir2/dir3/file1/file2'
-        self.assertRaises(OSError, vfs.make_file, url)
-
-
-    def test11_reading(self):
-        fh = vfs.open('mem:testfile.txt')
-        self.assertEqual(fh.read(), 'one\n')
-
-
-    def test12_append(self):
-        fh = vfs.open('mem:testfile.txt', vfs.APPEND)
-        fh.write("two\n")
-        fh.close()
-        fh = vfs.open('mem:testfile.txt')
-        self.assertEqual(fh.read(), 'one\ntwo\n')
-        fh = vfs.open('mem:testfile.txt', vfs.WRITE)
-        fh.write("three\n")
-        fh.close()
-        fh = vfs.open('mem:testfile.txt')
-        self.assertEqual(fh.read(), 'three\n')
-
-
-    def test13_folder_creation(self):
-        url = 'mem:testfile.txt/dir'
-        self.assertEqual(vfs.is_folder(url), False)
-        self.assertRaises(OSError, vfs.make_folder, url)
-
-        # This should raise an OSError because we're trying to make a file
-        # inside another file
-        fh = vfs.make_file('mem:blah1')
-        fh.write("blah1\n")
-        fh.close()
-        self.assertRaises(OSError, vfs.make_folder, 'mem:blah1/bad1')
-
-        # This should raise OSError because we're trying to make a file with
-        # the same name as an existing folder
-        url = 'mem:blah2/file2'
-        fh = vfs.make_file(url)
-        fh.write("blah2\n")
-        fh.close()
-        self.assertEqual(True, vfs.exists(url))
-        self.assertRaises(OSError, vfs.make_file, 'mem:blah2')
-
-
-    def test20_move_file(self):
-        vfs.copy('mem:testfile.txt', 'mem:testfile.txt.bak')
-        vfs.move('mem:testfile.txt.bak', 'mem:testfile.txt.old')
-        fh = vfs.open('mem:testfile.txt.old')
-        self.assertEqual(fh.read(), 'three\n')
-        self.assertEqual(vfs.exists('mem:testfile.txt.bak'), False)
-
-
-    def test21_copy_file(self):
-        vfs.copy('tests/hello.txt', 'mem:/tmp/hello.txt')
-        fh = vfs.open('mem:/tmp/hello.txt')
-        self.assertEqual(fh.read(), 'hello world\n')
-        vfs.make_folder('mem:/tmp/folder-test')
-        vfs.copy('tests/hello.txt', 'mem:/tmp/folder-test')
-        fh = vfs.open('mem:/tmp/folder-test/hello.txt')
-        self.assertEqual(fh.read(), 'hello world\n')
-
-
-    def test22_copy_folder(self):
-        vfs.copy('tests', 'mem:/tmp/folder-copy')
-        fh = vfs.open('mem:/tmp/folder-copy/hello.txt')
-        self.assertEqual(fh.read(), 'hello world\n')
-        vfs.make_folder('mem:/tmp/folder-dest')
-        vfs.copy('tests', 'mem:/tmp/folder-dest')
-        fh = vfs.open('mem:/tmp/folder-dest/tests/hello.txt')
-        self.assertEqual(fh.read(), 'hello world\n')
-
-
-    def test29_remove(self):
-        url = 'mem:testfile.txt.old'
-        vfs.remove(url)
-        self.assertEqual(vfs.exists(url), False)
-        url = 'mem:test/dir'
-        vfs.make_folder(url)
-        vfs.remove(url)
-        self.assertEqual(vfs.exists(url), False)
-        # Create hierarchy
-        vfs.make_folder('mem:tests/folder')
-        vfs.make_folder('mem:tests/folder/a')
-        vfs.make_file('mem:tests/folder/a/hello.txt')
-        # Remove and test
-        vfs.remove('mem:tests/folder')
-        self.assertEqual(vfs.exists('mem:tests/folder'), False)
-
-
-    def test30_get_names(self):
-        self.assertEqual('blah.txt' in vfs.get_names('mem:tmp'), True)
-
-
-    def test31_traverse(self):
-        for x in vfs.traverse('mem:'):
-            self.assertEqual(vfs.exists(x), True)
-
-
-
 class MimeTestCase(TestCase):
 
     def test_archive(self):
         # FIXME Compression schemes are not mimetypes, see /etc/mime.types
         mimetype = vfs.get_mimetype('handlers/test.tar.gz')
         self.assertEqual(mimetype, 'application/x-tgz')
-
 
 
 if __name__ == '__main__':

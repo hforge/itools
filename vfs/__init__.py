@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 # Copyright (C) 2007 Rob McMullen <rob.mcmullen@gmail.com>
 # Copyright (C) 2007-2008 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2009 David Versmisse <david.versmisse@itaapy.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,19 +17,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from base import BaseFS, FileName
-import file
-import memfs
-from registry import register_file_system, deregister_file_system
-from vfs import can_read, can_write, copy, cwd, exists, get_atime, get_ctime
-from vfs import get_mimetype, get_mtime, get_names, get_size, is_file
-from vfs import is_folder, make_file, make_folder, move, open, remove
-from vfs import traverse, READ, WRITE, READ_WRITE, APPEND
-
+from folder import READ, WRITE, READ_WRITE, APPEND
+from filename import FileName
+from vfs import cwd
+from vfs import get_ctime, get_mtime, get_atime, get_mimetype, get_size
+from vfs import exists, is_file, is_folder, can_read, can_write
+from vfs import make_file, make_folder
+from vfs import open, remove, copy, move
+from vfs import get_names, traverse, mount_archive
 
 __all__ = [
     'cwd',
-    'BaseFS',
     # Datatypes
     'FileName',
     # File modes
@@ -36,9 +35,6 @@ __all__ = [
     'WRITE',
     'READ_WRITE',
     'APPEND',
-    # Registry
-    'register_file_system',
-    'deregister_file_system',
     # Functions
     'exists',
     'is_file',
@@ -52,10 +48,12 @@ __all__ = [
     'get_size',
     'make_file',
     'make_folder',
-    'remove',
     'open',
+    'remove',
     'copy',
     'move',
     'get_names',
-    'traverse']
+    'traverse',
+    'mount_archive']
+
 

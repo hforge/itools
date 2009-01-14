@@ -52,42 +52,42 @@ class ReadOnlyDatabase(object):
 
 
     def has_handler(self, reference):
-        fs, reference = cwd.get_fs_and_reference(reference)
+        reference = cwd.get_reference(reference)
 
         # Check the file system
-        if fs.is_file(reference):
+        if vfs.is_file(reference):
             return True
-        if fs.is_folder(reference):
+        if vfs.is_folder(reference):
             # Empty folders do not exist
-            return bool(fs.get_names(reference))
+            return bool(vfs.get_names(reference))
         # Neither a file nor a folder
-        return fs.exists(reference)
+        return vfs.exists(reference)
 
 
     def get_handler_names(self, reference):
-        fs, uri = cwd.get_fs_and_reference(reference)
+        uri = cwd.get_reference(reference)
 
-        if fs.exists(uri):
-            names = fs.get_names(uri)
+        if vfs.exists(uri):
+            names = vfs.get_names(uri)
             return list(names)
 
         return []
 
 
     def get_handler(self, reference, cls=None):
-        fs, reference = cwd.get_fs_and_reference(reference)
+        reference = cwd.get_reference(reference)
 
         cache = self.cache
 
         # Verify the resource exists
-        if not fs.exists(reference):
+        if not vfs.exists(reference):
             # Clean the cache
             if reference in cache:
                 del cache[reference]
             raise LookupError, 'the resource "%s" does not exist' % reference
 
         # Folders are not cached
-        if fs.is_folder(reference):
+        if vfs.is_folder(reference):
             # Clean the cache
             if reference in cache:
                 del cache[reference]
@@ -108,7 +108,7 @@ class ReadOnlyDatabase(object):
             if handler.timestamp is None:
                 return handler
             # Timestamp cannot be more recent than mtime
-            mtime = fs.get_mtime(reference)
+            mtime = vfs.get_mtime(reference)
             if handler.timestamp > mtime:
                 message = "file %s: timestamp (%s) does not match mtime (%s)"
                 raise RuntimeError, message % (handler.uri, handler.timestamp,
@@ -137,8 +137,8 @@ class ReadOnlyDatabase(object):
 
 
     def get_handlers(self, reference):
-        fs, reference = cwd.get_fs_and_reference(reference)
-        for name in fs.get_names(reference):
+        reference = cwd.get_reference(reference)
+        for name in vfs.get_names(reference):
             ref = reference.resolve2(name)
             yield self.get_handler(ref)
 
@@ -211,7 +211,7 @@ class Database(ReadOnlyDatabase):
 
 
     def has_handler(self, reference):
-        fs, reference = cwd.get_fs_and_reference(reference)
+        reference = cwd.get_reference(reference)
         # Check the state
         if reference in self.added:
             return True
@@ -225,7 +225,7 @@ class Database(ReadOnlyDatabase):
         names = ReadOnlyDatabase.get_handler_names(self, reference)
 
         # The State
-        fs, uri = cwd.get_fs_and_reference(reference)
+        uri = cwd.get_reference(reference)
         names = set(names)
         removed = [ str(x.path[-1]) for x in self.removed
                     if uri.resolve2(str(x.path[-1])) == x ]
@@ -238,7 +238,7 @@ class Database(ReadOnlyDatabase):
 
 
     def get_handler(self, reference, cls=None):
-        fs, reference = cwd.get_fs_and_reference(reference)
+        reference = cwd.get_reference(reference)
 
         # Check state
         if reference in self.added:
@@ -276,7 +276,7 @@ class Database(ReadOnlyDatabase):
 
 
     def del_handler(self, reference):
-        fs, reference = cwd.get_fs_and_reference(reference)
+        reference = cwd.get_reference(reference)
 
         if reference in self.added:
             del self.cache[reference]
@@ -286,7 +286,7 @@ class Database(ReadOnlyDatabase):
         # Check the handler actually exists
         if reference in self.removed:
             raise LookupError, 'resource already removed'
-        if not fs.exists(reference):
+        if not vfs.exists(reference):
             raise LookupError, 'resource does not exist'
 
         # Clean the cache

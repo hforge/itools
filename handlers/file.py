@@ -154,7 +154,7 @@ class File(Handler):
         # Write and truncate (calls to "_save_state" must be done with the
         # pointer pointing to the beginning)
         file.write(data)
-        file.truncate()
+        file.truncate(file.tell())
 
 
     def clone(self, cls=None, exclude=('database', 'uri', 'timestamp',

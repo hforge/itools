@@ -22,7 +22,6 @@ from exceptions import InternalServerError, NotImplemented, BadGateway
 from exceptions import ServiceUnavailable, MethodNotAllowed, Conflict
 from request import Request
 from response import Response
-import vfs
 
 
 __all__ = [

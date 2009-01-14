@@ -395,7 +395,7 @@ class Context(object):
         return copy.deepcopy(self.footer)
 
 
-    def __del__(self):
+    def del_tmp_dir(self):
         if vfs.exists(self.tmp_dir):
             vfs.remove(self.tmp_dir)
 
@@ -493,6 +493,9 @@ def document_stream(stream, pdf_stream, is_test=False):
 
     # Reportlab, HACK to prevent too many open files error with inline images
     reportlab.rl_config.imageReaderFlags = previous_imageReaderFlags
+
+    # Remove temporary directory
+    context.del_tmp_dir()
 
     if is_test == True:
         return test_data

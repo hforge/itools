@@ -24,7 +24,7 @@ from os import getcwd
 load_module('itools', None, getcwd(), ('', '', PKG_DIRECTORY))
 
 # Import from itools
-from utils import setup
+from pkg import setup
 
 
 if __name__ == '__main__':

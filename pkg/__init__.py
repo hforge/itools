@@ -19,13 +19,12 @@
 from mimetypes import add_type
 
 # Import from itools
-from commands import DEFAULT_REPOSITORY, iregister, iupload
+from commands import DEFAULT_REPOSITORY
 from distribution import Dist, ArchiveNotSupported
-from handlers import SetupConf
 from metadata import PKGINFOFile
 from packages import get_installed_info, packages_infos
 from repository import parse_package_name, download, EXTENSIONS
-from utils import get_version
+from utils import get_version, setup
 
 
 __all__ = [
@@ -36,12 +35,10 @@ __all__ = [
     'EXTENSIONS',
     'get_installed_info',
     'get_version',
-    'iregister',
-    'iupload',
     'packages_infos',
     'parse_package_name',
     'PKGINFOFile',
-    'SetupConf',
+    'setup',
     ]
 
 add_type('text/x-egg-info', '.egg-info')

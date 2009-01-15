@@ -25,8 +25,6 @@ See the table below for the imports to update.
   isetup.EXTENSIONS              pkg.EXTENSIONS
   isetup.get_installed_info      pkg.get_installed_info
   isetup.get_package_version     ** NOT EXPORTED **
-  isetup.iregister               pkg.iregister
-  isetup.iupload                 pkg.iupload
   isetup.PACKAGES_DB             ** NOT EXPORTED **
   isetup.packages_infos          pkg.packages_infos
   isetup.parse_package_name      pkg.parse_package_name
@@ -41,7 +39,7 @@ See the table below for the imports to update.
   utils.get_abspath              core.get_abspath
   utils.get_time_spent           core.get_time_spent
   utils.get_version              pkg.get_version
-  utils.SetupConf                pkg.SetupConf
+  utils.setup                    pkg.setup
   utils.vmsize                   core.vmsize
 
 

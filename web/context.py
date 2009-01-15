@@ -53,11 +53,11 @@ class FormError(StandardError):
         missing = len(self.missing)
         invalid = len(self.invalid)
         if missing and invalid:
-            msg = u"There are ${miss} field(s) missing and ${inv} invalid."
+            msg = u"There are {miss} field(s) missing and {inv} invalid."
         elif missing:
-            msg = u"There are ${miss} field(s) missing."
+            msg = u"There are {miss} field(s) missing."
         elif invalid:
-            msg = u"There are ${inv} field(s) invalid."
+            msg = u"There are {inv} field(s) invalid."
         else:
             # We should never be here
             msg = u"Everything looks fine (strange)."

@@ -286,8 +286,9 @@ class UniqueError(ValueError):
 
 
     def __str__(self):
-        return (u'Error: Field "$field" must be unique, '
-                u'value "$value" is already used.')
+        return (
+            u'the "{field}" field must be unique, the "{value}" value is '
+            u' already used.')
 
 
 ###########################################################################

@@ -19,6 +19,7 @@
 
 # Import from the Standard Library
 from datetime import datetime
+from logging import getLogger
 from os import fdopen
 from tempfile import mkstemp
 from thread import allocate_lock, get_ident
@@ -30,6 +31,9 @@ from itools.vfs import cwd, WRITE, READ_WRITE, APPEND
 from folder import Folder
 import messages
 from registry import get_handler_class
+
+
+logger = getLogger('data')
 
 
 ###########################################################################
@@ -383,17 +387,13 @@ def get_tmp_map():
 
 class SafeDatabase(Database):
 
-    def __init__(self, commit, log=None):
+    def __init__(self, commit):
         Database.__init__(self)
         # The commit, for safe transactions
         if not isinstance(commit, Path):
             commit = Path(commit)
         self.commit = str(commit)
         self.commit_log = str(commit.resolve2('log'))
-        # The transactions log
-        if isinstance(log, str):
-            log = open(log, 'a+')
-        self.log = log
 
 
     #######################################################################
@@ -514,7 +514,7 @@ class SafeDatabase(Database):
             self.rollback()
             get_tmp_map().clear()
             # Log
-            self.log_event('Transaction failed.')
+            logger.error('Transaction failed.')
             raise
         else:
             get_tmp_map().clear()
@@ -542,7 +542,7 @@ class SafeDatabase(Database):
             handler.dirty = None
 
         # 4. Log
-        self.log_event('Transaction done.')
+        logger.info('Transaction done.')
 
 
     def rollback(self):
@@ -597,17 +597,4 @@ class SafeDatabase(Database):
 
         # We are done. Remove the commit.
         vfs.remove(self.commit)
-
-
-    #######################################################################
-    # API / Log
-    #######################################################################
-    def log_event(self, message):
-        log = self.log
-        if log is None:
-            return
-
-        log.write('%s %s\n' % (datetime.now(), message))
-        log.flush()
-
 

@@ -20,6 +20,7 @@
 # Import from the Standard Library
 from base64 import decodestring
 from datetime import datetime
+from logging import getLogger, DEBUG, FileHandler, StreamHandler, Formatter
 from os import fstat, getpid, remove as remove_file
 from types import FunctionType, MethodType
 from select import error as SelectError
@@ -180,11 +181,18 @@ class SocketWrapper(object):
 ###########################################################################
 # The Web Server
 ###########################################################################
+
+
+logger_data = getLogger('data')
+logger_http = getLogger('http')
+logger_loop = getLogger('loop')
+
+
+
 class Server(object):
 
     access_log = None
     event_log = None
-    debug = False
 
 
     def __init__(self, root, address=None, port=None, access_log=None,
@@ -203,15 +211,24 @@ class Server(object):
         if access_log is not None:
             self.access_log_path = access_log
             self.access_log = open(access_log, 'a+')
-        # Error log
+
+        # Events log: build handler
         if event_log is None:
-            self.event_log_path = None
-            self.event_log = sys.stderr
+            handler = StreamHandler()
         else:
-            self.event_log_path = event_log
-            self.event_log = open(event_log, 'a+')
-        # Debug log
-        self.debug = debug
+            handler = FileHandler(event_log)
+        formatter = Formatter('%(asctime)s - %(name)s - %(message)s')
+        handler.setFormatter(formatter)
+        # Events log: set handler
+        logger_data.addHandler(handler)
+        logger_http.addHandler(handler)
+        logger_loop.addHandler(handler)
+        # Level
+        if debug:
+            logger_data.setLevel(DEBUG)
+            logger_http.setLevel(DEBUG)
+            logger_loop.setLevel(DEBUG)
+
         # The pid file
         self.pid_file = pid_file
         # Authentication options
@@ -229,9 +246,8 @@ class Server(object):
             return
 
         # Debug
-        if self.debug:
-            peer = conn.getpeername()
-            self.log_debug('%s:%s => New connection' % peer)
+        peer = conn.getpeername()
+        logger_loop.debug('%s:%s => New connection' % peer)
 
         # Set non-blocking mode
         conn.setblocking(0)
@@ -253,9 +269,8 @@ class Server(object):
         conn, request, loader = requests.pop(fileno)
 
         # Debug
-        if self.debug:
-            peer = conn.getpeername()
-            self.log_debug('%s:%s => IN' % peer)
+        peer = conn.getpeername()
+        logger_loop.debug('%s:%s => IN' % peer)
 
         try:
             # Read
@@ -305,9 +320,8 @@ class Server(object):
         conn, response = requests.pop(fileno)
 
         # Debug
-        if self.debug:
-            peer = conn.getpeername()
-            self.log_debug('%s:%s => OUT' % peer)
+        peer = conn.getpeername()
+        logger_loop.debug('%s:%s => OUT' % peer)
 
         # Send the response
         try:
@@ -371,19 +385,18 @@ class Server(object):
                     elif event & POLLOUT:
                         self.send_response(poll, fileno, requests)
                     elif event & POLLERR:
-                        self.log_debug('ERROR CONDITION')
+                        logger_loop.debug('ERROR CONDITION')
                         poll.unregister(fileno)
                         if fileno in requests:
                             del requests[fileno]
                     elif event & POLLHUP:
-                        self.log_debug('HUNG UP')
+                        logger_loop.debug('HUNG UP')
                         # XXX Is this right?
                         poll.unregister(fileno)
                         if fileno in requests:
                             del requests[fileno]
                     elif event & POLLNVAL:
-                        self.log_debug(
-                             'INVALID REQUEST (descriptor not open)')
+                        logger_loop.debug('INVALID REQUEST: descriptor closed')
                         # XXX Is this right?
                         poll.unregister(fileno)
                         if fileno in requests:
@@ -443,28 +456,6 @@ class Server(object):
         log.flush()
 
 
-    def log_event(self, service, summary, details=None):
-        log = self.event_log
-        if log is None:
-            return
-
-        # Check the log file has not been removed
-        if fstat(log.fileno())[3] == 0:
-            log = open(self.event_log_path, 'a+')
-            self.event_log = log
-
-        # Summary
-        log.write('%s [%s] %s\n' % (datetime.now(), service, summary))
-        if details is None:
-            log.flush()
-            return
-
-        # Details
-        lines = [ ('  %s\n' % x) for x in details.splitlines() ]
-        log.write(''.join(lines) + '\n')
-        log.flush()
-
-
     def log_error(self, context=None):
         if context is None:
             summary = ''
@@ -473,9 +464,9 @@ class Server(object):
             # The summary
             user = context.user
             if user is None:
-                summary = str(context.uri)
+                summary = '%s\n' % context.uri
             else:
-                summary = '%s (user: %s)' % (context.uri, user.name)
+                summary = '%s (user: %s)\n' % (context.uri, user.name)
             # Details, the headers
             request = context.request
             details = (
@@ -486,13 +477,12 @@ class Server(object):
         # The traceback
         details = details + format_exc()
 
+        # Indent the details
+        lines = [ ('  %s\n' % x) for x in details.splitlines() ]
+        details = ''.join(lines)
+
         # Log
-        self.log_event('http', summary, details)
-
-
-    def log_debug(self, message):
-        if self.debug:
-            self.log_event('loop', message)
+        logger_http.error(summary + details)
 
 
     ########################################################################

@@ -44,3 +44,31 @@ See the table below for the imports to update.
   utils.SetupConf                pkg.SetupConf
   utils.vmsize                   core.vmsize
 
+
+Python 2.6
+==========
+
+Some changes are derived from the upgrade to Python 2.6
+
+Formatted strings
+-----------------
+
+Usage of the 'string.Template' class is declared obsolete.  Instead use
+the new formatted strings:
+
+  # Before
+  Template('hello ${name}').substitute(name='toto')
+
+  # Now
+  'hello ${name}'.format(name='toto')
+
+
+itools.git
+==========
+
+Now the 'get_metadata' function returns all the data from the commit, not
+just the committer's name and time.
+
+
+
+

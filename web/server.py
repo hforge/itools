@@ -28,7 +28,7 @@ from signal import signal, SIGINT
 from socket import socket as Socket, error as SocketError
 from socket import AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR
 import sys
-from time import strftime
+from time import strftime, time
 from traceback import format_exc
 from urllib import unquote
 from warnings import warn
@@ -185,6 +185,7 @@ class SocketWrapper(object):
 
 logger_data = getLogger('data')
 logger_http = getLogger('http')
+logger_load = getLogger('load')
 logger_loop = getLogger('loop')
 
 
@@ -223,11 +224,13 @@ class Server(object):
         logger_data.addHandler(handler)
         logger_http.addHandler(handler)
         logger_loop.addHandler(handler)
+        logger_load.addHandler(handler)
         # Level
         if debug:
             logger_data.setLevel(DEBUG)
             logger_http.setLevel(DEBUG)
             logger_loop.setLevel(DEBUG)
+            logger_load.setLevel(DEBUG)
 
         # The pid file
         self.pid_file = pid_file
@@ -278,6 +281,7 @@ class Server(object):
         except StopIteration:
             # We are done
             context = Context(request)
+            t0 = time()
             try:
                 response = self.handle_request(context)
             except HTTPError, exception:
@@ -289,6 +293,7 @@ class Server(object):
                 self.log_error(context)
                 conn.close()
                 return
+            logger_load.debug('%s (%f s)' % (context.uri, time() - t0))
         except BadRequest:
             # Error loading
             response = Response(status_code=400)

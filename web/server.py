@@ -20,7 +20,7 @@
 # Import from the Standard Library
 from base64 import decodestring
 from datetime import datetime
-from logging import getLogger, DEBUG, FileHandler, StreamHandler, Formatter
+from logging import getLogger, WARNING, FileHandler, StreamHandler, Formatter
 from os import fstat, getpid, remove as remove_file
 from types import FunctionType, MethodType
 from select import error as SelectError
@@ -197,7 +197,7 @@ class Server(object):
 
 
     def __init__(self, root, address=None, port=None, access_log=None,
-                 event_log=None, debug=False, pid_file=None,
+                 event_log=None, log_level=WARNING, pid_file=None,
                  auth_type='cookie', auth_realm='Restricted Area'):
         if address is None:
             address = ''
@@ -226,11 +226,10 @@ class Server(object):
         logger_loop.addHandler(handler)
         logger_load.addHandler(handler)
         # Level
-        if debug:
-            logger_data.setLevel(DEBUG)
-            logger_http.setLevel(DEBUG)
-            logger_loop.setLevel(DEBUG)
-            logger_load.setLevel(DEBUG)
+        logger_data.setLevel(log_level)
+        logger_http.setLevel(log_level)
+        logger_loop.setLevel(log_level)
+        logger_load.setLevel(log_level)
 
         # The pid file
         self.pid_file = pid_file

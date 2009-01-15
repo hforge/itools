@@ -70,5 +70,16 @@ Now the 'get_metadata' function returns all the data from the commit, not
 just the committer's name and time.
 
 
+itools.web
+==========
 
+Now the web server takes the log-level as an optinal parameter, replacing
+the boolean 'debug' parameter.  This gives finer granularity to control
+the loggers level.
+
+  # Before
+  Server(..., debug=debug, ...)
+
+  # Now
+  Server(..., log_level=log_level, ...)
 

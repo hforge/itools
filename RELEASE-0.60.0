@@ -19,7 +19,7 @@ Changes:
 
 - Python 2.6 required
 - New package itools.core
-- itools.isetup renamed to itools.pkg
+- itools.isetup renamed to itools.pkg (some isetup- scripts renamed to ipkg-)
 - Now we use Python's "logging" package
 
 

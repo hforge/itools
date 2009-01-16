@@ -19,6 +19,7 @@
 
 # Import from the Standard Library
 from base64 import decodestring
+from cProfile import runctx
 from datetime import datetime
 from logging import getLogger, WARNING, FileHandler, StreamHandler, Formatter
 from os import fstat, getpid, remove as remove_file
@@ -198,6 +199,7 @@ class Server(object):
 
     def __init__(self, root, address=None, port=None, access_log=None,
                  event_log=None, log_level=WARNING, pid_file=None,
+                 profile_path=None,
                  auth_type='cookie', auth_realm='Restricted Area'):
         if address is None:
             address = ''
@@ -230,6 +232,9 @@ class Server(object):
         logger_http.setLevel(log_level)
         logger_loop.setLevel(log_level)
         logger_load.setLevel(log_level)
+
+        # Profile
+        self.profile_path = profile_path
 
         # The pid file
         self.pid_file = pid_file
@@ -282,7 +287,13 @@ class Server(object):
             context = Context(request)
             t0 = time()
             try:
-                response = self.handle_request(context)
+                if self.profile_path is None:
+                    self.handle_request(context)
+                else:
+                    path = str(context.uri.path).replace('/', '-')
+                    filename = '%s/%s-%s' % (self.profile_path, time(), path)
+                    runctx("self.handle_request(context)", globals(), locals(),
+                           filename)
             except HTTPError, exception:
                 response = Response(status_code=exception.code)
                 response.body = exception.title
@@ -292,6 +303,8 @@ class Server(object):
                 self.log_error(context)
                 conn.close()
                 return
+            else:
+                response = context.response
             logger_load.debug('%s (%f s)' % (context.uri, time() - t0))
         except BadRequest:
             # Error loading

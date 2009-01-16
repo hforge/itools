@@ -38,49 +38,52 @@ class ArchiveNotSupported(Exception):
 
 
 class Dist(object):
-    """abstract distributions like .egg, .zip, .tar.gz ...
+    """Abstract distributions like .egg, .zip, .tar.gz ...
     """
 
     def __init__(self, location):
-        self._metadata = None
-        self.fromsetuptools = False
-        self.bundle = init_bundle(location)
-        if self.bundle == None:
-            raise ArchiveNotSupported
         self.location = location
+        # Bundle
+        filename = split(location)[1]
+        if filename.endswith('.zip'):
+            self.bundle = ZipBundle(location)
+        elif filename.endswith('.tar.gz'):
+            self.bundle = TarBundle(location, 'gzip')
+        elif filename.endswith('.tar.bz2'):
+            self.bundle = TarBundle(location, 'bz2')
+        elif filename.endswith('.tar'):
+            self.bundle = TarBundle(location, '')
+        else:
+            raise ArchiveNotSupported
 
-
-    def _init_metadata(self):
-        if self._metadata is None:
-            pkg_info = self.bundle.find_lowest_file('PKG-INFO')
-            if pkg_info != None:
-                data = self.bundle.get_file(pkg_info).read()
-                self._metadata = PKGINFOFile(string=data)
-            else:
-                self._metadata = PKGINFOFile()
-            setuppy = self.bundle.find_lowest_file('setup.py')
-            if setuppy != None:
-                setuppy_data = self.bundle.read_file(setuppy)
-                for line in setuppy_data.splitlines():
-                    if 'import' in line and 'setuptools' in line:
-                        self.fromsetuptools = True
+        # Metadata
+        self.fromsetuptools = False
+        pkg_info = self.bundle.find_lowest_file('PKG-INFO')
+        if pkg_info is not None:
+            data = self.bundle.get_file(pkg_info).read()
+            self.metadata = PKGINFOFile(string=data)
+        else:
+            self.metadata = PKGINFOFile()
+        setuppy = self.bundle.find_lowest_file('setup.py')
+        if setuppy != None:
+            setuppy_data = self.bundle.read_file(setuppy)
+            for line in setuppy_data.splitlines():
+                if 'import' in line and 'setuptools' in line:
+                    self.fromsetuptools = True
 
 
     def has_metadata(self, metadata):
-        self._init_metadata()
-        return metadata in self._metadata.attrs.keys()
+        return metadata in self.metadata.attrs.keys()
 
 
     def get_metadata(self, metadata):
-        self._init_metadata()
-        return self._metadata.attrs[metadata]
+        return self.metadata.attrs[metadata]
 
 
     def safe_get_metadata(self, metadata):
-        self._init_metadata()
         if not self.has_metadata(metadata):
             return None
-        return self._metadata.attrs[metadata]
+        return self.metadata.attrs[metadata]
 
 
     def install(self):
@@ -99,19 +102,6 @@ class Dist(object):
 
 
 
-def init_bundle(location):
-    # We will have to rely on extensions ...
-    if split(location)[1].endswith('.zip'):
-        return ZipBundle(location)
-    if split(location)[1].endswith('.tar.gz'):
-        return TarBundle(location, 'gzip')
-    if split(location)[1].endswith('.tar.bz2'):
-        return TarBundle(location, 'bz2')
-    if split(location)[1].endswith('.tar'):
-        return TarBundle(location, '')
-
-
-
 class Bundle(object):
 
     def find_lowest_file(self, filename):
@@ -119,8 +109,7 @@ class Bundle(object):
         files.sort(lambda x, y: cmp(len(x), len(y)))
         if len(files) > 0:
             return files[0]
-        else:
-            return None
+        return None
 
 
 

@@ -410,8 +410,10 @@ def document_stream(stream, pdf_stream, is_test=False):
     """
 
     # Reportlab, HACK to prevent too many open files error with inline images
-    previous_imageReaderFlags = reportlab.rl_config.imageReaderFlags
-    reportlab.rl_config.imageReaderFlags = -1
+    previous_imageReaderFlags = None
+    if hasattr(reportlab.rl_config, 'imageReaderFlags'):
+        previous_imageReaderFlags = reportlab.rl_config.imageReaderFlags
+        reportlab.rl_config.imageReaderFlags = -1
 
     story = []
     context = Context()
@@ -492,7 +494,8 @@ def document_stream(stream, pdf_stream, is_test=False):
         doc.build(story)
 
     # Reportlab, HACK to prevent too many open files error with inline images
-    reportlab.rl_config.imageReaderFlags = previous_imageReaderFlags
+    if previous_imageReaderFlags:
+        reportlab.rl_config.imageReaderFlags = previous_imageReaderFlags
 
     # Remove temporary directory
     context.del_tmp_dir()

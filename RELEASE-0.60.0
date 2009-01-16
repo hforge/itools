@@ -21,6 +21,7 @@ Changes:
 - New package itools.core
 - itools.isetup renamed to itools.pkg (some isetup- scripts renamed to ipkg-)
 - Now we use Python's "logging" package
+- New handlers for TGZ and TBZ2 files
 
 
 Resources

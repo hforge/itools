@@ -19,6 +19,7 @@
 # Import from the Standard Library
 from mimetypes import add_type
 import mimetypes
+from os.path import join
 from zipfile import ZipFile
 from tarfile import open as open_tarfile
 from cStringIO import StringIO
@@ -26,6 +27,7 @@ from cStringIO import StringIO
 # Import from itools
 from file import File
 from registry import register_handler_class
+from itools import vfs
 
 
 class ZIPFile(File):
@@ -33,20 +35,37 @@ class ZIPFile(File):
     class_mimetypes = ['application/zip']
     class_extension = 'zip'
 
-    def get_contents(self):
+
+    def _open_zipfile(self):
         archive = StringIO(self.to_str())
-        zip = ZipFile(archive)
-        contents = zip.namelist()
-        zip.close()
-        return contents
+        return ZipFile(archive)
+
+
+    def get_contents(self):
+        zip = self._open_zipfile()
+        try:
+            return zip.namelist()
+        finally:
+            zip.close()
 
 
     def get_file(self, filename):
-        archive = StringIO(self.to_str())
-        zip = ZipFile(archive)
-        contents = zip.read(filename)
-        zip.close()
-        return contents
+        zip = self._open_zipfile()
+        try:
+            return zip.read(filename)
+        finally:
+            zip.close()
+
+
+    def extract_to_folder(self, dst):
+        zip = self._open_zipfile()
+        try:
+            for filename in zip.namelist():
+                path = join(dst, filename)
+                with vfs.make_file(path) as file:
+                    file.write(zip.read(filename))
+        finally:
+            zip.close()
 
 
 
@@ -54,15 +73,43 @@ class TARFile(File):
 
     class_mimetypes = ['application/x-tar']
     class_extension = 'tar'
+    class_mode = 'r'
 
-    def get_contents(self):
+
+    def _open_tarfile(self):
         name = self.uri.path[-1]
         archive = StringIO(self.to_str())
-        tar = open_tarfile(name=name, fileobj=archive)
-        contents = tar.getnames()
-        tar.close()
+        return open_tarfile(name, self.class_mode, fileobj=archive)
 
-        return contents
+
+    def get_contents(self):
+        with self._open_tarfile() as tar:
+            return tar.getnames()
+
+
+    def get_file(self, filename):
+        with self._open_tarfile() as tar:
+            return tar.extractfile(filename).read()
+
+
+    def extract_to_folder(self, dst):
+        with self._open_tarfile() as tar:
+            tar.extractall(dst)
+
+
+
+class TGZFile(TARFile):
+
+    class_extension = 'tgz'
+    class_mode = 'r:gz'
+
+
+
+class TBZ2File(TARFile):
+
+    class_extension = 'tbz2'
+    class_mode = 'r:bz2'
+
 
 
 class GzipFile(File):
@@ -71,15 +118,17 @@ class GzipFile(File):
     class_extension = 'gz'
 
 
+
 class Bzip2File(File):
 
     class_mimetypes = ['application/x-bzip2']
     class_extension = 'bz2'
 
 
+
 # Register
-for handler_class in [ZIPFile, TARFile, GzipFile, Bzip2File]:
-    register_handler_class(handler_class)
+for cls in [ZIPFile, TARFile, TGZFile, TBZ2File, GzipFile, Bzip2File]:
+    register_handler_class(cls)
 
 # Mimetypes BZip2 support
 mimetypes.suffix_map['.tbz2'] = '.tar.bz2'

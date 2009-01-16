@@ -37,39 +37,33 @@ class ArchiveNotSupported(Exception):
 
 
 
-class Dist(object):
+class Bundle(object):
     """Abstract distributions like .egg, .zip, .tar.gz ...
     """
 
     def __init__(self, location):
         self.location = location
-        # Bundle
-        filename = split(location)[1]
-        if filename.endswith('.zip'):
-            self.bundle = ZipBundle(location)
-        elif filename.endswith('.tar.gz'):
-            self.bundle = TarBundle(location, 'gzip')
-        elif filename.endswith('.tar.bz2'):
-            self.bundle = TarBundle(location, 'bz2')
-        elif filename.endswith('.tar'):
-            self.bundle = TarBundle(location, '')
-        else:
-            raise ArchiveNotSupported
+
+        # Init handle
+        self.init_handle(location, format)
 
         # Metadata
-        self.fromsetuptools = False
-        pkg_info = self.bundle.find_lowest_file('PKG-INFO')
-        if pkg_info is not None:
-            data = self.bundle.get_file(pkg_info).read()
-            self.metadata = PKGINFOFile(string=data)
-        else:
+        pkg_info = self.find_lowest_file('PKG-INFO')
+        if pkg_info is None:
             self.metadata = PKGINFOFile()
-        setuppy = self.bundle.find_lowest_file('setup.py')
-        if setuppy != None:
-            setuppy_data = self.bundle.read_file(setuppy)
+        else:
+            data = self.get_file(pkg_info).read()
+            self.metadata = PKGINFOFile(string=data)
+
+        # Setuptools
+        self.fromsetuptools = False
+        setuppy = self.find_lowest_file('setup.py')
+        if setuppy is not None:
+            setuppy_data = self.read_file(setuppy)
             for line in setuppy_data.splitlines():
                 if 'import' in line and 'setuptools' in line:
                     self.fromsetuptools = True
+                    break
 
 
     def has_metadata(self, metadata):
@@ -89,20 +83,17 @@ class Dist(object):
     def install(self):
         cache_dir = self.location[:-len(Path(self.location).get_name())]
         try:
-            self.bundle.extract(cache_dir)
+            self.extract(cache_dir)
         except (zip_error, LargeZipFile, TarError):
             return -1
 
-        setup_py_file = self.bundle.find_lowest_file('setup.py')
+        setup_py_file = self.find_lowest_file('setup.py')
         before = getcwd()
         chdir(split(join(cache_dir, setup_py_file))[0])
         ret = call([executable, 'setup.py', 'install'])
         chdir(before)
         return ret
 
-
-
-class Bundle(object):
 
     def find_lowest_file(self, filename):
         files = [f for f in self.handle.getnames() if split(f)[1] == filename]
@@ -112,17 +103,31 @@ class Bundle(object):
         return None
 
 
+    #######################################################################
+    # Abstract API
+    def init_handle(self, location, format):
+        raise NotImplementedError
+
+
+    def extract(self, to):
+        raise NotImplementedError
+
+
+    def read_file(self, filename):
+        raise NotImplementedError
+
+
+    def get_file(self, filename):
+        raise NotImplementedError
+
+
 
 class TarBundle(Bundle):
+    mode = 'r'
 
     # Format can be 'gzip' 'bz2' or ''
-    def __init__(self, location, format):
-        if format == 'gzip':
-            self.handle = tar_open(location, 'r:gz')
-        elif format == 'bz2':
-            self.handle = tar_open(location, 'r:bz2')
-        elif format == '':
-            self.handle = tar_open(location, 'r')
+    def init_handle(self, location, format):
+        self.handle = tar_open(location, self.mode)
 
 
     def extract(self, to):
@@ -138,9 +143,19 @@ class TarBundle(Bundle):
 
 
 
+class TGZBundle(TarBundle):
+    mode = 'r:gz'
+
+
+
+class TBZ2Bundle(TarBundle):
+    mode = 'r:bz2'
+
+
+
 class ZipBundle(Bundle):
 
-    def __init__(self, location):
+    def init_handle(self, location, format):
         self.handle = ZipFile(location)
 
 
@@ -164,3 +179,17 @@ class ZipBundle(Bundle):
         handler.write(self.handle.read(filename))
         return handler
 
+
+
+def get_bundle(location):
+    filename = split(location)[1]
+    if filename.endswith('.zip'):
+        return ZipBundle(location)
+    elif filename.endswith('.tar.gz'):
+        return TGZBundle(location, 'gzip')
+    elif filename.endswith('.tar.bz2'):
+        return TBZ2Bundle(location, 'bz2')
+    elif filename.endswith('.tar'):
+        return TarBundle(location, '')
+    else:
+        raise ArchiveNotSupported

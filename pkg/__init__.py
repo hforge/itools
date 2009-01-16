@@ -20,7 +20,7 @@ from mimetypes import add_type
 
 # Import from itools
 from commands import DEFAULT_REPOSITORY
-from distribution import Dist, ArchiveNotSupported
+from distribution import ArchiveNotSupported, get_bundle
 from metadata import PKGINFOFile
 from packages import get_installed_info, packages_infos
 from repository import parse_package_name, download, EXTENSIONS
@@ -30,9 +30,9 @@ from utils import get_version, setup
 __all__ = [
     'ArchiveNotSupported',
     'DEFAULT_REPOSITORY',
-    'Dist',
     'download',
     'EXTENSIONS',
+    'get_bundle',
     'get_installed_info',
     'get_version',
     'packages_infos',

@@ -29,7 +29,7 @@ from tempfile import gettempdir
 
 # Import from itools
 from itools import __version__
-from itools.pkg import parse_package_name, Dist
+from itools.pkg import parse_package_name, get_bundle
 from itools.pkg import ArchiveNotSupported, EXTENSIONS
 from itools.vfs import exists, open, get_names, make_folder
 
@@ -64,7 +64,7 @@ if __name__ == '__main__':
             dist_loc = join(CACHE_DIR, dist['file'])
 
             try:
-                dist = Dist(dist_loc)
+                dist = get_bundle(dist_loc)
             except ArchiveNotSupported:
                 continue
 

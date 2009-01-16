@@ -17,6 +17,7 @@
 # Import from itools
 from base import CatalogAware
 from catalog import Catalog, make_catalog
+from exceptions import XapianIndexError
 from fields import BaseField, register_field, get_field
 from fields import BoolField, KeywordField, IntegerField, TextField
 from queries import RangeQuery, PhraseQuery, AndQuery, OrQuery
@@ -27,6 +28,8 @@ __all__ = [
     'make_catalog',
     'Catalog',
     'CatalogAware',
+    # Exceptions
+    'XapianIndexError',
     # Fields
     'BaseField',
     'TextField',

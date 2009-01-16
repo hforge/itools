@@ -43,7 +43,7 @@ import socket
 from itools import __version__
 import itools.http
 from itools.pkg import parse_package_name, download, get_installed_info
-from itools.pkg import EXTENSIONS, get_bundle
+from itools.pkg import EXTENSIONS, Bundle
 from itools.vfs import exists, get_names, make_folder
 from itools import vfs
 
@@ -174,7 +174,7 @@ def prepare(package_spec):
         requirements = []
         if bestmatch_from == 'cache':
             dist_loc = join(CACHE_DIR, bestmatch['file'])
-            dist = get_bundle(str(dist_loc))
+            dist = Bundle(str(dist_loc))
 
             if dist == None:
                 if candidates:
@@ -286,7 +286,7 @@ def install():
         if origin == 'repository':
            print "Downloading %s ..." % data['url']
            dist_loc = download(data['url'], CACHE_DIR)
-           dist = get_bundle(str(dist_loc))
+           dist = Bundle(str(dist_loc))
 
         ret = dist.install()
 

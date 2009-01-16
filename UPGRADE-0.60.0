@@ -75,7 +75,7 @@ The API has considerably changed.
 
   Before                        Now
   ----------------------------  ----------------------------
-  Dist(location)                pkg.get_bundle(location)
+  Dist(location)                Bundle(location)
 
 
 itools.web

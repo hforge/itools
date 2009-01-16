@@ -16,19 +16,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from Standard Library
-from os import makedirs, chdir, getcwd
+from os import chdir, getcwd
 from os.path import join, split
 from subprocess import call
 from sys import executable
-from tarfile import open as tar_open, TarError
-from tempfile import TemporaryFile
-from zipfile import ZipFile, error as zip_error, LargeZipFile
+from tarfile import TarError
+from zipfile import error as zip_error, LargeZipFile
 
 # Import from itools
+from itools.handlers import get_handler, TARFile, ZIPFile
 from itools.uri import Path
-from itools.vfs import exists, make_file
 from metadata import PKGINFOFile
-from repository import EXTENSIONS
 
 
 class ArchiveNotSupported(Exception):
@@ -44,22 +42,24 @@ class Bundle(object):
     def __init__(self, location):
         self.location = location
 
-        # Init handle
-        self.init_handle(location, format)
+        # The handler
+        self.handler = get_handler(location)
+        if not isinstance(self.handler, (TARFile, ZIPFile)):
+            raise ArchiveNotSupported
 
         # Metadata
         pkg_info = self.find_lowest_file('PKG-INFO')
         if pkg_info is None:
             self.metadata = PKGINFOFile()
         else:
-            data = self.get_file(pkg_info).read()
+            data = self.handler.get_file(pkg_info)
             self.metadata = PKGINFOFile(string=data)
 
         # Setuptools
         self.fromsetuptools = False
         setuppy = self.find_lowest_file('setup.py')
         if setuppy is not None:
-            setuppy_data = self.read_file(setuppy)
+            setuppy_data = self.handler.get_file(setuppy)
             for line in setuppy_data.splitlines():
                 if 'import' in line and 'setuptools' in line:
                     self.fromsetuptools = True
@@ -83,7 +83,7 @@ class Bundle(object):
     def install(self):
         cache_dir = self.location[:-len(Path(self.location).get_name())]
         try:
-            self.extract(cache_dir)
+            self.handler.extract_to_folder(cache_dir)
         except (zip_error, LargeZipFile, TarError):
             return -1
 
@@ -96,100 +96,11 @@ class Bundle(object):
 
 
     def find_lowest_file(self, filename):
-        files = [f for f in self.handle.getnames() if split(f)[1] == filename]
+        files = [
+            x for x in self.handler.contents() if split(x)[1] == filename ]
+        if len(files) == 0:
+            return None
+
         files.sort(lambda x, y: cmp(len(x), len(y)))
-        if len(files) > 0:
-            return files[0]
-        return None
+        return files[0]
 
-
-    #######################################################################
-    # Abstract API
-    def init_handle(self, location, format):
-        raise NotImplementedError
-
-
-    def extract(self, to):
-        raise NotImplementedError
-
-
-    def read_file(self, filename):
-        raise NotImplementedError
-
-
-    def get_file(self, filename):
-        raise NotImplementedError
-
-
-
-class TarBundle(Bundle):
-    mode = 'r'
-
-    # Format can be 'gzip' 'bz2' or ''
-    def init_handle(self, location, format):
-        self.handle = tar_open(location, self.mode)
-
-
-    def extract(self, to):
-        self.handle.extractall(to)
-
-
-    def read_file(self, filename):
-        return self.handle.extractfile(filename).read()
-
-
-    def get_file(self, filename):
-        return self.handle.extractfile(filename)
-
-
-
-class TGZBundle(TarBundle):
-    mode = 'r:gz'
-
-
-
-class TBZ2Bundle(TarBundle):
-    mode = 'r:bz2'
-
-
-
-class ZipBundle(Bundle):
-
-    def init_handle(self, location, format):
-        self.handle = ZipFile(location)
-
-
-    def extract(self, to):
-        for file in self.handle.namelist():
-            path = join(to, file)
-            ext_dir = split(path)[0]
-            if not exists(ext_dir):
-                makedirs(ext_dir)
-            if not exists(path):
-                make_file(path)
-                out = open(path, 'w+b').write(self.handle.read(file))
-
-
-    def read_file(self, filename):
-        return self.handle.read(filename)
-
-
-    def get_file(self, filename):
-        handler = TemporaryFile()
-        handler.write(self.handle.read(filename))
-        return handler
-
-
-
-def get_bundle(location):
-    filename = split(location)[1]
-    if filename.endswith('.zip'):
-        return ZipBundle(location)
-    elif filename.endswith('.tar.gz'):
-        return TGZBundle(location, 'gzip')
-    elif filename.endswith('.tar.bz2'):
-        return TBZ2Bundle(location, 'bz2')
-    elif filename.endswith('.tar'):
-        return TarBundle(location, '')
-    else:
-        raise ArchiveNotSupported

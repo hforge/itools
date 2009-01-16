@@ -26,6 +26,7 @@ from xapian import MultiValueSorter, sortable_serialise, sortable_unserialise
 # Import from itools
 from itools.uri import get_absolute_reference
 from base import CatalogAware
+from exceptions import XapianIndexError
 from fields import get_field
 from queries import RangeQuery, PhraseQuery, AndQuery, OrQuery
 from queries import AllQuery, NotQuery, StartQuery
@@ -111,7 +112,7 @@ def _get_xquery(catalog, query=None, **kw):
     for name in kw:
         # 'name' must be indexed
         if name not in fields:
-            raise ValueError, 'the field "%s" is not indexed' % name
+            raise XapianIndexError(name)
 
         # Ok
         info = fields[name]
@@ -203,21 +204,17 @@ class SearchResults(object):
             if isinstance(sort_by, list):
                 sorter = MultiValueSorter()
                 for name in sort_by:
-                    if name in fields:
-                        sorter.add(fields[name]['value'])
-                    else:
-                        # If there is a problem, ...
-                        raise ValueError, ('the field "%s" is not indexed'
-                                           % name)
+                    # If there is a problem, ...
+                    if name not in fields:
+                        raise XapianIndexError(name)
+                    sorter.add(fields[name]['value'])
                 enquire.set_sort_by_key_then_relevance(sorter, reverse)
             else:
-                if sort_by in fields:
-                    enquire.set_sort_by_value_then_relevance(
-                                            fields[sort_by]['value'], reverse)
-                else:
-                    # If there is a problem, ...
-                    raise ValueError, ('the field "%s" is not indexed' %
-                                       sort_by)
+                # If there is a problem, ...
+                if sort_by not in fields:
+                    raise XapianIndexError(sort_by)
+                value = fields[sort_by]['value']
+                enquire.set_sort_by_value_then_relevance(value, reverse)
         else:
             enquire.set_sort_by_relevance()
 
@@ -352,10 +349,10 @@ class Catalog(object):
                 info = fields[name]
                 if ((field.is_stored != ('is_stored' in info)) or
                     (field.is_indexed != ('is_indexed' in info))):
-                    raise ValueError, (('You have already used the name "%s" '
-                                        'for a field, but with an other '
-                                        'is_stored/is_indexed combination') %
-                                        name)
+                    msg = (
+                        'You have already used the name "%s" for a field, but'
+                        ' with an other is_stored/is_indexed combination')
+                    raise ValueError, msg % name
 
             # doc_fields can be greater than doc_values
             if doc_values.get(name) is None:

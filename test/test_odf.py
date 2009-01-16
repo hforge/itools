@@ -256,6 +256,7 @@ class Test_ODT_Parser(TestCase):
     def test_translation_paragraph(self):
         """Test translation of an element content"""
         po = POFile(string=
+            'msgctxt "paragraph"\n'
             'msgid "hello world"\n'
             'msgstr "hola mundo"\n')
         content = ('<office:text>'

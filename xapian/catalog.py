@@ -212,7 +212,7 @@ class SearchResults(object):
             else:
                 # If there is a problem, ...
                 if sort_by not in fields:
-                    raise XapianIndexError(name)
+                    raise XapianIndexError(sort_by)
                 value = fields[sort_by]['value']
                 enquire.set_sort_by_value_then_relevance(value, reverse)
         else:

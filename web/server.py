@@ -180,6 +180,24 @@ class SocketWrapper(object):
 
 
 ###########################################################################
+# The database
+###########################################################################
+
+class DummyDatabase(object):
+
+    def before_commit(self):
+        raise NotImplementedError
+
+
+    def save_changes(self):
+        raise NotImplementedError
+
+
+    def abort_changes(self):
+        raise NotImplementedError
+
+
+###########################################################################
 # The Web Server
 ###########################################################################
 
@@ -195,6 +213,8 @@ class Server(object):
 
     access_log = None
     event_log = None
+
+    database = DummyDatabase()
 
 
     def __init__(self, root, address=None, port=None, access_log=None,
@@ -502,17 +522,6 @@ class Server(object):
         logger_http.error(summary + details)
 
 
-    ########################################################################
-    # Hooks (to be overriden)
-    ########################################################################
-    def get_databases(self):
-        return []
-
-
-    def before_commit(self):
-        pass
-
-
     #######################################################################
     # Stage 0: Initialize the context
     #######################################################################
@@ -598,11 +607,6 @@ class Server(object):
         return context.response
 
 
-    def abort_transaction(self, context):
-        for db in self.get_databases():
-            db.abort_changes()
-
-
 
 ###########################################################################
 # The Request Methods
@@ -683,23 +687,23 @@ class RequestMethod(object):
 
     @classmethod
     def commit_transaction(cls, server, context):
+        database = server.database
         # Check conditions are met
         if not cls.check_transaction(server, context) is True:
-            server.abort_transaction(context)
+            database.abort_changes()
             return
 
         # Hook: before commit
         try:
-            server.before_commit()
+            database.before_commit()
         except:
             cls.internal_server_error(server, context)
-            server.abort_transaction(context)
+            database.abort_changes()
             return
 
         # Commit
         try:
-            for db in server.get_databases():
-                db.save_changes()
+            database.save_changes()
         except:
             cls.internal_server_error(server, context)
 
@@ -797,7 +801,7 @@ class RequestMethod(object):
                 context.entity = context.entity(context.resource, context)
             except:
                 cls.internal_server_error(server, context)
-            server.abort_transaction(context)
+            server.database.abort_changes()
 
         # (6) After Traverse hook
         try:

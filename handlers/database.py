@@ -81,9 +81,6 @@ class ReadOnlyDatabase(object):
 
         # Verify the resource exists
         if not fs.exists(reference):
-            # Check errors
-            if reference in self.changed:
-                raise RuntimeError, messages.MSG_CONFLICT
             # Clean the cache
             if reference in cache:
                 del cache[reference]
@@ -91,9 +88,6 @@ class ReadOnlyDatabase(object):
 
         # Folders are not cached
         if fs.is_folder(reference):
-            # Check errors
-            if reference in self.changed:
-                raise RuntimeError, messages.MSG_CONFLICT
             # Clean the cache
             if reference in cache:
                 del cache[reference]
@@ -231,6 +225,7 @@ class Database(ReadOnlyDatabase):
         names = ReadOnlyDatabase.get_handler_names(self, reference)
 
         # The State
+        fs, uri = cwd.get_fs_and_reference(reference)
         names = set(names)
         removed = [ str(x.path[-1]) for x in self.removed
                     if uri.resolve2(str(x.path[-1])) == x ]

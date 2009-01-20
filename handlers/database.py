@@ -27,7 +27,7 @@ from thread import allocate_lock, get_ident
 # Import from itools
 from itools.uri import get_reference, get_absolute_reference, Path
 from itools.vfs import vfs
-from itools.vfs import cwd, WRITE, READ_WRITE, APPEND
+from itools.vfs import cwd, READ, WRITE, READ_WRITE, APPEND
 from folder import Folder
 import messages
 from registry import get_handler_class
@@ -37,30 +37,22 @@ logger = getLogger('data')
 
 
 ###########################################################################
-# The Basic Database (in memory transactions)
+# Read Only Database
 ###########################################################################
-class Database(object):
+
+class ReadOnlyError(RuntimeError):
+    pass
+
+
+class ReadOnlyDatabase(object):
 
     def __init__(self):
-        # The cache
         self.cache = {}
         self.use_cache = True
-        # The state, for transactions
-        self.changed = set()
-        self.added = set()
-        self.removed = set()
 
 
-    #######################################################################
-    # API
-    #######################################################################
     def has_handler(self, reference):
         fs, reference = cwd.get_fs_and_reference(reference)
-        # Check the state
-        if reference in self.added:
-            return True
-        if reference in self.removed:
-            return False
 
         # Check the file system
         if fs.is_file(reference):
@@ -77,33 +69,15 @@ class Database(object):
 
         if fs.exists(uri):
             names = fs.get_names(uri)
-            names = set(names)
-        else:
-            names = set()
+            return list(names)
 
-        removed = [ str(x.path[-1]) for x in self.removed
-                    if uri.resolve2(str(x.path[-1])) == x ]
-        added = [ str(x.path[-1]) for x in self.added
-                  if uri.resolve2(str(x.path[-1])) == x ]
-
-        return list(names - set(removed) | set(added))
+        return []
 
 
     def get_handler(self, reference, cls=None):
         fs, reference = cwd.get_fs_and_reference(reference)
 
         cache = self.cache
-        # Check state
-        if reference in self.added:
-            handler = cache[reference]
-            # cls is good ?
-            if cls is not None and not isinstance(handler, cls):
-                raise LookupError, ('conflict with a handler of type "%s"' %
-                                     handler.__class__)
-            return handler
-
-        if reference in self.removed:
-            raise LookupError, 'the resource "%s" does not exist' % reference
 
         # Verify the resource exists
         if not fs.exists(reference):
@@ -173,6 +147,118 @@ class Database(object):
         for name in fs.get_names(reference):
             ref = reference.resolve2(name)
             yield self.get_handler(ref)
+
+
+    def set_use_cache(self, cache):
+        self.use_cache = bool(cache)
+
+
+    def add_to_cache(self, uri, handler):
+        if self.use_cache is True:
+            self.cache[uri] = handler
+
+
+    #######################################################################
+    # Write API
+    def set_handler(self, reference, handler):
+        raise ReadOnlyError, 'cannot set handler'
+
+
+    def del_handler(self, reference):
+        raise ReadOnlyError, 'cannot del handler'
+
+
+    def copy_handler(self, source, target):
+        raise ReadOnlyError, 'cannot copy handler'
+
+
+    def move_handler(self, source, target):
+        raise ReadOnlyError, 'cannot move handler'
+
+
+    def safe_make_file(self, reference):
+        raise ReadOnlyError, 'cannot make file'
+
+
+    def safe_make_folder(self, reference):
+        raise ReadOnlyError, 'cannot make folder'
+
+
+    def safe_remove(self, reference):
+        raise ReadOnlyError, 'cannot remove'
+
+
+    def safe_open(self, reference, mode=None):
+        if mode in (WRITE, READ_WRITE, APPEND):
+            raise ReadOnlyError, 'cannot open file for writing'
+
+        return vfs.open(reference, READ)
+
+
+    def abort_changes(self):
+        raise ReadOnlyError, 'cannot abort changes'
+
+
+    def save_changes(self):
+        raise ReadOnlyError, 'cannot save changes'
+
+
+###########################################################################
+# Read/Write Database (in memory transactions)
+###########################################################################
+class Database(ReadOnlyDatabase):
+
+    def __init__(self):
+        ReadOnlyDatabase.__init__(self)
+        # The state, for transactions
+        self.changed = set()
+        self.added = set()
+        self.removed = set()
+
+
+    def has_handler(self, reference):
+        fs, reference = cwd.get_fs_and_reference(reference)
+        # Check the state
+        if reference in self.added:
+            return True
+        if reference in self.removed:
+            return False
+
+        return ReadOnlyDatabase.has_handler(self, reference)
+
+
+    def get_handler_names(self, reference):
+        names = ReadOnlyDatabase.get_handler_names(self, reference)
+
+        # The State
+        names = set(names)
+        removed = [ str(x.path[-1]) for x in self.removed
+                    if uri.resolve2(str(x.path[-1])) == x ]
+        added = [ str(x.path[-1]) for x in self.added
+                  if uri.resolve2(str(x.path[-1])) == x ]
+        names = names - set(removed) | set(added)
+
+        # Ok
+        return list(names)
+
+
+    def get_handler(self, reference, cls=None):
+        fs, reference = cwd.get_fs_and_reference(reference)
+
+        # Check state
+        if reference in self.added:
+            handler = self.cache[reference]
+            # cls is good?
+            if cls is not None and not isinstance(handler, cls):
+                raise LookupError, ('conflict with a handler of type "%s"' %
+                                     handler.__class__)
+            return handler
+
+        if reference in self.removed:
+            raise LookupError, 'the resource "%s" does not exist' % reference
+
+        # Ok
+        return ReadOnlyDatabase.get_handler(self, reference, cls=cls)
 
 
     def set_handler(self, reference, handler):
@@ -281,20 +367,7 @@ class Database(object):
 
 
     #######################################################################
-    # API / Cache
-    #######################################################################
-    def set_use_cache(self, cache):
-        self.use_cache = bool(cache)
-
-
-    def add_to_cache(self, uri, handler):
-        if self.use_cache is True:
-            self.cache[uri] = handler
-
-
-    #######################################################################
     # API / Safe VFS operations (not really safe)
-    #######################################################################
     def safe_make_file(self, reference):
         return vfs.make_file(reference)
 
@@ -313,7 +386,6 @@ class Database(object):
 
     #######################################################################
     # API / Transactions
-    #######################################################################
     def abort_changes(self):
         cache = self.cache
         # Added handlers
@@ -398,7 +470,6 @@ class SafeDatabase(Database):
 
     #######################################################################
     # API / Safe VFS operations
-    #######################################################################
     def safe_make_file(self, reference):
         tmp_map = get_tmp_map()
         if reference in tmp_map:
@@ -472,7 +543,6 @@ class SafeDatabase(Database):
 
     #######################################################################
     # API / Transactions
-    #######################################################################
     def get_state(self):
         commit = self.commit
         if vfs.exists(commit):

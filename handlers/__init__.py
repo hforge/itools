@@ -41,7 +41,7 @@ from python import Python
 from registry import register_handler_class, get_handler_class_by_mimetype
 from registry import get_handler_class, get_handler
 from text import TextFile, guess_encoding
-from database import Database, SafeDatabase
+from database import ReadOnlyDatabase, Database, SafeDatabase
 from database import READY, TRANSACTION_PHASE1, TRANSACTION_PHASE2
 from utils import checkid
 
@@ -61,6 +61,7 @@ __all__ = [
     'Python',
     'TextFile',
     # The database
+    'ReadOnlyDatabase',
     'Database',
     'SafeDatabase',
     'READY',

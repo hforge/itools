@@ -146,8 +146,6 @@ class ElementSchema(object):
         if self.default_datatype is not None:
             return self.default_datatype
 
-        print self.default_datatype
-
         message = 'unexpected "%s" attribute for "%s" element'
         raise XMLError, message % (name, self.name)
 

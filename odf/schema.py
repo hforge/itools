@@ -50,7 +50,11 @@ inline_elements = [
     (text_uri, 'ruby-base'),
     (text_uri, 's'),
     (text_uri, 'span'),
-    (text_uri, 'tab')]
+    (text_uri, 'tab'),
+
+    (text_uri, 'bibliography-mark'),
+    (text_uri, 'user-field-get'),
+    (text_uri, 'reference-ref')]
 
 skip_content_elements = [
 
@@ -139,7 +143,7 @@ skip_content_elements = [
     (text_uri, 'print-date'),
     (text_uri, 'print-time'),
     (text_uri, 'printed-by'),
-    (text_uri, 'reference-ref'),
+    #(text_uri, 'reference-ref'),
     #(text_uri, 'ruby-text'),
     (text_uri, 'script'),
     (text_uri, 'sender-city'),
@@ -168,7 +172,7 @@ skip_content_elements = [
     (text_uri, 'time'),
     #(text_uri, 'title'),
     (text_uri, 'user-defined'),
-    (text_uri, 'user-field-get'),
+    #(text_uri, 'user-field-get'),
     (text_uri, 'user-field-input'),
     (text_uri, 'variable-get'),
     (text_uri, 'variable-input'),

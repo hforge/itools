@@ -43,14 +43,16 @@ def _get_attr_context(datatype, tag_name, attr_name):
     else:
         return datatype.context
 
+
 def _make_start_format(tag_uri, tag_name, attributes, encoding):
     # We must search for translatable attributes
-    result = [(u'<%s' % get_qname(tag_uri, tag_name),
-               False, None)]
+    result = [(u'<%s' % get_qname(tag_uri, tag_name), False, None)]
 
     for attr_uri, attr_name in attributes:
-        value = attributes[(attr_uri, attr_name)]
         qname = get_attribute_qname(attr_uri, attr_name)
+        qname = Unicode.decode(qname, encoding=encoding)
+        value = attributes[(attr_uri, attr_name)]
+        value = Unicode.decode(value, encoding=encoding)
         value = XMLAttribute.encode(value)
 
         datatype = get_attr_datatype(tag_uri, tag_name, attr_uri, attr_name,
@@ -58,12 +60,10 @@ def _make_start_format(tag_uri, tag_name, attributes, encoding):
         if issubclass(datatype, Unicode):
             result.append((u' %s="' % qname, False, None))
             context = _get_attr_context(datatype, tag_name, attr_name)
-            value = Unicode.decode(value, encoding=encoding)
-            result.append((u'%s' % value, True, context))
+            result.append((value, True, context))
             result.append((u'"', False, None))
         else:
-            result.append((u' %s="%s"' % (qname, value),
-                            False, None))
+            result.append((u' %s="%s"' % (qname, value), False, None))
     # Close the start tag
     if is_empty(tag_uri, tag_name):
         result.append((u'/>', False, None))

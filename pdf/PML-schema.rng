@@ -77,44 +77,45 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 <define name="body">
   <element name="pml:body">
-    <zeroOrMore><ref name="p" /></zeroOrMore>
-    <zeroOrMore><ref name="img" /></zeroOrMore>
     <zeroOrMore><ref name="b" /></zeroOrMore>
-    <zeroOrMore><ref name="i" /></zeroOrMore>
-    <zeroOrMore><ref name="u" /></zeroOrMore>
+    <zeroOrMore><ref name="div" /></zeroOrMore>
+    <zeroOrMore><ref name="dl" /></zeroOrMore>
+    <zeroOrMore><ref name="font" /></zeroOrMore>
     <zeroOrMore><ref name="hX" /></zeroOrMore>
     <zeroOrMore><ref name="hr" /></zeroOrMore>
-    <zeroOrMore><ref name="sup" /></zeroOrMore>
-    <zeroOrMore><ref name="sub" /></zeroOrMore>
-    <zeroOrMore><ref name="tt" /></zeroOrMore>
-    <zeroOrMore><ref name="font" /></zeroOrMore>
+    <zeroOrMore><ref name="i" /></zeroOrMore>
+    <zeroOrMore><ref name="img" /></zeroOrMore>
     <zeroOrMore><ref name="ol" /></zeroOrMore>
-    <zeroOrMore><ref name="ul" /></zeroOrMore>
-    <zeroOrMore><ref name="pre" /></zeroOrMore>
-    <zeroOrMore><ref name="dl" /></zeroOrMore>
-    <zeroOrMore><ref name="table" /></zeroOrMore>
-    <zeroOrMore><ref name="div" /></zeroOrMore>
+    <zeroOrMore><ref name="p" /></zeroOrMore>
     <zeroOrMore><ref name="pagebreak" /></zeroOrMore>
+    <zeroOrMore><ref name="pre" /></zeroOrMore>
+    <zeroOrMore><ref name="sub" /></zeroOrMore>
+    <zeroOrMore><ref name="sup" /></zeroOrMore>
+    <zeroOrMore><ref name="table" /></zeroOrMore>
+    <zeroOrMore><ref name="tt" /></zeroOrMore>
+    <zeroOrMore><ref name="u" /></zeroOrMore>
+    <zeroOrMore><ref name="ul" /></zeroOrMore>
   </element>
 </define>
 
 <define name="p">
   <element name="pml:p">
     <text />
-    <zeroOrMore><ref name="b" /></zeroOrMore>
-    <zeroOrMore><ref name="i" /></zeroOrMore>
-    <zeroOrMore><ref name="u" /></zeroOrMore>
-    <zeroOrMore><ref name="big" /></zeroOrMore>
-    <zeroOrMore><ref name="small" /></zeroOrMore>
-    <zeroOrMore><ref name="sup" /></zeroOrMore>
-    <zeroOrMore><ref name="sub" /></zeroOrMore>
-    <zeroOrMore><ref name="tt" /></zeroOrMore>
-    <zeroOrMore><ref name="font" /></zeroOrMore>
-    <zeroOrMore><ref name="link" /></zeroOrMore>
     <zeroOrMore><ref name="a" /></zeroOrMore>
+    <zeroOrMore><ref name="b" /></zeroOrMore>
+    <zeroOrMore><ref name="big" /></zeroOrMore>
     <zeroOrMore><ref name="br" /></zeroOrMore>
+    <zeroOrMore><ref name="font" /></zeroOrMore>
+    <zeroOrMore><ref name="i" /></zeroOrMore>
+    <zeroOrMore><ref name="link" /></zeroOrMore>
     <zeroOrMore><ref name="pagenumber" /></zeroOrMore>
     <zeroOrMore><ref name="pagetotal" /></zeroOrMore>
+    <zeroOrMore><ref name="small" /></zeroOrMore>
+    <zeroOrMore><ref name="span" /></zeroOrMore>
+    <zeroOrMore><ref name="sub" /></zeroOrMore>
+    <zeroOrMore><ref name="sup" /></zeroOrMore>
+    <zeroOrMore><ref name="tt" /></zeroOrMore>
+    <zeroOrMore><ref name="u" /></zeroOrMore>
   </element>
 </define>
 
@@ -139,6 +140,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <define name="u">
   <element name="pml:u">
     <text />
+  </element>
+</define>
+
+<define name="span">
+  <element name="pml:span">
+    <zeroOrMore><ref name="b" /></zeroOrMore>
+    <zeroOrMore><ref name="i" /></zeroOrMore>
+    <zeroOrMore><ref name="u" /></zeroOrMore>
   </element>
 </define>
 
@@ -327,6 +336,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <ref name="h1" />
     <ref name="h2" />
     <ref name="h3" />
+    <ref name="h4" />
+    <ref name="h5" />
+    <ref name="h6" />
   </choice>
 </define>
 
@@ -348,6 +360,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 <define name="h3">
   <element name="pml:h3">
+    <text />
+    <zeroOrMore><ref name="pagenumber" /></zeroOrMore>
+    <zeroOrMore><ref name="pagetotal" /></zeroOrMore>
+  </element>
+</define>
+
+<define name="h4">
+  <element name="pml:h4">
+    <text />
+    <zeroOrMore><ref name="pagenumber" /></zeroOrMore>
+    <zeroOrMore><ref name="pagetotal" /></zeroOrMore>
+  </element>
+</define>
+
+<define name="h5">
+  <element name="pml:h5">
+    <text />
+    <zeroOrMore><ref name="pagenumber" /></zeroOrMore>
+    <zeroOrMore><ref name="pagetotal" /></zeroOrMore>
+  </element>
+</define>
+
+<define name="h6">
+  <element name="pml:h6">
     <text />
     <zeroOrMore><ref name="pagenumber" /></zeroOrMore>
     <zeroOrMore><ref name="pagetotal" /></zeroOrMore>

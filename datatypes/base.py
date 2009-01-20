@@ -14,14 +14,19 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from the Standard Library
+from warnings import warn
+
 
 def is_datatype(datatype, base_type):
     # TODO To be removed by 0.60
+    warn("The 'is_datatype' function is deprecated.")
     return issubclass(datatype, base_type)
 
 
 def copy_datatype(datatype, **kw):
     # TODO To be removed by 0.60
+    warn("The 'copy_datatype' function is deprecated.")
     return datatype(**kw)
 
 

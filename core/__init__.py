@@ -20,9 +20,9 @@ from utils import get_abspath, merge_dicts
 from sys import platform
 
 if platform[:3] == 'win':
-    from _win import become_daemon, get_time_spent, vmsize
+    from _win import become_daemon, fork, get_time_spent, vmsize
 else:
-    from _unix import become_daemon, get_time_spent, vmsize
+    from _unix import become_daemon, fork, get_time_spent, vmsize
 
 
 
@@ -34,6 +34,7 @@ __all__ = [
     'merge_dicts',
     # System specific functions
     'become_daemon',
+    'fork',
     'get_time_spent',
     'vmsize',
    ]

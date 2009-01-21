@@ -61,3 +61,9 @@ def vmsize(scale={'kB': 1024.0, 'mB': 1024.0*1024.0,
 
 def become_daemon():
     raise NotImplementedError, 'become_daemon not yet implemented for Windows'
+
+
+
+def fork():
+    raise NotImplementedError, 'fork not yet implemented for Windows'
+

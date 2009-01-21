@@ -24,7 +24,6 @@ from datetime import datetime
 from logging import getLogger, WARNING, FileHandler, StreamHandler, Formatter
 from os import fstat, getpid, remove as remove_file
 from types import FunctionType, MethodType
-from select import error as SelectError
 from signal import signal, SIGINT
 from socket import socket as Socket, error as SocketError
 from socket import AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR
@@ -43,46 +42,13 @@ from itools.uri import Reference
 from context import Context, set_context, select_language
 from context import FormError
 
+# Import from gobject
+from gobject import MainLoop, io_add_watch, source_remove
+from gobject import IO_IN, IO_OUT, IO_PRI, IO_ERR, IO_HUP
 
 # Some constants
-POLLIN, POLLPRI, POLLOUT, POLLERR, POLLHUP, POLLNVAL = 1, 2, 4, 8, 16, 32
-POLL_READ = POLLIN | POLLPRI | POLLERR | POLLHUP | POLLNVAL
-POLL_WRITE = POLLOUT | POLLERR | POLLHUP | POLLNVAL
-
-
-###########################################################################
-# Some pre-historic systems (e.g. Windows and MacOS) don't implement
-# the "poll" sytem call. The code below is a wrapper around the "select"
-# system call that implements the poll's API.
-###########################################################################
-try:
-    from select import poll as Poll
-except ImportError:
-    # Implement a wrapper around select with the API of poll
-    from select import select
-    class Poll(object):
-        def __init__(self):
-            self.iwtd, self.owtd, self.ewtd = [], [], []
-
-        def register(self, fileno, mode):
-            if mode & POLLIN or mode & POLLPRI:
-                self.iwtd.append(fileno)
-            if mode & POLLOUT:
-                self.owtd.append(fileno)
-            if mode & POLLERR or mode & POLLHUP or mode & POLLNVAL:
-                self.ewtd.append(fileno)
-
-        def unregister(self, fileno):
-            for wtd in self.iwtd, self.owtd, self.ewtd:
-                if fileno in wtd:
-                    wtd.remove(fileno)
-
-        def poll(self):
-            iwtd, owtd, ewtd = select(self.iwtd, self.owtd, self.ewtd)
-            return [ (x, POLLIN) for x in iwtd ] \
-                   + [ (x, POLLOUT) for x in owtd ] \
-                   + [ (x, POLLERR) for x in ewtd ]
-
+IO_READ = IO_IN | IO_PRI | IO_ERR | IO_HUP
+IO_WRITE = IO_OUT | IO_ERR | IO_HUP
 
 
 ###########################################################################
@@ -258,17 +224,30 @@ class Server(object):
 
         # The pid file
         self.pid_file = pid_file
+
         # Authentication options
         self.auth_type = auth_type
         self.auth_realm = auth_realm
 
+        # The requests dict
+        # mapping {<fileno>: (conn, id, + some useful informations) }
+        self.requests = {}
 
-    def new_connection(self, ear, poll, requests):
+        # The connection
+        self.ear = None
+        self.ear_fileno = 0
+        self.ear_id = 0
+
+        # Main Loop
+        self.main_loop = MainLoop()
+
+
+    def new_connection(self):
         """Registers the connection to read the new request.
         """
         # Get the connection and client address
         try:
-            conn, client_address = ear.accept()
+            conn, client_address = self.ear.accept()
         except SocketError:
             return
 
@@ -280,20 +259,22 @@ class Server(object):
         conn.setblocking(0)
         # Register the connection
         fileno = conn.fileno()
-        poll.register(fileno, POLL_READ)
+        id = io_add_watch(fileno, IO_READ, self.events_callback)
         # Build and store the request
         request = Request()
         wrapper = SocketWrapper(conn)
         loader = request.non_blocking_load(wrapper)
-        requests[fileno] = conn, request, loader
+        self.requests[fileno] = conn, id, request, loader
 
 
-    def load_request(self, poll, fileno, requests):
+    def load_request(self, fileno):
         """Loads the request, and when it is done, handles it.
         """
+        requests = self.requests
+
         # Load request
-        poll.unregister(fileno)
-        conn, request, loader = requests.pop(fileno)
+        conn, id, request, loader = requests.pop(fileno)
+        source_remove(id)
 
         # Debug
         peer = conn.getpeername()
@@ -312,8 +293,8 @@ class Server(object):
                 else:
                     path = str(context.uri.path).replace('/', '-')
                     filename = '%s/%s-%s' % (self.profile_path, time(), path)
-                    runctx("self.handle_request(context)", globals(), locals(),
-                           filename)
+                    runctx("self.handle_request(context)", globals(),
+                           locals(), filename)
             except HTTPError, exception:
                 response = Response(status_code=exception.code)
                 response.body = exception.title
@@ -339,22 +320,24 @@ class Server(object):
             return
         else:
             # Not finished
-            requests[fileno] = conn, request, loader
-            poll.register(fileno, POLL_READ)
+            id = io_add_watch(fileno, IO_READ, self.events_callback)
+            requests[fileno] = conn, id, request, loader
             return
 
         # We have a response to send
         # Log access
         self.log_access(conn, request, response)
         # Ready to send response
-        poll.register(fileno, POLL_WRITE)
         response = response.to_str()
-        requests[fileno] = conn, response
+        id = io_add_watch(fileno, IO_WRITE, self.events_callback)
+        requests[fileno] = conn, id, response
 
 
-    def send_response(self, poll, fileno, requests):
-        poll.unregister(fileno)
-        conn, response = requests.pop(fileno)
+    def send_response(self, fileno):
+        requests = self.requests
+
+        conn, id, response = requests.pop(fileno)
+        source_remove(id)
 
         # Debug
         peer = conn.getpeername()
@@ -368,10 +351,56 @@ class Server(object):
         else:
             response = response[n:]
             if response:
-                poll.register(fileno, POLL_WRITE)
-                requests[fileno] = conn, response
+                id = io_add_watch(fileno, IO_WRITE, self.events_callback)
+                requests[fileno] = conn, id, response
             else:
                 conn.close()
+
+
+    def events_callback(self, fileno, event):
+        requests = self.requests
+
+        try:
+            if event & IO_IN or event & IO_PRI:
+                if fileno == self.ear_fileno:
+                    self.new_connection()
+                else:
+                    self.load_request(fileno)
+            elif event & IO_OUT:
+                self.send_response(fileno)
+            elif event & IO_ERR or event & IO_HUP:
+                if event == IO_ERR:
+                    logger_loop.debug('ERROR CONDITION')
+                else:
+                    logger_loop.debug('HUNG UP')
+
+                conn, id = requests.pop(fileno)[:2]
+                source_remove(id)
+        except:
+            self.log_error()
+
+        # The end ??
+        if not requests:
+            self.mainloop.quit()
+
+        return True
+
+
+    def stop_gracefully(self, signum, frame):
+       requests = self.requests
+       ear_fileno = self.ear_fileno
+
+       if ear_fileno not in requests:
+           return
+
+       source_remove(self.ear_id)
+       self.ear.close()
+       del requests[ear_fileno]
+       print 'Shutting down the server (gracefully)...'
+
+       # Yet the end ?
+       if not requests:
+           self.main_loop.quit()
 
 
     def start(self):
@@ -383,69 +412,24 @@ class Server(object):
             pid = getpid()
             open(self.pid_file, 'w').write(str(pid))
 
-        ear = Socket(AF_INET, SOCK_STREAM)
+        # Set up the connection
+        ear = self.ear = Socket(AF_INET, SOCK_STREAM)
         # Allow to reuse the address, this solves the bug "icms.py won't
         # close its connection properly". But is probably not the right
         # solution (FIXME).
         ear.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
         ear.bind((self.address, self.port))
         ear.listen(5)
-        ear_fileno = ear.fileno()
-
-        # Mapping {<fileno>: (request, loader)}
-        requests = {ear_fileno: None}
-
-        # Set-up polling object
-        poll = Poll()
-        poll.register(ear_fileno, POLL_READ)
+        ear_fileno = self.ear_fileno = ear.fileno()
+        ear_id = self.ear_id = io_add_watch(ear_fileno, IO_READ,
+                                            self.events_callback)
+        self.requests[ear_fileno] = ear, ear_id
 
         # Set up the graceful stop
-        def stop(n, frame, ear=ear, ear_fileno=ear_fileno, poll=poll,
-                 requests=requests):
-            if ear_fileno not in requests:
-                return
-            poll.unregister(ear_fileno)
-            ear.close()
-            requests.pop(ear_fileno)
-            print 'Shutting down the server (gracefully)...'
-        signal(SIGINT, stop)
+        signal(SIGINT, self.stop_gracefully)
 
-        # Loop
-        while requests:
-            try:
-                for fileno, event in poll.poll():
-                    if event & POLLIN or event & POLLPRI:
-                        if fileno == ear_fileno:
-                            self.new_connection(ear, poll, requests)
-                        else:
-                            self.load_request(poll, fileno, requests)
-                    elif event & POLLOUT:
-                        self.send_response(poll, fileno, requests)
-                    elif event & POLLERR:
-                        logger_loop.debug('ERROR CONDITION')
-                        poll.unregister(fileno)
-                        if fileno in requests:
-                            del requests[fileno]
-                    elif event & POLLHUP:
-                        logger_loop.debug('HUNG UP')
-                        # XXX Is this right?
-                        poll.unregister(fileno)
-                        if fileno in requests:
-                            del requests[fileno]
-                    elif event & POLLNVAL:
-                        logger_loop.debug('INVALID REQUEST: descriptor closed')
-                        # XXX Is this right?
-                        poll.unregister(fileno)
-                        if fileno in requests:
-                            del requests[fileno]
-            except SelectError, exception:
-                # Don't log an error every time the server is stopped
-                # (check "perror 4" from the shell)
-                errno, kk = exception
-                if errno != 4:
-                    self.log_error()
-            except:
-                self.log_error()
+        # Main loop !!
+        self.main_loop.run()
 
         # Close files
         if self.access_log is not None:

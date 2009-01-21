@@ -188,8 +188,11 @@ skip_content_elements = [
     ]
 
 contexts = [
-    (text_uri, 'p', 'paragraph'),
+    (meta_uri, 'keyword', 'metadata'),
+    (meta_uri, 'user-defined', 'metadata'),
+    (text_uri, 'index-entry-span', 'text index'),
     (text_uri, 'h', 'heading'),
+    (text_uri, 'p', 'paragraph'),
 ]
 
 

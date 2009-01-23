@@ -33,7 +33,7 @@ class Integer(DataType):
 
     @staticmethod
     def decode(value):
-        if not value:
+        if value == '':
             return None
         return int(value)
 
@@ -50,7 +50,7 @@ class Decimal(DataType):
 
     @staticmethod
     def decode(value):
-        if not value:
+        if value == '':
             return None
         return decimal(value)
 
@@ -97,6 +97,8 @@ class String(DataType):
 
     @staticmethod
     def encode(value):
+        if value is None:
+            return ''
         return value
 
 

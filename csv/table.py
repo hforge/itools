@@ -24,8 +24,9 @@ from datetime import datetime
 from itools.datatypes import DateTime, String, Integer, Unicode
 from itools.handlers import File
 from itools import vfs
-from itools.xapian import AndQuery, PhraseQuery, get_field
-from memory import MemoryCatalog
+from itools.xapian import make_catalog_in_memory, get_field
+from itools.xapian import AndQuery, PhraseQuery, CatalogAware
+from itools.xapian import IntegerField
 from parser import parse
 
 
@@ -310,13 +311,14 @@ class Property(object):
 
 
 
-class Record(list):
+class Record(list, CatalogAware):
 
-    __slots__ = ['id']
+    __slots__ = ['id', 'fields']
 
 
-    def __init__(self, id):
+    def __init__(self, id, fields):
         self.id = id
+        self.fields = fields
 
 
     def __getattr__(self, name):
@@ -351,6 +353,18 @@ class Record(list):
         if type(property) is list:
             return [ x.value for x in property ]
         return property.value
+
+
+    def get_catalog_fields(self):
+        return self.fields
+
+
+    def get_catalog_values(self):
+        values = {'__id__': self.id}
+        for field in self.fields[1:]:
+            name = field.name
+            values[name] = self.get_value(name)
+        return values
 
 
 
@@ -449,17 +463,22 @@ class Table(File):
         self.added_records = []
         self.removed_records = []
         # The catalog (for index and search)
-        self.catalog = MemoryCatalog()
+        fields = [IntegerField('__id__', is_stored=True, is_indexed=True)]
         for name, datatype in self.record_schema.items():
             index = getattr(datatype, 'index', None)
             if index is not None:
-                field = get_field(index)
-                self.catalog.add_index(name, field)
+                field_cls = get_field(index)
+                # XXX The fields are just indexed, so we cannot
+                # make all types of search
+                fields.append(field_cls(name, is_stored=False,
+                                        is_indexed=True))
+        self.catalog = make_catalog_in_memory()
+        self.fields = fields
 
 
     def new(self):
         # Add the properties record
-        properties = self.record_class(-1)
+        properties = self.record_class(-1, self.fields)
         properties.append({'ts': Property(datetime.now())})
         self.properties = properties
 
@@ -480,13 +499,13 @@ class Table(File):
                 if uid == -1:
                     # Tale properties
                     if properties is None:
-                        properties = self.record_class(uid)
+                        properties = self.record_class(uid, self.fields)
                         self.properties = properties
                     record = properties
                 elif uid >= n:
                     # New record
                     records.extend([None] * (uid - n))
-                    record = self.record_class(uid)
+                    record = self.record_class(uid, self.fields)
                     records.append(record)
                     n = uid + 1
                 else:
@@ -541,7 +560,7 @@ class Table(File):
         # Index the records
         for record in records:
             if record is not None:
-                self.catalog.index_document(record, record.id)
+                self.catalog.index_document(record)
 
 
     def _version_to_str(self, id, seq, version):
@@ -662,24 +681,6 @@ class Table(File):
 
 
     #######################################################################
-    # API / Private
-    #######################################################################
-    def get_analyser(self, name):
-        datatype = self.get_record_datatype(name)
-        return get_field(datatype.index)
-
-
-    def get_index(self, name):
-        if name not in self.record_schema:
-            raise ValueError, 'the field "%s" is not defined' % name
-
-        if name not in self.catalog.indexes:
-            raise ValueError, 'the field "%s" is not indexed' % name
-
-        return self.catalog.indexes[name]
-
-
-    #######################################################################
     # API / Public
     #######################################################################
     def get_record(self, id):
@@ -694,12 +695,11 @@ class Table(File):
         for name in kw:
             datatype = self.get_record_datatype(name)
             if getattr(datatype, 'unique', False) is True:
-                search = self.search(PhraseQuery(name, kw[name]))
                 if len(self.search(PhraseQuery(name, kw[name]))) > 0:
                     raise UniqueError(name, kw[name])
         # Add version to record
         id = len(self.records)
-        record = self.record_class(id)
+        record = self.record_class(id, self.fields)
         version = self.properties_to_dict(kw)
         version['ts'] = Property(datetime.now())
         record.append(version)
@@ -707,7 +707,7 @@ class Table(File):
         self.set_changed()
         self.added_records.append((id, 0))
         self.records.append(record)
-        self.catalog.index_document(record, id)
+        self.catalog.index_document(record)
         # Back
         return record
 
@@ -730,11 +730,11 @@ class Table(File):
         version['ts'] = Property(datetime.now())
         # Change
         self.set_changed()
-        self.catalog.unindex_document(record, id)
+        self.catalog.unindex_document(record.id)
         self.added_records.append((id, len(record)))
         record.append(version)
         # Index
-        self.catalog.index_document(record, id)
+        self.catalog.index_document(record)
 
 
     def update_properties(self, **kw):
@@ -742,7 +742,7 @@ class Table(File):
         if record is None:
             # if the record doesn't exist
             # we create it, it's useful during an update
-            record = self.record_class(-1)
+            record = self.record_class(-1, self.fields)
             version = None
             self.properties = record
         else:
@@ -767,7 +767,7 @@ class Table(File):
             self.removed_records.append((id, datetime.now()))
         self.added_records = [
             (x, y) for x, y in self.added_records if x != id ]
-        self.catalog.unindex_document(record, id)
+        self.catalog.unindex_document(record.id)
         self.records[id] = None
 
 
@@ -870,21 +870,8 @@ class Table(File):
     def search(self, query=None, **kw):
         """Return list of row numbers returned by executing the query.
         """
-        if query is None:
-            if kw:
-                atoms = []
-                for key, value in kw.items():
-                    atoms.append(PhraseQuery(key, value))
-
-                query = AndQuery(*atoms)
-            else:
-                return self.get_records()
-
-        documents = query.search(self)
-        # Sort by weight
-        ids = documents.keys()
-        ids.sort()
-
+        result = self.catalog.search(query, **kw)
+        ids = [ doc.__id__ for doc in result.get_documents(sort_by='__id__') ]
         return [ self.records[x] for x in ids ]
 
 

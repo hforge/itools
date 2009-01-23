@@ -41,10 +41,6 @@ class BaseQuery(object):
 
 class AllQuery(BaseQuery):
 
-    def search(self, catalog):
-        return catalog.search()
-
-
     def __repr_parameters__(self):
         return ''
 
@@ -58,14 +54,6 @@ class RangeQuery(BaseQuery):
         self.right = right
 
 
-    def search(self, catalog):
-        index = catalog.get_index(self.name)
-        if index is None:
-            return {}
-
-        return index.search_range(self.left, self.right)
-
-
     def __repr_parameters__(self):
         return "%r, %r, %r" % (self.name, self.left, self.right)
 
@@ -76,35 +64,6 @@ class PhraseQuery(BaseQuery):
     def __init__(self, name, value):
         self.name = name
         self.value = value
-
-
-    def search(self, catalog):
-        index = catalog.get_index(self.name)
-        if index is None:
-            return {}
-
-        # Get the analyser
-        field = catalog.get_analyser(self.name)
-
-        documents = {}
-        for value, offset in field.split(self.value):
-            result = index.search_word(value)
-            if offset == 0:
-                documents = result
-            else:
-                aux = {}
-                for doc_number in documents:
-                    if doc_number in result:
-                        pos = [ x for x in documents[doc_number]
-                                if x + offset in result[doc_number] ]
-                        if pos:
-                            aux[doc_number] = set(pos)
-                documents = aux
-        # Calculate the weight
-        for doc_number in documents:
-            documents[doc_number] = len(documents[doc_number])
-
-        return documents
 
 
     def __repr_parameters__(self):
@@ -120,19 +79,6 @@ class AndQuery(BaseQuery):
         self.atoms = [ x for x in args if not isinstance(x, AllQuery) ]
         if len(self.atoms) == 0 and len(args) > 0:
             self.atoms = [AllQuery()]
-
-
-    def search(self, catalog):
-        documents = self.atoms[0].search(catalog)
-        for atom in self.atoms[1:]:
-            sub_results = atom.search(catalog)
-            for id in documents.keys():
-                if id in sub_results:
-                    documents[id] += sub_results[id]
-                else:
-                    del documents[id]
-
-        return documents
 
 
     def __repr_parameters__(self):
@@ -151,19 +97,6 @@ class OrQuery(BaseQuery):
             self.atoms = args
 
 
-    def search(self, catalog):
-        documents = self.atoms[0].search(catalog)
-        for atom in self.atoms[1:]:
-            sub_results = atom.search(catalog)
-            for id in sub_results:
-                if id in documents:
-                    documents[id] += sub_results[id]
-                else:
-                    documents[id] = sub_results[id]
-
-        return documents
-
-
     def __repr_parameters__(self):
         return ', '.join([ repr(x) for x in self.atoms ])
 
@@ -175,29 +108,12 @@ class NotQuery(BaseQuery):
         self.query = query
 
 
-    def search(self, catalog):
-        all_documents = catalog.search()
-        not_documents = self.query.search(catalog)
-        sub_results = {}
-
-        for d in all_documents:
-            if (d.__number__ in not_documents) is False:
-                sub_results[d.__number__] = 1
-
-        return sub_results
-
-
 
 class StartQuery(BaseQuery):
 
     def __init__(self, name, value):
         self.name = name
         self.value = value
-
-
-    def search(self, catalog):
-        # TODO To be implemented for itools.csv and others
-        raise NotImplementedError
 
 
     def __repr_parameters__(self):

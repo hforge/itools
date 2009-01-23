@@ -22,6 +22,7 @@ from marshal import dumps, loads
 from xapian import Database, WritableDatabase, DB_CREATE, DB_OPEN
 from xapian import Document, Enquire, Query
 from xapian import MultiValueSorter, sortable_serialise, sortable_unserialise
+from xapian import inmemory_open
 
 # Import from itools
 from itools.uri import get_absolute_reference
@@ -237,7 +238,7 @@ class SearchResults(object):
 
 class Catalog(object):
 
-    def __init__(self, ref, read_only=False):
+    def __init__(self, ref, read_only=False, enable_transactions=True):
         # Load the database
         if isinstance(ref, Database) or isinstance(ref, WritableDatabase):
             self._db = ref
@@ -254,9 +255,10 @@ class Catalog(object):
                 self._db = WritableDatabase(path, DB_OPEN)
 
         db = self._db
+        self._transactions = enable_transactions
 
         # Asynchronous mode
-        if not read_only:
+        if not read_only and enable_transactions:
             db.begin_transaction(False)
 
         # Load the xfields from the database
@@ -273,6 +275,8 @@ class Catalog(object):
     def save_changes(self):
         """Save the last changes to disk.
         """
+        if not self._transactions:
+            raise ValueError, "The transactions are disable"
         db = self._db
         db.commit_transaction()
         db.flush()
@@ -282,6 +286,8 @@ class Catalog(object):
     def abort_changes(self):
         """Abort the last changes made in memory.
         """
+        if not self._transactions:
+            raise ValueError, "The transactions are disable"
         db = self._db
         db.cancel_transaction()
         self._load_all_internal()
@@ -545,3 +551,8 @@ def make_catalog(uri):
 
     return Catalog(db)
 
+
+
+def make_catalog_in_memory():
+    db = inmemory_open()
+    return Catalog(db, enable_transactions=False)

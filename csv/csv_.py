@@ -21,13 +21,14 @@
 # Import from itools
 from itools.datatypes import String, Integer
 from itools.handlers import TextFile, guess_encoding, register_handler_class
-from itools.xapian import AndQuery, PhraseQuery, get_field
-from memory import MemoryCatalog
+from itools.xapian import make_catalog_in_memory, get_field
+from itools.xapian import AndQuery, PhraseQuery, CatalogAware
+from itools.xapian import IntegerField
 from parser import parse
 
 
 
-class Row(list):
+class Row(list, CatalogAware):
 
     def get_value(self, name):
         if self.columns is None:
@@ -44,6 +45,20 @@ class Row(list):
         clone.columns = self.columns
 
         return clone
+
+
+    def get_catalog_fields(self):
+        return self.fields
+
+
+    def get_catalog_values(self):
+        columns = self.columns
+        values = {'__number__': self.number}
+        for field in self.fields[1:]:
+            name = field.name
+            column = columns.index(name)
+            values[name] = self[column]
+        return values
 
 
 
@@ -80,16 +95,23 @@ class CSVFile(TextFile):
         self.lines = []
         self.n_lines = 0
         # Initialize the catalog if needed (Index&Search)
-        if self.schema is None:
-            self.catalog = None
-        else:
-            self.catalog = MemoryCatalog()
+        fields = [IntegerField('__number__', is_stored=True, is_indexed=True)]
+        schema = self.schema
+        if schema is not None:
             for column in self.columns:
-                datatype = self.schema[column]
+                datatype = schema[column]
                 index = getattr(datatype, 'index', None)
                 if index is not None:
-                    field = get_field(index)
-                    self.catalog.add_index(column, field)
+                    field_cls = get_field(index)
+                    # XXX The fields are just indexed, so we cannot
+                    # make all types of search
+                    fields.append(field_cls(column, is_stored=False,
+                                            is_indexed=True))
+        if len(fields) > 1:
+            self.catalog = make_catalog_in_memory()
+            self.fields = fields
+        else:
+            self.catalog = None
 
 
     def new(self):
@@ -136,24 +158,6 @@ class CSVFile(TextFile):
     #########################################################################
     # API / Private
     #########################################################################
-    def get_analyser(self, name):
-        datatype = self.schema[name]
-        return get_field(datatype.index)
-
-
-    def get_index(self, name):
-        if self.schema is None:
-            raise ValueError, 'schema not defined'
-
-        if name not in self.schema:
-            raise ValueError, 'the field "%s" is not defined' % name
-
-        try:
-            return self.catalog.indexes[name]
-        except KeyError:
-            raise ValueError, 'the field "%s" is not indexed' % name
-
-
     def _add_row(self, row):
         """Append new row as an instance of row class.
         """
@@ -165,8 +169,9 @@ class CSVFile(TextFile):
         self.lines.append(row)
         self.n_lines += 1
         # Index
-        if self.schema is not None:
-            self.catalog.index_document(row, row.number)
+        if self.catalog is not None:
+            row.fields = self.fields
+            self.catalog.index_document(row)
 
         return row
 
@@ -184,9 +189,7 @@ class CSVFile(TextFile):
     def is_indexed(self):
         """Check if at least one index is available for searching, etc.
         """
-        if self.catalog is None:
-            return False
-        return bool(self.catalog.indexes)
+        return self.catalog is not None
 
 
     def get_nrows(self):
@@ -231,8 +234,8 @@ class CSVFile(TextFile):
         row = self.get_row(index)
         self.set_changed()
         # Un-index
-        if self.schema is not None:
-            self.catalog.unindex_document(row, index)
+        if self.catalog is not None:
+            self.catalog.unindex_document(row.number)
         # Update
         columns = self.columns
         if columns is None:
@@ -244,8 +247,8 @@ class CSVFile(TextFile):
                 column = columns.index(name)
                 row[column] = kw[name]
         # Index
-        if self.schema is not None:
-            self.catalog.index_document(row, index)
+        if self.catalog is not None:
+            self.catalog.index_document(row.number)
 
 
     def del_row(self, number):
@@ -260,8 +263,8 @@ class CSVFile(TextFile):
         self.lines[number] = None
 
         # Unindex
-        if self.schema is not None:
-            self.catalog.unindex_document(row, row.number)
+        if self.catalog is not None:
+            self.catalog.unindex_document(row.number)
 
 
     def del_rows(self, numbers):
@@ -276,25 +279,12 @@ class CSVFile(TextFile):
     def search(self, query=None, **kw):
         """Return list of row numbers returned by executing the query.
         """
-        if not self.is_indexed():
+        if self.catalog is None:
             raise IndexError, 'no index is defined in the schema'
 
-        if query is None:
-            if kw:
-                atoms = []
-                for key, value in kw.items():
-                    atoms.append(PhraseQuery(key, value))
-
-                query = AndQuery(*atoms)
-            else:
-                raise ValueError, "expected a query"
-
-        documents = query.search(self)
-        numbers = documents.keys()
-        # Sort by row order
-        numbers.sort()
-
-        return numbers
+        result = self.catalog.search(query, **kw)
+        return [ doc.__number__
+                 for doc in result.get_documents(sort_by='__number__') ]
 
 
     def get_unique_values(self, name):

@@ -327,6 +327,8 @@ class Server(object):
         # We have a response to send
         # Log access
         self.log_access(conn, request, response)
+        # We do not support persistent connections yet
+        response.set_header('connection', 'close')
         # Ready to send response
         response = response.to_str()
         id = io_add_watch(fileno, IO_WRITE, self.events_callback)

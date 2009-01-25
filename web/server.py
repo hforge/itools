@@ -796,11 +796,11 @@ class RequestMethod(object):
             cls.internal_server_error(server, context)
 
         # (7) Build and return the response
-        context.response.set_status(context.status)
+        response.set_status(context.status)
         cls.set_body(server, context)
 
         # (8) Ok
-        return context.response
+        return response
 
 
 
@@ -889,6 +889,78 @@ class POST(RequestMethod):
 
 
 
+class OPTIONS(RequestMethod):
+
+    @classmethod
+    def check_transaction(cls, server, context):
+        return False
+
+
+    @classmethod
+    def handle_request(cls, server, context):
+        response = context.response
+        root = context.root
+
+        known_methods = methods.keys()
+        allowed = []
+
+        # (1) Find out the requested resource and view
+        if context.path == '*':
+            # (2a) Server-registered methods
+            allowed = known_methods
+            context.status = 200
+        else:
+            try:
+                cls.find_resource(server, context)
+                cls.find_view(server, context)
+            except ClientError, error:
+                status = error.code
+                context.status = status
+                context.view_name = status2name[status]
+                context.view = root.get_view(context.view_name)
+            else:
+                # Everything goes fine so far
+                context.status = 200
+
+            # (2b) Check methods supported by the view
+            resource = context.resource
+            view = context.view
+            for method_name in known_methods:
+                # Search on the resource's view
+                method = getattr(view, method_name, None)
+                if method is not None:
+                    allowed.append(method_name)
+                    continue
+                # Search on the resource itself
+                # PUT -> put
+                method = getattr(resource, method_name.lower(), None)
+                if method is not None:
+                    allowed.append(method_name)
+                # OPTIONS is built-in
+                allowed.append('OPTIONS')
+
+        # (3) Render
+        response.set_header('allow', ','.join(allowed))
+        context.entity = None
+
+        # (4) Commit the transaction
+        cls.commit_transaction(server, context)
+
+        # (5) After Traverse hook
+        try:
+            context.site_root.after_traverse(context)
+        except:
+            cls.internal_server_error(server, context)
+
+        # (6) Build and return the response
+        response.set_status(context.status)
+        cls.set_body(server, context)
+
+        # (7) Ok
+        return response
+
+
+
 ###########################################################################
 # Registry
 ###########################################################################
@@ -903,4 +975,4 @@ def register_method(method, method_handler):
 register_method('GET', GET)
 register_method('HEAD', HEAD)
 register_method('POST', POST)
-
+register_method('OPTIONS', OPTIONS)

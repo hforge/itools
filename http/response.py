@@ -84,6 +84,7 @@ status_messages = {
 class Response(Message):
 
     def new(self, status_code=200, **kw):
+        self.http_version = '1.1'
         self.status = status_code
         self.headers = kw
         self.body = ''
@@ -94,6 +95,7 @@ class Response(Message):
         # The status line
         line = file.readline()
         http_version, status_code, status_message = line.split(' ', 2)
+        self.http_version = http_version
         status_code = int(status_code)
         self.set_status(status_code)
         # The headers
@@ -108,9 +110,11 @@ class Response(Message):
         from itools import __version__
         data = []
         # The status line
+        http_version = self.http_version
         status_code = self.status
         status_message = status_messages[status_code]
-        data.append('HTTP/1.0 %d %s\r\n' % (status_code, status_message))
+        data.append('HTTP/%s %d %s\r\n' % (http_version, status_code,
+                                           status_message))
         # Headers
         # Date:
         date = datetime.now()

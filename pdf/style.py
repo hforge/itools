@@ -62,7 +62,7 @@ BODY_MARGINS = {'margin-top': 'topMargin',
 
 
 
-def get_align(attributes):
+def table_get_align(attributes):
     attrs = {}
     hAlign = attributes.get((None, 'align'), None)
     if hAlign in H_ALIGN:
@@ -71,6 +71,18 @@ def get_align(attributes):
     if vAlign in V_ALIGN:
         attrs['vAlign'] = vAlign.upper()
     return attrs
+
+
+def table_get_margin(style_css):
+    """Calculate and return top and bottom margin"""
+    margin_top = margin_bottom = None, None
+    for key, value in style_css.iteritems():
+        if key == 'margin-top':
+            margin_top = format_size(value, None)
+        elif key == 'margin-bottom':
+            margin_bottom = format_size(value, None)
+
+    return margin_top, margin_bottom
 
 
 def attribute_style_to_dict(value):

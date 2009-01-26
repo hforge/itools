@@ -961,6 +961,20 @@ class OPTIONS(RequestMethod):
 
 
 
+class TRACE(RequestMethod):
+
+    @classmethod
+    def handle_request(cls, server, context):
+        request = context.request
+        context.entity = request.to_str()
+        cls.set_body(server, context)
+        response = context.response
+        response.set_header('content-type', 'message/http')
+        response.set_status(200)
+        return response
+
+
+
 ###########################################################################
 # Registry
 ###########################################################################
@@ -976,3 +990,4 @@ register_method('GET', GET)
 register_method('HEAD', HEAD)
 register_method('POST', POST)
 register_method('OPTIONS', OPTIONS)
+register_method('TRACE', TRACE)

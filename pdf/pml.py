@@ -41,7 +41,7 @@ from itools.xml import get_end_tag, XMLFile
 from doctemplate import MySimpleDocTemplate, MyDocTemplate
 from style import build_paragraph_style, get_table_style, makeTocHeaderStyle
 from style import get_align, build_inline_style, build_frame_style
-from style import get_hr_style, get_font_name
+from style import get_hr_style, get_font_name, attribute_style_to_dict
 from utils import check_image, exist_attribute, font_value
 from utils import format_size, get_int_value, normalize
 from utils import Paragraph, pc_float, stream_next, join_content, Div
@@ -563,6 +563,10 @@ def body_stream(stream, _tag_name, _attributes, context):
 
     body_style = context.get_css_props()
     context.doc_attr.update(build_frame_style(context, body_style))
+    attribute_style = _attributes.get((None, 'style'), '')
+    attribute_style = attribute_style_to_dict(attribute_style)
+    context.doc_attr.update(build_frame_style(context, attribute_style))
+
     temp_story = None
     story = []
     while True:

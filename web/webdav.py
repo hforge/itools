@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from server import RequestMethod, register_method
+from server import RequestMethod, register_method, find_view_by_method
 
 
 # This module is meant to provide support for the WebDav protocol.  Though so
@@ -155,53 +155,14 @@ class UNLOCK(RequestMethod):
 
 
 
-# FIXME The method PUT does not really belongs to webdav, but to HTTP 1.1
 class PUT(RequestMethod):
+    """This is the PUT method as defined in WebDAV.
+    Resource must be locked before PUTting.
+    """
 
     @classmethod
-    def handle_request(cls, server, context):
-        response = context.response
-
-        # (1) The requested resource
-        cls.find_resource(server, context)
-        resource = context.resource
-
-        # (2) Access Control
-        ac = resource.get_access_control()
-        if not ac.is_allowed_to_lock(context.user, resource):
-            # XXX Should it be Unauthorized (401) or Forbidden (403) ?
-            response.set_status(401)
-            response.set_header('content-length', 0)
-            response.set_body(None)
-            return response
-
-        # (3) Check whether the resource is already locked
-        if not resource.is_locked():
-            # FIXME This probably not the good response
-            response.set_status(423)
-            response.set_header('content-length', 0)
-            response.set_body(None)
-            return response
-
-        # (4) Put
-        try:
-            resource.put(context)
-        except:
-            server.log_error(context)
-            server.abort_transaction(context)
-            response.set_status(500)
-            response.set_header('content-length', 0)
-            response.set_body(None)
-            return response
-
-        # (5) Commit transaction
-        cls.commit_transaction(server, context)
-
-        # (6) Ok
-        response.set_status(204)
-        response.set_header('content-length', 0)
-        response.set_body(None)
-        return response
+    def find_view(cls, server, context):
+        find_view_by_method(server, context)
 
 
 

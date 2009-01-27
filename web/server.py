@@ -20,14 +20,12 @@
 # Import from the Standard Library
 from base64 import decodestring
 from cProfile import runctx
-from datetime import datetime
 from logging import getLogger, WARNING, FileHandler, StreamHandler, Formatter
 from os import fstat, getpid, remove as remove_file
 from types import FunctionType, MethodType
 from signal import signal, SIGINT
 from socket import socket as Socket, error as SocketError
 from socket import AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR
-import sys
 from time import strftime, time
 from traceback import format_exc
 from urllib import unquote
@@ -605,6 +603,16 @@ status2name = {
     405: 'method_not_allowed',
     409: 'conflict',
 }
+
+
+def find_view_by_method(server, context):
+    """Associating an uncommon HTTP or WebDAV method to a special view.
+    method "PUT" -> view "put" <instance of BaseView>
+    """
+    method_name = context.request.method
+    context.view = context.resource.get_view(method_name.lower())
+    if context.view is None:
+        raise MethodNotAllowed
 
 
 class RequestMethod(object):

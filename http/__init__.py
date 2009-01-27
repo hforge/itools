@@ -19,7 +19,7 @@ from exceptions import HTTPError, ClientError, ServerError
 from exceptions import NotModified
 from exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 from exceptions import InternalServerError, NotImplemented, BadGateway
-from exceptions import ServiceUnavailable, MethodNotAllowed
+from exceptions import ServiceUnavailable, MethodNotAllowed, Conflict
 from request import Request
 from response import Response
 import vfs

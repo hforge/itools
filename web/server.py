@@ -944,6 +944,9 @@ class OPTIONS(RequestMethod):
                             allowed.append(method_name)
                 # OPTIONS is built-in
                 allowed.append('OPTIONS')
+                # DELETE is unsupported at the root
+                if context.path == '/':
+                    allowed.remove('DELETE')
 
         # (3) Render
         response.set_header('allow', ','.join(allowed))
@@ -982,6 +985,18 @@ class TRACE(RequestMethod):
 
 
 
+class DELETE(RequestMethod):
+
+    method_name = 'DELETE'
+
+
+    @classmethod
+    def find_view(cls, server, context):
+        # Look for the "delete" view
+        return find_view_by_method(server, context)
+
+
+
 ###########################################################################
 # Registry
 ###########################################################################
@@ -998,3 +1013,4 @@ register_method('HEAD', HEAD)
 register_method('POST', POST)
 register_method('OPTIONS', OPTIONS)
 register_method('TRACE', TRACE)
+register_method('DELETE', DELETE)

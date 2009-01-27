@@ -30,6 +30,7 @@ __all__ = [
     'BadGateway',
     'BadRequest',
     'ClientError',
+    'Conflict',
     'Forbidden',
     'HTTPError',
     'InternalServerError',

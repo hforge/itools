@@ -36,7 +36,7 @@ from warnings import warn
 # Import from itools
 from itools.http import Request, Response, ClientError, NotModified
 from itools.http import BadRequest, Forbidden, NotFound, Unauthorized
-from itools.http import HTTPError, NotImplemented, MethodNotAllowed
+from itools.http import HTTPError, NotImplemented, MethodNotAllowed, Conflict
 from itools.i18n import init_language_selector
 from itools.uri import Reference
 from context import Context, set_context, select_language
@@ -603,6 +603,7 @@ status2name = {
     403: 'forbidden',
     404: 'not_found',
     405: 'method_not_allowed',
+    409: 'conflict',
 }
 
 
@@ -782,6 +783,11 @@ class RequestMethod(object):
         if method is not None:
             try:
                 context.entity = method(resource, context)
+            except Conflict, error:
+                status = error.code
+                context.status = status
+                context.view_name = status2name[status]
+                context.view = root.get_view(context.view_name)
             except:
                 cls.internal_server_error(server, context)
             else:

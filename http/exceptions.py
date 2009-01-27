@@ -55,6 +55,10 @@ class MethodNotAllowed(ClientError):
     title = 'Method Not Allowed'
 
 
+class Conflict(ClientError):
+    code = 409
+    title = 'Conflict'
+
 
 class ServerError(HTTPError):
     """Base class for 5xx responses."""

@@ -259,6 +259,11 @@ class RootResource(AccessControl, Resource):
         return '405 Method Not Allowed'
 
 
+    def conflict(self, context):
+        """Called on status 409 for replacing the body by an error page."""
+        return '409 Conflict'
+
+
     def internal_server_error(self, context):
         """Called on status 500 for replacing the body by an error page."""
         return '500 Internal Server Error'

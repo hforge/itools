@@ -764,8 +764,7 @@ class RequestMethod(object):
             method = None
         else:
             # GET, POST...
-            method_name = cls.__name__
-            method = getattr(view, method_name)
+            method = getattr(view, cls.method_name)
 
         # (3) Render
         if method is not None:
@@ -805,6 +804,9 @@ class RequestMethod(object):
 
 
 class GET(RequestMethod):
+
+    method_name = 'GET'
+
 
     @classmethod
     def check_method(cls, server, context):
@@ -860,6 +862,9 @@ class HEAD(GET):
 
 
 class POST(RequestMethod):
+
+    method_name = 'POST'
+
 
     @classmethod
     def check_method(cls, server, context):

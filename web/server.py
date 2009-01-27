@@ -602,7 +602,7 @@ status2name = {
     401: 'unauthorized',
     403: 'forbidden',
     404: 'not_found',
-    405: 'forbidden',
+    405: 'method_not_allowed',
 }
 
 
@@ -654,6 +654,18 @@ class RequestMethod(object):
 
         # Forbidden (403)
         raise Forbidden
+
+
+    @classmethod
+    def check_method(cls, server, context, method_name=None):
+        if method_name is None:
+            method_name = context.request.method
+        # Get the method
+        method = getattr(context.view, method_name, None)
+        if method is None:
+            raise MethodNotAllowed
+
+        context.view_method = method
 
 
     @classmethod
@@ -809,16 +821,6 @@ class GET(RequestMethod):
 
 
     @classmethod
-    def check_method(cls, server, context):
-        # Get the method
-        method = getattr(context.view, 'GET', None)
-        if method is None:
-            raise MethodNotAllowed
-
-        context.view_method = method
-
-
-    @classmethod
     def check_cache(cls, server, context):
         # Get the resource's modification time
         resource = context.resource
@@ -873,19 +875,7 @@ class POST(RequestMethod):
             method_name = 'POST'
         else:
             method_name = 'GET'
-
-        # Get the method
-        method = getattr(context.view, method_name, None)
-        if method is not None:
-            context.view_method = method
-            return
-
-        # Method not allowed
-        # FIXME For HTTP 1.1 this should be "405 Method not Allowed"
-        context.status = 403
-        context.view_name = 'forbidden'
-        context.view = context.site_root.get_view(context.view_name)
-        context.view_method = context.view.GET
+        RequestMethod.check_method(server, context, method_name=method_name)
 
 
     @classmethod

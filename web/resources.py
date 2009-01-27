@@ -254,6 +254,11 @@ class RootResource(AccessControl, Resource):
         return '404 Not Found'
 
 
+    def method_not_allowed(self, context):
+        """Called on status 405 for replacing the body by an error page."""
+        return '405 Method Not Allowed'
+
+
     def internal_server_error(self, context):
         """Called on status 500 for replacing the body by an error page."""
         return '500 Internal Server Error'

@@ -39,8 +39,9 @@ from itools.xml import get_end_tag, XMLFile
 # Internal import
 from doctemplate import MySimpleDocTemplate, MyDocTemplate
 from style import build_paragraph_style, get_table_style, makeTocHeaderStyle
-from style import get_align, build_inline_style, build_frame_style
-from style import get_hr_style, get_font_name
+from style import table_get_align, table_get_margin, build_inline_style
+from style import build_frame_style, get_hr_style, get_font_name
+from style import attribute_style_to_dict
 from utils import check_image, exist_attribute, font_value
 from utils import format_size, get_int_value, normalize
 from utils import Paragraph, pc_float, stream_next, join_content, Div
@@ -54,7 +55,7 @@ from reportlab.lib.units import cm
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.cidfonts import UnicodeCIDFont
 from reportlab.platypus import (XPreformatted, PageBreak, Image, Indenter,
-                                Table, tableofcontents)
+                                Table, tableofcontents, Spacer)
 from reportlab.platypus.flowables import HRFlowable
 from reportlab.platypus.tableofcontents import TableOfContents
 
@@ -562,6 +563,10 @@ def body_stream(stream, _tag_name, _attributes, context):
 
     body_style = context.get_css_props()
     context.doc_attr.update(build_frame_style(context, body_style))
+    attribute_style = _attributes.get((None, 'style'), '')
+    attribute_style = attribute_style_to_dict(attribute_style)
+    context.doc_attr.update(build_frame_style(context, attribute_style))
+
     temp_story = None
     story = []
     while True:
@@ -596,7 +601,7 @@ def body_stream(stream, _tag_name, _attributes, context):
             elif tag_name == 'pagebreak':
                 story.append(PageBreak())
             elif tag_name == 'table':
-                story.append(table_stream(stream, tag_name, attributes,
+                story.extend(table_stream(stream, tag_name, attributes,
                                           context))
             elif tag_name == 'toc':
                 level = attributes.get((None, 'level'), None)
@@ -685,7 +690,7 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context,
                     story.extend(def_list_stream(stream, tag_name, attributes,
                                                  context))
                 elif tag_name == 'table':
-                    story.append(table_stream(stream, tag_name, attributes,
+                    story.extend(table_stream(stream, tag_name, attributes,
                                               context))
                 else:
                     skip = False
@@ -930,13 +935,19 @@ def def_list_stream(stream, _tag_name, attributes, context):
 
 
 def table_stream(stream, _tag_name, attributes, context):
+    """Return a list of Flowables"""
+
     content = Table_Content(context)
     start = (0, 0)
     stop = (-1, -1)
-    content.add_attributes(get_align(attributes))
+    content.add_attributes(table_get_align(attributes))
 
     # Get the CSS style
     style_css = context.get_css_props()
+    # Table margin
+    margin_top, margin_bottom = table_get_margin(style_css)
+    content.set_table_margin(margin_top, margin_bottom)
+
     content.extend_style(get_table_style(style_css, attributes, start, stop))
 
     while True:
@@ -1159,19 +1170,39 @@ class Table_Content(object):
         self.rowHeights = []
         self.context = context
         self.split = 0
+        # Table margins (top and bottom)
+        self.margin_top = None
+        self.margin_bottom = None
 
 
     # Create platypus object
     def create(self):
+        """Return a list of flowables
+        Emulate the top/bottom margin of the table
+        by adding a Spacer before and after the table."""
+
         l = len(self.rowHeights)
         if l:
             none_list = [ None for x in xrange(l, self.current_y) ]
             self.rowHeights.extend(none_list)
         else:
             self.rowHeights = None
-        return Table(self.content, style=self.style, colWidths=self.colWidths,
-                     rowHeights=self.rowHeights, repeatRows=self.split,
-                     **self.attrs)
+        # Build the list of flowables
+        story = []
+        if self.margin_top:
+            # margin top
+            story.append(Spacer(0, self.margin_top))
+
+        table = Table(self.content, style=self.style, colWidths=self.colWidths,
+                      rowHeights=self.rowHeights, repeatRows=self.split,
+                      **self.attrs)
+        story.append(table)
+
+        if self.margin_bottom:
+            # margin bottom
+            story.append(Spacer(0, self.margin_bottom))
+
+        return story
 
 
     # Get current position in table
@@ -1235,6 +1266,11 @@ class Table_Content(object):
     # Attributes
     def add_attributes(self, attributes):
         self.attrs.update(attributes)
+
+
+    def set_table_margin(self, top, bottom):
+        self.margin_top = top
+        self.margin_bottom = bottom
 
 
     def extend_style(self, style):

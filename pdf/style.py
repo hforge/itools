@@ -62,7 +62,7 @@ BODY_MARGINS = {'margin-top': 'topMargin',
 
 
 
-def get_align(attributes):
+def table_get_align(attributes):
     attrs = {}
     hAlign = attributes.get((None, 'align'), None)
     if hAlign in H_ALIGN:
@@ -71,6 +71,36 @@ def get_align(attributes):
     if vAlign in V_ALIGN:
         attrs['vAlign'] = vAlign.upper()
     return attrs
+
+
+def table_get_margin(style_css):
+    """Calculate and return top and bottom margin"""
+    margin_top = margin_bottom = None, None
+    for key, value in style_css.iteritems():
+        if key == 'margin-top':
+            margin_top = format_size(value, None)
+        elif key == 'margin-bottom':
+            margin_bottom = format_size(value, None)
+
+    return margin_top, margin_bottom
+
+
+def attribute_style_to_dict(value):
+    """Build a dictionary from a HTML "style" attribute string
+    INPUT: background: red; color: green;
+    OUTPUT: {'background': 'red', 'color': 'green'}"""
+
+    css = {}
+    for data in value.split(';'):
+        if not data:
+            continue
+        try:
+            key, value = data.split(':')
+        except ValueError:
+            continue
+        css[key.strip()] = value.strip()
+    return css
+
 
 
 #######################################################################
@@ -555,12 +585,7 @@ def get_table_style(style_css, attributes, start, stop):
     for key1, value in attributes.iteritems():
         key1 = key1[1]
         if key1 == 'style':
-            style_css2 = {}
-            for data in value.split(';'):
-                if not data:
-                    continue
-                key, value = data.split(':') # FIXME to do more robust
-                style_css2[key] = value
+            style_css2 = attribute_style_to_dict(value)
             table_style.extend(_get_table_style(style_css, start, stop))
             border_css_buffer.update(_get_table_style_border_only(style_css2,
                                                                   start, stop))

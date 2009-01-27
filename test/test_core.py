@@ -91,7 +91,7 @@ class FrozenlistTestCase(TestCase):
     def test_del_slice(self):
         try:
             del a_frozen_list[0:2]
-        except TypeError:
+        except TypeError:   
             pass
         else:
             self.assert_(False)

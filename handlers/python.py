@@ -19,23 +19,24 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from compiler import parse, walk
+from ast import parse, walk, NodeVisitor
+
 
 # Import from itools
 from text import TextFile
 from registry import register_handler_class
 
-class VisitorUnicode(object):
+class VisitorUnicode(NodeVisitor):
 
     def __init__(self):
         self.messages = []
 
 
-    def visitConst(self, const):
+    def visit_Str(self, str):
         from itools.srx import TEXT
-        if type(const.value) is unicode and const.value.strip():
+        if type(str.s) is unicode and str.s.strip():
             # Context = None
-            msg = ((TEXT, const.value),), None, const.lineno
+            msg = ((TEXT, str.s),), None, str.lineno
             self.messages.append(msg)
 
 
@@ -54,8 +55,7 @@ class Python(TextFile):
         # Parse and Walk
         ast = parse(data)
         visitor = VisitorUnicode()
-        walk(ast, visitor)
-
+        visitor.generic_visit(ast)
         return visitor.messages
 
 

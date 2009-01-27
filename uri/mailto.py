@@ -20,6 +20,7 @@ from registry import register_scheme
 
 
 class Mailto(object):
+    __hash__ = None
     __slots__ = ['address']
     scheme = 'mailto'
 
@@ -47,7 +48,6 @@ class Mailto(object):
 
     def __eq__(self, other):
         return str(self) == str(other)
-
 
 
 class MailtoDataType(object):

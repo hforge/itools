@@ -118,6 +118,7 @@ def read_parameters(data):
 ###########################################################################
 
 class Cookie(object):
+    __hash__ = None
 
     def __init__(self, value, comment=None, domain=None, max_age=None,
                  path=None, secure=None, version=None, commenturl=None,

@@ -34,7 +34,7 @@ from warnings import warn
 # Import from itools
 from itools.http import Request, Response, ClientError, NotModified
 from itools.http import BadRequest, Forbidden, NotFound, Unauthorized
-from itools.http import HTTPError, NotImplemented, MethodNotAllowed, Conflict
+from itools.http import HTTPError, NotImplemented, Conflict
 from itools.i18n import init_language_selector
 from itools.uri import Reference
 from context import Context, set_context, select_language
@@ -578,9 +578,7 @@ class Server(object):
         request = context.request
         method = methods.get(request.method)
         if method is None:
-            # FIXME Return the right response
-            message = 'the request method "%s" is not implemented'
-            raise NotImplemented, message % request.method
+            raise NotImplemented
 
         # (2) Initialize the context
         self.init_context(context)
@@ -613,7 +611,7 @@ def find_view_by_method(server, context):
     method_name = context.request.method
     context.view = context.resource.get_view(method_name.lower())
     if context.view is None:
-        raise MethodNotAllowed
+        raise NotImplemented
 
 
 class RequestMethod(object):
@@ -673,7 +671,7 @@ class RequestMethod(object):
         # Get the method
         method = getattr(context.view, method_name, None)
         if method is None:
-            raise MethodNotAllowed
+            raise NotImplemented
 
         context.view_method = method
 
@@ -769,9 +767,6 @@ class RequestMethod(object):
             response.set_header('content-length', 0)
             response.set_body(None)
             return response
-        else:
-            # Everything goes fine so far
-            context.status = 200
 
         # (2) Always deserialize the query
         resource = context.resource
@@ -803,6 +798,10 @@ class RequestMethod(object):
                 # Ok: set status
                 if isinstance(context.entity, Reference):
                     context.status = 302
+                elif context.entity is None:
+                    context.status = 204
+                else:
+                    context.status = 200
 
         # (4) Commit the transaction
         cls.commit_transaction(server, context)
@@ -918,7 +917,6 @@ class OPTIONS(RequestMethod):
         if context.path == '*':
             # (2a) Server-registered methods
             allowed = known_methods
-            context.status = 200
         else:
             try:
                 cls.find_resource(server, context)
@@ -929,30 +927,28 @@ class OPTIONS(RequestMethod):
                 context.view_name = status2name[status]
                 context.view = root.get_view(context.view_name)
             else:
-                # Everything goes fine so far
-                context.status = 200
-
-            # (2b) Check methods supported by the view
-            resource = context.resource
-            view = context.view
-            for method_name in known_methods:
-                # Search on the resource's view
-                method = getattr(view, method_name, None)
-                if method is not None:
-                    allowed.append(method_name)
-                    continue
-                # Search on the resource itself
-                # PUT -> "put" view instance
-                method = getattr(resource, method_name.lower(), None)
-                if isinstance(method, BaseView):
-                    if getattr(method, method_name, None) is not None:
+                # (2b) Check methods supported by the view
+                resource = context.resource
+                view = context.view
+                for method_name in known_methods:
+                    # Search on the resource's view
+                    method = getattr(view, method_name, None)
+                    if method is not None:
                         allowed.append(method_name)
+                        continue
+                    # Search on the resource itself
+                    # PUT -> "put" view instance
+                    method = getattr(resource, method_name.lower(), None)
+                    if isinstance(method, BaseView):
+                        if getattr(method, method_name, None) is not None:
+                            allowed.append(method_name)
                 # OPTIONS is built-in
                 allowed.append('OPTIONS')
 
         # (3) Render
         response.set_header('allow', ','.join(allowed))
         context.entity = None
+        context.status = 200
 
         # (4) Commit the transaction
         cls.commit_transaction(server, context)

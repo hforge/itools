@@ -39,6 +39,7 @@ from itools.i18n import init_language_selector
 from itools.uri import Reference
 from context import Context, set_context, select_language
 from context import FormError
+from views import BaseView
 
 # Import from gobject
 from gobject import MainLoop, io_add_watch, source_remove
@@ -941,10 +942,11 @@ class OPTIONS(RequestMethod):
                     allowed.append(method_name)
                     continue
                 # Search on the resource itself
-                # PUT -> put
+                # PUT -> "put" view instance
                 method = getattr(resource, method_name.lower(), None)
-                if method is not None:
-                    allowed.append(method_name)
+                if isinstance(method, BaseView):
+                    if getattr(method, method_name, None) is not None:
+                        allowed.append(method_name)
                 # OPTIONS is built-in
                 allowed.append('OPTIONS')
 

@@ -34,7 +34,7 @@ from warnings import warn
 # Import from itools
 from itools.http import Request, Response, ClientError, NotModified
 from itools.http import BadRequest, Forbidden, NotFound, Unauthorized
-from itools.http import HTTPError, NotImplemented, Conflict
+from itools.http import HTTPError, NotImplemented
 from itools.i18n import init_language_selector
 from itools.uri import Reference
 from context import Context, set_context, select_language
@@ -686,6 +686,14 @@ class RequestMethod(object):
 
 
     @classmethod
+    def check_conditions(cls, server, context):
+        """Check conditions to match before the response can be processed:
+        resource, state, request headers...
+        """
+        pass
+
+
+    @classmethod
     def check_transaction(cls, server, context):
         """Return True if your method is supposed to change the state.
         """
@@ -750,6 +758,8 @@ class RequestMethod(object):
             cls.check_method(server, context)
             # Check the client's cache
             cls.check_cache(server, context)
+            # Check pre-conditions
+            cls.check_conditions(server, context)
         except Unauthorized, error:
             status = error.code
             context.status = status
@@ -788,11 +798,6 @@ class RequestMethod(object):
         if method is not None:
             try:
                 context.entity = method(resource, context)
-            except Conflict, error:
-                status = error.code
-                context.status = status
-                context.view_name = status2name[status]
-                context.view = root.get_view(context.view_name)
             except:
                 cls.internal_server_error(server, context)
             else:
@@ -998,6 +1003,20 @@ class DELETE(RequestMethod):
     def find_view(cls, server, context):
         # Look for the "delete" view
         return find_view_by_method(server, context)
+
+
+    @classmethod
+    def check_conditions(cls, server, context):
+        resource = context.resource
+        parent = resource.parent
+        # The root cannot delete itself
+        if parent is None:
+            raise MethodNotAllowed
+
+
+    @classmethod
+    def check_transaction(cls, server, context):
+        return getattr(context, 'commit', True) and context.status < 400
 
 
 

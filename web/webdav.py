@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
+from itools.http import Conflict
 from server import RequestMethod, register_method, find_view_by_method
 
 
@@ -160,9 +161,26 @@ class PUT(RequestMethod):
     Resource must be locked before PUTting.
     """
 
+    method_name = 'PUT'
+
+
     @classmethod
     def find_view(cls, server, context):
         find_view_by_method(server, context)
+
+
+    @classmethod
+    def check_conditions(cls, server, context):
+        resource = context.resource
+        # In WebDAV the resource must be locked
+        if not resource.is_locked():
+            raise Conflict
+        # TODO check the lock matches the "If:" header
+
+
+    @classmethod
+    def check_transaction(cls, server, context):
+        return getattr(context, 'commit', True) and context.status < 400
 
 
 

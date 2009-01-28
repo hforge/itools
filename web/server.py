@@ -606,10 +606,11 @@ status2name = {
 
 def find_view_by_method(server, context):
     """Associating an uncommon HTTP or WebDAV method to a special view.
-    method "PUT" -> view "put" <instance of BaseView>
+    method "PUT" -> view "http_put" <instance of BaseView>
     """
     method_name = context.request.method
-    context.view = context.resource.get_view(method_name.lower())
+    view_name = "http_%s" % method_name.lower()
+    context.view = context.resource.get_view(view_name)
     if context.view is None:
         raise NotImplemented
 
@@ -938,12 +939,15 @@ class OPTIONS(RequestMethod):
                         continue
                     # Search on the resource itself
                     # PUT -> "put" view instance
-                    method = getattr(resource, method_name.lower(), None)
-                    if isinstance(method, BaseView):
-                        if getattr(method, method_name, None) is not None:
+                    view_name = "http_%s" % method_name.lower()
+                    http_view = getattr(resource, view_name, None)
+                    if isinstance(http_view, BaseView):
+                        if getattr(http_view, method_name, None) is not None:
                             allowed.append(method_name)
                 # OPTIONS is built-in
                 allowed.append('OPTIONS')
+                # TRACE is built-in
+                allowed.append('TRACE')
                 # DELETE is unsupported at the root
                 if context.path == '/':
                     allowed.remove('DELETE')

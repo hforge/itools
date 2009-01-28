@@ -17,16 +17,6 @@
 
 class CatalogAware(object):
 
-    def get_catalog_fields(self):
-        """Returns a list with the definition of the fields to be indexed.
-
-        The first field must be both indexed and stored (it defines the
-        "external id", which is a unique identifier used to unindex the
-        document and to load the original document).
-        """
-        raise NotImplementedError
-
-
     def get_catalog_values(self):
         """Returns a dictionary with the values of the fields to be indexed.
         """

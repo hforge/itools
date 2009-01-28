@@ -27,8 +27,8 @@ from xapian import inmemory_open
 # Import from itools
 from itools.uri import get_absolute_reference
 from base import CatalogAware
+from itools.datatypes import Integer
 from exceptions import XapianIndexError
-from fields import get_field
 from queries import RangeQuery, PhraseQuery, AndQuery, OrQuery
 from queries import AllQuery, NotQuery, StartQuery
 
@@ -45,40 +45,36 @@ OP_VALUE_LE = Query.OP_VALUE_LE
 
 
 # We must overload the normal behaviour (range + optimization)
-def _encode(field_type, value):
-    # integer
+def _encode(field_cls, value):
+    # Overload the Integer type
     # XXX warning: this doesn't work with the big integers!
-    if field_type == 'integer':
+    if issubclass(field_cls, Integer):
         return sortable_serialise(value)
     # A common field or a new field
-    field = get_field(field_type)
-    return field.encode(value)
+    return field_cls.encode(value)
 
 
 
-def _decode(field_type, data):
-    # integer
-    if field_type == 'integer':
+def _decode(field_cls, data):
+    # Overload the Integer type, cf _encode
+    if issubclass(field_cls, Integer):
         if data == '':
             return None
         return int(sortable_unserialise(data))
     # A common field or a new field
-    field = get_field(field_type)
-    return field.decode(data)
+    return field_cls.decode(data)
 
 
 
-def _index(xdoc, field_type, value, prefix):
-    field = get_field(field_type)
-    for term in field.split(value):
+def _index(xdoc, field_cls, value, prefix):
+    for term in field_cls.split(value):
         xdoc.add_posting(prefix+term[0], term[1])
 
 
 
-def _make_PhraseQuery(field_type, value, prefix):
-    field = get_field(field_type)
+def _make_PhraseQuery(field_cls, value, prefix):
     words = []
-    for word in field.split(value):
+    for word in field_cls.split(value):
         words.append(prefix+word[0])
     return Query(OP_PHRASE, words)
 
@@ -90,8 +86,7 @@ def _get_prefix(number):
     X for a long prefix
     Z for a stemmed word
     """
-    # 0 is for the key field, the unique Id of a document
-    magic_letters = 'QABCDEFGHIJKLMNOPRSTUVWY'
+    magic_letters = 'ABCDEFGHIJKLMNOPRSTUVWY'
     size = len(magic_letters)
     result = 'X'*(number/size)
     return result+magic_letters[number%size]
@@ -108,16 +103,17 @@ def _get_xquery(catalog, query=None, **kw):
         return Query('')
 
     # Case 3: build the query from the keyword parameters
+    metadata = catalog._metadata
     fields = catalog._fields
     xqueries = []
-    for name in kw:
-        # 'name' must be indexed
-        if name not in fields:
-            raise XapianIndexError(name)
+    for name, value in kw.iteritems():
+        # If name is a field not yet indexed, return nothing
+        if name not in metadata:
+            return Query()
 
         # Ok
-        info = fields[name]
-        query = _make_PhraseQuery(info['type'], kw[name], info['prefix'])
+        prefix = metadata[name]['prefix']
+        query = _make_PhraseQuery(fields[name], value, prefix)
         xqueries.append(query)
 
     return Query(OP_AND, xqueries)
@@ -126,15 +122,16 @@ def _get_xquery(catalog, query=None, **kw):
 
 class Doc(object):
 
-    def __init__(self, xdoc, fields):
+    def __init__(self, xdoc, fields, metadata):
         self._xdoc = xdoc
         self._fields = fields
+        self._metadata = metadata
 
 
     def __getattr__(self, name):
-        info = self._fields[name]
-        data = self._xdoc.get_value(info['value'])
-        return _decode(info['type'], data)
+        value = self._metadata[name]['value']
+        data = self._xdoc.get_value(value)
+        return _decode(self._fields[name], data)
 
 
 
@@ -199,23 +196,23 @@ class SearchResults(object):
         """
         enquire = self._enquire
         fields = self._catalog._fields
+        metadata = self._catalog._metadata
 
         # sort_by != None
         if sort_by is not None:
             if isinstance(sort_by, list):
                 sorter = MultiValueSorter()
                 for name in sort_by:
-                    # If there is a problem, ...
-                    if name not in fields:
-                        raise XapianIndexError(name)
-                    sorter.add(fields[name]['value'])
+                    # If there is a problem, ignore this field
+                    if name not in metadata:
+                        continue
+                    sorter.add(metadata[name]['value'])
                 enquire.set_sort_by_key_then_relevance(sorter, reverse)
             else:
-                # If there is a problem, ...
-                if sort_by not in fields:
-                    raise XapianIndexError(sort_by)
-                value = fields[sort_by]['value']
-                enquire.set_sort_by_value_then_relevance(value, reverse)
+                # If there is a problem, ignore the sort
+                if sort_by in metadata:
+                    value = metadata[sort_by]['value']
+                    enquire.set_sort_by_value_then_relevance(value, reverse)
         else:
             enquire.set_sort_by_relevance()
 
@@ -226,7 +223,7 @@ class SearchResults(object):
         # Construction of the results
         results = []
         for doc in enquire.get_mset(start, size):
-            results.append(Doc(doc.get_document(), fields))
+            results.append(Doc(doc.get_document(), fields, metadata))
 
         # sort_by=None/reverse=True
         if sort_by is None and reverse:
@@ -238,7 +235,9 @@ class SearchResults(object):
 
 class Catalog(object):
 
-    def __init__(self, ref, read_only=False, enable_transactions=True):
+    def __init__(self, ref, fields, read_only=False,
+                 asynchronous_mode=True):
+
         # Load the database
         if isinstance(ref, Database) or isinstance(ref, WritableDatabase):
             self._db = ref
@@ -255,14 +254,15 @@ class Catalog(object):
                 self._db = WritableDatabase(path, DB_OPEN)
 
         db = self._db
-        self._transactions = enable_transactions
+        self._asynchronous = asynchronous_mode
+        self._fields = fields
 
         # Asynchronous mode
-        if not read_only and enable_transactions:
+        if not read_only and asynchronous_mode:
             db.begin_transaction(False)
 
         # Load the xfields from the database
-        self._fields = {}
+        self._metadata = {}
         self._key_field = None
         self._value_nb = 0
         self._prefix_nb = 0
@@ -275,8 +275,8 @@ class Catalog(object):
     def save_changes(self):
         """Save the last changes to disk.
         """
-        if not self._transactions:
-            raise ValueError, "The transactions are disable"
+        if not self._asynchronous:
+            raise ValueError, "The transactions are synchronous"
         db = self._db
         db.commit_transaction()
         db.flush()
@@ -286,8 +286,8 @@ class Catalog(object):
     def abort_changes(self):
         """Abort the last changes made in memory.
         """
-        if not self._transactions:
-            raise ValueError, "The transactions are disable"
+        if not self._asynchronous:
+            raise ValueError, "The transactions are synchronous"
         db = self._db
         db.cancel_transaction()
         self._load_all_internal()
@@ -301,102 +301,83 @@ class Catalog(object):
         """Add a new document.
         """
         db = self._db
+        metadata = self._metadata
         fields = self._fields
 
         # Check the input
         if not isinstance(document, CatalogAware):
             raise ValueError, 'the document must be a CatalogAware object'
 
-        # Extract the definition and values (do it first, because it may
-        # fail).
-        doc_fields = document.get_catalog_fields()
+        # Extract the values (do it first, because it may fail).
         doc_values = document.get_catalog_values()
 
-        # A least one field !
-        if len(doc_fields) == 0:
-            raise ValueError, 'the document must have at least one field'
-
         # Make the xapian document
-        fields_modified = False
+        metadata_modified = False
         xdoc = Document()
-        for position, field in enumerate(doc_fields):
-            name = field.name
+        for name, value in doc_values.iteritems():
+            field_cls = fields[name]
 
             # New field ?
-            if name not in fields:
+            if name not in metadata:
                 info = {}
-                # Type
-                info['type'] = field.type
 
-                # The first, so the key field
-                if position == 0:
-                    # Key field
-                    self._key_field = name
-                    info['is_key_field'] = True
-
-                    # The key field must be stored and indexed
-                    if not field.is_stored or not field.is_indexed:
-                        raise ValueError, ('the first field must be stored '
+                # The key field ?
+                if getattr(field_cls, 'is_key_field', False):
+                    if self._key_field is not None:
+                        raise ValueError, 'You must have only one key field'
+                    if not (field_cls.is_stored and field_cls.is_indexed):
+                        raise ValueError, ('the key field must be stored '
                                            'and indexed')
+                    self._key_field = name
+                    info['key_field'] = True
                 # Stored ?
-                if field.is_stored:
-                    info['is_stored'] = True
+                if getattr(field_cls, 'is_stored', False):
                     info['value'] = self._value_nb
                     self._value_nb += 1
                 # Indexed ?
-                if field.is_indexed:
-                    info['is_indexed'] = True
+                # XXX the key field is indexed twice
+                if getattr(field_cls, 'is_indexed', False):
                     info['prefix'] = _get_prefix(self._prefix_nb)
                     self._prefix_nb += 1
-                fields[name] = info
-                fields_modified = True
-            # Or verifications, ...
+
+                # Save info
+                # XXX info can be "{}"
+                metadata[name] = info
+                metadata_modified = True
             else:
-                info = fields[name]
-                if ((field.is_stored != ('is_stored' in info)) or
-                    (field.is_indexed != ('is_indexed' in info))):
-                    msg = (
-                        'You have already used the name "%s" for a field, but'
-                        ' with an other is_stored/is_indexed combination')
-                    raise ValueError, msg % name
-
-            # doc_fields can be greater than doc_values
-            if doc_values.get(name) is None:
-                if name != self._key_field:
-                    continue
-                else:
-                    raise IndexError, 'the first value is compulsory'
-
+                info = metadata[name]
 
             # Is stored ?
-            if field.is_stored:
-                xdoc.add_value(info['value'], _encode(field.type,
-                                                      doc_values[name]))
+            if getattr(field_cls, 'is_stored', False):
+                xdoc.add_value(info['value'], _encode(field_cls, value))
+
             # Is indexed ?
-            if field.is_indexed:
-                _index(xdoc, field.type, doc_values[name], info['prefix'])
+            if getattr(field_cls, 'is_indexed', False):
+                _index(xdoc, field_cls, value, info['prefix'])
 
         # Store the first value with the prefix 'Q'
-        xdoc.add_term('Q'+_encode(fields[self._key_field]['type'],
-                                  doc_values[self._key_field]))
+        key_field = self._key_field
+        if key_field is None or key_field not in doc_values:
+            raise ValueError, 'the "key_field" value is compulsory'
+        xdoc.add_term('Q'+_encode(fields[key_field], doc_values[key_field]))
 
         # TODO: Don't store two documents with the same key field!
 
         # Save the doc
         db.add_document(xdoc)
 
-        # Store fields ?
-        if fields_modified:
-            db.set_metadata('fields', dumps(fields))
+        # Store metadata ?
+        if metadata_modified:
+            db.set_metadata('metadata', dumps(metadata))
 
 
     def unindex_document(self, value):
-        """Remove the document 'value'. Value is the first Field.
+        """Remove the document that has value stored in its key_field.
            If the document does not exist => no error
         """
         key_field = self._key_field
         if key_field is not None:
-            data = _encode(self._fields[key_field]['type'], value)
+            data = _encode(self._fields[key_field], value)
             self._db.delete_document('Q'+data)
 
 
@@ -413,10 +394,12 @@ class Catalog(object):
     def get_unique_values(self, name):
         """Return all the terms of a given indexed field
         """
-        fields = self._fields
-        if name in fields:
-            prefix = fields[name]['prefix']
-            return set([t.term[1:] for t in self._db.allterms(prefix)])
+        metadata = self._metadata
+        if name in metadata:
+            prefix = metadata[name]['prefix']
+            prefix_size = len(prefix)
+            return set([ t.term[prefix_size:]
+                         for t in self._db.allterms(prefix) ])
         else:
             # If there is a problem => an empty result
             return set()
@@ -425,23 +408,24 @@ class Catalog(object):
     # API / Private
     #######################################################################
     def _load_all_internal(self):
-        """Load the "fields" informations form the database
+        """Load the metadata from the database
         """
-        fields = self._db.get_metadata('fields')
         self._key_field = None
         self._value_nb = 0
         self._prefix_nb = 0
-        if fields == '':
-            self._fields = {}
+
+        metadata = self._db.get_metadata('metadata')
+        if metadata == '':
+            self._metadata = {}
         else:
-            self._fields = loads(fields)
-            for name, info in self._fields.iteritems():
-                if 'is_stored' in info:
-                    self._value_nb += 1
-                if 'is_indexed' in info:
-                    self._prefix_nb += 1
-                if 'is_key_field' in info:
+            self._metadata = loads(metadata)
+            for name, info in self._metadata.iteritems():
+                if 'key_field' in info:
                     self._key_field = name
+                if 'value' in info:
+                    self._value_nb += 1
+                if 'prefix' in info:
+                    self._prefix_nb += 1
 
 
     def _query2xquery(self, query):
@@ -449,6 +433,7 @@ class Catalog(object):
         """
         query_class = query.__class__
         fields = self._fields
+        metadata = self._metadata
 
         # All Query
         if query_class is AllQuery:
@@ -460,22 +445,22 @@ class Catalog(object):
             if type(name) is not str:
                 raise TypeError, "unexpected '%s'" % type(name)
             # If there is a problem => an empty result
-            if name not in fields:
+            if name not in metadata:
                 return Query()
-            info = fields[name]
-            return _make_PhraseQuery(info['type'], query.value,
-                                     info['prefix'])
+            prefix = metadata[name]['prefix']
+            return _make_PhraseQuery(fields[name], query.value, prefix)
 
         # RangeQuery, the field must be stored
         if query_class is RangeQuery:
             name = query.name
+            if type(name) is not str:
+                raise TypeError, "unexpected '%s'" % type(name)
             # If there is a problem => an empty result
-            if name not in fields:
+            if name not in metadata:
                 return Query()
 
-            info = fields[name]
-            field_type = info['type']
-            value = info['value']
+            value = metadata[name]['value']
+            field_cls = fields[name]
 
             left = query.left
             right = query.right
@@ -486,31 +471,35 @@ class Catalog(object):
 
             # Case 2: left limit only
             if right is None:
-                return Query(OP_VALUE_GE, value, _encode(field_type, left))
+                return Query(OP_VALUE_GE, value, _encode(field_cls, left))
 
             # Case 3: right limit only
             if left is None:
-                return Query(OP_VALUE_LE, value, _encode(field_type, right))
+                return Query(OP_VALUE_LE, value, _encode(field_cls, right))
 
             # Case 4: left and right
-            return Query(OP_VALUE_RANGE, value, _encode(field_type, left),
-                         _encode(field_type, right))
+            return Query(OP_VALUE_RANGE, value, _encode(field_cls, left),
+                         _encode(field_cls, right))
 
         # StartQuery, the field must be stored
         if query_class is StartQuery:
             name = query.name
-            value = query.value
+            if type(name) is not str:
+                raise TypeError, "unexpected '%s'" % type(name)
             # If there is a problem => an empty result
-            if name not in fields:
+            if name not in metadata:
                 return Query()
 
-            info = fields[name]
-            value_nb = info['value']
+            value_nb = metadata[name]['value']
 
-            value = _encode(info['type'], value)
+            value = query.value
+            value = _encode(fields[name], value)
+
             if value:
                 # end_value = the word after value: toto => totp
-                end_value = value[:-1] + unichr(ord(value[-1]) + 1)
+                # XXX This code is bogus if the value = '\xff'
+                # XXX We must fix it!!
+                end_value = value[:-1] + chr(ord(value[-1]) + 1)
 
                 # good = {x / x >= value}
                 good = Query(OP_VALUE_GE, value_nb, value)
@@ -539,20 +528,26 @@ class Catalog(object):
 
 
 
-def make_catalog(uri):
+def make_catalog(uri, fields):
     """Creates a new and empty catalog in the given uri.
+
+       If uri=None the catalog is made "in memory".
+       fields must be a dict. It contains some informations about the
+       fields in the database.
+       By example:
+       fields = {'id': Integer(is_key_field=True, is_stored=True,
+                               is_indexed=True), ...}
     """
-    uri = get_absolute_reference(uri)
-    if uri.scheme != 'file':
-        raise IOError, 'The file system supported with catalog is only "file"'
+    if uri is None:
+        db = inmemory_open()
+        return Catalog(db, fields, asynchronous_mode=False)
+    else:
+        uri = get_absolute_reference(uri)
+        if uri.scheme != 'file':
+            raise IOError, ('The file system supported with catalog is only '
+                            '"file"')
+        path = str(uri.path)
+        db = WritableDatabase(path, DB_CREATE)
+        return Catalog(db, fields)
 
-    path = str(uri.path)
-    db = WritableDatabase(path, DB_CREATE)
 
-    return Catalog(db)
-
-
-
-def make_catalog_in_memory():
-    db = inmemory_open()
-    return Catalog(db, enable_transactions=False)

@@ -188,7 +188,7 @@ class icalendarTable(BaseCalendar, Table):
 
     record_schema = merge_dicts(
         data_properties,
-        type=String(index='keyword'),
+        type=String(is_indexed=True),
         inner=Integer(multiple=True),
     )
 
@@ -255,6 +255,7 @@ class icalendarTable(BaseCalendar, Table):
         c_inner_type = None
         uid = None
         records = self.records
+        record_schema = self.record_schema
         id = 0
         uids = {}
 
@@ -279,7 +280,7 @@ class icalendarTable(BaseCalendar, Table):
                     if uid is None:
                         raise ValueError, 'UID is not present'
 
-                    record = self.get_record(id) or Record(id)
+                    record = self.get_record(id) or Record(id, record_schema)
                     c_properties['type'] = Property(c_type)
                     c_properties['UID'] = Property(uid)
                     sequence = c_properties.get('SEQUENCE', None)
@@ -308,7 +309,7 @@ class icalendarTable(BaseCalendar, Table):
 
                 # Inner component
                 elif value == c_inner_type:
-                    record = self.get_record(id) or Record(id)
+                    record = self.get_record(id) or Record(id, record_schema)
                     c_inner_properties['type'] = Property(c_inner_type)
                     sequence = c_inner_properties.get('SEQUENCE', None)
                     c_inner_properties['SEQUENCE'] = sequence or Property(0)
@@ -336,7 +337,7 @@ class icalendarTable(BaseCalendar, Table):
                             # Check the property has not yet being found
                             if prop_name in c_properties:
                                 raise ValueError, \
-                                      "property '%s' can occur only once" % name
+                                    "property '%s' can occur only once" % name
                             # Set the property
                             c_properties[prop_name] = prop_value
                 else:
@@ -356,7 +357,7 @@ class icalendarTable(BaseCalendar, Table):
         # Index the records
         for record in records:
             if record is not None:
-                self.catalog.index_document(record, record.id)
+                self.catalog.index_document(record)
 
 
     def to_ical(self):
@@ -424,7 +425,7 @@ class icalendarTable(BaseCalendar, Table):
             kw['UID'] = self.generate_uid(type)
 
         id = len(self.records)
-        record = Record(id)
+        record = Record(id, self.record_schema)
         version = self.properties_to_dict(kw)
         version['ts'] = Property(datetime.now())
         record.append(version)
@@ -432,7 +433,7 @@ class icalendarTable(BaseCalendar, Table):
         self.set_changed()
         self.added_records.append((id, 0))
         self.records.append(record)
-        self.catalog.index_document(record, id)
+        self.catalog.index_document(record)
         # Back
         return record
 
@@ -534,10 +535,10 @@ class icalendarTable(BaseCalendar, Table):
             dtend = dtend + timedelta(days=1) - resolution
 
         # Get only the events which matches
-        dtstart_limit = str(dtstart + resolution)
-        dtend_limit = str(dtend + resolution)
-        dtstart = str(dtstart)
-        dtend = str(dtend)
+        dtstart_limit = dtstart + resolution
+        dtend_limit = dtend + resolution
+        dtstart = dtstart
+        dtend = dtend
         query = AndQuery(
             PhraseQuery('type', 'VEVENT'),
             OrQuery(RangeQuery('DTSTART', dtstart, dtend),

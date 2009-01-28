@@ -21,12 +21,12 @@
 from datetime import datetime
 
 # Import from itools
+from itools.core import merge_dicts
 from itools.datatypes import DateTime, String, Integer, Unicode
 from itools.handlers import File
 from itools import vfs
-from itools.xapian import make_catalog_in_memory, get_field
+from itools.xapian import make_catalog
 from itools.xapian import AndQuery, PhraseQuery, CatalogAware
-from itools.xapian import IntegerField
 from parser import parse
 
 
@@ -313,12 +313,12 @@ class Property(object):
 
 class Record(list, CatalogAware):
 
-    __slots__ = ['id', 'fields']
+    __slots__ = ['id', 'record_schema']
 
 
-    def __init__(self, id, fields):
+    def __init__(self, id, record_schema):
         self.id = id
-        self.fields = fields
+        self.record_schema  = record_schema
 
 
     def __getattr__(self, name):
@@ -355,14 +355,9 @@ class Record(list, CatalogAware):
         return property.value
 
 
-    def get_catalog_fields(self):
-        return self.fields
-
-
     def get_catalog_values(self):
         values = {'__id__': self.id}
-        for field in self.fields[1:]:
-            name = field.name
+        for name in self.record_schema.iterkeys():
             values[name] = self.get_value(name)
         return values
 
@@ -378,9 +373,7 @@ class Table(File):
     # Example: {'firstname': Unicode, 'lastname': Unicode, 'age': Integer}
     # To index some fields the schema should be declared as:
     # record_schema = {'firstname': Unicode, 'lastname': Unicode,
-    #                  'age': Integer(index='<analyser>')}
-    # where <analyser> is an itools.xapian analyser or derivate: keyword,
-    # book, text, path.
+    #                  'age': Integer(is_indexed=True)}
     #######################################################################
     schema = {}
     record_schema = {}
@@ -463,22 +456,15 @@ class Table(File):
         self.added_records = []
         self.removed_records = []
         # The catalog (for index and search)
-        fields = [IntegerField('__id__', is_stored=True, is_indexed=True)]
-        for name, datatype in self.record_schema.items():
-            index = getattr(datatype, 'index', None)
-            if index is not None:
-                field_cls = get_field(index)
-                # XXX The fields are just indexed, so we cannot
-                # make all types of search
-                fields.append(field_cls(name, is_stored=False,
-                                        is_indexed=True))
-        self.catalog = make_catalog_in_memory()
-        self.fields = fields
+        fields = merge_dicts(self.record_schema,
+                             __id__=Integer(is_key_field=True, is_stored=True,
+                                            is_indexed=True))
+        self.catalog = make_catalog(None, fields)
 
 
     def new(self):
         # Add the properties record
-        properties = self.record_class(-1, self.fields)
+        properties = self.record_class(-1, self.record_schema)
         properties.append({'ts': Property(datetime.now())})
         self.properties = properties
 
@@ -487,6 +473,8 @@ class Table(File):
         # Load the records
         records = self.records
         properties = self.properties
+        record_schema = self.record_schema
+
         n = 0
         version = None
         for name, value, parameters in parse_table(file.read()):
@@ -499,13 +487,13 @@ class Table(File):
                 if uid == -1:
                     # Tale properties
                     if properties is None:
-                        properties = self.record_class(uid, self.fields)
+                        properties = self.record_class(uid, record_schema)
                         self.properties = properties
                     record = properties
                 elif uid >= n:
                     # New record
                     records.extend([None] * (uid - n))
-                    record = self.record_class(uid, self.fields)
+                    record = self.record_class(uid, record_schema)
                     records.append(record)
                     n = uid + 1
                 else:
@@ -699,7 +687,7 @@ class Table(File):
                     raise UniqueError(name, kw[name])
         # Add version to record
         id = len(self.records)
-        record = self.record_class(id, self.fields)
+        record = self.record_class(id, self.record_schema)
         version = self.properties_to_dict(kw)
         version['ts'] = Property(datetime.now())
         record.append(version)
@@ -742,7 +730,7 @@ class Table(File):
         if record is None:
             # if the record doesn't exist
             # we create it, it's useful during an update
-            record = self.record_class(-1, self.fields)
+            record = self.record_class(-1, self.record_schema)
             version = None
             self.properties = record
         else:

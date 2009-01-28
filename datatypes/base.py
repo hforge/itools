@@ -40,12 +40,11 @@ class DataType(object):
     # I18n part
     context = None
 
-
     def __new__(cls, **kw):
         class_name = "%s(%s)" % (cls.__name__, kw)
         new_datatype = type(class_name, (cls,), kw)
-        for key in kw:
-            setattr(new_datatype, key, kw[key])
+        for key, value in kw.iteritems():
+            setattr(new_datatype, key, value)
         return new_datatype
 
 
@@ -60,18 +59,38 @@ class DataType(object):
         return default
 
 
-    @staticmethod
-    def decode(data):
+    @classmethod
+    def decode(cls, data):
         """Deserializes the given byte string to a value with a type.
         """
         raise NotImplementedError
 
 
-    @staticmethod
-    def encode(value):
+    @classmethod
+    def encode(cls, value):
         """Serializes the given value to a byte string.
         """
         raise NotImplementedError
+
+
+    @classmethod
+    def split(cls, value):
+        """To index a field it must be split in a sequence of words and
+        positions:
+
+          [(word, 0), (word, 1), (word, 2), ...]
+
+        Where <word> will be a <str> value. Usually this function will be a
+        generator.
+        """
+        if cls.multiple:
+            if isinstance(value, (tuple, list, set, frozenset)):
+                for x, position in enumerate(value):
+                    yield cls.encode(value), position
+            else:
+                yield cls.encode(value), 0
+        else:
+            yield cls.encode(value), 0
 
 
     @staticmethod

@@ -26,7 +26,7 @@ class Time(ISOTime):
     """This datatype is the same as ISOTime except that its encode method
     don't use seconds if not explicitely notified.
     """
-    @staticmethod
+    @classmethod
     def encode(value, seconds=False):
         if value is None:
             return ''
@@ -46,8 +46,8 @@ class DateTime(DataType):
     DTSTART;TZID=US-Eastern:19970714T133000 (Local time and time zone reference)
     """
 
-    @staticmethod
-    def decode(value):
+    @classmethod
+    def decode(cls, value):
         if value is None:
             return None
 
@@ -78,8 +78,8 @@ class DateTime(DataType):
         return datetime(year, month, day, hour, min, sec, micro)
 
 
-    @staticmethod
-    def encode(value):
+    @classmethod
+    def encode(cls, value):
     # PROBLEM --> 2 formats, with or without final 'Z'
         if value is None:
             return ''
@@ -149,12 +149,12 @@ data_properties = {
   'PRIORITY': Integer(multiple=False),
   'RESOURCES': Unicode(multiple=True),
   'STATUS': Unicode(multiple=False),
-  'SUMMARY': Unicode(multiple=False, index='text', mandatory=True),
+  'SUMMARY': Unicode(multiple=False, is_indexed=True, mandatory=True),
   # Date & Time component properties
   'COMPLETED': DateTime(multiple=False),
-  'DTEND': DateTime(multiple=False, index='keyword'),
+  'DTEND': DateTime(multiple=False, is_stored=True, is_indexed=True),
   'DUE': DateTime(multiple=False),
-  'DTSTART': DateTime(multiple=False, index='keyword'),
+  'DTSTART': DateTime(multiple=False, is_stored=True, is_indexed=True),
   'DURATION': Unicode(multiple=False),
   'FREEBUSY': Unicode(multiple=False),
   'TRANSP': Unicode(multiple=False),
@@ -186,7 +186,7 @@ data_properties = {
   'RECURRENCE-ID': DateTime(multiple=False),
   'RELATED-TO': Unicode(multiple=False),
   'URL': URI(multiple=False),
-  'UID': String(multiple=False, index='keyword')
+  'UID': String(multiple=False, is_indexed=True)
 }
 
 ################################################################

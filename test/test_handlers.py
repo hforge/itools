@@ -31,7 +31,7 @@ from itools import vfs
 
 class Agenda(Table):
 
-    record_schema = {'firstname': Unicode(index='text', multiple=False),
+    record_schema = {'firstname': Unicode(is_indexed=True, multiple=False),
                      'lastname': Unicode(multiple=False)}
 
 

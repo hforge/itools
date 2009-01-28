@@ -24,12 +24,12 @@ from operator import itemgetter
 
 # Import from itools
 from itools.core import freeze
-from itools.csv import MemoryCatalog, Property
+from itools.csv import Property
 from itools.csv import parse_table
-from itools.datatypes import String, Unicode
+from itools.datatypes import String, Unicode, DateTime
 from itools.handlers import guess_encoding, TextFile
+from itools.xapian import make_catalog, CatalogAware
 from itools.xapian import PhraseQuery, RangeQuery, OrQuery, AndQuery
-from itools.xapian import KeywordField
 from base import BaseCalendar
 from types import data_properties, Time
 
@@ -48,7 +48,7 @@ from types import data_properties, Time
 resolution = timedelta.resolution
 
 
-class Component(object):
+class Component(CatalogAware):
     """Parses and evaluates a component block.
 
         input :   string values for c_type and uid
@@ -131,6 +131,15 @@ class Component(object):
             properties['DTSTAMP'] = Property(datetime.today())
 
         self.versions[sequence] = properties
+
+
+    #######################################################################
+    # CatalogAware part
+    def get_catalog_values(self):
+        values = {'__uid__': self.uid}
+        for name in ['type', 'dtstart', 'dtend']:
+            values[name] = self.get_value(name)
+        return values
 
 
     #######################################################################
@@ -257,6 +266,7 @@ class Component(object):
 
 
 
+
 class InnerComponent(Component):
 
     def __init__(self, c_inner_type):
@@ -315,10 +325,14 @@ class iCalendar(BaseCalendar, TextFile):
     def reset(self):
         self.properties = {}
         self.components = {}
-        self.catalog = MemoryCatalog()
-        self.catalog.add_index('type', KeywordField)
-        self.catalog.add_index('dtstart', KeywordField)
-        self.catalog.add_index('dtend', KeywordField)
+
+        # A Catalog "in memory"
+        fields = {'__uid__': String(is_key_field=True, is_stored=True,
+                                    is_indexed=True),
+                  'type': String(is_indexed=True),
+                  'dtstart': DateTime(is_stored=True, is_indexed=True),
+                  'dtend': DateTime(is_stored=True, is_indexed=True)}
+        self.catalog = make_catalog(None, fields)
 
 
     def new(self):
@@ -471,7 +485,7 @@ class iCalendar(BaseCalendar, TextFile):
         # Index components
         for uid in self.components:
             component = self.components[uid]
-            self.catalog.index_document(component, uid)
+            self.catalog.index_document(component)
 
 
     #########################################################################
@@ -579,7 +593,7 @@ class iCalendar(BaseCalendar, TextFile):
         component.add_version(kw)
 
         # Index the component
-        self.catalog.index_document(component, uid)
+        self.catalog.index_document(component)
 
         return uid
 
@@ -609,9 +623,9 @@ class iCalendar(BaseCalendar, TextFile):
 
         self.set_changed()
         # Unindex the component, add new version, index again
-        self.catalog.unindex_document(component, uid)
+        self.catalog.unindex_document(uid)
         component.add_version(version)
-        self.catalog.index_document(component, uid)
+        self.catalog.index_document(component)
 
 
     def remove(self, uid):
@@ -623,7 +637,7 @@ class iCalendar(BaseCalendar, TextFile):
         component = self.components[uid]
         del self.components[uid]
         # Unindex
-        self.catalog.unindex_document(component, uid)
+        self.catalog.unindex_document(uid)
 
 
     def get_property_values(self, name=None):
@@ -768,10 +782,8 @@ class iCalendar(BaseCalendar, TextFile):
             dtend = dtend + timedelta(days=1) - resolution
 
         # Get only the events which matches
-        dtstart_limit = str(dtstart + resolution)
-        dtend_limit = str(dtend + resolution)
-        dtstart = str(dtstart)
-        dtend = str(dtend)
+        dtstart_limit = dtstart + resolution
+        dtend_limit = dtend + resolution
         query = AndQuery(
             PhraseQuery('type', 'VEVENT'),
             OrQuery(RangeQuery('dtstart', dtstart, dtend),
@@ -864,38 +876,11 @@ class iCalendar(BaseCalendar, TextFile):
 
     #######################################################################
     # API / Search
-    def get_analyser(self, name):
-        try:
-            return self.catalog.analysers[name]
-        except KeyError:
-            raise ValueError, 'the field "%s" is not indexed' % name
-
-
-    def get_index(self, name):
-        try:
-            return self.catalog.indexes[name]
-        except KeyError:
-            raise ValueError, 'the field "%s" is not indexed' % name
-
-
     def search(self, query=None, **kw):
         """Return list of component internal ids returned by executing the
         query.
         """
-        if query is None:
-            if kw:
-                atoms = []
-                for key, value in kw.items():
-                    atoms.append(PhraseQuery(key, value))
-
-                query = AndQuery(*atoms)
-            else:
-                raise ValueError, "expected a query"
-
-        documents = query.search(self)
-        uids = documents.keys()
-        # Sort by weight
-        uids.sort()
-
-        return uids
+        result = self.catalog.search(query, **kw)
+        return [ doc.__uid__
+                 for doc in result.get_documents(sort_by='__uid__') ]
 

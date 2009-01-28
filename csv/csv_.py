@@ -21,9 +21,9 @@
 # Import from itools
 from itools.datatypes import String, Integer
 from itools.handlers import TextFile, guess_encoding, register_handler_class
-from itools.xapian import make_catalog_in_memory, get_field
+from itools.xapian import make_catalog
 from itools.xapian import AndQuery, PhraseQuery, CatalogAware
-from itools.xapian import IntegerField
+from itools.core import merge_dicts
 from parser import parse
 
 
@@ -47,16 +47,9 @@ class Row(list, CatalogAware):
         return clone
 
 
-    def get_catalog_fields(self):
-        return self.fields
-
-
     def get_catalog_values(self):
-        columns = self.columns
         values = {'__number__': self.number}
-        for field in self.fields[1:]:
-            name = field.name
-            column = columns.index(name)
+        for column, name in enumerate(self.columns):
             values[name] = self[column]
         return values
 
@@ -71,9 +64,7 @@ class CSVFile(TextFile):
     # Example: {'firstname': Unicode, 'lastname': Unicode, 'age': Integer}
     # To index some columns the schema should be declared as:
     # schema = {'firstname': Unicode, 'lastname': Unicode,
-    #           'age': Integer(index='<analyser>')}
-    # where <analyser> is an itools.xapian analyser or derivate: keyword,
-    # book, text, path.
+    #           'age': Integer(is_indexed=True)}
     schema = None
 
     # List of the schema column names
@@ -95,21 +86,20 @@ class CSVFile(TextFile):
         self.lines = []
         self.n_lines = 0
         # Initialize the catalog if needed (Index&Search)
-        fields = [IntegerField('__number__', is_stored=True, is_indexed=True)]
+        # (we look if we have at least one indexed field in schema/columns)
         schema = self.schema
         if schema is not None:
-            for column in self.columns:
-                datatype = schema[column]
-                index = getattr(datatype, 'index', None)
-                if index is not None:
-                    field_cls = get_field(index)
-                    # XXX The fields are just indexed, so we cannot
-                    # make all types of search
-                    fields.append(field_cls(column, is_stored=False,
-                                            is_indexed=True))
-        if len(fields) > 1:
-            self.catalog = make_catalog_in_memory()
-            self.fields = fields
+            for name in self.columns:
+                field_cls = schema[name]
+                if getattr(field_cls, 'is_indexed', False):
+                    fields = merge_dicts(schema,
+                                         __number__=Integer(is_key_field=True,
+                                                            is_stored=True,
+                                                            is_indexed=True))
+                    self.catalog = make_catalog(None, fields)
+                    break
+            else:
+                self.catalog = None
         else:
             self.catalog = None
 
@@ -170,7 +160,6 @@ class CSVFile(TextFile):
         self.n_lines += 1
         # Index
         if self.catalog is not None:
-            row.fields = self.fields
             self.catalog.index_document(row)
 
         return row

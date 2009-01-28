@@ -42,14 +42,14 @@ class Languages(CSVFile):
     columns = ['name', 'url', 'number', 'date']
     schema = {'name': Unicode,
               'url': URI,
-              'number': Integer(index='keyword'),
-              'date': Date(index='keyword')}
+              'number': Integer(is_indexed=True),
+              'date': Date(is_indexed=True)}
 
 
 class Things(CSVFile):
 
     columns = ['name', 'date']
-    schema = {'name': Unicode(index='text'), 'date': Date(index='keyword')}
+    schema = {'name': Unicode(is_indexed=True), 'date': Date(is_indexed=True)}
 
 
 class Numbers(CSVFile):
@@ -62,8 +62,8 @@ class People(CSVFile):
 
     columns = ['name', 'surname', 'date']
     schema = {'name': Unicode,
-              'surname': Unicode(index='text'),
-              'date': Date(index='keyword')}
+              'surname': Unicode(is_indexed=True),
+              'date': Date(is_indexed=True)}
 
 
 class Countries(CSVFile):
@@ -71,15 +71,15 @@ class Countries(CSVFile):
     class_csv_guess = True
     columns = ['id', 'name', 'country', 'date']
     schema = {'id': Integer,
-              'name': Unicode(index='text'),
-              'country': Unicode(index='text'),
-              'date': Date(index='keyword')}
+              'name': Unicode(is_indexed=True),
+              'country': Unicode(is_indexed=True),
+              'date': Date(is_indexed=True)}
 
 
 class Politicians(CSVFile):
 
     columns = ['name', 'is_good']
-    schema = {'name': Unicode, 'is_good': Boolean(index='bool')}
+    schema = {'name': Unicode, 'is_good': Boolean(is_indexed=True)}
 
 
 
@@ -247,10 +247,10 @@ class CSVTestCase(TestCase):
     def test_build_csv_data(self):
         handler = People()
         handler.load_state_from_string('')
-        handler.add_row(['Piotr', 'Macuk', '1975-12-08'])
-        handler.add_row(['Basia', 'Macuk', '2002-02-14'])
+        handler.add_row(['Piotr', 'Macuk', Date.decode('1975-12-08')])
+        handler.add_row(['Basia', 'Macuk', Date.decode('2002-02-14')])
         self.assertEqual(handler.search(surname='macuk'), [0, 1])
-        handler.add_row(['Pawe³', 'Macuk', '1977-05-13'])
+        handler.add_row(['Pawe³', 'Macuk', Date.decode('1977-05-13')])
         self.assertEqual(handler.search(surname='macuk'), [0, 1, 2])
         handler.del_row(2)
         self.assertEqual(handler.search(surname='macuk'), [0, 1])
@@ -330,9 +330,9 @@ email:jacques@itaapy.com
 class Agenda(Table):
 
     record_schema = {
-        'firstname': Unicode(index='text', multiple=False),
+        'firstname': Unicode(is_indexed=True, multiple=False),
         'lastname': Unicode(multiple=False),
-        'email': Unicode(index='keyword', multiple=False, unique=True)}
+        'email': Unicode(is_indexed=True, multiple=False, unique=True)}
 
 
 books_file = """id:0/0

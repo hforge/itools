@@ -21,9 +21,10 @@ from time import time
 
 # Import from itools
 from itools import vfs
+from itools.datatypes import Unicode
 from itools.xml import get_element, TEXT
 from itools.html import HTMLFile
-from itools.xapian import Catalog, make_catalog, CatalogAware, TextField
+from itools.xapian import Catalog, make_catalog, CatalogAware
 
 
 
@@ -31,10 +32,6 @@ docs_path = '/usr/share/doc/python-docs-2.5.1/html/lib'
 
 
 class Document(CatalogAware, HTMLFile):
-
-    def get_catalog_fields(self):
-        return [TextField('title', is_stored=True), TextField('body')]
-
 
     def get_catalog_values(self):
         values = {}
@@ -61,11 +58,14 @@ class Document(CatalogAware, HTMLFile):
 def create_catalog():
     print 'Creating catalog...',
     global catalog
+    fields = {'title': Unicode(is_key_field=True, is_stored=True,
+                               is_indexed=True),
+              'body': Unicode(is_indexed=True)}
 
     if vfs.exists('/tmp/catalog_prof'):
         vfs.remove('/tmp/catalog_prof')
     # Create and get a new empty catalog
-    catalog = make_catalog('/tmp/catalog_prof')
+    catalog = make_catalog('/tmp/catalog_prof', fields)
     print 'done'
 
 

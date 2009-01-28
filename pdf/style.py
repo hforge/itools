@@ -21,6 +21,8 @@
 
 # Import from itools
 from itools.utils import freeze
+
+# Internal import
 from utils import font_value, format_size, get_color_as_hexa
 from utils import get_color, get_int_value
 
@@ -394,9 +396,6 @@ def body_margin_style(key, value):
 def build_frame_style(context, style_css, inline_attributes=freeze({})):
     frame_attr = {}
     border = {}
-    # The default style is Normal
-    parent_style_name = 'Normal'
-    bulletText = None
 
     keys = style_css.keys()
     keys.sort()

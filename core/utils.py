@@ -72,3 +72,11 @@ def guess_type(filename):
 
 def add_type(mimetype, extension):
     mimetypes.add_type(mimetype, extension)
+
+
+def guess_extension(mimetype):
+    return mimetypes.guess_extension(mimetype)
+
+
+def guess_all_extensions(mimetype):
+    return mimetypes.guess_all_extensions(mimetype)

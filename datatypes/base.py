@@ -85,8 +85,8 @@ class DataType(object):
         """
         if cls.multiple:
             if isinstance(value, (tuple, list, set, frozenset)):
-                for x, position in enumerate(value):
-                    yield cls.encode(value), position
+                for position, x in enumerate(value):
+                    yield cls.encode(x), position
             else:
                 yield cls.encode(value), 0
         else:

@@ -21,7 +21,19 @@ Changes:
 - New package itools.core
 - itools.isetup renamed to itools.pkg (some isetup- scripts renamed to ipkg-)
 - Now we use Python's "logging" package
-- New handlers for TGZ and TBZ2 files
+- Now we use Xapian (in memory) for itools.csv and itools.ical (#427)
+
+itools.core:
+- New 'guess_type' (to be used instead of Python's guess_type, because faster)
+
+itools.handlers:
+- Added handlers for TGZ and TBZ2 files
+- Added read-only database (ReadOnlyDatabase)
+
+itools.web:
+- Use glib.MainLoop
+- Better support for HTTP/1.1
+
 
 
 Resources

@@ -81,34 +81,44 @@ The API has considerably changed.
 itools.web
 ==========
 
-Now the web server takes the log-level as an optinal parameter, replacing
-the boolean 'debug' parameter.  This gives finer granularity to control
-the loggers level.
-
-  # Before
-  Server(..., debug=debug, ...)
-
-  # Now
-  Server(..., log_level=log_level, ...)
+Many small changes have been done to the Web server.  Most are internal
+so there should be little impact in applications.
 
 
 itools.xapian
 =============
 
-itools/xapian/fields.py is deleted. We use instead the itools.datatypes.
-CatalogAware is now easier, we must just implement the get_catalog_values
-method. Fields are given to the constructor or to make_catalog.
+(1) Several changes have been done to the way the fields to be indexed are
+defined:
 
-By example:
-fields = {'id': Integer(is_key_field=True, is_stored=True, is_indexed=True),
-          'name': Unicode(is_indexed=True)}
-catalog = make_catalog('my_database', fields)
+- The <Field> classes have been removed, now datatypes are used.
+- The 'CatalogAware.get_catalog_fields' method has been removed, now the
+  definition of the fields to be indexed is passed to the constructors.
+- Now by default the fields are not indexed.
+- The new 'is_key_field' variable says which field is the key in the catalog.
 
-Warning: all options (is_key_field, is_stored and is_indexed) are now False by
-default.
+For example:
 
-encode/decode use datatypes.* methods, so PhraseQuery('foo', '1') becomes
-PhraseQuery('foo', True) if 'foo' is a boolean field.
+  # Before
+  from itools.xapian import IntegerField, TextField
+  class MyResource(CatalogAware):
+      def get_catalog_fields(self):
+          return [
+              IntegerField('id', is_stored=True),
+              TextField('name')]
 
+  catalog = make_catalog('my_catalog')
 
+  # Now
+  from itools.datatypes import Integer, Unicode
+  fields = {
+      'id': Integer(is_key_field=True, is_stored=True, is_indexed=True),
+      'name': Unicode(is_indexed=True)}
+  catalog = make_catalog('my_database', fields)
+
+(2) When searching now we pass de-serialized (typed) valuse. For example:
+
+  Before                          Now
+  ------------------------------  ------------------------------
+  PhraseQuery('is_folder', '1')   PhraseQuery('is_folder', True)
 

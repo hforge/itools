@@ -18,10 +18,10 @@
 # Import from the Standard Library
 from datetime import datetime
 import mimetypes
-from mimetypes import guess_type
 from urllib import quote
 
 # Import from itools
+from itools.core import guess_type
 from itools.datatypes import DataType
 from itools.i18n import has_language
 

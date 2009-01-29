@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from mimetypes import MimeTypes
 from os import getcwd
 from os.path import join, sep, splitdrive
 from sys import _getframe, modules
@@ -57,3 +58,8 @@ def merge_dicts(d, *args, **kw):
     new_d.update(kw)
     return new_d
 
+
+
+mimetypes = MimeTypes()
+def guess_type(filename):
+    return mimetypes.guess_type(filename)

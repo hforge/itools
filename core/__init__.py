@@ -16,7 +16,7 @@
 
 # Import from itools
 from freeze import freeze, frozendict, frozenlist
-from utils import get_abspath, merge_dicts
+from utils import get_abspath, guess_type, merge_dicts
 from sys import platform
 
 if platform[:3] == 'win':
@@ -30,7 +30,9 @@ __all__ = [
     'freeze',
     'frozendict',
     'frozenlist',
+    # Utility functions
     'get_abspath',
+    'guess_type',
     'merge_dicts',
     # System specific functions
     'become_daemon',

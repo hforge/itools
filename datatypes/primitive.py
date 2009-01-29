@@ -31,15 +31,15 @@ from base import DataType
 
 class Integer(DataType):
 
-    @classmethod
-    def decode(cls, value):
+    @staticmethod
+    def decode(value):
         if value == '':
             return None
         return int(value)
 
 
-    @classmethod
-    def encode(cls, value):
+    @staticmethod
+    def encode(value):
         if value is None:
             return ''
         return str(value)
@@ -48,14 +48,14 @@ class Integer(DataType):
 
 class Decimal(DataType):
 
-    @classmethod
-    def decode(cls, value):
+    @staticmethod
+    def decode(value):
         if value == '':
             return None
         return decimal(value)
 
-    @classmethod
-    def encode(cls, value):
+    @staticmethod
+    def encode(value):
         if value is None:
             return ''
         return str(value)
@@ -72,13 +72,13 @@ class Unicode(DataType):
         return cls.default
 
 
-    @classmethod
-    def decode(cls, value, encoding='UTF-8'):
+    @staticmethod
+    def decode(value, encoding='UTF-8'):
         return unicode(value, encoding)
 
 
-    @classmethod
-    def encode(cls, value, encoding='UTF-8'):
+    @staticmethod
+    def encode(value, encoding='UTF-8'):
         return value.encode(encoding)
 
 
@@ -164,13 +164,13 @@ class Unicode(DataType):
 
 class String(DataType):
 
-    @classmethod
-    def decode(cls, value):
+    @staticmethod
+    def decode(value):
         return value
 
 
-    @classmethod
-    def encode(cls, value):
+    @staticmethod
+    def encode(value):
         if value is None:
             return ''
         return value
@@ -182,13 +182,13 @@ class Boolean(DataType):
     default = False
 
 
-    @classmethod
-    def decode(cls, value):
+    @staticmethod
+    def decode(value):
         return bool(int(value))
 
 
-    @classmethod
-    def encode(cls, value):
+    @staticmethod
+    def encode(value):
         if value is True:
             return '1'
         elif value is False:
@@ -200,26 +200,26 @@ class Boolean(DataType):
 
 class URI(DataType):
 
-    @classmethod
-    def decode(cls, value):
+    @staticmethod
+    def decode(value):
         return get_reference(value)
 
 
-    @classmethod
-    def encode(cls, value):
+    @staticmethod
+    def encode(value):
         return str(value)
 
 
 
 class PathDataType(DataType):
 
-    @classmethod
-    def decode(cls, value):
+    @staticmethod
+    def decode(value):
         return Path(value)
 
 
-    @classmethod
-    def encode(cls, value):
+    @staticmethod
+    def encode(value):
         return str(value)
 
 
@@ -235,16 +235,16 @@ class Email(String):
 
 class QName(DataType):
 
-    @classmethod
-    def decode(cls, data):
+    @staticmethod
+    def decode(data):
         if ':' in data:
             return tuple(data.split(':', 1))
 
         return None, data
 
 
-    @classmethod
-    def encode(cls, value):
+    @staticmethod
+    def encode(value):
         if value[0] is None:
             return value[1]
         return '%s:%s' % value
@@ -253,26 +253,26 @@ class QName(DataType):
 
 class Tokens(DataType):
 
-    @classmethod
-    def decode(cls, data):
+    @staticmethod
+    def decode(data):
         return tuple(data.split())
 
 
-    @classmethod
-    def encode(cls, value):
+    @staticmethod
+    def encode(value):
         return ' '.join(value)
 
 
 
 class MultiLinesTokens(DataType):
 
-    @classmethod
-    def decode(cls, data):
+    @staticmethod
+    def decode(data):
         return tuple(data.split('\n'))
 
 
-    @classmethod
-    def encode(cls, value):
+    @staticmethod
+    def encode(value):
         return '\n'.join(value)
 
 
@@ -356,25 +356,25 @@ def enumerate_get_value(options, name, default=None):
 
 class XMLContent(object):
 
-    @classmethod
-    def encode(cls, value):
+    @staticmethod
+    def encode(value):
         return value.replace('&', '&amp;').replace('<', '&lt;')
 
 
-    @classmethod
-    def decode(cls, value):
+    @staticmethod
+    def decode(value):
         return value.replace('&amp;', '&').replace('&lt;', '<')
 
 
 
 class XMLAttribute(object):
 
-    @classmethod
-    def encode(cls, value):
+    @staticmethod
+    def encode(value):
         value = value.replace('&', '&amp;').replace('<', '&lt;')
         return value.replace('"', '&quot;')
 
-    @classmethod
-    def decode(cls, value):
+    @staticmethod
+    def decode(value):
         value = value.replace('&amp;', '&').replace('&lt;', '<')
         return value.replace('&quot;', '"')

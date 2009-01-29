@@ -26,7 +26,7 @@ class Time(ISOTime):
     """This datatype is the same as ISOTime except that its encode method
     don't use seconds if not explicitely notified.
     """
-    @classmethod
+    @staticmethod
     def encode(value, seconds=False):
         if value is None:
             return ''
@@ -46,8 +46,8 @@ class DateTime(DataType):
     DTSTART;TZID=US-Eastern:19970714T133000 (Local time and time zone reference)
     """
 
-    @classmethod
-    def decode(cls, value):
+    @staticmethod
+    def decode(value):
         if value is None:
             return None
 
@@ -78,8 +78,8 @@ class DateTime(DataType):
         return datetime(year, month, day, hour, min, sec, micro)
 
 
-    @classmethod
-    def encode(cls, value):
+    @staticmethod
+    def encode(value):
     # PROBLEM --> 2 formats, with or without final 'Z'
         if value is None:
             return ''

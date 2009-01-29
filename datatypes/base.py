@@ -59,15 +59,15 @@ class DataType(object):
         return default
 
 
-    @classmethod
-    def decode(cls, data):
+    @staticmethod
+    def decode(data):
         """Deserializes the given byte string to a value with a type.
         """
         raise NotImplementedError
 
 
-    @classmethod
-    def encode(cls, value):
+    @staticmethod
+    def encode(value):
         """Serializes the given value to a byte string.
         """
         raise NotImplementedError

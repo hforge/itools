@@ -14,10 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the Standard Library
-from mimetypes import add_type
-
 # Import from itools
+from itools.core import add_type
 from srx import SRXFile
 from segment import Message, get_segments, translate_message
 from segment import TEXT, START_FORMAT, END_FORMAT

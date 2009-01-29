@@ -60,6 +60,15 @@ def merge_dicts(d, *args, **kw):
 
 
 
+###########################################################################
+# Mimetypes
+###########################################################################
 mimetypes = MimeTypes()
+
+
 def guess_type(filename):
     return mimetypes.guess_type(filename)
+
+
+def add_type(mimetype, extension):
+    mimetypes.add_type(mimetype, extension)

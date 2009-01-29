@@ -17,7 +17,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from mimetypes import add_type
 import mimetypes
 from os.path import join
 from zipfile import ZipFile
@@ -25,6 +24,7 @@ from tarfile import open as open_tarfile
 from cStringIO import StringIO
 
 # Import from itools
+from itools.core import add_type
 from file import File
 from registry import register_handler_class
 from itools import vfs

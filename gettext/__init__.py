@@ -16,11 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the Standard Library
-from mimetypes import add_type
-
 # Import from itools
-from itools.core import get_abspath
+from itools.core import add_type, get_abspath
 from domains import register_domain, get_domain, MSG
 from mo import MOFile
 from po import POFile, POUnit

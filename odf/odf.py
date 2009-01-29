@@ -18,16 +18,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from mimetypes import add_type
 from zipfile import ZipFile
 from cStringIO import StringIO
 
 # Import from itools
+from itools.core import add_type
 from itools.stl import stl
 from itools.handlers import register_handler_class, ZIPFile
+from itools.xml import XMLParser, XML_DECL, START_ELEMENT, TEXT
+from itools.xml import xml_to_text, translate, OfficeDocument, stream_to_str
 from itools.xml.i18n import get_units
-from itools.xml import (xml_to_text, translate, OfficeDocument, stream_to_str,
-                        XMLParser, XML_DECL, START_ELEMENT, TEXT)
 
 
 def stl_to_odt(model_odt, namespace):

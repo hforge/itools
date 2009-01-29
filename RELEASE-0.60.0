@@ -24,7 +24,9 @@ Changes:
 - Now we use Xapian (in memory) for itools.csv and itools.ical (#427)
 
 itools.core:
-- New 'guess_type' (to be used instead of Python's guess_type, because faster)
+- The new functions 'add_type' and 'guess_type' replace the equivalent
+  functions from the mimetypes module from the Standard Library (because
+  faster)
 
 itools.handlers:
 - Added handlers for TGZ and TBZ2 files

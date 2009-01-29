@@ -80,3 +80,16 @@ def guess_extension(mimetype):
 
 def guess_all_extensions(mimetype):
     return mimetypes.guess_all_extensions(mimetype)
+
+
+def has_extension(extension):
+    filename = 'toto.%s' % extension
+    mimetype, encoding = mimetypes.guess_type(filename)
+    return mimetype is not None
+
+
+def has_encoding(extension):
+    extension = '.%s' % extension
+    encodings_map = mimetypes.encodings_map
+    return extension in encodings_map or extension.lower() in encodings_map
+

@@ -17,6 +17,7 @@
 # Import from itools
 from freeze import freeze, frozendict, frozenlist
 from utils import add_type, guess_all_extensions, guess_extension, guess_type
+from utils import has_encoding, has_extension
 from utils import get_abspath, merge_dicts
 from sys import platform
 
@@ -36,6 +37,8 @@ __all__ = [
     'guess_all_extensions',
     'guess_extension',
     'guess_type',
+    'has_encoding',
+    'has_extension',
     # Utility functions
     'get_abspath',
     'merge_dicts',

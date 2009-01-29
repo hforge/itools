@@ -17,11 +17,10 @@
 
 # Import from the Standard Library
 from datetime import datetime
-import mimetypes
 from urllib import quote
 
 # Import from itools
-from itools.core import guess_type
+from itools.core import guess_type, has_encoding, has_extension
 from itools.datatypes import DataType
 from itools.i18n import has_language
 
@@ -41,17 +40,15 @@ class FileName(DataType):
 
         name, ext = parts
         # Case 2: name.encoding
-        if '.%s' % ext in mimetypes.encodings_map:
-            return name, ext, None
-        if '.%s' % ext.lower() in mimetypes.encodings_map:
+        if has_encoding(ext):
             return name, ext, None
 
         if '.' in name:
             a, b = name.rsplit('.', 1)
-            if '.%s' % b.lower() in mimetypes.types_map and has_language(ext):
+            if has_extension(b) and has_language(ext):
                 # Case 3: name.type.language
                 return a, b, ext
-        if '.%s' % ext.lower() in mimetypes.types_map:
+        if has_extension(ext):
             # Case 4: name.type
             return name, ext, None
         elif has_language(ext):

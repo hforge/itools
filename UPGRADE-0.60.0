@@ -91,3 +91,24 @@ the loggers level.
   # Now
   Server(..., log_level=log_level, ...)
 
+
+itools.xapian
+=============
+
+itools/xapian/fields.py is deleted. We use instead the itools.datatypes.
+CatalogAware is now easier, we must just implement the get_catalog_values
+method. Fields are given to the constructor or to make_catalog.
+
+By example:
+fields = {'id': Integer(is_key_field=True, is_stored=True, is_indexed=True),
+          'name': Unicode(is_indexed=True)}
+catalog = make_catalog('my_database', fields)
+
+Warning: all options (is_key_field, is_stored and is_indexed) are now False by
+default.
+
+encode/decode use datatypes.* methods, so PhraseQuery('foo', '1') becomes
+PhraseQuery('foo', True) if 'foo' is a boolean field.
+
+
+

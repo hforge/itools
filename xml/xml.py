@@ -190,7 +190,7 @@ class XMLFile(TextFile):
 
     class_mimetypes = ['text/xml', 'application/xml']
     class_extension = 'xml'
-
+    __hash__ = None
 
     def new(self):
         # XML is a meta-language, it does not make change to create a bare

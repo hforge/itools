@@ -242,6 +242,8 @@ class POUnit(object):
     XXX
     """
 
+    __hash__ = None
+
     def __init__(self, comments, context, source, target,
                  references=freeze({}), fuzzy=False):
         self.comments = comments

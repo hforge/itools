@@ -60,6 +60,37 @@ the new formatted strings:
   'hello ${name}'.format(name='toto')
 
 
+itools.csv
+==========
+
+Due to the changes with xapian (cf itools.xapian) the "schema" for a CSVFile
+and the "record_schema" for a Table are modified:
+
+  # Before
+  class Foo(CSVFile):
+
+      schema = {'name': String(index='keyword')}
+      columns = ['name']
+
+  # Now
+  class Foo(CSVFile):
+
+      schema = {'name': String(is_indexed=True)}
+      columns = ['name']
+
+And it is the same thing with Table, by example:
+
+  # Before
+  class Foo(Table):
+
+      record_schema = {'name': String(index='keyword')}
+
+  # Now
+  class Foo(Table):
+
+      record_schema = {'name': String(is_indexed=True)}
+
+
 itools.git
 ==========
 

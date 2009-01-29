@@ -37,8 +37,6 @@ class DataType(object):
     default = None
     multiple = False
 
-    # I18n part
-    context = None
 
     def __new__(cls, **kw):
         class_name = "%s(%s)" % (cls.__name__, kw)

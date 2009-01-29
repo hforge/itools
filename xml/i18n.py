@@ -37,11 +37,13 @@ MESSAGE = 999
 # Common code to "get_units" and "translate"
 ###########################################################################
 def _get_attr_context(datatype, tag_name, attr_name):
-    if datatype.context is None:
-        # By default, the context of attribute is "element[name]"
+    context = getattr(datatype, 'context', None)
+
+    # By default, the context of attribute is "element[name]"
+    if context is None:
         return '%s[%s]' % (tag_name, attr_name)
-    else:
-        return datatype.context
+
+    return context
 
 
 def _make_start_format(tag_uri, tag_name, attributes, encoding):

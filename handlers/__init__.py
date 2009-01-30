@@ -31,7 +31,7 @@ files, etc...
 """
 
 # Import from itools
-from archive import ZIPFile, TARFile, GzipFile, Bzip2File
+from archive import ZIPFile, TARFile, GzipFile, Bzip2File, TGZFile, TBZ2File
 from base import Handler
 from config import ConfigFile
 from file import File
@@ -50,16 +50,19 @@ __all__ = [
     # Abstract classes
     'Handler',
     # Handlers
-    'ZIPFile',
-    'TARFile',
-    'GzipFile',
-    'Bzip2File',
     'ConfigFile',
     'File',
     'Folder',
     'Image',
     'Python',
     'TextFile',
+    # Handlers / Archive
+    'ZIPFile',
+    'TARFile',
+    'GzipFile',
+    'Bzip2File',
+    'TGZFile',
+    'TBZ2File',
     # The database
     'ReadOnlyDatabase',
     'Database',

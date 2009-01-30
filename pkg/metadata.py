@@ -172,20 +172,13 @@ def parse_setupconf(package_dir):
 def get_package_version(package_name):
     try:
         mod = __import__(package_name)
-        if hasattr(mod, 'Version'):
-            if hasattr(mod.Version, "__call__"):
-                return mod.Version()
-            return mod.Version
-        elif hasattr(mod, '__version__'):
-            if hasattr(mod.__version__, "__call__"):
-                return mod.__version__()
-            return mod.__version__
-        elif hasattr(mod, 'version'):
-            if hasattr(mod.version, "__call__"):
-                return mod.version()
-            return mod.version
-        else:
-            return '?'
-    except ImportError:
+    except:
         return '?'
 
+    for name in ['Version', '__version__', 'version']:
+        version = getattr(mod, name, None)
+        if version is not None:
+            if callable(version):
+                return version()
+            return version
+    return '?'

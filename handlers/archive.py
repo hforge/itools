@@ -82,18 +82,27 @@ class TARFile(File):
 
 
     def get_contents(self):
-        with self._open_tarfile() as tar:
+        tar = self._open_tarfile()
+        try:
             return tar.getnames()
+        finally:
+            tar.close()
 
 
     def get_file(self, filename):
-        with self._open_tarfile() as tar:
+        tar = self._open_tarfile()
+        try:
             return tar.extractfile(filename).read()
+        finally:
+            tar.close()
 
 
     def extract_to_folder(self, dst):
-        with self._open_tarfile() as tar:
+        tar = self._open_tarfile()
+        try:
             tar.extractall(dst)
+        finally:
+            tar.close()
 
 
 

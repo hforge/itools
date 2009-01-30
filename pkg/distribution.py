@@ -97,7 +97,7 @@ class Bundle(object):
 
     def find_lowest_file(self, filename):
         files = [
-            x for x in self.handler.contents() if split(x)[1] == filename ]
+            x for x in self.handler.get_contents() if split(x)[1] == filename ]
         if len(files) == 0:
             return None
 

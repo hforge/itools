@@ -47,8 +47,7 @@ if __name__ == '__main__':
                   dest="cache_dir", default=TMP_DIR,
                   help="")
 
-
-    (options, args) = parser.parse_args()
+    options, args = parser.parse_args()
 
     CACHE_DIR = options.cache_dir
 

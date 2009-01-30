@@ -69,9 +69,6 @@ class FileName(DataType):
         return name
 
 
-# Translate compression encoding to mimetype
-encoding_map = {'gzip': 'application/x-gzip', 'bzip2': 'application/x-bzip2'}
-
 
 class BaseFS(object):
 
@@ -142,9 +139,15 @@ class BaseFS(object):
         # Figure out the mimetype from the filename extension
         if extension is not None:
             mimetype, encoding = guess_type('%s.%s' % (name, extension))
-            if encoding is not None:
-                if encoding in encoding_map:
-                    return encoding_map[encoding]
+            # FIXME Compression schemes are not mimetypes, see /etc/mime.types
+            if encoding == 'gzip':
+                if mimetype == 'application/x-tar':
+                    return 'application/x-tgz'
+                return 'application/x-gzip'
+            elif encoding == 'bzip2':
+                if mimetype == 'application/x-tar':
+                    return 'application/x-tbz2'
+                return 'application/x-bzip2'
             elif mimetype is not None:
                 return mimetype
 

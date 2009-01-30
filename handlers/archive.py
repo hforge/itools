@@ -99,6 +99,7 @@ class TARFile(File):
 
 class TGZFile(TARFile):
 
+    class_mimetypes = ['application/x-tgz']
     class_extension = 'tgz'
     class_mode = 'r:gz'
 
@@ -106,6 +107,7 @@ class TGZFile(TARFile):
 
 class TBZ2File(TARFile):
 
+    class_mimetypes = ['application/x-tbz2']
     class_extension = 'tbz2'
     class_mode = 'r:bz2'
 
@@ -128,7 +130,4 @@ class Bzip2File(File):
 # Register
 for cls in [ZIPFile, TARFile, TGZFile, TBZ2File, GzipFile, Bzip2File]:
     register_handler_class(cls)
-
-# Mimetypes BZip2 support
-add_type('application/x-tar', '.tar.bz2')
 

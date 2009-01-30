@@ -445,5 +445,14 @@ class MemFSTestCase(TestCase):
 
 
 
+class MimeTestCase(TestCase):
+
+    def test_archive(self):
+        # FIXME Compression schemes are not mimetypes, see /etc/mime.types
+        mimetype = vfs.get_mimetype('handlers/test.tar.gz')
+        self.assertEqual(mimetype, 'application/x-tgz')
+
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -22,8 +22,9 @@ from unittest import TestCase
 # Import from itools
 from itools.csv import Table
 from itools.datatypes import Unicode
-from itools.handlers import get_handler, Database, SafeDatabase, TextFile
-from itools.handlers import ConfigFile, TGZFile
+from itools.handlers import get_handler, get_handler_class
+from itools.handlers import Database, SafeDatabase
+from itools.handlers import TextFile, ConfigFile, TGZFile
 from itools.uri import get_reference
 from itools import vfs
 
@@ -348,6 +349,9 @@ class ConfigFileTestCase(TestCase):
 class ArchiveTestCase(TestCase):
 
     def test_get_handler(self):
+        cls = get_handler_class('handlers/test.tar.gz')
+        self.assertEqual(cls, TGZFile)
+
         file = get_handler('handlers/test.tar.gz')
         self.assertEqual(file.__class__, TGZFile)
 

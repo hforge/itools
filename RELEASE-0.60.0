@@ -32,6 +32,9 @@ itools.handlers:
 - Added handlers for TGZ and TBZ2 files
 - Added read-only database (ReadOnlyDatabase)
 
+itools.pdf
+- RML implementation removed
+
 itools.web:
 - Use glib.MainLoop
 - Better support for HTTP/1.1

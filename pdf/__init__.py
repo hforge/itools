@@ -16,32 +16,28 @@
 
 # Import from itools
 from itools.core import get_abspath
-from pdf import PDFFile
 from itools.relaxng import RelaxNGFile
 from itools.xml import register_dtd
+from pdf import PDFFile
 
 # There are imports from ReportLab in these imports, so, ...
 try:
-    from rml import rmltopdf, stl_rmltopdf
     from pml import pmltopdf, stl_pmltopdf
 except ImportError:
-    print 'You need to install the package "reportlab" to get RML working.'
+    print 'You need to install the package "reportlab" to get PML working.'
 
     # Not implemented, ...
     def not_implemented(*args, **kw):
         raise NotImplementedError, 'the package "reportlab" must be installed'
-    rmltopdf = not_implemented
-    stl_rmltopdf = not_implemented
     pmltopdf = not_implemented
     stl_pmltopdf = not_implemented
 
 
-__all__ = ['PDFFile', 'rmltopdf', 'stl_rmltopdf',
-                      'pmltopdf', 'stl_pmltopdf']
+__all__ = [
+    'PDFFile',
+    'pmltopdf',
+    'stl_pmltopdf']
 
-# Register "rml.dtd"
-register_dtd(get_abspath('rml.dtd'), uri='rml_1_0.dtd')
-register_dtd(get_abspath('rml.dtd'), uri='rml.dtd')
 
 # Read the Relax NG schema of PML and register its namespace
 rng_file = RelaxNGFile(get_abspath('PML-schema.rng'))

@@ -14,11 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the Standard Library
-from mimetypes import add_type
-
 # Import from itools
-from itools.utils import get_abspath
+from itools.utils import get_abspath, add_type
 from itools.xml import register_dtd
 from xliff import XLFFile, XLFUnit, XLFNote, File
 

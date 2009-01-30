@@ -15,11 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the Standard Library
-from mimetypes import add_type
-
 # Import from itools
 from csv_ import CSVFile, Row
+from itools.utils import add_type
 from memory import MemoryCatalog
 from parser import parse
 from table import Table, Record, Property, UniqueError

@@ -15,17 +15,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the Standard Library
-from mimetypes import add_type
-
 # Import from itools
-from itools.utils import get_abspath
-from itools.xml import register_dtd, DocType
 from html import HTMLFile
+from itools.utils import get_abspath, add_type
+from itools.xml import register_dtd, DocType
 from parser import HTMLParser
 from xhtml import XHTMLFile, xhtml_uri
-from xhtml import stream_to_str_as_html, stream_to_str_as_xhtml
 from xhtml import sanitize_stream, sanitize_str
+from xhtml import stream_to_str_as_html, stream_to_str_as_xhtml
 import schema
 
 

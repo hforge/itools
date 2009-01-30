@@ -22,6 +22,7 @@ from distutils.command.build_py import build_py
 from distutils.command.register import register
 from distutils.command.upload import upload
 from getpass import getpass
+from mimetypes import MimeTypes
 from os import getcwd, open as os_open, devnull, dup2, O_RDWR
 from os.path import exists, join as join_path, sep, splitdrive
 from re import search
@@ -245,6 +246,41 @@ def freeze(value):
         return value
     # Error
     raise TypeError, 'unable to freeze "%s"' % value_type
+
+
+
+###########################################################################
+# Mimetypes optimization
+###########################################################################
+mimetypes = MimeTypes()
+
+
+def guess_type(filename):
+    return mimetypes.guess_type(filename)
+
+
+def add_type(mimetype, extension):
+    mimetypes.add_type(mimetype, extension)
+
+
+def guess_extension(mimetype):
+    return mimetypes.guess_extension(mimetype)
+
+
+def guess_all_extensions(mimetype):
+    return mimetypes.guess_all_extensions(mimetype)
+
+
+def has_extension(extension):
+    filename = 'toto.%s' % extension
+    mimetype, encoding = mimetypes.guess_type(filename)
+    return mimetype is not None
+
+
+def has_encoding(extension):
+    extension = '.%s' % extension
+    encodings_map = mimetypes.encodings_map
+    return extension in encodings_map or extension.lower() in encodings_map
 
 
 

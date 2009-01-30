@@ -14,19 +14,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the Standard Library
-import mimetypes
-
 # Import from itools
 from tmx import TMXFile, Sentence, TMXUnit, TMXNote
-from itools.utils import get_abspath
+from itools.utils import get_abspath, add_type
 from itools.xml import register_dtd
 
 
 __all__ = ['TMXFile', 'Sentence', 'TMXUnit', 'TMXNote']
 
 
-mimetypes.add_type('application/x-tmx', '.tmx')
+add_type('application/x-tmx', '.tmx')
 
 # Register DTD
 register_dtd(get_abspath('tmx14.dtd'),

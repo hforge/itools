@@ -66,18 +66,9 @@ class Bundle(object):
                     break
 
 
-    def has_metadata(self, metadata):
-        return metadata in self.metadata.attrs.keys()
-
-
     def get_metadata(self, metadata):
-        return self.metadata.attrs[metadata]
-
-
-    def safe_get_metadata(self, metadata):
-        if not self.has_metadata(metadata):
-            return None
-        return self.metadata.attrs[metadata]
+        metadata = metadata.lower()
+        return self.metadata.attrs.get(metadata)
 
 
     def install(self):

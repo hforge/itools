@@ -67,7 +67,7 @@ if __name__ == '__main__':
             except ArchiveNotSupported:
                 continue
 
-            if dist.has_metadata('Name') and dist.has_metadata('Version'):
-                name = dist.get_metadata('Name')
-                version = dist.get_metadata('Version')
+            name = dist.get_metadata('Name')
+            version = dist.get_metadata('Version')
+            if name and version:
                 print "* %-20.20s Version: %-25.25s" % (name, version)

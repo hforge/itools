@@ -183,8 +183,10 @@ def prepare(package_spec):
                                        package_spec))
                 return prepare_code.BadArchive
 
-            if not dist.fromsetuptools and dist.has_metadata('Requires'):
-                requirements = dist.get_metadata('Requires').split(',')
+            if not dist.fromsetuptools:
+                requires = dist.get_metadata('Requires')
+                if requires is not None:
+                    requirements = requires.split(',')
 
         elif bestmatch_from == 'repository':
             pypi_server = bestmatch['pypi_server']

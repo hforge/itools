@@ -28,7 +28,7 @@ from itools.pkg import DEFAULT_REPOSITORY
 from itools.vfs import exists
 
 
-def release(options):
+def release(repository):
     # Check 'setup.py' exists
     if not exists('setup.py'):
         print ('setup.py not found, please execute isetup-release.py from '
@@ -43,14 +43,9 @@ def release(options):
     if not password:
         print 'Error: no password given, aborting.'
         return
-    args = ['-p', password]
 
-    # Username and repository
-    if options.username is not None:
-        args.extend(['-u', options.username])
-
-    if options.repository is not None:
-        args.extend(['-r', options.repository])
+    # Arguments list
+    args = ['-p', password, '-r', repository]
 
     # Call iregister
     ret = call(baseargs + ['iregister'] + args)
@@ -67,21 +62,17 @@ def release(options):
 
 if __name__ == '__main__':
     # Define the command line parser
-    usage = '%prog [OPTIONS]'
+    usage = '%prog REPOSITORY'
     version = 'itools %s' % __version__
-    description = 'Upload a new package version to the server.'
+    description = 'Upload a new package version to the given repository.'
     parser = OptionParser(usage, version=version, description=description)
-    parser.add_option(
-        '-u', '--username', dest='username', default=None,
-        help='username used to log in the server')
-    parser.add_option(
-        '-r', '--repository', dest='repository', default=None,
-        help='url to the package server [default: %s]' % DEFAULT_REPOSITORY)
 
     # Parse the command line
     options, args = parser.parse_args()
-    if len(args) != 0:
+    if len(args) != 1:
         parser.error('incorrect number of arguments')
 
+    repository = args[0]
+
     # Action
-    release(options)
+    release(repository)

@@ -34,7 +34,6 @@ DEFAULT_REPOSITORY = 'http://pypi.python.org/pypi'
 class iupload(upload):
 
     user_options = [
-        ('username=', 'u', 'username used to log in or to register'),
         ('password=', 'p', 'password'),
         ('repository=', 'r',
          "url of repository [default: %s]" % DEFAULT_REPOSITORY),
@@ -43,7 +42,6 @@ class iupload(upload):
 
 
     def initialize_options(self):
-        self.username = ''
         self.password = ''
         self.repository = ''
         self.show_response = 0
@@ -59,11 +57,6 @@ class iupload(upload):
                 self.repository = config.get_value('repository')
         elif self.repository is None:
             self.repository = DEFAULT_REPOSITORY
-        if not self.username:
-            if config.has_value('username'):
-                self.username = config.get_value('username')
-            else:
-                raise DistutilsOptionError("Please give a username")
         # Get the password
         while not self.password:
             self.password = getpass('Password: ')
@@ -75,7 +68,6 @@ class iregister(register):
     user_options = [
         ('repository=', 'r',
             "url of repository [default: %s]" % DEFAULT_REPOSITORY),
-        ('username=', 'u', 'username used to log in or to register'),
         ('password=', 'p', 'password'),
         ]
 
@@ -95,15 +87,14 @@ class iregister(register):
         code, result = self.post_to_server(data, auth)
 
         if code == 200:
-            print ('The package has been successfully register to'
-                   ' repository')
+            print 'The package has been successfully register to repository'
         else:
             print 'There has been an error while registring the package.'
             print 'Server responded (%s): %s' % (code, result)
             if code == 401:
                 if result == 'Unauthorized':
                     print 'Perhaps your username/password is wrong.'
-                    print 'Are you registered with "isetup-register.py"?'
+                    print 'Are you registered with "ipkg-register.py"?'
                 exit(2)
             else:
                 exit(3)
@@ -114,7 +105,6 @@ class iregister(register):
         self.list_classifiers = []
 
         self.repository = None
-        self.username = ''
         self.password = ''
 
 
@@ -125,9 +115,4 @@ class iregister(register):
                 self.repository = config.get_value('repository')
         elif self.repository is None:
             self.repository = DEFAULT_REPOSITORY
-        if not self.username:
-            if config.has_value('username'):
-                self.username = config.get_value('username')
-            else:
-                raise DistutilsOptionError("Please give a username")
 

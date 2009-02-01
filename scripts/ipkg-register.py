@@ -64,7 +64,7 @@ def register_user(username, options):
            ' email-confirmation system.\n'
            'In this case check your emails, and follow instructions'
            '\n'
-           '"Execute isetup-release.py again to register package')
+           '"Execute ipkg-release.py again to register package')
 
 
 

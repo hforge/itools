@@ -21,10 +21,11 @@
 # Import from the Standard Library
 from ast import parse, walk, NodeVisitor
 
-
 # Import from itools
 from text import TextFile
 from registry import register_handler_class
+
+
 
 class VisitorUnicode(NodeVisitor):
 

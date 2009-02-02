@@ -21,15 +21,10 @@
 
 # Import from itools
 from itools.datatypes import XMLAttribute, XMLContent
-from itools.handlers import TextFile, register_handler_class
 from namespaces import get_namespace, is_empty
-from parser import (XMLParser, XML_DECL, DOCUMENT_TYPE, START_ELEMENT,
-                    END_ELEMENT, TEXT, COMMENT, CDATA)
+from parser import XML_DECL, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, TEXT
+from parser import COMMENT, CDATA
 
-
-#############################################################################
-# Data types
-#############################################################################
 
 # Serialize
 def get_qname(ns_uri, name):
@@ -172,78 +167,3 @@ class Element(object):
     def get_content(self, encoding='UTF-8'):
         return stream_to_str(self.get_content_elements())
 
-
-
-#############################################################################
-# Documents
-#############################################################################
-class XMLFile(TextFile):
-    """An XML file is represented in memory as a tree where the nodes are
-    instances of the classes 'Element' and 'Raw'. The 'Element' class
-    represents an XML element, the 'Raw' class represents a text string.
-
-    XML sub-classes will, usually, provide their specific semantics by
-    providing their own Element and Raw classes. This is the reason why
-    we use 'self.Element' and 'self.Raw' throghout the code instead of
-    just 'Element' and 'Raw'.
-    """
-
-    class_mimetypes = ['text/xml', 'application/xml']
-    class_extension = 'xml'
-    __hash__ = None
-
-    def new(self):
-        # XML is a meta-language, it does not make change to create a bare
-        # XML handler without a resource.
-        raise NotImplementedError
-
-
-    def _load_state_from_file(self, file):
-        data = file.read()
-        stream = XMLParser(data)
-        self.events = list(stream)
-
-
-    #######################################################################
-    # API
-    #######################################################################
-    def to_str(self, encoding='UTF-8'):
-        return stream_to_str(self.events, encoding)
-
-
-    def set_events(self, events):
-        self.set_changed()
-        self.events = events
-
-
-    def __cmp__(self, other):
-        if not isinstance(other, self.__class__):
-            return 1
-        return cmp(self.events, other.events)
-
-
-    def to_text(self):
-        """Removes the markup and returns a plain text string.
-        """
-        text = [ unicode(value, 'utf-8') for event, value, line in self.events
-                 if event == TEXT ]
-        return u' '.join(text)
-
-
-    #######################################################################
-    # API / Internationalization - Localization
-    #######################################################################
-    def get_units(self, srx_handler=None):
-        from i18n import get_units
-
-        return get_units(self.events, srx_handler)
-
-
-    def translate(self, catalog, srx_handler=None):
-        from i18n import translate
-
-        stream = translate(self.events, catalog, srx_handler)
-        return stream_to_str(stream)
-
-
-register_handler_class(XMLFile)

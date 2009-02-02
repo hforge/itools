@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.utils import freeze
+from itools.core import freeze
 
 # Internal import
 from utils import reportlab_value

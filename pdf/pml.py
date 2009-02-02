@@ -29,7 +29,6 @@ from tempfile import mkdtemp, mkstemp
 # Import from itools
 from itools.core import freeze, get_abspath
 from itools.datatypes import XMLContent
-import itools.http
 from itools.stl import set_prefix, stl
 from itools.uri import Path
 from itools.uri.uri import get_cwd

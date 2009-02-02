@@ -18,7 +18,6 @@
 # Import from itools
 from itools import vfs
 from itools.uri import get_reference, Path
-import itools.http
 from itools.vfs import exists, is_file, is_folder, make_file, WRITE
 
 

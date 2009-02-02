@@ -19,7 +19,6 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-import itools.http
 from itools import vfs
 from itools.web import BaseView, RootResource, Server
 

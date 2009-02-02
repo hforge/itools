@@ -41,7 +41,6 @@ import socket
 
 # Import from itools
 from itools import __version__
-import itools.http
 from itools.pkg import parse_package_name, download, get_installed_info
 from itools.pkg import EXTENSIONS, Bundle
 from itools.vfs import exists, get_names, make_folder

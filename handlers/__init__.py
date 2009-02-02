@@ -37,7 +37,6 @@ from config import ConfigFile
 from file import File
 from folder import Folder
 from image import Image
-from python import Python
 from registry import register_handler_class, get_handler_class_by_mimetype
 from registry import get_handler_class, get_handler
 from text import TextFile, guess_encoding
@@ -54,7 +53,6 @@ __all__ = [
     'File',
     'Folder',
     'Image',
-    'Python',
     'TextFile',
     # Handlers / Archive
     'ZIPFile',

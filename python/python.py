@@ -19,11 +19,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from ast import parse, walk, NodeVisitor
+from ast import parse, NodeVisitor
 
 # Import from itools
-from text import TextFile
-from registry import register_handler_class
+from itools.handlers import TextFile, register_handler_class
+from itools.srx import TEXT
 
 
 
@@ -34,7 +34,6 @@ class VisitorUnicode(NodeVisitor):
 
 
     def visit_Str(self, str):
-        from itools.srx import TEXT
         if type(str.s) is unicode and str.s.strip():
             # Context = None
             msg = ((TEXT, str.s),), None, str.lineno
@@ -60,4 +59,5 @@ class Python(TextFile):
         return visitor.messages
 
 
+# Register
 register_handler_class(Python)

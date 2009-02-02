@@ -21,10 +21,10 @@
 
 # Import from the Standard Library
 from cStringIO import StringIO
+from copy import deepcopy
+from socket import setdefaulttimeout
 from types import FileType
-import copy
-import socket
-import tempfile
+from tempfile import mkdtemp, mkstemp
 
 # Import from itools
 from itools.core import freeze, get_abspath
@@ -36,7 +36,9 @@ from itools.uri.uri import get_cwd
 from itools.vfs import vfs
 from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, TEXT
 from itools.xml import get_end_tag, XMLFile
+
 # Internal import
+from css import CssStylesheet
 from doctemplate import MySimpleDocTemplate, MyDocTemplate
 from style import build_paragraph_style, get_table_style, makeTocHeaderStyle
 from style import table_get_align, table_get_margin, build_inline_style
@@ -54,13 +56,10 @@ from reportlab.lib.units import cm
 # CJK
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.cidfonts import UnicodeCIDFont
-from reportlab.platypus import (XPreformatted, PageBreak, Image, Indenter,
-                                Table, tableofcontents, Spacer)
+from reportlab.platypus import XPreformatted, PageBreak, Image, Indenter
+from reportlab.platypus import Table, tableofcontents, Spacer
 from reportlab.platypus.flowables import HRFlowable
 from reportlab.platypus.tableofcontents import TableOfContents
-
-# Import the graphication css parser
-import css
 
 
 ######################################################################
@@ -229,7 +228,7 @@ class Context(object):
 
 
     def __init__(self):
-        self.tmp_dir = tempfile.mkdtemp()
+        self.tmp_dir = mkdtemp()
         self.init_base_style_sheet()
         self.image_not_found_path = get_abspath('missing.png')
         self.toc_place = None
@@ -240,7 +239,7 @@ class Context(object):
         css_file = get_abspath('html.css')
         self.add_css_from_file(css_file)
         self.anchor = []
-        socket.setdefaulttimeout(10)
+        setdefaulttimeout(10)
         self.list_anchor = []
         self.tag_stack = []
         self.style_tag_stack = []
@@ -296,7 +295,7 @@ class Context(object):
 
 
     def get_tmp_file(self):
-        fd, filename = tempfile.mkstemp(dir=self.tmp_dir)
+        fd, filename = mkstemp(dir=self.tmp_dir)
         return vfs.open(filename, 'w')
 
 
@@ -310,9 +309,9 @@ class Context(object):
 
     def add_current_style(self, stylesheet_text):
         if self.css is None:
-            self.css = css.CssStylesheet.from_css(stylesheet_text)
+            self.css = CssStylesheet.from_css(stylesheet_text)
         else:
-            tmp = css.CssStylesheet.from_css(stylesheet_text)
+            tmp = CssStylesheet.from_css(stylesheet_text)
             self.css = self.css.merge(tmp)
 
 
@@ -377,7 +376,7 @@ class Context(object):
 
 
     def get_header_copy(self):
-        return copy.deepcopy(self.header)
+        return deepcopy(self.header)
 
 
     def has_footer(self):
@@ -392,7 +391,7 @@ class Context(object):
 
 
     def get_footer_copy(self):
-        return copy.deepcopy(self.footer)
+        return deepcopy(self.footer)
 
 
     def del_tmp_dir(self):

@@ -19,14 +19,13 @@
 
 # Import from the Standard Library
 from base64 import decodestring
-from cProfile import runctx
 from logging import getLogger, WARNING, FileHandler, StreamHandler, Formatter
 from os import fstat, getpid, remove as remove_file
 from types import FunctionType, MethodType
 from signal import signal, SIGINT
 from socket import socket as Socket, error as SocketError
 from socket import AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR
-from time import strftime, time
+from time import strftime
 from traceback import format_exc
 from urllib import unquote
 from warnings import warn
@@ -169,7 +168,6 @@ class DummyDatabase(object):
 
 logger_data = getLogger('data')
 logger_http = getLogger('http')
-logger_load = getLogger('load')
 logger_loop = getLogger('loop')
 
 
@@ -184,7 +182,6 @@ class Server(object):
 
     def __init__(self, root, address=None, port=None, access_log=None,
                  event_log=None, log_level=WARNING, pid_file=None,
-                 profile_path=None,
                  auth_type='cookie', auth_realm='Restricted Area'):
         if address is None:
             address = ''
@@ -211,15 +208,10 @@ class Server(object):
         logger_data.addHandler(handler)
         logger_http.addHandler(handler)
         logger_loop.addHandler(handler)
-        logger_load.addHandler(handler)
         # Level
         logger_data.setLevel(log_level)
         logger_http.setLevel(log_level)
         logger_loop.setLevel(log_level)
-        logger_load.setLevel(log_level)
-
-        # Profile
-        self.profile_path = profile_path
 
         # The pid file
         self.pid_file = pid_file
@@ -285,15 +277,8 @@ class Server(object):
         except StopIteration:
             # We are done
             context = Context(request)
-            t0 = time()
             try:
-                if self.profile_path is None:
-                    self.handle_request(context)
-                else:
-                    path = str(context.uri.path).replace('/', '-')
-                    filename = '%s/%s-%s' % (self.profile_path, time(), path)
-                    runctx("self.handle_request(context)", globals(),
-                           locals(), filename)
+                self.handle_request(context)
             except HTTPError, exception:
                 response = Response(status_code=exception.code)
                 response.body = exception.title
@@ -305,7 +290,6 @@ class Server(object):
                 return
             else:
                 response = context.response
-            logger_load.debug('%s (%f s)' % (context.uri, time() - t0))
         except BadRequest:
             # Error loading
             response = Response(status_code=400)

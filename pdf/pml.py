@@ -40,26 +40,27 @@ from itools.xml import get_end_tag, XMLFile
 # Internal import
 from css import CssStylesheet
 from doctemplate import MySimpleDocTemplate, MyDocTemplate
+from flowables import Paragraph, Div
+from style import attribute_style_to_dict
+from style import build_frame_style, get_hr_style, get_font_name
 from style import build_paragraph_style, get_table_style, makeTocHeaderStyle
 from style import table_get_align, table_get_margin, build_inline_style
-from style import build_frame_style, get_hr_style, get_font_name
-from style import attribute_style_to_dict
 from utils import check_image, exist_attribute, font_value
 from utils import format_size, get_int_value, normalize
-from utils import Paragraph, pc_float, stream_next, join_content, Div
+from utils import pc_float, stream_next, join_content
 
 # Import from reportlab
-import reportlab
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import cm
-# CJK
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.cidfonts import UnicodeCIDFont
 from reportlab.platypus import XPreformatted, PageBreak, Image, Indenter
 from reportlab.platypus import Table, tableofcontents, Spacer
 from reportlab.platypus.flowables import HRFlowable
 from reportlab.platypus.tableofcontents import TableOfContents
+import reportlab
+# CJK
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.cidfonts import UnicodeCIDFont
 
 
 ######################################################################
@@ -615,7 +616,8 @@ def body_stream(stream, _tag_name, _attributes, context):
                 style = context.get_css_props()
                 div_attrs = build_frame_style(context, style, attributes)
                 story.append(Div(body_stream(stream, tag_name, attributes,
-                                             context), frame_attrs=div_attrs))
+                                             context), frame_attrs=div_attrs,
+                                             attributes=attributes))
             elif tag_name in PHRASE:
                 story.extend(paragraph_stream(stream, tag_name, attributes,
                                               context))
@@ -691,6 +693,13 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context,
                 elif tag_name == 'table':
                     story.extend(table_stream(stream, tag_name, attributes,
                                               context))
+                elif tag_name == 'div':
+                    style = context.get_css_props()
+                    div_attrs = build_frame_style(context, style, attributes)
+                    story.append(Div(body_stream(stream, tag_name, attributes,
+                                                 context),
+                                     frame_attrs=div_attrs,
+                                     attributes=attributes))
                 else:
                     skip = False
             if skip:

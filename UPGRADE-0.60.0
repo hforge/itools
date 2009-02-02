@@ -40,6 +40,8 @@ See the table below for the imports to update.
   utils.get_version              pkg.get_version
   utils.setup                    pkg.setup
   utils.vmsize                   core.vmsize
+  xml.XMLFile                    xmlfile.XMLFile
+  xml.translate                  xmlfile.translate
 
 
 Python 2.6

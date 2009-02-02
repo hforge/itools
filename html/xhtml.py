@@ -26,8 +26,8 @@ from itools.handlers import register_handler_class
 from itools.xml import XMLParser, XML_DECL, DOCUMENT_TYPE, START_ELEMENT
 from itools.xml import END_ELEMENT, TEXT, COMMENT
 from itools.xml import stream_to_str, get_qname, get_attribute_qname
-from itools.xml import get_end_tag, get_doctype
-from itools.xml import XMLFile, get_element
+from itools.xml import get_end_tag, get_doctype, get_element
+from itools.xmlfile import XMLFile
 
 
 xhtml_uri = 'http://www.w3.org/1999/xhtml'

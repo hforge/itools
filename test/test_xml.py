@@ -22,13 +22,9 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools import html
-from itools.xml import (XMLFile, XMLParser, DocType, XMLError, XML_DECL,
-    DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, TEXT, COMMENT, PI, CDATA,
-    stream_to_str, get_doctype)
-from itools.xml.i18n import get_units
-from itools.gettext import POUnit
-from itools.srx import TEXT as srx_TEXT
+import itools.html
+from itools.xml import XMLParser, DocType, XMLError, XML_DECL, START_ELEMENT
+from itools.xml import TEXT, CDATA, get_doctype
 
 
 class ParserTestCase(TestCase):
@@ -124,70 +120,6 @@ class ParserTestCase(TestCase):
         self.assertRaises(XMLError, list, parser)
 
 
-class XMLTestCase(TestCase):
-
-    #######################################################################
-    # Identity
-    def test_identity(self):
-        """
-        Tests wether the input and the output match.
-        """
-        data = ('<html>\n'
-                '<head></head>\n'
-                '<body>\n'
-                ' this is a <span style="color: red">test</span>\n'
-                '</body>\n'
-                '</html>')
-        h1 = XMLFile(string=data)
-        h2 = XMLFile(string=data)
-
-        self.assertEqual(h1, h2)
-
-
-    #######################################################################
-    # Entities: http://www.w3.org/TR/REC-xml/#sec-entexpand
-    def test_1(self):
-        data = ('<?xml version="1.0"?>\n'
-                '<!DOCTYPE test\n'
-                '[\n'
-                '<!ENTITY example "<p>An ampersand (&#38;#38;) may be '
-                'escaped numerically (&#38;#38;#38;) or with a general '
-                ' entity (&amp;amp;).</p>" >\n'
-                ']>\n'
-                '<test>&example;</test>\n')
-
-        parser = XMLParser(data)
-        self.assertEqual(list(parser)[6:9], [
-                  (2, (None, 'p', {}), 6),
-                  (4, 'An ampersand (&) may be escaped numerically (&#38;) '
-                      'or with a general  entity (&amp;).', 6),
-                  (3, (None, 'p'), 6)])
-
-    def test_2(self):
-        data = ('<?xml version="1.0"?>\n'
-                '<!DOCTYPE test [\n'
-                '<!ELEMENT test (#PCDATA) >\n'
-                "<!ENTITY % xx '&#37;zz;'>\n"
-                """<!ENTITY % zz '&#60;!ENTITY tricky "error-prone" >' >\n"""
-                '%xx;\n'
-                ']>\n'
-                '<test>This sample shows a &tricky; method.</test>')
-
-        parser = XMLParser(data)
-        self.assertEqual(list(parser)[5], (4,
-                         'This sample shows a error-prone method.', 8))
-
-    def test_3(self):
-        data = ('<?xml version="1.0"?>\n'
-                '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"\n'
-                '"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">\n'
-                '<html>&laquo; &fnof; &Xi; &psi; &permil; &real; &infin; '
-                '&there4; &clubs;</html>\n')
-        expected = '« ƒ Ξ ψ ‰ ℜ ∞ ∴ ♣'
-
-        parser = XMLParser(data)
-        self.assertEqual(list(parser)[5][1], expected)
-
 
 class DocTypeTestCase(TestCase):
 
@@ -225,16 +157,6 @@ class DocTypeTestCase(TestCase):
 
         # No raise
         list(XMLParser(data, doctype=doctype))
-
-
-class TranslatableTestCase(TestCase):
-
-    def test_surrounding(self):
-        text = '<em>Hello World</em>'
-        parser = XMLFile(string=text)
-
-        messages = [unit[0] for unit in parser.get_units()]
-        self.assertEqual(messages, [((srx_TEXT, u'Hello World'),)])
 
 
 

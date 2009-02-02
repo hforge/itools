@@ -18,10 +18,13 @@ meta-package for easier development and deployment:
 Changes:
 
 - Python 2.6 required
-- New package itools.core
-- itools.isetup renamed to itools.pkg (some isetup- scripts renamed to ipkg-)
 - Now we use Python's "logging" package
 - Now we use Xapian (in memory) for itools.csv and itools.ical (#427)
+
+Core reorganization:
+- New package itools.core
+- itools.isetup renamed to itools.pkg (some isetup- scripts renamed to ipkg-)
+- New package itools.xmlfile (split from itools.xml)
 
 itools.core:
 - New functions 'add_type', 'guess_type', etc.

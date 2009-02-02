@@ -23,12 +23,12 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-from itools.odf import ODTFile, ODPFile, ODSFile
 from itools.gettext import POFile, POUnit
+from itools.odf import ODTFile, ODPFile, ODSFile
+from itools.srx import TEXT, START_FORMAT, END_FORMAT
 from itools import vfs
 from itools.xml import XMLParser
-from itools.xml.i18n import get_units, translate
-from itools.srx import TEXT, START_FORMAT, END_FORMAT
+from itools.xmlfile import get_units, translate
 
 
 class Test_ODT_File(TestCase):

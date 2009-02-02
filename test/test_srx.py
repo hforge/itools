@@ -21,8 +21,8 @@ import unittest
 
 # Import from itools
 from itools.html import HTMLParser
-from itools.xml.i18n import get_units
 from itools.srx import get_segments, Message, TEXT, START_FORMAT, END_FORMAT
+from itools.xmlfile import get_units
 
 
 class SentenceTestCase(unittest.TestCase):

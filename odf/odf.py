@@ -26,8 +26,8 @@ from itools.core import add_type
 from itools.stl import stl
 from itools.handlers import register_handler_class, ZIPFile
 from itools.xml import XMLParser, XML_DECL, START_ELEMENT, TEXT
-from itools.xml import xml_to_text, translate, OfficeDocument, stream_to_str
-from itools.xml.i18n import get_units
+from itools.xml import xml_to_text, OfficeDocument, stream_to_str
+from itools.xmlfile import get_units, translate
 
 
 def stl_to_odt(model_odt, namespace):

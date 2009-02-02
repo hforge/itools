@@ -21,9 +21,8 @@
 
 # Import from itools
 from itools.handlers import TextFile, register_handler_class
+from itools.xml import XMLParser, TEXT, stream_to_str
 from i18n import get_units, translate
-from parser import XMLParser, TEXT
-from xml import stream_to_str
 
 
 

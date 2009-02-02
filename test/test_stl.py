@@ -19,10 +19,11 @@ import unittest
 
 # Import from itools
 from itools.handlers import get_handler
+import itools.html
 from itools.stl import stl
 from itools.stl.stl import NamespaceStack, substitute, evaluate
-from itools.xml import XMLFile, stream_to_str
-import itools.html
+from itools.xml import stream_to_str
+from itools.xmlfile import XMLFile
 
 
 class SubstituteTestCase(unittest.TestCase):

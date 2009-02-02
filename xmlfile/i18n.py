@@ -20,16 +20,16 @@
 
 # Import from itools
 from itools.datatypes import Unicode, XMLContent, XMLAttribute
-from namespaces import get_element_schema, xmlns_uri, get_attr_datatype
-from namespaces import is_empty
-from parser import XMLParser, XMLError, DOCUMENT_TYPE, XML_DECL
-from parser import START_ELEMENT, END_ELEMENT, TEXT, COMMENT
-from xml import get_qname, get_attribute_qname, get_end_tag
+from itools.srx import Message, get_segments, translate_message
+from itools.srx import TEXT as srx_TEXT
+from itools.xml import get_element_schema, xmlns_uri, get_attr_datatype
+from itools.xml import is_empty, get_qname, get_attribute_qname, get_end_tag
+from itools.xml import XMLParser, XMLError, DOCUMENT_TYPE, XML_DECL
+from itools.xml import START_ELEMENT, END_ELEMENT, TEXT, COMMENT
 
 
-###########################################################################
+
 # Constants
-###########################################################################
 MESSAGE = 999
 
 
@@ -77,9 +77,6 @@ def _make_start_format(tag_uri, tag_name, attributes, encoding):
 
 
 def _get_translatable_blocks(events):
-    # XXX We must break this circular dependency
-    from itools.srx import Message
-
     # Default value
     encoding = 'utf-8'
 
@@ -165,9 +162,6 @@ def _get_translatable_blocks(events):
 # Get Messages
 ###########################################################################
 def get_units(events, srx_handler=None):
-    # XXX We must break this circular dependency
-    from itools.srx import get_segments, TEXT as srx_TEXT
-
     keep_spaces = False
     keep_spaces_level = 0
     for type, value, line in _get_translatable_blocks(events):
@@ -209,9 +203,6 @@ def get_units(events, srx_handler=None):
 # Translate
 ###########################################################################
 def translate(events, catalog, srx_handler=None):
-    # XXX We must break this circular dependency
-    from itools.srx import translate_message, TEXT as srx_TEXT
-
     # Default values
     encoding = 'utf-8'
     doctype = None

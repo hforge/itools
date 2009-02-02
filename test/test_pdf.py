@@ -23,7 +23,8 @@ from itools.pdf.pml import Context, normalize, paragraph_stream
 from itools.pdf.pml import pmltopdf_test, stl_pmltopdf_test
 from itools.pdf.utils import get_color
 from itools.vfs import vfs
-from itools.xml import XMLParser, XMLFile
+from itools.xml import XMLParser
+from itools.xmlfile import XMLFile
 
 
 URI = 'http://www.w3.org/1999/xhtml'

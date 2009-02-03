@@ -71,26 +71,6 @@ class DataType(object):
         raise NotImplementedError
 
 
-    @classmethod
-    def split(cls, value):
-        """To index a field it must be split in a sequence of words and
-        positions:
-
-          [(word, 0), (word, 1), (word, 2), ...]
-
-        Where <word> will be a <str> value. Usually this function will be a
-        generator.
-        """
-        if cls.multiple:
-            if isinstance(value, (tuple, list, set, frozenset)):
-                for position, x in enumerate(value):
-                    yield cls.encode(x), position
-            else:
-                yield cls.encode(value), 0
-        else:
-            yield cls.encode(value), 0
-
-
     @staticmethod
     def is_valid(value):
         """Checks whether the given value is valid.

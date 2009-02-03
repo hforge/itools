@@ -24,7 +24,6 @@ from copy import deepcopy
 
 # Import from itools
 from itools.core import freeze
-from itools.i18n import is_asian_character, is_punctuation
 from itools.uri import Path, get_reference
 from base import DataType
 
@@ -80,80 +79,6 @@ class Unicode(DataType):
     @staticmethod
     def encode(value, encoding='UTF-8'):
         return value.encode(encoding)
-
-
-    @classmethod
-    def split(cls, value):
-        """
-        Returns the next word and its position in the data. The analysis
-        is done with the automaton:
-
-        0 -> 1 [letter or number]
-        0 -> 0 [stop word]
-        1 -> 1 [letter or number or cjk]
-        1 -> 0 [stop word]
-        0 -> 2 [cjk]
-        2 -> 0 [stop word]
-        2 -> 3 [letter or number or cjk]
-        3 -> 3 [letter or number or cjk]
-        3 -> 0 [stop word]
-        """
-        if value is None:
-            return
-
-        # FIXME value should be an unicode object
-        if isinstance(value, (unicode, str)) is False:
-            raise TypeError, 'unexpected %s' % type(value)
-
-        position = state = 0
-        lexeme = previous_cjk = u''
-        mode_cjk = None
-
-        for c in value:
-            if mode_cjk is None:
-                mode_cjk = is_asian_character(c)
-
-            if is_punctuation(c):
-                # Stop word
-                if mode_cjk: # CJK
-                    if previous_cjk and state == 2: # CJK not yielded yet
-                        yield previous_cjk, position
-                        position += 1
-                else: # ASCII
-                    if state == 1:
-                        lexeme = lexeme.lower()
-                        yield lexeme, position
-                        position += 1
-
-                # reset state
-                lexeme = u''
-                previous_cjk = u''
-                state = 0
-                mode_cjk = None
-            else:
-                if mode_cjk is False: # ASCII
-                    if state == 1:
-                        lexeme += c
-                    else: # state == 0
-                        lexeme += c
-                        state = 1
-
-                else: # CJK
-                    c = c.lower()
-                    if previous_cjk:
-                        yield u'%s%s' % (previous_cjk, c), position
-                        position += 1
-                        state = 3
-                    else:
-                        state = 2
-                    previous_cjk = c
-
-        # Last word
-        if state == 1:
-            lexeme = lexeme.lower()
-            yield lexeme, position
-        elif previous_cjk and state == 2:
-            yield previous_cjk, position
 
 
     @staticmethod

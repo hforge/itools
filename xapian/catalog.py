@@ -20,20 +20,22 @@ from marshal import dumps, loads
 
 # Import from xapian
 from xapian import Database, WritableDatabase, DB_CREATE, DB_OPEN
-from xapian import Document, Enquire, Query
+from xapian import Document, Enquire, Query, TermGenerator
+# XXX from xapian import Stem
 from xapian import MultiValueSorter, sortable_serialise, sortable_unserialise
 from xapian import inmemory_open
 
 # Import from itools
+from itools.datatypes import Integer, Unicode
+from itools.i18n import is_asian_character, is_punctuation
 from itools.uri import get_absolute_reference
 from base import CatalogAware
-from itools.datatypes import Integer
 from exceptions import XapianIndexError
 from queries import RangeQuery, PhraseQuery, AndQuery, OrQuery
 from queries import AllQuery, NotQuery, StartQuery
 
-
 # Constants
+# XXX stemmer = Stem('en')
 OP_AND = Query.OP_AND
 OP_AND_NOT = Query.OP_AND_NOT
 OP_OR = Query.OP_OR
@@ -66,16 +68,145 @@ def _decode(field_cls, data):
 
 
 
+def _index_cjk(xdoc, value, prefix, termpos):
+    """
+    Returns the next word and its position in the data. The analysis
+    is done with the automaton:
+
+    0 -> 1 [letter or number]
+    0 -> 0 [stop word]
+    1 -> 1 [letter or number or cjk]
+    1 -> 0 [stop word]
+    0 -> 2 [cjk]
+    2 -> 0 [stop word]
+    2 -> 3 [letter or number or cjk]
+    3 -> 3 [letter or number or cjk]
+    3 -> 0 [stop word]
+    """
+    state = 0
+    lexeme = previous_cjk = u''
+    mode_cjk = None
+
+    for c in value:
+        if mode_cjk is None:
+            mode_cjk = is_asian_character(c)
+
+        if is_punctuation(c):
+            # Stop word
+            if mode_cjk: # CJK
+                if previous_cjk and state == 2: # CJK not yielded yet
+                    xdoc.add_posting(prefix + previous_cjk, termpos)
+                    termpos += 1
+            else: # ASCII
+                if state == 1:
+                    lexeme = lexeme.lower()
+                    xdoc.add_posting(prefix + lexeme, termpos)
+                    termpos += 1
+
+            # reset state
+            lexeme = u''
+            previous_cjk = u''
+            state = 0
+            mode_cjk = None
+        else:
+            if mode_cjk is False: # ASCII
+                if state == 1:
+                    lexeme += c
+                else: # state == 0
+                    lexeme += c
+                    state = 1
+
+            else: # CJK
+                c = c.lower()
+                if previous_cjk:
+                    xdoc.add_posting(prefix + (u'%s%s' % (previous_cjk, c)),
+                                     termpos)
+                    termpos += 1
+                    state = 3
+                else:
+                    state = 2
+                previous_cjk = c
+
+    # Last word
+    if state == 1:
+        lexeme = lexeme.lower()
+        xdoc.add_posting(prefix + lexeme, termpos)
+    elif previous_cjk and state == 2:
+        xdoc.add_posting(prefix + previous_cjk, termpos)
+
+    return termpos + 1
+
+
+
+def _index_unicode_value(xdoc, value, prefix, language, termpos):
+    if language in ['ko', 'ja', 'zh']:
+        return _index_cjk(xdoc, value, prefix, termpos)
+    else:
+        tg = TermGenerator()
+        tg.set_document(xdoc)
+        tg.set_termpos(termpos - 1)
+        # XXX The words are saved twice: with prefix and with Zprefix
+        #tg.set_stemmer(stemmer)
+        tg.index_text(value, 1, prefix)
+        return tg.get_termpos() + 1
+
+
+
+def _index_unicode(xdoc, field_cls, value, prefix, language):
+    if (field_cls.multiple and
+        isinstance(value, (tuple, list, set, frozenset))):
+        termpos = 1
+        for x in value:
+            termpos = _index_unicode_value(xdoc, x, prefix, language, termpos)
+    else:
+        _index_unicode_value(xdoc, value, prefix, language, 1)
+
+
+
 def _index(xdoc, field_cls, value, prefix):
-    for term in field_cls.split(value):
-        xdoc.add_posting(prefix+term[0], term[1])
+    """To index a field it must be split in a sequence of words and
+    positions:
+
+      [(word, 1), (word, 2), (word, 3), ...]
+
+    Where <word> will be a <str> value.
+    """
+
+    # Unicode: a complex split
+    if issubclass(field_cls, Unicode):
+        # A multilingual value ?
+        # XXX Make it compulsory
+        if isinstance(value, dict):
+            for language, a_value in value.iteritems():
+                _index_unicode(xdoc, field_cls, a_value, prefix, language)
+        else:
+            _index_unicode(xdoc, field_cls, value, prefix, 'en')
+    # An other type: too easy
+    else:
+        if (field_cls.multiple and
+            isinstance(value, (tuple, list, set, frozenset))):
+            for position, x in enumerate(value):
+                xdoc.add_posting(prefix + field_cls.encode(x), position + 1)
+        else:
+            xdoc.add_posting(prefix + field_cls.encode(value), 1)
 
 
 
 def _make_PhraseQuery(field_cls, value, prefix):
+    # Get the words
+    # XXX It's too complex (slow), we must use xapian
+    #     Problem => _index_cjk
+    xdoc = Document()
+    _index(xdoc, field_cls, value, prefix)
     words = []
-    for word in field_cls.split(value):
-        words.append(prefix+word[0])
+    for term_list_item in xdoc:
+        term = term_list_item.term
+        for termpos in term_list_item.positer:
+            words.append((termpos, term))
+    words.sort()
+    words = [ word[1] for word in words ]
+
+    # Make the query
     return Query(OP_PHRASE, words)
 
 
@@ -117,6 +248,19 @@ def _get_xquery(catalog, query=None, **kw):
         xqueries.append(query)
 
     return Query(OP_AND, xqueries)
+
+
+
+def split_unicode(text, language='en'):
+    xdoc = Document()
+    _index_unicode_value(xdoc, text, '', language, 1)
+    words = []
+    for term_list_item in xdoc:
+        term = unicode(term_list_item.term, 'utf-8')
+        for termpos in term_list_item.positer:
+            words.append((termpos, term))
+    words.sort()
+    return [ word[1] for word in words ]
 
 
 
@@ -347,13 +491,15 @@ class Catalog(object):
             else:
                 info = metadata[name]
 
-            # Is stored ?
-            if getattr(field_cls, 'is_stored', False):
-                xdoc.add_value(info['value'], _encode(field_cls, value))
+            # The value can be None
+            if value is not None:
+                # Is stored ?
+                if getattr(field_cls, 'is_stored', False):
+                    xdoc.add_value(info['value'], _encode(field_cls, value))
 
-            # Is indexed ?
-            if getattr(field_cls, 'is_indexed', False):
-                _index(xdoc, field_cls, value, info['prefix'])
+                # Is indexed ?
+                if getattr(field_cls, 'is_indexed', False):
+                    _index(xdoc, field_cls, value, info['prefix'])
 
         # Store the first value with the prefix 'Q'
         key_field = self._key_field

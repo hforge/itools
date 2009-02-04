@@ -678,7 +678,7 @@ static PyTypeObject XMLParserType = {
   0,                                 /* tp_clear */
   0,                                 /* tp_richcompare */
   0,                                 /* tp_weaklistoffset */
-  PyObject_SelfIter,                 /* tp_iter */
+  0, /* XXX set later: PyObject_SelfIter, */                /* tp_iter */
   (iternextfunc) XMLParser_iternext, /* tp_iternext */
   0,                                 /* tp_methods */
   0,                                 /* tp_members */
@@ -748,6 +748,9 @@ initparser (void)
 {
   /* TODO Make verifications / destructions ... */
   PyObject *module;
+
+  /* XXX Fix tp_Iter for cygwin */
+  XMLParserType.tp_iter = PyObject_SelfIter;
 
   /* Register parser */
   module = Py_InitModule3 ("parser", module_methods, "Low-level XML parser");

@@ -288,7 +288,7 @@ def setup(ext_modules=freeze([])):
     class SetupConf(ConfigFile):
         schema = {'name': String,
                   'title': String,
-                  'url': URI,
+                  'url': String,
                   'author_name': String,
                   'author_email': Email,
                   'license': String,

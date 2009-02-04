@@ -16,17 +16,26 @@
 
 # Import from the Standard Library
 from datetime import datetime
-from os import devnull, popen
 from subprocess import Popen, PIPE
 
 # Import from itools
 from itools.core import freeze
 
 
+def get_pipe(command, cwd=None):
+    popen = Popen(command, stdout=PIPE, stderr=PIPE, cwd=cwd)
+    errno = popen.wait()
+    if errno:
+        strerror = popen.stderr.read()
+        raise EnvironmentError, (errno, strerror)
+    return popen.stdout
+
+
 def is_available():
     """Returns True if we are in a git working directory, False otherwise.
     """
-    return bool(popen('git branch').read())
+    pipe = get_pipe(['git', 'branch'])
+    return bool(pipe.read())
 
 
 def get_filenames():
@@ -35,7 +44,8 @@ def get_filenames():
     if not is_available():
         return []
 
-    return [ x.strip() for x in popen('git ls-files').readlines() ]
+    pipe = get_pipe(['git', 'ls-files'])
+    return [ x.strip() for x in pipe.readlines() ]
 
 
 def get_metadata(reference='HEAD', cwd=None):
@@ -43,8 +53,7 @@ def get_metadata(reference='HEAD', cwd=None):
 
     For now only the commit id and the timestamp are returned.
     """
-    command = ['git', 'cat-file', 'commit', reference]
-    pipe = Popen(command, cwd=cwd, stdout=PIPE).stdout
+    pipe = get_pipe(['git', 'cat-file', 'commit', reference], cwd=cwd)
     lines = pipe.readlines()
 
     # Default values
@@ -92,7 +101,8 @@ def get_metadata(reference='HEAD', cwd=None):
 def get_branch_name():
     """Returns the name of the current branch.
     """
-    for line in popen('git branch').readlines():
+    pipe = get_pipe(['git', 'branch'])
+    for line in pipe.readlines():
         if line.startswith('*'):
             return line[2:-1]
 
@@ -102,16 +112,13 @@ def get_branch_name():
 def get_tag_names():
     """Returns the names of all the tags.
     """
-    cmd = 'git ls-remote --tags .'
-    return [ x.strip().split('/')[-1] for x in popen(cmd).readlines() ]
+    pipe = get_pipe(['git', 'ls-remote', '--tags', '.'])
+    return [ x.strip().split('/')[-1] for x in pipe.readlines() ]
 
 
 
 def get_revisions(files=freeze([]), cwd=None):
     command = ['git', 'rev-list', 'HEAD', '--'] + files
+    pipe = get_pipe(command, cwd=cwd)
 
-    with open(devnull) as null:
-        popen = Popen(command, cwd=cwd, stdout=PIPE, stderr=null)
-        returncode = popen.wait()
-
-    return [ x.rstrip() for x in popen.stdout.readlines() ]
+    return [ x.rstrip() for x in pipe.readlines() ]

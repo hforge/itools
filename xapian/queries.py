@@ -108,6 +108,10 @@ class NotQuery(BaseQuery):
         self.query = query
 
 
+    def __repr_parameters__(self):
+        return repr(self.query)
+
+
 
 class StartQuery(BaseQuery):
 

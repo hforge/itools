@@ -16,8 +16,11 @@
 
 # Import from the Standard Library
 from datetime import datetime
-from os import popen
+from os import devnull, popen
 from subprocess import Popen, PIPE
+
+# Import from itools
+from itools.core import freeze
 
 
 def is_available():
@@ -103,3 +106,12 @@ def get_tag_names():
     return [ x.strip().split('/')[-1] for x in popen(cmd).readlines() ]
 
 
+
+def get_revisions(files=freeze([]), cwd=None):
+    command = ['git', 'rev-list', 'HEAD', '--'] + files
+
+    with open(devnull) as null:
+        popen = Popen(command, cwd=cwd, stdout=PIPE, stderr=null)
+        returncode = popen.wait()
+
+    return [ x.rstrip() for x in popen.stdout.readlines() ]

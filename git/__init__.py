@@ -15,8 +15,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from git import (is_available, get_filenames, get_metadata, get_branch_name,
-    get_tag_names)
+from git import is_available, get_filenames, get_metadata, get_branch_name
+from git import get_revisions, get_tag_names
 
 
 
@@ -24,6 +24,7 @@ __all__ = [
     'get_branch_name',
     'get_filenames',
     'get_metadata',
+    'get_revisions',
     'get_tag_names',
     'is_available',
     ]

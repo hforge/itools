@@ -24,25 +24,20 @@ The scripts included are:
 
 
 Requirements
-------------
+=============
 
-Python 2.5.2 or later is required.  The GLib [1] library version 2.12 or
-later is required.  For Windows pywin32 [2] is needed.
-
-To get the "PDF Markup Language" (PML) working the package reportlab 2.2
-or later [3] must be installed.
-
-The "itools.xapian" package requires the Xapian [4] library (xapian-core)
-and its Python wrapper (xapian-bindings), version 1.0.7 or later is required.
-
-[1] http://www.gtk.org/
-[2] http://sourceforge.net/projects/pywin32/
-[3] http://www.reportlab.org/
-[4] http://www.xapian.org/
+Software    Version   Required by     Home
+---------   -------   -------------   ----------------------------------------
+Python        2.6.1   itools          http://www.python.org/
+glib           2.16   itools.vfs      http://www.gtk.org/
+pygobject      2.16   itools.vfs      http://www.pygtk.org/
+reportlab       2.2   itools.pdf      http://www.reportlab.org/
+xapian        1.0.8   itools.xapian   http://www.xapian.org/
+pywin32         212   (Windows)       http://sourceforge.net/projects/pywin32/
 
 
 Install
--------
+=============
 
 If you are reading this instructions you probably have already unpacked
 the itools tarball with the command line:
@@ -59,7 +54,7 @@ So now to install itools you just need to type this:
 
 
 Unit Tests
-----------
+=============
 
 To run the unit tests just type:
 
@@ -74,14 +69,14 @@ the mailing list:
 
 
 Documentation
--------------
+=============
 
 The documentation is distributed as a separate package, itools-docs.
 The PDF file can be downloaded from http://www.hforge.org/itools
 
 
 Resources
----------
+=============
 
 Home
 http://www.hforge.org/itools
@@ -95,18 +90,18 @@ http://bugs.hforge.org
 
 
 Copyright
----------
+=============
 
-Copyright (C) 2002-2008 Juan David Ibáñez Palomar <jdavid@itaapy.com>
-Copyright (C) 2005-2008 Luis Arturo Belmar-Letelier <luis@itaapy.com>
-Copyright (C) 2005-2008 Hervé Cauwelier <herve@itaapy.com>
-Copyright (C) 2005-2008 Nicolas Deram <nicolas@itaapy.com>
+Copyright (C) 2002-2009 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+Copyright (C) 2005-2009 Luis Arturo Belmar-Letelier <luis@itaapy.com>
+Copyright (C) 2005-2009 Hervé Cauwelier <herve@itaapy.com>
+Copyright (C) 2005-2009 Nicolas Deram <nicolas@itaapy.com>
 
 And others. Check the CREDITS file for complete list.
 
 
 License
--------
+=============
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

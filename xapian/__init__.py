@@ -26,7 +26,7 @@ __all__ = [
     'make_catalog',
     'Catalog',
     'CatalogAware',
-    'split_unicode'
+    'split_unicode',
     # Exceptions
     'XapianIndexError',
     # Queries

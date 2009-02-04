@@ -23,7 +23,7 @@ from messages import INFO, ERROR, MSG_MISSING_OR_INVALID
 from resources import Resource, RootResource
 from server import Server
 from views import BaseView, BaseForm, STLView, STLForm
-import webdav
+from webdav import lock_body
 
 
 __all__ = [
@@ -48,4 +48,6 @@ __all__ = [
     'INFO',
     'ERROR',
     'MSG_MISSING_OR_INVALID',
+    # Webdav
+    'lock_body',
     ]

@@ -62,7 +62,7 @@ skip_content_elements = [
     (config_uri, 'config-item'),
 
     # Dublin core
-    #(dc_uri, 'creator'),
+    (dc_uri, 'creator'),
     (dc_uri, 'date'),
     #(dc_uri, 'description'),
     (dc_uri, 'language'),
@@ -79,7 +79,7 @@ skip_content_elements = [
     (meta_uri, 'editing-cycles'),
     (meta_uri, 'editing-duration'),
     (meta_uri, 'generator'),
-    #(meta_uri, 'initial-creator'),
+    (meta_uri, 'initial-creator'),
     #(meta_uri, 'keyword'),
     (meta_uri, 'printed-by'),
     (meta_uri, 'print-date'),

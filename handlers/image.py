@@ -40,7 +40,7 @@ class Image(File):
         # The size, a tuple with the width and height, or None if PIL is not
         # installed.
         if PILImage is None:
-            self.size = None
+            self.size = 0, 0
         else:
             f = StringIO(self.data)
             try:

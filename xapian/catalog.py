@@ -73,65 +73,39 @@ def _index_cjk(xdoc, value, prefix, termpos):
     Returns the next word and its position in the data. The analysis
     is done with the automaton:
 
-    0 -> 1 [letter or number]
+    0 -> 1 [letter or number or cjk]
     0 -> 0 [stop word]
-    1 -> 1 [letter or number or cjk]
     1 -> 0 [stop word]
-    0 -> 2 [cjk]
+    1 -> 2 [letter or number or cjk]
+    2 -> 2 [letter or number or cjk]
     2 -> 0 [stop word]
-    2 -> 3 [letter or number or cjk]
-    3 -> 3 [letter or number or cjk]
-    3 -> 0 [stop word]
     """
     state = 0
     lexeme = previous_cjk = u''
-    mode_cjk = None
 
     for c in value:
-        if mode_cjk is None:
-            mode_cjk = is_asian_character(c)
-
         if is_punctuation(c):
             # Stop word
-            if mode_cjk: # CJK
-                if previous_cjk and state == 2: # CJK not yielded yet
-                    xdoc.add_posting(prefix + previous_cjk, termpos)
-                    termpos += 1
-            else: # ASCII
-                if state == 1:
-                    lexeme = lexeme.lower()
-                    xdoc.add_posting(prefix + lexeme, termpos)
-                    termpos += 1
-
+            if previous_cjk and state == 1: # CJK not yielded yet
+                xdoc.add_posting(prefix + previous_cjk, termpos)
+                termpos += 1
             # reset state
             lexeme = u''
             previous_cjk = u''
             state = 0
-            mode_cjk = None
         else:
-            if mode_cjk is False: # ASCII
-                if state == 1:
-                    lexeme += c
-                else: # state == 0
-                    lexeme += c
-                    state = 1
-
-            else: # CJK
-                c = c.lower()
-                if previous_cjk:
-                    xdoc.add_posting(prefix + (u'%s%s' % (previous_cjk, c)),
-                                     termpos)
-                    termpos += 1
-                    state = 3
-                else:
-                    state = 2
-                previous_cjk = c
+            c = c.lower()
+            if previous_cjk:
+                xdoc.add_posting(prefix + (u'%s%s' % (previous_cjk, c)),
+                                 termpos)
+                termpos += 1
+                state = 2
+            else:
+                state = 1
+            previous_cjk = c
 
     # Last word
-    if state == 1:
-        lexeme = lexeme.lower()
-        xdoc.add_posting(prefix + lexeme, termpos)
-    elif previous_cjk and state == 2:
+    if previous_cjk and state == 1:
         xdoc.add_posting(prefix + previous_cjk, termpos)
 
     return termpos + 1
@@ -139,7 +113,7 @@ def _index_cjk(xdoc, value, prefix, termpos):
 
 
 def _index_unicode_value(xdoc, value, prefix, language, termpos):
-    if language in ['ko', 'ja', 'zh']:
+    if language in ['ja', 'zh']:
         return _index_cjk(xdoc, value, prefix, termpos)
     else:
         tg = TermGenerator()

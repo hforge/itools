@@ -122,3 +122,9 @@ def get_revisions(files=freeze([]), cwd=None):
     pipe = get_pipe(command, cwd=cwd)
 
     return [ x.rstrip() for x in pipe.readlines() ]
+
+
+
+def get_diff(reference='HEAD', cwd=None):
+    pipe = get_pipe(['git', 'show', reference, '--pretty=format:'], cwd=cwd)
+    return [ x.rstrip() for x in pipe.readlines() ]

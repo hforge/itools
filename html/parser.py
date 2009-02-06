@@ -301,6 +301,8 @@ class Parser(BaseParser, object):
                 else:
                     message = 'missing attribute value for "%s"'
                     raise XMLError, message % attribute_name
+            elif type(attribute_value) is unicode:
+                attribute_value = attribute_value.encode(self.encoding)
             attributes[(None, attribute_name)] = attribute_value
 
         # Start element

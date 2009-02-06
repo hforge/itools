@@ -18,8 +18,8 @@
 
 # Import from itools
 import dublin_core
-from namespaces import XMLNamespace, register_namespace, get_namespace
-from namespaces import xml_uri, xmlns_uri
+from namespaces import XMLNamespace, xml_uri, xmlns_uri
+from namespaces import register_namespace, get_namespace, has_namespace
 from namespaces import ElementSchema, get_element_schema, get_attr_datatype
 from namespaces import is_empty
 from parser import XMLParser, DocType, register_dtd, XMLError, XML_DECL
@@ -51,6 +51,7 @@ __all__ = [
     'XMLNamespace',
     'register_namespace',
     'get_namespace',
+    'has_namespace',
     'get_element_schema',
     'get_attr_datatype',
     'is_empty',

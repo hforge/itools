@@ -43,7 +43,7 @@ dc_attributes = {
 
 
 dc_elements = [
-    ElementSchema('creator', context='creator'),
+    ElementSchema('creator', context='creator', skip_content=True),
     ElementSchema('description'),
     ElementSchema('date', skip_content=True),
     ElementSchema('language', skip_content=True),

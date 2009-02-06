@@ -22,15 +22,13 @@ from copy import copy
 from itools import get_abspath
 from itools.datatypes import String
 from itools.relaxng import RelaxNGFile
-from itools.xml import register_namespace, ElementSchema
-from itools.xml.namespaces import has_namespace
+from itools.xml import register_namespace, has_namespace, ElementSchema
 
 
 ###########################################################################
 # Metadata
 ###########################################################################
 config_uri = 'urn:oasis:names:tc:opendocument:xmlns:config:1.0'
-dc_uri = 'http://purl.org/dc/elements/1.1/'
 fo_uri = 'urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0'
 form_uri = 'urn:oasis:names:tc:opendocument:xmlns:form:1.0'
 meta_uri = 'urn:oasis:names:tc:opendocument:xmlns:meta:1.0'
@@ -54,20 +52,13 @@ inline_elements = [
 
     (text_uri, 'bibliography-mark'),
     (text_uri, 'user-field-get'),
-    (text_uri, 'reference-ref')]
+    (text_uri, 'reference-ref'),
+    ]
+
 
 skip_content_elements = [
-
     # Config
     (config_uri, 'config-item'),
-
-    # Dublin core
-    (dc_uri, 'creator'),
-    (dc_uri, 'date'),
-    #(dc_uri, 'description'),
-    (dc_uri, 'language'),
-    #(dc_uri, 'subject'),
-    #(dc_uri, 'title'),
 
     # Form
     (form_uri, 'item'),
@@ -184,8 +175,9 @@ skip_content_elements = [
     #(svg_uri, 'desc')
 
     # From translate (the only tag with elements)
-    (text_uri, 'tracked-changes')
+    (text_uri, 'tracked-changes'),
     ]
+
 
 contexts = [
     (meta_uri, 'keyword', 'metadata'),
@@ -193,13 +185,13 @@ contexts = [
     (text_uri, 'index-entry-span', 'text index'),
     (text_uri, 'h', 'heading'),
     (text_uri, 'p', 'paragraph'),
-]
+    ]
 
 
 # XXX These elements appear in openDocuments but they are neither in the doc,
 # nor the relaxNG file!
 unknown_elements = [
-    (style_uri, 'list-level-label-alignment')
+    (style_uri, 'list-level-label-alignment'),
     ]
 
 ###########################################################################
@@ -242,5 +234,3 @@ duplicate_ns(namespaces, svg_uri, svg_uri_2)
 for uri, namespace in namespaces.iteritems():
     if not has_namespace(uri):
         register_namespace(namespace)
-
-

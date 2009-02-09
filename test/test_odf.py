@@ -44,8 +44,6 @@ class Test_ODT_File(TestCase):
                     ((TEXT, u'Hello world Document'),),
                     ((TEXT, u"it's a very good document"),),
                     ((TEXT, u'Itools test'),),
-                    ((TEXT, u'sylvain'),),
-                    ((TEXT, u'sylvain'),),
                     ((TEXT, u'itools'),),
                     ((TEXT, u'odt'),),
                     ((TEXT, u'odf'),)]
@@ -72,8 +70,6 @@ class Test_ODT_File(TestCase):
             ((TEXT, u'Hello world Document'),),
             ((TEXT, u"it's a very good document"),),
             ((TEXT, u'Itools test'),),
-            ((TEXT, u'sylvain'),),
-            ((TEXT, u'sylvain'),),
             ((TEXT, u'itools'),),
             ((TEXT, u'odt'),),
             ((TEXT, u'odf'),)]
@@ -109,8 +105,6 @@ class Test_ODP_File(TestCase):
                      (START_FORMAT, 2), (TEXT, u'World'), (END_FORMAT, 2),
                      (START_FORMAT, 3), (TEXT, u' !'), (END_FORMAT, 3)),
                     ((TEXT, u'Welcome'),),
-                    ((TEXT, u'sylvain'),),
-                    ((TEXT, u'sylvain'),),
                     ((TEXT, u'2'),),
                     ((TEXT, u'2'),),
                     ((TEXT, u'2'),)]
@@ -141,8 +135,6 @@ class Test_ODS_File(TestCase):
                     ((TEXT, u'0'),),
                     ((TEXT, u'50'),),
                     ((TEXT, u'40'),),
-                    ((TEXT, u'sylvain'),),
-                    ((TEXT, u'sylvain'),),
                     ((TEXT, u'-'),),
                     ((TEXT, u'-'),),
                     ((TEXT, u'Page '), (START_FORMAT, 1), (TEXT, u'1'),

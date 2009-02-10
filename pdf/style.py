@@ -361,7 +361,7 @@ def build_inline_style(context, tag_name, style_css):
             continue
         if tag_and_attrs:
             tag, attrs = tag_and_attrs
-            if style.has_key(tag):
+            if tag in style:
                 style[tag].update(attrs)
             else:
                 style[tag] = attrs

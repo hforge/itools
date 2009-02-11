@@ -26,7 +26,7 @@ from itools.core import add_type
 from itools.stl import stl
 from itools.handlers import register_handler_class, ZIPFile
 from itools.xml import XMLParser, XML_DECL, START_ELEMENT, TEXT
-from itools.xml import xml_to_text, OfficeDocument, stream_to_str
+from itools.xml import OfficeDocument, stream_to_str
 from itools.xmlfile import get_units, translate
 
 
@@ -56,7 +56,16 @@ class OOFile(OfficeDocument, ZIPFile):
     """
 
     def to_text(self):
-        return xml_to_text(self.get_file('content.xml'))
+        file = self.get_file('content.xml')
+        encoding = 'utf-8'
+        text = []
+        for event, value, line in XMLParser(file):
+            # TODO Extract some attribute values
+            if event == TEXT:
+                text.append(value)
+            elif event == XML_DECL:
+                encoding = value[1]
+        return unicode(' '.join(text), encoding)
 
 
 

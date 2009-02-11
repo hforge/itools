@@ -52,13 +52,11 @@ def xml_to_text(data):
         if state == 0:
             if c == '<':
                 state = 1
-                continue
         elif state == 1:
             if c == '>':
                 # Force word separator
                 output.append(u' ')
                 state = 2
-                continue
         elif state == 2:
             if c == '<' or c == '&':
                 encoding = guess_encoding(buffer)
@@ -66,10 +64,8 @@ def xml_to_text(data):
                 buffer = ''
                 if c == '<':
                     state = 1
-                    continue
                 elif c == '&':
                     state = 3
-                    continue
             else:
                 buffer += c
         elif state == 3:
@@ -83,7 +79,6 @@ def xml_to_text(data):
                     output.append(unichr(name2codepoint.get(buffer, 63))) # '?'
                 buffer = ''
                 state = 2
-                continue
             else:
                 buffer += c
 

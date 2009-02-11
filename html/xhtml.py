@@ -124,7 +124,9 @@ safe_tags = frozenset([
     'kbd', 'label', 'legend', 'li', 'map', 'menu', 'ol', 'optgroup', 'option',
     'p', 'pre', 'q', 's', 'samp', 'select', 'small', 'span', 'strike',
     'strong', 'sub', 'sup', 'table', 'tbody', 'td', 'textarea', 'tfoot', 'th',
-    'thead', 'tr', 'tt', 'u', 'ul', 'var'])
+    'thead', 'tr', 'tt', 'u', 'ul', 'var',
+    # flash
+    'embed', 'object', 'param'])
 
 safe_attrs = frozenset([
     'abbr', 'accept', 'accept-charset', 'accesskey', 'action', 'align', 'alt',
@@ -136,10 +138,12 @@ safe_attrs = frozenset([
     'multiple', 'name', 'nohref', 'noshade', 'nowrap', 'prompt', 'readonly',
     'rel', 'rev', 'rows', 'rowspan', 'rules', 'scope', 'selected', 'shape',
     'size', 'span', 'src', 'start', 'style', 'summary', 'tabindex', 'target',
-    'title', 'type', 'usemap', 'valign', 'value', 'vspace', 'width'])
+    'title', 'type', 'usemap', 'valign', 'value', 'vspace', 'width',
+    # flash,
+    'data'])
 
 uri_attrs = frozenset([
-    'action', 'background', 'dynsrc', 'href', 'lowsrc', 'src'])
+    'action', 'background', 'data', 'dynsrc', 'href', 'lowsrc', 'src'])
 
 safe_schemes = frozenset(['file', 'ftp', 'http', 'https', 'mailto', None])
 
@@ -164,6 +168,12 @@ def sanitize_stream(stream):
             if tag_name not in safe_tags:
                 skip = 1
                 continue
+            # Check unsafe object
+            if tag_name == 'object':
+                attr_value = attributes.get('type')
+                if attr_value != 'application/x-shockwave-flash':
+                    skip = 1
+                    continue
             # Filter attributes
             attributes = attributes.copy()
             for attr_key in attributes.keys():
@@ -304,7 +314,9 @@ class XHTMLFile(XMLFile):
                     return False
             elif type == START_ELEMENT:
                 tag_uri, tag_name, attributes = value
-                if tag_name == 'img':
+                if tag_name in ('img', 'object'):
+                    # If the document contains at leat one image
+                    # or one object (i.e. flash object) it is not empty
                     return False
         return True
 

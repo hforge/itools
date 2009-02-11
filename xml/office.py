@@ -21,6 +21,9 @@ from os.path import join as join_path
 from subprocess import call
 from tempfile import mkdtemp
 
+# Import other modules
+from xlrd import open_workbook
+
 # Import from itools
 from itools import vfs
 from itools.handlers import File, register_handler_class
@@ -109,14 +112,23 @@ class MSWord(OfficeDocument):
 class MSExcel(OfficeDocument):
     class_mimetypes = ['application/vnd.ms-excel']
     class_extension = 'xls'
-    source_converter = 'xlhtml -a -fw -nc -nh -te %s'
 
 
     def to_text(self):
-        stdout, stderr = convert(self, self.source_converter)
-        if stderr != "":
-            return u''
-        return xml_to_text(stdout)
+        data = self.to_str()
+
+        # Load the XLRD file
+        # XXX This is slow (try 'print book.load_time_stage_2')
+        book = open_workbook(file_contents=data)
+
+        # Get the text
+        text = []
+        for sheet in book.sheets():
+            for idx in range(sheet.nrows):
+                row = sheet.row_values(idx)
+                row = [ x for x in row if type(x) is unicode ]
+                text.extend(row)
+        return u' '.join(text)
 
 
 

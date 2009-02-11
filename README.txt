@@ -26,7 +26,7 @@ The scripts included are:
 Requirements
 =============
 
-Software    Version   Required by     Home
+Software    Version   Used by         Home
 ---------   -------   -------------   ----------------------------------------
 Python        2.6.1   itools          http://www.python.org/
 glib           2.16   itools.vfs      http://www.gtk.org/
@@ -34,6 +34,7 @@ pygobject      2.16   itools.vfs      http://www.pygtk.org/
 reportlab       2.2   itools.pdf      http://www.reportlab.org/
 xapian        1.0.8   itools.xapian   http://www.xapian.org/
 pywin32         212   (Windows)       http://sourceforge.net/projects/pywin32/
+xlrd          0.6.1   itools.xml      http://www.lexicon.net/sjmachin/xlrd.htm
 
 
 Install

@@ -113,105 +113,105 @@ def stream_to_str_as_html(stream, encoding='UTF-8'):
     return stream_to_html(stream, encoding)
 
 
+###########################################################################
+# Sanitize
+###########################################################################
+safe_tags = frozenset([
+    'a', 'abbr', 'acronym', 'address', 'area', 'b', 'big', 'blockquote', 'br',
+    'button', 'caption', 'center', 'cite', 'code', 'col', 'colgroup', 'dd',
+    'del', 'dfn', 'dir', 'div', 'dl', 'dt', 'em', 'fieldset', 'font', 'form',
+    'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i', 'img', 'input', 'ins',
+    'kbd', 'label', 'legend', 'li', 'map', 'menu', 'ol', 'optgroup', 'option',
+    'p', 'pre', 'q', 's', 'samp', 'select', 'small', 'span', 'strike',
+    'strong', 'sub', 'sup', 'table', 'tbody', 'td', 'textarea', 'tfoot', 'th',
+    'thead', 'tr', 'tt', 'u', 'ul', 'var'])
+
+safe_attrs = frozenset([
+    'abbr', 'accept', 'accept-charset', 'accesskey', 'action', 'align', 'alt',
+    'axis', 'border', 'cellpadding', 'cellspacing', 'char', 'charoff',
+    'charset', 'checked', 'cite', 'class', 'clear', 'cols', 'colspan',
+    'color', 'compact', 'coords', 'datetime', 'dir', 'disabled', 'enctype',
+    'for', 'frame', 'headers', 'height', 'href', 'hreflang', 'hspace', 'id',
+    'ismap', 'label', 'lang', 'longdesc', 'maxlength', 'media', 'method',
+    'multiple', 'name', 'nohref', 'noshade', 'nowrap', 'prompt', 'readonly',
+    'rel', 'rev', 'rows', 'rowspan', 'rules', 'scope', 'selected', 'shape',
+    'size', 'span', 'src', 'start', 'style', 'summary', 'tabindex', 'target',
+    'title', 'type', 'usemap', 'valign', 'value', 'vspace', 'width'])
+
+uri_attrs = frozenset([
+    'action', 'background', 'dynsrc', 'href', 'lowsrc', 'src'])
+
+safe_schemes = frozenset(['file', 'ftp', 'http', 'https', 'mailto', None])
+
+
 def sanitize_stream(stream):
     """Method that removes potentially dangerous HTML tags and attributes
     from the events
     """
-    safe_tags = frozenset(['a', 'abbr', 'acronym', 'address', 'area',
-        'b', 'big', 'blockquote', 'br', 'button', 'caption', 'center',
-        'cite', 'code', 'col', 'colgroup', 'dd', 'del', 'dfn', 'dir',
-        'div', 'dl', 'dt', 'em', 'fieldset', 'font', 'form', 'h1', 'h2',
-        'h3', 'h4', 'h5', 'h6', 'hr', 'i', 'img', 'input', 'ins', 'kbd',
-        'label', 'legend', 'li', 'map', 'menu', 'ol', 'optgroup',
-        'option', 'p', 'pre', 'q', 's', 'samp', 'select', 'small',
-        'span', 'strike', 'strong', 'sub', 'sup', 'table', 'tbody',
-        'td', 'textarea', 'tfoot', 'th', 'thead', 'tr', 'tt', 'u', 'ul',
-        'var'])
 
-    safe_attrs = frozenset(['abbr', 'accept', 'accept-charset',
-        'accesskey', 'action', 'align', 'alt', 'axis', 'border',
-        'cellpadding', 'cellspacing', 'char', 'charoff', 'charset',
-        'checked', 'cite', 'class', 'clear', 'cols', 'colspan', 'color',
-        'compact', 'coords', 'datetime', 'dir', 'disabled', 'enctype',
-        'for', 'frame', 'headers', 'height', 'href', 'hreflang',
-        'hspace', 'id', 'ismap', 'label', 'lang', 'longdesc',
-        'maxlength', 'media', 'method', 'multiple', 'name', 'nohref',
-        'noshade', 'nowrap', 'prompt', 'readonly', 'rel', 'rev', 'rows',
-        'rowspan', 'rules', 'scope', 'selected', 'shape', 'size',
-        'span', 'src', 'start', 'style', 'summary', 'tabindex',
-        'target', 'title', 'type', 'usemap', 'valign', 'value',
-        'vspace', 'width'])
+    skip = 0
 
-    safe_schemes = frozenset(['file', 'ftp', 'http', 'https', 'mailto', None])
-
-    uri_attrs = frozenset(['action', 'background', 'dynsrc', 'href', 'lowsrc',
-                           'src'])
-
-    events_to_remove = []
-    events = list(stream)
-    remove_next = False
-    for c_event in events:
-        event, value, line = c_event
-        if event == START_ELEMENT:
-            _, name, attributes = value
-            # Remove unsafe Tag
-            if name not in safe_tags:
-                events_to_remove.append(c_event)
-                # Remove until end tad
-                remove_next = True
+    for event in stream:
+        type, value, line = event
+        if type == START_ELEMENT:
+            # Check we are not within a dangerous element
+            if skip > 0:
+                skip += 1
                 continue
-            # Remove unsafe attributes
-            attributes_to_remove = []
-            for c_attribute in attributes:
-                attr_uri, attr_name = c_attribute
-                # Remove unauthorized attributes
+            # Check it is a safe tag
+            tag_uri, tag_name, attributes = value
+#            if tag_uri != xhtml_uri or tag_name not in safe_tags:
+            if tag_name not in safe_tags:
+                skip = 1
+                continue
+            # Filter attributes
+            attributes = attributes.copy()
+            for attr_key in attributes.keys():
+                attr_value = attributes[attr_key]
+                attr_uri, attr_name = attr_key
+                # Check it is a safe attribute
                 if attr_name not in safe_attrs:
-                    attributes_to_remove.append(c_attribute)
-                # Check attributes with Uri
-                if attr_name in uri_attrs:
-                    href = attributes[c_attribute]
-                    if ':' in href:
-                        scheme = href.split(':')[0]
-                        if scheme not in safe_schemes:
-                            attributes_to_remove.append(c_attribute)
+                    del attributes[attr_key]
+                # Check it is a safe URI scheme
+                elif attr_name in uri_attrs and ':' in attr_value:
+                    scheme = attr_value.split(':')[0]
+                    if scheme not in safe_schemes:
+                        del attributes[attr_key]
                 # Check CSS
-                if attr_name in 'style':
-                    value = attributes[c_attribute]
-                    for m in finditer(r'url\s*\(([^)]+)', value):
+                elif attr_name == 'style':
+                    # TODO Clean attribute value instead
+                    for m in finditer(r'url\s*\(([^)]+)', attr_value):
                         href = m.group(1)
                         if ':' in href:
                             scheme = href.split(':')[0]
                             if scheme not in safe_schemes:
-                                attributes_to_remove.append(c_attribute)
-            for attr_to_remove in attributes_to_remove:
-                attributes.pop(attr_to_remove)
-        elif event == END_ELEMENT:
-            _, name = value
-            if name not in safe_tags:
-                events_to_remove.append(c_event)
-                remove_next = False
+                                del attributes[attr_key]
+                                break
+            # Ok
+            yield type, (tag_uri, tag_name, attributes), line
+        elif type == END_ELEMENT:
+            if skip > 0:
+                skip -= 1
                 continue
-        elif event == COMMENT:
-            events_to_remove.append(c_event)
+            yield event
+        elif type == COMMENT:
+            # Skip comments
             continue
-        if remove_next==True:
-            events_to_remove.append(c_event)
-    # Remove unsafe events
-    for event_to_remove in events_to_remove:
-        events.remove(event_to_remove)
-    return events
+        else:
+            if skip == 0:
+                yield event
+
 
 
 def sanitize_str(str):
     stream = XMLParser(str)
-    events = sanitize_stream(stream)
-    return events
+    return sanitize_stream(stream)
 
 
 
-#############################################################################
+###########################################################################
 # Document
-#############################################################################
+###########################################################################
 class XHTMLFile(XMLFile):
     """This class adds one thing to the XML class, the semantics of
     translatable text.
@@ -222,9 +222,9 @@ class XHTMLFile(XMLFile):
 
     namespace = xhtml_uri
 
-    #########################################################################
+    #######################################################################
     # The skeleton
-    #########################################################################
+    #######################################################################
     def new(self, title=''):
         skeleton = self.get_skeleton(title)
         file = StringIO()
@@ -261,9 +261,9 @@ class XHTMLFile(XMLFile):
     to_str = to_xhtml
 
 
-    ########################################################################
+    #######################################################################
     # API
-    ########################################################################
+    #######################################################################
     def get_head(self):
         """Returns the head element.
         """

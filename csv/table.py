@@ -37,7 +37,7 @@ def unescape_data(data):
     """Unescape the data
     """
     data = [ x.replace("\\r", "\r").replace("\\n", "\n")
-              for x in data.split('\\\\') ]
+             for x in data.split('\\\\') ]
     return '\\'.join(data)
 
 
@@ -60,7 +60,7 @@ def unfold_lines(data):
     line = ''
     while i < len(lines):
         next = lines[i]
-        if next.startswith(' ') or next.startswith('\t'):
+        if next and (next[0] == ' ' or next[0] == '\t'):
             line += next[1:]
         else:
             if line:
@@ -144,6 +144,9 @@ TPARAM, TVALUE = 0, 1
 token_name = ['name', 'parameter', 'value']
 
 
+error1 = 'unexpected character (%s) at status %s'
+error2 = 'unexpected repeated character (%s) at status %s'
+
 def get_tokens(property):
     status, lexeme, last = 0, '', ''
 
@@ -153,9 +156,6 @@ def get_tokens(property):
         status = 1
     elif c == ':':
         status = 7
-
-    error1 = 'unexpected character (%s) at status %s'
-    error2 = 'unexpected repeated character (%s) at status %s'
 
     for c in property:
         # parameter begun (just after ';')

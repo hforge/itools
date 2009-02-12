@@ -138,16 +138,13 @@ def read_name(line):
 #     7 --> value to begin (just after ':')
 #     8 --> value begun
 
-# Tokens
-TPARAM, TVALUE = 0, 1
-token_name = ['name', 'parameter', 'value']
-
-
 error1 = 'unexpected character (%s) at status %s'
 error2 = 'unexpected repeated character (%s) at status %s'
 
 def get_tokens(property):
-    status, lexeme, last = 0, '', ''
+    parameters = {}
+    value = ''
+    status, last = 0, ''
 
     # Init status
     c, property = property[0], property[1:]
@@ -159,21 +156,21 @@ def get_tokens(property):
     for c in property:
         # value begun
         if status == 8:
-            lexeme += c
+            value += c
 
         # parameter begun (just after ';')
         elif status == 1:
             if c.isalnum() or c in ('-'):
-                lexeme, status = c, 2
+                param_name, status = c, 2
             else:
                 raise SyntaxError, error1 % (c, status)
 
         # param-name begun
         elif status == 2:
             if c.isalnum() or c in ('-'):
-                lexeme += c
+                param_name += c
             elif c == '=':
-                lexeme += c
+                param_value = ''
                 status = 3
             else:
                 raise SyntaxError, error1 % (c, status)
@@ -181,12 +178,12 @@ def get_tokens(property):
         # param-name ended, param-value beginning
         elif status == 3:
             if c == '"':
-                lexeme += c
+                param_value += c
                 status = 4
             elif c in (';', ':', ',') :
                 raise SyntaxError, error1 % (c, status)
             else:
-                lexeme += c
+                param_value += c
                 status = 5
 
         # param-value quoted begun (just after '"')
@@ -195,41 +192,41 @@ def get_tokens(property):
                 if last == '"':
                     raise SyntaxError, error2 % (c, status)
                 last = '"'
-                lexeme += c
+                param_value += c
                 status = 6
             else:
-                lexeme += c
+                param_value += c
 
         # param-value NOT quoted begun
         elif status == 5:
             if c == ':':
+                parameters[param_name] = param_value.split(',')
                 status = 7
-                yield TPARAM, lexeme
             elif c == ';':
+                parameters[param_name] = param_value.split(',')
                 status = 1
-                yield TPARAM, lexeme
             elif c == ',':
-                lexeme += c
+                param_value += c
                 status = 3
             elif c == '"':
                 raise SyntaxError, error1 % (c, status)
             else:
-                lexeme += c
+                param_value += c
 
         # value to begin (just after ':')
         elif status == 7:
-            lexeme, status = c, 8
+            value, status = c, 8
 
         # param-value ended (just after '"' for quoted ones)
         elif status == 6:
             if c == ':':
+                parameters[param_name] = param_value.split(',')
                 status = 7
-                yield TPARAM, lexeme
             elif c == ';':
+                parameters[param_name] = param_value.split(',')
                 status = 1
-                yield TPARAM, lexeme
             elif c == ',':
-                lexeme += c
+                param_value += c
                 status = 3
             else:
                 raise SyntaxError, error1 % (c, status)
@@ -237,7 +234,9 @@ def get_tokens(property):
     if status not in (7, 8):
         raise SyntaxError, 'unexpected property (%s)' % property
 
-    yield TVALUE, lexeme
+    # Unescape special characters (TODO Check the spec)
+    value = unescape_data(value)
+    return value, parameters
 
 
 
@@ -257,16 +256,7 @@ def parse_table(data):
         parameters = {}
         name, line = read_name(line)
         # Read the parameters and the property value
-        for token, lexeme in get_tokens(line):
-            if token == TPARAM:
-                param_name, param_value = lexeme.split('=')
-                parameters[param_name] = param_value.split(',')
-            elif token == TVALUE:
-                # Unescape special characters
-                # TODO Check the spec
-                value = unescape_data(lexeme)
-            else:
-                raise SyntaxError, 'unexpected %s' % token_name[token]
+        value, parameters = get_tokens(line)
         yield name, value, parameters
 
 

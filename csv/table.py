@@ -103,23 +103,24 @@ def read_name(line):
         name
         [parameters]value
     """
-    c, lexeme = line[0], ''
     # Test first character of name
+    c = line[0]
     if not c.isalnum() and c != '-':
         raise SyntaxError, 'unexpected character (%s)' % c
-    # Test if line contains ':'
-    if not ':' in line:
-        raise SyntaxError, 'character (:) must appear at least one time'
-    # Cut name
-    while not c in (';', ':'):
-        line = line[1:]
-        if c.isalnum() or c in ['-', '_']:
-            lexeme += c
-        else:
-            raise SyntaxError, "unexpected character '%s' (%s)" % (c, ord(c))
-        c = line[0]
 
-    return lexeme, line
+    # Test the rest
+    idx = 1
+    n = len(line)
+    while idx < n:
+        c = line[idx]
+        if c in (';', ':'):
+            return line[:idx], line[idx:]
+        if c.isalnum() or c in ('-', '_'):
+            idx += 1
+            continue
+        raise SyntaxError, "unexpected character '%s' (%s)" % (c, ord(c))
+
+    raise SyntaxError, 'unexpected end of line (%s)' % line
 
 
 # Manage an icalendar content line value property [with parameters] :

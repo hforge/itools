@@ -158,8 +158,12 @@ def get_tokens(property):
         status = 7
 
     for c in property:
+        # value begun
+        if status == 8:
+            lexeme += c
+
         # parameter begun (just after ';')
-        if status == 1:
+        elif status == 1:
             if c.isalnum() or c in ('-'):
                 lexeme, status = c, 2
             else:
@@ -206,10 +210,6 @@ def get_tokens(property):
         # value to begin (just after ':')
         elif status == 7:
             lexeme, status = c, 8
-
-        # value begun
-        elif status == 8:
-            lexeme += c
 
         # param-value ended (just after '"' for quoted ones)
         if status == 6:

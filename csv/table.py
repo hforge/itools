@@ -192,6 +192,9 @@ def get_tokens(property):
         # param-value quoted begun (just after '"')
         elif status == 4:
             if c == '"':
+                if last == '"':
+                    raise SyntaxError, error2 % (c, status)
+                last = '"'
                 lexeme += c
                 status = 6
             else:
@@ -199,19 +202,6 @@ def get_tokens(property):
 
         # param-value NOT quoted begun
         elif status == 5:
-            if c in (':', ';', ',') :
-                status = 6
-            elif c=='"':
-                raise SyntaxError, error1 % (c, status)
-            else:
-                lexeme += c
-
-        # value to begin (just after ':')
-        elif status == 7:
-            lexeme, status = c, 8
-
-        # param-value ended (just after '"' for quoted ones)
-        if status == 6:
             if c == ':':
                 status = 7
                 yield TPARAM, lexeme
@@ -222,9 +212,25 @@ def get_tokens(property):
                 lexeme += c
                 status = 3
             elif c == '"':
-                if last == '"':
-                    raise SyntaxError, error2 % (c, status)
-                last = '"'
+                raise SyntaxError, error1 % (c, status)
+            else:
+                lexeme += c
+
+        # value to begin (just after ':')
+        elif status == 7:
+            lexeme, status = c, 8
+
+        # param-value ended (just after '"' for quoted ones)
+        elif status == 6:
+            if c == ':':
+                status = 7
+                yield TPARAM, lexeme
+            elif c == ';':
+                status = 1
+                yield TPARAM, lexeme
+            elif c == ',':
+                lexeme += c
+                status = 3
             else:
                 raise SyntaxError, error1 % (c, status)
 

@@ -170,7 +170,7 @@ def get_tokens(property):
             if c.isalnum() or c in ('-'):
                 param_name += c
             elif c == '=':
-                param_value = ''
+                parameters[param_name] = []
                 status = 3
             else:
                 raise SyntaxError, error1 % (c, status)
@@ -178,12 +178,12 @@ def get_tokens(property):
         # param-name ended, param-value beginning
         elif status == 3:
             if c == '"':
-                param_value += c
+                param_value = c
                 status = 4
             elif c in (';', ':', ',') :
                 raise SyntaxError, error1 % (c, status)
             else:
-                param_value += c
+                param_value = c
                 status = 5
 
         # param-value quoted begun (just after '"')
@@ -200,13 +200,13 @@ def get_tokens(property):
         # param-value NOT quoted begun
         elif status == 5:
             if c == ':':
-                parameters[param_name] = param_value.split(',')
+                parameters[param_name].append(param_value)
                 status = 7
             elif c == ';':
-                parameters[param_name] = param_value.split(',')
+                parameters[param_name].append(param_value)
                 status = 1
             elif c == ',':
-                param_value += c
+                parameters[param_name].append(param_value)
                 status = 3
             elif c == '"':
                 raise SyntaxError, error1 % (c, status)
@@ -219,14 +219,12 @@ def get_tokens(property):
 
         # param-value ended (just after '"' for quoted ones)
         elif status == 6:
+            parameters[param_name].append(param_value)
             if c == ':':
-                parameters[param_name] = param_value.split(',')
                 status = 7
             elif c == ';':
-                parameters[param_name] = param_value.split(',')
                 status = 1
             elif c == ',':
-                param_value += c
                 status = 3
             else:
                 raise SyntaxError, error1 % (c, status)

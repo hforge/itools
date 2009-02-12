@@ -17,7 +17,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from mimetypes import add_type
 import mimetypes
 from zipfile import ZipFile
 from tarfile import open as open_tarfile
@@ -84,5 +83,4 @@ for handler_class in [ZIPFile, TARFile, GzipFile, Bzip2File]:
 # Mimetypes BZip2 support
 mimetypes.suffix_map['.tbz2'] = '.tar.bz2'
 mimetypes.encodings_map['.bz2'] = 'bzip2'
-add_type('application/x-tar', '.tar.bz2')
-
+mimetypes.add_type('application/x-tar', '.tar.bz2')

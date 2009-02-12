@@ -20,6 +20,7 @@ from distutils.command.build_py import build_py
 from os import getcwd, getpid
 from os.path import exists, join as join_path, sep, splitdrive
 import sys
+from mimetypes import MimeTypes
 
 # Import from itools
 import git
@@ -92,6 +93,41 @@ class build_py_fixed(build_py):
 
 
 ############################################################################
+# Mimetypes optimization
+###########################################################################
+mimetypes = MimeTypes()
+
+
+def guess_type(filename):
+    return mimetypes.guess_type(filename)
+
+
+def add_type(mimetype, extension):
+    mimetypes.add_type(mimetype, extension)
+
+
+def guess_extension(mimetype):
+    return mimetypes.guess_extension(mimetype)
+
+
+def guess_all_extensions(mimetype):
+    return mimetypes.guess_all_extensions(mimetype)
+
+
+def has_extension(extension):
+    filename = 'toto.%s' % extension
+    mimetype, encoding = mimetypes.guess_type(filename)
+    return mimetype is not None
+
+
+def has_encoding(extension):
+    extension = '.%s' % extension
+    encodings_map = mimetypes.encodings_map
+    return extension in encodings_map or extension.lower() in encodings_map
+
+
+
+###########################################################################
 # Our all powerful setup
 ############################################################################
 def get_version(namespace):

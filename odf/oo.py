@@ -20,12 +20,10 @@
 (Writer, Calc and Impress).
 """
 
-# Import from the Standard Library
-from mimetypes import add_type
-
 # Import from itools
 from itools.handlers import register_handler_class
 from odf import OOFile
+from itools.utils import add_type
 
 
 class SXWFile(OOFile):

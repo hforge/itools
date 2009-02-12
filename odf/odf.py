@@ -16,7 +16,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from mimetypes import add_type
 from zipfile import ZipFile
 from cStringIO import StringIO
 
@@ -28,6 +27,7 @@ from itools.xml import (xml_to_text, translate, OfficeDocument, stream_to_str,
                         XMLParser, XML_DECL, START_ELEMENT, TEXT)
 import definition
 import w3
+from itools.utils import add_type
 
 
 def stl_to_odt(model_odt, namespace):

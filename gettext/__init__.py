@@ -15,13 +15,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the Standard Library
-from mimetypes import add_type
-
 # Import from itools
 from domains import DomainAware, register_domain, get_domain
 from mo import MOFile
 from po import POFile
+from itools.utils import add_type
 
 
 __all__ = [

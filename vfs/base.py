@@ -17,11 +17,11 @@
 
 # Import from the Standard Library
 from datetime import datetime
-from mimetypes import guess_type
 from urllib import quote
 
 # Import from itools
 from itools.datatypes import FileName
+from itools.utils import guess_type
 
 
 # Translate compression encoding to mimetype

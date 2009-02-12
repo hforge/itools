@@ -19,7 +19,6 @@
 
 # Import from the Standard Library
 from decimal import Decimal as decimal
-import mimetypes
 from re import match
 from copy import deepcopy
 
@@ -27,6 +26,7 @@ from copy import deepcopy
 from itools.uri import get_reference
 from itools.i18n import has_language
 from base import DataType
+from itools.utils import guess_type, has_encoding, has_extension
 
 
 
@@ -163,15 +163,15 @@ class FileName(DataType):
 
         name, ext = parts
         # Case 2: name.encoding
-        if '.%s' % ext.lower() in mimetypes.encodings_map:
+        if has_encoding(ext):
             return name, ext, None
 
         if '.' in name:
             a, b = name.rsplit('.', 1)
-            if '.%s' % b.lower() in mimetypes.types_map and has_language(ext):
+            if has_extension(b) and has_language(ext):
                 # Case 3: name.type.language
                 return a, b, ext
-        if '.%s' % ext.lower() in mimetypes.types_map:
+        if has_extension(ext):
             # Case 4: name.type
             return name, ext, None
         elif has_language(ext):

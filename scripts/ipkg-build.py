@@ -19,8 +19,9 @@
 
 # Import from the Standard Library
 from optparse import OptionParser
-from os import popen, system
+from os import popen
 from os.path import islink
+from subprocess import call
 import sys
 
 # Import from itools
@@ -110,7 +111,8 @@ if __name__ == '__main__':
         for lang in [source_language] + target_languages:
             print lang,
             sys.stdout.flush()
-            system('msgfmt locale/%s.po -o locale/%s.mo' % (lang, lang))
+            call([
+                'msgfmt', 'locale/%s.po' % lang, '-o', 'locale/%s.mo' % lang])
             # Add to the manifest
             manifest.append('locale/%s.mo' % lang)
         print

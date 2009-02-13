@@ -17,12 +17,12 @@
 
 # Import from the Standard Library
 from optparse import OptionParser
-from os import popen
 from os.path import exists
 import sys
 
 # Import from itools
 import itools
+from itools.core import get_pipe
 
 
 
@@ -51,7 +51,9 @@ if __name__ == '__main__':
         pot, po = args
         if exists(po):
             # a .po file already exist, merge it with locale.pot
-            output.write(popen('msgmerge -s %s %s' % (po, pot)).read())
+            command = ['msgmerge', '-s', po, pot]
+            data = get_pipe(command).read()
+            output.write(data)
         else:
             # po doesn't exist, just copy locale.pot
             output.write(open(pot).read())

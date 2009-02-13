@@ -23,17 +23,17 @@ isetup-quality.py is a small tool to do some measurements on Python files
 """
 
 # Import from the Standard Library
-import sys
 from datetime import date
-from os import popen, getcwd, chdir
 from glob import glob
 from optparse import OptionParser
-from tempfile import TemporaryFile
+from os import getcwd, chdir
+from subprocess import call
+import sys
+from tempfile import TemporaryFile, mkdtemp
+from time import time
 from token import tok_name
 from tokenize import generate_tokens, TokenError
 from types import ListType
-from tempfile import mkdtemp
-from time import time
 
 # Import from Matplotlib
 create_graph_is_available = True
@@ -328,13 +328,6 @@ def show_stats(filenames, worse):
     print_worses(files_db, worse, ['bad_import'])
 
 
-def _getcommit_ids():
-    ids = []
-    for line in popen('git log --pretty=oneline').readlines():
-        ids.append(line.split()[0])
-    ids.reverse()
-    return ids
-
 
 def create_graph():
     """ Create graph of code quality evolution"""
@@ -343,15 +336,16 @@ def create_graph():
     # We copy project to tmp (for security)
     current_directory = getcwd()
     tmp_directory = '%s/isetup_quality.git' % mkdtemp()
-    popen('git clone %s %s' % (current_directory, tmp_directory))
+    call(['git', 'clone',  current_directory, tmp_directory])
     chdir(tmp_directory)
     # First step: we create a list of statistics
     statistics = {}
-    commit_ids = _getcommit_ids()
+    commit_ids = git.get_revisions()
+    commit_ids.reverse()
     print 'Script will analyse %s commits.' % len(commit_ids)
     for commit_id in commit_ids:
         # We move to a given commit
-        popen('git reset --hard %s' % commit_id)
+        call(['git', 'reset', '--hard', commit_id])
         # Print script evolution
         sys.stdout.write('.')
         sys.stdout.flush()

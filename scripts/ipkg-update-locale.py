@@ -20,8 +20,9 @@
 
 # Import from the Standard Library
 from optparse import OptionParser
-from os import system, sep
+from os import sep
 from os.path import basename
+from subprocess import call
 import sys
 
 # Import from itools
@@ -130,7 +131,8 @@ if __name__ == '__main__':
     for filename in filenames:
         if folder.exists(filename):
             write('  %s ' % filename)
-            system('msgmerge -U -s locale/%s locale/locale.pot' % filename)
+            call(['msgmerge', '-U', '-s', 'locale/%s' % filename,
+                  'locale/locale.pot'])
         else:
             print '  %s (new)' % filename
             folder.copy('locale.pot', filename)

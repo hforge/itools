@@ -16,7 +16,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from Standard Library
-from os import chdir, getcwd
 from os.path import join, split
 from subprocess import call
 from sys import executable
@@ -79,11 +78,10 @@ class Bundle(object):
             return -1
 
         setup_py_file = self.find_lowest_file('setup.py')
-        before = getcwd()
-        chdir(split(join(cache_dir, setup_py_file))[0])
-        ret = call([executable, 'setup.py', 'install'])
-        chdir(before)
-        return ret
+
+        command = [executable, 'setup.py', 'install']
+        cwd = split(join(cache_dir, setup_py_file))[0]
+        return call(command, cwd=cwd)
 
 
     def find_lowest_file(self, filename):

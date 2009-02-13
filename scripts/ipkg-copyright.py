@@ -20,11 +20,11 @@
 # Import from the Standard Library
 from datetime import datetime
 from optparse import OptionParser
-from subprocess import PIPE, Popen
 import sys
 
 # Import from itools
 import itools
+from itools.core import get_pipe
 from itools import vfs
 
 
@@ -101,12 +101,12 @@ if __name__ == '__main__':
     # Go!
     for filename in args:
         # Call "git blame"
-        popen = Popen(['git', 'blame', '-p', filename], stdout=PIPE)
-        out, err = popen.communicate()
+        command = ['git', 'blame', '-p', filename]
+        pipe = get_pipe(command)
 
         header = True
         authors = {}
-        for line in out.splitlines():
+        for line in pipe.splitlines():
             if line.startswith('author '):
                 name = line[7:]
             elif line.startswith('author-mail '):

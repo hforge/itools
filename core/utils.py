@@ -18,6 +18,7 @@
 from mimetypes import MimeTypes
 from os import getcwd
 from os.path import join, sep, splitdrive
+from subprocess import Popen, PIPE
 from sys import _getframe, modules
 
 
@@ -92,4 +93,16 @@ def has_encoding(extension):
     extension = '.%s' % extension
     encodings_map = mimetypes.encodings_map
     return extension in encodings_map or extension.lower() in encodings_map
+
+
+###########################################################################
+# Wrapper around 'subprocess.Popen'
+###########################################################################
+def get_pipe(command, cwd=None):
+    popen = Popen(command, stdout=PIPE, stderr=PIPE, cwd=cwd)
+    errno = popen.wait()
+    if errno:
+        strerror = popen.stderr.read()
+        raise EnvironmentError, (errno, strerror)
+    return popen.stdout
 

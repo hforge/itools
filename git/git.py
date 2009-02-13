@@ -16,19 +16,9 @@
 
 # Import from the Standard Library
 from datetime import datetime
-from subprocess import Popen, PIPE
 
 # Import from itools
-from itools.core import freeze
-
-
-def get_pipe(command, cwd=None):
-    popen = Popen(command, stdout=PIPE, stderr=PIPE, cwd=cwd)
-    errno = popen.wait()
-    if errno:
-        strerror = popen.stderr.read()
-        raise EnvironmentError, (errno, strerror)
-    return popen.stdout
+from itools.core import freeze, get_pipe
 
 
 def is_available():

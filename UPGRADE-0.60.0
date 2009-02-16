@@ -102,15 +102,26 @@ Now the 'get_metadata' function returns all the data from the commit, not
 just the committer's name and time.
 
 
+itools.handlers
+===============
+
+The database API has changed a little:
+
+  Before                          Now
+  ------------------------------  ------------------------------
+  ReadOnlyDatabase.add_to_cache   ReadOnlyDatabase.push_handler
+  ReadOnlyDatabase.set_use_cache  ** REMOVED **
+
+
 itools.pkg
 ==========
 
-This package, formerly known as 'itools.isetup', is not anymore experimental.
-The API has considerably changed.
+The API of itools.pkg (formerly known as 'itools.isetup') has changed a
+little:
 
-  Before                        Now
-  ----------------------------  ----------------------------
-  Dist(location)                Bundle(location)
+  Before                          Now
+  ------------------------------  ------------------------------
+  Dist(location)                  Bundle(location)
 
 
 itools.web

@@ -161,6 +161,10 @@ class DummyDatabase(object):
         raise NotImplementedError
 
 
+    def cleanup(self):
+        pass
+
+
 ###########################################################################
 # The Web Server
 ###########################################################################
@@ -570,7 +574,10 @@ class Server(object):
         # (3) Pass control to the Get method class
         method.handle_request(self, context)
 
-        # (4) Return the response
+        # (4) Give the database a chance to clean itself
+        self.database.cleanup()
+
+        # (5) Return the response
         return context.response
 
 

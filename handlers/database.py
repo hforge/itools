@@ -21,6 +21,7 @@
 from datetime import datetime
 from logging import getLogger
 from os import fdopen
+from sys import getrefcount
 from tempfile import mkstemp
 from thread import allocate_lock, get_ident
 
@@ -45,23 +46,177 @@ class ReadOnlyError(RuntimeError):
 
 
 class ReadOnlyDatabase(object):
+    """The read-only database works as a cache for file handlers.
+    """
 
-    def __init__(self):
+    def __init__(self, size=5000):
+        # A mapping from URI to handler
         self.cache = {}
-        self.use_cache = True
+        # The maximum desired size for the cache
+        self.size = size
+        # The list of URIs sortet by access time to the associated handler
+        self.queue = []
 
 
+    #######################################################################
+    # Cache API
+    def _discard_handler(self, uri):
+        """Unconditionally remove the handler identified by the given URI from
+        the cache, and invalidate it (and free memory at the same time).
+        """
+        handler = self.cache.pop(uri)
+        self.queue.remove(uri)
+        # Invalidate the handler
+        handler.__dict__.clear()
+
+
+    def _sync_filesystem(self, uri):
+        """This method checks the state of the uri in the cache against the
+        filesystem.  Synchronizes the state if needed by discarding the
+        handler, or raises an error if there is a conflict.
+
+        Returns the handler for the given uri if it is still in the cache
+        after all the tests, or None otherwise.
+        """
+        # If the uri is not in the cache nothing can be wrong
+        handler = self.cache.get(uri)
+        if handler is None:
+            return None
+
+        # (1) Not yet loaded
+        if handler.timestamp is None and handler.dirty is None:
+            # Removed from the filesystem
+            if not vfs.exists(uri):
+                self._discard_handler(uri)
+                return None
+            # Everything looks fine
+            # FIXME There will be a bug if the file in the filesystem has
+            # changed to a different type, so the handler class may not match.
+            return handler
+
+        # (2) New handler
+        if handler.timestamp is None and handler.dirty is not None:
+            # Everything looks fine
+            if not vfs.exists(uri):
+                return handler
+            # Conflict
+            error = 'new file in the filesystem and new handler in the cache'
+            raise RuntimeError, error
+
+        # (3) Loaded but not changed
+        if handler.timestamp is not None and handler.dirty is None:
+            # Removed from the filesystem
+            if not vfs.exists(uri):
+                self._discard_handler(uri)
+                return None
+            # Modified in the filesystem
+            mtime = vfs.get_mtime(uri)
+            if mtime > handler.timestamp:
+                self._discard_handler(uri)
+                return None
+            # Everything looks fine
+            return handler
+
+        # (4) Loaded and changed
+        if handler.timestamp is not None and handler.dirty is not None:
+            # Removed from the filesystem
+            if not vfs.exists(uri):
+                error = 'a modified handler was removed from the filesystem'
+                raise RuntimeError, error
+            # Modified in the filesystem
+            mtime = vfs.get_mtime(uri)
+            if mtime > handler.timestamp:
+                error = 'modified in the cache and in the filesystem'
+                raise RuntimeError, error
+            # Everything looks fine
+            return handler
+
+
+    def discard_handler(self, uri):
+        """Removes the handler identified by the given uri from the cache.
+        If the handler has been modified, an exception is raised.
+        """
+        # Check the handler has not been modified
+        handler = self.cache[uri]
+        if handler.dirty is not None:
+            raise RuntimeError, 'cannot discard a modified handler'
+        # Discard the handler
+        self._discard_handler(uri)
+
+
+    def touch_handler(self, uri):
+        """Put the handler at the top of the queue.
+        """
+        self.queue.remove(uri)
+        self.queue.append(uri)
+
+
+    def push_handler(self, uri, handler):
+        """Adds the given resource to the cache.
+        """
+        handler.database = self
+        handler.uri = uri
+        # Folders are not stored in the cache
+        if isinstance(handler, Folder):
+            return
+        # Store in the cache
+        self.cache[uri] = handler
+        self.queue.append(uri)
+
+
+    def make_room(self):
+        """Remove handlers from the cache until it fits the defined size.
+
+        Use with caution.  If the handlers we are about to discard are still
+        used outside the database, and one of them (or more) are modified,
+        then there will be an error.
+        """
+        # Find out how many handlers should be removed
+        queue = self.queue
+        n = len(queue) - self.size
+        if n <= 0:
+            return
+
+        # Discard as many handlers as needed
+        cache = self.cache
+        for uri in queue:
+            handler = cache[uri]
+            # Skip externally referenced handlers (refcount should be 3:
+            # one for the cache, one for the local variable and one for
+            # the argument passed to getrefcount).
+            refcount = getrefcount(handler)
+            if refcount > 3:
+                continue
+            # Skip modified handlers
+            if handler.dirty is not None:
+                continue
+            # Discard this handler
+            self._discard_handler(uri)
+            # Check whether we are done
+            n -= 1
+            if n == 0:
+                return
+
+
+    #######################################################################
+    # Database API
     def has_handler(self, reference):
-        reference = cwd.get_reference(reference)
+        uri = cwd.get_reference(reference)
+
+        # Syncrhonize
+        handler = self._sync_filesystem(uri)
+        if handler is not None:
+            return True
 
         # Check the file system
-        if vfs.is_file(reference):
-            return True
-        if vfs.is_folder(reference):
-            # Empty folders do not exist
-            return bool(vfs.get_names(reference))
-        # Neither a file nor a folder
-        return vfs.exists(reference)
+        if not vfs.exists(uri):
+            return False
+
+        # Empty folders do not exist
+        if vfs.is_folder(uri):
+            return bool(vfs.get_names(uri))
+
+        return True
 
 
     def get_handler_names(self, reference):
@@ -75,63 +230,37 @@ class ReadOnlyDatabase(object):
 
 
     def get_handler(self, reference, cls=None):
-        reference = cwd.get_reference(reference)
+        uri = cwd.get_reference(reference)
 
-        cache = self.cache
+        # Syncrhonize
+        handler = self._sync_filesystem(uri)
+        if handler is not None:
+            # Check the class matches
+            if cls is not None and not isinstance(handler, cls):
+                error = "expected '%s' class, '%s' found"
+                raise LookupError, error % (cls, handler.__class__)
+            # Cache hit
+            self.touch_handler(uri)
+            return handler
 
-        # Verify the resource exists
-        if not vfs.exists(reference):
-            # Clean the cache
-            if reference in cache:
-                del cache[reference]
-            raise LookupError, 'the resource "%s" does not exist' % reference
+        # Check the resource exists
+        if not vfs.exists(uri):
+            raise LookupError, 'the resource "%s" does not exist' % uri
 
         # Folders are not cached
         if vfs.is_folder(reference):
-            # Clean the cache
-            if reference in cache:
-                del cache[reference]
             if cls is None:
                 cls = Folder
             folder = cls(reference)
             folder.database = self
             return folder
 
-        # Lookup the cache
-        if reference in cache:
-            handler = cache[reference]
-            # cls is good ?
-            if cls is not None and not isinstance(handler, cls):
-                raise LookupError, ('conflict with a handler of type "%s"' %
-                                     handler.__class__)
-            # Not yet loaded or new
-            if handler.timestamp is None:
-                return handler
-            # Timestamp cannot be more recent than mtime
-            mtime = vfs.get_mtime(reference)
-            if handler.timestamp > mtime:
-                message = "file %s: timestamp (%s) does not match mtime (%s)"
-                raise RuntimeError, message % (handler.uri, handler.timestamp,
-                                               mtime)
-            # Handler loaded and up-to-date
-            if handler.timestamp == mtime:
-                return handler
-            # Conflict, file modified both in filesystem and memory
-            if handler.dirty is not None:
-                raise RuntimeError, messages.MSG_CONFLICT
-            # Remove from cache
-            del cache[reference]
-
         # Cache miss
         if cls is None:
             cls = get_handler_class(reference)
-        # Build the handler
+        # Build the handler and update the cache
         handler = object.__new__(cls)
-        handler.database = self
-        handler.uri = reference
-        # Update the cache
-        if self.use_cache is True:
-            cache[reference] = handler
+        self.push_handler(reference, handler)
 
         return handler
 
@@ -141,15 +270,6 @@ class ReadOnlyDatabase(object):
         for name in vfs.get_names(reference):
             ref = reference.resolve2(name)
             yield self.get_handler(ref)
-
-
-    def set_use_cache(self, cache):
-        self.use_cache = bool(cache)
-
-
-    def add_to_cache(self, uri, handler):
-        if self.use_cache is True:
-            self.cache[uri] = handler
 
 
     #######################################################################
@@ -195,6 +315,7 @@ class ReadOnlyDatabase(object):
 
     def save_changes(self):
         raise ReadOnlyError, 'cannot save changes'
+
 
 
 ###########################################################################
@@ -268,18 +389,15 @@ class Database(ReadOnlyDatabase):
             raise RuntimeError, messages.MSG_URI_IS_BUSY % reference
 
         reference = get_absolute_reference(reference)
-        self.cache[reference] = handler
+        self.push_handler(reference, handler)
         self.added.add(reference)
-        # Attach
-        handler.database = self
-        handler.uri = reference
 
 
     def del_handler(self, reference):
         reference = cwd.get_reference(reference)
 
         if reference in self.added:
-            del self.cache[reference]
+            self._discard_handler(reference)
             self.added.remove(reference)
             return
 
@@ -291,7 +409,7 @@ class Database(ReadOnlyDatabase):
 
         # Clean the cache
         if reference in self.cache:
-            del self.cache[reference]
+            self._discard_handler(reference)
 
         # Mark for removal
         self.removed.add(reference)
@@ -316,10 +434,8 @@ class Database(ReadOnlyDatabase):
         else:
             # File
             handler = handler.clone()
-            handler.database = self
-            handler.uri = target
             # Update the state
-            self.cache[target] = handler
+            self.push_handler(target, handler)
             self.added.add(target)
 
 
@@ -345,11 +461,11 @@ class Database(ReadOnlyDatabase):
             if handler.timestamp is None and handler.dirty is None:
                 handler.load_state()
             # File
-            handler.uri = target
+            handler = self.cache.pop(uri)
+            self.queue.remove(uri)
+            self.push_handler(target, handler)
             handler.timestamp = None
             handler.dirty = datetime.now()
-            self.cache[target] = handler
-            del self.cache[source]
             # Add to target
             self.added.add(target)
             if source in self.added:
@@ -385,7 +501,7 @@ class Database(ReadOnlyDatabase):
         cache = self.cache
         # Added handlers
         for uri in self.added:
-            del cache[uri]
+            self._discard_handler(uri)
         # Changed handlers
         for uri in self.changed:
             cache[uri].abort_changes()

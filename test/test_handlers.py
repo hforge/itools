@@ -54,9 +54,7 @@ class FolderTestCase(TestCase):
     def setUp(self):
         database = Database()
         self.database = database
-        root = get_handler('.')
-        root.database = database
-        self.root = root
+        self.root = database.get_handler('.')
         file = vfs.make_file('tests/toto.txt')
         try:
             file.write('I am Toto\n')
@@ -163,15 +161,6 @@ class FolderTestCase(TestCase):
         folder = self.root.get_handler('tests')
         file = folder.get_handler('toto.txt')
         folder.del_handler('toto.txt')
-        self.assertRaises(RuntimeError, file.set_data, u'Oh dear\n')
-
-
-    def test_nocache_change(self):
-        """Only can change cached files.
-        """
-        self.database.set_use_cache(False)
-        file = self.root.get_handler('tests/toto.txt')
-        self.database.set_use_cache(True)
         self.assertRaises(RuntimeError, file.set_data, u'Oh dear\n')
 
 

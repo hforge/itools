@@ -125,9 +125,13 @@ class MSExcel(OfficeDocument):
         text = []
         for sheet in book.sheets():
             for idx in range(sheet.nrows):
-                row = sheet.row_values(idx)
-                row = [ x for x in row if type(x) is unicode ]
-                text.extend(row)
+                for value in sheet.row_values(idx):
+                    if not isinstance(value, unicode):
+                        try:
+                            value = unicode(value)
+                        except UnicodeError:
+                            continue
+                    text.append(value)
         return u' '.join(text)
 
 

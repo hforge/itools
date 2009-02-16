@@ -100,8 +100,9 @@ def has_encoding(extension):
 ###########################################################################
 def get_pipe(command, cwd=None):
     popen = Popen(command, stdout=PIPE, stderr=PIPE, cwd=cwd)
-    stdoutdata, stderrdata = popen.communicate()
-    errno = popen.returncode
+    errno = popen.wait()
     if errno:
-        raise EnvironmentError, (errno, stderrdata)
-    return stdoutdata
+        strerror = popen.stderr.read()
+        raise EnvironmentError, (errno, strerror)
+    return popen.stdout
+

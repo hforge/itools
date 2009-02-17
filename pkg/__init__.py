@@ -22,7 +22,7 @@ from distribution import ArchiveNotSupported, Bundle
 from metadata import PKGINFOFile
 from packages import get_installed_info, packages_infos
 from repository import parse_package_name, download, EXTENSIONS
-from utils import get_version, setup
+from utils import get_version, setup, OptionalExtension, OptionalBuildExt
 
 
 __all__ = [
@@ -37,6 +37,7 @@ __all__ = [
     'parse_package_name',
     'PKGINFOFile',
     'setup',
+    'OptionalExtension',
     ]
 
 add_type('text/x-egg-info', '.egg-info')

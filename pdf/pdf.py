@@ -17,11 +17,11 @@
 
 # Import from itools
 from itools.handlers import register_handler_class
-from itools.xml import OfficeDocument
+from itools.xml import ExternalIndexer
 
 
 
-class PDFFile(OfficeDocument):
+class PDFFile(ExternalIndexer):
 
     class_mimetypes = ['application/pdf']
     class_extension = 'pdf'

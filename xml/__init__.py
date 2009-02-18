@@ -28,7 +28,7 @@ from parser import PI, CDATA
 from xml import Element, stream_to_str, get_element, find_end
 from xml import get_qname, get_attribute_qname, get_start_tag, get_end_tag
 from xml import get_doctype
-from office import OfficeDocument, MSWord, MSExcel, MSPowerPoint, RTF
+from office import ExternalIndexer, MSWord, MSExcel, MSPowerPoint, RTF
 
 
 
@@ -70,7 +70,7 @@ __all__ = [
     # Handlers
     'Element',
     # Office
-    'OfficeDocument',
+    'ExternalIndexer',
     'MSWord',
     'MSExcel',
     'MSPowerPoint',

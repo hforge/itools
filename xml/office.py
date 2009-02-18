@@ -86,7 +86,7 @@ def convert(handler, cmdline, use_outfile=False):
 
 
 
-class OfficeDocument(File):
+class ExternalIndexer(File):
     source_encoding = 'UTF-8'
 
 
@@ -98,18 +98,18 @@ class OfficeDocument(File):
 
 
 
-class MSWord(OfficeDocument):
+class MSWord(ExternalIndexer):
     class_mimetypes = ['application/msword']
     class_extension = 'doc'
     source_converter = 'wvText %s %s'
 
 
     def to_text(self):
-        return OfficeDocument.to_text(self, use_outfile=True)
+        return ExternalIndexer.to_text(self, use_outfile=True)
 
 
 
-class MSExcel(OfficeDocument):
+class MSExcel(ExternalIndexer):
     class_mimetypes = ['application/vnd.ms-excel']
     class_extension = 'xls'
 
@@ -136,7 +136,7 @@ class MSExcel(OfficeDocument):
 
 
 
-class MSPowerPoint(OfficeDocument):
+class MSPowerPoint(ExternalIndexer):
     class_mimetypes = ['application/vnd.ms-powerpoint']
     class_extension = 'ppt'
     source_converter = 'ppthtml %s'
@@ -150,7 +150,7 @@ class MSPowerPoint(OfficeDocument):
 
 
 
-class RTF(OfficeDocument):
+class RTF(ExternalIndexer):
     class_mimetypes = ['text/rtf']
     class_extenstion = 'rtf'
     source_encoding = 'ISO-8859-1'
@@ -158,7 +158,7 @@ class RTF(OfficeDocument):
 
 
     def to_text(self):
-        text = OfficeDocument.to_text(self)
+        text = ExternalIndexer.to_text(self)
         words = text.split()
         # Filter noise by unrtf
         words = [word for word in words if len(word) < 100]

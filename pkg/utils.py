@@ -23,7 +23,7 @@ from os.path import exists, join as join_path
 from sys import _getframe, argv
 
 # Import from itools
-from itools.core import freeze, get_abspath
+from itools.core import freeze, get_abspath, get_pipe
 from itools import git
 from commands import iregister, iupload
 from handlers import SetupConf
@@ -70,6 +70,35 @@ class OptionalBuildExt(build_ext):
             print ", ".join(ext.libraries)
             print "  This error is not fatal, continuing build..."
             print ""
+
+
+
+def get_compile_flags(command):
+    include_dirs = []
+    extra_compile_args = []
+    library_dirs = []
+    libraries = []
+
+    if isinstance(command, str):
+        command = command.split()
+    pipe = get_pipe(command)
+
+    for line in pipe.readlines():
+        for token in line.split():
+            flag, value = token[:2], token[2:]
+            if flag == '-I':
+                include_dirs.append(value)
+            elif flag == '-f':
+                extra_compile_args.append(token)
+            elif flag == '-L':
+                library_dirs.append(value)
+            elif flag == '-l':
+                libraries.append(value)
+
+    return {'include_dirs': include_dirs,
+            'extra_compile_args': extra_compile_args,
+            'library_dirs': library_dirs,
+            'libraries': libraries}
 
 
 
@@ -147,7 +176,7 @@ def setup(ext_modules=freeze([])):
                # Scripts
                scripts = scripts,
                cmdclass = {'iupload': iupload,
-                           'iregister': iregister},
+                           'iregister': iregister,
+                           'build_ext': OptionalBuildExt},
                # C extensions
-               ext_modules=ext_modules,
-               cmdclass={'build_ext': OptionalBuildExt})
+               ext_modules=ext_modules)

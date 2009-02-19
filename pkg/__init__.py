@@ -23,6 +23,7 @@ from metadata import PKGINFOFile
 from packages import get_installed_info, packages_infos
 from repository import parse_package_name, download, EXTENSIONS
 from utils import get_version, setup, OptionalExtension, OptionalBuildExt
+from utils import get_compile_flags
 
 
 __all__ = [
@@ -38,6 +39,7 @@ __all__ = [
     'PKGINFOFile',
     'setup',
     'OptionalExtension',
+    'get_compile_flags',
     ]
 
 add_type('text/x-egg-info', '.egg-info')

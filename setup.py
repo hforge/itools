@@ -24,15 +24,14 @@ from os import getcwd
 load_module('itools', None, getcwd(), ('', '', PKG_DIRECTORY))
 
 # Import from itools
-from pkg import setup
+from pkg import setup, get_compile_flags
 
-GLIB_INCLUDE_PATH = ['/usr/include/glib-2.0', '/usr/lib/glib-2.0/include/']
 
 if __name__ == '__main__':
+    flags = get_compile_flags('pkg-config --cflags --libs glib-2.0')
     cparser = Extension('itools.xml.parser',
                         sources=['xml/parser.c', 'xml/doctype.c',
                                  'xml/arp.c', 'xml/pyparser.c'],
-                        libraries=['glib-2.0'],
-                        include_dirs=GLIB_INCLUDE_PATH)
+                        **flags)
 
     setup(ext_modules=[cparser])

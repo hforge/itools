@@ -16,9 +16,6 @@
 
 # Import from the Standard Library
 from distutils import core
-from distutils.core import Extension
-from distutils.command.build_ext import build_ext
-from distutils.errors import LinkError
 from os.path import exists, join as join_path
 from sys import _getframe, argv
 
@@ -37,40 +34,6 @@ def get_version(mname=None):
     if exists(path):
         return open(path).read().strip()
     return None
-
-
-
-class OptionalExtension(Extension):
-    """An Optional Extension is a C extension that complements the package
-    without being mandatory. It typically depends on external libraries. If the
-    libraries are not available, the package will be installed without this
-    extra module. Build errors will still be reported. Developers are
-    responsible for testing the availability of the package, e.g. try/except
-    ImportError.
-
-    Simply Use OptionalExtension instead of Extension in your setup.
-    """
-    pass
-
-
-
-class OptionalBuildExt(build_ext):
-    """Internal class to support OptionalExtension.
-    """
-
-    def build_extension(self, ext):
-        if not isinstance(ext, OptionalExtension):
-            return build_ext.build_extension(self, ext)
-        try:
-            build_ext.build_extension(self, ext)
-        except LinkError:
-            print ""
-            print "  '%s' module will not be available." % ext.name
-            print "  Make sure the following libraries are installed:",
-            print ", ".join(ext.libraries)
-            print "  This error is not fatal, continuing build..."
-            print ""
-
 
 
 def setup(ext_modules=freeze([])):
@@ -149,5 +112,5 @@ def setup(ext_modules=freeze([])):
                cmdclass = {'iupload': iupload,
                            'iregister': iregister},
                # C extensions
-               ext_modules=ext_modules,
-               cmdclass={'build_ext': OptionalBuildExt})
+               ext_modules=ext_modules)
+

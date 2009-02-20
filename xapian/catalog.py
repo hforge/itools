@@ -112,7 +112,7 @@ def _index_cjk(xdoc, value, prefix, termpos):
 
 
 
-def _index_unicode_value(xdoc, value, prefix, language, termpos):
+def _index_unicode(xdoc, value, prefix, language, termpos):
     if language in ['ja', 'zh']:
         return _index_cjk(xdoc, value, prefix, termpos)
     else:
@@ -126,18 +126,7 @@ def _index_unicode_value(xdoc, value, prefix, language, termpos):
 
 
 
-def _index_unicode(xdoc, field_cls, value, prefix, language):
-    if (field_cls.multiple and
-        isinstance(value, (tuple, list, set, frozenset))):
-        termpos = 1
-        for x in value:
-            termpos = _index_unicode_value(xdoc, x, prefix, language, termpos)
-    else:
-        _index_unicode_value(xdoc, value, prefix, language, 1)
-
-
-
-def _index(xdoc, field_cls, value, prefix):
+def _index(xdoc, field_cls, value, prefix, language):
     """To index a field it must be split in a sequence of words and
     positions:
 
@@ -148,22 +137,21 @@ def _index(xdoc, field_cls, value, prefix):
 
     # Unicode: a complex split
     if issubclass(field_cls, Unicode):
-        # A multilingual value ?
-        # XXX Make it compulsory
-        if isinstance(value, dict):
-            for language, a_value in value.iteritems():
-                _index_unicode(xdoc, field_cls, a_value, prefix, language)
+        if (field_cls.multiple and
+            isinstance(value, (tuple, list, set, frozenset))):
+            termpos = 1
+            for x in value:
+                termpos = _index_unicode(xdoc, x, prefix, language, termpos)
         else:
-            _index_unicode(xdoc, field_cls, value, prefix, 'en')
+            _index_unicode(xdoc, value, prefix, language, 1)
     # An other type: too easy
     else:
         if (field_cls.multiple and
             isinstance(value, (tuple, list, set, frozenset))):
             for position, x in enumerate(value):
-                xdoc.add_posting(prefix + field_cls.encode(x), position + 1)
+                xdoc.add_posting(prefix + _encode(field_cls, x), position + 1)
         else:
-            xdoc.add_posting(prefix + field_cls.encode(value), 1)
-
+            xdoc.add_posting(prefix + _encode(field_cls, value), 1)
 
 
 def _make_PhraseQuery(field_cls, value, prefix):
@@ -171,7 +159,8 @@ def _make_PhraseQuery(field_cls, value, prefix):
     # XXX It's too complex (slow), we must use xapian
     #     Problem => _index_cjk
     xdoc = Document()
-    _index(xdoc, field_cls, value, prefix)
+    # XXX Language = 'en' by default
+    _index(xdoc, field_cls, value, prefix, 'en')
     words = []
     for term_list_item in xdoc:
         term = term_list_item.term
@@ -198,6 +187,14 @@ def _get_prefix(number):
 
 
 
+def _get_field_cls(name, fields, info):
+    if name not in fields:
+        return fields[info['from']]
+    else:
+        return fields[name]
+
+
+
 def _get_xquery(catalog, query=None, **kw):
     # Case 1: a query is given
     if query is not None:
@@ -217,8 +214,10 @@ def _get_xquery(catalog, query=None, **kw):
             return Query()
 
         # Ok
-        prefix = metadata[name]['prefix']
-        query = _make_PhraseQuery(fields[name], value, prefix)
+        info = metadata[name]
+        prefix = info['prefix']
+        field_cls = _get_field_cls(name, fields, info)
+        query = _make_PhraseQuery(field_cls, value, prefix)
         xqueries.append(query)
 
     return Query(OP_AND, xqueries)
@@ -227,7 +226,7 @@ def _get_xquery(catalog, query=None, **kw):
 
 def split_unicode(text, language='en'):
     xdoc = Document()
-    _index_unicode_value(xdoc, text, '', language, 1)
+    _index_unicode(xdoc, text, '', language, 1)
     words = []
     for term_list_item in xdoc:
         term = unicode(term_list_item.term, 'utf-8')
@@ -247,9 +246,11 @@ class Doc(object):
 
 
     def __getattr__(self, name):
-        value = self._metadata[name]['value']
+        info = self._metadata[name]
+        value = info['value']
+        field_cls = _get_field_cls(name, self._fields, info)
         data = self._xdoc.get_value(value)
-        return _decode(self._fields[name], data)
+        return _decode(field_cls, data)
 
 
 
@@ -423,64 +424,71 @@ class Catalog(object):
         fields = self._fields
 
         # Check the input
-        if type(document) is dict:
-            doc_values = document
-        elif isinstance(document, CatalogAware):
-            # Extract the values (do it first, because it may fail).
-            doc_values = document.get_catalog_values()
-        else:
+        if not isinstance(document, CatalogAware):
             raise ValueError, 'the document must be a CatalogAware object'
+
+        # Extract the values (do it first, because it may fail).
+        doc_values = document.get_catalog_values()
 
         # Make the xapian document
         metadata_modified = False
         xdoc = Document()
         for name, value in doc_values.iteritems():
-            if value is None:
-                continue
-
             field_cls = fields[name]
 
             # New field ?
             if name not in metadata:
-                info = {}
-
-                # The key field ?
-                if getattr(field_cls, 'is_key_field', False):
-                    if self._key_field is not None:
-                        raise ValueError, 'You must have only one key field'
-                    if not (field_cls.is_stored and field_cls.is_indexed):
-                        raise ValueError, ('the key field must be stored '
-                                           'and indexed')
-                    self._key_field = name
-                    info['key_field'] = True
-                # Stored ?
-                if getattr(field_cls, 'is_stored', False):
-                    info['value'] = self._value_nb
-                    self._value_nb += 1
-                # Indexed ?
-                # XXX the key field is indexed twice
-                if getattr(field_cls, 'is_indexed', False):
-                    info['prefix'] = _get_prefix(self._prefix_nb)
-                    self._prefix_nb += 1
-
-                # Save info
-                # XXX info can be "{}"
-                metadata[name] = info
+                info = metadata[name] = self._get_info(field_cls, name)
                 metadata_modified = True
             else:
                 info = metadata[name]
 
-            # Is stored?
-            if getattr(field_cls, 'is_stored', False):
-                xdoc.add_value(info['value'], _encode(field_cls, value))
+            # A multilingual value ?
+            if isinstance(value, dict):
+                for language, lang_value in value.iteritems():
+                    lang_name = name + '_' + language
 
-            # Is indexed?
-            if getattr(field_cls, 'is_indexed', False):
-                _index(xdoc, field_cls, value, info['prefix'])
+                    # New field ?
+                    if lang_name not in metadata:
+                        lang_info = self._get_info(field_cls, lang_name)
+                        lang_info['from'] = name
+                        metadata[lang_name] = lang_info
+                        metadata_modified = True
+                    else:
+                        lang_info = metadata[lang_name]
 
-        # Store the first value with the prefix 'Q'
+                    # The value can be None
+                    if lang_value is not None:
+                        # Is stored ?
+                        if 'value' in lang_info:
+                            xdoc.add_value(lang_info['value'],
+                                           _encode(field_cls, lang_value))
+                        # Is indexed ?
+                        if 'prefix' in lang_info:
+                            # Comment: Index twice
+                            _index(xdoc, field_cls, lang_value,
+                                   info['prefix'], language)
+                            _index(xdoc, field_cls, lang_value,
+                                   lang_info['prefix'], language)
+            # The value can be None
+            elif value is not None:
+                # Is stored ?
+                if 'value' in info:
+                    xdoc.add_value(info['value'],
+                                   _encode(field_cls, value))
+                # Is indexed ?
+                if 'prefix' in info:
+                    # By default language='en'
+                    _index(xdoc, field_cls, value, info['prefix'], 'en')
+
+        # Store the key field with the prefix 'Q'
+        # Comment: the key field is indexed twice, but we must do it
+        #          one => to index (as the others)
+        #          two => to index without split
+        #          the problem is that "_encode != _index"
         key_field = self._key_field
-        if key_field is None or key_field not in doc_values:
+        if (key_field is None or key_field not in doc_values or
+            doc_values[key_field] is None):
             raise ValueError, 'the "key_field" value is compulsory'
         xdoc.add_term('Q'+_encode(fields[key_field], doc_values[key_field]))
 
@@ -527,9 +535,35 @@ class Catalog(object):
             # If there is a problem => an empty result
             return set()
 
+
     #######################################################################
     # API / Private
     #######################################################################
+    def _get_info(self, field_cls, name):
+        info = {}
+
+        # The key field ?
+        if getattr(field_cls, 'is_key_field', False):
+            if self._key_field is not None:
+                raise ValueError, ('You must have only one key field, '
+                                   'not multiple, not multilingual')
+            if not (field_cls.is_stored and field_cls.is_indexed):
+                raise ValueError, ('the key field must be stored '
+                                   'and indexed')
+            self._key_field = name
+            info['key_field'] = True
+        # Stored ?
+        if getattr(field_cls, 'is_stored', False):
+            info['value'] = self._value_nb
+            self._value_nb += 1
+        # Indexed ?
+        if getattr(field_cls, 'is_indexed', False):
+            info['prefix'] = _get_prefix(self._prefix_nb)
+            self._prefix_nb += 1
+
+        return info
+
+
     def _load_all_internal(self):
         """Load the metadata from the database
         """
@@ -570,8 +604,10 @@ class Catalog(object):
             # If there is a problem => an empty result
             if name not in metadata:
                 return Query()
-            prefix = metadata[name]['prefix']
-            return _make_PhraseQuery(fields[name], query.value, prefix)
+            info = metadata[name]
+            prefix = info['prefix']
+            field_cls = _get_field_cls(name, fields, info)
+            return _make_PhraseQuery(field_cls, query.value, prefix)
 
         # RangeQuery, the field must be stored
         if query_class is RangeQuery:
@@ -582,8 +618,9 @@ class Catalog(object):
             if name not in metadata:
                 return Query()
 
-            value = metadata[name]['value']
-            field_cls = fields[name]
+            info = metadata[name]
+            value = info['value']
+            field_cls = _get_field_cls(name, fields, info)
 
             left = query.left
             right = query.right
@@ -613,10 +650,12 @@ class Catalog(object):
             if name not in metadata:
                 return Query()
 
-            value_nb = metadata[name]['value']
+            info = metadata[name]
+            value_nb = info['value']
+            field_cls = _get_field_cls(name, fields, info)
 
             value = query.value
-            value = _encode(fields[name], value)
+            value = _encode(field_cls, value)
 
             if value:
                 # end_value = the word after value: toto => totp

@@ -27,7 +27,7 @@ from itools import vfs
 from itools.xapian import make_catalog, Catalog, CatalogAware, StartQuery
 from itools.xapian import AndQuery, RangeQuery, PhraseQuery, NotQuery
 from itools.datatypes import String, Unicode, Boolean, Integer
-from itools.xapian.catalog import _index
+from itools.xapian.catalog import _index, _decode
 
 # Import from xapian
 from xapian import Document as XapianDocument
@@ -77,8 +77,7 @@ class FieldsTestCase(TestCase):
             self.assertEqual(len(words), 1)
             word = words[0]
             self.assertEqual(type(word), str)
-            self.assertEqual(int(word), value)
-
+            self.assertEqual(_decode(Integer, word), value)
 
     def test_unicode(self):
         value = (u'Celle-ci consiste dans les differents Privileges, dont'

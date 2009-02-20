@@ -248,19 +248,19 @@ class ReadOnlyDatabase(object):
             raise LookupError, 'the resource "%s" does not exist' % uri
 
         # Folders are not cached
-        if vfs.is_folder(reference):
+        if vfs.is_folder(uri):
             if cls is None:
                 cls = Folder
-            folder = cls(reference)
+            folder = cls(uri)
             folder.database = self
             return folder
 
         # Cache miss
         if cls is None:
-            cls = get_handler_class(reference)
+            cls = get_handler_class(uri)
         # Build the handler and update the cache
         handler = object.__new__(cls)
-        self.push_handler(reference, handler)
+        self.push_handler(uri, handler)
 
         return handler
 

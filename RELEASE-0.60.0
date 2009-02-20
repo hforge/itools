@@ -15,32 +15,50 @@ meta-package for easier development and deployment:
   itools.html             itools.rss              itools.xliff
   itools.http             itools.srx              itools.xml
 
-Changes:
+Many of the changes in this release are to improve speed and scalability.
+There has been also some code reorganization, and some packages have seen
+major changes.
 
-- Python 2.6 required
-- Now we use Python's "logging" package
-- Now we use Xapian (in memory) for itools.csv and itools.ical (#427)
+Indexing with itools.xapian is much faster now for two reasons.  First
+extracting the text from some office formats (ODF and Excel) is a lot
+faster.  Second, now we use the xapian tokenizer to split a text into
+words (except for Chinese and Japanase texts).
 
-Core reorganization:
-- New packages: itools.core, itools.python and itools.xmlfile
-- itools.isetup renamed to itools.pkg (some isetup- scripts renamed to ipkg-)
+The filesystem database (itools.handlers) has been improved and now
+includes a read-only mode.  There is also a limit to the number of
+file handlers that can be stored in the cache, hence reducing memory
+usage.
 
-itools.core:
-- New functions 'add_type', 'guess_type', etc.
-  They replace the equivalent functions from the mimetypes module from the
-  Standard Library (because faster)
+Other optimizations include a 'parse_table' function about two times
+faster than before; used for instance to parse iCal files.
 
-itools.handlers:
-- Added handlers for TGZ and TBZ2 files
-- Added read-only database (ReadOnlyDatabase)
+The itools Virtual File System (itools.vfs) has been rewritten to use
+gio (from the Glib [1]), while preserving backwards compatibility.
 
-itools.pdf
-- RML implementation removed
+The web server (itools.web) now uses the Glib event loop.  Support for
+HTTP/1.1 has been improved too (XXX).
 
-itools.web:
-- Use glib.MainLoop
-- Better support for HTTP/1.1
+The itools.isetup package has been renamed to itools.pkg, and so have
+the related scripts (e.g. 'isetup-build.py' renamed to 'ipkg-build.py').
+Two new packages, itools.python and itools.xmlfile, have been split
+from itools.handlers and itools.xml, to avoid circular imports.
 
+The implementation of RML [2] has been removed, now we promote PML [3]
+instead.
+
+Python 2.6 is required, and support for Python 2.5 has been drop.  Other
+new dependencies include pygobject 2.16 [4] or later (used by itools.vfs
+and itools.web), and 'xlrd' [5] (used to index Excel files).  See the
+README file for the complete table of required and recommended packages.
+
+See the UPGRADE-0.60.0 file for further details on what has changed.
+
+
+[1] XXX
+[2] XXX
+[3] XXX (chapter to write in the documentation)
+[4] XXX
+[5] XXX
 
 
 Resources

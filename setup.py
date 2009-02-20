@@ -31,6 +31,7 @@ from pkg import setup, get_compile_flags
 if __name__ == '__main__':
     ext_modules = []
 
+    # XML Parser
     try:
         flags = get_compile_flags('pkg-config --cflags --libs glib-2.0')
     except OSError:
@@ -46,5 +47,17 @@ if __name__ == '__main__':
                                      'xml/arp.c', 'xml/pyparser.c'],
                             **flags)
         ext_modules.append(cparser)
+
+    # PDF indexer
+    try:
+        flags = get_compile_flags('pkg-config --cflags --libs poppler')
+    except EnvironmentError:
+        print >> stderr, 'Warning: poppler headers are not found.'
+        print >> stderr, 'PDF indexer will not be available'
+    else:
+        pdfindexer = Extension('itools.pdf.pdftotext',
+                               sources=['pdf/pdftotext.cc'],
+                               **flags)
+        ext_modules.append(pdfindexer)
 
     setup(ext_modules=ext_modules)

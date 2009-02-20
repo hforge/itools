@@ -103,7 +103,7 @@ class MSWord(ExternalIndexer):
 
 
 
-class MSExcel(ExternalIndexer):
+class MSExcel(File):
     class_mimetypes = ['application/vnd.ms-excel']
     class_extension = 'xls'
 

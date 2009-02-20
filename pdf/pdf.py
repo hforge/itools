@@ -16,16 +16,24 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.handlers import register_handler_class
-from itools.xml import ExternalIndexer
+from itools.handlers import register_handler_class, File
+try:
+    from pdftotext import pdf_to_text
+except ImportError:
+    pdf_to_text = None
 
 
 
-class PDFFile(ExternalIndexer):
+class PDFFile(File):
 
     class_mimetypes = ['application/pdf']
     class_extension = 'pdf'
-    source_converter = 'pdftotext -enc UTF-8 -nopgbrk %s -'
+
+
+    def to_text(self):
+        if pdf_to_text is None:
+            return u""
+        return pdf_to_text(self.to_str())
 
 
 register_handler_class(PDFFile)

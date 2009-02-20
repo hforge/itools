@@ -29,6 +29,7 @@ Requirements
 Software    Version   Used by         Home
 ---------   -------   -------------   ----------------------------------------
 Python        2.6.1   itools          http://www.python.org/
+pkg-config     0.23   itools          http://pkg-config.freedesktop.org/
 glib           2.16   itools.vfs      http://www.gtk.org/
 pygobject      2.16   itools.vfs      http://www.pygtk.org/
 reportlab       2.2   itools.pdf      http://www.reportlab.org/
@@ -36,6 +37,9 @@ xapian        1.0.8   itools.xapian   http://www.xapian.org/
 pywin32         212   (Windows)       http://sourceforge.net/projects/pywin32/
 xlrd          0.6.1   itools.xml      http://www.lexicon.net/sjmachin/xlrd.htm
 
+Note: you will find packages like pkg-config and glib compiled for Windows
+on http://ftp.gnome.org/pub/gnome/binaries/win32/ (don't forget to check
+the "dependencies" directory).
 
 Install
 =============

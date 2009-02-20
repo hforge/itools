@@ -19,6 +19,7 @@
 from distutils.core import Extension
 from imp import load_module, PKG_DIRECTORY
 from os import getcwd
+from sys import stderr, exit
 
 # Import local itools first, otherwise installing the first time won't work.
 load_module('itools', None, getcwd(), ('', '', PKG_DIRECTORY))
@@ -28,10 +29,22 @@ from pkg import setup, get_compile_flags
 
 
 if __name__ == '__main__':
-    flags = get_compile_flags('pkg-config --cflags --libs glib-2.0')
-    cparser = Extension('itools.xml.parser',
-                        sources=['xml/parser.c', 'xml/doctype.c',
-                                 'xml/arp.c', 'xml/pyparser.c'],
-                        **flags)
+    ext_modules = []
 
-    setup(ext_modules=[cparser])
+    try:
+        flags = get_compile_flags('pkg-config --cflags --libs glib-2.0')
+    except OSError:
+        print >> stderr, 'Error: the command "pkg-config" is not found.'
+        print >> stderr, 'Install pkg-config before installing itools.'
+        exit(1)
+    except EnvironmentError:
+        print >> stderr, 'Error: Glib 2.0 library or headers not found.'
+        raise
+    else:
+        cparser = Extension('itools.xml.parser',
+                            sources=['xml/parser.c', 'xml/doctype.c',
+                                     'xml/arp.c', 'xml/pyparser.c'],
+                            **flags)
+        ext_modules.append(cparser)
+
+    setup(ext_modules=ext_modules)

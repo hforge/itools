@@ -38,14 +38,66 @@ logger = getLogger('data')
 
 
 ###########################################################################
-# Read Only Database
+# Exceptions
 ###########################################################################
-
 class ReadOnlyError(RuntimeError):
     pass
 
 
-class ReadOnlyDatabase(object):
+###########################################################################
+# Abstract database (defines the API)
+###########################################################################
+
+class BaseDatabase(object):
+
+    def _before_commit(self):
+        """This method is called before 'save_changes', and gives a chance
+        to the database to check for preconditions, if an error occurs here
+        the transaction will be aborted.
+        """
+
+
+    def _save_changes(self):
+        raise NotImplementedError
+
+
+    def _abort_changes(self):
+        raise NotImplementedError
+
+
+    def _cleanup(self):
+        """For maintenance operations, this method is automatically called
+        after a transaction is commited or aborted.
+        """
+
+
+    #######################################################################
+    # Public API
+    def save_changes(self):
+        # Prepare for commit, do here the most you can, if something fails
+        # the transaction will be aborted
+        try:
+            self._before_commit()
+        except:
+            database.abort_changes()
+            raise
+
+        # Commit for real
+        self._save_changes()
+        self._cleanup()
+
+
+    def abort_changes(self):
+        self._abort_changes()
+        self._cleanup()
+
+
+
+###########################################################################
+# Read Only Database
+###########################################################################
+
+class RODatabase(BaseDatabase):
     """The read-only database works as a cache for file handlers.
     """
 
@@ -309,22 +361,17 @@ class ReadOnlyDatabase(object):
         return vfs.open(reference, READ)
 
 
-    def abort_changes(self):
-        raise ReadOnlyError, 'cannot abort changes'
-
-
-    def save_changes(self):
-        raise ReadOnlyError, 'cannot save changes'
-
+    def _cleanup(self):
+        self.make_room()
 
 
 ###########################################################################
 # Read/Write Database (in memory transactions)
 ###########################################################################
-class Database(ReadOnlyDatabase):
+class RWDatabase(RODatabase):
 
     def __init__(self):
-        ReadOnlyDatabase.__init__(self)
+        RODatabase.__init__(self)
         # The state, for transactions
         self.changed = set()
         self.added = set()
@@ -339,11 +386,11 @@ class Database(ReadOnlyDatabase):
         if reference in self.removed:
             return False
 
-        return ReadOnlyDatabase.has_handler(self, reference)
+        return RODatabase.has_handler(self, reference)
 
 
     def get_handler_names(self, reference):
-        names = ReadOnlyDatabase.get_handler_names(self, reference)
+        names = RODatabase.get_handler_names(self, reference)
 
         # The State
         uri = cwd.get_reference(reference)
@@ -374,7 +421,7 @@ class Database(ReadOnlyDatabase):
             raise LookupError, 'the resource "%s" does not exist' % reference
 
         # Ok
-        return ReadOnlyDatabase.get_handler(self, reference, cls=cls)
+        return RODatabase.get_handler(self, reference, cls=cls)
 
 
     def set_handler(self, reference, handler):
@@ -497,7 +544,7 @@ class Database(ReadOnlyDatabase):
 
     #######################################################################
     # API / Transactions
-    def abort_changes(self):
+    def _abort_changes(self):
         cache = self.cache
         # Added handlers
         for uri in self.added:
@@ -511,7 +558,7 @@ class Database(ReadOnlyDatabase):
         self.removed.clear()
 
 
-    def save_changes(self):
+    def _save_changes(self):
         cache = self.cache
         try:
             # Save changed handlers
@@ -545,7 +592,7 @@ class Database(ReadOnlyDatabase):
 
 
 ###########################################################################
-# The Safe Database (bullet-proof transactions)
+# The Solid Database (bullet-proof transactions)
 ###########################################################################
 
 # The database states
@@ -568,10 +615,10 @@ def get_tmp_map():
     return tmp_map
 
 
-class SafeDatabase(Database):
+class SolidDatabase(RWDatabase):
 
     def __init__(self, commit):
-        Database.__init__(self)
+        RWDatabase.__init__(self)
         # The commit, for safe transactions
         if not isinstance(commit, Path):
             commit = Path(commit)
@@ -664,7 +711,7 @@ class SafeDatabase(Database):
         return READY
 
 
-    def save_changes(self):
+    def _save_changes(self):
         # 1. Start
         vfs.make_file(self.commit_log)
 

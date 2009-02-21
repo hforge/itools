@@ -40,7 +40,7 @@ from image import Image
 from registry import register_handler_class, get_handler_class_by_mimetype
 from registry import get_handler_class, get_handler
 from text import TextFile, guess_encoding
-from database import ReadOnlyDatabase, Database, SafeDatabase
+from database import BaseDatabase, RODatabase, RWDatabase, SolidDatabase
 from database import READY, TRANSACTION_PHASE1, TRANSACTION_PHASE2
 from utils import checkid
 
@@ -62,9 +62,10 @@ __all__ = [
     'TGZFile',
     'TBZ2File',
     # The database
-    'ReadOnlyDatabase',
-    'Database',
-    'SafeDatabase',
+    'BaseDatabase',
+    'RODatabase',
+    'RWDatabase',
+    'SolidDatabase',
     'READY',
     'TRANSACTION_PHASE1',
     'TRANSACTION_PHASE2',

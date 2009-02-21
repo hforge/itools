@@ -31,6 +31,7 @@ from urllib import unquote
 from warnings import warn
 
 # Import from itools
+from itools.handlers import BaseDatabase
 from itools.http import Request, Response, ClientError, NotModified
 from itools.http import BadRequest, Forbidden, NotFound, Unauthorized
 from itools.http import HTTPError, NotImplemented
@@ -144,28 +145,6 @@ class SocketWrapper(object):
 
 
 ###########################################################################
-# The database
-###########################################################################
-
-class DummyDatabase(object):
-
-    def before_commit(self):
-        raise NotImplementedError
-
-
-    def save_changes(self):
-        raise NotImplementedError
-
-
-    def abort_changes(self):
-        raise NotImplementedError
-
-
-    def cleanup(self):
-        pass
-
-
-###########################################################################
 # The Web Server
 ###########################################################################
 
@@ -181,7 +160,7 @@ class Server(object):
     access_log = None
     event_log = None
 
-    database = DummyDatabase()
+    database = BaseDatabase()
 
 
     def __init__(self, root, address=None, port=None, access_log=None,
@@ -574,10 +553,7 @@ class Server(object):
         # (3) Pass control to the Get method class
         method.handle_request(self, context)
 
-        # (4) Give the database a chance to clean itself
-        self.database.cleanup()
-
-        # (5) Return the response
+        # (4) Return the response
         return context.response
 
 
@@ -699,15 +675,7 @@ class RequestMethod(object):
             database.abort_changes()
             return
 
-        # Hook: before commit
-        try:
-            database.before_commit()
-        except:
-            cls.internal_server_error(server, context)
-            database.abort_changes()
-            return
-
-        # Commit
+        # Save changes
         try:
             database.save_changes()
         except:

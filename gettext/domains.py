@@ -20,12 +20,12 @@ from sys import _getframe
 from types import ModuleType
 
 # Import from itools
-from itools.handlers import Folder, Database
+from itools.handlers import Folder, RODatabase
 
 
 domains = {}
 
-database = Database()
+database = RODatabase()
 def register_domain(name, locale_path):
     if name not in domains:
         domain = Domain(locale_path)

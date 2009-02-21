@@ -23,7 +23,7 @@ from unittest import TestCase
 from itools.csv import Table
 from itools.datatypes import Unicode
 from itools.handlers import get_handler, get_handler_class
-from itools.handlers import Database, SafeDatabase
+from itools.handlers import RWDatabase, SolidDatabase
 from itools.handlers import TextFile, ConfigFile, TGZFile
 from itools.uri import get_reference
 from itools import vfs
@@ -52,7 +52,7 @@ class StateTestCase(TestCase):
 class FolderTestCase(TestCase):
 
     def setUp(self):
-        database = Database()
+        database = RWDatabase()
         self.database = database
         self.root = database.get_handler('.')
         file = vfs.make_file('tests/toto.txt')
@@ -359,7 +359,7 @@ class BrokenHandler(TextFile):
 class DatabaseTestCase(TestCase):
 
     def setUp(self):
-        database = SafeDatabase('database.commit')
+        database = SolidDatabase('database.commit')
         self.database = database
         root = get_handler('fables')
         root.database = database

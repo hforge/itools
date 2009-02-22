@@ -54,10 +54,14 @@ class BaseDatabase(object):
         """This method is called before 'save_changes', and gives a chance
         to the database to check for preconditions, if an error occurs here
         the transaction will be aborted.
+
+        The value returned by this method will be passed to '_save_changes',
+        so it can be used to pre-calculate whatever data is needed.
         """
+        return None
 
 
-    def _save_changes(self):
+    def _save_changes(self, data):
         raise NotImplementedError
 
 
@@ -77,13 +81,13 @@ class BaseDatabase(object):
         # Prepare for commit, do here the most you can, if something fails
         # the transaction will be aborted
         try:
-            self._before_commit()
+            data = self._before_commit()
         except:
             database.abort_changes()
             raise
 
         # Commit for real
-        self._save_changes()
+        self._save_changes(data)
         self._cleanup()
 
 
@@ -558,7 +562,7 @@ class RWDatabase(RODatabase):
         self.removed.clear()
 
 
-    def _save_changes(self):
+    def _save_changes(self, data):
         cache = self.cache
         try:
             # Save changed handlers
@@ -711,7 +715,7 @@ class SolidDatabase(RWDatabase):
         return READY
 
 
-    def _save_changes(self):
+    def _save_changes(self, data):
         # 1. Start
         vfs.make_file(self.commit_log)
 

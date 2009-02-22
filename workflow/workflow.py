@@ -214,7 +214,7 @@ class WorkflowAware(object):
         if not initstate:
             raise WorkflowError, 'undefined initial state'
 
-        if not self.workflow.states.has_key(initstate):
+        if not initstate in self.workflow.states:
             raise WorkflowError, "invalid initial state: '%s'" % initstate
 
         self.workflow_state = initstate

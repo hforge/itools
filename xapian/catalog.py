@@ -435,6 +435,9 @@ class Catalog(object):
         metadata_modified = False
         xdoc = Document()
         for name, value in doc_values.iteritems():
+            if value is None:
+                continue
+
             field_cls = fields[name]
 
             # New field ?
@@ -467,15 +470,13 @@ class Catalog(object):
             else:
                 info = metadata[name]
 
-            # The value can be None
-            if value is not None:
-                # Is stored ?
-                if getattr(field_cls, 'is_stored', False):
-                    xdoc.add_value(info['value'], _encode(field_cls, value))
+            # Is stored?
+            if getattr(field_cls, 'is_stored', False):
+                xdoc.add_value(info['value'], _encode(field_cls, value))
 
-                # Is indexed ?
-                if getattr(field_cls, 'is_indexed', False):
-                    _index(xdoc, field_cls, value, info['prefix'])
+            # Is indexed?
+            if getattr(field_cls, 'is_indexed', False):
+                _index(xdoc, field_cls, value, info['prefix'])
 
         # Store the first value with the prefix 'Q'
         key_field = self._key_field

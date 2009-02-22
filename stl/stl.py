@@ -84,7 +84,7 @@ def evaluate(expression, stack, repeat_stack):
         value = lookup(value, name)
 
     # Call
-    if callable(value):
+    if hasattr(value, '__call__'):
         try:
             value = value()
         except AttributeError, error_value:

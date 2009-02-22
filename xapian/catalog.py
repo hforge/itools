@@ -423,11 +423,13 @@ class Catalog(object):
         fields = self._fields
 
         # Check the input
-        if not isinstance(document, CatalogAware):
+        if type(document) is dict:
+            doc_values = document
+        elif isinstance(document, CatalogAware):
+            # Extract the values (do it first, because it may fail).
+            doc_values = document.get_catalog_values()
+        else:
             raise ValueError, 'the document must be a CatalogAware object'
-
-        # Extract the values (do it first, because it may fail).
-        doc_values = document.get_catalog_values()
 
         # Make the xapian document
         metadata_modified = False

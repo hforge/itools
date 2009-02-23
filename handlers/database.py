@@ -44,23 +44,27 @@ logger = getLogger('data')
 ###########################################################################
 
 class DNode(object):
+
     __slots__ = ['prev', 'next', 'key']
+
 
     def __init__(self, key):
         self.key = key
 
 
-class Queue(object):
-    __slots__ = ['first', 'last', 'size', 'key2node']
+class LRUCache(dict):
+
+    __slots__ = ['first', 'last', 'key2node']
+
 
     def __init__(self):
+        dict.__init__(self)
         self.first = None
         self.last = None
-        self.size = 0
         self.key2node = {}
 
 
-    def append(self, key):
+    def _append(self, key):
         node = DNode(key)
 
         # (1) Insert into the key-to-node map
@@ -79,11 +83,8 @@ class Queue(object):
 
         self.last = node
 
-        # Ok
-        self.size += 1
 
-
-    def remove(self, key):
+    def _remove(self, key):
         # (1) Pop the node from the key-to-node map
         node = self.key2node.pop(key)
 
@@ -98,10 +99,35 @@ class Queue(object):
         else:
             node.next.prev = node.prev
 
-        # Ok
-        self.size -= 1
+
+    ######################################################################
+    # Override dict API
+    def __iter__(self):
+        node = self.first
+        while node is not None:
+            yield node.key
+            node = node.next
 
 
+    def __setitem__(self, key, value):
+        dict.__setitem__(self, key, value)
+        self._append(key)
+
+
+    def iteritems(self):
+        node = self.first
+        while node is not None:
+            yield node.key, self[node.key]
+            node = node.next
+
+
+    def pop(self, key):
+        self._remove(key)
+        return dict.pop(self, key)
+
+
+    ######################################################################
+    # Specific public API
     def touch(self, key):
         # (1) Get the node from the key-to-node map
         node = self.key2node[key]
@@ -124,16 +150,6 @@ class Queue(object):
         self.last.next = node
         self.last = node
 
-
-    def __len__(self):
-        return self.size
-
-
-    def __iter__(self):
-        node = self.first
-        while node is not None:
-            yield node.key
-            node = node.next
 
 
 ###########################################################################
@@ -206,11 +222,9 @@ class RODatabase(BaseDatabase):
 
     def __init__(self, size=5000):
         # A mapping from URI to handler
-        self.cache = {}
+        self.cache = LRUCache()
         # The maximum desired size for the cache
         self.size = size
-        # The list of URIs sorted by access time to the associated handler
-        self.queue = Queue()
 
 
     #######################################################################
@@ -220,7 +234,6 @@ class RODatabase(BaseDatabase):
         the cache, and invalidate it (and free memory at the same time).
         """
         handler = self.cache.pop(uri)
-        self.queue.remove(uri)
         # Invalidate the handler
         handler.__dict__.clear()
 
@@ -299,12 +312,6 @@ class RODatabase(BaseDatabase):
         self._discard_handler(uri)
 
 
-    def touch_handler(self, uri):
-        """Put the handler at the top of the queue.
-        """
-        self.queue.touch(uri)
-
-
     def push_handler(self, uri, handler):
         """Adds the given resource to the cache.
         """
@@ -315,7 +322,6 @@ class RODatabase(BaseDatabase):
             return
         # Store in the cache
         self.cache[uri] = handler
-        self.queue.append(uri)
 
 
     def make_room(self):
@@ -326,15 +332,12 @@ class RODatabase(BaseDatabase):
         then there will be an error.
         """
         # Find out how many handlers should be removed
-        queue = self.queue
-        n = len(queue) - self.size
+        n = len(self.cache) - self.size
         if n <= 0:
             return
 
         # Discard as many handlers as needed
-        cache = self.cache
-        for uri in queue:
-            handler = cache[uri]
+        for uri, handler in self.cache.iteritems():
             # Skip externally referenced handlers (refcount should be 3:
             # one for the cache, one for the local variable and one for
             # the argument passed to getrefcount).
@@ -394,7 +397,7 @@ class RODatabase(BaseDatabase):
                 error = "expected '%s' class, '%s' found"
                 raise LookupError, error % (cls, handler.__class__)
             # Cache hit
-            self.touch_handler(uri)
+            self.cache.touch(uri)
             return handler
 
         # Check the resource exists
@@ -611,7 +614,6 @@ class RWDatabase(RODatabase):
                 handler.load_state()
             # File
             handler = self.cache.pop(uri)
-            self.queue.remove(uri)
             self.push_handler(target, handler)
             handler.timestamp = None
             handler.dirty = datetime.now()

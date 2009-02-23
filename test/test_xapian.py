@@ -34,9 +34,9 @@ from xapian import Document as XapianDocument
 
 
 
-def split(field_cls, value):
+def split(field_cls, value, language='en'):
     xdoc = XapianDocument()
-    _index(xdoc, field_cls, value, '')
+    _index(xdoc, field_cls, value, '', language)
     words = []
     for term_list_item in xdoc:
         if issubclass(field_cls, Unicode):
@@ -86,13 +86,13 @@ class FieldsTestCase(TestCase):
             u'differents', u'privileges', u'dont', u'quelques', u'uns',
             u'jouissent', u'au', u'préjudice', u'des', u'autres']
 
-        words = split(Unicode, {'fr': value})
+        words = split(Unicode, value, 'fr')
         self.assertEqual(words, expected)
 
 
     def test_text_russian(self):
         text = u'Это наш дом'
-        words = split(Unicode, {'ru': text})
+        words = split(Unicode, text, 'ru')
         self.assertEqual(words, [u'это', u'наш',  u'дом'])
 
 
@@ -101,19 +101,19 @@ class FieldsTestCase(TestCase):
         expected = [u'東京', u'京都', u'都ル', u'ルパ', u'パン',
                     u'ン上', u'上映', u'映時', u'時間']
 
-        words = split(Unicode, {'ja': text})
+        words = split(Unicode, text, 'ja')
         self.assertEqual(words, expected)
 
         text = u'東京'
         expected = [u'東京']
 
-        words = split(Unicode, {'ja': text})
+        words = split(Unicode, text, 'ja')
         self.assertEqual(words, expected)
 
         text = u'東京      '
         expected = [u'東京']
 
-        words = split(Unicode, {'ja': text})
+        words = split(Unicode, text, 'ja')
         self.assertEqual(words, expected)
 
         text = u'会議室を出る時、エアコンを消しましたか。'
@@ -122,7 +122,7 @@ class FieldsTestCase(TestCase):
                     u'ンを', u'を消', u'消し', u'しま', u'まし',
                     u'した', u'たか']
 
-        words = split(Unicode, {'ja': text})
+        words = split(Unicode, text, 'ja')
         self.assertEqual(words, expected)
 
         text = (u'처음 계획에 의하면, 웸블리 스타디움은 '
@@ -130,7 +130,7 @@ class FieldsTestCase(TestCase):
         expected = [u'처음', u'계획에', u'의하면', u'웸블리', u'스타디움은',
                     u'2000년', u'크리스마스']
 
-        words = split(Unicode, {'ko': text})
+        words = split(Unicode, text, 'ko')
         self.assertEqual(words, expected)
 
         # FIXME regression
@@ -140,7 +140,7 @@ class FieldsTestCase(TestCase):
         #expected = [u'法国', u'国空', u'空中', u'中客', u'客车', u'车总',
         #            u'总部', u'a380', u'a330及a340']
 
-        #words = split(Unicode, {'ja': text})
+        #words = split(Unicode, text, 'ja')
         #self.assertEqual(words, expected)
 
 
@@ -157,7 +157,7 @@ class FieldsTestCase(TestCase):
     #                u'becomes', u'キャ', u'ャン', u'ント', u'バイ', u'ミー',
     #                u'ラヴ', u'kyanto', u'bai', u'mī', u'ravu']
 
-    #    words = split(Unicode, {'en': text})
+    #    words = split(Unicode, text, 'en')
     #    self.assertEqual(words, expected)
 
     #    # japanese
@@ -167,7 +167,7 @@ class FieldsTestCase(TestCase):
     #                u'becomes', u'キャ', u'ャン', u'ント', u'バイ', u'ミー',
     #                u'ラヴ', u'kyanto', u'bai', u'mī', u'ravu']
 
-    #    words = split(Unicode, {'ja': text})
+    #    words = split(Unicode, text, 'ja')
     #    self.assertEqual(words, expected)
 
     #    # english
@@ -179,7 +179,7 @@ class FieldsTestCase(TestCase):
     #                u'and', u'西', u'west', u'that', u'関西地方',
     #                u'kansai', u'chihō', u'means', u'kansai', u'region']
 
-    #    words = split(Unicode, {'en': text})
+    #    words = split(Unicode, text, 'en')
     #    self.assertEqual(words, expected)
 
     #    # japanese
@@ -192,25 +192,25 @@ class FieldsTestCase(TestCase):
     #                u'西地', u'地方', u'kansai', u'chihō', u'means',
     #                u'kansai', u'region']
 
-    #    words = split(Unicode, {'ja': text})
+    #    words = split(Unicode, text, 'ja')
     #    self.assertEqual(words, expected)
 
     #    text = u'East equals 東'
     #    expected = [u'east', u'equals', u'東']
 
-    #    words = split(Unicode, {'ja': text})
+    #    words = split(Unicode, text, 'ja')
     #    self.assertEqual(words, expected)
 
     #    text = u'East equals 東.'
     #    expected = [u'east', u'equals', u'東']
 
-    #    words = split(Unicode, {'ja': text})
+    #    words = split(Unicode, text, 'ja')
     #    self.assertEqual(words, expected)
 
     #    text = u'East equals 東。'
     #    expected = [u'east', u'equals', u'東']
 
-    #    words = split(Unicode, {'ja': text})
+    #    words = split(Unicode, text, 'ja')
     #    self.assertEqual(words, expected)
 
     #    # hangul
@@ -218,7 +218,7 @@ class FieldsTestCase(TestCase):
     #    expected = [u'웸블리', u'경기장', u'영어', u'wembley', u'stadium',
     #                u'은', u'영국', u'런던', u'웸블리에']
 
-    #    words = split(Unicode, {'ko': text})
+    #    words = split(Unicode, text, 'ko')
     #    self.assertEqual(words, expected)
 
     #    text = (u'예를 들면 Paris-Roubaix, Tour of Flanders, '
@@ -227,7 +227,7 @@ class FieldsTestCase(TestCase):
     #                u'of', u'flanders', u'liege', u'bastogne',
     #                u'liege', u'등이다']
 
-    #    words = split(Unicode, {'ko': text})
+    #    words = split(Unicode, text, 'ko')
     #    self.assertEqual(words, expected)
 
     #    # chinese
@@ -237,7 +237,7 @@ class FieldsTestCase(TestCase):
     #                u'東吳', u'吳大', u'大學', u'學g', u'gi', u'is', u's技',
     #                u'技術', u'術支', u'支援', u'援中', u'中心']
 
-    #    words = split(Unicode, {'zh': text})
+    #    words = split(Unicode, text, 'zh')
     #    self.assertEqual(words, expected)
 
 
@@ -261,7 +261,7 @@ class FieldsTestCase(TestCase):
     #                u'구역', u'은', u'1', u'20구로', u'나뉘어',
     #                u'있다']
 
-    #    words = split(Unicode, {'ko': text})
+    #    words = split(Unicode, text, 'ko')
     #    self.assertEqual(words, expected)
 
 
@@ -355,6 +355,37 @@ class UnicodeTestCase(TestCase):
         q = StartQuery('data', u'aabà')
         r = [ doc.id for doc in cat.search(q).get_documents() ]
         self.assertEqual(r, [2, 3])
+
+
+
+class MultilingualTestCase(TestCase):
+
+    def test_everything(self):
+
+        # In memory catalog
+        cat = make_catalog(None, Document_2.fields)
+
+        # Some data
+        cat.index_document(Document_2(1, {'en': u'Hello world',
+                                          'fr': u'Bonjour le monde',
+                                          'de': u'Hallo Welt',
+                                          'es': u'Hola mundo'}))
+        cat.index_document(Document_2(2, {'fr': u'Albert et le monde',
+                                          'en': u'Albert and the world'}))
+        cat.index_document(Document_2(3, u'world'))
+
+        # A simple search
+        self.assertEqual(len(cat.search(data=u'world')), 3)
+        self.assertEqual(len(cat.search(data=u'monde')), 2)
+        self.assertEqual(len(cat.search(data_de=u'welt')), 1)
+        self.assertEqual(len(cat.search(data_en=u'welt')), 0)
+
+
+        # Sort & Value
+        result = cat.search(data=u'monde')
+        doc1, doc2 = result.get_documents(sort_by='data_fr')
+        self.assertEqual(doc1.data_en, u'Albert and the world')
+        self.assertEqual(doc2.data_es, u'Hola mundo')
 
 
 

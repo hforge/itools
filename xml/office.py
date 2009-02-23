@@ -18,7 +18,7 @@
 
 # Import from the Standard Library
 from os.path import join as join_path
-from subprocess import call
+from subprocess import Popen, PIPE
 from tempfile import mkdtemp
 
 # Import other modules
@@ -36,53 +36,49 @@ class ConversionError(Exception):
 
 
 def convert(handler, cmdline, use_outfile=False):
-    path = mkdtemp('itools')
-    # Serialize the handler to a temporary file in the file system
-    infile_path = join_path(path, 'infile')
-    # TODO use "with" ASAP
-    infile = open(infile_path, 'wb')
-    infile.write(handler.to_str())
-    infile.close()
-    # stdout
-    stdout_path = join_path(path, 'stdout')
-    stdout = open(stdout_path, 'wb')
-    # stderr
-    stderr_path = join_path(path, 'stderr')
-    stderr = open(stderr_path, 'wb')
-    # output
-    if use_outfile is True:
-        cmdline = cmdline % ('infile', 'outfile')
+    # We may need a temporary folder (for the input and/or the output)
+    uri = handler.uri
+    if (uri.scheme != 'file') or (handler.dirty is not None) or (use_outfile):
+        path = mkdtemp('itools')
     else:
-        cmdline = cmdline % 'infile'
+        path = None
 
-    # Call convert method
-    # XXX do not use pipes, not enough buffer to hold stdout
-    call(cmdline.split(), stdout=stdout, stderr=stderr, cwd=path)
-    stdout.close()
-    stdout = open(stdout_path)
-    standard_output = stdout.read()
-    stdout.close()
-    stderr.close()
-    stderr = open(stderr_path)
-    error_output = stderr.read()
-    stderr.close()
+    # We may need to write the handler to a temporary file
+    if uri.scheme == 'file' and handler.dirty is None:
+        infile_path = str(uri.path)
+    else:
+        infile_path = join_path(path, 'infile')
+        with open(infile_path, 'wb') as infile:
+            infile.write(handler.to_str())
 
+    # We may need to write the output to a file
     if use_outfile is True:
         outfile_path = join_path(path, 'outfile')
+        cmdline = cmdline % (infile_path, outfile_path)
+    else:
+        cmdline = cmdline % infile_path
+
+    # Call, and read stdout and stderr
+    popen = Popen(cmdline.split(), stdout=PIPE, stderr=PIPE)
+    stdout, stderr = popen.communicate()
+
+    if use_outfile is True:
         try:
             outfile = open(outfile_path)
         except IOError, e:
-            message = error_output or standard_output or str(e)
-            raise ConversionError, message
+            raise ConversionError, stderr or stdout or str(e)
         else:
-            output = outfile.read()
+            stdout = outfile.read()
             outfile.close()
 
-    vfs.remove(path)
+    # Clean temporary folder if needed
+    if path is not None:
+        vfs.remove(path)
 
-    if use_outfile is True:
-        return output, error_output
-    return standard_output, error_output
+    # Ok
+    if stderr:
+        return ''
+    return stdout
 
 
 
@@ -91,9 +87,7 @@ class ExternalIndexer(File):
 
 
     def to_text(self, use_outfile=False):
-        stdout, stderr = convert(self, self.source_converter, use_outfile)
-        if stderr != "":
-            return u''
+        stdout = convert(self, self.source_converter, use_outfile)
         return unicode(stdout, self.source_encoding, 'replace')
 
 
@@ -143,9 +137,7 @@ class MSPowerPoint(ExternalIndexer):
 
 
     def to_text(self):
-        stdout, stderr = convert(self, self.source_converter)
-        if stderr != "":
-            return u''
+        stdout = convert(self, self.source_converter)
         return xml_to_text(stdout)
 
 

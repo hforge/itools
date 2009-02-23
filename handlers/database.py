@@ -44,24 +44,29 @@ logger = getLogger('data')
 ###########################################################################
 
 class DNode(object):
-    __slots__ = ['prev', 'next', 'data']
+    __slots__ = ['prev', 'next', 'key']
 
-    def __init__(self, data):
-        self.data = data
+    def __init__(self, key):
+        self.key = key
 
 
-class DList(object):
-    __slots__ = ['first', 'last', 'size']
+class Queue(object):
+    __slots__ = ['first', 'last', 'size', 'key2node']
 
     def __init__(self):
         self.first = None
         self.last = None
         self.size = 0
+        self.key2node = {}
 
 
-    def append(self, data):
-        # The node
-        node = DNode(data)
+    def append(self, key):
+        node = DNode(key)
+
+        # (1) Insert into the key-to-node map
+        self.key2node[key] = node
+
+        # (2) Append to the doubly-linked list
         node.prev = self.last
         node.next = None
 
@@ -76,10 +81,13 @@ class DList(object):
 
         # Ok
         self.size += 1
-        return node
 
 
-    def remove(self, node):
+    def remove(self, key):
+        # (1) Pop the node from the key-to-node map
+        node = self.key2node.pop(key)
+
+        # (2) Remove from the doubly-linked list
         if node.prev is None:
             self.first = node.next
         else:
@@ -94,7 +102,11 @@ class DList(object):
         self.size -= 1
 
 
-    def touch(self, node):
+    def touch(self, key):
+        # (1) Get the node from the key-to-node map
+        node = self.key2node[key]
+
+        # (2) Touch in the doubly-linked list
         # Already the last one
         if node.next is None:
             return
@@ -120,7 +132,7 @@ class DList(object):
     def __iter__(self):
         node = self.first
         while node is not None:
-            yield node.data
+            yield node.key
             node = node.next
 
 
@@ -198,8 +210,7 @@ class RODatabase(BaseDatabase):
         # The maximum desired size for the cache
         self.size = size
         # The list of URIs sorted by access time to the associated handler
-        self.queue = DList()
-        self.queue_idx = {}
+        self.queue = Queue()
 
 
     #######################################################################
@@ -209,8 +220,7 @@ class RODatabase(BaseDatabase):
         the cache, and invalidate it (and free memory at the same time).
         """
         handler = self.cache.pop(uri)
-        node = self.queue_idx.pop(uri)
-        self.queue.remove(node)
+        self.queue.remove(uri)
         # Invalidate the handler
         handler.__dict__.clear()
 
@@ -292,8 +302,7 @@ class RODatabase(BaseDatabase):
     def touch_handler(self, uri):
         """Put the handler at the top of the queue.
         """
-        node = self.queue_idx[uri]
-        self.queue.touch(node)
+        self.queue.touch(uri)
 
 
     def push_handler(self, uri, handler):
@@ -306,8 +315,7 @@ class RODatabase(BaseDatabase):
             return
         # Store in the cache
         self.cache[uri] = handler
-        node = self.queue.append(uri)
-        self.queue_idx[uri] = node
+        self.queue.append(uri)
 
 
     def make_room(self):
@@ -603,8 +611,7 @@ class RWDatabase(RODatabase):
                 handler.load_state()
             # File
             handler = self.cache.pop(uri)
-            node = self.queue_idx.pop(uri)
-            self.queue.remove(node)
+            self.queue.remove(uri)
             self.push_handler(target, handler)
             handler.timestamp = None
             handler.dirty = datetime.now()

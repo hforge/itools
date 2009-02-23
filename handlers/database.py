@@ -94,6 +94,25 @@ class DList(object):
         self.size -= 1
 
 
+    def touch(self, node):
+        # Already the last one
+        if node.next is None:
+            return
+
+        # Unlink
+        if node.prev is None:
+            self.first = node.next
+        else:
+            node.prev.next = node.next
+        node.next.prev = node.prev
+
+        # Link
+        node.prev = self.last
+        node.next = None
+        self.last.next = node
+        self.last = node
+
+
     def __len__(self):
         return self.size
 
@@ -273,13 +292,8 @@ class RODatabase(BaseDatabase):
     def touch_handler(self, uri):
         """Put the handler at the top of the queue.
         """
-        queue = self.queue
-        # Remove
         node = self.queue_idx[uri]
-        queue.remove(node)
-        # Add
-        node = queue.append(uri)
-        self.queue_idx[uri] = node
+        self.queue.touch(node)
 
 
     def push_handler(self, uri, handler):

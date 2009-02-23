@@ -35,7 +35,6 @@ pygobject    2.16.1   itools.vfs      http://www.pygtk.org/
 reportlab       2.3   itools.pdf      http://www.reportlab.org/
 xapian        1.0.8   itools.xapian   http://www.xapian.org/
 pywin32         212   (Windows)       http://sourceforge.net/projects/pywin32/
-xlrd          0.6.1   itools.xml      http://www.lexicon.net/sjmachin/xlrd.htm
 
 Note: you will find packages like pkg-config and glib compiled for Windows
 on http://ftp.gnome.org/pub/gnome/binaries/win32/ (don't forget to check
@@ -57,6 +56,17 @@ So now to install itools you just need to type this:
 
   $ python setup.py install
 
+Indexation
+============
+
+For indexing office documents like PDF, DOC and XLS, you can install libraries
+and Python packages. They are not mandatory for installing itools.
+
+Software    Version   Format          Home
+---------   -------   -------------   ----------------------------------------
+xlrd          0.6.1   XLS             http://www.lexicon.net/sjmachin/xlrd.htm
+poppler      0.10.4   PDF             http://poppler.freedesktop.org/
+wv2           0.2.3   DOC             https://sourceforge.net/projects/wvware
 
 Unit Tests
 =============

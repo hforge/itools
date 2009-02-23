@@ -48,8 +48,9 @@ instead.
 
 Python 2.6 is required, and support for Python 2.5 has been drop.  Other
 new dependencies include pygobject 2.16 [4] or later (used by itools.vfs
-and itools.web), and 'xlrd' [5] (used to index Excel files).  See the
-README file for the complete table of required and recommended packages.
+and itools.web), 'xlrd' [5] (used to index Excel files), 'poppler' [6] (PDF
+files) and 'wv2' [7] (Word files).  See the README.txt file for the complete
+table of required and recommended packages.
 
 See the UPGRADE-0.60.0 file for further details on what has changed.
 
@@ -58,7 +59,9 @@ See the UPGRADE-0.60.0 file for further details on what has changed.
 [2] XXX
 [3] XXX (chapter to write in the documentation)
 [4] XXX
-[5] XXX
+[5] http://www.lexicon.net/sjmachin/xlrd.htm
+[6] http://poppler.freedesktop.org/
+[7] https://sourceforge.net/projects/wvware
 
 
 Resources

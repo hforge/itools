@@ -48,15 +48,27 @@ if __name__ == '__main__':
                             **flags)
         ext_modules.append(cparser)
 
-    # PDF indexer
+    # PDF indexation
     try:
         flags = get_compile_flags('pkg-config --cflags --libs poppler')
     except EnvironmentError:
         print >> stderr, 'Warning: poppler headers are not found.'
-        print >> stderr, 'PDF indexer will not be available'
+        print >> stderr, 'PDF indexation will not be available'
     else:
         pdfindexer = Extension('itools.pdf.pdftotext',
                                sources=['pdf/pdftotext.cc'],
+                               **flags)
+        ext_modules.append(pdfindexer)
+
+    # DOC indexation
+    try:
+        flags = get_compile_flags('wv2-config --cflags --libs')
+    except EnvironmentError:
+        print >> stderr, 'Warning: wv2 library is not found.'
+        print >> stderr, 'DOC indexation will not be available'
+    else:
+        pdfindexer = Extension('itools.xml.doctotext',
+                               sources=['xml/doctotext.cc'],
                                **flags)
         ext_modules.append(pdfindexer)
 

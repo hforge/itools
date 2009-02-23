@@ -12,6 +12,9 @@ The minimum required version of Python has been raised to 2.6
 
 For compiling C modules, you need pkg-config (tested with version 0.23).
 
+For indexing office documents, you need libraries and Python packages. See
+README.txt for details.
+
 
 Imports
 =======

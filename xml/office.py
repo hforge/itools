@@ -22,12 +22,19 @@ from subprocess import Popen, PIPE
 from tempfile import mkdtemp
 
 # Import other modules
-from xlrd import open_workbook
+try:
+    from xlrd import open_workbook
+except ImportError:
+    open_workbook = None
 
 # Import from itools
 from itools import vfs
 from itools.handlers import File, register_handler_class
 from indexer import xml_to_text
+try:
+    from doctotext import doc_to_text
+except ImportError:
+    doc_to_text = None
 
 
 class ConversionError(Exception):
@@ -82,24 +89,20 @@ def convert(handler, cmdline, use_outfile=False):
 
 
 
-class ExternalIndexer(File):
-    source_encoding = 'UTF-8'
+# TODO move handlers not needing "ExternalIndexer" to the "handlers" package.
+# It has nothing to do with XML.
 
-
-    def to_text(self, use_outfile=False):
-        stdout = convert(self, self.source_converter, use_outfile)
-        return unicode(stdout, self.source_encoding, 'replace')
-
-
-
-class MSWord(ExternalIndexer):
+class MSWord(File):
     class_mimetypes = ['application/msword']
     class_extension = 'doc'
     source_converter = 'wvText %s %s'
 
 
     def to_text(self):
-        return ExternalIndexer.to_text(self, use_outfile=True)
+        if doc_to_text is None:
+            return u""
+        # TODO detect RTF error and use RTF extractor
+        return doc_to_text(self.to_str())
 
 
 
@@ -109,6 +112,9 @@ class MSExcel(File):
 
 
     def to_text(self):
+        if open_workbook is None:
+            return u""
+
         data = self.to_str()
 
         # Load the XLRD file
@@ -127,6 +133,18 @@ class MSExcel(File):
                             continue
                     text.append(value)
         return u' '.join(text)
+
+
+
+class ExternalIndexer(File):
+    source_encoding = 'UTF-8'
+
+
+    def to_text(self, use_outfile=False):
+        stdout, stderr = convert(self, self.source_converter, use_outfile)
+        if stderr != "":
+            return u''
+        return unicode(stdout, self.source_encoding, 'replace')
 
 
 

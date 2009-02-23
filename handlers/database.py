@@ -38,6 +38,74 @@ logger = getLogger('data')
 
 
 ###########################################################################
+# Doubly-linked list, used to build a LRU (Least Recently Used) Cache
+# http://en.wikipedia.org/wiki/Cache_algorithms
+# TODO Implement in C with the Glib
+###########################################################################
+
+class DNode(object):
+    __slots__ = ['prev', 'next', 'data']
+
+    def __init__(self, data):
+        self.data = data
+
+
+class DList(object):
+    __slots__ = ['first', 'last', 'size']
+
+    def __init__(self):
+        self.first = None
+        self.last = None
+        self.size = 0
+
+
+    def append(self, data):
+        # The node
+        node = DNode(data)
+        node.prev = self.last
+        node.next = None
+
+        if self.first is None:
+            # size = 0
+            self.first = node
+        else:
+            # size > 0
+            self.last.next = node
+
+        self.last = node
+
+        # Ok
+        self.size += 1
+        return node
+
+
+    def remove(self, node):
+        if node.prev is None:
+            self.first = node.next
+        else:
+            node.prev.next = node.next
+
+        if node.next is None:
+            self.last = node.prev
+        else:
+            node.next.prev = node.prev
+
+        # Ok
+        self.size -= 1
+
+
+    def __len__(self):
+        return self.size
+
+
+    def __iter__(self):
+        node = self.first
+        while node is not None:
+            yield node.data
+            node = node.next
+
+
+###########################################################################
 # Exceptions
 ###########################################################################
 class ReadOnlyError(RuntimeError):
@@ -110,8 +178,9 @@ class RODatabase(BaseDatabase):
         self.cache = {}
         # The maximum desired size for the cache
         self.size = size
-        # The list of URIs sortet by access time to the associated handler
-        self.queue = []
+        # The list of URIs sorted by access time to the associated handler
+        self.queue = DList()
+        self.queue_idx = {}
 
 
     #######################################################################
@@ -121,7 +190,8 @@ class RODatabase(BaseDatabase):
         the cache, and invalidate it (and free memory at the same time).
         """
         handler = self.cache.pop(uri)
-        self.queue.remove(uri)
+        node = self.queue_idx.pop(uri)
+        self.queue.remove(node)
         # Invalidate the handler
         handler.__dict__.clear()
 
@@ -203,8 +273,13 @@ class RODatabase(BaseDatabase):
     def touch_handler(self, uri):
         """Put the handler at the top of the queue.
         """
-        self.queue.remove(uri)
-        self.queue.append(uri)
+        queue = self.queue
+        # Remove
+        node = self.queue_idx[uri]
+        queue.remove(node)
+        # Add
+        node = queue.append(uri)
+        self.queue_idx[uri] = node
 
 
     def push_handler(self, uri, handler):
@@ -217,7 +292,8 @@ class RODatabase(BaseDatabase):
             return
         # Store in the cache
         self.cache[uri] = handler
-        self.queue.append(uri)
+        node = self.queue.append(uri)
+        self.queue_idx[uri] = node
 
 
     def make_room(self):
@@ -513,7 +589,8 @@ class RWDatabase(RODatabase):
                 handler.load_state()
             # File
             handler = self.cache.pop(uri)
-            self.queue.remove(uri)
+            node = self.queue_idx.pop(uri)
+            self.queue.remove(node)
             self.push_handler(target, handler)
             handler.timestamp = None
             handler.dirty = datetime.now()

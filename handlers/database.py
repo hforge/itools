@@ -180,6 +180,7 @@ class RODatabase(BaseDatabase):
         """Removes the handler identified by the given uri from the cache.
         If the handler has been modified, an exception is raised.
         """
+        uri = str(uri)
         # Check the handler has not been modified
         handler = self.cache[uri]
         if handler.dirty is not None:
@@ -197,13 +198,14 @@ class RODatabase(BaseDatabase):
         if isinstance(handler, Folder):
             return
         # Store in the cache
-        self.cache[uri] = handler
+        self.cache[str(uri)] = handler
 
 
     #######################################################################
     # Database API
     def has_handler(self, reference):
         uri = cwd.get_reference(reference)
+        uri = str(uri)
 
         # Syncrhonize
         handler = self._sync_filesystem(uri)
@@ -233,24 +235,25 @@ class RODatabase(BaseDatabase):
 
     def get_handler(self, reference, cls=None):
         uri = cwd.get_reference(reference)
+        uri_str = str(uri)
 
         # Syncrhonize
-        handler = self._sync_filesystem(uri)
+        handler = self._sync_filesystem(uri_str)
         if handler is not None:
             # Check the class matches
             if cls is not None and not isinstance(handler, cls):
                 error = "expected '%s' class, '%s' found"
                 raise LookupError, error % (cls, handler.__class__)
             # Cache hit
-            self.cache.touch(uri)
+            self.cache.touch(uri_str)
             return handler
 
         # Check the resource exists
-        if not vfs.exists(uri):
-            raise LookupError, 'the resource "%s" does not exist' % uri
+        if not vfs.exists(uri_str):
+            raise LookupError, 'the resource "%s" does not exist' % uri_str
 
         # Folders are not cached
-        if vfs.is_folder(uri):
+        if vfs.is_folder(uri_str):
             if cls is None:
                 cls = Folder
             folder = cls(uri)
@@ -356,7 +359,7 @@ class RWDatabase(RODatabase):
 
         # Check state
         if reference in self.added:
-            handler = self.cache[reference]
+            handler = self.cache[str(reference)]
             # cls is good?
             if cls is not None and not isinstance(handler, cls):
                 raise LookupError, ('conflict with a handler of type "%s"' %
@@ -454,7 +457,7 @@ class RWDatabase(RODatabase):
             if handler.timestamp is None and handler.dirty is None:
                 handler.load_state()
             # File
-            handler = self.cache.pop(uri)
+            handler = self.cache.pop(str(source))
             self.push_handler(target, handler)
             handler.timestamp = None
             handler.dirty = datetime.now()
@@ -493,10 +496,10 @@ class RWDatabase(RODatabase):
         cache = self.cache
         # Added handlers
         for uri in self.added:
-            self._discard_handler(uri)
+            self._discard_handler(str(uri))
         # Changed handlers
         for uri in self.changed:
-            cache[uri].abort_changes()
+            cache[str(uri)].abort_changes()
         # Reset state
         self.changed.clear()
         self.added.clear()
@@ -509,7 +512,7 @@ class RWDatabase(RODatabase):
             # Save changed handlers
             for uri in self.changed:
                 # Save the handler's state
-                handler = cache[uri]
+                handler = cache[str(uri)]
                 handler.save_state()
                 # Update timestamp
                 handler.timestamp = vfs.get_mtime(uri)
@@ -519,7 +522,7 @@ class RWDatabase(RODatabase):
                 self.safe_remove(uri)
             # Add new handlers
             for uri in self.added:
-                handler = cache[uri]
+                handler = cache[str(uri)]
                 handler.save_state_to(uri)
                 # Update timestamp
                 handler.timestamp = vfs.get_mtime(uri)
@@ -671,14 +674,14 @@ class SolidDatabase(RWDatabase):
             # Save changed handlers
             for uri in changed:
                 # Save the handler's state
-                handler = cache[uri]
+                handler = cache[str(uri)]
                 handler.save_state()
             # Remove handlers
             for uri in removed:
                 self.safe_remove(uri)
             # Add new handlers
             for uri in added:
-                handler = cache[uri]
+                handler = cache[str(uri)]
                 handler.save_state_to(uri)
         except:
             # Rollback the changes in memory
@@ -706,11 +709,11 @@ class SolidDatabase(RWDatabase):
 
         # 3. Update timestamps
         for uri in changed:
-            handler = cache[uri]
+            handler = cache[str(uri)]
             handler.timestamp = vfs.get_mtime(uri)
             handler.dirty = None
         for uri in added:
-            handler = cache[uri]
+            handler = cache[str(uri)]
             handler.timestamp = vfs.get_mtime(uri)
             handler.dirty = None
 

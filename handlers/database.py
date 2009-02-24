@@ -70,12 +70,6 @@ class BaseDatabase(object):
         raise NotImplementedError
 
 
-    def _cleanup(self):
-        """For maintenance operations, this method is automatically called
-        after a transaction is commited or aborted.
-        """
-
-
     #######################################################################
     # Public API
     def save_changes(self):
@@ -89,12 +83,10 @@ class BaseDatabase(object):
 
         # Commit for real
         self._save_changes(data)
-        self._cleanup()
 
 
     def abort_changes(self):
         self._abort_changes()
-        self._cleanup()
 
 
 
@@ -108,9 +100,7 @@ class RODatabase(BaseDatabase):
 
     def __init__(self, size=5000):
         # A mapping from URI to handler
-        self.cache = LRUCache()
-        # The maximum desired size for the cache
-        self.size = size
+        self.cache = LRUCache(size)
 
 
     #######################################################################
@@ -208,37 +198,6 @@ class RODatabase(BaseDatabase):
             return
         # Store in the cache
         self.cache[uri] = handler
-
-
-    def make_room(self):
-        """Remove handlers from the cache until it fits the defined size.
-
-        Use with caution.  If the handlers we are about to discard are still
-        used outside the database, and one of them (or more) are modified,
-        then there will be an error.
-        """
-        # Find out how many handlers should be removed
-        n = len(self.cache) - self.size
-        if n <= 0:
-            return
-
-        # Discard as many handlers as needed
-        for uri, handler in self.cache.iteritems():
-            # Skip externally referenced handlers (refcount should be 3:
-            # one for the cache, one for the local variable and one for
-            # the argument passed to getrefcount).
-            refcount = getrefcount(handler)
-            if refcount > 3:
-                continue
-            # Skip modified handlers
-            if handler.dirty is not None:
-                continue
-            # Discard this handler
-            self._discard_handler(uri)
-            # Check whether we are done
-            n -= 1
-            if n == 0:
-                return
 
 
     #######################################################################
@@ -350,10 +309,6 @@ class RODatabase(BaseDatabase):
             raise ReadOnlyError, 'cannot open file for writing'
 
         return vfs.open(reference, READ)
-
-
-    def _cleanup(self):
-        self.make_room()
 
 
 ###########################################################################

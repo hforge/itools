@@ -32,20 +32,24 @@ class Archive(Folder):
 
     def __init__(self, g_file):
         self._folder = None
+        self._loop = MainLoop()
 
         # Make the archive uri
         uri = g_file.get_uri()
         uri = 'archive://' + quote(uri, '')
 
-        # Mount the archive
+        # Mount the archive if needed
         g_file = File(uri)
-        mount_operation = MountOperation()
-        mount_operation.set_anonymous(True)
-        g_file.mount_enclosing_volume(mount_operation, self._mount_end)
+        # Already mounted ?
+        if g_file.query_exists():
+            self._folder = g_file
+        else:
+            mount_operation = MountOperation()
+            mount_operation.set_anonymous(True)
+            g_file.mount_enclosing_volume(mount_operation, self._mount_end)
 
-        # Wait
-        self._loop = MainLoop()
-        self._loop.run()
+            # Wait
+            self._loop.run()
 
 
 #    def __del__(self):

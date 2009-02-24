@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
+from cache import LRUCache
 from freeze import freeze, frozendict, frozenlist
 from utils import add_type, guess_all_extensions, guess_extension, guess_type
 from utils import has_encoding, has_extension
@@ -29,9 +30,11 @@ else:
 
 
 __all__ = [
+    # Datatypes & related functions
     'freeze',
     'frozendict',
     'frozenlist',
+    'LRUCache',
     # Mimetypes
     'add_type',
     'guess_all_extensions',

@@ -20,19 +20,6 @@ http://en.wikipedia.org/wiki/Cache_algorithms
 """
 
 
-class CacheAware(object):
-    """Base class for cache values, defines a protocol for removal.
-    """
-
-    def _can_remove_from_cache(self):
-        raise NotImplementedError
-
-
-    def _removed_from_cache(self):
-        raise NotImplementedError
-
-
-
 class DNode(object):
     """This class makes the nodes of a doubly-linked list.
     """
@@ -47,10 +34,7 @@ class DNode(object):
 
 class LRUCache(dict):
 
-    __slots__ = ['first', 'last', 'key2node', 'size']
-
-
-    def __init__(self, size):
+    def __init__(self, size, automatic=True):
         dict.__init__(self)
         # The doubly-linked list
         self.first = None
@@ -59,6 +43,8 @@ class LRUCache(dict):
         self.key2node = {}
         # The cache size
         self.size = size
+        # Whether to free memory automatically or not (boolean)
+        self.automatic = automatic
 
 
     def _append(self, key):
@@ -77,7 +63,8 @@ class LRUCache(dict):
         self.last = node
 
         # Free memory if needed
-        self._free()
+        if self.automatic is True:
+            self._free()
 
 
     def _free(self):
@@ -89,12 +76,7 @@ class LRUCache(dict):
             # Find next node
             node = node.next
             # Remove
-            if isinstance(value, CacheAware):
-                if value._can_remove_from_cache():
-                    self._remove(key)
-                    value._removed_from_cache()
-            else:
-                self._remove(key)
+            self._remove(key)
 
 
     def _remove(self, key):

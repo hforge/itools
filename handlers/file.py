@@ -19,10 +19,8 @@
 from copy import deepcopy
 from cStringIO import StringIO
 from datetime import datetime
-from sys import getrefcount
 
 # Import from itools
-from itools.core import CacheAware
 from itools.uri import get_absolute_reference
 from itools.vfs import vfs
 from registry import register_handler_class
@@ -30,7 +28,7 @@ from base import Handler
 
 
 
-class File(CacheAware, Handler):
+class File(Handler):
     """This is the base handler class for any file handler. It is also used
     as the default handler class for any file resource that has not a more
     specific handler.
@@ -236,27 +234,6 @@ class File(CacheAware, Handler):
         names = [ x for x in self.__dict__ if x not in ('database', 'uri') ]
         for name in names:
             delattr(self, name)
-
-
-    #########################################################################
-    # CacheAware
-    #########################################################################
-    def _can_remove_from_cache(self):
-        # Do not remove externally referenced handlers (refcount should be 3:
-        # one for the cache, one for the local variable and one for the
-        # argument passed to getrefcount).
-        refcount = getrefcount(self)
-        if refcount > 3:
-            return False
-        # Skip modified handlers
-        if self.dirty is not None:
-            return False
-
-        return True
-
-
-    def _removed_from_cache(self):
-        self.__dict__.clear()
 
 
     #########################################################################

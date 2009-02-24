@@ -91,7 +91,7 @@ class ODFFile(OOFile):
                 previous_tag_name = tag_name
             elif type == TEXT:
                 if previous_tag_name in meta_tags:
-                    if meta.has_key(previous_tag_name):
+                    if previous_tag_name in meta:
                         meta[previous_tag_name] = '%s\n%s' % (
                                               meta[previous_tag_name], value)
                     else:

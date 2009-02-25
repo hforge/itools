@@ -17,6 +17,7 @@
 
 #include <Python.h>
 #include <string.h>
+#include <wv2/global.h>
 #include <wv2/handlers.h>
 #include <wv2/parser.h>
 #include <wv2/parserfactory.h>
@@ -40,9 +41,12 @@ class PythonTextHandler: public TextHandler {
         ~PythonTextHandler();
         virtual void runOfText(const UString& text,
                                SharedPtr<const Word97::CHP> chp);
+#ifdef WV2_VERSION
+        // 0.3.0 is the first one to add both these header and callback
         virtual void pictureFound(const PictureFunctor& picture,
                                   SharedPtr<const Word97::PICF>,
                                   SharedPtr<const Word97::CHP>);
+#endif
         PyObject *get_text();
         PyObject *words;
 };
@@ -76,6 +80,7 @@ void PythonTextHandler::runOfText(const UString& text,
 }
 
 
+#ifdef WV2_VERSION
 void PythonTextHandler::pictureFound(const PictureFunctor& picture,
                                      SharedPtr<const Word97::PICF>,
                                      SharedPtr<const Word97::CHP>) {
@@ -83,6 +88,7 @@ void PythonTextHandler::pictureFound(const PictureFunctor& picture,
     // uncompres uncompressed images in version 0.3.0.
     // Too bad if there is text (legend?).
 }
+#endif
 
 
 PyObject *PythonTextHandler::get_text(void) {

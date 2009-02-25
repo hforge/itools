@@ -301,7 +301,7 @@ class Context(object):
 
 
     def get_toc_anchor(self, tag_name, content):
-        if not self.toc_high_level > tag_name[1]:
+        if not self.toc_high_level > int(tag_name[1]):
             ref = 'toc_' + str(self.cpt_toc_ref)
             self.cpt_toc_ref += 1
             content = '<a name="' + ref + '" />' + content

@@ -277,6 +277,7 @@ class CacheTestCase(TestCase):
         for i in range(5):
             cache[i] = str(i)
         self.assertEqual(len(cache), cache.size)
+        cache._check_integrity()
 
 
 if __name__ == '__main__':

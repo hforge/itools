@@ -47,6 +47,30 @@ class LRUCache(dict):
         self.automatic = automatic
 
 
+    def _check_integrity(self):
+        """This method is for testing purposes, it checks the internal
+        data structures are consistent.
+        """
+        keys = self.keys()
+        keys.sort()
+        # Check the key-to-node mapping
+        keys2 = self.key2node.keys()
+        keys2.sort()
+        assert keys == keys2
+        # Check the key-to-node against the doubly-linked list
+        for key, node in self.key2node.iteritems():
+            assert type(key) is type(node.key)
+            assert key == node.key
+        # Check the doubly-linked list against the cache
+        keys = set(keys)
+        node = self.first
+        while node is not None:
+            assert node.key in keys
+            keys.discard(node.key)
+            node = node.next
+        assert len(keys) == 0
+
+
     def _append(self, key):
         node = DNode(key)
 

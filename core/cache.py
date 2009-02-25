@@ -76,7 +76,7 @@ class LRUCache(dict):
             # Find next node
             node = node.next
             # Remove
-            self._remove(key)
+            del self[key]
 
 
     def _remove(self, key):
@@ -107,6 +107,11 @@ class LRUCache(dict):
     def __setitem__(self, key, value):
         dict.__setitem__(self, key, value)
         self._append(key)
+
+
+    def __delitem__(self, key):
+        self._remove(key)
+        dict.__delitem__(self, key)
 
 
     def iteritems(self):
@@ -144,6 +149,4 @@ class LRUCache(dict):
         node.next = None
         self.last.next = node
         self.last = node
-
-
 

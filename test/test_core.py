@@ -19,7 +19,9 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
+import local
 from itools.core import freeze, frozenlist, frozendict
+from itools.core import LRUCache
 
 
 ###########################################################################
@@ -261,6 +263,22 @@ class FrozendictTestCase(TestCase):
     def test_representation(self):
         self.assertEqual(repr(a_frozen_dict), "frozendict({'a': 5, 'b': 3})")
 
+
+###########################################################################
+# Cache
+###########################################################################
+
+class CacheTestCase(TestCase):
+
+    def setUp(self):
+        self.cache = LRUCache(2)
+
+
+    def test_size(self):
+        cache = self.cache
+        for i in range(5):
+            cache[i] = str(i)
+        self.assertEqual(len(cache), cache.size)
 
 
 if __name__ == '__main__':

@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from htmlentitydefs import name2codepoint
 from os.path import join as join_path
 from subprocess import Popen, PIPE
 from tempfile import mkdtemp
@@ -29,73 +30,20 @@ except ImportError:
 
 # Import from itools
 from itools import vfs
-from itools.handlers import File, register_handler_class
-from indexer import xml_to_text
+from itools.handlers import File, register_handler_class, guess_encoding
 try:
     from doctotext import doc_to_text
 except ImportError:
     doc_to_text = None
 
 
-class ConversionError(Exception):
-    pass
+# TODO Move this module to itools.handlers (it does not require itools.xml)
 
 
-
-def convert(handler, cmdline, use_outfile=False):
-    # We may need a temporary folder (for the input and/or the output)
-    uri = handler.uri
-    if (uri.scheme != 'file') or (handler.dirty is not None) or (use_outfile):
-        path = mkdtemp('itools')
-    else:
-        path = None
-
-    # We may need to write the handler to a temporary file
-    if uri.scheme == 'file' and handler.dirty is None:
-        infile_path = str(uri.path)
-    else:
-        infile_path = join_path(path, 'infile')
-        with open(infile_path, 'wb') as infile:
-            infile.write(handler.to_str())
-
-    # We may need to write the output to a file
-    if use_outfile is True:
-        outfile_path = join_path(path, 'outfile')
-        cmdline = cmdline % (infile_path, outfile_path)
-    else:
-        cmdline = cmdline % infile_path
-
-    # Call, and read stdout and stderr
-    popen = Popen(cmdline.split(), stdout=PIPE, stderr=PIPE)
-    stdout, stderr = popen.communicate()
-
-    if use_outfile is True:
-        try:
-            outfile = open(outfile_path)
-        except IOError, e:
-            raise ConversionError, stderr or stdout or str(e)
-        else:
-            stdout = outfile.read()
-            outfile.close()
-
-    # Clean temporary folder if needed
-    if path is not None:
-        vfs.remove(path)
-
-    # Ok
-    if stderr:
-        return ''
-    return stdout
-
-
-
-# TODO move handlers not needing "ExternalIndexer" to the "handlers" package.
-# It has nothing to do with XML.
 
 class MSWord(File):
     class_mimetypes = ['application/msword']
     class_extension = 'doc'
-    source_converter = 'wvText %s %s'
 
 
     def to_text(self):
@@ -126,7 +74,7 @@ class MSExcel(File):
         for sheet in book.sheets():
             for idx in range(sheet.nrows):
                 for value in sheet.row_values(idx):
-                    if not isinstance(value, unicode):
+                    if type(value) is not unicode:
                         try:
                             value = unicode(value)
                         except UnicodeError:
@@ -137,25 +85,111 @@ class MSExcel(File):
 
 
 class ExternalIndexer(File):
-    source_encoding = 'UTF-8'
+
+    def convert(self):
+        uri = self.uri
+        if uri.scheme == 'file' and self.dirty is None:
+            # Case 1: Use directly the handler's path
+            cmdline = self.source_converter + [str(uri.path)]
+            popen = Popen(cmdline, stdout=PIPE, stderr=PIPE)
+            stdout, stderr = popen.communicate()
+        else:
+            # Case 2: Use a temporary file
+            data = self.to_str()
+            tmp_folder = mkdtemp('itools')
+            try:
+                # Write the temporary file
+                infile_path = join_path(tmp_folder, 'infile')
+                with open(infile_path, 'wb') as infile:
+                    infile.write(data)
+                # Call, and read stdout and stderr
+                cmdline = self.source_converter + [infile_path]
+                popen = Popen(cmdline, stdout=PIPE, stderr=PIPE)
+                stdout, stderr = popen.communicate()
+            finally:
+                vfs.remove(tmp_folder)
+
+        # Ok
+        if stderr:
+            return ''
+        return stdout
 
 
-    def to_text(self, use_outfile=False):
-        stdout, stderr = convert(self, self.source_converter, use_outfile)
-        if stderr != "":
-            return u''
-        return unicode(stdout, self.source_encoding, 'replace')
+    def to_text(self):
+        stdout = self.convert()
+        return unicode(stdout, 'utf-8', 'replace')
 
 
+
+# Append &apos;, the apostrophe (simple quote) for XML
+name2codepoint['apos'] = 39
+
+def xml_to_text(data):
+    """A brute-force text extractor for XML and HTML syntax, even broken to
+    some extent.
+
+    We don't use itools.xml.parser (yet) because expat would raise an error
+    for too many documents.
+
+    The encoding is guessed for each text chunk because 'xlhtml' mixes UTF-8
+    and Latin1 encodings, and the most broken converters don't declare the
+    encoding at all.
+
+    TODO use the C parser instead with itools 0.15.
+    """
+
+    output = []
+    # 0 = Default
+    # 1 = Start tag
+    # 2 = Start text
+    # 3 = Char or entity reference
+    state = 0
+    buffer = ''
+
+    for c in data:
+        if state == 0:
+            if c == '<':
+                state = 1
+        elif state == 1:
+            if c == '>':
+                # Force word separator
+                output.append(u' ')
+                state = 2
+        elif state == 2:
+            if c == '<' or c == '&':
+                encoding = guess_encoding(buffer)
+                output.append(unicode(buffer, encoding, 'replace'))
+                buffer = ''
+                if c == '<':
+                    state = 1
+                elif c == '&':
+                    state = 3
+            else:
+                buffer += c
+        elif state == 3:
+            if c == ';':
+                if buffer[0] == '#':
+                    output.append(unichr(int(buffer[1:])))
+                elif buffer[0] == 'x':
+                    output.append(unichr(int(buffer[1:], 16)))
+                else:
+                    # XXX Assume entity
+                    output.append(unichr(name2codepoint.get(buffer, 63))) # '?'
+                buffer = ''
+                state = 2
+            else:
+                buffer += c
+
+    return u''.join(output)
 
 class MSPowerPoint(ExternalIndexer):
     class_mimetypes = ['application/vnd.ms-powerpoint']
     class_extension = 'ppt'
-    source_converter = 'ppthtml %s'
+    source_converter = ['ppthtml']
 
 
     def to_text(self):
-        stdout = convert(self, self.source_converter)
+        stdout = self.convert()
         return xml_to_text(stdout)
 
 
@@ -163,8 +197,7 @@ class MSPowerPoint(ExternalIndexer):
 class RTF(ExternalIndexer):
     class_mimetypes = ['text/rtf']
     class_extenstion = 'rtf'
-    source_encoding = 'ISO-8859-1'
-    source_converter = 'unrtf --text --nopict %s'
+    source_converter = ['unrtf', '--text', '--nopict']
 
 
     def to_text(self):
@@ -175,6 +208,9 @@ class RTF(ExternalIndexer):
         return u' '.join(words)
 
 
-handlers = [MSWord, MSExcel, MSPowerPoint, RTF]
-for handler in handlers:
-    register_handler_class(handler)
+
+# Register
+register_handler_class(MSWord)
+register_handler_class(MSExcel)
+register_handler_class(MSPowerPoint)
+register_handler_class(RTF)

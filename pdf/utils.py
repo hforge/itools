@@ -112,12 +112,12 @@ def exist_attribute(attrs, keys, at_least=False):
 
     if at_least is False:
         for key in keys:
-            if ((None, key) in attrs) is False:
+            if (None, key) not in attrs:
                 return False
         return True
     else:
         for key in keys:
-            if ((None, key) in attrs) is True:
+            if (None, key) in attrs:
                 return True
         return False
 

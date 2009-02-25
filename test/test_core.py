@@ -272,12 +272,134 @@ class CacheTestCase(TestCase):
         self.cache = LRUCache(2)
 
 
-    def test_size(self):
+    #######################################################################
+    # Dict API
+    def test_init(self):
+        cache = self.cache
+        cache._check_integrity()
+
+
+    def test_len(self):
         cache = self.cache
         for i in range(5):
             cache[i] = str(i)
         self.assertEqual(len(cache), cache.size)
         cache._check_integrity()
+
+
+    def test_setitem(self):
+        cache = self.cache
+        key, value = 5, '5'
+        cache[key] = value
+        self.assertEqual(cache[key], value)
+        cache._check_integrity()
+
+
+    def test_delitem(self):
+        cache = self.cache
+        key, value = 5, '5'
+        cache[key] = value
+        del cache[key]
+        self.assertRaises(KeyError, cache.__getitem__, key)
+        cache._check_integrity()
+
+
+    def test_in(self):
+        cache = self.cache
+        key, value = 5, '5'
+        cache[key] = value
+        self.assert_(key in cache)
+        self.assert_(value not in cache)
+        cache._check_integrity()
+
+
+    def test_clear(self):
+        cache = self.cache
+        key, value = 5, '5'
+        cache[key] = value
+        cache.clear()
+        self.assertEqual(len(cache), 0)
+        cache._check_integrity()
+
+
+    def test_copy(self):
+        cache = self.cache
+        self.assertRaises(NotImplementedError, cache.copy)
+        cache._check_integrity()
+
+
+    def test_fromkeys(self):
+        cache = self.cache
+        self.assertRaises(NotImplementedError, cache.fromkeys, 'abc')
+        cache._check_integrity()
+
+
+    def test_get(self):
+        cache = self.cache
+        key, value = 5, '5'
+        cache[key] = value
+        self.assertEqual(cache.get(key), value)
+        self.assertEqual(cache.get(4), None)
+        self.assertEqual(cache.get(4, 69), 69)
+        cache._check_integrity()
+
+
+    def test_items(self):
+        cache = self.cache
+        for key in 'abcde':
+            cache[key] = key
+        self.assertEqual(cache.items(), [('d', 'd'), ('e', 'e')])
+        cache._check_integrity()
+
+
+    def test_iteritems(self):
+        cache = self.cache
+        cache._check_integrity()
+
+
+    def test_iterkeys(self):
+        cache = self.cache
+        cache._check_integrity()
+
+
+    def test_itervalues(self):
+        cache = self.cache
+        cache._check_integrity()
+
+
+    def test_keys(self):
+        cache = self.cache
+        cache._check_integrity()
+
+
+    def test_pop(self):
+        cache = self.cache
+        cache._check_integrity()
+
+
+    def test_popitem(self):
+        cache = self.cache
+        cache._check_integrity()
+
+
+    def test_setdefault(self):
+        cache = self.cache
+        cache._check_integrity()
+
+
+    def test_update(self):
+        cache = self.cache
+        cache._check_integrity()
+
+
+    def test_values(self):
+        cache = self.cache
+        cache._check_integrity()
+
+
+    #######################################################################
+    # Other
+
 
 
 if __name__ == '__main__':

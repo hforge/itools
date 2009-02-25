@@ -138,6 +138,24 @@ class LRUCache(dict):
         dict.__delitem__(self, key)
 
 
+    def clear(self):
+        dict.clear(self)
+        self.key2node.clear()
+        self.first = self.last = None
+
+
+    def copy(self):
+        raise NotImplementedError, "use 'copy.deepcopy' to copy a cache"
+
+
+    def fromkeys(self, seq, value=None):
+        raise NotImplementedError, "the 'fromkeys' method is not supported"
+
+
+    def items(self):
+        return list(self.iteritems())
+
+
     def iteritems(self):
         node = self.first
         while node is not None:

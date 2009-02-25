@@ -19,7 +19,6 @@ import unittest
 from unittest import TestCase
 
 # Import from itools
-import local
 from itools.core import freeze, frozenlist, frozendict
 from itools.core import LRUCache
 

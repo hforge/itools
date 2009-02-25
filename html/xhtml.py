@@ -174,7 +174,7 @@ def sanitize_stream(stream):
                 continue
             # Check unsafe object
             if tag_name == 'object':
-                attr_value = attributes.get('type')
+                attr_value = attributes.get((None, 'type'))
                 if attr_value != 'application/x-shockwave-flash':
                     skip = 1
                     continue

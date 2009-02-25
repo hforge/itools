@@ -18,15 +18,14 @@
 # Import from the Standard Library
 from datetime import date
 from random import sample
-import unittest
-from unittest import TestCase
 import re
+from unittest import TestCase, main
 
 # Import from itools
+from itools.datatypes import String, Unicode, Boolean, Integer
 from itools import vfs
 from itools.xapian import make_catalog, Catalog, CatalogAware, StartQuery
 from itools.xapian import AndQuery, RangeQuery, PhraseQuery, NotQuery
-from itools.datatypes import String, Unicode, Boolean, Integer
 from itools.xapian.catalog import _index, _decode
 
 # Import from xapian
@@ -436,4 +435,4 @@ class Document_2(CatalogAware):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    main()

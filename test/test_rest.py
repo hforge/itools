@@ -16,20 +16,21 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-import unittest
+from unittest import TestCase, main
 
 # Import from itools.rest
-from itools.rest.parser import (strip_block, normalize_whitespace,
-    parse_inline, parse_blocks, parse_lists, parse_literal_blocks,
-    parse_titles)
-from itools.rest.parser import (XBLOCK, XCITATION, XEMPHASIS, XFOOTNOTE,
-    XINTERPRETED, XLIST_BEGIN, XLIST_END, XLIST_ITEM_BEGIN, XLIST_ITEM_END,
-    XLITERAL, XLITERAL_BLOCK, XPARAGRAPH, XREFERENCE, XSTRONG, XSUBSTITUTION,
-    XTARGET, XTEXT, XTITLE)
+from itools.rest.parser import strip_block, normalize_whitespace, parse_inline
+from itools.rest.parser import parse_blocks, parse_lists, parse_literal_blocks
+from itools.rest.parser import parse_titles
+from itools.rest.parser import XBLOCK, XCITATION, XEMPHASIS, XFOOTNOTE
+from itools.rest.parser import XINTERPRETED, XLIST_BEGIN, XLIST_END
+from itools.rest.parser import XLIST_ITEM_BEGIN, XLIST_ITEM_END, XLITERAL
+from itools.rest.parser import XLITERAL_BLOCK, XPARAGRAPH, XREFERENCE, XSTRONG
+from itools.rest.parser import XSUBSTITUTION, XTARGET, XTEXT, XTITLE
 
 
 
-class TestParserUtils(unittest.TestCase):
+class TestParserUtils(TestCase):
 
     def test_strip_block_empty(self):
         block = []
@@ -63,7 +64,7 @@ of\tinsignificant  \t whitespace. """
 
 
 
-class TestInlineParser(unittest.TestCase):
+class TestInlineParser(TestCase):
 
     def test_bytestring(self):
         """I am a bytestring, not text."""
@@ -187,7 +188,7 @@ class TestInlineParser(unittest.TestCase):
 
 
 
-class TestDocumentParser(unittest.TestCase):
+class TestDocumentParser(TestCase):
 
     def test_blocks(self):
         text = u"""\
@@ -428,4 +429,4 @@ I am a paragraph."""
 
 
 if __name__ == '__main__':
-    unittest.main()
+    main()

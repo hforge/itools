@@ -16,14 +16,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from Python
-import unittest
-from unittest import TestCase
+# Import from the Standard Library
+from unittest import TestCase, main
 
 # Import from itools
+from itools.rss import RSSFile
 from itools.uri import Reference
 from itools.xml import XMLParser, XML_DECL
-from itools.rss import RSSFile
 
 
 
@@ -85,4 +84,4 @@ class RSSTestCase(TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    main()

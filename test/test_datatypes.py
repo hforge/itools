@@ -17,11 +17,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from time import timezone, mktime
 from datetime import time, date, datetime
-import unittest
-from unittest import TestCase
-import random, decimal
+import decimal
+import random
+from time import timezone, mktime
+from unittest import TestCase, main
 
 # Import from itools
 from itools.datatypes import ISOTime, ISOCalendarDate, ISODateTime, HTTPDate
@@ -327,4 +327,4 @@ class LanguageTagTestCase(TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    main()

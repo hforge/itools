@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-import unittest
+from unittest import TestCase, main
 
 # Import from itools
 from itools.pdf.pml import Context, normalize, paragraph_stream
@@ -34,7 +34,7 @@ NAMESPACES = {None: URI}
 ######################################################################
 # PML part
 ######################################################################
-class pml_FunctionTestCase(unittest.TestCase):
+class pml_FunctionTestCase(TestCase):
 
     def test_normalize(self):
         s = ''
@@ -192,7 +192,7 @@ class pml_FunctionTestCase(unittest.TestCase):
 
 
 
-class pml_HtmlTestCase(unittest.TestCase):
+class pml_HtmlTestCase(TestCase):
 
     def test_empty_body(self):
         data = '<html><body></body></html>'
@@ -266,8 +266,7 @@ class pml_HtmlTestCase(unittest.TestCase):
 
 
 
-class pml_ColorTestCase(unittest.TestCase):
-
+class pml_ColorTestCase(TestCase):
 
     def test_hexa_simple(self):
         str = '#abc'
@@ -313,4 +312,4 @@ class pml_ColorTestCase(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    main()

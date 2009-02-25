@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-import unittest
+from unittest import TestCase, main
 
 # Import from itools
 from itools.handlers import get_handler
@@ -26,7 +26,7 @@ from itools.xml import stream_to_str
 from itools.xmlfile import XMLFile
 
 
-class SubstituteTestCase(unittest.TestCase):
+class SubstituteTestCase(TestCase):
 
     def setUp(self):
         namespace = {'name': u'Toto'}
@@ -45,7 +45,7 @@ class SubstituteTestCase(unittest.TestCase):
 
 
 
-class STLTestCase(unittest.TestCase):
+class STLTestCase(TestCase):
 
     def test_none(self):
         stack = NamespaceStack()
@@ -123,4 +123,4 @@ class STLTestCase(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    main()

@@ -19,16 +19,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-import unittest
-from unittest import TestCase
+from unittest import TestCase, main
 
 # Import from itools
 from itools.gettext import POFile
-from itools.xml import XMLParser, XMLError, START_ELEMENT, END_ELEMENT
-from itools.xml import TEXT as xml_TEXT, stream_to_str
 from itools.html import HTMLFile, XHTMLFile, HTMLParser, sanitize_str
 from itools.html.xhtml import stream_to_html
 from itools.srx import TEXT, START_FORMAT, END_FORMAT
+from itools.xml import XMLParser, XMLError, START_ELEMENT, END_ELEMENT
+from itools.xml import TEXT as xml_TEXT, stream_to_str
 
 
 
@@ -504,4 +503,4 @@ class SanitizerTestCase(TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    main()

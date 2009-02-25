@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-import unittest
+from unittest import TestCase, main
 
 # Import from itools
 from itools.html import HTMLParser
@@ -25,7 +25,7 @@ from itools.srx import get_segments, Message, TEXT, START_FORMAT, END_FORMAT
 from itools.xmlfile import get_units
 
 
-class SentenceTestCase(unittest.TestCase):
+class SentenceTestCase(TestCase):
 
     def test_simple(self):
         text = u'This is a sentence. A very little sentence.'
@@ -345,4 +345,4 @@ class SentenceTestCase(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    main()

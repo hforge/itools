@@ -16,9 +16,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-import unittest
 from cStringIO import StringIO
 from datetime import datetime
+from unittest import TestCase, main
 
 # Import from itools
 from itools.csv import Property
@@ -85,7 +85,7 @@ END:VCALENDAR
 """
 
 
-class icalTestCase(unittest.TestCase):
+class icalTestCase(TestCase):
 
     def setUp(self):
         self.cal1 = iCalendar(string=content)
@@ -579,7 +579,7 @@ class icalTestCase(unittest.TestCase):
 
 
 
-class icalTableTestCase(unittest.TestCase):
+class icalTableTestCase(TestCase):
 
     def setUp(self):
         src = iCalendar(string=content)
@@ -1022,4 +1022,4 @@ class icalTableTestCase(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    main()

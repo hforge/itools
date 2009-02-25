@@ -18,8 +18,7 @@
 
 # Import from the Standard Library
 from datetime import datetime
-import unittest
-from unittest import TestCase
+from unittest import TestCase, main
 
 # Import from itools
 from itools import vfs
@@ -274,4 +273,4 @@ class MimeTestCase(TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    main()

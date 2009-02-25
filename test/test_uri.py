@@ -17,8 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-import unittest
-from unittest import TestCase
+from unittest import TestCase, main
 
 # Import from itools
 from itools.uri import get_reference, Path, Reference
@@ -500,4 +499,4 @@ class MailtoTestCase(TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    main()

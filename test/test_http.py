@@ -15,14 +15,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-import unittest
-from unittest import TestCase
+from unittest import TestCase, main
 
 # Import from itools
 from itools.http.cookies import Cookie, CookieDataType, SetCookieDataType
 from itools.http.headers import ContentType, ContentDisposition
-from itools.http.parsing import (read_token, read_quoted_string,
-    read_parameter, read_parameters)
+from itools.http.parsing import read_token, read_quoted_string, read_parameter
+from itools.http.parsing import read_parameters
 
 
 
@@ -168,4 +167,4 @@ class CookieTestCase(TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    main()

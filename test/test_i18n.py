@@ -18,7 +18,7 @@
 
 # Import from the Standard Library
 from decimal import Decimal
-import unittest
+from unittest import TestCase, main
 
 # Import from itools
 from itools.i18n import is_similar, get_most_similar, guess_language
@@ -29,7 +29,7 @@ from itools.i18n import AcceptLanguageType
 ############################################################################
 # Language negotiation
 ############################################################################
-class QualityAcceptLanguageTestCase(unittest.TestCase):
+class QualityAcceptLanguageTestCase(TestCase):
 
     def setUp(self):
         self.al = AcceptLanguageType.decode("da, en-gb;q=0.8")
@@ -57,7 +57,7 @@ class QualityAcceptLanguageTestCase(unittest.TestCase):
 
 
 
-class SelectLanguageAcceptLanguageTestCase(unittest.TestCase):
+class SelectLanguageAcceptLanguageTestCase(TestCase):
 
     def setUp(self):
         self.al = AcceptLanguageType.decode("da, en-gb;q=0.8")
@@ -79,7 +79,7 @@ class SelectLanguageAcceptLanguageTestCase(unittest.TestCase):
 
 
 
-class ChangeAcceptLanguageTestCase(unittest.TestCase):
+class ChangeAcceptLanguageTestCase(TestCase):
 
     def setUp(self):
         self.al = AcceptLanguageType.decode("da, en-gb;q=0.8")
@@ -96,7 +96,7 @@ class ChangeAcceptLanguageTestCase(unittest.TestCase):
 ############################################################################
 # Fuzzy matching
 ############################################################################
-class IsSimilarTestCase(unittest.TestCase):
+class IsSimilarTestCase(TestCase):
 
     def test_different(self):
         a = "Good morning"
@@ -123,7 +123,7 @@ class IsSimilarTestCase(unittest.TestCase):
 
 
 
-class MostSimilarTestCase(unittest.TestCase):
+class MostSimilarTestCase(TestCase):
 
     database = ['Good morning', 'Good afternoon', 'Good night',
                 'This is strange', 'Why not?', 'Freedom as in speak',
@@ -151,7 +151,7 @@ class MostSimilarTestCase(unittest.TestCase):
 ############################################################################
 # Language guessing
 ############################################################################
-class OracleTestCase(unittest.TestCase):
+class OracleTestCase(TestCase):
 
     def test_spain_long(self):
         text = u"""Nueva coordinadora de Humanidades. En sustitución de la
@@ -242,4 +242,4 @@ class OracleTestCase(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    main()

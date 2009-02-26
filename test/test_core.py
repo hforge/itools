@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from string import lowercase
 from unittest import TestCase, main
 
 # Import from itools
@@ -269,138 +270,153 @@ class FrozendictTestCase(TestCase):
 class CacheTestCase(TestCase):
 
     def setUp(self):
-        self.cache = LRUCache(2)
+        self.cache = LRUCache(3)
+        for c in lowercase:
+            self.cache[c] = c.upper()
+
+
+    def tearDown(self):
+        self.cache._check_integrity()
 
 
     #######################################################################
     # Dict API
     def test_init(self):
-        cache = self.cache
-        cache._check_integrity()
+        self.assertRaises(TypeError, LRUCache)
+        self.assertRaises(TypeError, LRUCache, 'aa')
+        self.assertRaises(TypeError, LRUCache, 5, 5)
+        self.assertRaises(TypeError, LRUCache, 5, True, 4)
 
 
     def test_len(self):
         cache = self.cache
-        for i in range(5):
-            cache[i] = str(i)
         self.assertEqual(len(cache), cache.size)
-        cache._check_integrity()
 
 
     def test_setitem(self):
         cache = self.cache
-        key, value = 5, '5'
+        key, value = 'c', 'C'
         cache[key] = value
         self.assertEqual(cache[key], value)
-        cache._check_integrity()
 
 
     def test_delitem(self):
         cache = self.cache
-        key, value = 5, '5'
-        cache[key] = value
+        self.assertEqual(len(cache), cache.size)
+        key = 'y'
         del cache[key]
+        self.assertEqual(len(cache), cache.size - 1)
         self.assertRaises(KeyError, cache.__getitem__, key)
-        cache._check_integrity()
 
 
     def test_in(self):
         cache = self.cache
-        key, value = 5, '5'
-        cache[key] = value
-        self.assert_(key in cache)
-        self.assert_(value not in cache)
-        cache._check_integrity()
+        self.assert_('x' in cache)
+        self.assert_('n' not in cache)
 
 
     def test_clear(self):
         cache = self.cache
-        key, value = 5, '5'
-        cache[key] = value
+        self.assertEqual(len(cache), cache.size)
         cache.clear()
         self.assertEqual(len(cache), 0)
-        cache._check_integrity()
 
 
     def test_copy(self):
         cache = self.cache
         self.assertRaises(NotImplementedError, cache.copy)
-        cache._check_integrity()
 
 
     def test_fromkeys(self):
         cache = self.cache
         self.assertRaises(NotImplementedError, cache.fromkeys, 'abc')
-        cache._check_integrity()
 
 
     def test_get(self):
         cache = self.cache
-        key, value = 5, '5'
-        cache[key] = value
-        self.assertEqual(cache.get(key), value)
-        self.assertEqual(cache.get(4), None)
-        self.assertEqual(cache.get(4, 69), 69)
-        cache._check_integrity()
+        self.assertEqual(cache.get('y'), 'Y')
+        self.assertEqual(cache.get('c'), None)
+        self.assertEqual(cache.get('c', 69), 69)
 
 
     def test_items(self):
         cache = self.cache
-        for key in 'abcde':
-            cache[key] = key
-        self.assertEqual(cache.items(), [('d', 'd'), ('e', 'e')])
-        cache._check_integrity()
+        items = cache.items()
+        self.assertEqual(items, [('x', 'X'), ('y', 'Y'), ('z', 'Z')])
 
 
     def test_iteritems(self):
         cache = self.cache
-        cache._check_integrity()
+        items = cache.iteritems()
+        items = list(items)
+        self.assertEqual(items, [('x', 'X'), ('y', 'Y'), ('z', 'Z')])
 
 
     def test_iterkeys(self):
         cache = self.cache
-        cache._check_integrity()
+        keys = cache.iterkeys()
+        keys = list(keys)
+        self.assertEqual(keys, list('xyz'))
 
 
     def test_itervalues(self):
         cache = self.cache
-        cache._check_integrity()
+        values = cache.itervalues()
+        values = list(values)
+        self.assertEqual(values, list('XYZ'))
 
 
     def test_keys(self):
         cache = self.cache
-        cache._check_integrity()
+        keys = cache.keys()
+        self.assertEqual(keys, list('xyz'))
 
 
     def test_pop(self):
         cache = self.cache
-        cache._check_integrity()
+        self.assertEqual(len(cache), cache.size)
+        key = 'y'
+        value = cache.pop(key)
+        self.assertEqual(value, key.upper())
+        self.assertEqual(len(cache), cache.size - 1)
+        self.assertRaises(KeyError, cache.__getitem__, key)
 
 
     def test_popitem(self):
         cache = self.cache
-        cache._check_integrity()
+        self.assertEqual(len(cache), cache.size)
+        item = cache.popitem()
+        self.assertEqual(len(cache), cache.size - 1)
+        self.assertEqual(item, ('x', 'X'))
 
 
     def test_setdefault(self):
         cache = self.cache
-        cache._check_integrity()
+        self.assertRaises(NotImplementedError, cache.setdefault, 7)
 
 
     def test_update(self):
         cache = self.cache
-        cache._check_integrity()
+        self.assertRaises(NotImplementedError, cache.update)
 
 
     def test_values(self):
         cache = self.cache
-        cache._check_integrity()
+        values = cache.values()
+        self.assertEqual(values, list('XYZ'))
 
 
     #######################################################################
-    # Other
+    # Specific API
+    def test_touch(self):
+        cache = self.cache
+        self.assertRaises(KeyError, cache.touch, 'r')
+        cache.touch('x')
+        keys = cache.keys()
+        self.assertEqual(keys, list('yzx'))
 
 
 
 if __name__ == '__main__':
     main()
+

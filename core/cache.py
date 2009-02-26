@@ -33,8 +33,47 @@ class DNode(object):
 
 
 class LRUCache(dict):
+    """LRU stands for Least-Recently-Used.
+
+    The LRUCache is a mapping from key to value, it is implemented as a dict
+    with some differences:
+
+    - The elemens within the cache are ordered by the access time, starting
+      from the least-recently used value.  All iteration methods ('items',
+      'iteritems', 'keys', etc.) return the objects sorted by this criteria,
+      and so does 'popitem' too.
+
+    - The constructor is different from that of a dict, it expects first a
+      'size' parameter that defines the maximum number of values that should
+      be stored in the cache.  Optionally it can take an 'automatic' boolean
+      parameter, which defaults to 'True'.
+
+    - The cache automatically removes the least-recently used values when its
+      size surpasses the defined maximum size.
+
+      Unless the 'automatic' parameter is set to 'False'.  Then it will be the
+      responsability of external code to explicitly remove the least-recently
+      used values.
+
+    Some of the dict methods have been de-activated on purpose: 'copy',
+    'fromkeys', 'setdefault' and 'update'.
+
+    There are other new methods too:
+
+    - touch(key): defines the value identified by the given key as to be
+      accessed, hence it will be at the end of the list.
+    """
 
     def __init__(self, size, automatic=True):
+        # Check arguments type
+        if type(size) is not int:
+            error = "the 'size' argument must be an int, not '%s'"
+            raise TypeError, error % type(size)
+        if type(automatic) is not bool:
+            error = "the 'automatic' argument must be an int, not '%s'"
+            raise TypeError, error % type(automatic)
+
+        # Initialize the dict
         dict.__init__(self)
         # The doubly-linked list
         self.first = None
@@ -88,19 +127,8 @@ class LRUCache(dict):
 
         # Free memory if needed
         if self.automatic is True:
-            self._free()
-
-
-    def _free(self):
-        node = self.first
-        while node and len(self) > self.size:
-            # Get the key and value
-            key = node.key
-            value = self[key]
-            # Find next node
-            node = node.next
-            # Remove
-            del self[key]
+            while len(self) > self.size:
+                self.popitem()
 
 
     def _remove(self, key):
@@ -163,9 +191,48 @@ class LRUCache(dict):
             node = node.next
 
 
+    def iterkeys(self):
+        node = self.first
+        while node is not None:
+            yield node.key
+            node = node.next
+
+
+    def itervalues(self):
+        node = self.first
+        while node is not None:
+            yield self[node.key]
+            node = node.next
+
+
+    def keys(self):
+        return list(self.iterkeys())
+
+
     def pop(self, key):
         self._remove(key)
         return dict.pop(self, key)
+
+
+    def popitem(self):
+        if self.first is None:
+            raise KeyError, 'popitem(): cache is empty'
+        key = self.first.key
+        value = self[key]
+        del self[key]
+        return (key, value)
+
+
+    def setdefault(self, key, default=None):
+        raise NotImplementedError, "the 'setdefault' method is not supported"
+
+
+    def update(self, value=None, **kw):
+        raise NotImplementedError, "the 'update' method is not supported"
+
+
+    def values(self):
+        return list(self.itervalues())
 
 
     ######################################################################

@@ -31,16 +31,6 @@ class Resource(object):
     #######################################################################
     # API / Private
     #######################################################################
-    def _has_resource(self, name):
-        """Default implementation, may be overriden for a better performance.
-        """
-        try:
-            self._get_resource(name)
-        except LookupError:
-            return False
-        return True
-
-
     def _get_names(self):
         raise NotImplementedError
 
@@ -86,20 +76,11 @@ class Resource(object):
 
 
     def has_resource(self, path):
-        if not isinstance(path, Path):
-            path = Path(path)
-
-        # If path is "/" or "."
-        if len(path) == 0:
-            return True
-
-        path, name = path[:-1], path[-1]
         try:
-            container = self.get_resource(path)
+            self.get_resource(path)
         except LookupError:
             return False
-
-        return container._has_resource(name)
+        return True
 
 
     def get_names(self, path='.'):

@@ -106,9 +106,9 @@ class RODatabase(BaseDatabase):
     """The read-only database works as a cache for file handlers.
     """
 
-    def __init__(self, size=5000):
+    def __init__(self, cache_size=5000):
         # A mapping from URI to handler
-        self.cache = LRUCache(size, automatic=False)
+        self.cache = LRUCache(cache_size, automatic=False)
 
 
     #######################################################################
@@ -362,8 +362,8 @@ class RODatabase(BaseDatabase):
 ###########################################################################
 class RWDatabase(RODatabase):
 
-    def __init__(self):
-        RODatabase.__init__(self)
+    def __init__(self, cache_size):
+        RODatabase.__init__(self, cache_size)
         # The state, for transactions
         self.changed = set()
         self.added = set()
@@ -608,8 +608,8 @@ def get_tmp_map():
 
 class SolidDatabase(RWDatabase):
 
-    def __init__(self, commit):
-        RWDatabase.__init__(self)
+    def __init__(self, commit, cache_size):
+        RWDatabase.__init__(self, cache_size)
         # The commit, for safe transactions
         if not isinstance(commit, Path):
             commit = Path(commit)

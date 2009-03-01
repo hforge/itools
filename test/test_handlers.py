@@ -51,7 +51,7 @@ class StateTestCase(TestCase):
 class FolderTestCase(TestCase):
 
     def setUp(self):
-        database = RWDatabase()
+        database = RWDatabase(100)
         self.database = database
         self.root = database.get_handler('.')
         file = vfs.make_file('tests/toto.txt')
@@ -358,7 +358,7 @@ class BrokenHandler(TextFile):
 class DatabaseTestCase(TestCase):
 
     def setUp(self):
-        database = SolidDatabase('database.commit')
+        database = SolidDatabase('database.commit', 100)
         self.database = database
         root = get_handler('fables')
         root.database = database

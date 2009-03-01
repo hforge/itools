@@ -111,7 +111,7 @@ class Resource(object):
 
     def get_resources(self, path='.'):
         here = self.get_resource(path)
-        if resource is None:
+        if here is None:
             raise LookupError
         for name in here._get_names():
             resource = here._get_resource(name)

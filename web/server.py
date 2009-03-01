@@ -19,6 +19,7 @@
 
 # Import from the Standard Library
 from base64 import decodestring
+from copy import copy
 from logging import getLogger, WARNING, FileHandler, StreamHandler, Formatter
 from os import fstat, getpid, remove as remove_file
 from types import FunctionType, MethodType

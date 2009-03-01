@@ -36,7 +36,7 @@ class Resource(object):
 
 
     def _get_resource(self, name):
-        raise LookupError
+        return None
 
 
     #######################################################################
@@ -62,7 +62,10 @@ class Resource(object):
         cpath = self.get_canonical_path()
         if cpath == self.get_abspath():
             return self
-        return self.get_resource(cpath)
+        resource = self.get_resource(cpath)
+        if resource is None:
+            raise LookupError
+        return resource
 
 
     def get_root(self):
@@ -75,16 +78,10 @@ class Resource(object):
         return self.get_abspath().get_pathto(handler.get_abspath())
 
 
-    def has_resource(self, path):
-        try:
-            self.get_resource(path)
-        except LookupError:
-            return False
-        return True
-
-
     def get_names(self, path='.'):
         resource = self.get_resource(path)
+        if resource is None:
+            raise LookupError
         return resource._get_names()
 
 
@@ -103,6 +100,8 @@ class Resource(object):
 
         for name in path:
             resource = here._get_resource(name)
+            if resource is None:
+                return None
             resource.parent = here
             resource.name = name
             here = resource
@@ -112,6 +111,8 @@ class Resource(object):
 
     def get_resources(self, path='.'):
         here = self.get_resource(path)
+        if resource is None:
+            raise LookupError
         for name in here._get_names():
             resource = here._get_resource(name)
             resource.parent = here

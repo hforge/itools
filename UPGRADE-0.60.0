@@ -137,6 +137,39 @@ itools.web
 Many small changes have been done to the Web server.  Most are internal
 so there should be little impact in applications.
 
+(1) Now 'get_resource' returns 'None' instead of raising the 'LookupError'
+exception if the requested resource does not exist:
+
+  # Before
+  try:
+      resource = here.get_resource(path)
+  except LookupError:
+      ...
+  else:
+      ...
+
+  # Now
+  resource = here.get_resource(path)
+  if resource is None:
+      ...
+  else:
+      ...
+
+(2) The 'has_resource' method has been removed:
+
+  # Before
+  if here.has_resource(path):
+      ...
+  else:
+      ...
+
+  # Now
+  resource = here.get_resource(path)
+  if resource is None:
+      ...
+  else:
+      ...
+
 
 itools.xapian
 =============

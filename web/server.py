@@ -591,15 +591,23 @@ class RequestMethod(object):
         Otherwise sets 'context.status' to 404 (not found error) and
         'context.resource' to the latest resource in the path that does exist.
         """
-        resource = context.site_root
-        for name in context.path:
-            try:
-                resource = resource.get_resource(name)
-            except LookupError:
-                context.resource = resource
-                raise NotFound
+        # We start at the sire-root
+        root = context.site_root
+        path = copy(context.path)
+        path.startswith_slash = False
 
+        # Found
+        resource = root.get_resource(path)
+        if resource is not None:
+            context.resource = resource
+            return
+
+        # Not Found
+        while resource is None:
+            path = path[:-1]
+            resource = root.get_resource(path)
         context.resource = resource
+        raise NotFound
 
 
     @classmethod

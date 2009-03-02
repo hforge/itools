@@ -40,6 +40,16 @@ Note: you will find packages like pkg-config and glib compiled for Windows
 on http://ftp.gnome.org/pub/gnome/binaries/win32/ (don't forget to check
 the "dependencies" directory).
 
+For indexing office documents like PDF, DOC and XLS, you can install libraries
+and Python packages.  They are not mandatory for installing itools.
+
+Software    Version   Format          Home
+---------   -------   -------------   ----------------------------------------
+xlrd          0.6.1   XLS             http://www.lexicon.net/sjmachin/xlrd.htm
+poppler      0.10.4   PDF             http://poppler.freedesktop.org/
+wv2           0.2.3   DOC             https://sourceforge.net/projects/wvware
+
+
 Install
 =============
 
@@ -55,18 +65,6 @@ And changed the working directory this way:
 So now to install itools you just need to type this:
 
   $ python setup.py install
-
-Indexation
-============
-
-For indexing office documents like PDF, DOC and XLS, you can install libraries
-and Python packages. They are not mandatory for installing itools.
-
-Software    Version   Format          Home
----------   -------   -------------   ----------------------------------------
-xlrd          0.6.1   XLS             http://www.lexicon.net/sjmachin/xlrd.htm
-poppler      0.10.4   PDF             http://poppler.freedesktop.org/
-wv2           0.2.3   DOC             https://sourceforge.net/projects/wvware
 
 Unit Tests
 =============

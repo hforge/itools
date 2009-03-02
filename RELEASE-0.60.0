@@ -15,53 +15,55 @@ meta-package for easier development and deployment:
   itools.html             itools.rss              itools.xliff
   itools.http             itools.srx              itools.xml
 
-Many of the changes in this release are to improve speed and scalability.
-There has been also some code reorganization, and some packages have seen
-major changes.
+The itools.vfs package has been rewritten to use gio, the virtual file
+system from the glib project [1].  The web server, from itools.web, now
+uses the glib event loop.
 
-Indexing with itools.xapian is much faster now for two reasons.  First
-extracting the text from some office formats (ODF and Excel) is a lot
-faster.  Second, now we use the xapian tokenizer to split a text into
-words (except for Chinese and Japanase texts).
+Extracting text from office formats is in general much faster.  Command
+line utilities have been replaced by libraries, e.g. 'xlrd' [2] instead
+of 'xlhtml' [3] to extract text from Excel files.
 
-The filesystem database (itools.handlers) has been improved and now
-includes a read-only mode.  There is also a limit to the number of
-file handlers that can be stored in the cache, hence reducing memory
-usage.
+Indexing text is also much faster now that itools.xapian uses the native
+Xapian [4] tokenizer; except for Japanase and Chinese, which still use
+the itools tokenizer.
 
-Other optimizations include a 'parse_table' function about two times
-faster than before; used for instance to parse iCal files.
+The filesystem database, from itools.handlers, has been improved and now
+includes a read-only mode.  There is also a limit to the number of file
+handlers that can be stored in the cache.
 
-The itools Virtual File System (itools.vfs) has been rewritten to use
-gio (from the Glib [1]), while preserving backwards compatibility.
+There have been other optimizations, like faster parsing of iCal files,
+or the generic least-recently-used cache [5] system (from itools.core).
 
-The web server (itools.web) now uses the Glib event loop.  Support for
-HTTP/1.1 has been improved too (XXX).
+The code has been re-arranged a little:
 
-The itools.isetup package has been renamed to itools.pkg, and so have
-the related scripts (e.g. 'isetup-build.py' renamed to 'ipkg-build.py').
-Two new packages, itools.python and itools.xmlfile, have been split
-from itools.handlers and itools.xml, to avoid circular imports.
+- The itools.isetup package has been renamed to itools.pkg, and so have
+  been the related scripts: isetup-build.py renamed to ipkg-build.py,
+  etc.
 
-The implementation of RML [2] has been removed, now we promote PML [3]
+- There are three new packages, split from other packages: itools.python
+  from itools.handlers, itools.xmlfile from itools.xml and itools.office
+  from itools.xml
+
+The implementation of RML [6] has been removed, now we promote PML [7]
 instead.
 
-Python 2.6 is required, and support for Python 2.5 has been drop.  Other
-new dependencies include pygobject 2.16 [4] or later (used by itools.vfs
-and itools.web), 'xlrd' [5] (used to index Excel files), 'poppler' [6] (PDF
-files) and 'wv2' [7] (Word files).  See the README.txt file for the complete
-table of required and recommended packages.
+There are some new dependencies.  Most notably Python 2.6.1 is required,
+support for 2.5 has been droped.  Also, now pygobject 2.16.1 [8] or
+later, and pkg-config [9] are required.  See the full list of required
+and recommended packages in the README file.
 
 See the UPGRADE-0.60.0 file for further details on what has changed.
 
 
-[1] XXX
-[2] XXX
-[3] XXX (chapter to write in the documentation)
-[4] XXX
-[5] http://www.lexicon.net/sjmachin/xlrd.htm
-[6] http://poppler.freedesktop.org/
-[7] https://sourceforge.net/projects/wvware
+[1] http://www.gtk.org/
+[2] http://www.lexicon.net/sjmachin/xlrd.htm
+[3] XXX xlhtml
+[4] http://www.xapian.org
+[5] XXX lru
+[6] http://www.reportlab.com/docs/RML_UserGuide_1_0.pdf
+[7] XXX (chapter to write in the documentation)
+[8] http://www.pygtk.org/
+[9] http://pkg-config.freedesktop.org/
 
 
 Resources

@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2006 Hervé Cauwelier <herve@itaapy.com>
+# Copyright (C) 2004 Alex Ott <alexott@gmail.com>
+# Copyright (C) 2006-2009 Hervé Cauwelier <herve@itaapy.com>
 # Copyright (C) 2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 # Copyright (C) 2007 Sylvain Taverne <sylvain@itaapy.com>
 #
@@ -17,78 +18,87 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from htmlentitydefs import name2codepoint
-from os.path import join as join_path
-from subprocess import Popen, PIPE
-from tempfile import mkdtemp
+from cStringIO import StringIO
 
 # Import from itools
-from itools.handlers import File, register_handler_class, guess_encoding
-from itools import vfs
+from itools.handlers import File, register_handler_class
+from ole import SEEK_CUR, getshort, getulong, convert_char, Ole
 
 
-# Append &apos;, the apostrophe (simple quote) for XML
-name2codepoint['apos'] = 39
+DOCUMENT                      = 1000
+DOCUMENT_END                  = 1002
+SLIDE_BASE                    = 1004
+SLIDE                         = 1006
+NOTES                         = 1008
+MAIN_MASTER                   = 1016
+LIST                          = 2000
+TEXT_CHARS_ATOM               = 4000
+TEXT_BYTES_ATOM               = 4008
+CSTRING                       = 4026
+HEADERS_FOOTERS               = 4057
+SLIDE_LIST_WITH_TEXT          = 4080
 
 
-
-def xml_to_text(data):
-    """A brute-force text extractor for XML and HTML syntax, even broken to
-    some extent.
-
-    We don't use itools.xml.parser (yet) because expat would raise an error
-    for too many documents.
-
-    The encoding is guessed for each text chunk because 'xlhtml' mixes UTF-8
-    and Latin1 encodings, and the most broken converters don't declare the
-    encoding at all.
-
-    TODO use the C parser instead with itools 0.15.
-    """
-
-    output = []
-    # 0 = Default
-    # 1 = Start tag
-    # 2 = Start text
-    # 3 = Char or entity reference
-    state = 0
-    buffer = ''
-
-    for c in data:
-        if state == 0:
-            if c == '<':
-                state = 1
-        elif state == 1:
-            if c == '>':
-                # Force word separator
-                output.append(u' ')
-                state = 2
-        elif state == 2:
-            if c == '<' or c == '&':
-                encoding = guess_encoding(buffer)
-                output.append(unicode(buffer, encoding, 'replace'))
-                buffer = ''
-                if c == '<':
-                    state = 1
-                elif c == '&':
-                    state = 3
+def process_item(entry, rectype, reclen):
+    if rectype in (DOCUMENT, SLIDE, SLIDE_BASE, NOTES,
+                     HEADERS_FOOTERS, MAIN_MASTER, LIST,
+                     SLIDE_LIST_WITH_TEXT):
+        pass
+    elif rectype == TEXT_BYTES_ATOM:
+        for i in range(reclen):
+            buf = entry.read(1)
+            if ord(buf) != 0x0d:
+                yield convert_char(ord(buf))
             else:
-                buffer += c
-        elif state == 3:
-            if c == ';':
-                if buffer[0] == '#':
-                    output.append(unichr(int(buffer[1:])))
-                elif buffer[0] == 'x':
-                    output.append(unichr(int(buffer[1:], 16)))
-                else:
-                    # XXX Assume entity
-                    output.append(unichr(name2codepoint.get(buffer, 63))) # '?'
-                buffer = ''
-                state = 2
+                yield u"\n"
+        yield u"\n"
+    elif rectype == TEXT_CHARS_ATOM or rectype == CSTRING:
+        text_len = reclen / 2
+        for i in range(text_len):
+            buf = entry.read(2)
+            u = getshort(buf, 0)
+            if u != 0x0d:
+                yield convert_char(u)
             else:
-                buffer += c
+                yield u"\n"
+        yield u"\n"
+    else:
+        entry.seek(reclen, SEEK_CUR)
 
-    return u''.join(output)
+
+
+def do_ppt(entry):
+    itemsread = 1
+
+    while itemsread:
+        recbuf = entry.read(8)
+        itemsread = len(recbuf)
+        if entry.is_eof():
+            for char in process_item(entry, DOCUMENT_END, 0):
+                yield char
+            return
+        if itemsread < 8:
+            break
+        rectype = getshort(recbuf, 2)
+        reclen = getulong(recbuf, 4)
+        if reclen < 0:
+            return
+        for char in process_item(entry, rectype, reclen):
+            yield char
+
+
+
+def ppt_to_text(data):
+    buffer = []
+    file = StringIO(data)
+    ole = Ole(file)
+
+    for entry in ole.readdir():
+        if entry.open() >= 0:
+            if entry.name == 'PowerPoint Document':
+                for text in do_ppt(entry):
+                    buffer.append(text)
+    return u"".join(buffer)
 
 
 
@@ -101,39 +111,8 @@ class MSPowerPoint(File):
     class_extension = 'ppt'
 
 
-    def _convert(self):
-        uri = self.uri
-        if uri.scheme == 'file' and self.dirty is None:
-            # Case 1: Use directly the handler's path
-            command = ['ppthtml', str(uri.path)]
-            popen = Popen(command, stdout=PIPE, stderr=PIPE)
-            stdout, stderr = popen.communicate()
-        else:
-            # Case 2: Use a temporary file
-            data = self.to_str()
-            tmp_folder = mkdtemp('itools')
-            try:
-                # Write the temporary file
-                infile_path = join_path(tmp_folder, 'infile')
-                with open(infile_path, 'wb') as infile:
-                    infile.write(data)
-                # Call, and read stdout and stderr
-                command = ['ppthtml', infile_path]
-                popen = Popen(command, stdout=PIPE, stderr=PIPE)
-                stdout, stderr = popen.communicate()
-            finally:
-                vfs.remove(tmp_folder)
-
-        # Ok
-        if stderr:
-            return ''
-        return stdout
-
-
     def to_text(self):
-        stdout = self._convert()
-        return xml_to_text(stdout)
-
+        return ppt_to_text(self.to_str())
 
 
 # Register

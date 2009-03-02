@@ -30,8 +30,9 @@ using namespace wvWare;
 
 
 
-PyObject *separator;
-PyObject *empty;
+static PyObject *DocRtfException;
+static PyObject *separator;
+static PyObject *empty;
 
 
 
@@ -117,7 +118,7 @@ static PyObject *doc_to_text(PyObject *self, PyObject *args) {
     }
 
     if (!(strncmp((char *)buffer_in, "{\\rtf", 5))) {
-        PyErr_SetString(PyExc_ValueError, "file is RTF not DOC");
+        PyErr_SetString(DocRtfException, "file is RTF not DOC");
         return NULL;
     }
 
@@ -160,14 +161,27 @@ extern "C" PyMODINIT_FUNC initdoctotext(void) {
     if (module == NULL) {
         return;
     }
+
+    if (!(DocRtfException = PyErr_NewException((char *)
+                    "itools.xml.doctotext.DocRtfException", NULL, NULL))) {
+        goto err0;
+    }
+    Py_INCREF(DocRtfException);
+    PyModule_AddObject(module, "DocRtfException", DocRtfException);
+
     if (!(separator = PyUnicode_DecodeUTF8(" ", 1, "ignore"))) {
-        PyErr_SetString(PyExc_MemoryError, "out of memory to initialize");
-        Py_DECREF(module);
-        return;
+        goto err1;
     }
+
     if (!(empty = PyUnicode_DecodeUTF8("", 0, "ignore"))) {
-        PyErr_SetString(PyExc_MemoryError, "out of memory to initialize");
-        Py_DECREF(module);
-        return;
+        goto err1;
     }
+    return;
+
+err1:
+    Py_DECREF(DocRtfException);
+err0:
+    PyErr_SetString(PyExc_MemoryError, "out of memory to initialize");
+    Py_DECREF(module);
+    return;
 }

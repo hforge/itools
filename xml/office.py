@@ -32,9 +32,10 @@ except ImportError:
 from itools import vfs
 from itools.handlers import File, register_handler_class, guess_encoding
 try:
-    from doctotext import doc_to_text
+    from doctotext import doc_to_text, DocRtfException
 except ImportError:
     doc_to_text = None
+from rtftotext import rtf_to_text
 
 
 # TODO Move this module to itools.handlers (it does not require itools.xml)
@@ -49,8 +50,11 @@ class MSWord(File):
     def to_text(self):
         if doc_to_text is None:
             return u""
-        # TODO detect RTF error and use RTF extractor
-        return doc_to_text(self.to_str())
+        data = self.to_str()
+        try:
+            return doc_to_text(data)
+        except DocRtfException:
+            return rtf_to_text(data)
 
 
 
@@ -81,6 +85,16 @@ class MSExcel(File):
                             continue
                     text.append(value)
         return u' '.join(text)
+
+
+
+class RTF(File):
+    class_mimetypes = ['text/rtf']
+    class_extenstion = 'rtf'
+
+
+    def to_text(self):
+        return rtf_to_text(self.to_str())
 
 
 
@@ -191,21 +205,6 @@ class MSPowerPoint(ExternalIndexer):
     def to_text(self):
         stdout = self.convert()
         return xml_to_text(stdout)
-
-
-
-class RTF(ExternalIndexer):
-    class_mimetypes = ['text/rtf']
-    class_extenstion = 'rtf'
-    source_converter = ['unrtf', '--text', '--nopict']
-
-
-    def to_text(self):
-        text = ExternalIndexer.to_text(self)
-        words = text.split()
-        # Filter noise by unrtf
-        words = [word for word in words if len(word) < 100]
-        return u' '.join(words)
 
 
 

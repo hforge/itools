@@ -42,11 +42,10 @@ if __name__ == '__main__':
         print >> stderr, 'Error: Glib 2.0 library or headers not found.'
         raise
     else:
-        cparser = Extension('itools.xml.parser',
-                            sources=['xml/parser.c', 'xml/doctype.c',
-                                     'xml/arp.c', 'xml/pyparser.c'],
-                            **flags)
-        ext_modules.append(cparser)
+        sources = ['xml/parser.c', 'xml/doctype.c', 'xml/arp.c',
+                   'xml/pyparser.c']
+        extension = Extension('itools.xml.parser', sources, **flags)
+        ext_modules.append(extension)
 
     # PDF indexation
     try:
@@ -55,10 +54,9 @@ if __name__ == '__main__':
         print >> stderr, 'Warning: poppler headers are not found.'
         print >> stderr, 'PDF indexation will not be available'
     else:
-        pdfindexer = Extension('itools.pdf.pdftotext',
-                               sources=['pdf/pdftotext.cc'],
-                               **flags)
-        ext_modules.append(pdfindexer)
+        sources = ['pdf/pdftotext.cc']
+        extension = Extension('itools.pdf.pdftotext', sources, **flags)
+        ext_modules.append(extension)
 
     # DOC indexation
     try:
@@ -67,9 +65,9 @@ if __name__ == '__main__':
         print >> stderr, 'Warning: wv2 library is not found.'
         print >> stderr, 'DOC indexation will not be available'
     else:
-        pdfindexer = Extension('itools.xml.doctotext',
-                               sources=['xml/doctotext.cc'],
-                               **flags)
-        ext_modules.append(pdfindexer)
+        sources = ['office/doctotext.cc']
+        extension = Extension('itools.office.doctotext', sources, **flags)
+        ext_modules.append(extension)
 
+    # Ok
     setup(ext_modules=ext_modules)

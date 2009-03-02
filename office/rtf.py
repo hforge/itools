@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from itools
+from itools.handlers import File
+
 
 
 def rtf_parse(data):
@@ -112,3 +115,22 @@ def rtf_to_text(data):
     text = text.decode('quopri_codec')
     text = unicode(text, 'cp1252')
     return text
+
+
+
+
+###########################################################################
+# Handler
+###########################################################################
+class RTF(File):
+
+    class_mimetypes = ['text/rtf']
+    class_extenstion = 'rtf'
+
+
+    def to_text(self):
+        return rtf_to_text(self.to_str())
+
+
+# Register
+register_handler_class(RTF)

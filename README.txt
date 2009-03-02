@@ -4,16 +4,16 @@ meta-package for easier development and deployment.
 
 The packages included are:
 
-  itools.abnf             itools.ical             itools.tmx
-  itools.core             itools.odf              itools.uri
-  itools.csv              itools.pdf              itools.vfs
-  itools.datatypes        itools.pkg              itools.web
-  itools.gettext          itools.python           itools.workflow
-  itools.git              itools.relaxng          itools.xapian
-  itools.handlers         itools.rest             itools.xliff
-  itools.html             itools.rss              itools.xml
-  itools.http             itools.srx              itools.xmlfile
-  itools.i18n             itools.stl
+  itools.abnf             itools.ical             itools.stl
+  itools.core             itools.odf              itools.tmx
+  itools.csv              itools.office           itools.uri
+  itools.datatypes        itools.pdf              itools.vfs
+  itools.gettext          itools.pkg              itools.web
+  itools.git              itools.python           itools.workflow
+  itools.handlers         itools.relaxng          itools.xapian
+  itools.html             itools.rest             itools.xliff
+  itools.http             itools.rss              itools.xml
+  itools.i18n             itools.srx              itools.xmlfile
 
 The scripts included are:
 

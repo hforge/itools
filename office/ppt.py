@@ -22,121 +22,15 @@ from os.path import join as join_path
 from subprocess import Popen, PIPE
 from tempfile import mkdtemp
 
-# Import other modules
-try:
-    from xlrd import open_workbook
-except ImportError:
-    open_workbook = None
-
 # Import from itools
-from itools import vfs
 from itools.handlers import File, register_handler_class, guess_encoding
-try:
-    from doctotext import doc_to_text, DocRtfException
-except ImportError:
-    doc_to_text = None
-from rtftotext import rtf_to_text
-
-
-# TODO Move this module to itools.handlers (it does not require itools.xml)
-
-
-
-class MSWord(File):
-    class_mimetypes = ['application/msword']
-    class_extension = 'doc'
-
-
-    def to_text(self):
-        if doc_to_text is None:
-            return u""
-        data = self.to_str()
-        try:
-            return doc_to_text(data)
-        except DocRtfException:
-            return rtf_to_text(data)
-
-
-
-class MSExcel(File):
-    class_mimetypes = ['application/vnd.ms-excel']
-    class_extension = 'xls'
-
-
-    def to_text(self):
-        if open_workbook is None:
-            return u""
-
-        data = self.to_str()
-
-        # Load the XLRD file
-        # XXX This is slow (try 'print book.load_time_stage_2')
-        book = open_workbook(file_contents=data)
-
-        # Get the text
-        text = []
-        for sheet in book.sheets():
-            for idx in range(sheet.nrows):
-                for value in sheet.row_values(idx):
-                    if type(value) is not unicode:
-                        try:
-                            value = unicode(value)
-                        except UnicodeError:
-                            continue
-                    text.append(value)
-        return u' '.join(text)
-
-
-
-class RTF(File):
-    class_mimetypes = ['text/rtf']
-    class_extenstion = 'rtf'
-
-
-    def to_text(self):
-        return rtf_to_text(self.to_str())
-
-
-
-class ExternalIndexer(File):
-
-    def convert(self):
-        uri = self.uri
-        if uri.scheme == 'file' and self.dirty is None:
-            # Case 1: Use directly the handler's path
-            cmdline = self.source_converter + [str(uri.path)]
-            popen = Popen(cmdline, stdout=PIPE, stderr=PIPE)
-            stdout, stderr = popen.communicate()
-        else:
-            # Case 2: Use a temporary file
-            data = self.to_str()
-            tmp_folder = mkdtemp('itools')
-            try:
-                # Write the temporary file
-                infile_path = join_path(tmp_folder, 'infile')
-                with open(infile_path, 'wb') as infile:
-                    infile.write(data)
-                # Call, and read stdout and stderr
-                cmdline = self.source_converter + [infile_path]
-                popen = Popen(cmdline, stdout=PIPE, stderr=PIPE)
-                stdout, stderr = popen.communicate()
-            finally:
-                vfs.remove(tmp_folder)
-
-        # Ok
-        if stderr:
-            return ''
-        return stdout
-
-
-    def to_text(self):
-        stdout = self.convert()
-        return unicode(stdout, 'utf-8', 'replace')
-
+from itools import vfs
 
 
 # Append &apos;, the apostrophe (simple quote) for XML
 name2codepoint['apos'] = 39
+
+
 
 def xml_to_text(data):
     """A brute-force text extractor for XML and HTML syntax, even broken to
@@ -196,6 +90,48 @@ def xml_to_text(data):
 
     return u''.join(output)
 
+
+
+###########################################################################
+# Handler
+###########################################################################
+class ExternalIndexer(File):
+
+    def convert(self):
+        uri = self.uri
+        if uri.scheme == 'file' and self.dirty is None:
+            # Case 1: Use directly the handler's path
+            cmdline = self.source_converter + [str(uri.path)]
+            popen = Popen(cmdline, stdout=PIPE, stderr=PIPE)
+            stdout, stderr = popen.communicate()
+        else:
+            # Case 2: Use a temporary file
+            data = self.to_str()
+            tmp_folder = mkdtemp('itools')
+            try:
+                # Write the temporary file
+                infile_path = join_path(tmp_folder, 'infile')
+                with open(infile_path, 'wb') as infile:
+                    infile.write(data)
+                # Call, and read stdout and stderr
+                cmdline = self.source_converter + [infile_path]
+                popen = Popen(cmdline, stdout=PIPE, stderr=PIPE)
+                stdout, stderr = popen.communicate()
+            finally:
+                vfs.remove(tmp_folder)
+
+        # Ok
+        if stderr:
+            return ''
+        return stdout
+
+
+    def to_text(self):
+        stdout = self.convert()
+        return unicode(stdout, 'utf-8', 'replace')
+
+
+
 class MSPowerPoint(ExternalIndexer):
     class_mimetypes = ['application/vnd.ms-powerpoint']
     class_extension = 'ppt'
@@ -209,7 +145,4 @@ class MSPowerPoint(ExternalIndexer):
 
 
 # Register
-register_handler_class(MSWord)
-register_handler_class(MSExcel)
 register_handler_class(MSPowerPoint)
-register_handler_class(RTF)

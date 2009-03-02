@@ -23,7 +23,7 @@ from textwrap import wrap
 from re import split
 
 # Import from itools
-from itools.datatypes.primitive import String
+from itools.datatypes import String
 from text import TextFile
 
 

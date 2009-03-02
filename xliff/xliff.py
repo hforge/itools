@@ -19,10 +19,10 @@
 
 # Import from itools
 from itools.datatypes import XMLContent, XMLAttribute
-from itools.gettext.po import encode_source
+from itools.gettext import encode_source
 from itools.handlers import TextFile, register_handler_class
-from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, COMMENT, TEXT
 from itools.srx import TEXT as srx_TEXT, START_FORMAT, END_FORMAT
+from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, COMMENT, TEXT
 
 
 doctype = (

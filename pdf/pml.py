@@ -31,7 +31,7 @@ from itools.core import freeze, get_abspath
 from itools.datatypes import XMLContent
 from itools.stl import set_prefix, stl
 from itools.uri import Path
-from itools.uri.uri import get_cwd
+from itools.uri import get_cwd
 from itools import vfs
 from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, TEXT
 from itools.xml import get_end_tag

@@ -20,16 +20,18 @@
 from itools.core import add_type, get_abspath
 from domains import register_domain, get_domain, MSG
 from mo import MOFile
-from po import POFile, POUnit
+from po import POFile, POUnit, encode_source
 
 
 __all__ = [
+    'encode_source',
     'register_domain',
     'get_domain',
     'MSG',
     'MOFile',
     'POFile',
-    'POUnit']
+    'POUnit',
+    ]
 
 
 add_type('text/x-gettext-translation', '.po')

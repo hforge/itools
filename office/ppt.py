@@ -95,14 +95,18 @@ def xml_to_text(data):
 ###########################################################################
 # Handler
 ###########################################################################
-class ExternalIndexer(File):
+class MSPowerPoint(File):
 
-    def convert(self):
+    class_mimetypes = ['application/vnd.ms-powerpoint']
+    class_extension = 'ppt'
+
+
+    def _convert(self):
         uri = self.uri
         if uri.scheme == 'file' and self.dirty is None:
             # Case 1: Use directly the handler's path
-            cmdline = self.source_converter + [str(uri.path)]
-            popen = Popen(cmdline, stdout=PIPE, stderr=PIPE)
+            command = ['ppthtml', str(uri.path)]
+            popen = Popen(command, stdout=PIPE, stderr=PIPE)
             stdout, stderr = popen.communicate()
         else:
             # Case 2: Use a temporary file
@@ -114,8 +118,8 @@ class ExternalIndexer(File):
                 with open(infile_path, 'wb') as infile:
                     infile.write(data)
                 # Call, and read stdout and stderr
-                cmdline = self.source_converter + [infile_path]
-                popen = Popen(cmdline, stdout=PIPE, stderr=PIPE)
+                command = ['ppthtml', infile_path]
+                popen = Popen(command, stdout=PIPE, stderr=PIPE)
                 stdout, stderr = popen.communicate()
             finally:
                 vfs.remove(tmp_folder)
@@ -127,19 +131,7 @@ class ExternalIndexer(File):
 
 
     def to_text(self):
-        stdout = self.convert()
-        return unicode(stdout, 'utf-8', 'replace')
-
-
-
-class MSPowerPoint(ExternalIndexer):
-    class_mimetypes = ['application/vnd.ms-powerpoint']
-    class_extension = 'ppt'
-    source_converter = ['ppthtml']
-
-
-    def to_text(self):
-        stdout = self.convert()
+        stdout = self._convert()
         return xml_to_text(stdout)
 
 

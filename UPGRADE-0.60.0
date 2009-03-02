@@ -48,6 +48,10 @@ See the table below for the imports to update.
   utils.get_version              pkg.get_version
   utils.setup                    pkg.setup
   utils.vmsize                   core.vmsize
+  xml.MSExcel                    office.MSExcel
+  xml.MSPowerPoint               office.MSPowerPoint
+  xml.MSWord                     office.MSWord
+  xml.RTF                        office.RTF
   xml.translate                  xmlfile.translate
   xml.xml_to_text                ** NOT EXPORTED **
   xml.XMLFile                    xmlfile.XMLFile

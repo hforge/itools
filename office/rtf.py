@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.handlers import File
+from itools.handlers import File, register_handler_class
 
 
 

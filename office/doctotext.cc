@@ -162,8 +162,8 @@ extern "C" PyMODINIT_FUNC initdoctotext(void) {
         return;
     }
 
-    if (!(DocRtfException = PyErr_NewException((char *)
-                    "itools.xml.doctotext.DocRtfException", NULL, NULL))) {
+    if (!(DocRtfException = PyErr_NewException(
+                    (char *)"doctotext.DocRtfException", NULL, NULL))) {
         goto err0;
     }
     Py_INCREF(DocRtfException);

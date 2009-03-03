@@ -133,11 +133,6 @@ class Context(object):
     #######################################################################
     # API / Redirect
     #######################################################################
-    def redirect(self, reference, status=302):
-        reference = self.uri.resolve(reference)
-        self.response.redirect(reference, status)
-
-
     def come_back(self, message, goto=None, keep=freeze([]), **kw):
         """This is a handy method that builds a resource URI from some
         parameters.  It exists to make short some common patterns.

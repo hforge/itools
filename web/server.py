@@ -696,7 +696,8 @@ class RequestMethod(object):
         response = context.response
         body = context.entity
         if isinstance(body, Reference):
-            context.redirect(body)
+            reference = context.uri.resolve(body)
+            response.redirect(reference, 302)
             return
         response.set_body(body)
         length = response.get_content_length()

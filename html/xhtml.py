@@ -126,7 +126,9 @@ safe_tags = frozenset([
     'strong', 'sub', 'sup', 'table', 'tbody', 'td', 'textarea', 'tfoot', 'th',
     'thead', 'tr', 'tt', 'u', 'ul', 'var',
     # flash
-    'embed', 'object', 'param'])
+    'embed', 'object', 'param',
+    # iframe
+    'iframe'])
 
 safe_attrs = frozenset([
     'abbr', 'accept', 'accept-charset', 'accesskey', 'action', 'align', 'alt',
@@ -140,7 +142,10 @@ safe_attrs = frozenset([
     'size', 'span', 'src', 'start', 'style', 'summary', 'tabindex', 'target',
     'title', 'type', 'usemap', 'valign', 'value', 'vspace', 'width',
     # flash,
-    'data'])
+    'data',
+    # iframe
+    'frameborder', 'marginheight', 'marginwidth', 'scrolling'])
+
 
 uri_attrs = frozenset([
     'action', 'background', 'data', 'dynsrc', 'href', 'lowsrc', 'src'])

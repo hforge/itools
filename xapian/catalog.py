@@ -20,22 +20,20 @@ from marshal import dumps, loads
 
 # Import from xapian
 from xapian import Database, WritableDatabase, DB_CREATE, DB_OPEN
-from xapian import Document, Enquire, Query, TermGenerator
-# XXX from xapian import Stem
-from xapian import MultiValueSorter, sortable_serialise, sortable_unserialise
-from xapian import inmemory_open
+from xapian import Document, Query, TermGenerator, inmemory_open
 
 # Import from itools
-from itools.datatypes import Integer, Unicode
-from itools.i18n import is_asian_character, is_punctuation
+from itools.datatypes import Unicode
+from itools.i18n import is_punctuation
 from itools.uri import get_absolute_reference
 from base import CatalogAware
-from exceptions import XapianIndexError
-from queries import RangeQuery, PhraseQuery, AndQuery, OrQuery
-from queries import AllQuery, NotQuery, StartQuery
+from queries import AllQuery, AndQuery, NotQuery, OrQuery, PhraseQuery
+from queries import RangeQuery, StartQuery
+from results import SearchResults
+from utils import _encode, _get_field_cls
+
 
 # Constants
-# XXX stemmer = Stem('en')
 OP_AND = Query.OP_AND
 OP_AND_NOT = Query.OP_AND_NOT
 OP_OR = Query.OP_OR
@@ -43,28 +41,6 @@ OP_PHRASE= Query.OP_PHRASE
 OP_VALUE_RANGE = Query.OP_VALUE_RANGE
 OP_VALUE_GE = Query.OP_VALUE_GE
 OP_VALUE_LE = Query.OP_VALUE_LE
-
-
-
-# We must overload the normal behaviour (range + optimization)
-def _encode(field_cls, value):
-    # Overload the Integer type
-    # XXX warning: this doesn't work with the big integers!
-    if issubclass(field_cls, Integer):
-        return sortable_serialise(value)
-    # A common field or a new field
-    return field_cls.encode(value)
-
-
-
-def _decode(field_cls, data):
-    # Overload the Integer type, cf _encode
-    if issubclass(field_cls, Integer):
-        if data == '':
-            return None
-        return int(sortable_unserialise(data))
-    # A common field or a new field
-    return field_cls.decode(data)
 
 
 
@@ -113,16 +89,18 @@ def _index_cjk(xdoc, value, prefix, termpos):
 
 
 def _index_unicode(xdoc, value, prefix, language, termpos):
+    # Japanese or Chinese
     if language in ['ja', 'zh']:
         return _index_cjk(xdoc, value, prefix, termpos)
-    else:
-        tg = TermGenerator()
-        tg.set_document(xdoc)
-        tg.set_termpos(termpos - 1)
-        # XXX The words are saved twice: with prefix and with Zprefix
-        #tg.set_stemmer(stemmer)
-        tg.index_text(value, 1, prefix)
-        return tg.get_termpos() + 1
+
+    # Any other language
+    tg = TermGenerator()
+    tg.set_document(xdoc)
+    tg.set_termpos(termpos - 1)
+    # XXX The words are saved twice: with prefix and with Zprefix
+    #tg.set_stemmer(stemmer)
+    tg.index_text(value, 1, prefix)
+    return tg.get_termpos() + 1
 
 
 
@@ -134,11 +112,13 @@ def _index(xdoc, field_cls, value, prefix, language):
 
     Where <word> will be a <str> value.
     """
+    is_multiple = (
+        field_cls.multiple
+        and isinstance(value, (tuple, list, set, frozenset)))
 
     # Unicode: a complex split
     if issubclass(field_cls, Unicode):
-        if (field_cls.multiple and
-            isinstance(value, (tuple, list, set, frozenset))):
+        if is_multiple:
             termpos = 1
             for x in value:
                 termpos = _index_unicode(xdoc, x, prefix, language, termpos)
@@ -146,8 +126,7 @@ def _index(xdoc, field_cls, value, prefix, language):
             _index_unicode(xdoc, value, prefix, language, 1)
     # An other type: too easy
     else:
-        if (field_cls.multiple and
-            isinstance(value, (tuple, list, set, frozenset))):
+        if is_multiple:
             for position, x in enumerate(value):
                 xdoc.add_posting(prefix + _encode(field_cls, x), position + 1)
         else:
@@ -184,14 +163,6 @@ def _get_prefix(number):
     size = len(magic_letters)
     result = 'X'*(number/size)
     return result+magic_letters[number%size]
-
-
-
-def _get_field_cls(name, fields, info):
-    if name not in fields:
-        return fields[info['from']]
-    else:
-        return fields[name]
 
 
 
@@ -237,126 +208,9 @@ def split_unicode(text, language='en'):
 
 
 
-class Doc(object):
-
-    def __init__(self, xdoc, fields, metadata):
-        self._xdoc = xdoc
-        self._fields = fields
-        self._metadata = metadata
-
-
-    def __getattr__(self, name):
-        info = self._metadata[name]
-        value = info['value']
-        field_cls = _get_field_cls(name, self._fields, info)
-        data = self._xdoc.get_value(value)
-        return _decode(field_cls, data)
-
-
-
-class SearchResults(object):
-
-    def __init__(self, catalog, xquery):
-        self._catalog = catalog
-        self._xquery = xquery
-
-        # Enquire
-        enquire = Enquire(catalog._db)
-        enquire.set_query(xquery)
-        self._enquire = enquire
-
-        # Max
-        max = enquire.get_mset(0,0).get_matches_upper_bound()
-        self._max = enquire.get_mset(0, max).size()
-
-
-    def __len__(self):
-        """Returns the number of documents found."""
-        return self._max
-
-
-    # FIXME Obsolete
-    get_n_documents = __len__
-
-
-    def search(self, query=None, **kw):
-        catalog = self._catalog
-
-        xquery = _get_xquery(catalog, query, **kw)
-        return SearchResults(catalog, Query(OP_AND, [self._xquery, xquery]))
-
-
-    def get_documents(self, sort_by=None, reverse=False, start=0, size=0):
-        """Returns the documents for the search, sorted by weight.
-
-        Four optional arguments are accepted, which will modify the documents
-        returned.
-
-        First, it is possible to sort by a field, or a list of fields, instead
-        of by the weight. The condition is that the field must be stored:
-
-          - "sort_by", if given it must be the name of an stored field, or
-            a list of names of stored fields. The results will be sorted by
-            this fields, instead of by the weight.
-
-          - "reverse", a boolean value that says whether the results will be
-            ordered from smaller to greater (reverse is False, the default),
-            or from greater to smaller (reverse is True). This parameter only
-            takes effect if the parameter "sort_by" is also given.
-
-        It is also possible to ask for a subset of the documents:
-
-          - "start": returns the documents starting from the given start
-            position.
-
-          - "size": returns at most documents as specified by this parameter.
-
-        By default all the documents are returned.
-        """
-        enquire = self._enquire
-        fields = self._catalog._fields
-        metadata = self._catalog._metadata
-
-        # sort_by != None
-        if sort_by is not None:
-            if isinstance(sort_by, list):
-                sorter = MultiValueSorter()
-                for name in sort_by:
-                    # If there is a problem, ignore this field
-                    if name not in metadata:
-                        continue
-                    sorter.add(metadata[name]['value'])
-                enquire.set_sort_by_key_then_relevance(sorter, reverse)
-            else:
-                # If there is a problem, ignore the sort
-                if sort_by in metadata:
-                    value = metadata[sort_by]['value']
-                    enquire.set_sort_by_value_then_relevance(value, reverse)
-        else:
-            enquire.set_sort_by_relevance()
-
-        # start/size
-        if size == 0:
-            size = self._max
-
-        # Construction of the results
-        results = []
-        for doc in enquire.get_mset(start, size):
-            results.append(Doc(doc.get_document(), fields, metadata))
-
-        # sort_by=None/reverse=True
-        if sort_by is None and reverse:
-            results.reverse()
-
-        return results
-
-
-
 class Catalog(object):
 
-    def __init__(self, ref, fields, read_only=False,
-                 asynchronous_mode=True):
-
+    def __init__(self, ref, fields, read_only=False, asynchronous_mode=True):
         # Load the database
         if isinstance(ref, Database) or isinstance(ref, WritableDatabase):
             self._db = ref
@@ -526,14 +380,14 @@ class Catalog(object):
         """Return all the terms of a given indexed field
         """
         metadata = self._metadata
-        if name in metadata:
-            prefix = metadata[name]['prefix']
-            prefix_size = len(prefix)
-            return set([ t.term[prefix_size:]
-                         for t in self._db.allterms(prefix) ])
-        else:
-            # If there is a problem => an empty result
+        # If there is a problem => an empty result
+        if name not in metadata:
             return set()
+
+        # Ok
+        prefix = metadata[name]['prefix']
+        prefix_len = len(prefix)
+        return set([ t.term[prefix_len:] for t in self._db.allterms(prefix) ])
 
 
     #######################################################################
@@ -711,5 +565,4 @@ def make_catalog(uri, fields):
         path = str(uri.path)
         db = WritableDatabase(path, DB_CREATE)
         return Catalog(db, fields)
-
 

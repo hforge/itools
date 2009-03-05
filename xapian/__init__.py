@@ -17,7 +17,6 @@
 # Import from itools
 from base import CatalogAware
 from catalog import Catalog, make_catalog, split_unicode
-from exceptions import XapianIndexError
 from queries import RangeQuery, PhraseQuery, AndQuery, OrQuery
 from queries import AllQuery, NotQuery, StartQuery
 
@@ -27,8 +26,6 @@ __all__ = [
     'Catalog',
     'CatalogAware',
     'split_unicode',
-    # Exceptions
-    'XapianIndexError',
     # Queries
     'RangeQuery',
     'PhraseQuery',

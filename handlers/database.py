@@ -354,7 +354,13 @@ class RODatabase(BaseDatabase):
 
 
     def _cleanup(self):
+#       import gc
+#       from itools.core import vmsize
+#       print 'RODatabase._cleanup (0): % 4d %s' % (len(self.cache), vmsize())
+#       print gc.get_count()
         self.make_room()
+#       print 'RODatabase._cleanup (1): % 4d %s' % (len(self.cache), vmsize())
+#       print gc.get_count()
 
 
 ###########################################################################

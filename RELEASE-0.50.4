@@ -1,0 +1,46 @@
+
+itools 0.50.4 (2009/03/06)
+==========================
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.abnf             itools.ical             itools.tmx
+  itools.csv              itools.isetup           itools.uri
+  itools.datatypes        itools.odf              itools.vfs
+  itools.gettext          itools.pdf              itools.web
+  itools.git              itools.relaxng          itools.workflow
+  itools.handlers         itools.rest             itools.xapian
+  itools.html             itools.rss              itools.xliff
+  itools.http             itools.srx              itools.xml
+  itools.i18n             itools.stl
+
+Most important in this release, the usage of the Python's mimetypes
+module has been optimized.  It was found the functional API parsed
+the mimetype files at each call, and represented a huge performance
+penalty.  Now itools.vfs uses the class API, and overall performance
+has been much improved.
+
+There have been some fixes.  Most notably a bug in Python's HTMLParser
+has been work-around; and the 'sanitize_stream' function, also from
+itools.html, has been optimized.
+
+
+Resources
+---------
+
+Download
+http://download.hforge.org/itools/0.50/itools-0.50.4.tar.gz
+http://download.hforge.org/itools/0.50/itools-0.50.4.win32-py2.5.exe
+http://download.hforge.org/itools/0.50/itools-0.50.4.win32-py2.6.exe
+
+Home
+http://www.hforge.org/itools/
+
+Mailing list
+http://www.hforge.org/community/
+http://archives.hforge.org/index.cgi?list=itools
+
+Bug Tracker
+http://bugs.hforge.org/
+

@@ -115,6 +115,25 @@ def get_revisions(files=freeze([]), cwd=None):
 
 
 
+def get_revisions_metadata(files=freeze([]), cwd=None):
+    command = ['git', 'rev-list', '--pretty=format:%an%n%at%n%s', 'HEAD', '--']
+    command = command + files
+    pipe = get_pipe(command, cwd=cwd)
+
+    revisions = []
+    lines = pipe.readlines()
+    for idx in range(len(lines) / 5):
+        base = idx * 4
+        ts = line[base+2].rstrip()
+        revisions.append(
+            {'commit': line[base].split()[1],
+             'author_name': line[base+1].rstrip(),
+             'author_date': datetime.fromtimestamp(int(ts)),
+             'subject': line[base+3].rstrip()})
+
+    return revisions
+
+
 def get_diff(reference='HEAD', cwd=None):
     pipe = get_pipe(['git', 'show', reference, '--pretty=format:'], cwd=cwd)
     return [ x.rstrip() for x in pipe.readlines() ]

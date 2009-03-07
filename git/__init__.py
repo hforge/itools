@@ -17,6 +17,7 @@
 # Import from itools
 from git import is_available, get_filenames, get_metadata, get_branch_name
 from git import get_revisions, get_tag_names, get_diff
+from git import get_revisions_metadata
 
 
 
@@ -26,6 +27,7 @@ __all__ = [
     'get_filenames',
     'get_metadata',
     'get_revisions',
+    'get_revisions_metadata',
     'get_tag_names',
     'is_available',
     ]

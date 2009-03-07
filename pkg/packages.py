@@ -92,7 +92,7 @@ def packages_infos(module_name=None):
     module_mask = set()
 
     def add_package(site, package):
-        if packages.has_key(site):
+        if site in packages:
             packages[site].append(package)
         else:
             packages[site] = [package]

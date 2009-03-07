@@ -127,7 +127,7 @@ if __name__ == '__main__':
                     authors[email][1].add(year)
 
         # Don't consider the email 'not.committed.yet' as a valid author email
-        if authors.has_key('not.committed.yet'):
+        if 'not.committed.yet' in authors:
             del authors['not.committed.yet']
 
         # Keep old copyright

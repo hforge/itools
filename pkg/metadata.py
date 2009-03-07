@@ -70,7 +70,7 @@ class RFC822File(TextFile):
                     self.attrs[k] = self.message.getheader(k)
                 else:
                     self.attrs[k] = self.message.getheaders(k)
-            elif self.schema.has_key(k):
+            elif k in self.schema:
                 if issubclass(self.schema[k], String):
                     self.attrs[k] = self.message.getheader(k)
                 elif issubclass(self.schema[k], Tokens):
@@ -103,7 +103,7 @@ class RFC822File(TextFile):
                 for v in val:
                     if type(v) not in self.str_types:
                         raise TypeError, type_error_msg
-            elif not (self.schema is None or self.schema.has_key(key)):
+            elif self.schema is not None and key not in self.schema:
                 del attrs[key]
 
         # Now attrs is sure
@@ -114,7 +114,7 @@ class RFC822File(TextFile):
     def get_attrs(self):
         if self.schema is not None:
             for key in self.schema:
-                if not self.attrs.has_key(key):
+                if key not in self.attrs:
                     self.attrs[key] = self.schema[key].get_default()
         return self.attrs
 

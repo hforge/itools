@@ -357,7 +357,7 @@ def create_graph():
         metadata = git.get_metadata()
         date_time = metadata['committer'][1]
         commit_date = date(date_time.year, date_time.month, date_time.day)
-        if not statistics.has_key(commit_date):
+        if commit_date not in statistics:
             statistics[commit_date] = stats
         else:
             # Same day => Avg

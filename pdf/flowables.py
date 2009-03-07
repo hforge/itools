@@ -96,7 +96,7 @@ class Div(Flowable):
 
         for margin in ('topMargin', 'bottomMargin', 'leftMargin',
                        'rightMargin'):
-            if self.frame_attrs.has_key(margin):
+            if margin in self.frame_attrs:
                 del self.frame_attrs[margin]
 
         border = self.frame_attrs['showBoundary']

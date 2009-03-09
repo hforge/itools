@@ -76,23 +76,37 @@ class BaseDatabase(object):
         """
 
 
+    def _has_changed(self):
+        """Returns whethere there is something that has changed or not.
+        This is to avoid superfluos actions by the 'save' and 'abort'
+        methods.
+        """
+        raise NotImplementedError
+
+
     #######################################################################
     # Public API
     def save_changes(self):
+        if self._has_changed() is False:
+            return
+
         # Prepare for commit, do here the most you can, if something fails
         # the transaction will be aborted
         try:
             data = self._before_commit()
         except:
-            database.abort_changes()
+            self._abort_changes()
             raise
-
-        # Commit for real
-        self._save_changes(data)
-        self._cleanup()
+        else:
+            self._save_changes(data)
+        finally:
+            self._cleanup()
 
 
     def abort_changes(self):
+        if self._has_changed() is False:
+            return
+
         self._abort_changes()
         self._cleanup()
 
@@ -541,6 +555,10 @@ class RWDatabase(RODatabase):
 
     #######################################################################
     # API / Transactions
+    def _has_changed(self):
+        return bool(self.added) or bool(self.changed) or bool(self.removed)
+
+
     def _abort_changes(self):
         cache = self.cache
         # Added handlers

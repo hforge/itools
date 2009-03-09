@@ -122,14 +122,14 @@ def get_revisions_metadata(files=freeze([]), cwd=None):
 
     revisions = []
     lines = pipe.readlines()
-    for idx in range(len(lines) / 5):
+    for idx in range(len(lines) / 4):
         base = idx * 4
-        ts = line[base+2].rstrip()
+        ts = lines[base+2].rstrip()
         revisions.append(
-            {'commit': line[base].split()[1],
-             'author_name': line[base+1].rstrip(),
+            {'commit': lines[base].split()[1],
+             'author_name': lines[base+1].rstrip(),
              'author_date': datetime.fromtimestamp(int(ts)),
-             'subject': line[base+3].rstrip()})
+             'subject': lines[base+3].rstrip()})
 
     return revisions
 

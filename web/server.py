@@ -680,7 +680,7 @@ class RequestMethod(object):
     def commit_transaction(cls, server, context):
         database = server.database
         # Check conditions are met
-        if not cls.check_transaction(server, context) is True:
+        if cls.check_transaction(server, context) is False:
             database.abort_changes()
             return
 
@@ -876,11 +876,6 @@ class POST(RequestMethod):
 class OPTIONS(RequestMethod):
 
     @classmethod
-    def check_transaction(cls, server, context):
-        return False
-
-
-    @classmethod
     def handle_request(cls, server, context):
         response = context.response
         root = context.root
@@ -930,9 +925,6 @@ class OPTIONS(RequestMethod):
         response.set_header('allow', ','.join(allowed))
         context.entity = None
         context.status = 200
-
-        # (4) Commit the transaction
-        cls.commit_transaction(server, context)
 
         # (5) After Traverse hook
         try:

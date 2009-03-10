@@ -19,23 +19,18 @@
 
 # Import from the Standard Library
 from datetime import datetime
-from logging import getLogger
-from os import fdopen
+from os import mkdir
+from subprocess import call, PIPE
 from sys import getrefcount
-from tempfile import mkstemp
-from thread import allocate_lock, get_ident
 
 # Import from itools
 from itools.core import LRUCache
-from itools.uri import get_reference, get_absolute_reference, Path
+from itools.uri import get_absolute_reference
 from itools.vfs import vfs
 from itools.vfs import cwd, READ, WRITE, READ_WRITE, APPEND
 from folder import Folder
 import messages
 from registry import get_handler_class
-
-
-logger = getLogger('data')
 
 
 ###########################################################################
@@ -66,7 +61,15 @@ class BaseDatabase(object):
         raise NotImplementedError
 
 
+    def _rollback(self):
+        """To be called when something goes wrong while saving the changes.
+        """
+        raise NotImplementedError
+
+
     def _abort_changes(self):
+        """To be called to abandon the transaction.
+        """
         raise NotImplementedError
 
 
@@ -96,9 +99,16 @@ class BaseDatabase(object):
             data = self._before_commit()
         except:
             self._abort_changes()
+            self._cleanup()
             raise
-        else:
+
+        # Commit
+        try:
             self._save_changes(data)
+        except:
+            self._rollback()
+            self._abort_changes()
+            raise
         finally:
             self._cleanup()
 
@@ -575,29 +585,24 @@ class RWDatabase(RODatabase):
 
     def _save_changes(self, data):
         cache = self.cache
-        try:
-            # Save changed handlers
-            for uri in self.changed:
-                # Save the handler's state
-                handler = cache[str(uri)]
-                handler.save_state()
-                # Update timestamp
-                handler.timestamp = vfs.get_mtime(uri)
-                handler.dirty = None
-            # Remove handlers
-            for uri in self.removed:
-                self.safe_remove(uri)
-            # Add new handlers
-            for uri in self.added:
-                handler = cache[str(uri)]
-                handler.save_state_to(uri)
-                # Update timestamp
-                handler.timestamp = vfs.get_mtime(uri)
-                handler.dirty = None
-        except:
-            # Rollback
-            self.abort_changes()
-            raise
+        # Save changed handlers
+        for uri in self.changed:
+            # Save the handler's state
+            handler = cache[str(uri)]
+            handler.save_state()
+            # Update timestamp
+            handler.timestamp = vfs.get_mtime(uri)
+            handler.dirty = None
+        # Remove handlers
+        for uri in self.removed:
+            self.safe_remove(uri)
+        # Add new handlers
+        for uri in self.added:
+            handler = cache[str(uri)]
+            handler.save_state_to(uri)
+            # Update timestamp
+            handler.timestamp = vfs.get_mtime(uri)
+            handler.dirty = None
 
         # Reset the state
         self.changed.clear()
@@ -605,239 +610,110 @@ class RWDatabase(RODatabase):
         self.removed.clear()
 
 
-
 ###########################################################################
-# The Solid Database (bullet-proof transactions)
+# The Git Database
 ###########################################################################
+class GitDatabase(RWDatabase):
 
-# The database states
-READY = 0
-TRANSACTION_PHASE1 = 1
-TRANSACTION_PHASE2 = 2
-
-# Map from handler path to temporal file
-thread_lock = allocate_lock()
-_tmp_maps = {}
-
-def get_tmp_map():
-    ident = get_ident()
-    thread_lock.acquire()
-    try:
-        tmp_map = _tmp_maps.setdefault(ident, {})
-    finally:
-        thread_lock.release()
-
-    return tmp_map
-
-
-class SolidDatabase(RWDatabase):
-
-    def __init__(self, commit, cache_size):
+    def __init__(self, path, cache_size):
         RWDatabase.__init__(self, cache_size)
-        # The commit, for safe transactions
-        if not isinstance(commit, Path):
-            commit = Path(commit)
-        self.commit = str(commit)
-        self.commit_log = str(commit.resolve2('log'))
+        uri = get_absolute_reference(path)
+        if uri.scheme != 'file':
+            raise ValueError, 'unexpected "%s" path' % path
+        self.path = str(uri.path)
+        if self.path[-1] != '/':
+            self.path += '/'
 
 
-    #######################################################################
-    # API / Safe VFS operations
+    def _check_reference(self, reference):
+        """Check whether the given reference is within the git path.  If it
+        is, return the resolved reference as an string.
+        """
+        # Resolve the reference
+        uri = get_absolute_reference(reference)
+        # Security check
+        if uri.scheme != 'file':
+            raise ValueError, 'unexpected "%s" reference' % reference
+        path = str(uri.path)
+        if not path.startswith(self.path):
+            raise ValueError, 'unexpected "%s" reference' % reference
+        # Ok
+        return str(uri)
+
+
     def safe_make_file(self, reference):
-        tmp_map = get_tmp_map()
-        if reference in tmp_map:
-            tmp_path = tmp_map[reference]
-            return vfs.open(tmp_path, WRITE)
-
-        tmp_file, tmp_path = mkstemp(dir=self.commit)
-        tmp_path = get_reference(tmp_path)
-        log = open(self.commit_log, 'a+b')
-        try:
-            log.write('+%s#%s\n' % (reference, tmp_path))
-        finally:
-            log.close()
-        return fdopen(tmp_file, 'w')
+        reference = self._check_reference(reference)
+        return vfs.make_file(reference)
 
 
     def safe_make_folder(self, reference):
-        log = open(self.commit_log, 'a+b')
-        try:
-            log.write('+%s\n' % reference)
-        finally:
-            log.close()
-
+        reference = self._check_reference(reference)
         return vfs.make_folder(reference)
 
 
     def safe_remove(self, reference):
-        log = open(self.commit_log, 'a+b')
-        try:
-            log.write('-%s\n' % reference)
-        finally:
-            log.close()
+        reference = self._check_reference(reference)
+        return vfs.remove(reference)
 
 
     def safe_open(self, reference, mode=None):
-        if mode == WRITE:
-            tmp_map = get_tmp_map()
-            if reference in tmp_map:
-                tmp_path = tmp_map[reference]
-                return vfs.open(tmp_path, mode)
-
-            tmp_file, tmp_path = mkstemp(dir=self.commit)
-            tmp_path = get_reference(tmp_path)
-            tmp_map[reference] = tmp_path
-            log = open(self.commit_log, 'a+b')
-            try:
-                log.write('~%s#%s\n' % (reference, tmp_path))
-            finally:
-                log.close()
-            return fdopen(tmp_file, 'w')
-        elif mode == READ_WRITE:
-            raise NotImplementedError
-        elif mode == APPEND:
-            tmp_map = get_tmp_map()
-            if reference in tmp_map:
-                tmp_path = tmp_map[reference]
-                return vfs.open(tmp_path, mode)
-
-            tmp_file, tmp_path = mkstemp(dir=self.commit)
-            tmp_path = get_reference(tmp_path)
-            tmp_map[reference] = tmp_path
-            log = open(self.commit_log, 'a+b')
-            try:
-                log.write('>%s#%s\n' % (reference, tmp_path))
-            finally:
-                log.close()
-            return fdopen(tmp_file, 'w')
-        # READ by default
+        reference = self._check_reference(reference)
         return vfs.open(reference, mode)
 
 
-    #######################################################################
-    # API / Transactions
-    def get_state(self):
-        commit = self.commit
-        if vfs.exists(commit):
-            if vfs.exists('%s/done' % commit):
-                return TRANSACTION_PHASE2
-            return TRANSACTION_PHASE1
-
-        return READY
+    def _rollback(self):
+        command = ['git', 'checkout', '-f']
+        call(command, cwd=self.path)
+        command = ['git', 'clean', '-fxdq']
+        call(command, cwd=self.path)
 
 
     def _save_changes(self, data):
-        # 1. Start
-        vfs.make_file(self.commit_log)
+        # Figure out the files to add
+        git_files = []
+        for uri in self.added:
+            git_files.append(str(uri.path))
 
-        # State
-        changed = self.changed
-        added = self.added
-        removed = self.removed
+        # Save
+        RWDatabase._save_changes(self, data)
 
-        # Write changes to disk
-        cache = self.cache
-        try:
-            # Save changed handlers
-            for uri in changed:
-                # Save the handler's state
-                handler = cache[str(uri)]
-                handler.save_state()
-            # Remove handlers
-            for uri in removed:
-                self.safe_remove(uri)
-            # Add new handlers
-            for uri in added:
-                handler = cache[str(uri)]
-                handler.save_state_to(uri)
-        except:
-            # Rollback the changes in memory
-            self.abort_changes()
-            # Rollback the changes in disk
-            self.rollback()
-            get_tmp_map().clear()
-            # Log
-            logger.error('Transaction failed.')
-            raise
+        # Add
+        git_files = [ x for x in git_files if vfs.exists(x) ]
+        if git_files:
+            command = ['git', 'add'] + git_files
+            call(command, cwd=self.path)
+
+        # Commit
+        command = ['git', 'commit', '-aq']
+        if data is None:
+            command.extend(['-m', 'no comment'])
         else:
-            get_tmp_map().clear()
-
-        # Reset the state
-        self.changed = set()
-        self.added = set()
-        self.removed = set()
-
-        # 2. Transaction commited successfully.
-        # Once we pass this point, we will save the changes permanently,
-        # whatever happens (e.g. if there is a current failover we will
-        # continue this process to finish the work).
-        vfs.make_file('%s/done' % self.commit)
-        self.save_changes_forever()
-
-        # 3. Update timestamps
-        for uri in changed:
-            handler = cache[str(uri)]
-            handler.timestamp = vfs.get_mtime(uri)
-            handler.dirty = None
-        for uri in added:
-            handler = cache[str(uri)]
-            handler.timestamp = vfs.get_mtime(uri)
-            handler.dirty = None
-
-        # 4. Log
-        logger.info('Transaction done.')
+            git_author, git_message = data
+            command.extend(['--author=%s' % git_author, '-m', git_message])
+        call(command, cwd=self.path, stdout=PIPE)
 
 
-    def rollback(self):
-        """This method is to be called when something bad happens while we
-        are saving the changes to disk. For example if somebody pushes the
-        reset button of the computer.
 
-        This method will remove the changes done so far and restore the
-        database state before the transaction started.
-        """
-        vfs.remove(self.commit)
+def make_git_database(path, size):
+    """Create a new empty Git database if the given path does not exists or
+    is a folder.
 
+    If the given path is a folder with content, the Git archive will be
+    initialized and the content of the folder will be added to it in a first
+    commit.
+    """
+    if not vfs.exists(path):
+        mkdir(path)
+    # Init
+    command = ['git', 'init', '-q']
+    call(command, cwd=path, stdout=PIPE)
+    # Add
+    command = ['git', 'add', '.']
+    error = call(command, cwd=path, stdout=PIPE, stderr=PIPE)
+    # Commit
+    if error == 0:
+        command = ['git', 'commit', '-q', '-m', 'Initial commit']
+        call(command, cwd=path, stdout=PIPE)
 
-    def save_changes_forever(self):
-        """This method makes the transaction changes permanent.
-
-        If it fails, for example if the computer crashes, it must be
-        safe call this method again so it finishes the work.
-        """
-        # Save the transaction
-        log = open(self.commit_log)
-        try:
-            for line in log.readlines():
-                if line[-1] == '\n':
-                    line = line[:-1]
-                else:
-                    raise RuntimeError, 'log file corrupted'
-                action, line = line[0], line[1:]
-                if action == '-':
-                    if vfs.exists(line):
-                        vfs.remove(line)
-                elif action == '+':
-                    dst, src = line.rsplit('#', 1)
-                    vfs.move(src, dst)
-                elif action == '~':
-                    dst, src = line.rsplit('#', 1)
-                    if vfs.exists(src):
-                        vfs.remove(dst)
-                        vfs.move(src, dst)
-                elif action == '>':
-                    dst, src = line.rsplit('#', 1)
-                    data = vfs.open(src).read()
-                    file = vfs.open(dst, APPEND)
-                    try:
-                        file.write(data)
-                    finally:
-                        file.close()
-                else:
-                    raise RuntimeError, 'log file corrupted'
-        finally:
-            log.close()
-
-        # We are done. Remove the commit.
-        vfs.remove(self.commit)
-
+    # Ok
+    return GitDatabase(path, size)

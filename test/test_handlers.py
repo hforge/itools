@@ -22,7 +22,7 @@ from unittest import TestCase, main
 from itools.csv import Table
 from itools.datatypes import Unicode
 from itools.handlers import get_handler, get_handler_class
-from itools.handlers import RWDatabase, SolidDatabase
+from itools.handlers import RWDatabase, make_git_database
 from itools.handlers import TextFile, ConfigFile, TGZFile
 from itools.uri import get_reference
 from itools import vfs
@@ -358,7 +358,7 @@ class BrokenHandler(TextFile):
 class DatabaseTestCase(TestCase):
 
     def setUp(self):
-        database = SolidDatabase('database.commit', 100)
+        database = make_git_database('fables', 20)
         self.database = database
         root = get_handler('fables')
         root.database = database
@@ -366,7 +366,7 @@ class DatabaseTestCase(TestCase):
 
 
     def tearDown(self):
-        for name in ['fables/31.txt', 'fables/agenda', 'database.commit']:
+        for name in ['fables/31.txt', 'fables/agenda', 'fables/.git']:
             if vfs.exists(name):
                 vfs.remove(name)
 

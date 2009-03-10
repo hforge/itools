@@ -39,16 +39,15 @@ class FormError(StandardError):
     """
 
     def __init__(self, message=None, missing=freeze([]), invalid=freeze([])):
-        self.message = message
+        self.msg = message
         self.missing = missing
         self.invalid = invalid
 
 
     def get_message(self):
         # Custom message
-        if self.message is not None:
-            return self.message
-
+        if self.msg is not None:
+            return ERROR(self.msg)        
         # Default message
         missing = len(self.missing)
         invalid = len(self.invalid)

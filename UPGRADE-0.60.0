@@ -26,7 +26,7 @@ See the table below for the imports to update.
   handlers.Database              handlers.RWDatabase
   handlers.merge_dicts           core.merge_dicts
   handlers.Python                python.Python
-  handlers.SafeDatabase          handlers.SolidDatabase
+  handlers.SafeDatabase          ** REPLACED **
   isetup.ArchiveNotSupported     pkg.ArchiveNotSupported
   isetup.download                pkg.download
   isetup.EXTENSIONS              pkg.EXTENSIONS
@@ -116,7 +116,11 @@ just the committer's name and time.
 itools.handlers
 ===============
 
-The database API has changed a little:
+(1) The 'SafeDatabase' class has been removed.  It has been replaced by
+the new 'GitDatabase' class, which offers the same functionality (atomic
+transactions) and more (versioning).
+
+(2) The database API has changed a little:
 
   Before                          Now
   ------------------------------  ------------------------------
@@ -173,6 +177,9 @@ exception if the requested resource does not exist:
       ...
   else:
       ...
+
+(3) The 'context.redirect' method, which was already obsolete, has been
+removed.  Return a URI instead.
 
 
 itools.xapian

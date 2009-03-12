@@ -25,7 +25,6 @@ from sys import getrefcount
 
 # Import from itools
 from itools.core import LRUCache
-from itools.uri import get_absolute_reference
 from itools.vfs import vfs
 from itools.vfs import cwd, READ, WRITE, READ_WRITE, APPEND
 from folder import Folder
@@ -457,7 +456,7 @@ class RWDatabase(RODatabase):
         if self.has_handler(reference):
             raise RuntimeError, messages.MSG_URI_IS_BUSY % reference
 
-        reference = get_absolute_reference(reference)
+        reference = cwd.get_reference(reference)
         self.push_handler(reference, handler)
         self.added.add(reference)
 
@@ -485,8 +484,8 @@ class RWDatabase(RODatabase):
 
 
     def copy_handler(self, source, target):
-        source = get_absolute_reference(source)
-        target = get_absolute_reference(target)
+        source = cwd.get_reference(source)
+        target = cwd.get_reference(target)
         if source == target:
             return
 
@@ -510,8 +509,8 @@ class RWDatabase(RODatabase):
 
     def move_handler(self, source, target):
         # TODO This method can be optimized further
-        source = get_absolute_reference(source)
-        target = get_absolute_reference(target)
+        source = cwd.get_reference(source)
+        target = cwd.get_reference(target)
         if source == target:
             return
 
@@ -617,7 +616,7 @@ class GitDatabase(RWDatabase):
 
     def __init__(self, path, cache_size):
         RWDatabase.__init__(self, cache_size)
-        uri = get_absolute_reference(path)
+        uri = cwd.get_reference(path)
         if uri.scheme != 'file':
             raise ValueError, 'unexpected "%s" path' % path
         self.path = str(uri.path)
@@ -630,7 +629,7 @@ class GitDatabase(RWDatabase):
         is, return the resolved reference as an string.
         """
         # Resolve the reference
-        uri = get_absolute_reference(reference)
+        uri = cwd.get_reference(reference)
         # Security check
         if uri.scheme != 'file':
             raise ValueError, 'unexpected "%s" reference' % reference

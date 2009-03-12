@@ -21,8 +21,8 @@ from cStringIO import StringIO
 from datetime import datetime
 
 # Import from itools
-from itools.uri import get_absolute_reference
-from itools.vfs import vfs
+from itools import vfs
+from itools.vfs import cwd
 from registry import register_handler_class
 from base import Handler
 
@@ -62,7 +62,7 @@ class File(Handler):
                 self.new(**kw)
         else:
             # Calculate the URI
-            self.uri = get_absolute_reference(ref)
+            self.uri = cwd.get_reference(ref)
 
 
     def reset(self):

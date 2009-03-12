@@ -25,7 +25,7 @@ from xapian import Document, Query, TermGenerator, inmemory_open
 # Import from itools
 from itools.datatypes import Unicode
 from itools.i18n import is_punctuation
-from itools.uri import get_absolute_reference
+from itools.vfs import cwd
 from base import CatalogAware
 from queries import AllQuery, AndQuery, NotQuery, OrQuery, PhraseQuery
 from queries import RangeQuery, StartQuery
@@ -215,7 +215,7 @@ class Catalog(object):
         if isinstance(ref, Database) or isinstance(ref, WritableDatabase):
             self._db = ref
         else:
-            uri = get_absolute_reference(ref)
+            uri = cwd.get_reference(ref)
             if uri.scheme != 'file':
                 raise IOError, ('The file system supported with catalog is '
                                 'only "file"')
@@ -559,7 +559,7 @@ def make_catalog(uri, fields):
         db = inmemory_open()
         return Catalog(db, fields, asynchronous_mode=False)
     else:
-        uri = get_absolute_reference(uri)
+        uri = cwd.get_reference(uri)
         if uri.scheme != 'file':
             raise IOError, ('The file system supported with catalog is only '
                             '"file"')

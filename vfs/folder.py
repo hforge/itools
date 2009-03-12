@@ -133,15 +133,16 @@ def _traverse(g_file):
 class Folder(object):
 
     def __init__(self, obj=None):
-        if obj is not None:
-            if isinstance(obj, Reference):
-                self._folder = File(str(obj))
-            elif isinstance(obj, File):
-                self._folder = obj
-            else:
-                self._folder = File(obj)
-        else:
+        if obj is None:
             self._folder = None
+        elif type(obj) is str:
+            self._folder = File(obj)
+        elif isinstance(obj, Reference):
+            self._folder = File(str(obj))
+        elif isinstance(obj, File):
+            self._folder = obj
+        else:
+            raise ValueError, 'unexpected obj "%s"' % obj
 
 
     ############################
@@ -150,10 +151,10 @@ class Folder(object):
     def _get_g_file(self, uri):
         if isinstance(uri, Reference):
             uri = str(uri)
-        if self._folder is not None:
-            return self._folder.resolve_relative_path(uri)
-        else:
+        if self._folder is None:
             return File(uri)
+
+        return self._folder.resolve_relative_path(uri)
 
 
     def _get_xtime(self, uri, attribut):

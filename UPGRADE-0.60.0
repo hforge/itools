@@ -139,6 +139,21 @@ little:
   Dist(location)                  Bundle(location)
 
 
+itools.uri
+==========
+
+The 'get_absolute_reference' function has been removed, since itools.vfs
+already provides this feature, bug much faster:
+
+  # Before
+  from itools.uri import get_absolute_reference
+  uri = get_absolute_reference(ref)
+
+  # Now
+  from itools.vfs import cwd
+  uri = cwd.get_reference(ref)
+
+
 itools.web
 ==========
 

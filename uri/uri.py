@@ -20,7 +20,7 @@ from os import getcwd
 from os.path import sep
 
 # Import from itools
-from generic import Path, Reference, GenericDataType
+from generic import Authority, Path, Reference, GenericDataType
 from registry import get_scheme
 
 
@@ -47,14 +47,16 @@ def get_cwd():
         # Internally we use always the "/"
         base = base.replace(sep, '/')
 
-    return GenericDataType.decode('file://%s/' % base)
+    path = Path(base + '/')
+    return Reference('file', Authority(''), path, {})
 
 
 
-def get_absolute_reference(reference, base=None):
-    """Returns the absolute URI for the given reference. Uses "base" to
-    resolve the reference, if "base" is not given default to the current
-    working directory.
+def get_absolute_reference2(reference):
+    """Returns the absolute URI for the given reference, using the current
+    working directory as the base URI.
+
+    Uses the "resolve2" algorithm (ignores trailing slashes).
     """
     # Check the reference is of the good type
     if not isinstance(reference, Reference):
@@ -63,24 +65,5 @@ def get_absolute_reference(reference, base=None):
     if reference.scheme:
         return reference
     # Default to the current working directory
-    if base is None:
-        base = get_cwd()
-    return base.resolve(reference)
-
-
-
-def get_absolute_reference2(reference, base=None):
-    """Like "get_absolute_reference", but uses the "resolve2" algorithm
-    (ignores trailing slashes).
-    """
-    # Check the reference is of the good type
-    if not isinstance(reference, Reference):
-        reference = get_reference(reference)
-    # Check the reference is absolute
-    if reference.scheme:
-        return reference
-    # Default to the current working directory
-    if base is None:
-        base = get_cwd()
-    return base.resolve2(reference)
+    return get_cwd().resolve2(reference)
 

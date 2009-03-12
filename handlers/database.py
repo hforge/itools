@@ -142,6 +142,10 @@ class RODatabase(BaseDatabase):
         return str(uri)
 
 
+    def _resolve_reference_for_writing(self, reference):
+        raise NotImplementedError
+
+
     def _sync_filesystem(self, uri):
         """This method checks the state of the uri in the cache against the
         filesystem.  Synchronizes the state if needed by discarding the
@@ -403,6 +407,13 @@ class RWDatabase(RODatabase):
         self.removed = set()
 
 
+    def _resolve_reference_for_writing(self, reference):
+        """Resolves and returns the given reference.
+        """
+        uri = cwd.get_reference(reference)
+        return str(uri)
+
+
     def has_handler(self, reference):
         uri = self._resolve_reference(reference)
 
@@ -471,13 +482,13 @@ class RWDatabase(RODatabase):
         if self.has_handler(reference):
             raise RuntimeError, messages.MSG_URI_IS_BUSY % reference
 
-        uri = self._resolve_reference(reference)
+        uri = self._resolve_reference_for_writing(reference)
         self.push_handler(uri, handler)
         self.added.add(uri)
 
 
     def del_handler(self, reference):
-        uri = self._resolve_reference(reference)
+        uri = self._resolve_reference_for_writing(reference)
 
         if uri in self.added:
             self._discard_handler(uri)
@@ -500,7 +511,7 @@ class RWDatabase(RODatabase):
 
     def copy_handler(self, source, target):
         source = self._resolve_reference(source)
-        target = self._resolve_reference(target)
+        target = self._resolve_reference_for_writing(target)
         if source == target:
             return
 
@@ -526,8 +537,8 @@ class RWDatabase(RODatabase):
 
     def move_handler(self, source, target):
         # TODO This method can be optimized further
-        source = self._resolve_reference(source)
-        target = self._resolve_reference(target)
+        source = self._resolve_reference_for_writing(source)
+        target = self._resolve_reference_for_writing(target)
         if source == target:
             return
 
@@ -566,15 +577,18 @@ class RWDatabase(RODatabase):
     #######################################################################
     # API / Safe VFS operations (not really safe)
     def safe_make_file(self, reference):
-        return vfs.make_file(reference)
+        uri = self._resolve_reference_for_writing(reference)
+        return vfs.make_file(uri)
 
 
     def safe_remove(self, reference):
-        return vfs.remove(reference)
+        uri = self._resolve_reference_for_writing(reference)
+        return vfs.remove(uri)
 
 
     def safe_open(self, reference, mode=None):
-        return vfs.open(reference, mode)
+        uri = self._resolve_reference_for_writing(reference)
+        return vfs.open(uri, mode)
 
 
     #######################################################################
@@ -639,7 +653,7 @@ class GitDatabase(RWDatabase):
             self.path += '/'
 
 
-    def _resolve_reference(self, reference):
+    def _resolve_reference_for_writing(self, reference):
         """Check whether the given reference is within the git path.  If it
         is, return the resolved reference as an string.
         """
@@ -649,27 +663,12 @@ class GitDatabase(RWDatabase):
         if uri.scheme != 'file':
             raise ValueError, 'unexpected "%s" reference' % reference
         path = str(uri.path)
-        if (path + '/' != self.path) and not path.startswith(self.path):
+        if not path.startswith(self.path):
             raise ValueError, 'unexpected "%s" reference' % reference
         if path == ('%s.git' % self.path):
             raise ValueError, 'unexpected "%s" reference' % reference
         # Ok
         return str(uri)
-
-
-    def safe_make_file(self, reference):
-        reference = self._resolve_reference(reference)
-        return vfs.make_file(reference)
-
-
-    def safe_remove(self, reference):
-        reference = self._resolve_reference(reference)
-        return vfs.remove(reference)
-
-
-    def safe_open(self, reference, mode=None):
-        reference = self._resolve_reference(reference)
-        return vfs.open(reference, mode)
 
 
     def _rollback(self):

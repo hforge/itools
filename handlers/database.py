@@ -232,12 +232,12 @@ class RODatabase(BaseDatabase):
         """Adds the given resource to the cache.
         """
         handler.database = self
-        handler.uri = uri
+        handler.uri = get_reference(uri)
         # Folders are not stored in the cache
         if isinstance(handler, Folder):
             return
         # Store in the cache
-        self.cache[str(uri)] = handler
+        self.cache[uri] = handler
 
 
     def make_room(self):
@@ -330,7 +330,6 @@ class RODatabase(BaseDatabase):
             return folder
 
         # Cache miss
-        uri = get_reference(uri)
         if cls is None:
             cls = get_handler_class(uri)
         # Build the handler and update the cache
@@ -425,13 +424,22 @@ class RWDatabase(RODatabase):
 
         # The State
         uri = self._resolve_reference(reference)
-        uri = get_reference(uri)
-        names = set(names)
-        removed = [ str(x.path[-1]) for x in self.removed
-                    if uri.resolve2(str(x.path[-1])) == x ]
-        added = [ str(x.path[-1]) for x in self.added
-                  if uri.resolve2(str(x.path[-1])) == x ]
-        names = names - set(removed) | set(added)
+        base = get_reference(uri)
+        # Removed
+        removed = set()
+        for uri in self.removed:
+            uri = get_reference(uri)
+            name = str(uri.path[-1])
+            if base.resolve2(name) == uri:
+                removed.add(name)
+        # Added
+        added = set()
+        for uri in self.added:
+            uri = get_reference(uri)
+            name = str(uri.path[-1])
+            if base.resolve2(name) == uri:
+                added.add(name)
+        names = set(names) - removed | added
 
         # Ok
         return list(names)
@@ -649,7 +657,7 @@ class GitDatabase(RWDatabase):
         if uri.scheme != 'file':
             raise ValueError, 'unexpected "%s" reference' % reference
         path = str(uri.path)
-        if not path.startswith(self.path):
+        if (path + '/' != self.path) and not path.startswith(self.path):
             raise ValueError, 'unexpected "%s" reference' % reference
         if path == ('%s.git' % self.path):
             raise ValueError, 'unexpected "%s" reference' % reference

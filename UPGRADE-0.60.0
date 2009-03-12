@@ -142,16 +142,23 @@ little:
 itools.uri
 ==========
 
-The 'get_absolute_reference' function has been removed, since itools.vfs
-already provides this feature, bug much faster:
+The 'get_absolute_reference' and 'get_absolute_reference2' functions have
+been removed, since itools.vfs already provides this feature, bug much
+faster:
 
   # Before
-  from itools.uri import get_absolute_reference
-  uri = get_absolute_reference(ref)
+  from itools.uri import get_absolute_reference, get_absolute_reference2
+  uri1 = get_absolute_reference(ref1)
+  uri2 = get_absolute_reference2(ref2)
 
   # Now
   from itools.vfs import cwd
-  uri = cwd.get_reference(ref)
+  uri1 = cwd.get_reference(ref1)
+  uri2 = cwd.get_reference(ref2)
+
+Both 'get_absolute_reference' and 'get_absolute_reference2' behave the
+same, except when the optional parameter 'base' was passed, a feature
+rarely used.
 
 
 itools.web

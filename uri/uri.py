@@ -50,20 +50,3 @@ def get_cwd():
     path = Path(base + '/')
     return Reference('file', Authority(''), path, {})
 
-
-
-def get_absolute_reference2(reference):
-    """Returns the absolute URI for the given reference, using the current
-    working directory as the base URI.
-
-    Uses the "resolve2" algorithm (ignores trailing slashes).
-    """
-    # Check the reference is of the good type
-    if not isinstance(reference, Reference):
-        reference = get_reference(reference)
-    # Check the reference is absolute
-    if reference.scheme:
-        return reference
-    # Default to the current working directory
-    return get_cwd().resolve2(reference)
-

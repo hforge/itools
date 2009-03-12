@@ -665,7 +665,7 @@ class GitDatabase(RWDatabase):
         path = str(uri.path)
         if not path.startswith(self.path):
             raise ValueError, 'unexpected "%s" reference' % reference
-        if path == ('%s.git' % self.path):
+        if path.startswith('%s.git' % self.path):
             raise ValueError, 'unexpected "%s" reference' % reference
         # Ok
         return str(uri)

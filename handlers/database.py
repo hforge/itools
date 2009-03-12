@@ -25,6 +25,7 @@ from sys import getrefcount
 
 # Import from itools
 from itools.core import LRUCache
+from itools.uri import get_reference
 from itools.vfs import vfs
 from itools.vfs import cwd, READ, WRITE, READ_WRITE, APPEND
 from folder import Folder
@@ -134,15 +135,11 @@ class RODatabase(BaseDatabase):
         self.cache = LRUCache(cache_size, automatic=False)
 
 
-    #######################################################################
-    # Cache API
-    def _discard_handler(self, uri):
-        """Unconditionally remove the handler identified by the given URI from
-        the cache, and invalidate it (and free memory at the same time).
+    def _resolve_reference(self, reference):
+        """Resolves and returns the given reference.
         """
-        handler = self.cache.pop(uri)
-        # Invalidate the handler
-        handler.__dict__.clear()
+        uri = cwd.get_reference(reference)
+        return str(uri)
 
 
     def _sync_filesystem(self, uri):
@@ -207,6 +204,17 @@ class RODatabase(BaseDatabase):
             return handler
 
 
+    #######################################################################
+    # Cache API
+    def _discard_handler(self, uri):
+        """Unconditionally remove the handler identified by the given URI from
+        the cache, and invalidate it (and free memory at the same time).
+        """
+        handler = self.cache.pop(uri)
+        # Invalidate the handler
+        handler.__dict__.clear()
+
+
     def discard_handler(self, uri):
         """Removes the handler identified by the given uri from the cache.
         If the handler has been modified, an exception is raised.
@@ -266,8 +274,7 @@ class RODatabase(BaseDatabase):
     #######################################################################
     # Database API
     def has_handler(self, reference):
-        uri = cwd.get_reference(reference)
-        uri = str(uri)
+        uri = self._resolve_reference(reference)
 
         # Syncrhonize
         handler = self._sync_filesystem(uri)
@@ -286,7 +293,7 @@ class RODatabase(BaseDatabase):
 
 
     def get_handler_names(self, reference):
-        uri = cwd.get_reference(reference)
+        uri = self._resolve_reference(reference)
 
         if vfs.exists(uri):
             names = vfs.get_names(uri)
@@ -296,33 +303,34 @@ class RODatabase(BaseDatabase):
 
 
     def get_handler(self, reference, cls=None):
-        uri = cwd.get_reference(reference)
-        uri_str = str(uri)
+        uri = self._resolve_reference(reference)
 
         # Syncrhonize
-        handler = self._sync_filesystem(uri_str)
+        handler = self._sync_filesystem(uri)
         if handler is not None:
             # Check the class matches
             if cls is not None and not isinstance(handler, cls):
                 error = "expected '%s' class, '%s' found"
                 raise LookupError, error % (cls, handler.__class__)
             # Cache hit
-            self.cache.touch(uri_str)
+            self.cache.touch(uri)
             return handler
 
         # Check the resource exists
-        if not vfs.exists(uri_str):
-            raise LookupError, 'the resource "%s" does not exist' % uri_str
+        if not vfs.exists(uri):
+            raise LookupError, 'the resource "%s" does not exist' % uri
 
         # Folders are not cached
-        if vfs.is_folder(uri_str):
+        if vfs.is_folder(uri):
             if cls is None:
                 cls = Folder
+            uri = get_reference(uri)
             folder = cls(uri)
             folder.database = self
             return folder
 
         # Cache miss
+        uri = get_reference(uri)
         if cls is None:
             cls = get_handler_class(uri)
         # Build the handler and update the cache
@@ -333,9 +341,10 @@ class RODatabase(BaseDatabase):
 
 
     def get_handlers(self, reference):
-        reference = cwd.get_reference(reference)
-        for name in vfs.get_names(reference):
-            ref = reference.resolve2(name)
+        uri = self._resolve_reference(reference)
+        base = get_reference(uri)
+        for name in vfs.get_names(uri):
+            ref = base.resolve2(name)
             yield self.get_handler(ref)
 
 
@@ -400,21 +409,23 @@ class RWDatabase(RODatabase):
 
 
     def has_handler(self, reference):
-        reference = cwd.get_reference(reference)
+        uri = self._resolve_reference(reference)
+
         # Check the state
-        if reference in self.added:
+        if uri in self.added:
             return True
-        if reference in self.removed:
+        if uri in self.removed:
             return False
 
-        return RODatabase.has_handler(self, reference)
+        return RODatabase.has_handler(self, uri)
 
 
     def get_handler_names(self, reference):
         names = RODatabase.get_handler_names(self, reference)
 
         # The State
-        uri = cwd.get_reference(reference)
+        uri = self._resolve_reference(reference)
+        uri = get_reference(uri)
         names = set(names)
         removed = [ str(x.path[-1]) for x in self.removed
                     if uri.resolve2(str(x.path[-1])) == x ]
@@ -427,22 +438,22 @@ class RWDatabase(RODatabase):
 
 
     def get_handler(self, reference, cls=None):
-        reference = cwd.get_reference(reference)
+        uri = self._resolve_reference(reference)
 
         # Check state
-        if reference in self.added:
-            handler = self.cache[str(reference)]
+        if uri in self.added:
+            handler = self.cache[uri]
             # cls is good?
             if cls is not None and not isinstance(handler, cls):
                 raise LookupError, ('conflict with a handler of type "%s"' %
                                      handler.__class__)
             return handler
 
-        if reference in self.removed:
-            raise LookupError, 'the resource "%s" does not exist' % reference
+        if uri in self.removed:
+            raise LookupError, 'the resource "%s" does not exist' % uri
 
         # Ok
-        return RODatabase.get_handler(self, reference, cls=cls)
+        return RODatabase.get_handler(self, uri, cls=cls)
 
 
     def set_handler(self, reference, handler):
@@ -456,36 +467,36 @@ class RWDatabase(RODatabase):
         if self.has_handler(reference):
             raise RuntimeError, messages.MSG_URI_IS_BUSY % reference
 
-        reference = cwd.get_reference(reference)
-        self.push_handler(reference, handler)
-        self.added.add(reference)
+        uri = self._resolve_reference(reference)
+        self.push_handler(uri, handler)
+        self.added.add(uri)
 
 
     def del_handler(self, reference):
-        reference = cwd.get_reference(reference)
+        uri = self._resolve_reference(reference)
 
-        if reference in self.added:
-            self._discard_handler(reference)
-            self.added.remove(reference)
+        if uri in self.added:
+            self._discard_handler(uri)
+            self.added.remove(uri)
             return
 
         # Check the handler actually exists
-        if reference in self.removed:
+        if uri in self.removed:
             raise LookupError, 'resource already removed'
-        if not vfs.exists(reference):
+        if not vfs.exists(uri):
             raise LookupError, 'resource does not exist'
 
         # Clean the cache
-        if reference in self.cache:
-            self._discard_handler(reference)
+        if uri in self.cache:
+            self._discard_handler(uri)
 
         # Mark for removal
-        self.removed.add(reference)
+        self.removed.add(uri)
 
 
     def copy_handler(self, source, target):
-        source = cwd.get_reference(source)
-        target = cwd.get_reference(target)
+        source = self._resolve_reference(source)
+        target = self._resolve_reference(target)
         if source == target:
             return
 
@@ -496,6 +507,8 @@ class RWDatabase(RODatabase):
         handler = self.get_handler(source)
         if isinstance(handler, Folder):
             # Folder
+            source = get_reference(source)
+            target = get_reference(target)
             for name in handler.get_handler_names():
                 self.copy_handler(source.resolve2(name),
                                   target.resolve2(name))
@@ -509,8 +522,8 @@ class RWDatabase(RODatabase):
 
     def move_handler(self, source, target):
         # TODO This method can be optimized further
-        source = cwd.get_reference(source)
-        target = cwd.get_reference(target)
+        source = self._resolve_reference(source)
+        target = self._resolve_reference(target)
         if source == target:
             return
 
@@ -521,6 +534,8 @@ class RWDatabase(RODatabase):
         handler = self.get_handler(source)
         if isinstance(handler, Folder):
             # Folder
+            source = get_reference(source)
+            target = get_reference(target)
             for name in handler.get_handler_names():
                 self.move_handler(source.resolve2(name),
                                   target.resolve2(name))
@@ -529,7 +544,7 @@ class RWDatabase(RODatabase):
             if handler.timestamp is None and handler.dirty is None:
                 handler.load_state()
             # File
-            handler = self.cache.pop(str(source))
+            handler = self.cache.pop(source)
             self.push_handler(target, handler)
             handler.timestamp = None
             handler.dirty = datetime.now()
@@ -624,7 +639,7 @@ class GitDatabase(RWDatabase):
             self.path += '/'
 
 
-    def _check_reference(self, reference):
+    def _resolve_reference(self, reference):
         """Check whether the given reference is within the git path.  If it
         is, return the resolved reference as an string.
         """
@@ -636,27 +651,29 @@ class GitDatabase(RWDatabase):
         path = str(uri.path)
         if not path.startswith(self.path):
             raise ValueError, 'unexpected "%s" reference' % reference
+        if path == ('%s.git' % self.path):
+            raise ValueError, 'unexpected "%s" reference' % reference
         # Ok
         return str(uri)
 
 
     def safe_make_file(self, reference):
-        reference = self._check_reference(reference)
+        reference = self._resolve_reference(reference)
         return vfs.make_file(reference)
 
 
     def safe_make_folder(self, reference):
-        reference = self._check_reference(reference)
+        reference = self._resolve_reference(reference)
         return vfs.make_folder(reference)
 
 
     def safe_remove(self, reference):
-        reference = self._check_reference(reference)
+        reference = self._resolve_reference(reference)
         return vfs.remove(reference)
 
 
     def safe_open(self, reference, mode=None):
-        reference = self._check_reference(reference)
+        reference = self._resolve_reference(reference)
         return vfs.open(reference, mode)
 
 
@@ -671,7 +688,8 @@ class GitDatabase(RWDatabase):
         # Figure out the files to add
         git_files = []
         for uri in self.added:
-            git_files.append(str(uri.path))
+            path = get_reference(uri).path
+            git_files.append(str(path))
 
         # Save
         RWDatabase._save_changes(self, data)

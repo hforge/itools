@@ -355,7 +355,7 @@ class BrokenHandler(TextFile):
 
 
 
-class DatabaseTestCase(TestCase):
+class GitDatabaseTestCase(TestCase):
 
     def setUp(self):
         database = make_git_database('fables', 20)
@@ -452,6 +452,11 @@ class DatabaseTestCase(TestCase):
         self.database.save_changes()
         self.assertEqual(vfs.exists('fables/31.txt'), True)
         self.assertEqual(fables.has_handler('31.txt'), True)
+
+
+    def test_dot_git(self):
+        fables = self.root
+        self.assertRaises(ValueError, fables.del_handler, '.git')
 
 
 

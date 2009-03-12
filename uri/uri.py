@@ -15,12 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the Standard Library
-from os import getcwd
-from os.path import sep
-
 # Import from itools
-from generic import Authority, Path, Reference, GenericDataType
+from generic import GenericDataType
 from registry import get_scheme
 
 
@@ -34,19 +30,4 @@ def get_reference(reference):
     else:
         scheme = GenericDataType
     return scheme.decode(reference)
-
-
-
-def get_cwd():
-    """Returns the current working directory as a URI object.
-    """
-    # Get the base path
-    base = getcwd()
-    # Make it working with Windows
-    if sep == '\\':
-        # Internally we use always the "/"
-        base = base.replace(sep, '/')
-
-    path = Path(base + '/')
-    return Reference('file', Authority(''), path, {})
 

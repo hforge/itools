@@ -616,7 +616,7 @@ class RWDatabase(RODatabase):
         # Save changed handlers
         for uri in self.changed:
             # Save the handler's state
-            handler = cache[str(uri)]
+            handler = cache[uri]
             handler.save_state()
             # Update timestamp
             handler.timestamp = vfs.get_mtime(uri)
@@ -626,7 +626,7 @@ class RWDatabase(RODatabase):
             self.safe_remove(uri)
         # Add new handlers
         for uri in self.added:
-            handler = cache[str(uri)]
+            handler = cache[uri]
             handler.save_state_to(uri)
             # Update timestamp
             handler.timestamp = vfs.get_mtime(uri)

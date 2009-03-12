@@ -26,7 +26,7 @@ from math import floor
 from itools.core import freeze
 from itools.datatypes import Unicode, Integer
 from itools.handlers import Image as ItoolsImage
-from itools.vfs import vfs
+from itools import vfs
 
 # Import from reportlab
 from reportlab.lib import colors

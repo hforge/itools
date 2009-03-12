@@ -21,7 +21,7 @@ handler class hierarchy.
 
 # Import from itools
 from itools.uri import Path
-from itools.vfs import vfs
+from itools import vfs
 from messages import *
 
 

@@ -29,7 +29,7 @@ from tarfile import open as open_tar
 # Import from itools
 import itools
 from itools.core import vmsize, get_time_spent
-from itools.vfs import vfs
+from itools import vfs
 from itools.xml import XMLParser, XMLError, START_ELEMENT, END_ELEMENT
 
 

@@ -26,7 +26,7 @@ from sys import getrefcount
 # Import from itools
 from itools.core import LRUCache
 from itools.uri import get_reference
-from itools.vfs import vfs
+from itools import vfs
 from itools.vfs import cwd, READ, WRITE, READ_WRITE, APPEND
 from folder import Folder
 import messages

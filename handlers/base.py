@@ -50,13 +50,6 @@ class Handler(object):
         return self.database.safe_make_file(reference)
 
 
-    def safe_make_folder(self, reference):
-        if self.database is None:
-            return vfs.make_folder(reference)
-
-        return self.database.safe_make_folder(reference)
-
-
     def safe_remove(self, reference):
         if self.database is None:
             return vfs.remove(reference)

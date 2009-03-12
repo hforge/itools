@@ -369,10 +369,6 @@ class RODatabase(BaseDatabase):
         raise ReadOnlyError, 'cannot make file'
 
 
-    def safe_make_folder(self, reference):
-        raise ReadOnlyError, 'cannot make folder'
-
-
     def safe_remove(self, reference):
         raise ReadOnlyError, 'cannot remove'
 
@@ -573,10 +569,6 @@ class RWDatabase(RODatabase):
         return vfs.make_file(reference)
 
 
-    def safe_make_folder(self, reference):
-        return vfs.make_folder(reference)
-
-
     def safe_remove(self, reference):
         return vfs.remove(reference)
 
@@ -668,11 +660,6 @@ class GitDatabase(RWDatabase):
     def safe_make_file(self, reference):
         reference = self._resolve_reference(reference)
         return vfs.make_file(reference)
-
-
-    def safe_make_folder(self, reference):
-        reference = self._resolve_reference(reference)
-        return vfs.make_folder(reference)
 
 
     def safe_remove(self, reference):

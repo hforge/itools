@@ -63,6 +63,7 @@ class File(Handler):
                 self.new(**kw)
         else:
             # Calculate the URI
+            ref = str(ref)
             uri = cwd.get_uri(ref)
             self.uri = get_reference(uri)
 

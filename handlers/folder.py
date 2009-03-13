@@ -47,6 +47,7 @@ class Folder(Handler):
     def __init__(self, ref=None, **kw):
         if ref is not None:
             # Calculate the URI
+            ref = str(ref)
             uri = cwd.get_uri(ref)
             self.uri = get_reference(uri)
 

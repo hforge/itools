@@ -21,6 +21,7 @@
 from unittest import TestCase, main
 
 # Import from itools
+import itools.html
 from itools.srx import TEXT as srx_TEXT
 from itools.xml import XMLParser
 from itools.xmlfile import XMLFile

@@ -328,7 +328,6 @@ class RODatabase(BaseDatabase):
         if vfs.is_folder(uri):
             if cls is None:
                 cls = Folder
-            uri = get_reference(uri)
             folder = cls(uri)
             folder.database = self
             return folder

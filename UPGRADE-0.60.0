@@ -152,9 +152,10 @@ faster:
   uri2 = get_absolute_reference2(ref2)
 
   # Now
+  from itools.uri import get_reference
   from itools.vfs import cwd
-  uri1 = cwd.get_reference(ref1)
-  uri2 = cwd.get_reference(ref2)
+  uri1 = get_reference(cwd.get_uri(ref1))
+  uri2 = get_reference(cwd.get_uri(ref2))
 
 Both 'get_absolute_reference' and 'get_absolute_reference2' behave the
 same, except when the optional parameter 'base' was passed, a feature
@@ -167,8 +168,23 @@ rarely used.
   uri = get_cwd()
 
   # Now
+  from itools.uri import get_reference
   from itools.vfs import cwd
-  uri = cwd.get_reference()
+  uri = get_reference(cwd.get_uri())
+
+
+itools.vfs
+==========
+
+The Virtual File System does not take anymore itools.uri.Reference objects:
+
+  # Before
+  from itools import vfs
+  vfs.XXX(uri)
+
+  # Now
+  from itools import vfs
+  vfs.XXX(str(uri))
 
 
 itools.web

@@ -202,7 +202,8 @@ class File(Handler):
 
     def set_changed(self):
         # Invalid handler
-        if self.uri is None and self.dirty is None:
+        uri = self.uri
+        if uri is None and self.dirty is None:
             raise RuntimeError, 'cannot change an orphaned file handler'
 
         # Free handler (not attached to a database)
@@ -212,15 +213,16 @@ class File(Handler):
 
         # Check nothing weird happened
         database = self.database
-        if self.uri is None or database.cache.get(self.uri) is not self:
+        if uri is None or database.cache.get(uri) is not self:
             raise RuntimeError, 'database incosistency!'
 
         # Update database state
+        uri = str(uri)
         if self.timestamp is None and self.dirty is not None:
-            database.added.add(self.uri)
+            database.added.add(uri)
         else:
             self.dirty = datetime.now()
-            database.changed.add(self.uri)
+            database.changed.add(uri)
 
 
     def abort_changes(self):

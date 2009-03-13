@@ -626,7 +626,8 @@ class Table(File):
             return
 
         # Incremental Save
-        file = self.safe_open(self.uri, 'a')
+        uri = str(self.uri)
+        file = self.safe_open(uri, 'a')
         try:
             # Added properties records
             for seq in self.added_properties:
@@ -650,7 +651,7 @@ class Table(File):
             file.close()
 
         # Update the timestamp
-        self.timestamp = vfs.get_mtime(self.uri)
+        self.timestamp = vfs.get_mtime(uri)
         self.dirty = None
 
 

@@ -25,7 +25,6 @@ from unittest import TestCase, main
 from itools.gettext import POFile, POUnit
 from itools.odf import ODTFile, ODPFile, ODSFile
 from itools.srx import TEXT, START_FORMAT, END_FORMAT
-from itools import vfs
 from itools.xml import XMLParser
 from itools.xmlfile import get_units, translate
 

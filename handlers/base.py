@@ -96,5 +96,6 @@ class Handler(object):
 
 
     def get_mimetype(self):
-        return vfs.get_mimetype(self.uri)
+        uri = str(self.uri)
+        return vfs.get_mimetype(uri)
 

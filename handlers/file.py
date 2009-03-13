@@ -21,6 +21,7 @@ from cStringIO import StringIO
 from datetime import datetime
 
 # Import from itools
+from itools.uri import get_reference
 from itools import vfs
 from itools.vfs import cwd
 from registry import register_handler_class
@@ -62,7 +63,8 @@ class File(Handler):
                 self.new(**kw)
         else:
             # Calculate the URI
-            self.uri = cwd.get_reference(ref)
+            uri = cwd.get_uri(ref)
+            self.uri = get_reference(uri)
 
 
     def reset(self):
@@ -97,16 +99,18 @@ class File(Handler):
         self.reset()
         # TODO Use "with" once we move to Python 2.5 and "urllib.urlopen"
         # supports it
-        file = vfs.open(self.uri)
+        uri = str(self.uri)
+        file = vfs.open(uri)
         try:
             self._load_state_from_file(file)
         finally:
             file.close()
-        self.timestamp = vfs.get_mtime(self.uri)
+        self.timestamp = vfs.get_mtime(uri)
         self.dirty = None
 
 
     def load_state_from(self, uri):
+        uri = str(uri)
         file = vfs.open(uri)
         try:
             self.load_state_from_file(file)
@@ -126,17 +130,19 @@ class File(Handler):
 
 
     def save_state(self):
-        file = self.safe_open(self.uri, 'w')
+        uri = str(self.uri)
+        file = self.safe_open(uri, 'w')
         try:
             self.save_state_to_file(file)
         finally:
             file.close()
         # Update the timestamp
-        self.timestamp = vfs.get_mtime(self.uri)
+        self.timestamp = vfs.get_mtime(uri)
         self.dirty = None
 
 
     def save_state_to(self, uri):
+        uri = str(uri)
         # If there is an empty folder in the given URI, remove it
         if vfs.is_folder(uri) and not vfs.get_names(uri):
             vfs.remove(uri)
@@ -192,7 +198,8 @@ class File(Handler):
         if timestamp is None:
             return False
 
-        mtime = vfs.get_mtime(self.uri)
+        uri = str(self.uri)
+        mtime = vfs.get_mtime(uri)
         # If the resource layer does not support mtime... we are...
         if mtime is None:
             return True
@@ -253,7 +260,8 @@ class File(Handler):
             return self.timestamp
 
         # Not yet loaded, check the VFS
-        return vfs.get_mtime(self.uri)
+        uri = str(self.uri)
+        return vfs.get_mtime(uri)
 
 
     def to_str(self):

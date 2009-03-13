@@ -138,8 +138,8 @@ class RODatabase(BaseDatabase):
     def _resolve_reference(self, reference):
         """Resolves and returns the given reference.
         """
-        uri = cwd.get_reference(reference)
-        return str(uri)
+        reference = str(reference)
+        return cwd.get_uri(reference)
 
 
     def _resolve_reference_for_writing(self, reference):
@@ -410,8 +410,8 @@ class RWDatabase(RODatabase):
     def _resolve_reference_for_writing(self, reference):
         """Resolves and returns the given reference.
         """
-        uri = cwd.get_reference(reference)
-        return str(uri)
+        reference = str(reference)
+        return cwd.get_uri(reference)
 
 
     def has_handler(self, reference):
@@ -645,7 +645,8 @@ class GitDatabase(RWDatabase):
 
     def __init__(self, path, cache_size):
         RWDatabase.__init__(self, cache_size)
-        uri = cwd.get_reference(path)
+        uri = cwd.get_uri(path)
+        uri = get_reference(uri)
         if uri.scheme != 'file':
             raise ValueError, 'unexpected "%s" path' % path
         self.path = str(uri.path)
@@ -658,17 +659,19 @@ class GitDatabase(RWDatabase):
         is, return the resolved reference as an string.
         """
         # Resolve the reference
-        uri = cwd.get_reference(reference)
+        reference = str(reference)
+        uri = cwd.get_uri(reference)
+        uri_ = get_reference(uri)
         # Security check
-        if uri.scheme != 'file':
+        if uri_.scheme != 'file':
             raise ValueError, 'unexpected "%s" reference' % reference
-        path = str(uri.path)
+        path = str(uri_.path)
         if not path.startswith(self.path):
             raise ValueError, 'unexpected "%s" reference' % reference
         if path.startswith('%s.git' % self.path):
             raise ValueError, 'unexpected "%s" reference' % reference
         # Ok
-        return str(uri)
+        return uri
 
 
     def _rollback(self):
@@ -680,10 +683,7 @@ class GitDatabase(RWDatabase):
 
     def _save_changes(self, data):
         # Figure out the files to add
-        git_files = []
-        for uri in self.added:
-            path = get_reference(uri).path
-            git_files.append(str(path))
+        git_files = [ str(get_reference(x).path) for x in self.added ]
 
         # Save
         RWDatabase._save_changes(self, data)

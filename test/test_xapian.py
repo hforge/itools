@@ -23,6 +23,7 @@ from unittest import TestCase, main
 
 # Import from itools
 from itools.datatypes import String, Unicode, Boolean, Integer
+from itools.uri import get_reference
 from itools import vfs
 from itools.xapian import make_catalog, Catalog, CatalogAware, StartQuery
 from itools.xapian import AndQuery, RangeQuery, PhraseQuery, NotQuery
@@ -274,7 +275,8 @@ class CatalogTestCase(TestCase):
         # Index
         fables = vfs.open('fables')
         for name in fables.get_names():
-            uri = fables.get_reference().resolve2(name)
+            uri = fables.get_uri()
+            uri = get_reference(uri).resolve2(name)
             document = Document(uri)
             catalog.index_document(document)
         # Save
@@ -406,16 +408,17 @@ class Document(CatalogAware):
 
 
     def get_catalog_values(self):
-        data = vfs.open(self.uri).read()
+        uri = str(self.uri)
+        data = vfs.open(uri).read()
 
-        indexes = {}
-        indexes['name'] = self.uri.path[-1]
-        indexes['title'] = data.splitlines()[0]
-        indexes['data'] = data
-        indexes['size'] = len(data)
-        indexes['about_wolf'] = re.search('wolf', data, re.I) is not None
-        indexes['is_long'] = len(data) > 1024
-        return indexes
+        return {
+            'name': self.uri.path[-1],
+            'title': data.splitlines()[0],
+            'data': data,
+            'size': len(data),
+            'about_wolf': re.search('wolf', data, re.I) is not None,
+            'is_long': len(data) > 1024,
+        }
 
 
 

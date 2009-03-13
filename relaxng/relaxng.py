@@ -228,6 +228,7 @@ def read_file(context, uri, file):
                 elif tag_name == 'include':
                     href = attrs[None, 'href']
                     include_uri = uri.resolve(href)
+                    include_uri = str(include_uri)
                     include_file = vfs.open(include_uri)
                     read_file(context, include_uri, include_file)
 

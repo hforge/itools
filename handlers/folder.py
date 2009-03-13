@@ -18,6 +18,7 @@
 
 # Import from itools
 from itools import vfs
+from itools.uri import get_reference
 from itools.vfs import cwd
 from base import Handler
 from messages import *
@@ -46,7 +47,8 @@ class Folder(Handler):
     def __init__(self, ref=None, **kw):
         if ref is not None:
             # Calculate the URI
-            self.uri = cwd.get_reference(ref)
+            uri = cwd.get_uri(ref)
+            self.uri = get_reference(uri)
 
 
     #########################################################################
@@ -55,8 +57,9 @@ class Folder(Handler):
     def get_mtime(self):
         """Returns the last modification time.
         """
-        if vfs.exists(self.uri):
-            return vfs.get_mtime(self.uri)
+        uri = str(self.uri)
+        if vfs.exists(uri):
+            return vfs.get_mtime(uri)
         return None
 
 

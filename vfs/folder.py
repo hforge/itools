@@ -21,7 +21,7 @@ from cStringIO import StringIO
 
 # Import from itools
 from itools.core import guess_type
-from itools.uri import Reference, get_reference
+from itools.uri import get_reference
 from filename import FileName
 
 # Import from gio
@@ -137,8 +137,6 @@ class Folder(object):
             self._folder = None
         elif type(obj) is str:
             self._folder = File(obj)
-        elif isinstance(obj, Reference):
-            self._folder = File(str(obj))
         elif isinstance(obj, File):
             self._folder = obj
         else:
@@ -149,8 +147,8 @@ class Folder(object):
     # Private API
     ############################
     def _get_g_file(self, uri):
-        if isinstance(uri, Reference):
-            uri = str(uri)
+        if type(uri) is not str:
+            raise TypeError, 'unexpected "%s"' % repr(uri)
         if self._folder is None:
             return File(uri)
 
@@ -338,8 +336,8 @@ class Folder(object):
         return Archive(g_file)
 
 
-    def get_reference(self, uri='.'):
-        g_file = self._get_g_file(uri)
-        return get_reference(g_file.get_uri())
+    def get_uri(self, reference='.'):
+        g_file = self._get_g_file(reference)
+        return g_file.get_uri()
 
 

@@ -18,7 +18,7 @@
 
 # Import from itools
 from itools import vfs
-from itools.uri import get_reference
+from itools.uri import resolve_uri2
 from itools.vfs import cwd
 from base import Handler
 from messages import *
@@ -48,8 +48,7 @@ class Folder(Handler):
         if ref is not None:
             # Calculate the URI
             ref = str(ref)
-            uri = cwd.get_uri(ref)
-            self.uri = get_reference(uri)
+            self.uri = cwd.get_uri(ref)
 
 
     #########################################################################
@@ -68,7 +67,7 @@ class Folder(Handler):
         if self.database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
-        uri = self.uri.resolve2(reference)
+        uri = resolve_uri2(self.uri, reference)
         return self.database.has_handler(uri)
 
 
@@ -76,7 +75,7 @@ class Folder(Handler):
         if self.database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
-        uri = self.uri.resolve2(reference)
+        uri = resolve_uri2(self.uri, reference)
         return self.database.get_handlers(uri)
 
 
@@ -84,7 +83,7 @@ class Folder(Handler):
         if self.database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
-        uri = self.uri.resolve2(reference)
+        uri = resolve_uri2(self.uri, reference)
         self.database.set_handler(uri, handler)
 
 
@@ -92,7 +91,7 @@ class Folder(Handler):
         if self.database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
-        uri = self.uri.resolve2(reference)
+        uri = resolve_uri2(self.uri, reference)
         self.database.del_handler(uri)
 
 
@@ -100,8 +99,8 @@ class Folder(Handler):
         if self.database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
-        source = self.uri.resolve2(source)
-        target = self.uri.resolve2(target)
+        source = resolve_uri2(self.uri, source)
+        target = resolve_uri2(self.uri, target)
         self.database.copy_handler(source, target)
 
 
@@ -109,8 +108,8 @@ class Folder(Handler):
         if self.database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
-        source = self.uri.resolve2(source)
-        target = self.uri.resolve2(target)
+        source = resolve_uri2(self.uri, source)
+        target = resolve_uri2(self.uri, target)
         self.database.move_handler(source, target)
 
 

@@ -236,7 +236,7 @@ class RODatabase(BaseDatabase):
         """Adds the given resource to the cache.
         """
         handler.database = self
-        handler.uri = get_reference(uri)
+        handler.uri = uri
         # Folders are not stored in the cache
         if isinstance(handler, Folder):
             return

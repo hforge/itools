@@ -24,6 +24,7 @@ from cStringIO import StringIO
 
 # Import from itools
 from itools.core import add_type
+from itools.uri import get_uri_name
 from file import File
 from registry import register_handler_class
 from itools import vfs
@@ -76,7 +77,7 @@ class TARFile(File):
 
 
     def _open_tarfile(self):
-        name = self.uri.path[-1]
+        name = get_uri_name(self.uri)
         archive = StringIO(self.to_str())
         return open_tarfile(name, self.class_mode, fileobj=archive)
 

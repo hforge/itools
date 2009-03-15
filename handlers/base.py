@@ -20,7 +20,7 @@ handler class hierarchy.
 """
 
 # Import from itools
-from itools.uri import Path
+from itools.uri import Path, resolve_uri2
 from itools import vfs
 from messages import *
 
@@ -82,7 +82,7 @@ class Handler(object):
         if self.database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
-        uri = self.uri.resolve2(reference)
+        uri = resolve_uri2(self.uri, reference)
         return self.database.get_handler_names(uri)
 
 
@@ -91,7 +91,7 @@ class Handler(object):
         if database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
-        uri = self.uri.resolve2(reference)
+        uri = resolve_uri2(self.uri, reference)
         return self.database.get_handler(uri, cls=cls)
 
 

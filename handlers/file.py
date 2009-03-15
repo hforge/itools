@@ -64,8 +64,7 @@ class File(Handler):
         else:
             # Calculate the URI
             ref = str(ref)
-            uri = cwd.get_uri(ref)
-            self.uri = get_reference(uri)
+            self.uri = cwd.get_uri(ref)
 
 
     def reset(self):

@@ -31,3 +31,36 @@ def get_reference(reference):
         scheme = GenericDataType
     return scheme.decode(reference)
 
+
+
+def resolve_uri(base, reference):
+    base = get_reference(base)
+    reference = get_reference(reference)
+
+    uri = base.resolve(reference)
+    return str(uri)
+
+
+
+def resolve_uri2(base, reference):
+    base = get_reference(base)
+    reference = get_reference(reference)
+
+    uri = base.resolve2(reference)
+    return str(uri)
+
+
+
+def get_uri_name(uri):
+    uri = get_reference(uri)
+
+    return str(uri.path[-1])
+
+
+
+def get_uri_path(uri):
+    uri = get_reference(uri)
+
+    return str(uri.path)
+
+

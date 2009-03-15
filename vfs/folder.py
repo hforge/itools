@@ -21,7 +21,7 @@ from cStringIO import StringIO
 
 # Import from itools
 from itools.core import guess_type
-from itools.uri import get_reference
+from itools.uri import get_uri_name
 from filename import FileName
 
 # Import from gio
@@ -245,8 +245,7 @@ class Folder(object):
             return 'application/x-not-regular-file'
 
         # Find out the filename extension
-        reference = get_reference(g_file.get_uri())
-        name = reference.path[-1]
+        name = get_uri_name(uri)
         name, extension, language = FileName.decode(name)
         # Figure out the mimetype from the filename extension
         if extension is not None:

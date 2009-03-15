@@ -16,20 +16,34 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
+from itools.core import LRUCache
 from generic import GenericDataType
 from registry import get_scheme
+
+
+
+cache = LRUCache(200)
 
 
 
 def get_reference(reference):
     """Returns a URI reference of the good type from the given string.
     """
+    # Hit
+    if reference in cache:
+        return cache[reference]
+
+    # Miss
     if ':' in reference:
         scheme_name, scheme_specifics = reference.split(':', 1)
         scheme = get_scheme(scheme_name)
     else:
         scheme = GenericDataType
-    return scheme.decode(reference)
+    parsed_reference = scheme.decode(reference)
+
+    # Ok
+    cache[reference] = parsed_reference
+    return parsed_reference
 
 
 

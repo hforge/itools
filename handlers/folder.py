@@ -51,9 +51,6 @@ class Folder(Handler):
             self.uri = cwd.get_uri(ref)
 
 
-    #########################################################################
-    # API (public)
-    #########################################################################
     def get_mtime(self):
         """Returns the last modification time.
         """
@@ -62,58 +59,6 @@ class Folder(Handler):
         return None
 
 
-    def has_handler(self, reference):
-        if self.database is None:
-            raise NotImplementedError, MSG_NOT_ATTACHED
-
-        uri = resolve_uri2(self.uri, reference)
-        return self.database.has_handler(uri)
-
-
-    def get_handlers(self, reference='.'):
-        if self.database is None:
-            raise NotImplementedError, MSG_NOT_ATTACHED
-
-        uri = resolve_uri2(self.uri, reference)
-        return self.database.get_handlers(uri)
-
-
-    def set_handler(self, reference, handler):
-        if self.database is None:
-            raise NotImplementedError, MSG_NOT_ATTACHED
-
-        uri = resolve_uri2(self.uri, reference)
-        self.database.set_handler(uri, handler)
-
-
-    def del_handler(self, reference):
-        if self.database is None:
-            raise NotImplementedError, MSG_NOT_ATTACHED
-
-        uri = resolve_uri2(self.uri, reference)
-        self.database.del_handler(uri)
-
-
-    def copy_handler(self, source, target):
-        if self.database is None:
-            raise NotImplementedError, MSG_NOT_ATTACHED
-
-        source = resolve_uri2(self.uri, source)
-        target = resolve_uri2(self.uri, target)
-        self.database.copy_handler(source, target)
-
-
-    def move_handler(self, source, target):
-        if self.database is None:
-            raise NotImplementedError, MSG_NOT_ATTACHED
-
-        source = resolve_uri2(self.uri, source)
-        target = resolve_uri2(self.uri, target)
-        self.database.move_handler(source, target)
-
-
-    ########################################################################
-    # Tree
     def traverse(self):
         yield self
         for name in self.get_handler_names():
@@ -144,4 +89,5 @@ class Folder(Handler):
                         context.skip = False
 
 
+# Register
 register_handler_class(Folder)

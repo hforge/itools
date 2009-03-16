@@ -67,15 +67,12 @@ class Handler(object):
     ########################################################################
     # API
     ########################################################################
-    def has_handler(self, path):
-        # Normalize the path
-        if not isinstance(path, Path):
-            path = Path(path)
+    def has_handler(self, reference):
+        if self.database is None:
+            raise NotImplementedError, MSG_NOT_ATTACHED
 
-        path, name = path[:-1], path[-1]
-
-        container = self.get_handler(path)
-        return name in container.get_handler_names()
+        uri = resolve_uri2(self.uri, reference)
+        return self.database.has_handler(uri)
 
 
     def get_handler_names(self, reference='.'):
@@ -87,12 +84,53 @@ class Handler(object):
 
 
     def get_handler(self, reference, cls=None):
-        database = self.database
-        if database is None:
+        if self.database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
         uri = resolve_uri2(self.uri, reference)
         return self.database.get_handler(uri, cls=cls)
+
+
+    def get_handlers(self, reference='.'):
+        if self.database is None:
+            raise NotImplementedError, MSG_NOT_ATTACHED
+
+        uri = resolve_uri2(self.uri, reference)
+        return self.database.get_handlers(uri)
+
+
+    def set_handler(self, reference, handler):
+        if self.database is None:
+            raise NotImplementedError, MSG_NOT_ATTACHED
+
+        uri = resolve_uri2(self.uri, reference)
+        self.database.set_handler(uri, handler)
+
+
+    def del_handler(self, reference):
+        if self.database is None:
+            raise NotImplementedError, MSG_NOT_ATTACHED
+
+        uri = resolve_uri2(self.uri, reference)
+        self.database.del_handler(uri)
+
+
+    def copy_handler(self, source, target):
+        if self.database is None:
+            raise NotImplementedError, MSG_NOT_ATTACHED
+
+        source = resolve_uri2(self.uri, source)
+        target = resolve_uri2(self.uri, target)
+        self.database.copy_handler(source, target)
+
+
+    def move_handler(self, source, target):
+        if self.database is None:
+            raise NotImplementedError, MSG_NOT_ATTACHED
+
+        source = resolve_uri2(self.uri, source)
+        target = resolve_uri2(self.uri, target)
+        self.database.move_handler(source, target)
 
 
     def get_mimetype(self):

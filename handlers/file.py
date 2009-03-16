@@ -62,8 +62,6 @@ class File(Handler):
                 # A handler from some input data
                 self.new(**kw)
         else:
-            # Calculate the URI
-            ref = str(ref)
             self.uri = cwd.get_uri(ref)
 
 
@@ -109,7 +107,6 @@ class File(Handler):
 
 
     def load_state_from(self, uri):
-        uri = str(uri)
         file = vfs.open(uri)
         try:
             self.load_state_from_file(file)
@@ -140,7 +137,6 @@ class File(Handler):
 
 
     def save_state_to(self, uri):
-        uri = str(uri)
         # If there is an empty folder in the given URI, remove it
         if vfs.is_folder(uri) and not vfs.get_names(uri):
             vfs.remove(uri)

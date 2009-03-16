@@ -39,7 +39,6 @@ def get_handler_class_by_mimetype(mimetype):
 
 
 def get_handler_class(uri):
-    uri = str(uri)
     mimetype = vfs.get_mimetype(uri)
 
     try:
@@ -58,7 +57,6 @@ def get_handler_class(uri):
 def get_handler(uri):
     """Returns a resource handler from a uri reference.
     """
-    uri = str(uri)
     if vfs.exists(uri):
         handler_class = get_handler_class(uri)
         new_handler = handler_class(uri)

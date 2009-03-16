@@ -25,7 +25,7 @@ from sys import getrefcount
 
 # Import from itools
 from itools.core import LRUCache
-from itools.uri import get_reference
+from itools.uri import get_reference, resolve_uri2
 from itools import vfs
 from itools.vfs import cwd, READ, WRITE, READ_WRITE, APPEND
 from folder import Folder
@@ -264,7 +264,6 @@ class RODatabase(BaseDatabase):
     #######################################################################
     # Database API
     def has_handler(self, reference):
-        reference = str(reference)
         uri = self._resolve_reference(reference)
 
         # Syncrhonize
@@ -284,7 +283,6 @@ class RODatabase(BaseDatabase):
 
 
     def get_handler_names(self, reference):
-        reference = str(reference)
         uri = self._resolve_reference(reference)
 
         if vfs.exists(uri):
@@ -295,7 +293,6 @@ class RODatabase(BaseDatabase):
 
 
     def get_handler(self, reference, cls=None):
-        reference = str(reference)
         uri = self._resolve_reference(reference)
 
         # Syncrhonize
@@ -332,11 +329,9 @@ class RODatabase(BaseDatabase):
 
 
     def get_handlers(self, reference):
-        reference = str(reference)
-        uri = self._resolve_reference(reference)
-        base = get_reference(uri)
+        base = self._resolve_reference(reference)
         for name in vfs.get_names(uri):
-            ref = base.resolve2(name)
+            ref = resolve_uri2(base, name)
             yield self.get_handler(ref)
 
 
@@ -403,7 +398,6 @@ class RWDatabase(RODatabase):
 
 
     def has_handler(self, reference):
-        reference = str(reference)
         uri = self._resolve_reference(reference)
 
         # Check the state
@@ -416,7 +410,6 @@ class RWDatabase(RODatabase):
 
 
     def get_handler_names(self, reference):
-        reference = str(reference)
         names = RODatabase.get_handler_names(self, reference)
 
         # The State
@@ -443,7 +436,6 @@ class RWDatabase(RODatabase):
 
 
     def get_handler(self, reference, cls=None):
-        reference = str(reference)
         uri = self._resolve_reference(reference)
 
         # Check state
@@ -463,7 +455,6 @@ class RWDatabase(RODatabase):
 
 
     def set_handler(self, reference, handler):
-        reference = str(reference)
         if isinstance(handler, Folder):
             raise ValueError, 'unexpected folder (only files can be "set")'
 
@@ -480,7 +471,6 @@ class RWDatabase(RODatabase):
 
 
     def del_handler(self, reference):
-        reference = str(reference)
         uri = self._resolve_reference_for_writing(reference)
 
         if uri in self.added:
@@ -503,8 +493,6 @@ class RWDatabase(RODatabase):
 
 
     def copy_handler(self, source, target):
-        source = str(source)
-        target = str(target)
         source = self._resolve_reference(source)
         target = self._resolve_reference_for_writing(target)
         if source == target:
@@ -517,11 +505,9 @@ class RWDatabase(RODatabase):
         handler = self.get_handler(source)
         if isinstance(handler, Folder):
             # Folder
-            source = get_reference(source)
-            target = get_reference(target)
             for name in handler.get_handler_names():
-                self.copy_handler(source.resolve2(name),
-                                  target.resolve2(name))
+                self.copy_handler(resolve_uri2(source, name),
+                                  resolve_uri2(target, name))
         else:
             # File
             handler = handler.clone()
@@ -532,8 +518,6 @@ class RWDatabase(RODatabase):
 
     def move_handler(self, source, target):
         # TODO This method can be optimized further
-        source = str(source)
-        target = str(target)
         source = self._resolve_reference_for_writing(source)
         target = self._resolve_reference_for_writing(target)
         if source == target:
@@ -546,11 +530,9 @@ class RWDatabase(RODatabase):
         handler = self.get_handler(source)
         if isinstance(handler, Folder):
             # Folder
-            source = get_reference(source)
-            target = get_reference(target)
             for name in handler.get_handler_names():
-                self.move_handler(source.resolve2(name),
-                                  target.resolve2(name))
+                self.move_handler(resolve_uri2(source, name),
+                                  resolve_uri2(target, name))
         else:
             # Load if needed
             if handler.timestamp is None and handler.dirty is None:

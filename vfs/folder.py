@@ -18,10 +18,12 @@
 # Import from the Standard Library
 from datetime import datetime
 from cStringIO import StringIO
+from os.path import basename
+from urllib import unquote
+from urlparse import urlsplit
 
 # Import from itools
 from itools.core import guess_type
-from itools.uri import get_uri_name
 from filename import FileName
 
 # Import from gio
@@ -245,7 +247,10 @@ class Folder(object):
             return 'application/x-not-regular-file'
 
         # Find out the filename extension
-        name = get_uri_name(uri)
+        scheme, authority, path, query, fragment = urlsplit(uri)
+        path = unquote(path)
+        name = basename(path)
+
         name, extension, language = FileName.decode(name)
         # Figure out the mimetype from the filename extension
         if extension is not None:

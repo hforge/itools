@@ -57,9 +57,8 @@ class Folder(Handler):
     def get_mtime(self):
         """Returns the last modification time.
         """
-        uri = str(self.uri)
-        if vfs.exists(uri):
-            return vfs.get_mtime(uri)
+        if vfs.exists(self.uri):
+            return vfs.get_mtime(self.uri)
         return None
 
 

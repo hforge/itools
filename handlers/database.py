@@ -25,7 +25,7 @@ from sys import getrefcount
 
 # Import from itools
 from itools.core import LRUCache
-from itools.uri import get_reference, resolve_uri2
+from itools.uri import get_reference, get_uri_name, get_uri_path, resolve_uri2
 from itools import vfs
 from itools.vfs import cwd, READ, WRITE, READ_WRITE, APPEND
 from folder import Folder
@@ -413,21 +413,18 @@ class RWDatabase(RODatabase):
         names = RODatabase.get_handler_names(self, reference)
 
         # The State
-        uri = self._resolve_reference(reference)
-        base = get_reference(uri)
+        base = self._resolve_reference(reference)
         # Removed
         removed = set()
         for uri in self.removed:
-            uri = get_reference(uri)
-            name = str(uri.path[-1])
-            if base.resolve2(name) == uri:
+            name = get_uri_name(uri)
+            if resolve_uri2(base, name) == uri:
                 removed.add(name)
         # Added
         added = set()
         for uri in self.added:
-            uri = get_reference(uri)
-            name = str(uri.path[-1])
-            if base.resolve2(name) == uri:
+            name = get_uri_name(uri)
+            if resolve_uri2(base, name) == uri:
                 added.add(name)
         names = set(names) - removed | added
 
@@ -580,10 +577,10 @@ class RWDatabase(RODatabase):
         cache = self.cache
         # Added handlers
         for uri in self.added:
-            self._discard_handler(str(uri))
+            self._discard_handler(uri)
         # Changed handlers
         for uri in self.changed:
-            cache[str(uri)].abort_changes()
+            cache[uri].abort_changes()
         # Reset state
         self.changed.clear()
         self.added.clear()
@@ -661,7 +658,7 @@ class GitDatabase(RWDatabase):
 
     def _save_changes(self, data):
         # Figure out the files to add
-        git_files = [ str(get_reference(x).path) for x in self.added ]
+        git_files = [ get_uri_path(x) for x in self.added ]
 
         # Save
         RWDatabase._save_changes(self, data)

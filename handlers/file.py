@@ -99,13 +99,12 @@ class File(Handler):
         self.reset()
         # TODO Use "with" once we move to Python 2.5 and "urllib.urlopen"
         # supports it
-        uri = str(self.uri)
-        file = vfs.open(uri)
+        file = vfs.open(self.uri)
         try:
             self._load_state_from_file(file)
         finally:
             file.close()
-        self.timestamp = vfs.get_mtime(uri)
+        self.timestamp = vfs.get_mtime(self.uri)
         self.dirty = None
 
 
@@ -130,14 +129,13 @@ class File(Handler):
 
 
     def save_state(self):
-        uri = str(self.uri)
-        file = self.safe_open(uri, 'w')
+        file = self.safe_open(self.uri, 'w')
         try:
             self.save_state_to_file(file)
         finally:
             file.close()
         # Update the timestamp
-        self.timestamp = vfs.get_mtime(uri)
+        self.timestamp = vfs.get_mtime(self.uri)
         self.dirty = None
 
 
@@ -198,8 +196,7 @@ class File(Handler):
         if timestamp is None:
             return False
 
-        uri = str(self.uri)
-        mtime = vfs.get_mtime(uri)
+        mtime = vfs.get_mtime(self.uri)
         # If the resource layer does not support mtime... we are...
         if mtime is None:
             return True
@@ -209,8 +206,7 @@ class File(Handler):
 
     def set_changed(self):
         # Invalid handler
-        uri = self.uri
-        if uri is None and self.dirty is None:
+        if self.uri is None and self.dirty is None:
             raise RuntimeError, 'cannot change an orphaned file handler'
 
         # Free handler (not attached to a database)
@@ -220,16 +216,15 @@ class File(Handler):
 
         # Check nothing weird happened
         database = self.database
-        if uri is None or database.cache.get(uri) is not self:
+        if self.uri is None or database.cache.get(self.uri) is not self:
             raise RuntimeError, 'database incosistency!'
 
         # Update database state
-        uri = str(uri)
         if self.timestamp is None and self.dirty is not None:
-            database.added.add(uri)
+            database.added.add(self.uri)
         else:
             self.dirty = datetime.now()
-            database.changed.add(uri)
+            database.changed.add(self.uri)
 
 
     def abort_changes(self):
@@ -260,8 +255,7 @@ class File(Handler):
             return self.timestamp
 
         # Not yet loaded, check the VFS
-        uri = str(self.uri)
-        return vfs.get_mtime(uri)
+        return vfs.get_mtime(self.uri)
 
 
     def to_str(self):

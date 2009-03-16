@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <errno.h>
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -874,9 +875,10 @@ doctype_read_external_dtd (DocType * doctype, gchar * PubidLiteral,
     {
       err_buffer = g_string_sized_new (256);
       g_string_set_size (err_buffer, 0);
-      g_string_append (err_buffer, "'");
+      g_string_append (err_buffer, "Error opening file (");
       g_string_append (err_buffer, filename);
-      g_string_append (err_buffer, "' no such file");
+      g_string_append (err_buffer, "): ");
+      g_string_append (err_buffer, strerror (errno));
 
       error_msg = g_string_chunk_insert (doctype_global_strings,
                                          err_buffer->str);

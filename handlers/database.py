@@ -218,19 +218,6 @@ class RODatabase(BaseDatabase):
         handler.__dict__.clear()
 
 
-    def discard_handler(self, uri):
-        """Removes the handler identified by the given uri from the cache.
-        If the handler has been modified, an exception is raised.
-        """
-        uri = str(uri)
-        # Check the handler has not been modified
-        handler = self.cache[uri]
-        if handler.dirty is not None:
-            raise RuntimeError, 'cannot discard a modified handler'
-        # Discard the handler
-        self._discard_handler(uri)
-
-
     def push_handler(self, uri, handler):
         """Adds the given resource to the cache.
         """

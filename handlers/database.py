@@ -138,7 +138,6 @@ class RODatabase(BaseDatabase):
     def _resolve_reference(self, reference):
         """Resolves and returns the given reference.
         """
-        reference = str(reference)
         return cwd.get_uri(reference)
 
 
@@ -278,6 +277,7 @@ class RODatabase(BaseDatabase):
     #######################################################################
     # Database API
     def has_handler(self, reference):
+        reference = str(reference)
         uri = self._resolve_reference(reference)
 
         # Syncrhonize
@@ -297,6 +297,7 @@ class RODatabase(BaseDatabase):
 
 
     def get_handler_names(self, reference):
+        reference = str(reference)
         uri = self._resolve_reference(reference)
 
         if vfs.exists(uri):
@@ -307,6 +308,7 @@ class RODatabase(BaseDatabase):
 
 
     def get_handler(self, reference, cls=None):
+        reference = str(reference)
         uri = self._resolve_reference(reference)
 
         # Syncrhonize
@@ -343,6 +345,7 @@ class RODatabase(BaseDatabase):
 
 
     def get_handlers(self, reference):
+        reference = str(reference)
         uri = self._resolve_reference(reference)
         base = get_reference(uri)
         for name in vfs.get_names(uri):
@@ -409,11 +412,11 @@ class RWDatabase(RODatabase):
     def _resolve_reference_for_writing(self, reference):
         """Resolves and returns the given reference.
         """
-        reference = str(reference)
         return cwd.get_uri(reference)
 
 
     def has_handler(self, reference):
+        reference = str(reference)
         uri = self._resolve_reference(reference)
 
         # Check the state
@@ -426,6 +429,7 @@ class RWDatabase(RODatabase):
 
 
     def get_handler_names(self, reference):
+        reference = str(reference)
         names = RODatabase.get_handler_names(self, reference)
 
         # The State
@@ -452,6 +456,7 @@ class RWDatabase(RODatabase):
 
 
     def get_handler(self, reference, cls=None):
+        reference = str(reference)
         uri = self._resolve_reference(reference)
 
         # Check state
@@ -471,6 +476,7 @@ class RWDatabase(RODatabase):
 
 
     def set_handler(self, reference, handler):
+        reference = str(reference)
         if isinstance(handler, Folder):
             raise ValueError, 'unexpected folder (only files can be "set")'
 
@@ -487,6 +493,7 @@ class RWDatabase(RODatabase):
 
 
     def del_handler(self, reference):
+        reference = str(reference)
         uri = self._resolve_reference_for_writing(reference)
 
         if uri in self.added:
@@ -509,6 +516,8 @@ class RWDatabase(RODatabase):
 
 
     def copy_handler(self, source, target):
+        source = str(source)
+        target = str(target)
         source = self._resolve_reference(source)
         target = self._resolve_reference_for_writing(target)
         if source == target:
@@ -536,6 +545,8 @@ class RWDatabase(RODatabase):
 
     def move_handler(self, source, target):
         # TODO This method can be optimized further
+        source = str(source)
+        target = str(target)
         source = self._resolve_reference_for_writing(source)
         target = self._resolve_reference_for_writing(target)
         if source == target:
@@ -658,7 +669,6 @@ class GitDatabase(RWDatabase):
         is, return the resolved reference as an string.
         """
         # Resolve the reference
-        reference = str(reference)
         uri = cwd.get_uri(reference)
         uri_ = get_reference(uri)
         # Security check

@@ -122,47 +122,49 @@ def normalize_path(path):
       '/../a/b/c ' -> '/a/b/c'
       '.'          -> ''
     """
-    if not isinstance(path, (str, unicode)):
+    if type(path) is not str:
         raise TypeError, 'path must be an string, not a %s' % type(path)
 
-    # Does the path start by an slash? i.e.: is it absolute?
-    startswith_slash = path.startswith('/')
+    # Does the path start and/or end with an slash?
+    startswith_slash = endswith_slash = False
+    if path:
+        startswith_slash = (path[0] == '/')
+        if path[-1] == '/':
+            endswith_slash = True
+        elif len(path) > 1 and path[-2] == '/' and path[-1] == '.':
+            endswith_slash = True
 
-    # Does the path end by an slash? (relevant to resolve URLs)
-    endswith_slash = path.endswith('/') or path.endswith('/.')
-
-    # Split the path http://a//
-    path = path.split('/')
-
-    # Transform '//' and '/./' to '/'
-    path = [ x for x in path if x not in ('', '.') ]
-
-    # Transform 'a/..' to ''
+    # Reduce '//', '/./' and 'a/..'
     stack = []
-    for name in path:
+    for name in path.split('/'):
+        # Reduce '//' and '/./' to '/'
+        if name == '' or name == '.':
+            continue
+        # Reduce 'a/..' to ''
         if name == '..' and stack and stack[-1] != '..':
             stack.pop()
         else:
             stack.append(name)
     path = stack
 
-    # Absolute or Relative
+    # Absolute path: remove '..' at the beginning
     if startswith_slash:
-        # Absolute path, remove '..' at the beginning
         while path and path[0] == '..':
-            path = path[1:]
+            del path[0]
 
-    path = '/'.join(path)
+    # len > 0
     if path:
+        path = '/'.join(path)
         if startswith_slash:
             path = '/' + path
         if endswith_slash:
             path = path + '/'
         return path
-    else:
-        if startswith_slash:
-            return '/'
-        return ''
+
+    # len = 0
+    if startswith_slash:
+        return '/'
+    return ''
 
 
 

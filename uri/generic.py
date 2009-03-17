@@ -110,18 +110,7 @@ class Authority(object):
 # Path
 ##########################################################################
 
-def normalize_path(path):
-    """Normalize the path (we don't use os.path because on Windows it
-    converts forward slashes to back slashes).
-
-    Examples:
-
-      'a//b/c'     -> 'a/b/c'
-      'a/./b/c'    -> 'a/b/c'
-      'a/b/c/../d' -> 'a/b/d'
-      '/../a/b/c ' -> '/a/b/c'
-      '.'          -> ''
-    """
+def _normalize_path(path):
     if type(path) is not str:
         raise TypeError, 'path must be an string, not a %s' % type(path)
 
@@ -151,6 +140,24 @@ def normalize_path(path):
     if startswith_slash:
         while path and path[0] == '..':
             del path[0]
+
+    # Ok
+    return startswith_slash, path, endswith_slash
+
+
+def normalize_path(path):
+    """Normalize the path (we don't use os.path because on Windows it
+    converts forward slashes to back slashes).
+
+    Examples:
+
+      'a//b/c'     -> 'a/b/c'
+      'a/./b/c'    -> 'a/b/c'
+      'a/b/c/../d' -> 'a/b/d'
+      '/../a/b/c ' -> '/a/b/c'
+      '.'          -> ''
+    """
+    startswith_slash, path, endswith_slash = _normalize_path(path)
 
     # len > 0
     if path:
@@ -203,18 +210,14 @@ class Path(list):
         if isinstance(path, tuple) or isinstance(path, list):
             path = '/'.join([ str(x) for x in path ])
 
-        path = normalize_path(path)
+        startswith_slash, path, endswith_slash = _normalize_path(path)
 
         # Absolute or relative
-        self.startswith_slash = path.startswith('/')
-        if self.startswith_slash:
-            path = path[1:]
-        self.endswith_slash = path.endswith('/')
-        if self.endswith_slash:
-            path = path[:-1]
+        self.startswith_slash = startswith_slash
+        self.endswith_slash = path and endswith_slash
 
-        if path != '':
-            path = [ Segment(x) for x in path.split('/') ]
+        if path:
+            path = [ Segment(x) for x in path ]
             list.__init__(self, path)
 
 

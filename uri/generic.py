@@ -111,7 +111,7 @@ class Authority(object):
 ##########################################################################
 
 def _normalize_path(path):
-    if type(path) is not str:
+    if not isinstance(path, str):
         raise TypeError, 'path must be an string, not a %s' % type(path)
 
     # Does the path start and/or end with an slash?

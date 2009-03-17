@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2008-11-04 17:11+CET\n"
+"POT-Creation-Date: 2009-03-17 11:03+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,15 +15,15 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../xml/i18n.py:59
+#: ../xml/i18n.py:61
 msgid " %s=\""
 msgstr ""
 
-#: ../xml/i18n.py:65
+#: ../xml/i18n.py:66
 msgid " %s=\"%s\""
 msgstr ""
 
-#: ../xml/i18n.py:63
+#: ../xml/i18n.py:64
 msgid "\""
 msgstr ""
 
@@ -36,11 +36,6 @@ msgstr ""
 msgid "#"
 msgstr ""
 
-#: ../web/context.py:45
-msgid "${missing} field(s) are missing and ${invalid} field(s) are invalid"
-msgstr ""
-
-#: ../xml/i18n.py:62
 #: ../tmx/tmx.py:229
 msgid "%s"
 msgstr ""
@@ -49,15 +44,19 @@ msgstr ""
 msgid "%s%s"
 msgstr ""
 
-#: ../pdf/pml.py:1056
+#: ../pdf/pml.py:336
+msgid "(WW) CSS filename \"%s\" does not exist"
+msgstr ""
+
+#: ../pdf/pml.py:1116
 msgid "(WW) Cannot add an image inside a td without predefined size"
 msgstr ""
 
-#: ../pdf/pml.py:1052
+#: ../pdf/pml.py:1112
 msgid "(WW) Filename is None"
 msgstr ""
 
-#: ../pdf/utils.py:236
+#: ../pdf/utils.py:234
 msgid "(WW) The filename '%s' doesn't exist"
 msgstr ""
 
@@ -71,21 +70,21 @@ msgstr ""
 msgid "*"
 msgstr ""
 
-#: ../handlers/utils.py:48
-#: ../handlers/utils.py:49
-#: ../handlers/utils.py:53
-#: ../handlers/utils.py:54
+#: ../handlers/utils.py:51
+#: ../handlers/utils.py:52
+#: ../handlers/utils.py:56
+#: ../handlers/utils.py:57
 #: ../rest/parser.py:104
 #: ../rest/parser.py:105
 msgid "-"
 msgstr ""
 
-#: ../ical/table.py:316
-#: ../ical/icalendar.py:312
+#: ../ical/table.py:374
+#: ../ical/icalendar.py:327
 msgid "-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN"
 msgstr ""
 
-#: ../handlers/utils.py:48
+#: ../handlers/utils.py:51
 #: ../rest/parser.py:106
 #: ../rest/parser.py:107
 msgid "."
@@ -107,8 +106,8 @@ msgstr ""
 msgid "1"
 msgstr ""
 
-#: ../ical/table.py:315
-#: ../ical/icalendar.py:311
+#: ../ical/table.py:373
+#: ../ical/icalendar.py:326
 msgid "2.0"
 msgstr ""
 
@@ -120,19 +119,19 @@ msgstr ""
 msgid "::"
 msgstr ""
 
-#: ../xml/i18n.py:48
+#: ../xml/i18n.py:49
 msgid "<%s"
 msgstr ""
 
-#: ../gettext/po.py:140
+#: ../gettext/po.py:142
 msgid "</g>"
 msgstr ""
 
-#: ../gettext/po.py:136
+#: ../gettext/po.py:138
 msgid "<g id='%d'>"
 msgstr ""
 
-#: ../gettext/po.py:134
+#: ../gettext/po.py:136
 msgid "<x id='%d'/>"
 msgstr ""
 
@@ -144,15 +143,15 @@ msgstr ""
 msgid "???"
 msgstr ""
 
-#: ../handlers/utils.py:48
+#: ../handlers/utils.py:51
 msgid "@"
 msgstr ""
 
-#: ../handlers/utils.py:21
+#: ../handlers/utils.py:24
 msgid "AAAAAAAaaaaaaaCcEEEEEeeeeeIIIIIiiiiiNnOOOOOOOoooooooUUUUUuuuuuYYYyyy"
 msgstr ""
 
-#: ../handlers/utils.py:29
+#: ../handlers/utils.py:32
 msgid "AE"
 msgstr ""
 
@@ -160,16 +159,30 @@ msgstr ""
 msgid "Aesthetics (and readibility)"
 msgstr ""
 
+#: ../ical/icalendar.py:496
+#: ../ical/icalendar.py:512
+msgid "BEGIN:%s\n"
+msgstr ""
+
 #: ../scripts/isetup-quality.py:58
 msgid "Code length"
+msgstr ""
+
+#: ../ical/icalendar.py:520
+#: ../ical/icalendar.py:523
+msgid "END:%s\n"
 msgstr ""
 
 #: ../scripts/isetup-quality.py:505
 msgid "Error, your project must be versioned with GIT."
 msgstr ""
 
-#: ../csv/table.py:280
+#: ../csv/table.py:284
 msgid "Error: Field \"$field\" must be unique, value \"$value\" is already used."
+msgstr ""
+
+#: ../web/context.py:63
+msgid "Everything looks fine (strange)."
 msgstr ""
 
 #: ../scripts/isetup-quality.py:71
@@ -188,7 +201,7 @@ msgstr ""
 msgid "Number of tokens"
 msgstr ""
 
-#: ../handlers/utils.py:31
+#: ../handlers/utils.py:34
 msgid "OE"
 msgstr ""
 
@@ -204,12 +217,24 @@ msgstr ""
 msgid "Please install matplotlib."
 msgstr ""
 
-#: ../web/messages.py:51
+#: ../web/messages.py:46
 msgid "Some required fields are missing, or some values are not valid. Please correct them and continue."
 msgstr ""
 
 #: ../scripts/isetup-quality.py:499
 msgid "The option --show-lines takes one file in parameter."
+msgstr ""
+
+#: ../web/context.py:60
+msgid "There are ${inv} field(s) invalid."
+msgstr ""
+
+#: ../web/context.py:56
+msgid "There are ${miss} field(s) missing and ${inv} invalid."
+msgstr ""
+
+#: ../web/context.py:58
+msgid "There are ${miss} field(s) missing."
 msgstr ""
 
 #: ../scripts/isetup-quality.py:288
@@ -229,7 +254,7 @@ msgstr ""
 msgid "]"
 msgstr ""
 
-#: ../handlers/utils.py:48
+#: ../handlers/utils.py:51
 #: ../rest/parser.py:299
 #: ../rest/parser.py:349
 #: ../rest/parser.py:368
@@ -245,7 +270,7 @@ msgstr ""
 msgid "`"
 msgstr ""
 
-#: ../handlers/utils.py:28
+#: ../handlers/utils.py:31
 msgid "ae"
 msgstr ""
 
@@ -370,7 +395,7 @@ msgstr ""
 msgid "ils"
 msgstr ""
 
-#: ../pdf/utils.py:254
+#: ../pdf/utils.py:252
 msgid "image not valid : %s"
 msgstr ""
 
@@ -423,6 +448,10 @@ msgstr ""
 msgid "no"
 msgstr ""
 
+#: ../ical/table.py:120
+msgid "no title"
+msgstr ""
+
 #: ../i18n/oracle.py:115
 msgid "nous"
 msgstr ""
@@ -435,7 +464,7 @@ msgstr ""
 msgid "o"
 msgstr ""
 
-#: ../handlers/utils.py:30
+#: ../handlers/utils.py:33
 msgid "oe"
 msgstr ""
 
@@ -479,7 +508,7 @@ msgstr ""
 msgid "she"
 msgstr ""
 
-#: ../handlers/utils.py:32
+#: ../handlers/utils.py:35
 msgid "ss"
 msgstr ""
 
@@ -584,15 +613,15 @@ msgstr ""
 msgid "¿"
 msgstr ""
 
-#: ../handlers/utils.py:19
+#: ../handlers/utils.py:22
 msgid "ÄÅÁÀÂÃĀäåáàâãāÇçÉÈÊËĒéèêëēÍÌÎÏĪíìîïīÑñÖÓÒÔÕØŌöóòôõøōÜÚÙÛŪüúùûūÝŸȲýÿȳ"
 msgstr ""
 
-#: ../handlers/utils.py:29
+#: ../handlers/utils.py:32
 msgid "Æ"
 msgstr ""
 
-#: ../handlers/utils.py:32
+#: ../handlers/utils.py:35
 #: ../i18n/oracle.py:47
 msgid "ß"
 msgstr ""
@@ -605,7 +634,7 @@ msgstr ""
 msgid "ä"
 msgstr ""
 
-#: ../handlers/utils.py:28
+#: ../handlers/utils.py:31
 msgid "æ"
 msgstr ""
 
@@ -641,11 +670,11 @@ msgstr ""
 msgid "ü"
 msgstr ""
 
-#: ../handlers/utils.py:31
+#: ../handlers/utils.py:34
 msgid "Œ"
 msgstr ""
 
-#: ../handlers/utils.py:30
+#: ../handlers/utils.py:33
 msgid "œ"
 msgstr ""
 

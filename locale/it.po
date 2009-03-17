@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: it\n"
-"POT-Creation-Date: 2008-11-04 17:11+CET\n"
+"POT-Creation-Date: 2009-03-17 11:03+CET\n"
 "PO-Revision-Date: 2004-11-26 14:39+0100\n"
 "Last-Translator: Paolo Dina <paolo@php3.it>\n"
 "Language-Team: Italian <paolo@php3.it>\n"
@@ -16,15 +16,15 @@ msgstr ""
 "X-Poedit-Language: Italian\n"
 "X-Poedit-Country: ITALY\n"
 
-#: ../xml/i18n.py:59
+#: ../xml/i18n.py:61
 msgid " %s=\""
 msgstr ""
 
-#: ../xml/i18n.py:65
+#: ../xml/i18n.py:66
 msgid " %s=\"%s\""
 msgstr ""
 
-#: ../xml/i18n.py:63
+#: ../xml/i18n.py:64
 msgid "\""
 msgstr ""
 
@@ -33,11 +33,7 @@ msgstr ""
 msgid "#"
 msgstr ""
 
-#: ../web/context.py:45
-msgid "${missing} field(s) are missing and ${invalid} field(s) are invalid"
-msgstr ""
-
-#: ../xml/i18n.py:62 ../tmx/tmx.py:229
+#: ../tmx/tmx.py:229
 msgid "%s"
 msgstr ""
 
@@ -45,15 +41,20 @@ msgstr ""
 msgid "%s%s"
 msgstr ""
 
-#: ../pdf/pml.py:1056
+#: ../pdf/pml.py:336
+#, fuzzy
+msgid "(WW) CSS filename \"%s\" does not exist"
+msgstr "L'utente \"%s\" non esiste"
+
+#: ../pdf/pml.py:1116
 msgid "(WW) Cannot add an image inside a td without predefined size"
 msgstr ""
 
-#: ../pdf/pml.py:1052
+#: ../pdf/pml.py:1112
 msgid "(WW) Filename is None"
 msgstr ""
 
-#: ../pdf/utils.py:236
+#: ../pdf/utils.py:234
 #, fuzzy
 msgid "(WW) The filename '%s' doesn't exist"
 msgstr "L'utente \"%s\" non esiste"
@@ -63,16 +64,16 @@ msgstr "L'utente \"%s\" non esiste"
 msgid "*"
 msgstr ""
 
-#: ../handlers/utils.py:48 ../handlers/utils.py:49 ../handlers/utils.py:53
-#: ../handlers/utils.py:54 ../rest/parser.py:104 ../rest/parser.py:105
+#: ../handlers/utils.py:51 ../handlers/utils.py:52 ../handlers/utils.py:56
+#: ../handlers/utils.py:57 ../rest/parser.py:104 ../rest/parser.py:105
 msgid "-"
 msgstr ""
 
-#: ../ical/table.py:316 ../ical/icalendar.py:312
+#: ../ical/table.py:374 ../ical/icalendar.py:327
 msgid "-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN"
 msgstr ""
 
-#: ../handlers/utils.py:48 ../rest/parser.py:106 ../rest/parser.py:107
+#: ../handlers/utils.py:51 ../rest/parser.py:106 ../rest/parser.py:107
 msgid "."
 msgstr ""
 
@@ -93,7 +94,7 @@ msgstr ""
 msgid "1"
 msgstr ""
 
-#: ../ical/table.py:315 ../ical/icalendar.py:311
+#: ../ical/table.py:373 ../ical/icalendar.py:326
 msgid "2.0"
 msgstr ""
 
@@ -105,19 +106,19 @@ msgstr ""
 msgid "::"
 msgstr ""
 
-#: ../xml/i18n.py:48
+#: ../xml/i18n.py:49
 msgid "<%s"
 msgstr ""
 
-#: ../gettext/po.py:140
+#: ../gettext/po.py:142
 msgid "</g>"
 msgstr ""
 
-#: ../gettext/po.py:136
+#: ../gettext/po.py:138
 msgid "<g id='%d'>"
 msgstr ""
 
-#: ../gettext/po.py:134
+#: ../gettext/po.py:136
 msgid "<x id='%d'/>"
 msgstr ""
 
@@ -129,15 +130,15 @@ msgstr ""
 msgid "???"
 msgstr ""
 
-#: ../handlers/utils.py:48
+#: ../handlers/utils.py:51
 msgid "@"
 msgstr ""
 
-#: ../handlers/utils.py:21
+#: ../handlers/utils.py:24
 msgid "AAAAAAAaaaaaaaCcEEEEEeeeeeIIIIIiiiiiNnOOOOOOOoooooooUUUUUuuuuuYYYyyy"
 msgstr ""
 
-#: ../handlers/utils.py:29
+#: ../handlers/utils.py:32
 msgid "AE"
 msgstr ""
 
@@ -145,17 +146,29 @@ msgstr ""
 msgid "Aesthetics (and readibility)"
 msgstr ""
 
+#: ../ical/icalendar.py:496 ../ical/icalendar.py:512
+msgid "BEGIN:%s\n"
+msgstr ""
+
 #: ../scripts/isetup-quality.py:58
 msgid "Code length"
+msgstr ""
+
+#: ../ical/icalendar.py:520 ../ical/icalendar.py:523
+msgid "END:%s\n"
 msgstr ""
 
 #: ../scripts/isetup-quality.py:505
 msgid "Error, your project must be versioned with GIT."
 msgstr ""
 
-#: ../csv/table.py:280
+#: ../csv/table.py:284
 msgid ""
 "Error: Field \"$field\" must be unique, value \"$value\" is already used."
+msgstr ""
+
+#: ../web/context.py:63
+msgid "Everything looks fine (strange)."
 msgstr ""
 
 #: ../scripts/isetup-quality.py:71
@@ -175,7 +188,7 @@ msgstr ""
 msgid "Number of tokens"
 msgstr ""
 
-#: ../handlers/utils.py:31
+#: ../handlers/utils.py:34
 msgid "OE"
 msgstr ""
 
@@ -192,7 +205,7 @@ msgstr "Devi scegliere un collaboratore da rimuovere."
 msgid "Please install matplotlib."
 msgstr ""
 
-#: ../web/messages.py:51
+#: ../web/messages.py:46
 msgid ""
 "Some required fields are missing, or some values are not valid. Please "
 "correct them and continue."
@@ -200,6 +213,19 @@ msgstr ""
 
 #: ../scripts/isetup-quality.py:499
 msgid "The option --show-lines takes one file in parameter."
+msgstr ""
+
+#: ../web/context.py:60
+#, fuzzy
+msgid "There are ${inv} field(s) invalid."
+msgstr "Il nome utente è errato, tenta di nuovo"
+
+#: ../web/context.py:56
+msgid "There are ${miss} field(s) missing and ${inv} invalid."
+msgstr ""
+
+#: ../web/context.py:58
+msgid "There are ${miss} field(s) missing."
 msgstr ""
 
 #: ../scripts/isetup-quality.py:288
@@ -219,7 +245,7 @@ msgstr ""
 msgid "]"
 msgstr ""
 
-#: ../handlers/utils.py:48 ../rest/parser.py:299 ../rest/parser.py:349
+#: ../handlers/utils.py:51 ../rest/parser.py:299 ../rest/parser.py:349
 #: ../rest/parser.py:368
 msgid "_"
 msgstr ""
@@ -229,7 +255,7 @@ msgstr ""
 msgid "`"
 msgstr ""
 
-#: ../handlers/utils.py:28
+#: ../handlers/utils.py:31
 #, fuzzy
 msgid "ae"
 msgstr "Confronta"
@@ -365,7 +391,7 @@ msgstr "Dettagli"
 msgid "ils"
 msgstr "Dettagli"
 
-#: ../pdf/utils.py:254
+#: ../pdf/utils.py:252
 msgid "image not valid : %s"
 msgstr ""
 
@@ -423,6 +449,11 @@ msgstr "Email"
 msgid "no"
 msgstr "Gruppi"
 
+#: ../ical/table.py:120
+#, fuzzy
+msgid "no title"
+msgstr "Il titolo"
+
 #: ../i18n/oracle.py:115
 #, fuzzy
 msgid "nous"
@@ -437,7 +468,7 @@ msgstr ""
 msgid "o"
 msgstr "A"
 
-#: ../handlers/utils.py:30
+#: ../handlers/utils.py:33
 #, fuzzy
 msgid "oe"
 msgstr "Codice"
@@ -486,7 +517,7 @@ msgstr ""
 msgid "she"
 msgstr ""
 
-#: ../handlers/utils.py:32
+#: ../handlers/utils.py:35
 msgid "ss"
 msgstr ""
 
@@ -594,15 +625,15 @@ msgstr ""
 msgid "¿"
 msgstr ""
 
-#: ../handlers/utils.py:19
+#: ../handlers/utils.py:22
 msgid "ÄÅÁÀÂÃĀäåáàâãāÇçÉÈÊËĒéèêëēÍÌÎÏĪíìîïīÑñÖÓÒÔÕØŌöóòôõøōÜÚÙÛŪüúùûūÝŸȲýÿȳ"
 msgstr ""
 
-#: ../handlers/utils.py:29
+#: ../handlers/utils.py:32
 msgid "Æ"
 msgstr ""
 
-#: ../handlers/utils.py:32 ../i18n/oracle.py:47
+#: ../handlers/utils.py:35 ../i18n/oracle.py:47
 msgid "ß"
 msgstr ""
 
@@ -614,7 +645,7 @@ msgstr ""
 msgid "ä"
 msgstr ""
 
-#: ../handlers/utils.py:28
+#: ../handlers/utils.py:31
 msgid "æ"
 msgstr ""
 
@@ -650,11 +681,11 @@ msgstr ""
 msgid "ü"
 msgstr ""
 
-#: ../handlers/utils.py:31
+#: ../handlers/utils.py:34
 msgid "Œ"
 msgstr ""
 
-#: ../handlers/utils.py:30
+#: ../handlers/utils.py:33
 msgid "œ"
 msgstr ""
 
@@ -3210,10 +3241,6 @@ msgstr ""
 #~ msgstr "Il nome utente è errato, tenta di nuovo"
 
 #, fuzzy
-#~ msgid "The email address provided is invalid."
-#~ msgstr "Il nome utente è errato, tenta di nuovo"
-
-#, fuzzy
 #~ msgid "The file must be entered."
 #~ msgstr "Deve essere inserito un file"
 
@@ -3275,9 +3302,6 @@ msgstr ""
 
 #, fuzzy
 #~ msgid "The subview"
-#~ msgstr "Il titolo"
-
-#~ msgid "The title"
 #~ msgstr "Il titolo"
 
 #, fuzzy

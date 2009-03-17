@@ -180,13 +180,13 @@ class PathResolve2TestCase(TestCase):
     def test_resolve2_wo_slash(self):
         before = Path('/a/b')
         after = Path('/a/b/c')
-        self.assertEqual(before.resolve2('c'), after)
+        self.assertEqual(before.resolve_name('c'), after)
 
 
     def test_resolve2_w_slash(self):
         before = Path('/a/b/')
         after = Path('/a/b/c')
-        self.assertEqual(before.resolve2('c'), after)
+        self.assertEqual(before.resolve_name('c'), after)
 
 
 

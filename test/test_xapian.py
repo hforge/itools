@@ -276,7 +276,7 @@ class CatalogTestCase(TestCase):
         fables = vfs.open('fables')
         for name in fables.get_names():
             uri = fables.get_uri()
-            uri = get_reference(uri).resolve2(name)
+            uri = get_reference(uri).resolve_name(name)
             document = Document(uri)
             catalog.index_document(document)
         # Save

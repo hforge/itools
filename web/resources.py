@@ -47,7 +47,7 @@ class Resource(object):
             return Path('/')
         parent_path = self.parent.get_abspath()
 
-        return parent_path.resolve2(self.name)
+        return parent_path.resolve_name(self.name)
 
 
     def get_canonical_path(self):
@@ -55,7 +55,7 @@ class Resource(object):
             return Path('/')
         parent_path = self.parent.get_canonical_path()
 
-        return parent_path.resolve2(self.name)
+        return parent_path.resolve_name(self.name)
 
 
     def get_real_resource(self):

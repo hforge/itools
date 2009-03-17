@@ -16,9 +16,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
+from itools.uri import get_uri_name, resolve_name
 from itools import vfs
-from itools.uri import get_reference, Path
-from itools.vfs import exists, is_file, is_folder, make_file, WRITE
+from itools.vfs import WRITE
 
 
 # List of supported extensions
@@ -61,31 +61,24 @@ def parse_package_name(package_name, extension=''):
 
 
 def download(url, to):
-    """download an url to to, if to is s a directory the file will be
+    """Download an url to 'to', if 'to' is s a directory the file will be
     named by the path.get_name() of the url, or index.html if unknown.
     """
-    if isinstance(url, str):
-        url = get_reference(url)
-
-    if isinstance(to, str):
-        to = get_reference(to)
-
-    url_handle = vfs.open(url)
-    size = url_handle.headers['Content-Length']
-
-    if exists(to) and is_folder(to):
-        if url.path.get_name() != '':
-            to = to.resolve2(url.path.get_name())
-        else:
-            to = to.resolve2('index.html')
-        if exists(to):
-            # If the file have been downloaded just return its name
-            return to
-    elif exists(to) and is_file(to):
-        # If the file have been downloaded just return its name
+    # If the file have been downloaded just return its name
+    if vfs.exists(to) and vfs.is_file(to):
         return to
 
-    make_file(to)
+    if vfs.exists(to) and vfs.is_folder(to):
+        name = get_uri_name(url)
+        if name == '':
+            name = 'index.html'
+        to = resolve_name(name)
+        # If the file has been downloaded just return its name
+        if vfs.exists(to):
+            return to
+
+    url_handle = vfs.open(url)
+    vfs.make_file(to)
     vfs.open(to, WRITE).write(url_handle.read())
     return to
 

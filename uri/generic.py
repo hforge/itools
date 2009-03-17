@@ -316,6 +316,21 @@ class Path(list):
         return Path('%s/%s' % (self, path))
 
 
+    def resolve_name(self, name):
+        """This is a particular case of the 'resolve2' method, where the
+        reference is known to be a relative path of length = 1.
+        """
+        if not isinstance(name, str):
+            raise TypeError, 'unexpected value "%s"' % repr(name)
+
+        # Relative path
+        path = copy(self)
+        segment = Segment(name)
+        path.append(segment)
+        path.endswith_slash = False
+        return path
+
+
     def get_prefix(self, path):
         """Returns the common prefix of two paths, for example:
 
@@ -574,7 +589,7 @@ class Reference(object):
 
 
     def resolve2(self, reference):
-        """This is much like 'resolv', but uses 'Path.resolve2' method
+        """This is much like 'resolve', but uses 'Path.resolve2' method
         instead.
 
         XXX Too much code is duplicated, the only difference beween 'resolve'
@@ -624,6 +639,14 @@ class Reference(object):
                          self.path.resolve2(reference.path),
                          copy(reference.query),
                          reference.fragment)
+
+
+    def resolve_name(self, name):
+        """This is a particular case of the 'resolve2' method, where the
+        reference is known to be a relative path of length = 1.
+        """
+        path = self.path.resolve_name(name)
+        return Reference(self.scheme, copy(self.authority), path, {})
 
 
     def replace(self, **kw):

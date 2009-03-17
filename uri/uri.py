@@ -47,6 +47,20 @@ def get_reference(reference):
 
 
 
+def get_uri_name(uri):
+    uri = get_reference(uri)
+
+    return str(uri.path[-1])
+
+
+
+def get_uri_path(uri):
+    uri = get_reference(uri)
+
+    return str(uri.path)
+
+
+
 def resolve_uri(base, reference):
     base = get_reference(base)
     reference = get_reference(reference)
@@ -65,16 +79,9 @@ def resolve_uri2(base, reference):
 
 
 
-def get_uri_name(uri):
-    uri = get_reference(uri)
+def resolve_name(base, name):
+    base = get_reference(base)
 
-    return str(uri.path[-1])
-
-
-
-def get_uri_path(uri):
-    uri = get_reference(uri)
-
-    return str(uri.path)
-
+    uri = base.resolve_name(name)
+    return str(uri)
 

@@ -207,14 +207,13 @@ class Path(list):
 
 
     def __init__(self, path):
-        if isinstance(path, tuple) or isinstance(path, list):
-            path = '/'.join([ str(x) for x in path ])
-
-        startswith_slash, path, endswith_slash = _normalize_path(path)
-
-        # Absolute or relative
-        self.startswith_slash = startswith_slash
-        self.endswith_slash = path and endswith_slash
+        if isinstance(path, (tuple, list)):
+            self.startswith_slash = False
+            self.endswith_slash = False
+        else:
+            startswith_slash, path, endswith_slash = _normalize_path(path)
+            self.startswith_slash = startswith_slash
+            self.endswith_slash = path and endswith_slash
 
         if path:
             path = [ Segment(x) for x in path ]

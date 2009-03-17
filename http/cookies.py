@@ -14,8 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from the Standard Library
+from datetime import datetime
+
 # Import from itools
-from itools.datatypes import DataType
+from itools.datatypes import DataType, HTTPDate
 from parsing import lookup_char, read_char, read_opaque, read_quoted_string
 from parsing import read_token, read_white_space
 
@@ -247,8 +250,11 @@ class SetCookieDataType(DataType):
             aux = []
             aux.append('%s="%s"' % (name, cookie.value))
             # The parameters
-            if cookie.expires is not None:
-                aux.append('expires=%s' % cookie.expires)
+            expires = cookie.expires
+            if expires is not None:
+                if isinstance(expires, datetime):
+                    expires = HTTPDate.encode(expires)
+                aux.append('expires=%s' % expires)
             if cookie.domain is not None:
                 aux.append('domain=%s' % cookie.domain)
             if cookie.path is not None:

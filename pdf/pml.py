@@ -290,7 +290,7 @@ class Context(object):
            does not exist.
         """
 
-        if self.stylesheet.has_key(name):
+        if name in self.stylesheet:
             return self.stylesheet[name]
         return self.stylesheet['Normal']
 

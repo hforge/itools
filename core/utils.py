@@ -63,19 +63,20 @@ def merge_dicts(d, *args, **kw):
 
 
 def get_sizeof(obj):
-    """Return the size of an object and all objects refered by it."""
-    size = getsizeof(obj)
-    memory = set()
-    memory.add(id(obj))
-    remaining = get_referents(obj)
-    while remaining:
-        next_remaining = []
-        for obj in remaining:
-            if id(obj) not in memory:
-                size += getsizeof(obj)
-                memory.add(id(obj))
-                next_remaining += get_referents(obj)
-        remaining = next_remaining
+    """Return the size of an object and all objects refered by it.
+    """
+    size = 0
+    done = set()
+    todo = {id(obj): obj}
+    while todo:
+        obj_id, obj = todo.popitem()
+        size += getsizeof(obj)
+        done.add(obj_id)
+        for obj in get_referents(obj):
+            obj_id = id(obj)
+            if obj_id not in done:
+                todo[obj_id] = obj
+
     return size
 
 

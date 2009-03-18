@@ -19,7 +19,8 @@ from mimetypes import MimeTypes
 from os import getcwd
 from os.path import join, sep, splitdrive
 from subprocess import Popen, PIPE
-from sys import _getframe, modules
+from sys import _getframe, modules, getsizeof
+from gc import get_referents
 
 
 def get_abspath(local_path, mname=None):
@@ -58,6 +59,24 @@ def merge_dicts(d, *args, **kw):
         new_d.update(dic)
     new_d.update(kw)
     return new_d
+
+
+
+def get_sizeof(obj):
+    """Return the size of an object and all objects refered by it."""
+    size = getsizeof(obj)
+    memory = set()
+    memory.add(id(obj))
+    remaining = get_referents(obj)
+    while remaining:
+        next_remaining = []
+        for obj in remaining:
+            if id(obj) not in memory:
+                size += getsizeof(obj)
+                memory.add(id(obj))
+                next_remaining += get_referents(obj)
+        remaining = next_remaining
+    return size
 
 
 

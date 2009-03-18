@@ -72,6 +72,7 @@ def get_sizeof(obj):
         obj_id, obj = todo.popitem()
         size += getsizeof(obj)
         done.add(obj_id)
+        done.add(id(obj.__class__)) # Do not count the class
         for obj in get_referents(obj):
             obj_id = id(obj)
             if obj_id not in done:

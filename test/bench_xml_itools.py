@@ -29,26 +29,25 @@ if __name__ == '__main__':
     nb_repeat = int(sys.argv[2])
 
     # Open the test file
-    test_file = open(filename)
+    with open(filename) as test_file:
 
-    # Loop
-    while nb_repeat > 0:
-        nb_repeat -= 1
-        # Parse
-        parser = XMLParser(test_file)
-        try:
-            for type, value, line in parser:
-                if type == START_ELEMENT:
-                    pass
-                elif type == END_ELEMENT:
-                    pass
-        except:
-            # Error
-            test_file.close()
-            exit(1)
-        # Again
-        test_file.seek(0)
+        # Loop
+        while nb_repeat > 0:
+            nb_repeat -= 1
+            # Parse
+            parser = XMLParser(test_file)
+            try:
+                for type, value, line in parser:
+                    if type == START_ELEMENT:
+                        pass
+                    elif type == END_ELEMENT:
+                        pass
+            except:
+                # Error
+                test_file.close()
+                exit(1)
+            # Again
+            test_file.seek(0)
 
     # Ok
-    test_file.close()
 

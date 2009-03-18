@@ -38,23 +38,22 @@ if __name__ == '__main__':
     nb_repeat = int(sys.argv[2])
 
     # Open the test file
-    test_file = open(filename)
+    with open(filename)as test_file:
 
-    # Loop
-    while nb_repeat > 0:
-        nb_repeat -= 1
-        # Raise MemoryError after calling seek(0)
-        # if we don't create a new parser
-        p = ParserCreate()
-        p.StartElementHandler = start_element
-        p.EndElementHandler = end_element
-        try:
-            p.ParseFile(test_file)
-        except:
-            # Error
-            test_file.close()
-            exit(1)
-        test_file.seek(0)
+        # Loop
+        while nb_repeat > 0:
+            nb_repeat -= 1
+            # Raise MemoryError after calling seek(0)
+            # if we don't create a new parser
+            p = ParserCreate()
+            p.StartElementHandler = start_element
+            p.EndElementHandler = end_element
+            try:
+                p.ParseFile(test_file)
+            except:
+                # Error
+                test_file.close()
+                exit(1)
+            test_file.seek(0)
 
     # Ok
-    test_file.close()

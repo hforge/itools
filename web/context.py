@@ -333,7 +333,7 @@ def get_form_value(form, name, type=String, default=None):
 
     # Missing
     is_mandatory = getattr(type, 'mandatory', False)
-    is_missing = name not in form
+    is_missing = form.get(name) is None
     if is_missing:
         # Mandatory: raise an error
         if is_mandatory and is_missing:

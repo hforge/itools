@@ -23,6 +23,7 @@
 from cStringIO import StringIO
 from copy import deepcopy
 from socket import setdefaulttimeout
+from os import close as close_fd
 from types import FileType
 from tempfile import mkdtemp, mkstemp
 
@@ -299,6 +300,8 @@ class Context(object):
 
     def get_tmp_file(self):
         fd, filename = mkstemp(dir=self.tmp_dir)
+        # close fd
+        close_fd(fd)
         return vfs.open(filename, 'w')
 
 

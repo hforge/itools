@@ -751,7 +751,7 @@ dtd_parse (DocType * doctype, DTD * dtd)
         return ALL_OK;
       case '%':
         if (dtd_read_parameter_entity (dtd))
-          return ERROR;
+          return DOCTYPE_ERROR ("DTD Error: expected parameter entity");
         continue;
       case '<':
         if (dtd_move_cursor (dtd) == '!')
@@ -761,7 +761,7 @@ dtd_parse (DocType * doctype, DTD * dtd)
             case '-':
               /* '<!-' */
               if (dtd_ignore_comment (dtd))
-                return ERROR;
+                return DOCTYPE_ERROR ("DTD Error: ignoring comment failed");
               continue;
             case 'E':
               /* '<!E' */
@@ -769,16 +769,16 @@ dtd_parse (DocType * doctype, DTD * dtd)
                 {
                   /* '<!EN' */
                   if (dtd_read_EntityDecl (doctype, dtd))
-                    return ERROR;
+                    return DOCTYPE_ERROR ("DTD Error: expected entity decl");
                   continue;
                 }
             }
         /* The other cases => ignore it */
         if (dtd_ignore_element (dtd))
-          return ERROR;
+          return DOCTYPE_ERROR ("DTD Error: ignoring element failed");
         continue;
       default:
-        return ERROR;
+        return DOCTYPE_ERROR ("DTD Error: unexpected char");
       }
 }
 
@@ -810,6 +810,7 @@ doctype_read_external_dtd (DocType * doctype, gchar * PubidLiteral,
   GString *err_buffer;
   gchar *error_msg;
   DTD *dtd;
+  gboolean status;
 
   /* Store the values */
   if (PubidLiteral)
@@ -892,17 +893,10 @@ doctype_read_external_dtd (DocType * doctype, gchar * PubidLiteral,
   dtd = dtd_new (NULL, file, TRUE);
 
   /* And parse it ! */
-  if (dtd_parse (doctype, dtd))
-    {
-      dtd_free (dtd);
-      fclose (file);
-      return ERROR;
-    }
-
-  /* ALL OK */
+  status = dtd_parse (doctype, dtd);
   dtd_free (dtd);
   fclose (file);
-  return ALL_OK;
+  return status;
 }
 
 
@@ -910,6 +904,7 @@ gboolean
 doctype_read_internal_dtd (DocType * doctype, gchar * intSubset)
 {
   DTD *dtd;
+  gboolean status;
 
   /* Store the value */
   doctype->intSubset = g_string_chunk_insert (doctype->strings_storage,
@@ -919,15 +914,9 @@ doctype_read_internal_dtd (DocType * doctype, gchar * intSubset)
   dtd = dtd_new (intSubset, NULL, FALSE);
 
   /* And parse it ! */
-  if (dtd_parse (doctype, dtd))
-    {
-      dtd_free (dtd);
-      return ERROR;
-    }
-
-  /* All OK */
+  status = dtd_parse (doctype, dtd);
   dtd_free (dtd);
-  return ALL_OK;
+  return status;
 }
 
 

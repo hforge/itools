@@ -258,6 +258,8 @@ class Context(object):
         self.pagetotal = XMLContent.encode('#pagetotal/>')
         self.multibuild = False
         self.doc_attr = {'pagesize': A4} # FIXME Should be customizable
+        # Image cache
+        self.check_img_cache = {}
 
 
     def init_base_style_sheet(self):
@@ -1129,7 +1131,7 @@ def create_img(attributes, context, check_dimension=False):
 def build_image(filename, width, height, context):
     # determines behavior of both arguments(width, height)
     kind = 'direct'
-    file_path, size = check_image(filename, context)
+    file_path, size = context.check_image(filename)
     x, y = size
     #FIXME not like html
     if height or width:
@@ -1427,7 +1429,7 @@ def build_img_attributes(attributes, context):
     for key, attr_value in attributes.iteritems():
         key = key[1]
         if key == 'src':
-            file_path, size = check_image(attr_value, context)
+            file_path, size = context.check_image(attr_value)
             attrs[(None, 'src')] = file_path
         elif key == 'width':
             attrs[(None, 'width')] = format_size(attr_value)

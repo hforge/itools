@@ -21,6 +21,7 @@
 
 # Import from the Standard Library
 from cStringIO import StringIO
+from os import close as close_fd
 from types import FileType
 import copy
 import socket
@@ -302,6 +303,8 @@ class Context(object):
 
     def get_tmp_file(self):
         fd, filename = tempfile.mkstemp(dir=self.tmp_dir)
+        # close fd
+        close_fd(fd)
         return vfs.open(filename, 'w')
 
 

@@ -845,17 +845,11 @@ doctype_read_external_dtd (DocType * doctype, gchar * PubidLiteral,
     {
       err_buffer = g_string_sized_new (256);
       g_string_set_size (err_buffer, 0);
-      g_string_append (err_buffer, "'");
       if (PubidLiteral)
-        {
-          g_string_append (err_buffer, PubidLiteral);
-          g_string_append (err_buffer, " (");
-          g_string_append (err_buffer, doctype->buffer->str);
-          g_string_append_c (err_buffer, ')');
-        }
+        g_string_append_printf (err_buffer, "'%s (%s)|", PubidLiteral,
+                                doctype->buffer->str);
       else
-        g_string_append (err_buffer, "None");
-      g_string_append_c (err_buffer, '|');
+        g_string_append (err_buffer, "'None|");
       if (SystemLiteral)
         g_string_append (err_buffer, SystemLiteral);
       else
@@ -876,10 +870,8 @@ doctype_read_external_dtd (DocType * doctype, gchar * PubidLiteral,
     {
       err_buffer = g_string_sized_new (256);
       g_string_set_size (err_buffer, 0);
-      g_string_append (err_buffer, "Error opening file (");
-      g_string_append (err_buffer, filename);
-      g_string_append (err_buffer, "): ");
-      g_string_append (err_buffer, strerror (errno));
+      g_string_append_printf (err_buffer, "Error opening file (%s): %s",
+                              filename, strerror (errno));
 
       error_msg = g_string_chunk_insert (doctype_global_strings,
                                          err_buffer->str);

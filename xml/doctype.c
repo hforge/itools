@@ -146,17 +146,31 @@ doctype_load_urn (gchar * urn, GString * target)
   gchar buffer[256];
   gint size;
   FILE *file;
+  GString *err_buffer;
+  gchar *error_msg;
 
   /* Search for the good file */
   urn_filename = (gchar *) g_hash_table_lookup (doctype_URN_table, urn);
 
   if (!urn_filename)
-    return ERROR;
+    return DOCTYPE_ERROR ("DTD Error: URN lookup failed");
 
   /* Open the file */
   file = fopen (urn_filename, "r");
   if (!file)
-    return ERROR;
+    {
+      err_buffer = g_string_sized_new (256);
+      g_string_set_size (err_buffer, 0);
+      g_string_append_printf (err_buffer, "Error opening file (%s): %s",
+                              urn_filename, strerror (errno));
+
+      error_msg = g_string_chunk_insert (doctype_global_strings,
+                                         err_buffer->str);
+
+      g_string_free (err_buffer, TRUE);
+
+      return DOCTYPE_ERROR (error_msg);
+    }
 
   /* And read it */
   g_string_set_size (target, 0);
@@ -640,10 +654,11 @@ dtd_read_EntityDecl (DocType * doctype, DTD * dtd)
 {
   gboolean PE = FALSE;
   gchar *name, *value;
+  gboolean error;
 
   /* Read 'ENTITY' */
   if (dtd_read_string (dtd, "TITY"))
-    return ERROR;
+    return DOCTYPE_ERROR ("DTD Error: expected 'TITY' not found");
   dtd_move_cursor (dtd);
 
   dtd_read_S (dtd);
@@ -668,7 +683,7 @@ dtd_read_EntityDecl (DocType * doctype, DTD * dtd)
     case '"':
       /* Read value (in buffer1) */
       if (dtd_read_value (dtd, dtd->buffer1))
-        return ERROR;
+        return DOCTYPE_ERROR ("DTD Error: expected value not found");
 
       dtd_read_S (dtd);
 
@@ -676,15 +691,15 @@ dtd_read_EntityDecl (DocType * doctype, DTD * dtd)
     case 'S':
       /* SYSTEM => We ignore it */
       if (dtd_read_SYSTEM (dtd, dtd->buffer1))
-        return ERROR;
+        return DOCTYPE_ERROR ("DTD Error: expected 'SYSTEM' not found");
 
       if (dtd_ignore_element (dtd))
-        return ERROR;
+        return DOCTYPE_ERROR ("DTD Error: expected element not found");
       return ALL_OK;
     case 'P':
       /* PUBLIC => read it */
       if (dtd_read_PUBLIC (dtd, dtd->buffer1, dtd->buffer2))
-        return ERROR;
+        return DOCTYPE_ERROR ("DTD Error: expected 'PUBLIC' not found");
 
       dtd_read_S (dtd);
 
@@ -693,7 +708,7 @@ dtd_read_EntityDecl (DocType * doctype, DTD * dtd)
       if (!PE && dtd->cursor_char == 'N')
         {
           if (dtd_ignore_element (dtd))
-            return ERROR;
+            return DOCTYPE_ERROR ("DTD Error: expected element not found");
           return ALL_OK;
         }
 
@@ -701,16 +716,17 @@ dtd_read_EntityDecl (DocType * doctype, DTD * dtd)
       doctype_compute_urn (dtd->buffer1->str, dtd->buffer2);
 
       /* And we load the entity */
-      if (doctype_load_urn (dtd->buffer2->str, dtd->buffer1))
-        return ERROR;
+      error = doctype_load_urn (dtd->buffer2->str, dtd->buffer1);
+      if (error)
+        return error;
       break;
     default:
-      return ERROR;
+      return DOCTYPE_ERROR ("DTD Error: unexpected char");
     }
 
   /* Without NDATA, we must finish to read the '>' */
   if (dtd->cursor_char != '>')
-    return ERROR;
+    return DOCTYPE_ERROR ("DTD Error: expected '>' char not found");
   dtd_move_cursor (dtd);
 
   /* Save */
@@ -736,6 +752,8 @@ dtd_read_EntityDecl (DocType * doctype, DTD * dtd)
 gboolean
 dtd_parse (DocType * doctype, DTD * dtd)
 {
+  gboolean error;
+
   for (;;)
     switch (dtd->cursor_char)
       {
@@ -768,8 +786,9 @@ dtd_parse (DocType * doctype, DTD * dtd)
               if (dtd_move_cursor (dtd) == 'N')
                 {
                   /* '<!EN' */
-                  if (dtd_read_EntityDecl (doctype, dtd))
-                    return DOCTYPE_ERROR ("DTD Error: expected entity decl");
+                  error = dtd_read_EntityDecl (doctype, dtd);
+                  if (error)
+                    return error;
                   continue;
                 }
             }
@@ -810,7 +829,7 @@ doctype_read_external_dtd (DocType * doctype, gchar * PubidLiteral,
   GString *err_buffer;
   gchar *error_msg;
   DTD *dtd;
-  gboolean status;
+  gboolean error;
 
   /* Store the values */
   if (PubidLiteral)
@@ -885,10 +904,10 @@ doctype_read_external_dtd (DocType * doctype, gchar * PubidLiteral,
   dtd = dtd_new (NULL, file, TRUE);
 
   /* And parse it ! */
-  status = dtd_parse (doctype, dtd);
+  error = dtd_parse (doctype, dtd);
   dtd_free (dtd);
   fclose (file);
-  return status;
+  return error;
 }
 
 
@@ -896,7 +915,7 @@ gboolean
 doctype_read_internal_dtd (DocType * doctype, gchar * intSubset)
 {
   DTD *dtd;
-  gboolean status;
+  gboolean error;
 
   /* Store the value */
   doctype->intSubset = g_string_chunk_insert (doctype->strings_storage,
@@ -906,9 +925,9 @@ doctype_read_internal_dtd (DocType * doctype, gchar * intSubset)
   dtd = dtd_new (intSubset, NULL, FALSE);
 
   /* And parse it ! */
-  status = dtd_parse (doctype, dtd);
+  error = dtd_parse (doctype, dtd);
   dtd_free (dtd);
-  return status;
+  return error;
 }
 
 

@@ -175,25 +175,6 @@ def normalize_path(path):
 
 
 
-class Segment(str):
-
-    __slots__ = []
-
-    def get_name(self):
-        return self.split(';', 1)[0]
-
-    name = property(get_name, None, None, '')
-
-
-    def get_params(self):
-        if ';' in self:
-            return self.split(';')[1:]
-        return []
-
-    params = property(get_params, None, None, '')
-
-
-
 class Path(list):
     """A path is a sequence of segments. A segment is has a name and,
     optionally one or more parameters.
@@ -210,14 +191,13 @@ class Path(list):
         if isinstance(path, (tuple, list)):
             self.startswith_slash = False
             self.endswith_slash = False
+            path = [ str(x) for x in path ]
         else:
             startswith_slash, path, endswith_slash = _normalize_path(path)
             self.startswith_slash = startswith_slash
             self.endswith_slash = path and endswith_slash
 
-        if path:
-            path = [ Segment(x) for x in path ]
-            list.__init__(self, path)
+        list.__init__(self, path)
 
 
     def __getslice__(self, a, b):
@@ -241,7 +221,7 @@ class Path(list):
         path = ''
         if self.startswith_slash:
             path = '/'
-        path += '/'.join([ str(x) for x in self ])
+        path += '/'.join(self)
         if self.endswith_slash:
             path += '/'
         if len(path) == 0:
@@ -277,7 +257,7 @@ class Path(list):
 
     def get_name(self):
         if len(self) > 0:
-            return self[-1].name
+            return self[-1]
         return ''
 
 
@@ -329,8 +309,7 @@ class Path(list):
 
         # Relative path
         path = copy(self)
-        segment = Segment(name)
-        path.append(segment)
+        path.append(name)
         path.endswith_slash = False
         return path
 
@@ -709,7 +688,7 @@ class GenericDataType(object):
         if isinstance(data, Path):
             return Reference('', Authority(''), data, {}, None)
 
-        if not isinstance(data, (str, unicode)):
+        if type(data) is not str:
             raise TypeError, 'unexpected %s' % type(data)
 
         # Special case, the empty reference

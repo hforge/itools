@@ -103,9 +103,10 @@ class Context(object):
 
         # Split the path into path and method ("a/b/c/;view")
         path = request.request_uri.path
-        if path and path[-1].name == '':
+        name = path.get_name()
+        if name and name[0] == ';':
             self.path = path[:-1]
-            self.view_name = path[-1].params[0]
+            self.view_name = name[1:]
         else:
             self.path = path
             self.view_name = None

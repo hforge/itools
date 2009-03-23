@@ -74,7 +74,7 @@ skip_content_elements = [
     #(meta_uri, 'keyword'),
     (meta_uri, 'printed-by'),
     (meta_uri, 'print-date'),
-    #(meta_uri, 'user-defined'),
+    (meta_uri, 'user-defined'),
 
     # Number
     (number_uri, 'currency-symbol'),

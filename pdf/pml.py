@@ -288,14 +288,15 @@ class Context(object):
 
 
     def get_style(self, name):
+        """Return the style corresponding to name or the style normal if it
+        does not exist.
         """
-           Return the style corresponding to name or the style normal if it
-           does not exist.
-        """
-
-        if name in self.stylesheet:
+        # Reportlab 2.3 does not fully support the mapping API (__contains__,
+        # get, etc.), so we use a try/except clause.
+        try:
             return self.stylesheet[name]
-        return self.stylesheet['Normal']
+        except KeyError:
+            return self.stylesheet['Normal']
 
 
     def get_tmp_file(self):

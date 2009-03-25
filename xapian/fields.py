@@ -16,9 +16,26 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from the standard library
+from hashlib import sha1
+
 # Import from itools
 from itools.uri import Path
 from itools.i18n import is_asian_character, is_punctuation
+
+
+
+###########################################################################
+# Reduce the size of too long data
+###########################################################################
+def reduce_size(data):
+    if len(data) > 240:
+        if isinstance(data, unicode):
+            data = data.encode('utf-8')
+        return sha1(data).hexdigest()
+    else:
+        return data
+
 
 
 ###########################################################################
@@ -201,6 +218,8 @@ class BoolField(BaseField):
 
 
 
+
+
 class KeywordField(BaseField):
 
     type = 'keyword'
@@ -212,11 +231,11 @@ class KeywordField(BaseField):
 
         if isinstance(value, (tuple, list, set, frozenset)):
             for x in value:
-                yield unicode(x), 0
+                yield reduce_size(unicode(x)), 0
         else:
             value = unicode(value)
             if value:
-                yield value, 0
+                yield reduce_size(value), 0
 
 
     @staticmethod

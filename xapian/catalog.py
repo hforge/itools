@@ -27,7 +27,7 @@ from xapian import MultiValueSorter, sortable_serialise, sortable_unserialise
 from itools.uri import get_absolute_reference
 from base import CatalogAware
 from exceptions import XapianIndexError
-from fields import get_field
+from fields import get_field, reduce_size
 from queries import RangeQuery, PhraseQuery, AndQuery, OrQuery
 from queries import AllQuery, NotQuery, StartQuery
 
@@ -371,8 +371,8 @@ class Catalog(object):
                 _index(xdoc, field.type, doc_values[name], info['prefix'])
 
         # Store the first value with the prefix 'Q'
-        xdoc.add_term('Q'+_encode(fields[self._key_field]['type'],
-                                  doc_values[self._key_field]))
+        xdoc.add_term('Q'+reduce_size(_encode(fields[self._key_field]['type'],
+                                              doc_values[self._key_field])))
 
         # TODO: Don't store two documents with the same key field!
 
@@ -391,7 +391,7 @@ class Catalog(object):
         key_field = self._key_field
         if key_field is not None:
             data = _encode(self._fields[key_field]['type'], value)
-            self._db.delete_document('Q'+data)
+            self._db.delete_document('Q'+reduce_size(data))
 
 
     #######################################################################

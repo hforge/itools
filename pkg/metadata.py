@@ -178,7 +178,7 @@ def get_package_version(package_name):
     for name in ['Version', '__version__', 'version']:
         version = getattr(mod, name, None)
         if version is not None:
-            if callable(version):
+            if hasattr(version,'__call__'):
                 return version()
             return version
     return '?'

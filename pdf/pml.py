@@ -1197,7 +1197,7 @@ class Table_Content(object):
 
         l = len(self.rowHeights)
         if l:
-            none_list = [ None for x in xrange(l, self.current_y) ]
+            none_list = [ None for x in range(l, self.current_y) ]
             self.rowHeights.extend(none_list)
         else:
             self.rowHeights = None
@@ -1231,7 +1231,7 @@ class Table_Content(object):
                 start, stop = self.span_stack.pop()
                 self.add_span(start, stop)
             l = len(self.colWidths)
-            none_list = [ None for x in xrange(l, self.current_x) ]
+            none_list = [ None for x in range(l, self.current_x) ]
             self.colWidths.extend(none_list)
         # Next line
         self.current_x = 0
@@ -1309,7 +1309,7 @@ class Table_Content(object):
             if ctmp > 0:
                 self.span_stack.append(((self.current_x, self.current_y),
                                         (col, row)))
-                self.content[0].extend([ None for x in xrange(ctmp) ])
+                self.content[0].extend([ None for x in range(ctmp) ])
                 self.size[0] += ctmp
                 self.current_x += ctmp - 1
                 return (col, row)
@@ -1326,7 +1326,7 @@ class Table_Content(object):
         list_length = len(self.colWidths)
         platypus_value = format_size(value)
         if not self.current_y and list_length <= self.current_x:
-            none_list = [ None for x in xrange(list_length, self.current_x+1) ]
+            none_list = [ None for x in range(list_length, self.current_x+1) ]
             self.colWidths.extend(none_list)
 
         # Colspan one the first cell
@@ -1343,7 +1343,7 @@ class Table_Content(object):
         list_length = len(self.rowHeights)
         platypus_value = format_size(value)
         if list_length <= self.current_y:
-            none_list = [ None for y in xrange(list_length, self.current_y+1) ]
+            none_list = [ None for y in range(list_length, self.current_y+1) ]
             self.rowHeights.extend(none_list)
         if self.rowHeights[self.current_y] is None\
             or platypus_value > self.rowHeights[self.current_y]:
@@ -1353,7 +1353,7 @@ class Table_Content(object):
     # Internal
     def create_table_line(self):
         line = []
-        line.extend([ 0 for x in xrange(self.size[0]) ])
+        line.extend([ 0 for x in range(self.size[0]) ])
         self.content.append(line)
         self.size[1] += 1
 
@@ -1366,8 +1366,8 @@ class Table_Content(object):
                 st += 1
             else:
                 return
-        for y in xrange(st, stop[1] + 1):
-            for x in xrange(start[0], stop[0] + 1):
+        for y in range(st, stop[1] + 1):
+            for x in range(start[0], stop[0] + 1):
                 if x != start[0] or y != start[1]:
                     self.push_content(None, x, y)
 

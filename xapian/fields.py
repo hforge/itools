@@ -29,12 +29,13 @@ from itools.i18n import is_asian_character, is_punctuation
 # Reduce the size of too long data
 ###########################################################################
 def reduce_size(data):
+    # If the data are too long, we replace it by its sha1
     if len(data) > 240:
         if isinstance(data, unicode):
             data = data.encode('utf-8')
         return sha1(data).hexdigest()
-    else:
-        return data
+    # All OK, we simply return the data
+    return data
 
 
 
@@ -215,8 +216,6 @@ class BoolField(BaseField):
     @staticmethod
     def encode(value):
         return unicode(int(value))
-
-
 
 
 

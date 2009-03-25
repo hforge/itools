@@ -54,7 +54,7 @@ class BasicTypeTest(TestCase):
 
 
     def test_Decimal(self):
-        for x in [random.uniform(-100,100) for _ in xrange(10)]:
+        for x in [random.uniform(-100,100) for _ in range(10)]:
             x = decimal.Decimal(str(x))
             data = Decimal.encode(x)
             self.assertEqual(x, Decimal.decode(data))
@@ -126,7 +126,7 @@ class EnumerateTestCase(TestCase):
 
 
     def test_get_value(self):
-        for i in xrange(1,4):
+        for i in range(1,4):
             self.assertEqual(self.AnEnumerate.get_value(
                                 'name%d' % i),
                                 'value%d' % i)

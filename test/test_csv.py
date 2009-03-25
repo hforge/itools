@@ -111,9 +111,9 @@ class CSVTestCase(TestCase):
         handler.load_state_from_string(TEST_DATA_1)
         rows = list(handler.get_rows())
         self.assertEqual(rows, [
-            [u"python", URI.decode('http://python.org'), 52343,
+            [u"python", 'http://python.org/', 52343,
              Date.decode('2003-10-23')],
-            [u"ruby", URI.decode('http://ruby-lang.org'), 42352,
+            [u"ruby", 'http://ruby-lang.org/', 42352,
              Date.decode('2001-03-28')]])
 
 

@@ -21,7 +21,6 @@ from unittest import TestCase, main
 
 # Import from itools
 from itools.rss import RSSFile
-from itools.uri import Reference
 from itools.xml import XMLParser, XML_DECL
 
 
@@ -39,7 +38,6 @@ class RSSTestCase(TestCase):
         channel = self.rss.channel
         self.assertEqual(channel['title'], u"Liftoff News")
         link = channel['link']
-        self.assert_(isinstance(link, Reference))
         self.assertEqual(str(link), 'http://liftoff.msfc.nasa.gov/')
         self.assertEqual(channel['description'],
                 u"Liftoff to Space Exploration.")
@@ -59,7 +57,6 @@ class RSSTestCase(TestCase):
         item = self.rss.items[0]
         self.assertEqual(item['title'], u"Star City")
         link = item['link']
-        self.assert_(isinstance(link, Reference))
         self.assertEqual(str(link),
                 'http://liftoff.msfc.nasa.gov/news/2003/news-starcity.asp')
         expected = u"How do Americans get ready to work with Russians"

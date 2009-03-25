@@ -22,7 +22,6 @@ from unittest import TestCase, main
 
 # Import from itools
 from itools.csv import Property
-from itools.datatypes import URI
 from itools.ical import iCalendar, icalendarTable
 
 
@@ -406,9 +405,9 @@ class icalTestCase(TestCase):
 
         member = '"mailto:DEV-GROUP@host2.com"'
         value = [
-            Property(URI.decode('mailto:darwin@itaapy.com'), MEMBER=[member]),
-            Property(URI.decode('mailto:jdoe@itaapy.com')),
-            Property(URI.decode('mailto:jsmith@itaapy.com'))]
+            Property('mailto:darwin@itaapy.com', MEMBER=[member]),
+            Property('mailto:jdoe@itaapy.com'),
+            Property('mailto:jsmith@itaapy.com')]
         cal.update_component(event.uid, ATTENDEE=value)
         self.assertEqual(event.get_property_values('ATTENDEE'), value)
 
@@ -417,7 +416,7 @@ class icalTestCase(TestCase):
         """Test get events filtered by arguments given."""
         # Test with 1 event
         cal = self.cal1
-        attendee_value = URI.decode('mailto:jdoe@itaapy.com')
+        attendee_value = 'mailto:jdoe@itaapy.com'
 
         events = cal.search_events(ATTENDEE=attendee_value)
         self.assertEqual(len(events), 1)
@@ -435,14 +434,14 @@ class icalTestCase(TestCase):
         self.assertEqual(len(events), 1)
 
         events = cal.search_events(
-            ATTENDEE=[attendee_value, URI.decode('mailto:jsmith@itaapy.com')],
+            ATTENDEE=[attendee_value, 'mailto:jsmith@itaapy.com'],
             STATUS='TENTATIVE',
             PRIORITY=1)
         self.assertEqual(len(events), 1)
 
         # Tests with 2 events
         cal = self.cal2
-        attendee_value = URI.decode('mailto:jdoe@itaapy.com')
+        attendee_value = 'mailto:jdoe@itaapy.com'
 
         events = cal.search_events(ATTENDEE=attendee_value)
         self.assertEqual(len(events), 2)
@@ -460,7 +459,7 @@ class icalTestCase(TestCase):
         self.assertEqual(len(events), 1)
 
         events = cal.search_events(
-            ATTENDEE=[attendee_value, URI.decode('mailto:jsmith@itaapy.com')],
+            ATTENDEE=[attendee_value, 'mailto:jsmith@itaapy.com'],
             STATUS='TENTATIVE',
             PRIORITY=1)
         self.assertEqual(len(events), 1)
@@ -485,7 +484,7 @@ class icalTestCase(TestCase):
         events = cal.search_events_in_date(date, STATUS='CONFIRMED')
         self.assertEqual(len(events), 0)
 
-        attendee_value = URI.decode('mailto:jdoe@itaapy.com')
+        attendee_value = 'mailto:jdoe@itaapy.com'
         events = cal.search_events_in_date(date, ATTENDEE=attendee_value)
         self.assertEqual(len(events), 1)
         events = cal.search_events_in_date(date, ATTENDEE=attendee_value,
@@ -545,7 +544,7 @@ class icalTestCase(TestCase):
         events = cal.search_events_in_range(dtstart, dtend, STATUS='CONFIRMED')
         self.assertEqual(len(events), 0)
 
-        attendee_value = URI.decode('mailto:jdoe@itaapy.com')
+        attendee_value = 'mailto:jdoe@itaapy.com'
         events = cal.search_events_in_range(dtstart, dtend,
                                             ATTENDEE=attendee_value)
         self.assertEqual(len(events), 1)
@@ -849,9 +848,9 @@ class icalTableTestCase(TestCase):
 
         member = '"mailto:DEV-GROUP@host2.com"'
         value = [
-            Property(URI.decode('mailto:darwin@itaapy.com'), MEMBER=[member]),
-            Property(URI.decode('mailto:jdoe@itaapy.com')),
-            Property(URI.decode('mailto:jsmith@itaapy.com'))]
+            Property('mailto:darwin@itaapy.com', MEMBER=[member]),
+            Property('mailto:jdoe@itaapy.com'),
+            Property('mailto:jsmith@itaapy.com')]
         cal.update_record(event.id, ATTENDEE=value)
         self.assertEqual(event.get_property('ATTENDEE'), value)
 
@@ -860,7 +859,7 @@ class icalTableTestCase(TestCase):
         """Test get events filtered by arguments given."""
         cal = self.cal1
         # Test with 1 event
-        attendee_value = URI.decode('mailto:jdoe@itaapy.com')
+        attendee_value = 'mailto:jdoe@itaapy.com'
 
         events = cal.search_events(ATTENDEE=attendee_value)
         self.assertEqual(len(events), 1)
@@ -878,14 +877,14 @@ class icalTableTestCase(TestCase):
         self.assertEqual(len(events), 1)
 
         events = cal.search_events(
-            ATTENDEE=[attendee_value, URI.decode('mailto:jsmith@itaapy.com')],
+            ATTENDEE=[attendee_value, 'mailto:jsmith@itaapy.com'],
             STATUS='TENTATIVE',
             PRIORITY=1)
         self.assertEqual(len(events), 1)
 
         # Tests with 2 events
         cal = iCalendar(string=content2)
-        attendee_value = URI.decode('mailto:jdoe@itaapy.com')
+        attendee_value = 'mailto:jdoe@itaapy.com'
 
         events = cal.search_events(ATTENDEE=attendee_value)
         self.assertEqual(len(events), 2)
@@ -903,7 +902,7 @@ class icalTableTestCase(TestCase):
         self.assertEqual(len(events), 1)
 
         events = cal.search_events(
-            ATTENDEE=[attendee_value, URI.decode('mailto:jsmith@itaapy.com')],
+            ATTENDEE=[attendee_value, 'mailto:jsmith@itaapy.com'],
             STATUS='TENTATIVE',
             PRIORITY=1)
         self.assertEqual(len(events), 1)
@@ -928,7 +927,7 @@ class icalTableTestCase(TestCase):
         events = cal.search_events_in_date(date, STATUS='CONFIRMED')
         self.assertEqual(len(events), 0)
 
-        attendee_value = URI.decode('mailto:jdoe@itaapy.com')
+        attendee_value = 'mailto:jdoe@itaapy.com'
         events = cal.search_events_in_date(date, ATTENDEE=attendee_value)
         self.assertEqual(len(events), 1)
         events = cal.search_events_in_date(date, ATTENDEE=attendee_value,
@@ -988,7 +987,7 @@ class icalTableTestCase(TestCase):
         events = cal.search_events_in_range(dtstart, dtend, STATUS='CONFIRMED')
         self.assertEqual(len(events), 0)
 
-        attendee_value = URI.decode('mailto:jdoe@itaapy.com')
+        attendee_value = 'mailto:jdoe@itaapy.com'
         events = cal.search_events_in_range(dtstart, dtend,
                                             ATTENDEE=attendee_value)
         self.assertEqual(len(events), 1)

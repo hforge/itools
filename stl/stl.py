@@ -29,9 +29,9 @@ from types import GeneratorType
 
 # Import from itools
 from itools.core import freeze
-from itools.datatypes import Boolean, URI
+from itools.datatypes import Boolean
 from itools.gettext import MSG
-from itools.uri import Path, Reference
+from itools.uri import Authority, Path, Reference, get_reference
 from itools.xml import XMLError, XMLParser, find_end, stream_to_str
 from itools.xml import DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, TEXT, COMMENT
 from itools.xml import xmlns_uri
@@ -473,20 +473,19 @@ def set_prefix(stream, prefix, ns_uri=xhtml_uri):
 
 
 def resolve_pointer(value, offset):
-    # XXX Exception for STL
-    if value.startswith('${'):
+    # FIXME Exception for STL
+    if value[:2] == '${':
         return value
 
-    uri = URI.decode(value)
-    if not uri.scheme and not uri.authority:
-        if uri.path.is_relative():
-            if uri.path or str(uri) == '.':
-                new_path = offset.resolve(uri.path)
-                value = Reference("", copy(uri.authority), new_path,
-                                  uri.query.copy(), uri.fragment)
-                return str(value)
+    # Absolute URI or path
+    uri = get_reference(value)
+    if uri.scheme or uri.authority or uri.path.is_absolute():
+        return value
 
-    return value
+    # Resolve Path
+    path = offset.resolve(uri.path)
+    value = Reference("", Authority(''), path, uri.query.copy(), uri.fragment)
+    return str(value)
 
 
 ###########################################################################

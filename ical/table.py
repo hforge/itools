@@ -466,8 +466,8 @@ class icalendarTable(BaseCalendar, Table):
             events = cal.search_events(
                 STATUS='TENTATIVE',
                 PRIORITY=1,
-                ATTENDEE=[URI.decode('mailto:jdoe@itaapy.com'),
-                          URI.decode('mailto:jsmith@itaapy.com')])
+                ATTENDEE=['mailto:jdoe@itaapy.com',
+                          'mailto:jsmith@itaapy.com'])
 
         ** With a list of values, events match if at least one value matches
 

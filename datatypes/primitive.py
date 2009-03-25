@@ -123,16 +123,16 @@ class Boolean(DataType):
 
 
 
-class URI(DataType):
+class URI(String):
+    # XXX Should we at least normalize the sring when decoding/encoding?
 
     @staticmethod
-    def decode(value):
-        return get_reference(value)
-
-
-    @staticmethod
-    def encode(value):
-        return str(value)
+    def is_valid(value):
+        try:
+            get_reference(value)
+        except:
+            return False
+        return True
 
 
 

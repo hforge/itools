@@ -1,0 +1,63 @@
+
+itools 0.50.5 (2009/03/XX)
+==========================
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.abnf             itools.ical             itools.tmx
+  itools.csv              itools.isetup           itools.uri
+  itools.datatypes        itools.odf              itools.vfs
+  itools.gettext          itools.pdf              itools.web
+  itools.git              itools.relaxng          itools.workflow
+  itools.handlers         itools.rest             itools.xapian
+  itools.html             itools.rss              itools.xliff
+  itools.http             itools.srx              itools.xml
+  itools.i18n             itools.stl
+
+A segmentation fault has been fixed in the XML parser, it was trigged
+when there was an error parsing a DTD file.  Error messages when parsing
+DTD files have been improved too.
+
+In the PDF Markup Language (PML), a file descriptor left open is now
+closed, fixing a 'Too many open file descriptors' error.  Handling of
+images has been optimized too.
+
+A limit to the length of indexed terms in Xapian has been work-around.
+
+Now non-breaking spaces are preserved when normalizing white-space
+characters in text segmentation (itools.srx, bug #336).
+
+Now parsing of tables (itools.csv) and iCalendar files is more correct
+(several errors have been fixed) and faster.
+
+The expire date in the 'Set-Cookie' response header (itools.http) is
+now correctly encoded.
+
+The 'Context.get_form_value' method (itools.web) has been fixed for the
+case when a query parameter has not a value (bug #574).
+
+Now user defined metadata from ODF documents is not extracted for
+translation.
+
+The French locale has been updated.
+
+
+Resources
+---------
+
+Download
+http://download.hforge.org/itools/0.50/itools-0.50.5.tar.gz
+http://download.hforge.org/itools/0.50/itools-0.50.5.win32-py2.5.exe
+http://download.hforge.org/itools/0.50/itools-0.50.5.win32-py2.6.exe
+
+Home
+http://www.hforge.org/itools/
+
+Mailing list
+http://www.hforge.org/community/
+http://archives.hforge.org/index.cgi?list=itools
+
+Bug Tracker
+http://bugs.hforge.org/
+

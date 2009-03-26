@@ -146,9 +146,10 @@ class Context(object):
                 uri = str(self.uri)
                 if '/;' in uri:
                     goto = uri.split('/;')[0]
-                    goto = get_reference(goto)
-        elif isinstance(goto, str):
+
+        if type(goto) is str:
             goto = get_reference(goto)
+
         # Preserve some form values
         form = {}
         for key, value in self.request.get_form().items():

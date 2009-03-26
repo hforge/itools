@@ -23,6 +23,39 @@ from srx import SRXFile
 TEXT, START_FORMAT, END_FORMAT = range(3)
 
 
+SPACE = ' \t\r\n'
+
+
+def isspace(text):
+    if len(text) == 0:
+        return False
+    if text.strip(SPACE):
+        return False
+    return True
+
+
+def collapse(text):
+    """Sequences of white-space characters are normalized to one ' ' char.
+    """
+    collapsed_text = []
+
+    state = 0
+    for c in text:
+        if state == 0:
+            if c in SPACE:
+                collapsed_text.append(' ')
+                state = 1
+            else:
+                collapsed_text.append(c)
+        else:
+            if c not in SPACE:
+                state = 0
+                collapsed_text.append(c)
+
+    return ''.join(collapsed_text)
+
+
+
 def _remove_spaces(left, center, right, keep_spaces):
     # (1) Move only "spaces" surrounding the center to left and right
     if center:
@@ -33,7 +66,7 @@ def _remove_spaces(left, center, right, keep_spaces):
 
             new_start = 0
             for c in text:
-                if c.isspace():
+                if isspace(c):
                     # Move the character
                     left.append_text(c, line, None)
                     new_start += 1
@@ -51,7 +84,7 @@ def _remove_spaces(left, center, right, keep_spaces):
             new_end = len(text)
             moved_text = u''
             for c in reversed(text):
-                if c.isspace():
+                if isspace(c):
                     # Move the character
                     moved_text = c + moved_text
                     new_end -= 1
@@ -76,24 +109,25 @@ def _remove_spaces(left, center, right, keep_spaces):
                 text, context = value
 
                 # Begin and End
-                if i > 0 and text and text[0].isspace():
+                if i > 0 and text and isspace(text[0]):
                     begin = u' '
                 else:
                     begin = u''
-                if i < len(center) - 1 and text[-1].isspace():
+                if i < len(center) - 1 and isspace(text[-1]):
                     end = u' '
                 else:
                     end = u''
 
                 # Compute the new "line" argument
                 for c in text:
-                    if not c.isspace():
+                    if not isspace(c):
                         break
                     if c == '\n':
                         line += 1
 
                 # Clean
-                text = u' '.join(text.split())
+                text = text.strip(SPACE)
+                text = collapse(text)
 
                 # And store the new value
                 center[i] = (type, (begin + text + end, context), line)
@@ -108,9 +142,11 @@ def _clean_message(message, keep_spaces):
     right = Message()
 
     # (1) Remove the "spaces" TEXT before and after the message
-    while center and center[0][0] == TEXT and center[0][1][0].strip() == '':
+    while (center and center[0][0] == TEXT and
+           center[0][1][0].strip(SPACE) == ''):
         left.append(center.pop(0))
-    while center and center[-1][0] == TEXT and center[-1][1][0].strip() == '':
+    while (center and center[-1][0] == TEXT and
+           center[-1][1][0].strip(SPACE) == ''):
         right.insert(0, center.pop())
 
     # (2) Remove start/end couples before and after the message
@@ -214,7 +250,7 @@ def _translate_format(message, catalog):
     for type, value, line in message:
         if type != TEXT:
             for i, (text, translatable, context) in enumerate(value[0]):
-                if translatable and text.strip():
+                if translatable and text.strip(SPACE):
                     translation = catalog.gettext(((TEXT, text),), context)
                     value[0][i] = (translation[0][1], True, context)
 
@@ -257,7 +293,7 @@ def get_segments(message, keep_spaces=False, srx_handler=None):
             # Is there a human text in this center ?
             for type, value, line in center:
                 # XXX A more complex test here
-                if type == TEXT and value[0].strip():
+                if type == TEXT and value[0].strip(SPACE):
                     yield (center.to_unit(), center.get_context(),
                            center.get_line())
                     break
@@ -267,7 +303,7 @@ def get_segments(message, keep_spaces=False, srx_handler=None):
         for type, value, line in todo:
             if type != TEXT:
                 for (text, translatable, context) in value[0]:
-                    if translatable and text.strip():
+                    if translatable and text.strip(SPACE):
                         yield ((TEXT, text),), context, line
 
 
@@ -289,7 +325,7 @@ def translate_message(message, catalog, keep_spaces=False, srx_handler=None):
             # Is there a human text in this center ?
             for type, value, line in center:
                 # XXX A more complex test here
-                if type == TEXT and value[0].strip():
+                if type == TEXT and value[0].strip(SPACE):
                     center = _translate_message(center, catalog)
                     break
             _translate_format(center, catalog)

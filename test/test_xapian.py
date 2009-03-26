@@ -73,7 +73,7 @@ class FieldsTestCase(TestCase):
 
 
     def test_integer(self):
-        for value in sample(range(1000000000), 255):
+        for value in sample(range(10000000), 255):
             words = split(Integer, value)
             self.assertEqual(len(words), 1)
             word = words[0]

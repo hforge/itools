@@ -15,6 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from the standard library
+from hashlib import sha1
+
 # Import from xapian
 from xapian import sortable_serialise, sortable_unserialise
 
@@ -52,4 +55,12 @@ def _get_field_cls(name, fields, info):
     return fields[name] if (name in fields) else fields[info['from']]
 
 
+def _reduce_size(data):
+    # If the data are too long, we replace it by its sha1
+    if len(data) > 240:
+        if isinstance(data, unicode):
+            data = data.encode('utf-8')
+        return sha1(data).hexdigest()
+    # All OK, we simply return the data
+    return data
 

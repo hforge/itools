@@ -31,7 +31,7 @@ from base import CatalogAware
 from queries import AllQuery, AndQuery, NotQuery, OrQuery, PhraseQuery
 from queries import RangeQuery, StartQuery
 from results import SearchResults
-from utils import _encode, _get_field_cls
+from utils import _encode, _get_field_cls, _reduce_size
 
 
 # Constants
@@ -129,9 +129,11 @@ def _index(xdoc, field_cls, value, prefix, language):
     else:
         if is_multiple:
             for position, x in enumerate(value):
-                xdoc.add_posting(prefix + _encode(field_cls, x), position + 1)
+                data = _reduce_size(_encode(field_cls, x))
+                xdoc.add_posting(prefix + data, position + 1)
         else:
-            xdoc.add_posting(prefix + _encode(field_cls, value), 1)
+            data = _reduce_size(_encode(field_cls, value))
+            xdoc.add_posting(prefix + data, 1)
 
 
 def _make_PhraseQuery(field_cls, value, prefix):
@@ -347,7 +349,8 @@ class Catalog(object):
         if (key_field is None or key_field not in doc_values or
             doc_values[key_field] is None):
             raise ValueError, 'the "key_field" value is compulsory'
-        xdoc.add_term('Q'+_encode(fields[key_field], doc_values[key_field]))
+        data = _reduce_size(_encode(fields[key_field], doc_values[key_field]))
+        xdoc.add_term('Q' + data)
 
         # TODO: Don't store two documents with the same key field!
 
@@ -365,8 +368,8 @@ class Catalog(object):
         """
         key_field = self._key_field
         if key_field is not None:
-            data = _encode(self._fields[key_field], value)
-            self._db.delete_document('Q'+data)
+            data = _reduce_size(_encode(self._fields[key_field], value))
+            self._db.delete_document('Q' + data)
 
 
     #######################################################################

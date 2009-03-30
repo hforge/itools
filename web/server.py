@@ -35,7 +35,7 @@ from warnings import warn
 from itools.handlers import BaseDatabase
 from itools.http import Request, Response, ClientError, NotModified
 from itools.http import BadRequest, Forbidden, NotFound, Unauthorized
-from itools.http import HTTPError, NotImplemented
+from itools.http import HTTPError, NotImplemented, MethodNotAllowed
 from itools.i18n import init_language_selector
 from itools.uri import Reference
 from context import Context, set_context, select_language
@@ -646,10 +646,11 @@ class RequestMethod(object):
         if method_name is None:
             method_name = context.request.method
         # Get the method
-        method = getattr(context.view, method_name, None)
+        view = context.view
+        method = getattr(view, method_name, None)
         if method is None:
-            raise NotImplemented
-
+            raise NotImplemented, '%s has no "%s" method' % (view,
+                                                             method_name)
         context.view_method = method
 
 

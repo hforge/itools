@@ -20,6 +20,7 @@ from freeze import freeze, frozendict, frozenlist
 from utils import add_type, guess_all_extensions, guess_extension, guess_type
 from utils import has_encoding, has_extension
 from utils import get_abspath, merge_dicts, get_sizeof, get_pipe
+from utils import get_version
 from sys import platform
 
 if platform[:3] == 'win':
@@ -45,6 +46,7 @@ __all__ = [
     'has_extension',
     # Utility functions
     'get_abspath',
+    'get_version',
     'merge_dicts',
     'get_sizeof',
     'get_pipe',

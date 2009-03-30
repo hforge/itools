@@ -22,7 +22,7 @@ from distribution import ArchiveNotSupported, Bundle
 from metadata import PKGINFOFile
 from packages import get_installed_info, packages_infos
 from repository import parse_package_name, download, EXTENSIONS
-from utils import get_version, setup, OptionalExtension, OptionalBuildExt
+from utils import setup, OptionalExtension, OptionalBuildExt
 from utils import get_compile_flags
 
 
@@ -33,7 +33,6 @@ __all__ = [
     'download',
     'EXTENSIONS',
     'get_installed_info',
-    'get_version',
     'packages_infos',
     'parse_package_name',
     'PKGINFOFile',

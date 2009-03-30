@@ -17,7 +17,7 @@
 # Import from the Standard Library
 from mimetypes import MimeTypes
 from os import getcwd
-from os.path import join, sep, splitdrive
+from os.path import exists, join, sep, splitdrive
 from subprocess import Popen, PIPE
 from sys import _getframe, modules, getsizeof
 from gc import get_referents
@@ -48,6 +48,17 @@ def get_abspath(local_path, mname=None):
         mpath = mpath.replace(sep, '/')
 
     return mpath
+
+
+
+def get_version(mname=None):
+    if mname is None:
+        mname = _getframe(1).f_globals.get('__name__')
+
+    path = get_abspath('version.txt', mname=mname)
+    if exists(path):
+        return open(path).read().strip()
+    return None
 
 
 

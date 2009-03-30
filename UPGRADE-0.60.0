@@ -45,7 +45,7 @@ See the table below for the imports to update.
   utils.frozenlist               core.frozenlist
   utils.get_abspath              core.get_abspath
   utils.get_time_spent           core.get_time_spent
-  utils.get_version              pkg.get_version
+  utils.get_version              core.get_version
   utils.setup                    pkg.setup
   utils.vmsize                   core.vmsize
   xml.MSExcel                    office.MSExcel

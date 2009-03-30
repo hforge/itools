@@ -126,7 +126,7 @@ skip_content_elements = [
     (text_uri, 'object-count'),
     (text_uri, 'page-continuation'),
     (text_uri, 'page-count'),
-    #(text_uri, 'page-number'),
+    (text_uri, 'page-number'),
     (text_uri, 'page-variable-get'),
     (text_uri, 'page-variable-set'),
     (text_uri, 'paragraph-count'),

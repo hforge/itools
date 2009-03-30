@@ -56,6 +56,11 @@ class LOCK(RequestMethod):
 
 
     @classmethod
+    def find_view(cls, server, context):
+        find_view_by_method(server, context)
+
+
+    @classmethod
     def check_conditions(cls, server, context):
         resource = context.resource
         if resource.is_locked():
@@ -71,6 +76,11 @@ class LOCK(RequestMethod):
 class UNLOCK(RequestMethod):
 
     method_name = 'UNLOCK'
+
+    @classmethod
+    def find_view(cls, server, context):
+        find_view_by_method(server, context)
+
 
     @classmethod
     def check_conditions(cls, server, context):

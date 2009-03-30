@@ -14,14 +14,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from the Standard Library
+from sys import platform
+
 # Import from itools
 from cache import LRUCache
 from freeze import freeze, frozendict, frozenlist
-from utils import add_type, guess_all_extensions, guess_extension, guess_type
-from utils import has_encoding, has_extension
-from utils import get_abspath, merge_dicts, get_sizeof, get_pipe
-from utils import get_version
-from sys import platform
+from mimetypes_ import add_type, guess_all_extensions, guess_extension
+from mimetypes_ import guess_type, has_encoding, has_extension
+from utils import get_abspath, merge_dicts, get_sizeof, get_pipe, get_version
+
 
 if platform[:3] == 'win':
     from _win import become_daemon, fork, get_time_spent, vmsize

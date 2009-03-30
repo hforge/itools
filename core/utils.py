@@ -15,7 +15,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from mimetypes import MimeTypes
 from os import getcwd
 from os.path import exists, join, sep, splitdrive
 from subprocess import Popen, PIPE
@@ -93,44 +92,9 @@ def get_sizeof(obj):
 
 
 
-###########################################################################
-# Mimetypes
-###########################################################################
-mimetypes = MimeTypes()
-
-
-def guess_type(filename):
-    return mimetypes.guess_type(filename)
-
-
-def add_type(mimetype, extension):
-    mimetypes.add_type(mimetype, extension)
-
-
-def guess_extension(mimetype):
-    return mimetypes.guess_extension(mimetype)
-
-
-def guess_all_extensions(mimetype):
-    return mimetypes.guess_all_extensions(mimetype)
-
-
-def has_extension(extension):
-    filename = 'toto.%s' % extension
-    mimetype, encoding = mimetypes.guess_type(filename)
-    return mimetype is not None
-
-
-def has_encoding(extension):
-    extension = '.%s' % extension
-    encodings_map = mimetypes.encodings_map
-    return extension in encodings_map or extension.lower() in encodings_map
-
-
-###########################################################################
-# Wrapper around 'subprocess.Popen'
-###########################################################################
 def get_pipe(command, cwd=None):
+    """Wrapper around 'subprocess.Popen'
+    """
     popen = Popen(command, stdout=PIPE, stderr=PIPE, cwd=cwd)
     errno = popen.wait()
     if errno:

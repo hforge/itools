@@ -102,10 +102,7 @@ class Test_ODP_File(TestCase):
         expected = [((START_FORMAT, 1), (TEXT, u'Hello '), (END_FORMAT, 1),
                      (START_FORMAT, 2), (TEXT, u'World'), (END_FORMAT, 2),
                      (START_FORMAT, 3), (TEXT, u' !'), (END_FORMAT, 3)),
-                    ((TEXT, u'Welcome'),),
-                    ((TEXT, u'2'),),
-                    ((TEXT, u'2'),),
-                    ((TEXT, u'2'),)]
+                    ((TEXT, u'Welcome'),)]
 
         self.assertEqual(messages, expected)
 
@@ -135,14 +132,13 @@ class Test_ODS_File(TestCase):
                     ((TEXT, u'40'),),
                     ((TEXT, u'-'),),
                     ((TEXT, u'-'),),
-                    ((TEXT, u'Page '), (START_FORMAT, 1), (TEXT, u'1'),
-                     (END_FORMAT, 1)),
+                    ((TEXT, u'Page'),),
                     ((TEXT, u'('),),
                     ((TEXT, u'???'),),
                     ((TEXT, u')'),),
                     ((TEXT, u','),),
-                    ((TEXT, u'Page '), (START_FORMAT, 2), (TEXT, u'1'),
-                     (END_FORMAT, 2), (TEXT, u' /'))]
+                    ((TEXT, u'Page'),),
+                    ((TEXT, u'/'),)]
 
         self.assertEqual(messages, expected)
 

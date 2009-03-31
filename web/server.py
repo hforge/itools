@@ -598,7 +598,7 @@ class RequestMethod(object):
         path.startswith_slash = False
 
         # Found
-        resource = root.get_resource(path)
+        resource = root.get_resource(path, soft=True)
         if resource is not None:
             context.resource = resource
             return
@@ -606,7 +606,7 @@ class RequestMethod(object):
         # Not Found
         while resource is None:
             path = path[:-1]
-            resource = root.get_resource(path)
+            resource = root.get_resource(path, soft=True)
         context.resource = resource
         raise NotFound
 

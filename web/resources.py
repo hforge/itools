@@ -62,10 +62,7 @@ class Resource(object):
         cpath = self.get_canonical_path()
         if cpath == self.get_abspath():
             return self
-        resource = self.get_resource(cpath)
-        if resource is None:
-            raise LookupError
-        return resource
+        return self.get_resource(cpath)
 
 
     def get_root(self):
@@ -80,13 +77,11 @@ class Resource(object):
 
     def get_names(self, path='.'):
         resource = self.get_resource(path)
-        if resource is None:
-            raise LookupError
         return resource._get_names()
 
 
-    def get_resource(self, path):
-        if not isinstance(path, Path):
+    def get_resource(self, path, soft=False):
+        if type(path) is not Path:
             path = Path(path)
 
         if path.is_absolute():
@@ -101,7 +96,9 @@ class Resource(object):
         for name in path:
             resource = here._get_resource(name)
             if resource is None:
-                return None
+                if soft is True:
+                    return None
+                raise LookupError, 'resource "%s" not found' % path
             resource.parent = here
             resource.name = name
             here = resource
@@ -111,8 +108,6 @@ class Resource(object):
 
     def get_resources(self, path='.'):
         here = self.get_resource(path)
-        if here is None:
-            raise LookupError
         for name in here._get_names():
             resource = here._get_resource(name)
             resource.parent = here

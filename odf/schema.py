@@ -191,6 +191,7 @@ contexts = [
 # XXX These elements appear in openDocuments but they are neither in the doc,
 # nor the relaxNG file!
 unknown_elements = [
+    (style_uri, 'default-page-layout'),
     (style_uri, 'list-level-label-alignment'),
     ]
 

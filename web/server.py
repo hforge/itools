@@ -30,6 +30,7 @@ from time import strftime
 from traceback import format_exc
 from urllib import unquote
 from warnings import warn
+from sys import exc_info
 
 # Import from itools
 from itools.handlers import BaseDatabase
@@ -263,6 +264,10 @@ class Server(object):
             context = Context(request)
             try:
                 self.handle_request(context)
+            except NotImplemented, exception:
+                response = Response(status_code=exception.code)
+                response.body = exception.title
+                self.log_warning(context)
             except HTTPError, exception:
                 response = Response(status_code=exception.code)
                 response.body = exception.title
@@ -475,6 +480,11 @@ class Server(object):
         logger_http.error(summary + details)
 
 
+    def log_warning(self, context=None):
+        exc_type, exc_value, traceback = exc_info()
+        logger_http.warning("%s: %s" % (exc_type.__name__, exc_value))
+
+
     #######################################################################
     # Stage 0: Initialize the context
     #######################################################################
@@ -544,9 +554,11 @@ class Server(object):
     def handle_request(self, context):
         # (1) Get the class that will handle the request
         request = context.request
-        method = methods.get(request.method)
+        method_name = request.method
+        method = methods.get(method_name)
         if method is None:
-            raise NotImplemented
+            message = 'method "%s" is not implemented' % method_name
+            raise NotImplemented, message
 
         # (2) Initialize the context
         self.init_context(context)
@@ -580,7 +592,7 @@ def find_view_by_method(server, context):
     view_name = "http_%s" % method_name.lower()
     context.view = context.resource.get_view(view_name)
     if context.view is None:
-        raise NotImplemented
+        raise NotImplemented, 'method "%s" is not implemented' % method_name
 
 
 class RequestMethod(object):
@@ -649,8 +661,8 @@ class RequestMethod(object):
         view = context.view
         method = getattr(view, method_name, None)
         if method is None:
-            raise NotImplemented, '%s has no "%s" method' % (view,
-                                                             method_name)
+            message = '%s has no "%s" method' % (view, method_name)
+            raise NotImplemented, message
         context.view_method = method
 
 

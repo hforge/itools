@@ -157,8 +157,8 @@ class File(Handler):
         file.truncate(file.tell())
 
 
-    def clone(self, cls=None, exclude=('database', 'uri', 'timestamp',
-                                       'dirty')):
+    clone_exclude = frozenset(['database', 'uri', 'timestamp', 'dirty'])
+    def clone(self, cls=None):
         # Define the class to build
         if cls is None:
             cls = self.__class__
@@ -173,9 +173,8 @@ class File(Handler):
 
         # Copy the state
         copy = object.__new__(cls)
-        exclude = set(exclude)
         for name in self.__dict__:
-            if name not in exclude:
+            if name not in cls.clone_exclude:
                 value = getattr(self, name)
                 value = deepcopy(value)
                 setattr(copy, name, value)

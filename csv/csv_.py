@@ -19,11 +19,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
+from itools.core import merge_dicts
 from itools.datatypes import String, Integer
 from itools.handlers import TextFile, guess_encoding, register_handler_class
-from itools.xapian import make_catalog
-from itools.xapian import AndQuery, PhraseQuery, CatalogAware
-from itools.core import merge_dicts
+from itools.xapian import make_catalog, AndQuery, PhraseQuery, CatalogAware
 from parser import parse
 
 
@@ -82,11 +81,15 @@ class CSVFile(TextFile):
     #########################################################################
     # Load & Save
     #########################################################################
+    clone_exclude = TextFile.clone_exclude | frozenset(['catalog'])
+
+
     def reset(self):
         self.lines = []
         self.n_lines = 0
         # Initialize the catalog if needed (Index&Search)
         # (we look if we have at least one indexed field in schema/columns)
+        self.catalog = None
         schema = self.schema
         if schema is not None:
             for name in self.columns:
@@ -98,10 +101,6 @@ class CSVFile(TextFile):
                                                             is_indexed=True))
                     self.catalog = make_catalog(None, fields)
                     break
-            else:
-                self.catalog = None
-        else:
-            self.catalog = None
 
 
     def new(self):

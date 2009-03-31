@@ -444,6 +444,9 @@ class Table(File):
     #######################################################################
     # Handlers
     #######################################################################
+    clone_exclude = File.clone_exclude | frozenset(['catalog'])
+
+
     def reset(self):
         self.properties = None
         self.records = []

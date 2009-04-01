@@ -30,6 +30,7 @@ import itools
 from itools.gettext import POFile
 from itools.handlers import ConfigFile, get_handler
 import itools.html
+import itools.python
 import itools.stl
 import itools.srx
 from itools.uri import Path

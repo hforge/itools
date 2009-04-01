@@ -14,9 +14,29 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from the Standard Library
+from re import compile
+
+
+
+expr = compile('(\{.*?\})')
 
 def format(txt, **kw):
-    raise NotImplementedError, "'format' not supported in Python 2.5"
+    """Mimics the method 'str.format' from Python 2.6
+    """
+    # TODO Implement escaping curly brackets by doubling them: "{{}}"
+    # TODO Raise an error if there are unbalanced curly brackets: "{" or "}"
+    def repl(match):
+        name = match.group(1)
+        name = name[1:-1]
+        if not name:
+            raise ValueError, 'zero length field name in format'
+        if name not in kw:
+            raise KeyError, "'%s'" % name
+        value = kw[name]
+        return str(value)
+
+    return expr.sub(repl, txt)
 
 
 

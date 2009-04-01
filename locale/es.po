@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: es\n"
-"POT-Creation-Date: 2009-03-17 11:03+CET\n"
+"POT-Creation-Date: 2009-04-01 16:04+CET\n"
 "PO-Revision-Date: 2006-12-06 16:23+0100\n"
 "Last-Translator: J. David Ibáñez <jdavid@itaapy.com>\n"
 "Language-Team: Spanish\n"
@@ -12,15 +12,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
 
-#: ../xml/i18n.py:61
+#: ../xmlfile/i18n.py:63
 msgid " %s=\""
 msgstr ""
 
-#: ../xml/i18n.py:66
+#: ../xmlfile/i18n.py:68
 msgid " %s=\"%s\""
 msgstr ""
 
-#: ../xml/i18n.py:64
+#: ../xmlfile/i18n.py:66
 msgid "\""
 msgstr ""
 
@@ -33,23 +33,23 @@ msgstr ""
 msgid "%s"
 msgstr ""
 
-#: ../xapian/fields.py:158
+#: ../xapian/catalog.py:76
 msgid "%s%s"
 msgstr ""
 
-#: ../pdf/pml.py:336
+#: ../pdf/pml.py:339
 msgid "(WW) CSS filename \"%s\" does not exist"
 msgstr ""
 
-#: ../pdf/pml.py:1116
+#: ../pdf/pml.py:1119
 msgid "(WW) Cannot add an image inside a td without predefined size"
 msgstr ""
 
-#: ../pdf/pml.py:1112
+#: ../pdf/pml.py:1115
 msgid "(WW) Filename is None"
 msgstr ""
 
-#: ../pdf/utils.py:234
+#: ../pdf/utils.py:235
 msgid "(WW) The filename '%s' doesn't exist"
 msgstr ""
 
@@ -58,16 +58,16 @@ msgstr ""
 msgid "*"
 msgstr ""
 
-#: ../handlers/utils.py:51 ../handlers/utils.py:52 ../handlers/utils.py:56
-#: ../handlers/utils.py:57 ../rest/parser.py:104 ../rest/parser.py:105
+#: ../handlers/utils.py:48 ../handlers/utils.py:49 ../handlers/utils.py:53
+#: ../handlers/utils.py:54 ../rest/parser.py:104 ../rest/parser.py:105
 msgid "-"
 msgstr ""
 
-#: ../ical/table.py:374 ../ical/icalendar.py:327
+#: ../ical/table.py:374 ../ical/icalendar.py:344
 msgid "-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN"
 msgstr ""
 
-#: ../handlers/utils.py:51 ../rest/parser.py:106 ../rest/parser.py:107
+#: ../handlers/utils.py:48 ../rest/parser.py:106 ../rest/parser.py:107
 msgid "."
 msgstr ""
 
@@ -75,19 +75,11 @@ msgstr ""
 msgid ".."
 msgstr ""
 
-#: ../xml/i18n.py:69
+#: ../xmlfile/i18n.py:71
 msgid "/>"
 msgstr ""
 
-#: ../pdf/rml.py:2016
-msgid "0"
-msgstr ""
-
-#: ../pdf/rml.py:2015
-msgid "1"
-msgstr ""
-
-#: ../ical/table.py:373 ../ical/icalendar.py:326
+#: ../ical/table.py:373 ../ical/icalendar.py:343
 msgid "2.0"
 msgstr ""
 
@@ -99,7 +91,7 @@ msgstr ""
 msgid "::"
 msgstr ""
 
-#: ../xml/i18n.py:49
+#: ../xmlfile/i18n.py:51
 msgid "<%s"
 msgstr ""
 
@@ -115,7 +107,7 @@ msgstr ""
 msgid "<x id='%d'/>"
 msgstr ""
 
-#: ../xml/i18n.py:71
+#: ../xmlfile/i18n.py:73
 msgid ">"
 msgstr ""
 
@@ -123,76 +115,71 @@ msgstr ""
 msgid "???"
 msgstr ""
 
-#: ../handlers/utils.py:51
+#: ../handlers/utils.py:48
 msgid "@"
 msgstr ""
 
-#: ../handlers/utils.py:24
+#: ../handlers/utils.py:21
 msgid "AAAAAAAaaaaaaaCcEEEEEeeeeeIIIIIiiiiiNnOOOOOOOoooooooUUUUUuuuuuYYYyyy"
 msgstr ""
 
-#: ../handlers/utils.py:32
+#: ../handlers/utils.py:29
 msgid "AE"
 msgstr ""
 
-#: ../scripts/isetup-quality.py:63
+#: ../scripts/ipkg-quality.py:62
 msgid "Aesthetics (and readibility)"
 msgstr ""
 
-#: ../ical/icalendar.py:496 ../ical/icalendar.py:512
+#: ../ical/icalendar.py:513 ../ical/icalendar.py:529
 msgid "BEGIN:%s\n"
 msgstr ""
 
-#: ../scripts/isetup-quality.py:58
+#: ../scripts/ipkg-quality.py:57
 msgid "Code length"
 msgstr ""
 
-#: ../ical/icalendar.py:520 ../ical/icalendar.py:523
+#: ../ical/icalendar.py:537 ../ical/icalendar.py:540
 msgid "END:%s\n"
 msgstr ""
 
-#: ../scripts/isetup-quality.py:505
+#: ../scripts/ipkg-quality.py:499
 msgid "Error, your project must be versioned with GIT."
-msgstr ""
-
-#: ../csv/table.py:284
-msgid ""
-"Error: Field \"$field\" must be unique, value \"$value\" is already used."
 msgstr ""
 
 #: ../web/context.py:63
 msgid "Everything looks fine (strange)."
 msgstr ""
 
-#: ../scripts/isetup-quality.py:71
+#: ../scripts/ipkg-quality.py:70
 msgid "Exception handling"
 msgstr ""
 
-#: ../scripts/isetup-quality.py:77
+#: ../scripts/ipkg-quality.py:76
 msgid "Import problems"
 msgstr ""
 
-#: ../scripts/isetup-quality.py:59
+#: ../scripts/ipkg-quality.py:58
 msgid "Number of lines"
 msgstr ""
 
-#: ../scripts/isetup-quality.py:59
+#: ../scripts/ipkg-quality.py:58
 msgid "Number of tokens"
 msgstr ""
 
-#: ../handlers/utils.py:34
+#: ../handlers/utils.py:31
 msgid "OE"
 msgstr ""
 
-#: ../scripts/isetup-quality.py:497
+#: ../scripts/ipkg-quality.py:491
 msgid "Options --worse and --show-lines are mutually exclusive."
 msgstr ""
 
-#: ../scripts/isetup-quality.py:495
+#: ../scripts/ipkg-quality.py:489
 msgid "Please give at least one file to analyse."
 msgstr ""
 
-#: ../scripts/isetup-quality.py:508
+#: ../scripts/ipkg-quality.py:502
 msgid "Please install matplotlib."
 msgstr ""
 
@@ -202,33 +189,35 @@ msgid ""
 "correct them and continue."
 msgstr ""
 
-#: ../scripts/isetup-quality.py:499
+#: ../scripts/ipkg-quality.py:493
 msgid "The option --show-lines takes one file in parameter."
 msgstr ""
 
 #: ../web/context.py:60
 #, fuzzy
-msgid "There are ${inv} field(s) invalid."
+msgid "There are {inv} field(s) invalid."
 msgstr ""
 "La dirección de correo electrónico es incorrecta, por favor intentelo de "
 "nuevo."
 
 #: ../web/context.py:56
-msgid "There are ${miss} field(s) missing and ${inv} invalid."
+#, fuzzy
+msgid "There are {miss} field(s) missing and {inv} invalid."
 msgstr ""
+"La dirección de correo electrónico es incorrecta, por favor intentelo de "
+"nuevo."
 
 #: ../web/context.py:58
-msgid "There are ${miss} field(s) missing."
+#, fuzzy
+msgid "There are {miss} field(s) missing."
 msgstr ""
+"La dirección de correo electrónico es incorrecta, por favor intentelo de "
+"nuevo."
 
-#: ../scripts/isetup-quality.py:288
+#: ../scripts/ipkg-quality.py:287
 #, fuzzy
 msgid "This file is perfect !"
 msgstr "Esta carpeta está vacía."
-
-#: ../pdf/rml.py:1441
-msgid "X%sX"
-msgstr ""
 
 #: ../rest/parser.py:288 ../rest/parser.py:292
 msgid "["
@@ -238,7 +227,7 @@ msgstr ""
 msgid "]"
 msgstr ""
 
-#: ../handlers/utils.py:51 ../rest/parser.py:299 ../rest/parser.py:349
+#: ../handlers/utils.py:48 ../rest/parser.py:299 ../rest/parser.py:349
 #: ../rest/parser.py:368
 msgid "_"
 msgstr ""
@@ -248,7 +237,7 @@ msgstr ""
 msgid "`"
 msgstr ""
 
-#: ../handlers/utils.py:31
+#: ../handlers/utils.py:28
 #, fuzzy
 msgid "ae"
 msgstr "Fecha"
@@ -257,7 +246,7 @@ msgstr "Fecha"
 msgid "al"
 msgstr ""
 
-#: ../scripts/isetup-quality.py:73
+#: ../scripts/ipkg-quality.py:72
 msgid "all exceptions are catched"
 msgstr ""
 
@@ -281,7 +270,7 @@ msgstr ""
 msgid "aux"
 msgstr ""
 
-#: ../scripts/isetup-quality.py:65
+#: ../scripts/ipkg-quality.py:64
 msgid "bad indented"
 msgstr ""
 
@@ -348,11 +337,6 @@ msgstr ""
 msgid "et"
 msgstr "Texto"
 
-#: ../pdf/rml.py:2016
-#, fuzzy
-msgid "false"
-msgstr "Pegar"
-
 #: ../i18n/oracle.py:98
 msgid "from"
 msgstr ""
@@ -378,7 +362,7 @@ msgstr "Fichero"
 msgid "ils"
 msgstr ""
 
-#: ../pdf/utils.py:252
+#: ../pdf/utils.py:253
 msgid "image not valid : %s"
 msgstr ""
 
@@ -417,7 +401,7 @@ msgstr ""
 msgid "lo"
 msgstr ""
 
-#: ../scripts/isetup-quality.py:66
+#: ../scripts/ipkg-quality.py:65
 msgid "longer than 79 characters"
 msgstr ""
 
@@ -429,12 +413,12 @@ msgstr ""
 msgid "mais"
 msgstr ""
 
-#: ../i18n/oracle.py:114 ../pdf/rml.py:2016
+#: ../i18n/oracle.py:114
 #, fuzzy
 msgid "no"
 msgstr "Deshacer"
 
-#: ../ical/table.py:120
+#: ../ical/table.py:119
 #, fuzzy
 msgid "no title"
 msgstr "Título"
@@ -451,7 +435,7 @@ msgstr ""
 msgid "o"
 msgstr ""
 
-#: ../handlers/utils.py:33
+#: ../handlers/utils.py:30
 #, fuzzy
 msgid "oe"
 msgstr "Código"
@@ -496,11 +480,11 @@ msgstr ""
 msgid "she"
 msgstr ""
 
-#: ../handlers/utils.py:35
+#: ../handlers/utils.py:32
 msgid "ss"
 msgstr ""
 
-#: ../scripts/isetup-quality.py:72
+#: ../scripts/ipkg-quality.py:71
 msgid "string exceptions are used"
 msgstr ""
 
@@ -520,6 +504,11 @@ msgstr ""
 msgid "the"
 msgstr ""
 
+#: ../csv/table.py:286
+msgid ""
+"the \"{field}\" field must be unique, the \"{value}\" value is  already used."
+msgstr ""
+
 #: ../i18n/oracle.py:132
 msgid "their"
 msgstr ""
@@ -530,10 +519,6 @@ msgstr ""
 
 #: ../i18n/oracle.py:134
 msgid "to"
-msgstr ""
-
-#: ../pdf/rml.py:2015
-msgid "true"
 msgstr ""
 
 #: ../i18n/oracle.py:135
@@ -565,11 +550,11 @@ msgstr ""
 msgid "where"
 msgstr ""
 
-#: ../scripts/isetup-quality.py:64
+#: ../scripts/ipkg-quality.py:63
 msgid "with tabulators"
 msgstr ""
 
-#: ../scripts/isetup-quality.py:67
+#: ../scripts/ipkg-quality.py:66
 msgid "with trailing whitespaces"
 msgstr ""
 
@@ -577,11 +562,6 @@ msgstr ""
 #, fuzzy
 msgid "y"
 msgstr "Por"
-
-#: ../pdf/rml.py:2015
-#, fuzzy
-msgid "yes"
-msgstr "Sí"
 
 #: ../i18n/oracle.py:143
 msgid "you"
@@ -603,15 +583,15 @@ msgstr ""
 msgid "¿"
 msgstr ""
 
-#: ../handlers/utils.py:22
+#: ../handlers/utils.py:19
 msgid "ÄÅÁÀÂÃĀäåáàâãāÇçÉÈÊËĒéèêëēÍÌÎÏĪíìîïīÑñÖÓÒÔÕØŌöóòôõøōÜÚÙÛŪüúùûūÝŸȲýÿȳ"
 msgstr ""
 
-#: ../handlers/utils.py:32
+#: ../handlers/utils.py:29
 msgid "Æ"
 msgstr ""
 
-#: ../handlers/utils.py:35 ../i18n/oracle.py:47
+#: ../handlers/utils.py:32 ../i18n/oracle.py:47
 msgid "ß"
 msgstr ""
 
@@ -623,7 +603,7 @@ msgstr ""
 msgid "ä"
 msgstr ""
 
-#: ../handlers/utils.py:31
+#: ../handlers/utils.py:28
 msgid "æ"
 msgstr ""
 
@@ -659,11 +639,11 @@ msgstr ""
 msgid "ü"
 msgstr ""
 
-#: ../handlers/utils.py:34
+#: ../handlers/utils.py:31
 msgid "Œ"
 msgstr ""
 
-#: ../handlers/utils.py:33
+#: ../handlers/utils.py:30
 msgid "œ"
 msgstr ""
 
@@ -1554,5 +1534,13 @@ msgstr ""
 #~ msgstr "Debes elijir un idioma"
 
 #, fuzzy
+#~ msgid "false"
+#~ msgstr "Pegar"
+
+#, fuzzy
 #~ msgid "search"
 #~ msgstr "Buscar"
+
+#, fuzzy
+#~ msgid "yes"
+#~ msgstr "Sí"

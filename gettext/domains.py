@@ -20,6 +20,7 @@ from sys import _getframe
 from types import ModuleType
 
 # Import from itools
+from itools.core import format
 from itools.handlers import Folder, RODatabase
 
 
@@ -76,7 +77,7 @@ def gettext(domain_name, message, language=None, **kw):
 
     # Interpolation
     if kw:
-        return message.format(**kw)
+        return format(message, **kw)
 
     return message
 
@@ -114,6 +115,6 @@ class MSG(object):
 
         # Interpolation
         if kw:
-            return message.format(**kw)
+            return format(message, **kw)
 
         return message

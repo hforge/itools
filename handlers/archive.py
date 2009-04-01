@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from __future__ import with_statement
 from os.path import join
 from zipfile import ZipFile
 from tarfile import open as open_tarfile

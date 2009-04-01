@@ -56,8 +56,7 @@ The code has been re-arranged a little:
 The implementation of RML [7] has been removed, now we promote PML [8]
 instead.
 
-There are some new dependencies.  Most notably Python 2.6.1 is required,
-support for 2.5 has been droped.  Also, now pygobject 2.16.1 [9] or
+There are some new dependencies.  Most notably pygobject 2.16.1 [9] or
 later, and pkg-config [10] are required.  See the full list of required
 and recommended packages in the README file.
 

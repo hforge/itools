@@ -101,13 +101,13 @@ class Folder(Handler):
         self.database.copy_handler(source, target)
 
 
-    def move_handler(self, source, target):
+    def move_handler(self, source, target, cls=None):
         if self.database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
         source = self.uri.resolve2(source)
         target = self.uri.resolve2(target)
-        self.database.move_handler(source, target)
+        self.database.move_handler(source, target, cls=cls)
 
 
     ########################################################################

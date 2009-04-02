@@ -228,7 +228,7 @@ class Database(object):
             self.added.add(target)
 
 
-    def move_handler(self, source, target):
+    def move_handler(self, source, target, cls=None):
         # TODO This method can be optimized further
         source = get_absolute_reference(source)
         target = get_absolute_reference(target)
@@ -239,7 +239,7 @@ class Database(object):
         if self.has_handler(target):
             raise RuntimeError, MSG_URI_IS_BUSY % target
 
-        handler = self.get_handler(source)
+        handler = self.get_handler(source, cls=cls)
         if isinstance(handler, Folder):
             # Folder
             for name in handler.get_handler_names():

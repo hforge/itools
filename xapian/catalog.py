@@ -518,19 +518,31 @@ class Catalog(object):
             value = _encode(field_cls, value)
 
             if value:
-                # end_value = the word after value: toto => totp
-                # XXX This code is bogus if the value = '\xff'
-                # XXX We must fix it!!
-                end_value = value[:-1] + chr(ord(value[-1]) + 1)
-
                 # good = {x / x >= value}
                 good = Query(OP_VALUE_GE, value_nb, value)
 
-                # bad = {x / x >= end_value}
-                bad = Query(OP_VALUE_GE, value_nb, end_value)
+                # Construct the variable end_value:
+                # end_value = the word "after" value: toto => totp
 
-                # Return {x / x in good but x not in bad}
-                return Query(OP_AND_NOT, good, bad)
+                # Delete the '\xff' at the end of value
+                end_value = value
+                while end_value and ord(end_value[-1]) == 255:
+                    end_value = end_value[:-1]
+
+                # Normal case: end_value is not empty
+                if end_value:
+                    # The world after
+                    end_value = end_value[:-1] + chr(ord(end_value[-1]) + 1)
+
+                    # bad = {x / x >= end_value}
+                    bad = Query(OP_VALUE_GE, value_nb, end_value)
+
+                    # Return {x / x in good but x not in bad}
+                    return Query(OP_AND_NOT, good, bad)
+                # If end_value is empty
+                else:
+                    # Return {x / x in good}
+                    return good
             else:
                 # If value == '', we return everything
                 return Query('')

@@ -62,8 +62,9 @@ def get_installed_info(dir, package_name):
     if info:
         return info
 
-    entries = [join(dir, f) for f in get_names(dir) if\
-               f.endswith('.egg-info') and package_name.upper() in f.upper()]
+    entries = [
+        join(dir, f) for f in get_names(dir)
+        if f.endswith('.egg-info') and package_name.upper() in f.upper() ]
 
     entries.sort(lambda a, b: cmp(get_ctime(a), get_ctime(b)))
 

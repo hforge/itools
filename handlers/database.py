@@ -349,7 +349,7 @@ class RODatabase(BaseDatabase):
         raise ReadOnlyError, 'cannot copy handler'
 
 
-    def move_handler(self, source, target):
+    def move_handler(self, source, target, cls=None):
         raise ReadOnlyError, 'cannot move handler'
 
 
@@ -523,7 +523,7 @@ class RWDatabase(RODatabase):
             self.added.add(target)
 
 
-    def move_handler(self, source, target):
+    def move_handler(self, source, target, cls=None):
         # TODO This method can be optimized further
         source = self._resolve_reference_for_writing(source)
         target = self._resolve_reference_for_writing(target)
@@ -534,7 +534,7 @@ class RWDatabase(RODatabase):
         if self.has_handler(target):
             raise RuntimeError, messages.MSG_URI_IS_BUSY % target
 
-        handler = self.get_handler(source)
+        handler = self.get_handler(source, cls=cls)
         if isinstance(handler, Folder):
             # Folder
             for name in handler.get_handler_names():

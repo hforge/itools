@@ -124,13 +124,13 @@ class Handler(object):
         self.database.copy_handler(source, target)
 
 
-    def move_handler(self, source, target):
+    def move_handler(self, source, target, cls=None):
         if self.database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
         source = resolve_uri2(self.uri, source)
         target = resolve_uri2(self.uri, target)
-        self.database.move_handler(source, target)
+        self.database.move_handler(source, target, cls=cls)
 
 
     def get_mimetype(self):

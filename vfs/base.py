@@ -96,7 +96,7 @@ class BaseFS(object):
         name, extension, language = FileName.decode(name)
         # Figure out the mimetype from the filename extension
         if extension is not None:
-            mimetype, encoding = guess_type('.%s' % extension)
+            mimetype, encoding = guess_type('%s.%s' % (name, extension))
             if encoding is not None:
                 if encoding in encoding_map:
                     return encoding_map[encoding]

@@ -57,32 +57,6 @@ class Domain(Folder):
 
 
 
-def gettext(domain_name, message, language=None, **kw):
-    # Source look-up
-    if type(message) is str:
-        domain_name, message = find_module_name(domain_name, message)
-
-    # Get the domain
-    domain_name = domain_name.split('.', 1)[0]
-    domain = domains[domain_name]
-
-    # Find out the language (the 'select_language' function must be built-in)
-    if language is None:
-        languages = domain.get_languages()
-        language = select_language(languages)
-
-    # Look-up
-    if language is not None:
-        message = domain.gettext(message, language)
-
-    # Interpolation
-    if kw:
-        return format(message, **kw)
-
-    return message
-
-
-
 class MSG(object):
 
     __slots__ = ['message', 'domain', 'kw']

@@ -8,8 +8,6 @@ find.
 New Dependencies
 ================
 
-The minimum required version of Python has been raised to 2.6
-
 For compiling C modules, you need pkg-config (tested with version 0.23).
 
 For indexing office documents, you need libraries and Python packages. See
@@ -57,24 +55,6 @@ See the table below for the imports to update.
   xml.XMLFile                    xmlfile.XMLFile
 
 
-Python 2.6
-==========
-
-Some changes are derived from the upgrade to Python 2.6
-
-Formatted strings
------------------
-
-Usage of the 'string.Template' class is declared obsolete.  Instead use
-the new formatted strings:
-
-  # Before
-  Template('hello ${name}').substitute(name='toto')
-
-  # Now
-  'hello ${name}'.format(name='toto')
-
-
 itools.csv
 ==========
 
@@ -104,6 +84,21 @@ And it is the same thing with Table, by example:
   class Foo(Table):
 
       record_schema = {'name': String(is_indexed=True)}
+
+
+itools.gettext
+==============
+
+Now itools.gettext uses the new formatted strings introduced in Python 2.6:
+
+  # Before
+  MSG('hello $name')
+
+  # Now
+  MSG('hello {name}')
+
+Note that this works even on Python 2.5, since itools includes a partial
+implementation for it.
 
 
 itools.git

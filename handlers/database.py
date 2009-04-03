@@ -470,14 +470,24 @@ class RWDatabase(RODatabase):
     def del_handler(self, reference):
         uri = self._resolve_reference_for_writing(reference)
 
+        # Check the handler has been added
         if uri in self.added:
             self._discard_handler(uri)
             self.added.remove(uri)
             return
 
-        # Check the handler actually exists
+        # Check the handler has been removed
         if uri in self.removed:
             raise LookupError, 'resource already removed'
+
+        # Check for phantom handlers
+        handler = self.cache.get(uri)
+        if handler and not handler.timestamp and handler.dirty:
+            self._discard_handler(uri)
+            return
+
+        # Syncrhonize
+        handler = self._sync_filesystem(uri)
         if not vfs.exists(uri):
             raise LookupError, 'resource does not exist'
 

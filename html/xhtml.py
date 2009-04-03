@@ -52,12 +52,11 @@ class Boolean(Boolean):
 
 def stream_to_html(stream, encoding='UTF-8'):
     data = []
-    for event in stream:
-        type, value, line = event
-        if type == TEXT:
+    for event, value, line in stream:
+        if event == TEXT:
             value = XMLContent.encode(value)
             data.append(value)
-        elif type == START_ELEMENT:
+        elif event == START_ELEMENT:
             tag_uri, tag_name, attributes = value
             qname = get_qname(tag_uri, tag_name)
             s = '<%s' % qname
@@ -68,14 +67,14 @@ def stream_to_html(stream, encoding='UTF-8'):
                 value = XMLAttribute.encode(value)
                 s += ' %s="%s"' % (qname, value)
             data.append(s + '>')
-        elif type == END_ELEMENT:
+        elif event == END_ELEMENT:
             tag_uri, tag_name = value
             data.append(get_end_tag(tag_uri, tag_name))
-        elif type == COMMENT:
+        elif event == COMMENT:
             data.append('<!--%s-->' % value)
-        elif type == XML_DECL:
+        elif event == XML_DECL:
             pass
-        elif type == DOCUMENT_TYPE:
+        elif event == DOCUMENT_TYPE:
             # FIXME
             pass
     return ''.join(data)

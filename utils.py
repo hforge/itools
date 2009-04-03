@@ -229,10 +229,18 @@ def setup(namespace, classifiers=[], ext_modules=[]):
 
 pythons_import = __import__
 
-def local_import(name, globals={}, locals={}, fromlist=[], level=-1):
-    if name.startswith('itools.'):
-        name = name[7:]
-    return pythons_import(name, globals, locals, fromlist, level)
+if sys.version_info[0] == 2 and sys.version_info[1] == 4:
+    # Python 2.4
+    def local_import(name, globals={}, locals={}, fromlist=[]):
+        if name.startswith('itools.'):
+            name = name[7:]
+        return pythons_import(name, globals, locals, fromlist)
+else:
+    # Python 2.5 & 2.6
+    def local_import(name, globals={}, locals={}, fromlist=[], level=-1):
+        if name.startswith('itools.'):
+            name = name[7:]
+        return pythons_import(name, globals, locals, fromlist, level)
 
 
 def start_local_import():

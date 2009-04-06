@@ -143,7 +143,9 @@ def _get_translatable_blocks(events):
                 continue
         elif type == COMMENT and message:
             id += 1
-            message.append_start_format([('<!--%s-->' % value, False, None)],
+            if isinstance(value, str):
+                value = unicode(value, encoding)
+            message.append_start_format([(u'<!--%s-->' % value, False, None)],
                                         id, line)
             message.append_end_format([], id, line)
             continue

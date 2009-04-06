@@ -1,5 +1,5 @@
 
-itools 0.60.0 (2009/0X/XX)
+itools 0.60.0 (2009/04/XX)
 ==========================
 
 itools is a Python library, it groups a number of packages into a single
@@ -16,26 +16,23 @@ meta-package for easier development and deployment:
   itools.http             itools.srx              itools.xml
 
 The itools.vfs package has been rewritten to use gio, the virtual file
-system from the glib project [1].  The web server, from itools.web, now
-uses the glib event loop.
+system from the glib project [1].  The web server (itools.web) now uses
+the glib event loop.
 
 Extracting text from office formats is in general much faster.  Command
-line utilities have been replaced by libraries, e.g. 'xlrd' [2] instead
-of 'xlhtml' [3] to extract text from Excel files.
+line utilities have been replaced by libraries; for instance,  now we
+use 'xlrd' [2] instead of 'xlhtml' [3] to extract text from Excel files.
 
 Indexing text is also much faster now that itools.xapian uses the native
 Xapian [4] tokenizer.  Except for Japanase and Chinese, which still use
 the itools tokenizer.
-
-Other optimizations include: faster parsing of iCal files, and a generic
-least-recently-used cache [5] system (from itools.core).
 
 The filesystem database, from itools.handlers, has been much improved:
 
 - A read-only mode has been added, implemented by the 'RODatabase' class.
 
 - There is a new 'GitDatabase' class that provides atomic transactions
-  and versioning (using Git [6]).
+  and versioning (using Git [5]).
 
 - Now there is a limit to the number of file handlers that can be stored
   in the cache (defaults to five thousands).
@@ -53,25 +50,20 @@ The code has been re-arranged a little:
   from itools.handlers, itools.xmlfile from itools.xml and itools.office
   from itools.xml
 
-The implementation of RML [7] has been removed, now we promote PML [8]
+The implementation of RML [6] has been removed, now we promote PML [7]
 instead.
 
-There are some new dependencies.  Most notably pygobject 2.16.1 [9] or
-later, and pkg-config [10] are required.  See the full list of required
-and recommended packages in the README file.
-
-See the UPGRADE-0.60.0 file for further details on what has changed.
+See the README file for details on the updated requirements to install
+itools, and the UPGRADE-0.60.0 file for further details on what has
+changed.
 
 [1] http://www.gtk.org/
 [2] http://www.lexicon.net/sjmachin/xlrd.htm
 [3] http://chicago.sourceforge.net/xlhtml/
 [4] http://www.xapian.org
-[5] XXX lru
-[6] http://git-scm.com/
+[5] http://git-scm.com/
+[6] http://www.reportlab.com/docs/RML_UserGuide_1_0.pdf
 [7] http://www.reportlab.com/docs/RML_UserGuide_1_0.pdf
-[8] XXX (chapter to write in the documentation)
-[9] http://www.pygtk.org/
-[10] http://pkg-config.freedesktop.org/
 
 
 Resources

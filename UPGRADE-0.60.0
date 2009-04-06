@@ -86,6 +86,13 @@ And it is the same thing with Table, by example:
       record_schema = {'name': String(is_indexed=True)}
 
 
+itools.datatypes
+================
+
+(1) Now the 'URI' datatype returns a string (instead of a uri reference
+object).
+
+
 itools.gettext
 ==============
 
@@ -111,11 +118,14 @@ just the committer's name and time.
 itools.handlers
 ===============
 
-(1) The 'SafeDatabase' class has been removed.  It has been replaced by
+(1) Now 'handler.uri' is a string (before it was a 'itools.uri.Reference'
+object).  And the public API only takes strings.
+
+(2) The 'SafeDatabase' class has been removed.  It has been replaced by
 the new 'GitDatabase' class, which offers the same functionality (atomic
 transactions) and more (versioning).
 
-(2) The database API has changed a little:
+(3) The database API has changed a little:
 
   Before                          Now
   ------------------------------  ------------------------------
@@ -138,7 +148,7 @@ itools.uri
 ==========
 
 (1) The 'get_absolute_reference' and 'get_absolute_reference2' functions
-have been removed, since itools.vfs already provides this feature, bug much
+have been removed, since itools.vfs already provides this feature, but much
 faster:
 
   # Before
@@ -152,7 +162,7 @@ faster:
   uri1 = get_reference(cwd.get_uri(ref1))
   uri2 = get_reference(cwd.get_uri(ref2))
 
-Both 'get_absolute_reference' and 'get_absolute_reference2' behave the
+Both 'get_absolute_reference' and 'get_absolute_reference2' behaved the
 same, except when the optional parameter 'base' was passed, a feature
 rarely used.
 
@@ -166,6 +176,24 @@ rarely used.
   from itools.uri import get_reference
   from itools.vfs import cwd
   uri = get_reference(cwd.get_uri())
+
+(3) The 'Segment' class has been removed.  Now path segments are strings.
+
+(4) There is a new functional API that should be used when possible instead
+of the old, but still maintained, OO API.  For instance:
+
+  # Before
+  from itools.uri import get_reference
+  base = get_reference('http://www.hforge.org/itools/')
+  ref = get_reference('../ikaaro/')
+  uri = base.resolve(ref)
+  uri = str(uri)
+
+  # Now
+  from itools.uri import resolve_uri
+  base = 'http://www.hforge.org/itools/'
+  ref = '../ikaaro/'
+  uri = resolve_uri(base, ref)
 
 
 itools.vfs

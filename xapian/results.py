@@ -19,6 +19,7 @@
 from xapian import Enquire, MultiValueSorter, Query
 
 # Import from itools
+from itools.datatypes import Unicode
 from utils import _decode, _get_field_cls
 
 
@@ -33,8 +34,21 @@ class Doc(object):
 
     def __getattr__(self, name):
         info = self._metadata[name]
-        value = info['value']
         field_cls = _get_field_cls(name, self._fields, info)
+
+        # Multilingual field: language negotiation
+        if issubclass(field_cls, Unicode) and 'from' not in info:
+            prefix = '%s_' % name
+            n = len(prefix)
+            languages = [ k[n:] for k in self._metadata if k[:n] == prefix ]
+            if languages:
+                language = select_language(languages)
+                if language is None:
+                    language = languages[0]
+                return getattr(self, '%s_%s' % (name, language))
+
+        # Standard (monolingual)
+        value = info['value']
         data = self._xdoc.get_value(value)
         return _decode(field_cls, data)
 

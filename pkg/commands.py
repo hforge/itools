@@ -79,7 +79,7 @@ class iregister(register):
             self.password = getpass('Password: ')
         # set up the authentication
         auth = HTTPPasswordMgr()
-        host = str(get_reference(self.repository).authority)
+        host = get_reference(self.repository).authority
         auth.add_password('pypi', host, self.username, self.password)
 
         # send the info to the server and report the result

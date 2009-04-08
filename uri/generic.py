@@ -49,63 +49,6 @@ from urlparse import urlsplit, urlunsplit
 from urllib import quote_plus, unquote, unquote_plus
 
 
-##########################################################################
-# Authority
-##########################################################################
-
-class Authority(object):
-    """There are two types of authorities: registry based and server-based;
-    right now only server-based are supported (XXX).
-
-    The userinfo component could be further processed.
-    """
-
-    __slots__ = ['userinfo', 'host', 'port']
-
-
-    def __init__(self, auth):
-        # The userinfo
-        if '@' in auth:
-            self.userinfo, auth = auth.split('@', 1)
-        else:
-            self.userinfo = None
-        # host:port
-        if ':' in auth:
-            self.host, self.port = auth.split(':', 1)
-        else:
-            self.host = auth
-            self.port = None
-
-
-    def __str__(self):
-        # userinfo@host
-        if self.userinfo is not None:
-            auth = '%s@%s' % (self.userinfo, self.host)
-        else:
-            auth = self.host
-        # The port
-        if self.port is not None:
-            return auth + ':' + self.port
-        return auth
-
-
-    def __eq__(self, other):
-        return str(self) == str(other)
-
-
-    def __ne__(self, other):
-        return str(self) != str(other)
-
-
-    def __hash__(self):
-        return hash(str(self))
-
-
-    def __nonzero__(self):
-        return bool(str(self))
-
-
-
 #########################################################################
 # Path
 ##########################################################################
@@ -497,7 +440,7 @@ class Reference(object):
         if path == '.':
             path = ''
         query = encode_query(self.query)
-        reference = urlunsplit((self.scheme, str(self.authority), path, query,
+        reference = urlunsplit((self.scheme, self.authority, path, query,
                                 self.fragment))
         if reference == '':
             if self.fragment is not None:
@@ -534,38 +477,33 @@ class Reference(object):
 
         # Network path
         if reference.authority:
-            return Reference(self.scheme,
-                             copy(reference.authority),
+            return Reference(self.scheme, reference.authority,
                              copy(reference.path),
                              copy(reference.query),
                              reference.fragment)
 
         # Absolute path
         if reference.path.is_absolute():
-            return Reference(self.scheme,
-                             copy(self.authority),
+            return Reference(self.scheme, self.authority,
                              copy(reference.path),
                              copy(reference.query),
                              reference.fragment)
 
         # Internal references
         if isinstance(reference, EmptyReference):
-            return Reference(self.scheme,
-                             copy(self.authority),
+            return Reference(self.scheme, self.authority,
                              copy(self.path),
                              self.query.copy(),
                              None)
 
         if reference.fragment and not reference.path and not reference.query:
-            return Reference(self.scheme,
-                             copy(self.authority),
+            return Reference(self.scheme, self.authority,
                              copy(self.path),
                              copy(self.query),
                              reference.fragment)
 
         # Relative path
-        return Reference(self.scheme,
-                         copy(self.authority),
+        return Reference(self.scheme, self.authority,
                          self.path.resolve(reference.path),
                          copy(reference.query),
                          reference.fragment)
@@ -587,38 +525,33 @@ class Reference(object):
 
         # Network path
         if reference.authority:
-            return Reference(self.scheme,
-                             copy(reference.authority),
+            return Reference(self.scheme, reference.authority,
                              copy(reference.path),
                              copy(reference.query),
                              reference.fragment)
 
         # Absolute path
         if reference.path.is_absolute():
-            return Reference(self.scheme,
-                             copy(self.authority),
+            return Reference(self.scheme, self.authority,
                              copy(reference.path),
                              copy(reference.query),
                              reference.fragment)
 
         # Internal references
         if isinstance(reference, EmptyReference):
-            return Reference(self.scheme,
-                             copy(self.authority),
+            return Reference(self.scheme, self.authority,
                              copy(self.path),
                              copy(self.query),
                              None)
 
         if reference.fragment and not reference.path and not reference.query:
-            return Reference(self.scheme,
-                             copy(self.authority),
+            return Reference(self.scheme, self.authority,
                              copy(self.path),
                              copy(self.query),
                              reference.fragment)
 
         # Relative path
-        return Reference(self.scheme,
-                         copy(self.authority),
+        return Reference(self.scheme, self.authority,
                          self.path.resolve2(reference.path),
                          copy(reference.query),
                          reference.fragment)
@@ -629,7 +562,7 @@ class Reference(object):
         reference is known to be a relative path of length = 1.
         """
         path = self.path.resolve_name(name)
-        return Reference(self.scheme, copy(self.authority), path, {})
+        return Reference(self.scheme, self.authority, path, {})
 
 
     def replace(self, **kw):
@@ -686,7 +619,7 @@ class GenericDataType(object):
     @staticmethod
     def decode(data):
         if isinstance(data, Path):
-            return Reference('', Authority(''), data, {}, None)
+            return Reference('', '', data, {}, None)
 
         if type(data) is not str:
             raise TypeError, 'unexpected %s' % type(data)
@@ -697,7 +630,7 @@ class GenericDataType(object):
 
         # Special case, the empty fragment
         if data == '#':
-            return Reference('', Authority(''), Path(''), {}, '')
+            return Reference('', '', Path(''), {}, '')
 
         # All other cases, split the reference in its components
         scheme, authority, path, query, fragment = urlsplit(data)
@@ -722,7 +655,6 @@ class GenericDataType(object):
             path = '/'
         # The authority
         authority = unquote(authority)
-        authority = Authority(authority)
         # The query
         try:
             query = decode_query(query)

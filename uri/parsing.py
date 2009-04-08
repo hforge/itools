@@ -23,7 +23,7 @@ from urllib import unquote
 
 # Import from itools
 from itools.abnf import build_grammar, get_parser, BaseContext
-from generic import Authority, EmptyReference, Path, Reference, decode_query
+from generic import EmptyReference, Path, Reference, decode_query
 
 
 ###########################################################################
@@ -157,7 +157,7 @@ class GenericDataType2(object):
     @staticmethod
     def decode(data):
         if isinstance(data, Path):
-            return Reference('', Authority(''), data, {}, None)
+            return Reference('', '', data, {}, None)
 
         if not isinstance(data, (str, unicode)):
             raise TypeError, 'unexpected %s' % type(data)
@@ -168,7 +168,7 @@ class GenericDataType2(object):
 
         # Special case, the empty fragment
         if data == '#':
-            return Reference('', Authority(''), Path(''), {}, '')
+            return Reference('', '', Path(''), {}, '')
 
         # All other cases, split the reference in its components
         scheme, authority, path, query, fragment = parse_uri(data)
@@ -193,7 +193,6 @@ class GenericDataType2(object):
             path = '/'
         # The authority
         authority = unquote(authority)
-        authority = Authority(authority)
         # The query
         try:
             query = decode_query(query)

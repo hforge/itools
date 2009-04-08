@@ -31,7 +31,7 @@ from types import GeneratorType
 from itools.core import freeze
 from itools.datatypes import Boolean
 from itools.gettext import MSG
-from itools.uri import Authority, Path, Reference, get_reference
+from itools.uri import Path, Reference, get_reference
 from itools.xml import XMLError, XMLParser, find_end, stream_to_str
 from itools.xml import DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, TEXT, COMMENT
 from itools.xml import xmlns_uri
@@ -468,7 +468,7 @@ def resolve_pointer(value, offset):
 
     # Resolve Path
     path = offset.resolve(uri.path)
-    value = Reference("", Authority(''), path, uri.query.copy(), uri.fragment)
+    value = Reference('', '', path, uri.query.copy(), uri.fragment)
     return str(value)
 
 

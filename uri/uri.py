@@ -60,6 +60,13 @@ def get_uri_path(uri):
     return str(uri.path)
 
 
+def get_host_from_authority(auth):
+    """Get the host from the authority.  The format of the authority is:
+
+      [userinfo@]host[:port]
+    """
+    return auth.split('@', 1)[-1].split(':', 1)[0]
+
 
 def resolve_uri(base, reference):
     base = get_reference(base)

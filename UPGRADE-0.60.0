@@ -177,7 +177,10 @@ rarely used.
   from itools.vfs import cwd
   uri = get_reference(cwd.get_uri())
 
-(3) The 'Segment' class has been removed.  Now path segments are strings.
+(3) The 'Segment' and 'Authority' classes have been removed.  Now both path
+segments and URI authorities are represented internally as plain strings.
+
+Use the new functional API to parse them.
 
 (4) There is a new functional API that should be used when possible instead
 of the old, but still maintained, OO API.  For instance:

@@ -225,51 +225,35 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
     Returns a tuple with the interpreted string and the number of
     substitutions done.
     """
-    if not isinstance(data, str):
+    if type(data) is not str:
         raise ValueError, 'byte string expected, not %s' % type(data)
 
-    start = 0
-    state = 0
-    for i, c in enumerate(data):
-        if state == 0:
-            if c == '$':
-                state = 1
-        elif state == 1:
-            if c == '{':
-                end = (i - 1)
-                state = 2
+    segments = subs_expr.split(data)
+    for i, segment in enumerate(segments):
+        if i % 2:
+            # Evaluate expression
+            value = evaluate(segment, stack, repeat_stack)
+            # An STL template
+            if isinstance(value, STLTemplate):
+                value = value.render()
+            # Ignore if None
+            if value is None:
+                continue
+            # Yield
+            if isinstance(value, MSG):
+                value = value.gettext()
+                yield TEXT, value.encode(encoding), 0
+            elif isinstance(value, (list, GeneratorType, XMLParser)):
+                for x in value:
+                    if type(x) is not tuple:
+                        raise STLError, ERR_EXPR_VALUE % segment
+                    yield x
+            elif type(value) is unicode:
+                yield TEXT, value.encode(encoding), 0
             else:
-                state = 0
-        elif state == 2:
-            if c == '}':
-                # Evaluate expression
-                expression = data[end+2:i]
-                value = evaluate(expression, stack, repeat_stack)
-                # Next
-                if end > start:
-                    yield TEXT, data[start:end], 0
-                start = (i + 1)
-                state = 0
-                # Send back
-                if isinstance(value, STLTemplate):
-                    value = value.render()
-                if value is None:
-                    continue
-                if isinstance(value, MSG):
-                    value = value.gettext()
-                    yield TEXT, value.encode(encoding), 0
-                elif isinstance(value, (list, GeneratorType, XMLParser)):
-                    for x in value:
-                        if type(x) is not tuple:
-                            raise STLError, ERR_EXPR_VALUE % expression
-                        yield x
-                elif type(value) is unicode:
-                    yield TEXT, value.encode(encoding), 0
-                else:
-                    yield TEXT, str(value), 0
-
-    if start <= i:
-        yield TEXT, data[start:], 0
+                yield TEXT, str(value), 0
+        elif segment:
+            yield TEXT, segment, 0
 
 
 

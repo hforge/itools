@@ -161,15 +161,13 @@ class Path(list):
 
 
     def __str__(self):
-        path = ''
-        if self.startswith_slash:
-            path = '/'
+        path = '/' if self.startswith_slash else ''
+
         path += '/'.join(self)
         if self.endswith_slash:
             path += '/'
-        if len(path) == 0:
-            return '.'
-        return path
+
+        return path if path else '.'
 
 
     def __ne__(self, other):

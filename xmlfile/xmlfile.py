@@ -19,6 +19,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from the Standard Library
+from cStringIO import InputType
+
 # Import from itools
 from itools.handlers import TextFile, register_handler_class
 from itools.xml import XMLParser, TEXT, stream_to_str
@@ -48,8 +51,18 @@ class XMLFile(TextFile):
 
 
     def _load_state_from_file(self, file):
-        data = file.read()
-        stream = XMLParser(data)
+        # FIXME The XML parser does not support reading from a StringIO
+        if type(file) is InputType:
+            file = file.read()
+
+        stream = XMLParser(file)
+        self.events = list(stream)
+
+
+    def load_state_from_string(self, string):
+        self.set_changed()
+        self.reset()
+        stream = XMLParser(string)
         self.events = list(stream)
 
 

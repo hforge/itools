@@ -18,7 +18,6 @@
 
 # Import from the Standard Library
 from re import finditer
-from cStringIO import StringIO
 
 # Import from itools
 from itools.datatypes import XMLContent, XMLAttribute
@@ -242,10 +241,7 @@ class XHTMLFile(XMLFile):
     #######################################################################
     def new(self, title=''):
         skeleton = self.get_skeleton(title)
-        file = StringIO()
-        file.write(skeleton)
-        file.seek(0)
-        self.load_state_from_file(file)
+        self.load_state_from_string(skeleton)
 
 
     @classmethod

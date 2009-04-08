@@ -57,6 +57,13 @@ class HTMLFile(XHTMLFile):
         self.events = list(stream)
 
 
+    def load_state_from_string(self, string):
+        self.set_changed()
+        self.reset()
+        stream = HTMLParser(string)
+        self.events = list(stream)
+
+
     to_str = XHTMLFile.to_html
 
 

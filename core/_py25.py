@@ -34,7 +34,7 @@ def format(txt, **kw):
         if name not in kw:
             raise KeyError, "'%s'" % name
         value = kw[name]
-        return str(value)
+        return unicode(value)
 
     return expr.sub(repl, txt)
 

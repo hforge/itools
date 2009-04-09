@@ -784,7 +784,9 @@ class RequestMethod(object):
                 cls.internal_server_error(server, context)
             else:
                 # Ok: set status
-                if isinstance(context.entity, Reference):
+                if context.status is not None:
+                    pass
+                elif isinstance(context.entity, Reference):
                     context.status = 302
                 elif context.entity is None:
                     context.status = 204

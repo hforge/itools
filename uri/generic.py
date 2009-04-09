@@ -232,13 +232,25 @@ class Path(list):
 
         Very, very practical.
         """
-        if not isinstance(path, Path):
+        if type(path) is not Path:
             path = Path(path)
 
-        if path.is_absolute():
+        if path.startswith_slash:
             return path
 
-        return Path('%s/%s' % (self, path))
+        # Resolve
+        new_path = Path(self)
+        new_path.startswith_slash = self.startswith_slash
+        new_path.endswith_slash = path.startswith_slash
+        for name in path:
+            if name == '..':
+                if new_path:
+                    new_path.pop()
+                elif not new_path.startswith_slash:
+                    new_path.append(name)
+            else:
+                new_path.append(name)
+        return new_path
 
 
     def resolve_name(self, name):

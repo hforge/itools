@@ -17,21 +17,21 @@
 
 # Import from the Standard Library
 from sys import _getframe
-from types import ModuleType
 
 # Import from itools
 from itools.core import format
-from itools.handlers import Folder, RODatabase
+from itools.handlers import RODatabase
+
+
+# XXX This code does not take into account changes in the filesystem once a
+# domain has been registered/loaded.
 
 
 domains = {}
 
-database = RODatabase()
 def register_domain(name, locale_path):
     if name not in domains:
-        domain = Domain(locale_path)
-        domain.database = database
-        domains[name] = domain
+        domains[name] = Domain(locale_path)
 
 
 def get_domain(name):
@@ -39,21 +39,27 @@ def get_domain(name):
 
 
 
-# FIXME The "Folder" handler class is not meant to be a base class, we should
-# not inherit from it.  Figure out another way to do the job.
-class Domain(Folder):
+database = RODatabase()
+
+class Domain(dict):
+
+    def __init__(self, uri):
+        folder = database.get_handler(uri)
+        for key in folder.get_handler_names():
+            if key[-3:] == '.mo':
+                language = key[:-3]
+                self[language] = folder.get_handler(key)
+
 
     def gettext(self, message, language):
-        handler_name = '%s.mo' % language
-        if self.has_handler(handler_name):
-            handler = self.get_handler(handler_name)
-            return handler.gettext(message)
-        return message
+        if language not in self:
+            return message
+        handler = self[language]
+        return handler.gettext(message)
 
 
     def get_languages(self):
-        return [ x[:-3] for x in self.get_handler_names()
-                 if x.endswith('.mo') ]
+        return self.keys()
 
 
 

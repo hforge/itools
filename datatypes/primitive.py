@@ -178,6 +178,8 @@ class QName(DataType):
 
 class Tokens(DataType):
 
+    default = ()
+
     @staticmethod
     def decode(data):
         return tuple(data.split())

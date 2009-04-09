@@ -37,10 +37,10 @@ class SetupFile(ConfigFile):
         'author_email': String(default=''),
         'license': String(default=''),
         'description': String(default=''),
-        'packages': Tokens(default=()),
-        'requires': Tokens(default=()),
-        'provides': Tokens(default=()),
-        'scripts': Tokens(default=''),
+        'packages': Tokens,
+        'requires': Tokens,
+        'provides': Tokens,
+        'scripts': Tokens,
         'source_language': LanguageTag(default=('en', 'EN')),
         'target_languages': Tokens(default=(('en', 'EN'),))
     }
@@ -135,15 +135,15 @@ class PKGINFOFile(RFC822File):
 
         # Optional
         'description': String(default=''),
-        'keywords': Tokens(default=()),
+        'keywords': Tokens,
         'home-page': String(default=''),
         'author': String(default=''),
         'platform': String(default=''),
         'supported-platform': String(default=''),
-        'classifiers': Tokens(default=()),
-        'requires': Tokens(default=()),
-        'provides': Tokens(default=()),
-        'obsoletes': Tokens(default=()),
+        'classifiers': Tokens,
+        'requires': Tokens,
+        'provides': Tokens,
+        'obsoletes': Tokens,
     }
 
 

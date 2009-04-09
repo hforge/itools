@@ -858,6 +858,11 @@ class GET(RequestMethod):
 class HEAD(GET):
 
     @classmethod
+    def check_method(cls, server, context):
+        GET.check_method(server, context, method_name='GET')
+
+
+    @classmethod
     def set_body(cls, server, context):
         GET.set_body(server, context)
         # Drop the body from the response

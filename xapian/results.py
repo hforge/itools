@@ -36,8 +36,12 @@ class Doc(object):
         info = self._metadata[name]
         field_cls = _get_field_cls(name, self._fields, info)
 
+        # Get the data
+        value = info['value']
+        data = self._xdoc.get_value(value)
+
         # Multilingual field: language negotiation
-        if issubclass(field_cls, Unicode) and 'from' not in info:
+        if not data and issubclass(field_cls, Unicode) and 'from' not in info:
             prefix = '%s_' % name
             n = len(prefix)
             languages = [ k[n:] for k in self._metadata if k[:n] == prefix ]
@@ -48,8 +52,6 @@ class Doc(object):
                 return getattr(self, '%s_%s' % (name, language))
 
         # Standard (monolingual)
-        value = info['value']
-        data = self._xdoc.get_value(value)
         return _decode(field_cls, data)
 
 

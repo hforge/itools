@@ -28,6 +28,7 @@ from itools.gettext import POFile
 import itools.html
 import itools.stl
 import itools.odf
+import itools.python
 import itools.srx
 from itools.tmx import TMXFile
 from itools.xliff import XLFFile

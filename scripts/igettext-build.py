@@ -27,6 +27,7 @@ from itools.handlers import get_handler
 import itools.html
 import itools.stl
 import itools.odf
+import itools.python
 import itools.srx
 import itools.xliff
 

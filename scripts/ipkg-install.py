@@ -285,19 +285,18 @@ def install():
                                     data['version'])
 
         if origin == 'repository':
-           print "Downloading %s ..." % data['url']
-           dist_loc = download(data['url'], CACHE_DIR)
-           dist = Bundle(str(dist_loc))
+            print "Downloading %s ..." % data['url']
+            dist_loc = download(data['url'], CACHE_DIR)
+            dist = Bundle(str(dist_loc))
 
         ret = dist.install()
 
         if ret == 0:
             print "%s %s has been successfully installed" % (data['name'],
-                                                            data['version'])
+                                                             data['version'])
             continue
 
-        print "%s %s failed to install" % (data['name'],
-                                           data['version'])
+        print "%s %s failed to install" % (data['name'], data['version'])
         if ret == -1:
             print "Unable to extract files from archive"
         else:

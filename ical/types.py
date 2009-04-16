@@ -39,11 +39,11 @@ class Time(ISOTime):
 class DateTime(DataType):
     """iCalendar Date format:
 
-    DTSTART:19970714T133000.000000 (Local time)
+    DTSTART:19970714T133000.000000 (local time)
 
     DTSTART:19970714T173000Z (UTC time)
 
-    DTSTART;TZID=US-Eastern:19970714T133000 (Local time and time zone reference)
+    DTSTART;TZID=US-Eastern:19970714T133000 (local time + timezone)
     """
 
     @staticmethod
@@ -103,7 +103,7 @@ class DateTime(DataType):
         year, month, day = int(year), int(month), int(day)
         # If no time
         if not time:
-             return datetime(year, month, day)
+            return datetime(year, month, day)
         # Time
         if time.count(':') == 1:
             hours, minutes = time.split(':')

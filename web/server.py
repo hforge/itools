@@ -361,20 +361,20 @@ class Server(object):
 
 
     def stop_gracefully(self, signum, frame):
-       requests = self.requests
-       ear_fileno = self.ear_fileno
+        requests = self.requests
+        ear_fileno = self.ear_fileno
 
-       if ear_fileno not in requests:
-           return
+        if ear_fileno not in requests:
+            return
 
-       source_remove(self.ear_id)
-       self.ear.close()
-       del requests[ear_fileno]
-       print 'Shutting down the server (gracefully)...'
+        source_remove(self.ear_id)
+        self.ear.close()
+        del requests[ear_fileno]
+        print 'Shutting down the server (gracefully)...'
 
-       # Yet the end ?
-       if not requests:
-           self.main_loop.quit()
+        # Yet the end ?
+        if not requests:
+            self.main_loop.quit()
 
 
     def start(self):

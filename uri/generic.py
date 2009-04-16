@@ -144,9 +144,9 @@ class Path(list):
 
 
     def __getslice__(self, a, b):
-         slice = Path(list.__getslice__(self, a, b))
-         slice.startswith_slash = self.startswith_slash
-         return slice
+        slice = Path(list.__getslice__(self, a, b))
+        slice.startswith_slash = self.startswith_slash
+        return slice
 
 
     def __add__(self, path):

@@ -372,7 +372,7 @@ def get_form_value(form, name, type=String, default=None):
     is_blank = isinstance(value, (str, unicode)) and not value.strip()
     if is_blank:
         if is_mandatory:
-           raise FormError(missing=[name])
+            raise FormError(missing=[name])
     elif not type.is_valid(value):
         raise FormError(invalid=[name])
     return value

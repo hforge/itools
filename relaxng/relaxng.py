@@ -250,7 +250,7 @@ def read_file(context, uri, file):
             tag_uri, tag_name = value
             if (tag_uri == rng_uri and
                 tag_name in ['element', 'attribute', 'define']):
-                    stack.pop()
+                stack.pop()
 
 
 ###########################################################################

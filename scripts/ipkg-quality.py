@@ -89,14 +89,15 @@ def analyse_file_pass1(filename):
      - 'bad_end': list of lines with trailing whitespaces;
      - 'tabs': list of lines with tabulators;
     """
-
     stats = {'bad_length': [], 'bad_end': [], 'tabs': []}
 
     current_line = -1
     for current_line, line in enumerate(file(filename)):
         # Bad length (the end-of-line is included)
         # FIXME: 80 is good for '\n' or '\r' ended files, not for '\r\n'
-        if len(line) > 80:
+        # FIXME: the encoding is hard-coded, we must detect it
+        uline = unicode(line, 'utf-8')
+        if len(uline) > 80:
             stats['bad_length'].append(current_line+1)
 
         # Bad end

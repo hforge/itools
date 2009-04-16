@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: fr\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-04-01 16:04+CET\n"
-"PO-Revision-Date: 2007-12-30 23:13+0100\n"
+"PO-Revision-Date: 2009-04-16 10:18+0200\n"
 "Last-Translator: David Versmisse <david.versmisse@itaapy.com>\n"
 "Language-Team: Français <fr@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -47,19 +47,19 @@ msgstr ""
 
 #: ../pdf/pml.py:339
 msgid "(WW) CSS filename \"%s\" does not exist"
-msgstr ""
+msgstr "(WW) Fichier \"%s\" CSS inexistant"
 
 #: ../pdf/pml.py:1119
 msgid "(WW) Cannot add an image inside a td without predefined size"
-msgstr ""
+msgstr "(WW) Ne peut insérer une image au sein d'un td sans taille prédéfinie"
 
 #: ../pdf/pml.py:1115
 msgid "(WW) Filename is None"
-msgstr ""
+msgstr "(WW) Le nom du fichier est None"
 
 #: ../pdf/utils.py:235
 msgid "(WW) The filename '%s' doesn't exist"
-msgstr ""
+msgstr "(WW) Le fichier \"%s\" n'existe pas"
 
 #: ../rest/parser.py:102 ../rest/parser.py:103 ../rest/parser.py:278
 #: ../rest/parser.py:311 ../rest/parser.py:317 ../rest/parser.py:324
@@ -157,7 +157,7 @@ msgstr "Erreur, votre projet doit être versionné avec GIT"
 
 #: ../web/context.py:63
 msgid "Everything looks fine (strange)."
-msgstr ""
+msgstr "Tout paraît correct (étrange)."
 
 #: ../scripts/ipkg-quality.py:70
 msgid "Exception handling"
@@ -204,19 +204,16 @@ msgid "The option --show-lines takes one file in parameter."
 msgstr "L'option --show-lines prend un seul fichier en paramètre"
 
 #: ../web/context.py:60
-#, fuzzy
 msgid "There are {inv} field(s) invalid."
-msgstr "Il y a ${inv} champ(s) invalide(s)."
+msgstr "Il y a {inv} champ(s) invalide(s)."
 
 #: ../web/context.py:56
-#, fuzzy
 msgid "There are {miss} field(s) missing and {inv} invalid."
-msgstr "Il manque ${missing} champ(s) et ${invalid} sont invalide(s)"
+msgstr "Il manque {missing} champ(s) et {invalid} sont invalide(s)"
 
 #: ../web/context.py:58
-#, fuzzy
 msgid "There are {miss} field(s) missing."
-msgstr "Il y a ${miss} champ(s) invalide(s)."
+msgstr "Il y a {miss} champ(s) invalide(s)."
 
 #: ../scripts/ipkg-quality.py:287
 msgid "This file is perfect !"
@@ -253,9 +250,8 @@ msgid "all exceptions are catched"
 msgstr "Toutes les exceptions sont capturées"
 
 #: ../i18n/oracle.py:78
-#, fuzzy
 msgid "an"
-msgstr "et"
+msgstr "un"
 
 #: ../i18n/oracle.py:79
 msgid "and"
@@ -322,9 +318,8 @@ msgid "elles"
 msgstr ""
 
 #: ../i18n/oracle.py:94
-#, fuzzy
 msgid "es"
-msgstr "oui"
+msgstr ""
 
 #: ../i18n/oracle.py:95
 msgid "est"
@@ -364,7 +359,7 @@ msgstr ""
 
 #: ../pdf/utils.py:253
 msgid "image not valid : %s"
-msgstr ""
+msgstr "image %s non valide"
 
 #: ../i18n/oracle.py:104
 msgid "in"
@@ -499,10 +494,11 @@ msgid "the"
 msgstr ""
 
 #: ../csv/table.py:286
-#, fuzzy
 msgid ""
 "the \"{field}\" field must be unique, the \"{value}\" value is  already used."
-msgstr "Erreur: le champ %s doit être unique, la valeur %s est déjà utilisée"
+msgstr ""
+"le champ \"{field}\" doit être unique, la valeur \"{value}\" est déjà "
+"utilisée"
 
 #: ../i18n/oracle.py:132
 msgid "their"

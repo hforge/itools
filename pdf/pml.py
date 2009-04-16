@@ -341,11 +341,14 @@ class Context(object):
             print u'(WW) CSS filename "%s" does not exist' % filename
 
 
-    def get_css_props(self):
+    def get_css_props(self, suffix=''):
+        """Return the CSS properties corresponding to the current path"""
         if self.css is None:
             return {}
         else:
             path = ' '.join(self.current_object_path)
+            if suffix:
+                path = '%s %s' % (path, suffix)
             return self.css.get_properties_str(path)
 
 
@@ -1012,7 +1015,46 @@ def tr_stream(stream, _tag_name, attributes, table, context):
             if tag_name in ('td', 'th'):
                 context.path_on_start_event(tag_name, attributes)
                 style_css = context.get_css_props()
+                # Check overflow
+                overflow = style_css.get('overflow-y', None)
+                if overflow:
+                    # We get the PTO style now because paragraph_stream
+                    # will modify the css state
+                    pto_trailer_css = context.get_css_props('.pto-trailer')
+                    pto_header_css = context.get_css_props('.pto-header')
+
+                # Build story
                 cont = paragraph_stream(stream, tag_name, attributes, context)
+
+                if overflow:
+                    # Wrap the cell content inside a Div using overflow-y=hidden
+                    # to avoid "Cell too Big"
+                    # Check if trailer and header are defined
+                    # FIXME This is a very dirty hack
+                    # To improve
+
+                    pto_trailer_txt = pto_trailer_css.get('overflow-y-trailer-txt',
+                                                          None)
+                    pto_header_txt = pto_header_css.get('overflow-y-header-txt',
+                                                        None)
+                    pto_trailer = None
+                    pto_header = None
+                    if pto_trailer_txt:
+                        pto_trailer_style, bt = build_paragraph_style(context,
+                                (None, {}), pto_trailer_css)
+                        pto_trailer = Paragraph(pto_trailer_txt,
+                                pto_trailer_style, context, bt)
+                    if pto_header_txt:
+                        pto_header_style, bt = build_paragraph_style(context,
+                                (None, {}), pto_header_css)
+                        pto_header = Paragraph(pto_header_txt,
+                                pto_header_style, context, bt)
+                    # hook attributes
+                    overflow_y = 'overflow-y:%s;' % overflow
+                    overflow_attributes = {(None, 'style'): overflow_y}
+                    cont = Div(cont, attributes=overflow_attributes,
+                               pto_trailer=pto_trailer, pto_header=pto_header)
+
                 table.push_content(cont)
                 if exist_attribute(attributes, ['width']):
                     width = attributes.get((None, 'width'))

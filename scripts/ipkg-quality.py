@@ -19,7 +19,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-isetup-quality.py is a small tool to do some measurements on Python files
+ipkg-quality.py is a small tool to do some measurements on Python files
 """
 
 # Import from the Standard Library
@@ -237,7 +237,8 @@ def print_worses(db, worse, criteria):
 
 
 def analyse(filenames):
-    """Analyse a list of files"""
+    """Analyse a list of files
+    """
     stats = {
         'lines': 0,
         'bad_length': 0,
@@ -265,7 +266,8 @@ def analyse(filenames):
 
 
 def show_lines(filenames):
-    """Show number lines of errors"""
+    """Show number lines of errors
+    """
     # We get statistics
     stats, files_db = analyse(filenames)
     # We show lines
@@ -286,7 +288,8 @@ def show_lines(filenames):
 
 
 def show_stats(filenames, worse):
-    """Show general statistics"""
+    """Show general statistics.
+    """
     # We get statistics
     stats, files_db = analyse(filenames)
     # Show quality summary
@@ -328,12 +331,13 @@ def show_stats(filenames, worse):
 
 
 def create_graph():
-    """ Create graph of code quality evolution"""
+    """Create graph of code quality evolution
+    """
     t0 = time()
     cwd = getcwd()
     project_name = cwd.split('/')[-1]
     # We copy project to tmp (for security)
-    tmp_directory = '%s/isetup_quality.git' % mkdtemp()
+    tmp_directory = '%s/ipkg_quality.git' % mkdtemp()
     call(['git', 'clone',  cwd, tmp_directory])
     chdir(tmp_directory)
     # First step: we create a list of statistics
@@ -411,7 +415,8 @@ def create_graph():
 
 
 def fix(filenames):
-    """Clean files: We remove trailing spaces & tabulators"""
+    """Clean files: We remove trailing spaces & tabulators
+    """
     for filename in filenames:
         lines = []
         for line in open(filename).readlines():

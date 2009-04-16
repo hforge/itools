@@ -31,7 +31,7 @@ from itools.vfs import exists
 def release(repository):
     # Check 'setup.py' exists
     if not exists('setup.py'):
-        print ('setup.py not found, please execute isetup-release.py from '
+        print ('setup.py not found, please execute ipkg-release.py from '
                'the package directory')
         return
 

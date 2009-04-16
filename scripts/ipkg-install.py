@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """Usage:
-isetup-install.py [options] package-spec
+ipkg-install.py [options] package-spec
 
 If the package is installed in package-spec do nothing.
 If the package is not installed, then download if available from index-url to
@@ -323,7 +323,7 @@ if __name__ == '__main__':
 
     parser.add_option("-p", "--pretend",
                   dest="pretend", default=False, action="store_true",
-                  help="Only print what isetup-install.py will do")
+                  help="Only print what ipkg-install.py will do")
 
     parser.add_option("-a", "--ask",
                   dest="ask", default=False, action="store_true",

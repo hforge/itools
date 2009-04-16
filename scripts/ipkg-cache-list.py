@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """Usage:
-isetup-cache-list.py [--cache-dir dir]
+ipkg-cache-list.py [--cache-dir dir]
 
 Lists packages in the cache.
 """

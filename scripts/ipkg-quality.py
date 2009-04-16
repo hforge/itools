@@ -28,12 +28,11 @@ from glob import glob
 from optparse import OptionParser
 from os import getcwd, chdir
 from subprocess import call
-import sys
-from tempfile import TemporaryFile, mkdtemp
+from sys import exit, stdout
+from tempfile import mkdtemp
 from time import time
 from token import tok_name
 from tokenize import generate_tokens, TokenError
-from types import ListType
 
 # Import from Matplotlib
 create_graph_is_available = True
@@ -47,9 +46,8 @@ except ImportError:
 
 # Import from itools
 import itools
-from itools.core import get_abspath, merge_dicts
+from itools.core import merge_dicts
 from itools import git, vfs
-from itools.datatypes import Unicode, Integer, DateTime
 
 
 # Define list of problems
@@ -257,7 +255,7 @@ def analyse(filenames):
         f_stats = analyse_file(filename)
         if f_stats['lines'] != 0:
             for key, value in f_stats.iteritems():
-                if type(value) == ListType:
+                if type(value) is list:
                     stats[key] += len(value)
                 else:
                     stats[key] += value
@@ -332,11 +330,11 @@ def show_stats(filenames, worse):
 def create_graph():
     """ Create graph of code quality evolution"""
     t0 = time()
-    project_name = getcwd().split('/')[-1]
+    cwd = getcwd()
+    project_name = cwd.split('/')[-1]
     # We copy project to tmp (for security)
-    current_directory = getcwd()
     tmp_directory = '%s/isetup_quality.git' % mkdtemp()
-    call(['git', 'clone',  current_directory, tmp_directory])
+    call(['git', 'clone',  cwd, tmp_directory])
     chdir(tmp_directory)
     # First step: we create a list of statistics
     statistics = {}
@@ -347,8 +345,8 @@ def create_graph():
         # We move to a given commit
         call(['git', 'reset', '--hard', commit_id])
         # Print script evolution
-        sys.stdout.write('.')
-        sys.stdout.flush()
+        stdout.write('.')
+        stdout.flush()
         # We list files
         filenames = git.get_filenames()
         filenames = [ x for x in filenames if x.endswith('.py') ]
@@ -374,7 +372,7 @@ def create_graph():
     # Base graph informations
     base_title = '[%s %s]' % (project_name, git.get_branch_name())
     # We generate graphs
-    chdir(current_directory)
+    chdir(cwd)
     for problem_dict in ['code_length', 'aesthetics_problems',
                          'exception_problems', 'import_problems']:
         current_problems = eval(problem_dict)
@@ -501,12 +499,12 @@ if __name__ == '__main__':
         if not create_graph_is_available:
             parser.error(u'Please install matplotlib.')
         create_graph()
-        sys.exit()
+        exit()
 
     # Show Lines
     if options.show_lines:
         show_lines(filenames)
-        sys.exit()
+        exit()
 
     # Analyse
     show_stats(filenames, options.worse)

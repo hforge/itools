@@ -23,7 +23,7 @@ from utils import reportlab_value
 from style import attribute_style_to_dict
 
 # Import from reportlab
-from reportlab.platypus import KeepInFrame
+from reportlab.platypus import KeepInFrame, PTOContainer
 from reportlab.platypus import Paragraph as BaseParagraph
 from reportlab.platypus.flowables import Flowable
 from reportlab.platypus.frames import Frame, ShowBoundaryValue
@@ -52,23 +52,24 @@ class Paragraph(BaseParagraph):
                 # restore
                 self.frags[0].text = self.save_before_change
 
-            page_num = self.context.pagenumber
-            is_pagetotal = (
-                    not self.frags[0].text.find(self.context.pagetotal) < 0)
-            is_pagenumber = not self.frags[0].text.find(page_num) < 0
-            if is_pagenumber or is_pagetotal:
-                if self.save_before_change is None:
-                    # save
-                    self.save_before_change = self.frags[0].text
-                if is_pagenumber:
-                    page = str(self.context.current_page)
-                    self.frags[0].text = self.frags[0].text.replace(page_num,
-                                                                    page)
-                if is_pagetotal:
-                    pages = str(self.context.number_of_pages)
-                    self.frags[0].text = (
-                      self.frags[0].text.replace(self.context.pagetotal,
-                                                 pages))
+            if self.context:
+                page_num = self.context.pagenumber
+                is_pagetotal = (
+                        not self.frags[0].text.find(self.context.pagetotal) < 0)
+                is_pagenumber = not self.frags[0].text.find(page_num) < 0
+                if is_pagenumber or is_pagetotal:
+                    if self.save_before_change is None:
+                        # save
+                        self.save_before_change = self.frags[0].text
+                    if is_pagenumber:
+                        page = str(self.context.current_page)
+                        self.frags[0].text = self.frags[0].text.replace(page_num,
+                                                                        page)
+                    if is_pagetotal:
+                        pages = str(self.context.number_of_pages)
+                        self.frags[0].text = (
+                          self.frags[0].text.replace(self.context.pagetotal,
+                                                     pages))
 
         width = getattr(self.style, 'width', None)
         if width is not None:
@@ -81,15 +82,18 @@ class Paragraph(BaseParagraph):
 class Div(Flowable):
 
     def __init__(self, story, height=None, width=None, pos_x=None, pos_y=None,
-                 frame_attrs=freeze({}), attributes=freeze({})):
+                 frame_attrs=freeze({}), attributes=freeze({}), pto_trailer=None,
+                 pto_header=None):
         Flowable.__init__(self)
         # get on story
         self.div_story = story
-
         # set frame style
         self.frame_attrs = {'leftPadding': 0, 'bottomPadding': 0,
                            'rightPadding': 0, 'topPadding': 0,
                            'showBoundary': 0}
+        # PTO initialisation
+        self.pto_trailer = pto_trailer
+        self.pto_header = pto_header
 
         if frame_attrs is not None:
             self.frame_attrs.update(frame_attrs)
@@ -112,9 +116,6 @@ class Div(Flowable):
         self.keep_in_frame = None
         style = attribute_style_to_dict(attributes.get((None, 'style'), ''))
         self.overflow = style.get('overflow-y', None)
-        # fallback attribute
-        if self.overflow is None:
-            self.overflow = attributes.get(('overflow-y'), None)
         if self.overflow == 'hidden':
             self.overflow = 'truncate'
         else:
@@ -124,6 +125,8 @@ class Div(Flowable):
     def draw(self):
         # set position for the frame
         self.pos_x, self.pos_y = self._get_current_position(self.canv)
+        # XXX This is false, height=drawHeigh and drawHeight should take into
+        # account the frame padding
         height = (self.drawHeight + self.frame_attrs['leftPadding'] +
                   self.frame_attrs['rightPadding'])
         width = (self.drawWidth + self.frame_attrs['topPadding'] +
@@ -132,7 +135,33 @@ class Div(Flowable):
         self.frame = Frame(self.pos_x, self.pos_y, width, height,
                            **self.frame_attrs)
         if self.overflow:
-            self.frame.addFromList([self.keep_in_frame], self.canv)
+            # Hack, We lie by setting the new created frame as default frame
+            # of the doc template
+            # To avoid problems when calling keep_in_frame.wrap
+            # See platypus.flowables "def _listWrapOn"
+            _doctemplate = self.canv._doctemplate
+            # save state
+            current_frame = getattr(_doctemplate, 'frame', None)
+            _doctemplate.frame = self.frame
+
+            # Check if PTO is defined
+            if self.pto_trailer or self.pto_header:
+                ptocontainer = PTOContainer(self.div_story[:],
+                                            self.pto_trailer, self.pto_header)
+                ptocontainer.canv = self.canv
+                pto_size = ptocontainer.wrap(self.drawWidth, self.drawHeight)
+                # XXX Round the height to avoid problems with decimal
+                if int(pto_size[1]) > int(self.drawHeight):
+                    pto_story = ptocontainer.split(self.drawWidth,
+                                                   self.drawHeight)
+                    self.frame.addFromList(pto_story, self.canv)
+                else:
+                    self.frame.addFromList([self.keep_in_frame], self.canv)
+            else:
+                self.frame.addFromList([self.keep_in_frame], self.canv)
+            # restore state
+            if current_frame:
+                _doctemplate.frame = current_frame
         else:
             self.frame.addFromList(self.div_story[:], self.canv)
 
@@ -148,15 +177,46 @@ class Div(Flowable):
                     width, height = self._get_real_size(availWidth)
                 else:
                     width, height = availWidth, availHeight
+
+                # Dirty hack, get the current frame height and use it
+                # if height is too small
+                main_frame_height = self._get_main_frame_height(availHeight,
+                                                                0.8)
+                if height == -1e-06:
+                    height = main_frame_height
+                else:
+                    height = min(height, main_frame_height)
+
                 self.keep_in_frame = KeepInFrame(width, height,
                                                  self.div_story[:],
                                                  mode=self.overflow)
             else:
                 width, height = availWidth, availHeight
+                # FIXME Usefull ?
+                # Dirty hack, get the current frame height and use it
+                # if height is too small
+                main_frame_height = self._get_main_frame_height(availHeight,
+                                                                0.8)
+                if height == -1e-06:
+                    height = main_frame_height
+                else:
+                    height = min(height, main_frame_height)
 
             # Set the canva
             self.keep_in_frame.canv = canv
+
+            # Hack, We remove the attribute _doctemplate of the canv
+            # To avoid problems when calling keep_in_frame.wrap
+            # See platypus.flowables "def _listWrapOn"
+            if hasattr(canv, '_doctemplate'):
+                _doctemplate = canv._doctemplate
+                # Remove _doctemplate
+                canv._doctemplate = None
             w, h = self.keep_in_frame.wrap(width, height)
+            if hasattr(canv, '_doctemplate'):
+                # Restore _doctemplate
+                canv._doctemplate = _doctemplate
+
             self.drawWidth, self.drawHeight = w, h
         else:
             width, height = self._get_real_size(availWidth)
@@ -216,3 +276,10 @@ class Div(Flowable):
 
     def _get_current_absolute_position(self, canv):
         return canv.absolutePosition(canv._x, canv._y)
+
+
+    def _get_main_frame_height(self, default, ratio=0.9):
+        if self.canv is None:
+            return default
+        value = self.canv._doctemplate.main_frame_attr.get('height', default)
+        return value * ratio

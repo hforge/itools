@@ -25,7 +25,8 @@ from sys import getrefcount
 
 # Import from itools
 from itools.core import LRUCache
-from itools.git import start_git_process, GIT_STOP, GIT_REVISIONS, GIT_DIFF
+from itools.git import start_git_process
+from itools.git import GIT_CALL, GIT_STOP, GIT_REVISIONS, GIT_DIFF
 from itools.uri import get_reference, get_uri_name, get_uri_path, resolve_uri2
 from itools import vfs
 from itools.vfs import cwd, READ, WRITE, READ_WRITE, APPEND
@@ -662,9 +663,9 @@ class GitDatabase(RWDatabase):
 
     def _rollback(self):
         command = ['git', 'checkout', '-f']
-        call(command, cwd=self.path)
+        self.git_send(GIT_CALL, command)
         command = ['git', 'clean', '-fxdq']
-        call(command, cwd=self.path)
+        self.git_send(GIT_CALL, command)
 
 
     def _save_changes(self, data):
@@ -678,7 +679,7 @@ class GitDatabase(RWDatabase):
         git_files = [ x for x in git_files if vfs.exists(x) ]
         if git_files:
             command = ['git', 'add'] + git_files
-            call(command, cwd=self.path)
+            self.git_send(GIT_CALL, command)
 
         # Commit
         command = ['git', 'commit', '-aq']
@@ -687,7 +688,7 @@ class GitDatabase(RWDatabase):
         else:
             git_author, git_message = data
             command.extend(['--author=%s' % git_author, '-m', git_message])
-        call(command, cwd=self.path, stdout=PIPE)
+        self.git_send(GIT_CALL, command)
 
 
     #######################################################################
@@ -702,18 +703,21 @@ class GitDatabase(RWDatabase):
         self.git_pipe = start_git_process(self.path)
 
 
+    def git_send(self, command, data):
+        self.git_pipe.send((command, data))
+        return self.git_pipe.recv()
+
+
     def git_stop(self):
-        self.git_pipe.send((GIT_STOP, None))
+        self.git_send(GIT_STOP, None)
 
 
     def get_revisions_metadata(self, files):
-        self.git_pipe.send((GIT_REVISIONS, files))
-        return self.git_pipe.recv()
+        return self.git_send(GIT_REVISIONS, files)
 
 
     def get_diff(self, revision):
-        self.git_pipe.send((GIT_DIFF, revision))
-        return self.git_pipe.recv()
+        return self.git_send(GIT_DIFF, revision)
 
 
 

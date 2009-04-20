@@ -16,6 +16,7 @@
 
 # Import from the Standard Library
 from multiprocessing import Process, Pipe
+from subprocess import call, PIPE
 
 # Import from itools
 from git import get_diff, get_revisions_metadata
@@ -23,8 +24,9 @@ from git import get_diff, get_revisions_metadata
 
 # The git process
 GIT_STOP = 0
-GIT_REVISIONS = 1
-GIT_DIFF = 2
+GIT_CALL = 1
+GIT_REVISIONS = 2
+GIT_DIFF = 3
 
 
 def start_git_process(path):
@@ -48,11 +50,15 @@ def git_process(cwd, conn):
         # Recv
         command, data = conn.recv()
         # Action
-        if command == GIT_REVISIONS:
+        # FIXME Error handling
+        if command == GIT_CALL:
+            results = call(data, cwd=cwd, stdout=PIPE, stderr=PIPE)
+        elif command == GIT_REVISIONS:
             results = get_revisions_metadata(data, cwd=cwd)
         elif command == GIT_DIFF:
             results = get_diff(data, cwd=cwd)
         elif command == GIT_STOP:
+            conn.send(None)
             break
         else:
             results = None

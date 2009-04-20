@@ -24,7 +24,7 @@ line utilities have been replaced by libraries; for instance,  now we
 use 'xlrd' [2] instead of 'xlhtml' [3] to extract text from Excel files.
 
 Indexing text is also much faster now that itools.xapian uses the native
-Xapian [4] tokenizer.  Except for Japanase and Chinese, which still use
+Xapian [4] tokenizer.  Except for Japanese and Chinese, which still use
 the itools tokenizer.
 
 The filesystem database, from itools.handlers, has been much improved:

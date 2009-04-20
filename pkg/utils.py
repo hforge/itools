@@ -159,9 +159,8 @@ def setup(ext_modules=freeze([])):
                package_dir = {package_name: ''},
                packages = packages,
                package_data = package_data,
-               # Requires
+               # Requires / Provides
                requires = config.get_value('requires'),
-               # Provides
                provides = config.get_value('provides'),
                # Scripts
                scripts = scripts,

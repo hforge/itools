@@ -144,6 +144,7 @@ def setup(ext_modules=freeze([])):
     # and "register" don't likes normal strings).
     if 'register' in argv or 'iregister' in argv:
         author_name = unicode(author_name, 'utf-8')
+    classifiers = [ x for x in config.get_value('classifiers') if x ]
     core.setup(name = package_name,
                version = version,
                # Metadata
@@ -153,7 +154,7 @@ def setup(ext_modules=freeze([])):
                url = config.get_value('url'),
                description = config.get_value('title'),
                long_description = config.get_value('description'),
-               classifiers = config.get_value('classifiers'),
+               classifiers = classifiers,
                # Packages
                package_dir = {package_name: ''},
                packages = packages,

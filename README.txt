@@ -37,7 +37,7 @@ reportlab       2.3  itools.pdf       http://www.reportlab.org/
 xapian        1.0.8  itools.xapian    http://www.xapian.org/
 pywin32         212  (Windows)        http://sf.net/projects/pywin32/
 PIL           1.1.6  itools.handlers  http://www.pythonware.com/products/pil/
-matplotlib      XXX  ipkg-quality.py  XXX
+matplotlib     0.91  ipkg-quality.py  http://matplotlib.sourceforge.net/
 
 Note: you will find packages like pkg-config and glib compiled for Windows
 on http://ftp.gnome.org/pub/gnome/binaries/win32/ (don't forget to check

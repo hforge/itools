@@ -29,7 +29,7 @@ Requirements
 
 Software    Version  Used by          Home
 ----------  -------  ---------------  ----------------------------------------
-Python        2.5.2  itools           http://www.python.org/
+Python          2.6  itools           http://www.python.org/
 pkg-config     0.23  itools           http://pkg-config.freedesktop.org/
 glib           2.16  itools.vfs       http://www.gtk.org/
 pygobject    2.16.1  itools.vfs       http://www.pygtk.org/

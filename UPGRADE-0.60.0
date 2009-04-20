@@ -8,7 +8,8 @@ find.
 New Dependencies
 ================
 
-For compiling C modules, you need pkg-config (tested with version 0.23).
+Now Python 2.6 is required.  For compiling the C extensions, you need
+pkg-config (tested with version 0.23).
 
 For indexing office documents, you need libraries and Python packages. See
 README.txt for details.
@@ -103,9 +104,6 @@ Now itools.gettext uses the new formatted strings introduced in Python 2.6:
 
   # Now
   MSG('hello {name}')
-
-Note that this works even on Python 2.5, since itools includes a partial
-implementation for it.
 
 
 itools.git

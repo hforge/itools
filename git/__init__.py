@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
+from daemon import start_git_process, GIT_STOP, GIT_REVISIONS, GIT_DIFF
 from git import is_available, get_filenames, get_metadata, get_branch_name
 from git import get_revisions, get_tag_names, get_diff
 from git import get_revisions_metadata
@@ -30,4 +31,9 @@ __all__ = [
     'get_revisions_metadata',
     'get_tag_names',
     'is_available',
+    # Sub-process
+    'start_git_daemon',
+    'GIT_STOP',
+    'GIT_REVISIONS',
+    'GIT_DIFF',
     ]

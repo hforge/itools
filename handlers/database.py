@@ -25,6 +25,7 @@ from sys import getrefcount
 
 # Import from itools
 from itools.core import LRUCache
+from itools.git import start_git_process, GIT_STOP, GIT_REVISIONS, GIT_DIFF
 from itools.uri import get_reference, get_uri_name, get_uri_path, resolve_uri2
 from itools import vfs
 from itools.vfs import cwd, READ, WRITE, READ_WRITE, APPEND
@@ -687,6 +688,32 @@ class GitDatabase(RWDatabase):
             git_author, git_message = data
             command.extend(['--author=%s' % git_author, '-m', git_message])
         call(command, cwd=self.path, stdout=PIPE)
+
+
+    #######################################################################
+    # Git API
+    #######################################################################
+    def git_start(self):
+        """This methods starts another process that will be used to make
+        questions to git.  This is done so because we fork to call the git
+        commands, and using an specific process for this purpose minimizes
+        memory usage.
+        """
+        self.git_pipe = start_git_process(self.path)
+
+
+    def git_stop(self):
+        self.git_pipe.send((GIT_STOP, None))
+
+
+    def get_revisions_metadata(self, files):
+        self.git_pipe.send((GIT_REVISIONS, files))
+        return self.git_pipe.recv()
+
+
+    def get_diff(self, revision):
+        self.git_pipe.send((GIT_DIFF, revision))
+        return self.git_pipe.recv()
 
 
 

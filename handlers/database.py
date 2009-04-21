@@ -629,10 +629,10 @@ class RWDatabase(RODatabase):
 ###########################################################################
 # The Git Database
 ###########################################################################
-class GitDatabase(RWDatabase):
+class ROGitDatabase(RODatabase):
 
-    def __init__(self, path, cache_size):
-        RWDatabase.__init__(self, cache_size)
+    def __init__(self, path, cache_size=5000):
+        RODatabase.__init__(self, cache_size)
         uri = cwd.get_uri(path)
         uri = get_reference(uri)
         if uri.scheme != 'file':
@@ -640,6 +640,40 @@ class GitDatabase(RWDatabase):
         self.path = str(uri.path)
         if self.path[-1] != '/':
             self.path += '/'
+
+
+    def git_start(self):
+        """This methods starts another process that will be used to make
+        questions to git.  This is done so because we fork to call the git
+        commands, and using an specific process for this purpose minimizes
+        memory usage.
+        """
+        self.git_pipe = start_git_process(self.path)
+
+
+    def git_send(self, command, data):
+        self.git_pipe.send((command, data))
+        return self.git_pipe.recv()
+
+
+    def git_stop(self):
+        self.git_send(GIT_STOP, None)
+
+
+    def get_revisions_metadata(self, files):
+        return self.git_send(GIT_REVISIONS, files)
+
+
+    def get_diff(self, revision):
+        return self.git_send(GIT_DIFF, revision)
+
+
+
+class GitDatabase(RWDatabase, ROGitDatabase):
+
+    def __init__(self, path, cache_size):
+        RWDatabase.__init__(self, cache_size)
+        ROGitDatabase.__init__(self, path, cache_size)
 
 
     def _resolve_reference_for_writing(self, reference):
@@ -689,35 +723,6 @@ class GitDatabase(RWDatabase):
             git_author, git_message = data
             command.extend(['--author=%s' % git_author, '-m', git_message])
         self.git_send(GIT_CALL, command)
-
-
-    #######################################################################
-    # Git API
-    #######################################################################
-    def git_start(self):
-        """This methods starts another process that will be used to make
-        questions to git.  This is done so because we fork to call the git
-        commands, and using an specific process for this purpose minimizes
-        memory usage.
-        """
-        self.git_pipe = start_git_process(self.path)
-
-
-    def git_send(self, command, data):
-        self.git_pipe.send((command, data))
-        return self.git_pipe.recv()
-
-
-    def git_stop(self):
-        self.git_send(GIT_STOP, None)
-
-
-    def get_revisions_metadata(self, files):
-        return self.git_send(GIT_REVISIONS, files)
-
-
-    def get_diff(self, revision):
-        return self.git_send(GIT_DIFF, revision)
 
 
 

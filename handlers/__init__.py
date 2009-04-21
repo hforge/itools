@@ -40,8 +40,8 @@ from image import Image
 from registry import register_handler_class, get_handler_class_by_mimetype
 from registry import get_handler_class, get_handler
 from text import TextFile, guess_encoding
-from database import BaseDatabase, RODatabase, RWDatabase, GitDatabase
-from database import make_git_database
+from database import BaseDatabase, RODatabase, RWDatabase
+from database import ROGitDatabase, GitDatabase, make_git_database
 from utils import checkid
 
 
@@ -65,6 +65,7 @@ __all__ = [
     'BaseDatabase',
     'RODatabase',
     'RWDatabase',
+    'ROGitDatabase',
     'GitDatabase',
     'make_git_database',
     # Registry

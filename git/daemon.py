@@ -16,6 +16,7 @@
 
 # Import from the Standard Library
 from multiprocessing import Process, Pipe
+from signal import signal, SIGINT, SIG_IGN
 from subprocess import call, PIPE
 
 # Import from itools
@@ -46,6 +47,7 @@ def start_git_process(path):
 
 
 def git_process(cwd, conn):
+    signal(SIGINT, SIG_IGN)
     while conn.poll(None):
         # Recv
         command, data = conn.recv()

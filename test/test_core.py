@@ -19,49 +19,8 @@ from string import lowercase
 from unittest import TestCase, main
 
 # Import from itools
-from itools.core import format
 from itools.core import freeze, frozenlist, frozendict
 from itools.core import LRUCache
-
-
-###########################################################################
-# Format
-###########################################################################
-
-class FormatTestCase(TestCase):
-    """Tests the Python 2.5 pseudo-implementation of the 'str.format' method.
-    """
-
-    def test_format_single(self):
-        test_in = '{name}'
-        kw = {'name': 'toto'}
-        test_out = 'toto'
-        self.assertEqual(format(test_in, **kw), test_out)
-
-
-    def test_format_simple(self):
-        test_in = 'hello {name}'
-        kw = {'name': 'toto'}
-        test_out = 'hello toto'
-        self.assertEqual(format(test_in, **kw), test_out)
-
-
-    def test_format_double(self):
-        test_in = 'hello {cat} & {mouse}'
-        kw = {'cat': 'tom', 'mouse': 'jerry'}
-        test_out = 'hello tom & jerry'
-        self.assertEqual(format(test_in, **kw), test_out)
-
-
-    def test_format_error_zero(self):
-        test_in = 'error {}'
-        self.assertRaises(ValueError, format, test_in)
-
-
-    def test_format_error_key(self):
-        test_in = 'error {name}'
-        self.assertRaises(KeyError, format, test_in)
-
 
 
 ###########################################################################

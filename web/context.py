@@ -47,6 +47,8 @@ class FormError(StandardError):
     def get_message(self):
         # Custom message
         if self.msg is not None:
+            if isinstance(self.msg, MSG):
+                return self.msg
             return ERROR(self.msg)
         # Default message
         missing = len(self.missing)

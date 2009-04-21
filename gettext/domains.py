@@ -19,7 +19,6 @@
 from sys import _getframe
 
 # Import from itools
-from itools.core import format
 from itools.handlers import RODatabase
 
 
@@ -95,6 +94,6 @@ class MSG(object):
 
         # Interpolation
         if kw:
-            return format(message, **kw)
+            return message.format(**kw)
 
         return message

@@ -15,26 +15,20 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from sys import platform, version_info
+from sys import platform
 
 # Import from itools
 from cache import LRUCache
 from freeze import freeze, frozendict, frozenlist
 from mimetypes_ import add_type, guess_all_extensions, guess_extension
 from mimetypes_ import guess_type, has_encoding, has_extension
-from utils import get_abspath, merge_dicts, get_pipe, get_version
+from utils import get_abspath, merge_dicts, get_sizeof, get_pipe, get_version
 
 
 if platform[:3] == 'win':
     from _win import become_daemon, fork, get_time_spent, vmsize
 else:
     from _unix import become_daemon, fork, get_time_spent, vmsize
-
-
-if version_info[0] == 2 and version_info[1] == 5:
-    from _py25 import format, get_sizeof
-else:
-    from _py26 import format, get_sizeof
 
 
 
@@ -56,14 +50,12 @@ __all__ = [
     'get_abspath',
     'get_version',
     'merge_dicts',
+    'get_sizeof',
     'get_pipe',
     # System specific functions
     'become_daemon',
     'fork',
     'get_time_spent',
     'vmsize',
-    # Python specific functions
-    'get_sizeof',
-    'format',
    ]
 

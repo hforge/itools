@@ -363,9 +363,11 @@ class GitDatabaseTestCase(TestCase):
         root = get_handler('fables')
         root.database = database
         self.root = root
+        self.database.git_start()
 
 
     def tearDown(self):
+        self.database.git_stop()
         for name in ['fables/31.txt', 'fables/agenda', 'fables/.git']:
             if vfs.exists(name):
                 vfs.remove(name)

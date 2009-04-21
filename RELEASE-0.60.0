@@ -50,7 +50,7 @@ The code has been re-arranged a little:
   from itools.handlers, itools.xmlfile from itools.xml and itools.office
   from itools.xml
 
-The implementation of RML [6] has been removed, now we promote PML [7]
+The implementation of RML [6] has been removed, now we promote PML
 instead.
 
 See the README file for details on the updated requirements to install
@@ -63,7 +63,6 @@ changed.
 [4] http://www.xapian.org
 [5] http://git-scm.com/
 [6] http://www.reportlab.com/docs/RML_UserGuide_1_0.pdf
-[7] http://www.reportlab.com/docs/RML_UserGuide_1_0.pdf
 
 
 Resources

@@ -355,7 +355,7 @@ class Server(object):
 
         # The end ??
         if not requests:
-            self.mainloop.quit()
+            self.stop()
 
         return True
 
@@ -374,7 +374,7 @@ class Server(object):
 
         # Yet the end ?
         if not requests:
-            self.main_loop.quit()
+            self.stop()
 
 
     def start(self):
@@ -413,6 +413,10 @@ class Server(object):
         # Remove pid file
         if self.pid_file is not None:
             remove_file(self.pid_file)
+
+
+    def stop(self):
+        self.main_loop.quit()
 
 
     ########################################################################

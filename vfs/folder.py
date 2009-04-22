@@ -158,9 +158,21 @@ class Folder(object):
     def _get_g_file(self, uri):
         if type(uri) is not str:
             raise TypeError, 'unexpected "%s"' % repr(uri)
+
+        # Your folder is None => new File
         if self._folder is None:
             return File(uri)
 
+        # Your folder is not None, we must resolve the uri
+        scheme, authority, path, query, fragment = urlsplit(uri)
+
+        # A scheme or an authority => new File
+        # XXX This is not truly exact:
+        #     we can have a scheme and a relative path.
+        if scheme or authority:
+            return File(uri)
+
+        # Else we resolve the path
         return self._folder.resolve_relative_path(uri)
 
 
@@ -350,5 +362,12 @@ class Folder(object):
     def get_uri(self, reference='.'):
         g_file = self._get_g_file(reference)
         return g_file.get_uri()
+
+
+    def get_relative_path(self, uri):
+        g_file = self._get_g_file(uri)
+        if self._folder is None:
+            return g_file.get_path()
+        return self._folder.get_relative_path(g_file)
 
 

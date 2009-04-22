@@ -31,7 +31,7 @@ from subprocess import call
 from sys import exit, stdout
 from tempfile import mkdtemp
 from time import time
-from token import tok_name
+from tokenize import COMMENT, DEDENT, INDENT, NAME, NEWLINE, NL, OP, STRING
 from tokenize import generate_tokens, TokenError
 
 # Import from Matplotlib
@@ -81,6 +81,37 @@ problems = merge_dicts(
     import_problems['keys'])
 
 
+###########################################################################
+# Plugins (by line)
+###########################################################################
+
+class LineLengthPlugin(object):
+    key = 'bad_length'
+
+    @classmethod
+    def analyse_line(self, line):
+        # FIXME 80 is good for '\n' or '\r' ended files, not for '\r\n'
+        return len(line) > 80
+
+
+class TrailingSpacePlugin(object):
+    key = 'bad_end'
+
+    @classmethod
+    def analyse_line(self, line):
+        return len(line.rstrip()) != len(line.rstrip(u'\n\x0b\x0c\r'))
+
+
+class TabsPlugin(object):
+    key = 'tabs'
+
+    @classmethod
+    def analyse_line(self, line):
+        return u'\t' in line
+
+
+line_plugins = [LineLengthPlugin, TrailingSpacePlugin, TabsPlugin]
+
 
 ###########################################################################
 # The analysis code
@@ -93,27 +124,27 @@ def analyse_file_by_lines(filename):
      - 'bad_end': list of lines with trailing whitespaces;
      - 'tabs': list of lines with tabulators;
     """
-    stats = {'bad_length': [], 'bad_end': [], 'tabs': []}
+    # Init
+    stats = {}
+    for plugin in line_plugins:
+        stats[plugin.key] = []
 
-    current_line = -1
-    for current_line, line in enumerate(file(filename)):
-        # Bad length (the end-of-line is included)
-        # FIXME: 80 is good for '\n' or '\r' ended files, not for '\r\n'
-        # FIXME: the encoding is hard-coded, we must detect it
-        uline = unicode(line, 'utf-8')
-        if len(uline) > 80:
-            stats['bad_length'].append(current_line+1)
+    # Encoding (FIXME hardcoded to UTF-8)
+    encoding = 'utf-8'
 
-        # Bad end
-        if len(line.rstrip()) != len(line.rstrip('\n\x0b\x0c\r')):
-            stats['bad_end'].append(current_line+1)
+    # Analyse
+    line_no = 0
+    for line in file(filename):
+        line = unicode(line, encoding)
+        # Plugins
+        for plugin in line_plugins:
+            if plugin.analyse_line(line):
+                stats[plugin.key].append(line_no)
+        # Next
+        line_no += 1
 
-        # Tabs ?
-        if '\t' in line:
-            stats['tabs'].append(current_line+1)
-
-    stats['lines'] = current_line+1
-
+    # Number of lines
+    stats['lines'] = line_no
     return stats
 
 
@@ -123,6 +154,7 @@ def analyse_file_by_tokens(filename):
      - 'string_exception': list of lines with string exceptions;
      - 'except_all': list of line where all exceptions are catched;
      - 'bad_indentation': list of lines with a bad indentation;
+     - 'bad_import': ;
      - 'syntax_error': list of lines with an error;
     """
     stats = {
@@ -132,70 +164,62 @@ def analyse_file_by_tokens(filename):
         'bad_indentation': [],
         'bad_import': [],
         'syntax_error': []}
+
+    srow = 0
+    last_name = ''
+    current_indentation = 0
+    header = True
+    command_on_line = False
+    import_on_line = False
+    tokens = generate_tokens(file(filename).readline)
+
     try:
-        tokens = generate_tokens(file(filename).readline)
-
-        last_name = ''
-        current_line = 0
-        current_indentation = 0
-
-        header = True
-        command_on_line = False
-        import_on_line = False
-
-        for tok_type, value, begin, _, _ in tokens:
+        for tok_type, value, (srow, scol), _, _ in tokens:
             # Tokens number
             stats['tokens'] += 1
 
-            # Find the line number
-            if begin[0] > current_line:
-                current_line = begin[0]
-
             # Find NEWLINE
-            if tok_name[tok_type] == 'NEWLINE':
+            if tok_type == NEWLINE:
                 if command_on_line and not import_on_line:
                     header = False
                 command_on_line = False
                 import_on_line = False
 
             # Find command
-            if tok_name[tok_type] not in ['COMMENT', 'STRING', 'NEWLINE',
-                                          'NL']:
+            if tok_type not in [COMMENT, STRING, NEWLINE, NL]:
                 command_on_line = True
 
             # Find import and test
-            if tok_name[tok_type] == 'NAME' and value == 'import':
+            if tok_type == NAME and value == 'import':
                 import_on_line = True
                 if not header:
-                    stats['bad_import'].append(current_line)
+                    stats['bad_import'].append(srow)
 
             # Indentation management
-            if tok_name[tok_type] == 'INDENT':
+            if tok_type == INDENT:
                 if '\t' in value or len(value) - current_indentation != 4:
-                    stats['bad_indentation'].append(current_line)
+                    stats['bad_indentation'].append(srow)
                 current_indentation = len(value)
-            if tok_name[tok_type] == 'DEDENT':
-                current_indentation = begin[1]
+            if tok_type == DEDENT:
+                current_indentation = scol
 
             # String exceptions except or raise ?
-            if ((last_name == 'except' or last_name == 'raise') and
-                tok_name[tok_type] == 'STRING'):
-                stats['string_exception'].append(current_line)
+            if tok_type == STRING and last_name in ('except', 'raise'):
+                stats['string_exception'].append(srow)
 
             # except: ?
-            if (last_name == 'except' and tok_name[tok_type] == 'OP' and
-                value == ':'):
-                stats['except_all'].append(current_line)
+            if tok_type == OP and value == ':' and last_name == 'except':
+                stats['except_all'].append(srow)
 
             # Last_name
-            if tok_name[tok_type] == 'NAME':
+            if tok_type == NAME:
                 last_name = value
             else:
                 last_name = ''
 
     # Syntax error ?
     except (TokenError, IndentationError):
-        stats['syntax_error'].append(current_line)
+        stats['syntax_error'].append(srow)
 
     return stats
 

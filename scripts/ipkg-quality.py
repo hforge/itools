@@ -82,7 +82,11 @@ problems = merge_dicts(
 
 
 
-def analyse_file_pass1(filename):
+###########################################################################
+# The analysis code
+###########################################################################
+
+def analyse_file_by_lines(filename):
     """This function analyses a file and produces a dict with these members:
      - 'lines': number of lines;
      - 'bad_length': list of lines longer than 79 characters;
@@ -113,7 +117,7 @@ def analyse_file_pass1(filename):
     return stats
 
 
-def analyse_file_pass2(filename):
+def analyse_file_by_tokens(filename):
     """This function analyses a file and produces a dict with these members:
      - 'tokens': number of tokens;
      - 'string_exception': list of lines with string exceptions;
@@ -199,12 +203,57 @@ def analyse_file_pass2(filename):
 def analyse_file(filename):
     """This function merges the two dictionaries for a file
     """
-    stats = analyse_file_pass1(filename)
-    for key, value in analyse_file_pass2(filename).iteritems():
-        stats[key] = value
+    # Pass 1
+    stats = analyse_file_by_lines(filename)
+    # Pass 2
+    stats2 = analyse_file_by_tokens(filename)
+    # Merge
+    stats.update(stats2)
 
+    # Ok
     return stats
 
+
+
+def analyse(filenames):
+    """Analyse a list of files
+    """
+    stats = {
+        'lines': 0,
+        'bad_length': 0,
+        'bad_end': 0,
+        'tabs': 0,
+        'tokens': 0,
+        'string_exception': 0,
+        'except_all': 0,
+        'bad_indentation':0,
+        'bad_import': 0,
+        'syntax_error': 0}
+
+    files_db = []
+    for filename in filenames:
+        f_stats = analyse_file(filename)
+        if f_stats['lines'] != 0:
+            for key, value in f_stats.iteritems():
+                if type(value) is list:
+                    stats[key] += len(value)
+                else:
+                    stats[key] += value
+            f_stats['filename'] = filename
+            files_db.append(f_stats)
+    return stats, files_db
+
+
+
+###########################################################################
+# The four commands:
+#
+# - show_stats
+# - show_lines
+# - fix
+# - create_graph
+#
+###########################################################################
 
 def print_list(title, string_list):
     if len(string_list) != 0:
@@ -235,35 +284,6 @@ def print_worses(db, worse, criteria):
                 print '- %s (%d)' % (f['filename'], sort_key(f))
         if not first:
             print
-
-
-def analyse(filenames):
-    """Analyse a list of files
-    """
-    stats = {
-        'lines': 0,
-        'bad_length': 0,
-        'bad_end': 0,
-        'tabs': 0,
-        'tokens': 0,
-        'string_exception': 0,
-        'except_all': 0,
-        'bad_indentation':0,
-        'bad_import': 0,
-        'syntax_error': 0}
-
-    files_db = []
-    for filename in filenames:
-        f_stats = analyse_file(filename)
-        if f_stats['lines'] != 0:
-            for key, value in f_stats.iteritems():
-                if type(value) is list:
-                    stats[key] += len(value)
-                else:
-                    stats[key] += value
-            f_stats['filename'] = filename
-            files_db.append(f_stats)
-    return stats, files_db
 
 
 def show_lines(filenames):
@@ -443,6 +463,11 @@ def fix(filenames):
         open(filename, 'w').write(''.join(lines))
 
 
+
+###########################################################################
+# The command line
+###########################################################################
+
 if __name__ == '__main__':
     # The parser
     usage = '%prog [OPTIONS] [FILES]'
@@ -489,14 +514,16 @@ if __name__ == '__main__':
                 filenames.append(str(here.uri.path.get_pathto(uri.path)))
 
     # Check options
-    if len(filenames)==0:
+    if len(filenames) == 0:
         parser.error(u'Please give at least one file to analyse.')
-    if options.worse>0 and options.show_lines==True:
-        parser.error(u'Options --worse and --show-lines are mutually exclusive.')
-    if options.show_lines==True and len(filenames)!=1:
-        parser.error(u'The option --show-lines takes one file in parameter.')
+    if options.worse > 0 and options.show_lines is True:
+        parser.error(
+            u'Options --worse and --show-lines are mutually exclusive.')
+    if options.show_lines == True and len(filenames) != 1:
+        parser.error(
+            u'The option --show-lines takes one file in parameter.')
 
-    # Export graph
+    # (1) Export graph
     if options.graph:
         # Check if GIT is available
         if not git.is_available():
@@ -505,19 +532,20 @@ if __name__ == '__main__':
         if not create_graph_is_available:
             parser.error(u'Please install matplotlib.')
         create_graph()
-        exit()
 
-    # Show Lines
-    if options.show_lines:
+    # (2) Show Lines
+    elif options.show_lines:
         show_lines(filenames)
-        exit()
 
-    # Analyse
-    show_stats(filenames, options.worse)
-
-    # Fix
-    if options.fix is True:
+    # (3) Fix
+    elif options.fix is True:
+        show_stats(filenames, options.worse)
         print 'FIXING...'
         fix(filenames)
         print 'DONE'
         show_stats(filenames, options.worse)
+
+    # (4) Analyse
+    else:
+        show_stats(filenames, options.worse)
+

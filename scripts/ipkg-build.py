@@ -18,8 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from re import compile
 from optparse import OptionParser
-from os import popen
 from os.path import islink
 from subprocess import call
 from sys import exc_info, stdout
@@ -32,7 +32,7 @@ from itools import git
 from itools.handlers import get_handler
 from itools.html import XHTMLFile
 import itools.pdf
-from itools.pkg import SetupConf, get_manifest, make_version
+from itools.pkg import SetupConf, get_files, get_manifest, make_version
 import itools.stl
 from itools.fs import lfs
 
@@ -47,6 +47,9 @@ if __name__ == '__main__':
     options, args = parser.parse_args()
     if len(args) != 0:
         parser.error('incorrect number of arguments')
+
+    # The base directory
+    base = lfs.open('.')
 
     # Try using git facilities
     git_available = git.is_available()
@@ -90,16 +93,18 @@ if __name__ == '__main__':
             message_catalogs[lang] = (get_handler(path), lfs.get_mtime(path))
 
         # Build the templates in the target languages
-        cmd = 'find -name "*.x*ml.%s"| grep -Ev "^./(build|dist|skeleton)"'
-        lines = popen(cmd % source_language).readlines()
+        # XXX The directory "skeleton" is specific to ikaaro, should not
+        # be hardcoded.
+        lines = get_files(excluded_paths=('build', 'dist', '.git',
+                                          'skeleton'),
+                          good_files=compile('.*\\.x.*ml.%s$' %
+                                             source_language))
         if lines:
             print '* Build XHTML files',
             stdout.flush()
-            # XXX The directory "skeleton" is specific to ikaaro, should not
-            # be hardcoded.
-            for path in popen(cmd % source_language).readlines():
+            for path in lines:
+                path = base.get_relative_path(path)
                 # Load the handler
-                path = path.strip()
                 src_mtime = lfs.get_mtime(path)
                 src = XHTMLFile(path)
                 done = False
@@ -110,7 +115,7 @@ if __name__ == '__main__':
                     po, po_mtime = message_catalogs[language]
                     dst = '%s.%s' % (path[:n], language)
                     # Add to the manifest
-                    manifest.append(dst[2:])
+                    manifest.append(dst)
                     # Skip the file if it is already up-to-date
                     if lfs.exists(dst):
                         dst_mtime = lfs.get_mtime(dst)

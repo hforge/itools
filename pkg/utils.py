@@ -20,11 +20,12 @@ from distutils.core import Extension
 from distutils.command.build_ext import build_ext
 from distutils.errors import LinkError
 from os.path import exists, join as join_path
-from os import popen
+from re import compile
 from sys import _getframe, argv
 
 # Import from itools
 from itools.core import freeze, get_pipe, get_version
+from itools.fs import lfs
 from itools import git
 from handlers import SetupConf
 
@@ -61,6 +62,27 @@ def make_version(cwd=None):
     timestamp = head['committer'][1]
     timestamp = timestamp.strftime('%Y%m%d%H%M')
     return '%s-%s' % (version, timestamp)
+
+
+
+def get_files(excluded_paths, good_files=None, bad_files=None):
+    base = lfs.open('.')
+    for name in base.get_names('.'):
+        if base.is_folder(name):
+            if name not in excluded_paths:
+                uris = base.traverse(name)
+            else:
+                continue
+        else:
+            uris = (base.get_uri(name), )
+        for uri in uris:
+            if lfs.is_file(uri):
+                if good_files and not good_files.match(uri):
+                    continue
+                if bad_files and bad_files.match(uri):
+                    continue
+                yield uri
+
 
 
 class OptionalExtension(Extension):
@@ -131,10 +153,12 @@ def get_manifest():
     # No git: find out source files
     config = SetupConf('setup.conf')
     target_languages = config.get_value('target_languages', default='').split()
-    cmd = (
-        'find -type f|grep -Ev "^./(build|dist)"|grep -Ev "*.(~|pyc|%s)"'
-        % '|'.join(target_languages))
-    return [ x.strip() for x in popen(cmd).readlines() ]
+
+    filenames = get_files(excluded_paths=('.git', 'build', 'dist'),
+                          bad_files=compile('.*(~|pyc|%s)$' %
+                                            '|'.join(target_languages)))
+    base = lfs.open('.')
+    return [ base.get_relative_path(x) for x in filenames ]
 
 
 

@@ -18,8 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from re import compile
 from optparse import OptionParser
-from os import popen
 from os.path import islink
 from subprocess import call
 import sys
@@ -67,6 +67,24 @@ def get_version():
     return version_name
 
 
+def get_files(excluded_paths, good_files=None, bad_files=None):
+    base = vfs.open('.')
+    for name in base.get_names('.'):
+        if base.is_folder(name):
+            if name not in excluded_paths:
+                uris = base.traverse(name)
+            else:
+                continue
+        else:
+            uris = (base.get_uri(name), )
+        for uri in uris:
+            if vfs.is_file(uri):
+                if good_files and not good_files.match(uri):
+                    continue
+                if bad_files and bad_files.match(uri):
+                    continue
+                yield uri
+
 
 if __name__ == '__main__':
     # The command line parser
@@ -77,6 +95,9 @@ if __name__ == '__main__':
     options, args = parser.parse_args()
     if len(args) != 0:
         parser.error('incorrect number of arguments')
+
+    # The base directory
+    base = vfs.open('.')
 
     # Try using git facilities
     git_available = git.is_available()
@@ -98,10 +119,11 @@ if __name__ == '__main__':
         filenames = git.get_filenames()
     else:
         # No git: find out source files
-        cmd = ('find -type f|grep -Ev "^./(build|dist)"'
-               '|grep -Ev "*.(~|pyc|%s)"' % '|'.join(target_languages))
-        filenames = [ x.strip() for x in popen(cmd).readlines() ]
-    filenames = [ x for x in filenames if not islink(x) ]
+        filenames = get_files(excluded_paths=('.git', 'build', 'dist'),
+                              bad_files=compile('.*(~|pyc|%s)$' %
+                                                '|'.join(target_languages)))
+    filenames = [ base.get_relative_path(x)
+                  for x in filenames if not islink(x) ]
     manifest.extend(filenames)
 
     # Internationalization
@@ -125,16 +147,18 @@ if __name__ == '__main__':
             message_catalogs[lang] = (get_handler(path), vfs.get_mtime(path))
 
         # Build the templates in the target languages
-        cmd = 'find -name "*.x*ml.%s"| grep -Ev "^./(build|dist|skeleton)"'
-        lines = popen(cmd % source_language).readlines()
+        # XXX The directory "skeleton" is specific to ikaaro, should not
+        # be hardcoded.
+        lines = get_files(excluded_paths=('build', 'dist', '.git',
+                                          'skeleton'),
+                          good_files=compile('.*\\.x.*ml.%s$' %
+                                             source_language))
         if lines:
             print '* Build XHTML files',
             sys.stdout.flush()
-            # XXX The directory "skeleton" is specific to ikaaro, should not
-            # be hardcoded.
-            for path in popen(cmd % source_language).readlines():
+            for path in lines:
+                path = base.get_relative_path(path)
                 # Load the handler
-                path = path.strip()
                 src_mtime = vfs.get_mtime(path)
                 src = XHTMLFile(path)
                 done = False
@@ -144,7 +168,7 @@ if __name__ == '__main__':
                     po, po_mtime = message_catalogs[language]
                     dst = '%s.%s' % (path[:n], language)
                     # Add to the manifest
-                    manifest.append(dst[2:])
+                    manifest.append(dst)
                     # Skip the file if it is already up-to-date
                     if vfs.exists(dst):
                         dst_mtime = vfs.get_mtime(dst)

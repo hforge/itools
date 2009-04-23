@@ -222,21 +222,9 @@ class RootResource(AccessControl, Resource):
     #######################################################################
     # API / Error Pages
     #######################################################################
-    def unauthorized(self, context):
-        """Called on status 401 for replacing the body by an error page."""
-        return '401 Unauthorized'
-
-
-    def forbidden(self, context):
-        """Called on status 403 for replacing the body by an error page."""
-        return '403 Forbidden'
-
-
-    def not_found(self, context):
-        """Called on status 404 for replacing the body by an error page."""
-        return '404 Not Found'
-
-
-    def internal_server_error(self, context):
-        """Called on status 500 for replacing the body by an error page."""
-        return '500 Internal Server Error'
+    # FIXME These views should be defined in the site-root
+    # FIXME Implement a default behaviour for these views.
+    unauthorized = None # 401 Unauthorized
+    forbidden = None # 403 Forbidden
+    not_found = None # 404 Not Found
+    internal_server_error = None # 500 Internal Server Error

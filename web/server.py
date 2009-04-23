@@ -731,7 +731,7 @@ class RequestMethod(object):
     @classmethod
     def handle_request(cls, server, context):
         response = context.response
-        root = context.root
+        root = context.site_root
 
         # (1) Find out the requested resource and view
         try:
@@ -902,7 +902,7 @@ class OPTIONS(RequestMethod):
     @classmethod
     def handle_request(cls, server, context):
         response = context.response
-        root = context.root
+        root = context.site_root
 
         known_methods = methods.keys()
         allowed = []

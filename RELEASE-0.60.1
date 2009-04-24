@@ -18,13 +18,13 @@ meta-package for easier development and deployment:
 Now Python 2.6 is required.
 
 New feature in itools.git, there are now facilities to start a process
-that will specialize to call Git commands, and send the data back to the
-parent process.  This is useful for applications that may take more than
-a little memory, so instead of forking a big process we fork an small
-process; this reduces the probability of a MemoryError, and saves the
-time to copy large chunks of memory.  (This is a work-around to the fact
-that Git is not yet available as a library, but the mechanism could be
-useful for anything that uses the 'subprocess' module.)
+that will specialize in calling Git commands, and send the data back to
+the parent process.  This is useful for applications that may take more
+than a little memory, so instead of forking a big process we fork an
+small process; this reduces the probability of a MemoryError, and saves
+the time to copy large chunks of memory.  (This is a work-around to the
+fact that Git is not yet available as a library, but the mechanism could
+be useful for anything that uses the 'subprocess' module.)
 
 The itools.handlers package now includes a read-only version of the Git
 database, it is named 'ROGitDatabase'.

@@ -223,6 +223,6 @@ class RootResource(AccessControl, Resource):
     unauthorized = None # 401 Unauthorized
     forbidden = None # 403 Forbidden
     not_found = None # 404 Not Found
-    method_not_allowed # 405 Method Not Allowed
+    method_not_allowed = None # 405 Method Not Allowed
     conflict = None # 409 Conflict
     internal_server_error = None # 500 Internal Server Error

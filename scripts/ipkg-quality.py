@@ -23,6 +23,7 @@ ipkg-quality.py is a small tool to do some measurements on Python files
 """
 
 # Import from the Standard Library
+from ast import parse, NodeVisitor, Str, Name
 from datetime import date
 from glob import glob
 from optparse import OptionParser
@@ -66,8 +67,9 @@ aesthetics_problems = {
 
 exception_problems = {
     'title': u'Exception handling',
-    'keys': {'string_exception': u'string exceptions are used',
-             'except_all': u'all exceptions are catched'},
+    'keys': {
+        'string_exception': u'unexpected raise or except statements',
+        'except_all': u'all exceptions are catched'},
     'pourcent': False}
 
 import_problems = {
@@ -151,22 +153,17 @@ def analyse_file_by_lines(filename):
 def analyse_file_by_tokens(filename):
     """This function analyses a file and produces a dict with these members:
      - 'tokens': number of tokens;
-     - 'string_exception': list of lines with string exceptions;
-     - 'except_all': list of line where all exceptions are catched;
      - 'bad_indentation': list of lines with a bad indentation;
      - 'bad_import': ;
      - 'syntax_error': list of lines with an error;
     """
     stats = {
         'tokens': 0,
-        'string_exception': [],
-        'except_all': [],
         'bad_indentation': [],
         'bad_import': [],
         'syntax_error': []}
 
     srow = 0
-    last_name = ''
     current_indentation = 0
     header = True
     command_on_line = False
@@ -203,25 +200,52 @@ def analyse_file_by_tokens(filename):
             if tok_type == DEDENT:
                 current_indentation = scol
 
-            # String exceptions except or raise ?
-            if tok_type == STRING and last_name in ('except', 'raise'):
-                stats['string_exception'].append(srow)
-
-            # except: ?
-            if tok_type == OP and value == ':' and last_name == 'except':
-                stats['except_all'].append(srow)
-
-            # Last_name
-            if tok_type == NAME:
-                last_name = value
-            else:
-                last_name = ''
-
     # Syntax error ?
     except (TokenError, IndentationError):
         stats['syntax_error'].append(srow)
 
     return stats
+
+
+class Visitor(NodeVisitor):
+
+    def __init__(self):
+        self.except_all = []
+        self.string_exception = []
+
+
+    def visit_ExceptHandler(self, node):
+        # except:
+        if node.type is None:
+            self.except_all.append(node.lineno)
+        # except <str>:
+        elif type(node.type) is Str:
+            self.string_exception.append(node.lineno)
+        # TODO except (<str>,):
+        # Continue
+        self.generic_visit(node)
+
+
+    def visit_Raise(self, node):
+        # unexpected raise
+        if node.type and type(node.type) is not Name:
+            self.string_exception.append(node.lineno)
+
+
+
+def analyse_file_by_ast(filename):
+    """This function analyses a file and produces a dict with these members:
+     - 'except_all': list of line where all exceptions are catched;
+     - 'string_exception': list of lines with string exceptions;
+    """
+    ast = parse(open(filename).read())
+    visitor = Visitor()
+    visitor.generic_visit(ast)
+    return {
+        'except_all': visitor.except_all,
+        'string_exception': visitor.string_exception,
+    }
+
 
 
 def analyse_file(filename):
@@ -231,8 +255,10 @@ def analyse_file(filename):
     stats = analyse_file_by_lines(filename)
     # Pass 2
     stats2 = analyse_file_by_tokens(filename)
-    # Merge
     stats.update(stats2)
+    # Pass 3
+    stats3 = analyse_file_by_ast(filename)
+    stats.update(stats3)
 
     # Ok
     return stats

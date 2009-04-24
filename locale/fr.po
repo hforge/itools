@@ -209,7 +209,7 @@ msgstr "Il y a {inv} champ(s) invalide(s)."
 
 #: ../web/context.py:56
 msgid "There are {miss} field(s) missing and {inv} invalid."
-msgstr "Il manque {missing} champ(s) et {invalid} sont invalide(s)"
+msgstr "Il manque {miss} champ(s) et {inv} sont invalide(s)"
 
 #: ../web/context.py:58
 msgid "There are {miss} field(s) missing."

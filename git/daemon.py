@@ -20,14 +20,13 @@ from signal import signal, SIGINT, SIG_IGN
 from subprocess import call, PIPE
 
 # Import from itools
-from git import get_diff, get_revisions_metadata
+from itools.core import get_pipe
 
 
 # The git process
 GIT_STOP = 0
 GIT_CALL = 1
-GIT_REVISIONS = 2
-GIT_DIFF = 3
+GIT_DATA = 2
 
 
 def start_git_process(path):
@@ -55,10 +54,8 @@ def git_process(cwd, conn):
         # FIXME Error handling
         if command == GIT_CALL:
             results = call(data, cwd=cwd, stdout=PIPE, stderr=PIPE)
-        elif command == GIT_REVISIONS:
-            results = get_revisions_metadata(data, cwd=cwd)
-        elif command == GIT_DIFF:
-            results = get_diff(data, cwd=cwd)
+        elif command == GIT_DATA:
+            results = get_pipe(data, cwd=cwd).read()
         elif command == GIT_STOP:
             conn.send(None)
             break

@@ -26,7 +26,7 @@ from sys import getrefcount
 # Import from itools
 from itools.core import LRUCache
 from itools.git import start_git_process
-from itools.git import GIT_CALL, GIT_STOP, GIT_REVISIONS, GIT_DIFF
+from itools.git import GIT_CALL, GIT_STOP, GIT_DATA
 from itools.uri import get_reference, get_uri_name, get_uri_path, resolve_uri2
 from itools import vfs
 from itools.vfs import cwd, READ, WRITE, READ_WRITE, APPEND
@@ -661,11 +661,35 @@ class ROGitDatabase(RODatabase):
 
 
     def get_revisions_metadata(self, files):
-        return self.git_send(GIT_REVISIONS, files)
+        cmd = ['git', 'rev-list', '--pretty=format:%an%n%at%n%s', 'HEAD', '--']
+        cmd = cmd + files
+        data = self.git_send(GIT_DATA, cmd)
+
+        revisions = []
+        lines = data.splitlines()
+        for idx in range(len(lines) / 4):
+            base = idx * 4
+            ts = lines[base+2]
+            revisions.append(
+                {'commit': lines[base].split()[1],
+                 'author_name': lines[base+1].rstrip(),
+                 'author_date': datetime.fromtimestamp(int(ts)),
+                 'subject': lines[base+3].rstrip()})
+
+        return revisions
 
 
     def get_diff(self, revision):
-        return self.git_send(GIT_DIFF, revision)
+        cmd = ['git', 'show', revision, '--pretty=format:%an%n%at%n%s']
+        data = self.git_send(GIT_DATA, cmd)
+        lines = data.splitlines()
+
+        ts = int(lines[1])
+        return {
+            'author_name': lines[0],
+            'author_date': datetime.fromtimestamp(ts),
+            'subject': lines[2],
+            'diff': '\n'.join(lines[2:])}
 
 
 

@@ -18,22 +18,6 @@
 from itools.core import get_abspath
 
 
-# Initializes a dictionary containing the iso 639 language codes/names
-languages = {}
-filename = get_abspath('languages.txt')
-for line in open(filename).readlines():
-    line = line.strip()
-    if line and line[0] != '#':
-        code, name = line.split(' ', 1)
-        languages[code] = name
-
-# Builds a sorted list with the languages code and name
-language_codes = languages.keys()
-language_codes.sort()
-langs = [ {'code': x, 'name': languages[x]} for x in language_codes ]
-
-
-
 def has_language(code):
     return code in languages
 
@@ -55,3 +39,28 @@ def get_language_name(code):
         return languages[code]
     return u'???'
 
+
+###########################################################################
+# Initialize the module
+###########################################################################
+
+def init_module():
+    global languages
+    global langs
+
+    # Initializes a dictionary containing the iso 639 language codes/names
+    languages = {}
+    filename = get_abspath('languages.txt')
+    for line in open(filename).readlines():
+        line = line.strip()
+        if line and line[0] != '#':
+            code, name = line.split(' ', 1)
+            languages[code] = name
+
+    # Builds a sorted list with the languages code and name
+    language_codes = languages.keys()
+    language_codes.sort()
+    langs = [ {'code': x, 'name': languages[x]} for x in language_codes ]
+
+
+init_module()

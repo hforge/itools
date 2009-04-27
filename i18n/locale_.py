@@ -22,19 +22,6 @@ Output dates and times in locale format.
 from accept import get_accept
 
 
-formats = {
-    # Date, Time, DateTime
-    'en': ('%d/%m/%Y', '%H:%M', '%d/%m/%Y %H:%M'),
-    'es': ('%d/%m/%Y', '%H.%M', '%d/%m/%Y %H.%M'),
-    'fr': ('%d/%m/%Y', '%Hh%M', '%d/%m/%Y %Hh%M'),
-    }
-
-
-
-available_languages = formats.keys()
-
-
-
 def get_format(accept):
     # By default use the computer's locale
     if accept is None:
@@ -62,4 +49,20 @@ def format_time(x, accept=None):
 def format_datetime(x, accept=None):
     format = get_format(accept)[2]
     return x.strftime(format)
+
+
+
+###########################################################################
+# Initialize the module
+###########################################################################
+
+formats = {
+    # Date, Time, DateTime
+    'en': ('%d/%m/%Y', '%H:%M', '%d/%m/%Y %H:%M'),
+    'es': ('%d/%m/%Y', '%H.%M', '%d/%m/%Y %H.%M'),
+    'fr': ('%d/%m/%Y', '%Hh%M', '%d/%m/%Y %Hh%M'),
+    }
+
+
+available_languages = formats.keys()
 

@@ -24,9 +24,7 @@ from subprocess import call, PIPE
 from sys import getrefcount
 
 # Import from itools
-from itools.core import LRUCache
-from itools.core import start_subprocess, stop_subprocess
-from itools.core import call_subprocess, read_subprocess
+from itools.core import LRUCache, call_subprocess, read_subprocess
 from itools.uri import get_reference, get_uri_name, get_uri_path, resolve_uri2
 from itools import vfs
 from itools.vfs import cwd, READ, WRITE, READ_WRITE, APPEND
@@ -640,19 +638,6 @@ class ROGitDatabase(RODatabase):
         self.path = str(uri.path)
         if self.path[-1] != '/':
             self.path += '/'
-
-
-    def git_start(self):
-        """This methods starts another process that will be used to make
-        questions to git.  This is done so because we fork to call the git
-        commands, and using an specific process for this purpose minimizes
-        memory usage.
-        """
-        start_subprocess(self.path)
-
-
-    def git_stop(self):
-        stop_subprocess()
 
 
     def get_revisions_metadata(self, files):

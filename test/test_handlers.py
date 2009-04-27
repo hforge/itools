@@ -19,6 +19,7 @@
 from unittest import TestCase, main
 
 # Import from itools
+from itools.core import start_subprocess, stop_subprocess
 from itools.csv import Table
 from itools.datatypes import Unicode
 from itools.handlers import get_handler, get_handler_class
@@ -363,11 +364,9 @@ class GitDatabaseTestCase(TestCase):
         root = get_handler('fables')
         root.database = database
         self.root = root
-        self.database.git_start()
 
 
     def tearDown(self):
-        self.database.git_stop()
         for name in ['fables/31.txt', 'fables/agenda', 'fables/.git']:
             if vfs.exists(name):
                 vfs.remove(name)
@@ -463,4 +462,8 @@ class GitDatabaseTestCase(TestCase):
 
 
 if __name__ == '__main__':
-    main()
+    start_subprocess('fables')
+    try:
+        main()
+    finally:
+        stop_subprocess()

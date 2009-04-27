@@ -26,6 +26,7 @@ CMD_READ = 1
 CMD_STOP = 2
 
 
+# FIXME Not thread safe
 pipe_to_subprocess = None
 
 
@@ -36,16 +37,19 @@ def start_subprocess(path):
     memory usage (because fork duplicates the memory).
     """
     global pipe_to_subprocess
-    # Make the pipe that will connect the parent to the sub-process
-    pipe_to_subprocess, child_pipe = Pipe()
-    # Make and start the sub-process
-    p = Process(target=subprocess, args=(path, child_pipe))
-    p.start()
+    if pipe_to_subprocess is None:
+        # Make the pipe that will connect the parent to the sub-process
+        pipe_to_subprocess, child_pipe = Pipe()
+        # Make and start the sub-process
+        p = Process(target=subprocess, args=(path, child_pipe))
+        p.start()
 
 
 def stop_subprocess():
+    global pipe_to_subprocess
     pipe_to_subprocess.send((CMD_STOP, None))
     pipe_to_subprocess.recv()
+    pipe_to_subprocess = None
 
 
 def call_subprocess(command):

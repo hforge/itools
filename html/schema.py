@@ -159,9 +159,10 @@ html_attributes = {
     'vspace': Integer,
     'width': String,
     # FIXME Not standard
-    'wrap': String,
-    'quality': String, # <embed>
+    'autocomplete': String, # <input>
     'pluginspage': String, # <embed>
+    'quality': String, # <embed>
+    'wrap': String,
     }
 
 
@@ -302,7 +303,8 @@ html_elements = [
         'vspace']),
     InputElement('input', common_attrs + focus_attrs + ['type', 'name',
         'value', 'checked', 'disabled', 'readonly', 'size', 'maxlength',
-        'src', 'alt', 'usemap', 'onselect', 'onchange', 'accept', 'align']),
+        'src', 'alt', 'usemap', 'onselect', 'onchange', 'accept', 'align',
+        'autocomplete']),
     Element('kbd', common_attrs),
     Element('label', common_attrs + ['for', 'accesskey', 'onfocus',
                                      'onblur']),

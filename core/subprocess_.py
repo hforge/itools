@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from atexit import register
 from multiprocessing import Process, Pipe
 from signal import signal, SIGINT, SIG_IGN
 from subprocess import call, Popen, PIPE
@@ -47,9 +48,9 @@ def start_subprocess(path):
 
 def stop_subprocess():
     global pipe_to_subprocess
-    pipe_to_subprocess.send((CMD_STOP, None))
-    pipe_to_subprocess.recv()
-    pipe_to_subprocess = None
+    if pipe_to_subprocess:
+        pipe_to_subprocess.send((CMD_STOP, None))
+        pipe_to_subprocess = None
 
 
 def call_subprocess(command):
@@ -80,10 +81,11 @@ def subprocess(cwd, conn):
             else:
                 results = errno, popen.stdout.read()
         elif command == CMD_STOP:
-            conn.send(None)
             break
         else:
             results = None
         # Send
         conn.send(results)
 
+
+register(stop_subprocess)

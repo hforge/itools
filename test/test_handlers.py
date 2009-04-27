@@ -19,7 +19,7 @@
 from unittest import TestCase, main
 
 # Import from itools
-from itools.core import start_subprocess, stop_subprocess
+from itools.core import start_subprocess
 from itools.csv import Table
 from itools.datatypes import Unicode
 from itools.handlers import get_handler, get_handler_class
@@ -461,9 +461,6 @@ class GitDatabaseTestCase(TestCase):
 
 
 
+start_subprocess('fables')
 if __name__ == '__main__':
-    start_subprocess('fables')
-    try:
-        main()
-    finally:
-        stop_subprocess()
+    main()

@@ -25,8 +25,7 @@ from sys import getrefcount
 
 # Import from itools
 from itools.core import LRUCache
-from itools.git import start_git_process
-from itools.git import GIT_CALL, GIT_STOP, GIT_DATA
+from itools.core import start_subprocess, CMD_CALL, CMD_READ, CMD_STOP
 from itools.uri import get_reference, get_uri_name, get_uri_path, resolve_uri2
 from itools import vfs
 from itools.vfs import cwd, READ, WRITE, READ_WRITE, APPEND
@@ -648,7 +647,7 @@ class ROGitDatabase(RODatabase):
         commands, and using an specific process for this purpose minimizes
         memory usage.
         """
-        self.git_pipe = start_git_process(self.path)
+        self.git_pipe = start_subprocess(self.path)
 
 
     def git_send(self, command, data):
@@ -657,13 +656,13 @@ class ROGitDatabase(RODatabase):
 
 
     def git_stop(self):
-        self.git_send(GIT_STOP, None)
+        self.git_send(CMD_STOP, None)
 
 
     def get_revisions_metadata(self, files):
         cmd = ['git', 'rev-list', '--pretty=format:%an%n%at%n%s', 'HEAD', '--']
         cmd = cmd + files
-        data = self.git_send(GIT_DATA, cmd)
+        errno, data = self.git_send(CMD_READ, cmd)
 
         revisions = []
         lines = data.splitlines()
@@ -681,7 +680,7 @@ class ROGitDatabase(RODatabase):
 
     def get_diff(self, revision):
         cmd = ['git', 'show', revision, '--pretty=format:%an%n%at%n%s']
-        data = self.git_send(GIT_DATA, cmd)
+        errno, data = self.git_send(CMD_READ, cmd)
         lines = data.splitlines()
 
         ts = int(lines[1])
@@ -721,9 +720,9 @@ class GitDatabase(RWDatabase, ROGitDatabase):
 
     def _rollback(self):
         command = ['git', 'checkout', '-f']
-        self.git_send(GIT_CALL, command)
+        self.git_send(CMD_CALL, command)
         command = ['git', 'clean', '-fxdq']
-        self.git_send(GIT_CALL, command)
+        self.git_send(CMD_CALL, command)
 
 
     def _save_changes(self, data):
@@ -737,7 +736,7 @@ class GitDatabase(RWDatabase, ROGitDatabase):
         git_files = [ x for x in git_files if vfs.exists(x) ]
         if git_files:
             command = ['git', 'add'] + git_files
-            self.git_send(GIT_CALL, command)
+            self.git_send(CMD_CALL, command)
 
         # Commit
         command = ['git', 'commit', '-aq']
@@ -746,7 +745,7 @@ class GitDatabase(RWDatabase, ROGitDatabase):
         else:
             git_author, git_message = data
             command.extend(['--author=%s' % git_author, '-m', git_message])
-        self.git_send(GIT_CALL, command)
+        self.git_send(CMD_CALL, command)
 
 
 

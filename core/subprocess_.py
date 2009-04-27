@@ -17,46 +17,48 @@
 # Import from the Standard Library
 from multiprocessing import Process, Pipe
 from signal import signal, SIGINT, SIG_IGN
-from subprocess import call, PIPE
-
-# Import from itools
-from itools.core import get_pipe
+from subprocess import call, Popen, PIPE
 
 
-# The git process
-GIT_STOP = 0
-GIT_CALL = 1
-GIT_DATA = 2
+# Contants.  The commands the sub-process accepts.
+CMD_CALL = 0
+CMD_READ = 1
+CMD_STOP = 2
 
 
-def start_git_process(path):
+def start_subprocess(path):
     """This methods starts another process that will be used to make
     questions to git.  This is done so because we fork to call the git
     commands, and using an specific process for this purpose minimizes
     memory usage (because fork duplicates the memory).
     """
-    # Make the pipe that will connect the parent to the git sub-process
+    # Make the pipe that will connect the parent to the sub-process
     parent_pipe, child_pipe = Pipe()
     # Make and start the sub-process
-    p = Process(target=git_process, args=(path, child_pipe))
+    p = Process(target=subprocess, args=(path, child_pipe))
     p.start()
-    # Return the pipe to the git sub-process
+    # Return the pipe to the sub-process
     return parent_pipe
 
 
 
-def git_process(cwd, conn):
+def subprocess(cwd, conn):
     signal(SIGINT, SIG_IGN)
     while conn.poll(None):
         # Recv
         command, data = conn.recv()
         # Action
         # FIXME Error handling
-        if command == GIT_CALL:
-            results = call(data, cwd=cwd, stdout=PIPE, stderr=PIPE)
-        elif command == GIT_DATA:
-            results = get_pipe(data, cwd=cwd).read()
-        elif command == GIT_STOP:
+        if command == CMD_CALL:
+            results = call(data, stdout=PIPE, stderr=PIPE, cwd=cwd)
+        elif command == CMD_READ:
+            popen = Popen(data, stdout=PIPE, stderr=PIPE, cwd=cwd)
+            errno = popen.wait()
+            if errno:
+                results = errno, popen.stderr.read()
+            else:
+                results = errno, popen.stdout.read()
+        elif command == CMD_STOP:
             conn.send(None)
             break
         else:

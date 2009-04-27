@@ -26,19 +26,36 @@ CMD_READ = 1
 CMD_STOP = 2
 
 
+pipe_to_subprocess = None
+
+
 def start_subprocess(path):
     """This methods starts another process that will be used to make
     questions to git.  This is done so because we fork to call the git
     commands, and using an specific process for this purpose minimizes
     memory usage (because fork duplicates the memory).
     """
+    global pipe_to_subprocess
     # Make the pipe that will connect the parent to the sub-process
-    parent_pipe, child_pipe = Pipe()
+    pipe_to_subprocess, child_pipe = Pipe()
     # Make and start the sub-process
     p = Process(target=subprocess, args=(path, child_pipe))
     p.start()
-    # Return the pipe to the sub-process
-    return parent_pipe
+
+
+def stop_subprocess():
+    pipe_to_subprocess.send((CMD_STOP, None))
+    pipe_to_subprocess.recv()
+
+
+def call_subprocess(command):
+    pipe_to_subprocess.send((CMD_CALL, command))
+    return pipe_to_subprocess.recv()
+
+
+def read_subprocess(command):
+    pipe_to_subprocess.send((CMD_READ, command))
+    return pipe_to_subprocess.recv()
 
 
 

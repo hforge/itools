@@ -17,8 +17,9 @@
 # Import from the Standard Library
 from atexit import register
 from multiprocessing import Process, Pipe
+from os import chdir
 from signal import signal, SIGINT, SIG_IGN
-from subprocess import call, Popen, PIPE
+from subprocess import Popen, PIPE
 
 
 # Contants.  The commands the sub-process accepts.
@@ -70,6 +71,7 @@ def read_subprocess(command):
 
 
 def subprocess(cwd, conn):
+    chdir(cwd)
     signal(SIGINT, SIG_IGN)
     while conn.poll(None):
         # Recv
@@ -77,9 +79,10 @@ def subprocess(cwd, conn):
         # Action
         # FIXME Error handling
         if command == CMD_CALL:
-            results = call(data, stdout=PIPE, stderr=PIPE, cwd=cwd)
+            popen = Popen(data, stdout=PIPE, stderr=PIPE)
+            results = popen.wait()
         elif command == CMD_READ:
-            popen = Popen(data, stdout=PIPE, stderr=PIPE, cwd=cwd)
+            popen = Popen(data, stdout=PIPE, stderr=PIPE)
             errno = popen.wait()
             if errno:
                 results = errno, popen.stderr.read()

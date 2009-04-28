@@ -641,28 +641,6 @@ class ROGitDatabase(RODatabase):
             self.path += '/'
 
 
-    def get_revisions_metadata(self, files, n=None):
-        cmd = ['git', 'rev-list', '--pretty=format:%an%n%at%n%s']
-        if n is not None:
-            cmd = cmd + ['-n', str(n)]
-        cmd = cmd + ['HEAD', '--'] + files
-        cmd = cmd + files
-        data = send_subprocess(cmd)
-
-        revisions = []
-        lines = data.splitlines()
-        for idx in range(len(lines) / 4):
-            base = idx * 4
-            ts = lines[base+2]
-            revisions.append(
-                {'commit': lines[base].split()[1],
-                 'author_name': lines[base+1].rstrip(),
-                 'author_date': datetime.fromtimestamp(int(ts)),
-                 'subject': lines[base+3].rstrip()})
-
-        return revisions
-
-
     def get_diff(self, revision):
         cmd = ['git', 'show', revision, '--pretty=format:%an%n%at%n%s']
         data = send_subprocess(cmd)

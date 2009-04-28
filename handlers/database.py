@@ -640,8 +640,11 @@ class ROGitDatabase(RODatabase):
             self.path += '/'
 
 
-    def get_revisions_metadata(self, files):
-        cmd = ['git', 'rev-list', '--pretty=format:%an%n%at%n%s', 'HEAD', '--']
+    def get_revisions_metadata(self, files, n=None):
+        cmd = ['git', 'rev-list', '--pretty=format:%an%n%at%n%s']
+        if n is not None:
+            cmd = cmd + ['-n', str(n)]
+        cmd = cmd + ['HEAD', '--'] + files
         cmd = cmd + files
         errno, data = read_subprocess(cmd)
 

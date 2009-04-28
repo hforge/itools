@@ -19,7 +19,7 @@ from atexit import register
 from multiprocessing import Process, Pipe
 from os import chdir
 from signal import signal, SIGINT, SIG_IGN
-from subprocess import Popen, PIPE
+from subprocess import Popen, PIPE, CalledProcessError
 
 
 # Contants.  The commands the sub-process accepts.
@@ -58,14 +58,16 @@ def call_subprocess(command):
     pipe_to_subprocess.send((CMD_CALL, command))
     errno = pipe_to_subprocess.recv()
     if errno:
-        raise OSError, (errno, '')
+        command = ' '.join(command)
+        raise CalledProcessError(errno, command)
 
 
 def read_subprocess(command):
     pipe_to_subprocess.send((CMD_READ, command))
     errno, data = pipe_to_subprocess.recv()
     if errno:
-        raise OSError, (errno, data)
+        command = ' '.join(command)
+        raise CalledProcessError(errno, command)
     return data
 
 

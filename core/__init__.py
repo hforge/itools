@@ -23,7 +23,7 @@ from freeze import freeze, frozendict, frozenlist
 from mimetypes_ import add_type, guess_all_extensions, guess_extension
 from mimetypes_ import guess_type, has_encoding, has_extension
 from subprocess_ import start_subprocess, stop_subprocess
-from subprocess_ import call_subprocess, read_subprocess
+from subprocess_ import call_subprocess, read_subprocess, send_subprocess
 from utils import get_abspath, merge_dicts, get_sizeof, get_pipe, get_version
 
 
@@ -52,6 +52,7 @@ __all__ = [
     'start_subprocess',
     'call_subprocess',
     'read_subprocess',
+    'send_subprocess',
     'stop_subprocess',
     # Utility functions
     'get_abspath',

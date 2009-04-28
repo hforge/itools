@@ -24,7 +24,8 @@ from subprocess import call, PIPE
 from sys import getrefcount
 
 # Import from itools
-from itools.core import LRUCache, call_subprocess, read_subprocess
+from itools.core import LRUCache
+from itools.core import call_subprocess, read_subprocess, send_subprocess
 from itools.uri import get_reference, get_uri_name, get_uri_path, resolve_uri2
 from itools import vfs
 from itools.vfs import cwd, READ, WRITE, READ_WRITE, APPEND
@@ -646,7 +647,7 @@ class ROGitDatabase(RODatabase):
             cmd = cmd + ['-n', str(n)]
         cmd = cmd + ['HEAD', '--'] + files
         cmd = cmd + files
-        data = read_subprocess(cmd)
+        data = send_subprocess(cmd)
 
         revisions = []
         lines = data.splitlines()
@@ -664,7 +665,7 @@ class ROGitDatabase(RODatabase):
 
     def get_diff(self, revision):
         cmd = ['git', 'show', revision, '--pretty=format:%an%n%at%n%s']
-        data = read_subprocess(cmd)
+        data = send_subprocess(cmd)
         lines = data.splitlines()
 
         ts = int(lines[1])

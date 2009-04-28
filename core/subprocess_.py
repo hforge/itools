@@ -62,14 +62,18 @@ def call_subprocess(command):
         raise CalledProcessError(errno, command)
 
 
-def read_subprocess(command):
+def send_subprocess(command, wait=True):
     pipe_to_subprocess.send((CMD_READ, command))
+    if wait is True:
+        return read_subprocess()
+
+
+def read_subprocess():
     errno, data = pipe_to_subprocess.recv()
     if errno:
         command = ' '.join(command)
         raise CalledProcessError(errno, command)
     return data
-
 
 
 def subprocess(cwd, conn):

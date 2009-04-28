@@ -646,7 +646,7 @@ class ROGitDatabase(RODatabase):
             cmd = cmd + ['-n', str(n)]
         cmd = cmd + ['HEAD', '--'] + files
         cmd = cmd + files
-        errno, data = read_subprocess(cmd)
+        data = read_subprocess(cmd)
 
         revisions = []
         lines = data.splitlines()
@@ -664,7 +664,7 @@ class ROGitDatabase(RODatabase):
 
     def get_diff(self, revision):
         cmd = ['git', 'show', revision, '--pretty=format:%an%n%at%n%s']
-        errno, data = read_subprocess(cmd)
+        data = read_subprocess(cmd)
         lines = data.splitlines()
 
         ts = int(lines[1])

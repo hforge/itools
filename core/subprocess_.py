@@ -55,12 +55,17 @@ def stop_subprocess():
 
 def call_subprocess(command):
     pipe_to_subprocess.send((CMD_CALL, command))
-    return pipe_to_subprocess.recv()
+    errno = pipe_to_subprocess.recv()
+    if errno:
+        raise OSError, (errno, '')
 
 
 def read_subprocess(command):
     pipe_to_subprocess.send((CMD_READ, command))
-    return pipe_to_subprocess.recv()
+    errno, data = pipe_to_subprocess.recv()
+    if errno:
+        raise OSError, (errno, data)
+    return data
 
 
 

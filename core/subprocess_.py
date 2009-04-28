@@ -76,26 +76,21 @@ def subprocess(cwd, conn):
     chdir(cwd)
     signal(SIGINT, SIG_IGN)
     while conn.poll(None):
-        # Recv
         command, data = conn.recv()
-        # Action
-        # FIXME Error handling
-        if command == CMD_CALL:
-            popen = Popen(data, stdout=PIPE, stderr=PIPE)
-            results = popen.wait()
-        elif command == CMD_READ:
-            popen = Popen(data, stdout=PIPE, stderr=PIPE)
-            errno = popen.wait()
-            if errno:
-                results = errno, popen.stderr.read()
-            else:
-                results = errno, popen.stdout.read()
-        elif command == CMD_STOP:
+        # Stop
+        if command == CMD_STOP:
             break
-        else:
-            results = None
-        # Send
-        conn.send(results)
+        # Spawn subprocess
+        popen = Popen(data, stdout=PIPE, stderr=PIPE)
+        errno = popen.wait()
+        if command == CMD_CALL:
+            conn.send(errno)
+        elif command == CMD_READ:
+            if errno:
+                data = popen.stderr.read()
+            else:
+                data = popen.stdout.read()
+            conn.send((errno, data))
 
 
 register(stop_subprocess)

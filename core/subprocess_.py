@@ -86,15 +86,15 @@ def subprocess(cwd, conn):
             break
         # Spawn subprocess
         popen = Popen(data, stdout=PIPE, stderr=PIPE)
-        errno = popen.wait()
+        stdout, stderr = popen.communicate()
+        errno = popen.returncode
         if command == CMD_CALL:
             conn.send(errno)
         elif command == CMD_READ:
             if errno:
-                data = popen.stderr.read()
+                conn.send((errno, stderr))
             else:
-                data = popen.stdout.read()
-            conn.send((errno, data))
+                conn.send((errno, stdout))
 
 
 register(stop_subprocess)

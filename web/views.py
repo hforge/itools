@@ -194,6 +194,9 @@ class BaseForm(BaseView):
         """
         for name in context.get_form_keys():
             if name.startswith(';'):
+                # Browsers send the mouse coordinates with image submits
+                if name.endswith(('.x', '.y')):
+                    name = name[:-2]
                 action = 'action_%s' % name[1:]
                 # Save the query of the action into context.form_query
                 if '?' in action:

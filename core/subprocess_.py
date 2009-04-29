@@ -23,9 +23,8 @@ from subprocess import Popen, PIPE, CalledProcessError
 
 
 # Contants.  The commands the sub-process accepts.
-CMD_CALL = 0
-CMD_READ = 1
-CMD_STOP = 2
+CMD_READ = 0
+CMD_STOP = 1
 
 
 # FIXME Not thread safe
@@ -54,14 +53,6 @@ def stop_subprocess():
         pipe_to_subprocess = None
 
 
-def call_subprocess(command):
-    pipe_to_subprocess.send((CMD_CALL, command))
-    errno = pipe_to_subprocess.recv()
-    if errno:
-        command = ' '.join(command)
-        raise CalledProcessError(errno, command)
-
-
 def send_subprocess(command, wait=True):
     pipe_to_subprocess.send((CMD_READ, command))
     if wait is True:
@@ -88,13 +79,10 @@ def subprocess(cwd, conn):
         popen = Popen(data, stdout=PIPE, stderr=PIPE)
         stdout, stderr = popen.communicate()
         errno = popen.returncode
-        if command == CMD_CALL:
-            conn.send(errno)
-        elif command == CMD_READ:
-            if errno:
-                conn.send((errno, stderr))
-            else:
-                conn.send((errno, stdout))
+        if errno:
+            conn.send((errno, stderr))
+        else:
+            conn.send((errno, stdout))
 
 
 register(stop_subprocess)

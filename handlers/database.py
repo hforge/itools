@@ -24,8 +24,7 @@ from subprocess import call, PIPE
 from sys import getrefcount
 
 # Import from itools
-from itools.core import LRUCache
-from itools.core import call_subprocess, read_subprocess, send_subprocess
+from itools.core import LRUCache, send_subprocess, read_subprocess
 from itools.uri import get_reference, get_uri_name, get_uri_path, resolve_uri2
 from itools import vfs
 from itools.vfs import cwd, READ, WRITE, READ_WRITE, APPEND
@@ -682,8 +681,8 @@ class GitDatabase(RWDatabase, ROGitDatabase):
 
 
     def _rollback(self):
-        call_subprocess(['git', 'checkout', '-f'])
-        call_subprocess(['git', 'clean', '-fxdq'])
+        send_subprocess(['git', 'checkout', '-f'])
+        send_subprocess(['git', 'clean', '-fxdq'])
 
 
     def _save_changes(self, data):
@@ -696,7 +695,7 @@ class GitDatabase(RWDatabase, ROGitDatabase):
         # Add
         git_files = [ x for x in git_files if vfs.exists(x) ]
         if git_files:
-            call_subprocess(['git', 'add'] + git_files)
+            send_subprocess(['git', 'add'] + git_files)
 
         # Commit
         command = ['git', 'commit', '-aq']
@@ -705,7 +704,7 @@ class GitDatabase(RWDatabase, ROGitDatabase):
         else:
             git_author, git_message = data
             command.extend(['--author=%s' % git_author, '-m', git_message])
-        call_subprocess(command)
+        send_subprocess(command)
 
 
 

@@ -58,7 +58,7 @@ code_length = {
     'pourcent': False}
 
 aesthetics_problems = {
-     'title': u'Aesthetics (and readibility)',
+     'title': u'Style',
      'keys': {'tabs':  u'with tabulators',
               'bad_indentation': u'bad indented',
               'bad_length': u'longer than 79 characters',
@@ -113,6 +113,32 @@ class TabsPlugin(object):
 
 
 line_plugins = [LineLengthPlugin, TrailingSpacePlugin, TabsPlugin]
+
+
+###########################################################################
+# Plugins (by tokens)
+###########################################################################
+
+class IndentPlugin(object):
+    key = 'bad_indentation'
+
+    def __init__(self):
+        self.current_indentation = 0
+
+
+    def analyse_token(self, token, value, srow, scol):
+        indent = self.current_indentation
+        # Indentation management
+        if token == INDENT:
+            self.current_indentation = len(value)
+            return '\t' in value or len(value) - indent != 4
+        elif token == DEDENT:
+            self.current_indentation = scol
+        return False
+
+
+token_plugins = [IndentPlugin]
+
 
 
 ###########################################################################
@@ -208,25 +234,20 @@ def analyse_file_by_tokens(filename):
      - 'tokens': number of tokens;
      - 'bad_indentation': list of lines with a bad indentation;
     """
-    stats = {
-        'tokens': 0,
-        'bad_indentation': []}
+    stats = {'tokens': 0}
 
-    srow = 0
-    current_indentation = 0
+    plugins = [ cls() for cls in token_plugins ]
+    for plugin in plugins:
+        stats[plugin.key] = []
+
     tokens = generate_tokens(file(filename).readline)
-
-    for tok_type, value, (srow, scol), _, _ in tokens:
+    for token, value, (srow, scol), _, _ in tokens:
         # Tokens number
         stats['tokens'] += 1
 
-        # Indentation management
-        if tok_type == INDENT:
-            if '\t' in value or len(value) - current_indentation != 4:
-                stats['bad_indentation'].append(srow)
-            current_indentation = len(value)
-        if tok_type == DEDENT:
-            current_indentation = scol
+        for plugin in plugins:
+            if plugin.analyse_token(token, value, srow, scol):
+                stats[plugin.key].append(srow)
 
     return stats
 

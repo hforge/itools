@@ -208,33 +208,26 @@ def analyse_file_by_tokens(filename):
     """This function analyses a file and produces a dict with these members:
      - 'tokens': number of tokens;
      - 'bad_indentation': list of lines with a bad indentation;
-     - 'syntax_error': list of lines with an error;
     """
     stats = {
         'tokens': 0,
-        'bad_indentation': [],
-        'syntax_error': []}
+        'bad_indentation': []}
 
     srow = 0
     current_indentation = 0
     tokens = generate_tokens(file(filename).readline)
 
-    try:
-        for tok_type, value, (srow, scol), _, _ in tokens:
-            # Tokens number
-            stats['tokens'] += 1
+    for tok_type, value, (srow, scol), _, _ in tokens:
+        # Tokens number
+        stats['tokens'] += 1
 
-            # Indentation management
-            if tok_type == INDENT:
-                if '\t' in value or len(value) - current_indentation != 4:
-                    stats['bad_indentation'].append(srow)
-                current_indentation = len(value)
-            if tok_type == DEDENT:
-                current_indentation = scol
-
-    # Syntax error ?
-    except (TokenError, IndentationError):
-        stats['syntax_error'].append(srow)
+        # Indentation management
+        if tok_type == INDENT:
+            if '\t' in value or len(value) - current_indentation != 4:
+                stats['bad_indentation'].append(srow)
+            current_indentation = len(value)
+        if tok_type == DEDENT:
+            current_indentation = scol
 
     return stats
 
@@ -300,8 +293,7 @@ def analyse(filenames):
         'string_exception': 0,
         'except_all': 0,
         'bad_indentation':0,
-        'bad_import': 0,
-        'syntax_error': 0}
+        'bad_import': 0}
 
     files_db = []
     for filename in filenames:

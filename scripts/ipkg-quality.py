@@ -30,11 +30,10 @@ from glob import glob
 from optparse import OptionParser
 from os import getcwd, chdir
 from subprocess import call
-from sys import exit, stdout
+from sys import stdout
 from tempfile import mkdtemp
 from time import time
-from tokenize import COMMENT, DEDENT, INDENT, NAME, NEWLINE, NL, OP, STRING
-from tokenize import generate_tokens, TokenError
+from tokenize import generate_tokens, DEDENT, INDENT
 
 # Import from Matplotlib
 create_graph_is_available = True

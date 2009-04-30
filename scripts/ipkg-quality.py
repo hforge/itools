@@ -23,7 +23,7 @@ ipkg-quality.py is a small tool to do some measurements on Python files
 """
 
 # Import from the Standard Library
-from ast import parse, NodeVisitor, Str, Name
+from ast import parse, NodeVisitor, Str, Name, stmt
 from datetime import date
 from glob import glob
 from optparse import OptionParser
@@ -154,43 +154,21 @@ def analyse_file_by_tokens(filename):
     """This function analyses a file and produces a dict with these members:
      - 'tokens': number of tokens;
      - 'bad_indentation': list of lines with a bad indentation;
-     - 'bad_import': ;
      - 'syntax_error': list of lines with an error;
     """
     stats = {
         'tokens': 0,
         'bad_indentation': [],
-        'bad_import': [],
         'syntax_error': []}
 
     srow = 0
     current_indentation = 0
-    header = True
-    command_on_line = False
-    import_on_line = False
     tokens = generate_tokens(file(filename).readline)
 
     try:
         for tok_type, value, (srow, scol), _, _ in tokens:
             # Tokens number
             stats['tokens'] += 1
-
-            # Find NEWLINE
-            if tok_type == NEWLINE:
-                if command_on_line and not import_on_line:
-                    header = False
-                command_on_line = False
-                import_on_line = False
-
-            # Find command
-            if tok_type not in [COMMENT, STRING, NEWLINE, NL]:
-                command_on_line = True
-
-            # Find import and test
-            if tok_type == NAME and value == 'import':
-                import_on_line = True
-                if not header:
-                    stats['bad_import'].append(srow)
 
             # Indentation management
             if tok_type == INDENT:
@@ -212,6 +190,8 @@ class Visitor(NodeVisitor):
     def __init__(self):
         self.except_all = []
         self.string_exception = []
+        self.bad_import = []
+        self.header = True
 
 
     def visit_ExceptHandler(self, node):
@@ -232,11 +212,34 @@ class Visitor(NodeVisitor):
             self.string_exception.append(node.lineno)
 
 
+    def visit_Import(self, node):
+        if self.header is False:
+            self.bad_import.append(node.lineno)
+
+
+    def visit_ImportFrom(self, node):
+        if self.header is False:
+            self.bad_import.append(node.lineno)
+
+
+    def visit_Expr(self, node):
+        if type(node.value) is not Str:
+            self.header = False
+        NodeVisitor.generic_visit(self, node)
+
+
+    def generic_visit(self, node):
+        if isinstance(node, stmt):
+            self.header = False
+        NodeVisitor.generic_visit(self, node)
+
+
 
 def analyse_file_by_ast(filename):
     """This function analyses a file and produces a dict with these members:
      - 'except_all': list of line where all exceptions are catched;
      - 'string_exception': list of lines with string exceptions;
+     - 'bad_import': ;
     """
     ast = parse(open(filename).read())
     visitor = Visitor()
@@ -244,6 +247,7 @@ def analyse_file_by_ast(filename):
     return {
         'except_all': visitor.except_all,
         'string_exception': visitor.string_exception,
+        'bad_import': visitor.bad_import,
     }
 
 

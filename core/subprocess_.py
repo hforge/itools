@@ -56,13 +56,14 @@ def stop_subprocess():
 def send_subprocess(command, wait=True):
     pipe_to_subprocess.send((CMD_READ, command))
     if wait is True:
-        return read_subprocess()
+        return read_subprocess(command)
 
 
-def read_subprocess():
+def read_subprocess(command=None):
     errno, data = pipe_to_subprocess.recv()
     if errno:
-        command = ' '.join(command)
+        if command is not None:
+            command = ' '.join(command)
         raise CalledProcessError(errno, command)
     return data
 

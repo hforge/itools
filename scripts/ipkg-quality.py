@@ -24,7 +24,7 @@ ipkg-quality.py is a small tool to do some measurements on Python files
 
 # Import from the Standard Library
 import ast
-from ast import parse, NodeVisitor, Str, Name, stmt
+from ast import parse, NodeVisitor
 from datetime import date
 from glob import glob
 from optparse import OptionParser
@@ -69,7 +69,7 @@ aesthetics_problems = {
 exception_problems = {
     'title': u'Exception handling',
     'keys': {
-        'string_exception': u'unexpected raise or except statements',
+        'string_exception': u'string exceptions are used',
         'except_all': u'all exceptions are catched'},
     'pourcent': False}
 
@@ -128,7 +128,7 @@ class ExceptAllPlugin(object):
         return type(node) is ast.ExceptHandler and node.type is None
 
 
-class WeirdException(object):
+class StringException(object):
     key = 'string_exception'
 
     @classmethod
@@ -137,10 +137,12 @@ class WeirdException(object):
         # except <str>:
         if node_type is ast.ExceptHandler:
             # TODO except (<str>,):
-            return type(node.type) is Str
-        # unexpected raise
+            return type(node.type) is ast.Str
+        # raise <str>
         if node_type is ast.Raise:
-            return node.type and type(node.type) is not Name
+            # TODO raise <expr>
+            # (Where <expr> does not evaluate to exception.)
+            return node.type and type(node.type) is ast.Str
 
 
 class MisplacedImport(object):
@@ -157,14 +159,14 @@ class MisplacedImport(object):
             return not self.header
 
         if node_type is ast.Expr:
-            if type(node.value) is not Str:
+            if type(node.value) is not ast.Str:
                 self.header = False
-        elif isinstance(node, stmt):
+        elif isinstance(node, ast.stmt):
             self.header = False
         return False
 
 
-ast_plugins = [ExceptAllPlugin, WeirdException, MisplacedImport]
+ast_plugins = [ExceptAllPlugin, StringException, MisplacedImport]
 
 
 ###########################################################################

@@ -23,6 +23,7 @@ ipkg-quality.py is a small tool to do some measurements on Python files
 """
 
 # Import from the Standard Library
+import ast
 from ast import parse, NodeVisitor, Str, Name, stmt
 from datetime import date
 from glob import glob
@@ -116,6 +117,57 @@ line_plugins = [LineLengthPlugin, TrailingSpacePlugin, TabsPlugin]
 
 
 ###########################################################################
+# Plugins (by AST)
+###########################################################################
+
+class ExceptAllPlugin(object):
+    key = 'except_all'
+
+    @classmethod
+    def analyse_node(cls, node):
+        return type(node) is ast.ExceptHandler and node.type is None
+
+
+class WeirdException(object):
+    key = 'string_exception'
+
+    @classmethod
+    def analyse_node(cls, node):
+        node_type = type(node)
+        # except <str>:
+        if node_type is ast.ExceptHandler:
+            # TODO except (<str>,):
+            return type(node.type) is Str
+        # unexpected raise
+        if node_type is ast.Raise:
+            return node.type and type(node.type) is not Name
+
+
+class MisplacedImport(object):
+    key = 'bad_import'
+
+    def __init__(self):
+        self.header = True
+
+
+    def analyse_node(self, node):
+        node_type = type(node)
+        # import xx, from xx import yy
+        if node_type is ast.Import or node_type is ast.ImportFrom:
+            return not self.header
+
+        if node_type is ast.Expr:
+            if type(node.value) is not Str:
+                self.header = False
+        elif isinstance(node, stmt):
+            self.header = False
+        return False
+
+
+ast_plugins = [ExceptAllPlugin, WeirdException, MisplacedImport]
+
+
+###########################################################################
 # The analysis code
 ###########################################################################
 
@@ -188,49 +240,18 @@ def analyse_file_by_tokens(filename):
 class Visitor(NodeVisitor):
 
     def __init__(self):
-        self.except_all = []
-        self.string_exception = []
-        self.bad_import = []
-        self.header = True
-
-
-    def visit_ExceptHandler(self, node):
-        # except:
-        if node.type is None:
-            self.except_all.append(node.lineno)
-        # except <str>:
-        elif type(node.type) is Str:
-            self.string_exception.append(node.lineno)
-        # TODO except (<str>,):
-        # Continue
-        self.generic_visit(node)
-
-
-    def visit_Raise(self, node):
-        # unexpected raise
-        if node.type and type(node.type) is not Name:
-            self.string_exception.append(node.lineno)
-
-
-    def visit_Import(self, node):
-        if self.header is False:
-            self.bad_import.append(node.lineno)
-
-
-    def visit_ImportFrom(self, node):
-        if self.header is False:
-            self.bad_import.append(node.lineno)
-
-
-    def visit_Expr(self, node):
-        if type(node.value) is not Str:
-            self.header = False
-        NodeVisitor.generic_visit(self, node)
+        self.plugins = [ cls() for cls in ast_plugins ]
+        self.stats = {}
+        for plugin in self.plugins:
+            self.stats[plugin.key] = []
 
 
     def generic_visit(self, node):
-        if isinstance(node, stmt):
-            self.header = False
+        # Plugins
+        for plugin in self.plugins:
+            if plugin.analyse_node(node):
+                self.stats[plugin.key].append(node.lineno)
+
         NodeVisitor.generic_visit(self, node)
 
 
@@ -244,11 +265,7 @@ def analyse_file_by_ast(filename):
     ast = parse(open(filename).read())
     visitor = Visitor()
     visitor.generic_visit(ast)
-    return {
-        'except_all': visitor.except_all,
-        'string_exception': visitor.string_exception,
-        'bad_import': visitor.bad_import,
-    }
+    return visitor.stats
 
 
 

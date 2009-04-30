@@ -20,7 +20,7 @@
 # Import from the Standard Library
 from datetime import datetime
 from os import mkdir
-from subprocess import call, PIPE
+from subprocess import call, PIPE, CalledProcessError
 from sys import getrefcount
 
 # Import from itools
@@ -704,8 +704,13 @@ class GitDatabase(RWDatabase, ROGitDatabase):
         else:
             git_author, git_message = data
             command.extend(['--author=%s' % git_author, '-m', git_message])
-        send_subprocess(command)
-
+        try:
+            send_subprocess(command)
+        except CalledProcessError, excp:
+            # Avoid an exception for the 'nothing to commit' case
+            # FIXME Not reliable, we may catch other cases
+            if excp.returncode != 1:
+                raise
 
 
 def make_git_database(path, size):

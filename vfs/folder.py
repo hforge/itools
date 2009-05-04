@@ -18,6 +18,7 @@
 # Import from the Standard Library
 from datetime import datetime
 from cStringIO import StringIO
+from os import listdir
 from os.path import basename
 from urllib import unquote
 from urlparse import urlsplit
@@ -30,7 +31,6 @@ from filename import FileName
 from gio import File, Error
 from gio import FILE_ATTRIBUTE_TIME_CHANGED, FILE_ATTRIBUTE_TIME_MODIFIED
 from gio import FILE_ATTRIBUTE_TIME_ACCESS
-from gio import FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE
 from gio import FILE_ATTRIBUTE_STANDARD_SIZE, FILE_ATTRIBUTE_STANDARD_NAME
 from gio import FILE_ATTRIBUTE_STANDARD_TYPE
 from gio import FILE_TYPE_DIRECTORY, FILE_TYPE_REGULAR
@@ -73,6 +73,12 @@ def _is_folder(g_file):
 
 
 def _get_names(g_file):
+    # Local ?
+    uri = g_file.get_uri()
+    if uri.startswith('file:'):
+        path = g_file.get_path()
+        return listdir(path)
+
     children = g_file.enumerate_children(FILE_ATTRIBUTE_STANDARD_NAME)
     return [child.get_name() for child in children]
 

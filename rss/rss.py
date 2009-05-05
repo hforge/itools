@@ -71,11 +71,11 @@ def decode_element(name, value, encoding='UTF-8'):
 # Decode rss element according to its type (by schema)
 def encode_element(name, value, encoding='UTF-8'):
     # Encode
-    type = schema.get(name, String)
-    if issubclass(type, Unicode):
-        result = type.encode(value, encoding)
+    datatype = schema.get(name, String)
+    if issubclass(datatype, Unicode):
+        result = datatype.encode(value, encoding)
     else:
-        result = type.encode(value)
+        result = datatype.encode(value)
 
     # To XML
     return XMLContent.encode(result)

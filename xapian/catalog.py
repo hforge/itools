@@ -333,8 +333,7 @@ class Catalog(object):
             elif value is not None:
                 # Is stored ?
                 if 'value' in info:
-                    xdoc.add_value(info['value'],
-                                   _encode(field_cls, value))
+                    xdoc.add_value(info['value'], _encode(field_cls, value))
                 # Is indexed ?
                 if 'prefix' in info:
                     # By default language='en'

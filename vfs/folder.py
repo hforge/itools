@@ -73,6 +73,7 @@ def _is_folder(g_file):
 
 
 def _get_names(g_file):
+    # FIXME This is a hack, see bug #675
     # Local ?
     uri = g_file.get_uri()
     if uri.startswith('file:'):

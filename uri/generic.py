@@ -46,7 +46,7 @@ Other related RFCs include:
 # Import from the Standard Library
 from copy import copy
 from urlparse import urlsplit, urlunsplit
-from urllib import quote_plus, unquote, unquote_plus
+from urllib import quote, quote_plus, unquote, unquote_plus
 
 
 ##########################################################################
@@ -198,7 +198,7 @@ class Path(list):
 
 
     def __init__(self, path):
-        if isinstance(path, tuple) or isinstance(path, list):
+        if isinstance(path, (tuple, list)):
             path = '/'.join([ str(x) for x in path ])
 
         path = normalize_path(path)
@@ -212,6 +212,7 @@ class Path(list):
             path = path[:-1]
 
         if path != '':
+            path = unquote(path)
             path = [ Segment(x) for x in path.split('/') ]
             list.__init__(self, path)
 
@@ -242,7 +243,7 @@ class Path(list):
             path += '/'
         if len(path) == 0:
             return '.'
-        return path
+        return quote(path, safe=":/@!$'()*+,;=~")
 
 
     def __ne__(self, other):
@@ -710,9 +711,7 @@ class GenericDataType(object):
             path = "%s:%s" % (path[1].lower(), path[3:])
 
         # The path
-        if path:
-            path = unquote(path)
-        elif authority:
+        if not path and authority:
             path = '/'
         # The authority
         authority = unquote(authority)

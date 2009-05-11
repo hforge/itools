@@ -293,6 +293,12 @@ class PathTestCase(TestCase):
         self.assertEqual(str(path), '../../a/b/c')
 
 
+    def test_quote(self):
+        string = "Wikip%C3%A9dia:/@!$'()*+,;=~"
+        path = Path(string)
+        self.assertEqual(str(path), string)
+
+
 
 class ParseTestCase(TestCase):
     """
@@ -440,6 +446,12 @@ class ReferenceTestCase(TestCase):
         """references with no scheme are generic."""
         ref = get_reference('logo.png')
         self.assert_(isinstance(ref, Reference))
+
+
+    def test_quote(self):
+        string = "http://fr.wikipedia.org/wiki/Wikip%C3%A9dia:/@!$'()*+,;=~"
+        ref = get_reference(string)
+        self.assertEqual(str(ref), string)
 
 
 

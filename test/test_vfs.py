@@ -215,6 +215,17 @@ class FoldersTestCase(TestCase):
         self.assertEqual(mimetype, 'application/x-not-regular-file')
 
 
+    def test_uri_resolution(self):
+        directory = self.tests.open('toto.txt')
+
+        directory.make_file('a_file')
+        a_file_uri = directory.get_uri('a_file')
+
+        resolved_uri = directory.get_uri(a_file_uri)
+
+        self.assertEqual(a_file_uri, resolved_uri)
+
+
 
 class CopyTestCase(TestCase):
 

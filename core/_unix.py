@@ -16,18 +16,19 @@
 
 # Import from the Standard Library
 from os import devnull, dup2, fork, getpid, open as os_open, O_RDWR, setsid
-from resource import getrusage, RUSAGE_SELF
+from resource import getrusage, RUSAGE_SELF, getpagesize
 from sys import exit, stdin, stdout, stderr
 
 
-def vmsize(scale={'kB': 1024.0, 'mB': 1024.0*1024.0,
-                  'KB': 1024.0, 'MB': 1024.0*1024.0}):
-    status = '/proc/%d/status' % getpid()
-    status = open(status).read()
-    i = status.index('VmSize:')
-    status = status[i:].split(None, 3)  # whitespace
-    # convert Vm value to bytes
-    return float(status[1]) * scale[status[2]]
+pagesize = getpagesize()
+
+
+def vmsize():
+    statm = '/proc/%d/statm' % getpid()
+    statm = open(statm).read()
+    size, resident, share, text, lib, data, dt = statm.split()
+    # FIXME May be more interesting to return the resident size
+    return int(size) * pagesize
 
 
 def get_time_spent(mode='both', since=0.0):

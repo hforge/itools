@@ -51,8 +51,7 @@ def get_time_spent(mode='both', since=0.0):
 
 
 
-def vmsize(scale={'kB': 1024.0, 'mB': 1024.0*1024.0,
-                  'KB': 1024.0, 'MB': 1024.0*1024.0}):
+def vmsize():
     handle = get_win32_handle(getpid())
     m = GetProcessMemoryInfo(handle)
     return m["WorkingSetSize"]

@@ -19,8 +19,9 @@
 from itools.core import add_type
 from csv_ import CSVFile, Row
 from parser import parse
-from table import Table, Record, Property, UniqueError
+from table import Table, Record, UniqueError
 from table import parse_table, fold_line, escape_data, is_multilingual
+from table import Property, property_to_str
 
 
 __all__ = [
@@ -33,6 +34,7 @@ __all__ = [
     'Table',
     'Record',
     'Property',
+    'property_to_str',
     'UniqueError',
     'parse_table',
     'fold_line',

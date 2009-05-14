@@ -189,18 +189,7 @@ class icalendarTable(BaseCalendar, Table):
     record_schema = merge_dicts(
         data_properties,
         type=String(is_indexed=True),
-        inner=Integer(multiple=True),
-    )
-
-
-    def get_parameter_datatype(self, name):
-        """ Default parameter type is multiple for ical.
-        """
-        # Record schema
-        schema = self.parameters_schema
-        if name in schema:
-            return schema[name]
-        return String(multiple=True)
+        inner=Integer(multiple=True))
 
 
     #########################################################################

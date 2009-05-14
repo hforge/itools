@@ -306,6 +306,46 @@ class Property(object):
         self.parameters = kw
 
 
+def property_to_str(name, property, datatype, p_schema, encoding='utf-8'):
+    """This method serializes the given property to a byte string:
+
+      name[;parameters]=value
+
+    The given datatype is used to serialize the property value.  The given
+    'p_schema' describes the parameters.
+    """
+    # Parameters
+    parameters = []
+    p_names = property.parameters.keys()
+    p_names.sort()
+    for p_name in p_names:
+        p_value = property.parameters[p_name]
+        # Find out the datatype for the parameter
+        p_datatype = p_schema.get(p_name)
+        if not p_datatype:
+            p_datatype = String(multiple=True)
+        # Serialize the parameter
+        # FIXME Use the encoding
+        if getattr(p_datatype, 'multiple', False):
+            p_value = [ p_datatype.encode(x) for x in p_value ]
+            p_value = ','.join(p_value)
+        else:
+            p_value = p_datatype.encode(p_value)
+        parameters.append(';%s=%s' % (p_name, p_value))
+    parameters = ''.join(parameters)
+
+    # Value
+    if isinstance(datatype, Unicode):
+        value = datatype.encode(property.value, encoding=encoding)
+    else:
+        value = datatype.encode(property.value)
+    value = escape_data(value)
+
+    # Ok
+    property = '%s%s:%s\n' % (name, parameters, value)
+    return fold_line(property)
+
+
 
 class Record(list, CatalogAware):
 
@@ -401,7 +441,7 @@ class Table(File):
         schema = self.parameters_schema
         if name in schema:
             return schema[name]
-        return String
+        return String(multiple=True)
 
 
     def properties_to_dict(self, properties, version=None, first=False):
@@ -561,6 +601,7 @@ class Table(File):
             get_datatype = self.get_record_datatype
 
         # Loop
+        p_schema = self.parameters_schema
         for name in names:
             datatype = get_datatype(name)
             if getattr(datatype, 'multiple', False) is True:
@@ -570,26 +611,8 @@ class Table(File):
             for property in properties:
                 if property.value is None:
                     continue
-                lines.append(name)
-                # Parameters
-                pnames = property.parameters.keys()
-                pnames.sort()
-                for pname in pnames:
-                    pvalues = property.parameters[pname]
-                    pdatatype = self.get_parameter_datatype(pname)
-                    if pdatatype.multiple:
-                        pvalues = [ pdatatype.encode(x) for x in pvalues ]
-                        pvalues = ','.join(pvalues)
-                    else:
-                        pvalues = pdatatype.encode(pvalues)
-                    lines.append(';%s=%s' % (pname, pvalues))
-                # Value
-                value = datatype.encode(property.value)
-                if isinstance(value, Integer):
-                    value = str(value)
-                # Escape the value
-                value = escape_data(value)
-                lines.append(':%s\n' % fold_line(value))
+                property = property_to_str(name, property, datatype, p_schema)
+                lines.append(property)
 
         # Ok
         lines.append('\n')

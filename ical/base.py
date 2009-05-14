@@ -18,7 +18,7 @@
 from datetime import datetime
 
 # Import from itools
-from itools.csv import escape_data, fold_line
+from itools.csv import property_to_str
 from itools.datatypes import Unicode
 
 
@@ -66,33 +66,11 @@ class BaseCalendar(object):
 
 
     def encode_property(self, name, property_values, encoding='utf-8'):
-        if not isinstance(property_values, list):
+        if type(property_values) is not list:
             property_values = [property_values]
 
         datatype = self.get_record_datatype(name)
-
-        lines = []
-        for property_value in property_values:
-            # The parameters
-            parameters = ''
-            for param_name in property_value.parameters:
-                param_value = property_value.parameters[param_name]
-                parameters += ';%s=%s' % (param_name, ','.join(param_value))
-
-            # The value (encode)
-            value = property_value.value
-            if isinstance(datatype, Unicode):
-                value = datatype.encode(value, encoding=encoding)
-            else:
-                value = datatype.encode(value)
-            # The value (escape)
-            value = escape_data(value)
-
-            # Build the line
-            line = '%s%s:%s\n' % (name, parameters, value)
-
-            # Append
-            lines.append(fold_line(line))
-
-        return lines
+        return [
+            property_to_str(name, x, datatype, {}, encoding)
+            for x in property_values ]
 

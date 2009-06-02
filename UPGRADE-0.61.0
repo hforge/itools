@@ -96,3 +96,15 @@ itools.vfs
   # After
   from itools.fs import vfs
   vfs.exists(uri)
+
+
+itools.xapian
+=============
+
+(1) Remove obsolete method 'SearchResults.get_n_documents':
+
+  # Before
+  n = results.get_n_documents()
+
+  # Now
+  n = len(results)

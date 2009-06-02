@@ -95,10 +95,6 @@ class SearchResults(object):
         return self._max
 
 
-    # FIXME Obsolete
-    get_n_documents = __len__
-
-
     def search(self, query=None, **kw):
         catalog = self._catalog
 

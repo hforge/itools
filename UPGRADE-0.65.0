@@ -42,3 +42,15 @@ And:
 
   # Now
   new_datatype = datatype(a=5, b=3, ...)
+
+
+itools.xapian
+=============
+
+(1) Remove obsolete method 'SearchResults.get_n_documents':
+
+  # Before
+  n = results.get_n_documents()
+
+  # Now
+  n = len(results)

@@ -1,0 +1,44 @@
+*************************************************************************
+itools 0.65.0
+*************************************************************************
+
+These upgrade notes may not be complete. Thanks to report any problem you
+find.
+
+New Dependencies
+================
+
+TODO
+
+
+Imports
+=======
+
+See the table below for the imports to update.
+
+  Before (alphabetical order)    Now
+  ----------------------------   ---------------------------
+  TODO
+
+
+itools.datatypes
+================
+
+(1) The obsolete functions 'is_datatype' and 'copy_datatype' have been
+removed:
+
+  # Before
+  if is_datatype(datatype, Unicode):
+      ...
+
+  # Now
+  if issubclass(datatype, Unicode):
+      ...
+
+And:
+
+  # Before
+  new_datatype = copy_datatype(datatype, a=5, b=3, ...)
+
+  # Now
+  new_datatype = datatype(a=5, b=3, ...)

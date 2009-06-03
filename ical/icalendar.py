@@ -24,14 +24,13 @@ from operator import itemgetter
 
 # Import from itools
 from itools.core import freeze
-from itools.csv import Property
-from itools.csv import parse_table
+from itools.csv import Property, parse_table, deserialize_parameters
 from itools.datatypes import String, Unicode, DateTime
 from itools.handlers import guess_encoding, TextFile
 from itools.xapian import make_catalog, CatalogAware
 from itools.xapian import PhraseQuery, RangeQuery, OrQuery, AndQuery
 from base import BaseCalendar
-from types import record_properties, Time
+from types import record_properties, record_parameters, Time
 
 
 # The smallest possible difference between non-equal timedelta objects.
@@ -301,6 +300,7 @@ class iCalendar(BaseCalendar, TextFile):
 
 
     record_properties = record_properties
+    record_parameters = record_parameters
 
 
     @classmethod
@@ -360,6 +360,7 @@ class iCalendar(BaseCalendar, TextFile):
             else:
                 value = datatype.decode(value)
             # Build the value (a Property instance)
+            deserialize_parameters(parameters, self.record_parameters)
             value = Property(value, **parameters)
             # Append
             lines.append((name, value))

@@ -191,6 +191,14 @@ record_properties = freeze({
 })
 
 
+
+record_parameters = freeze({
+    'ALTREP': URI(multiple=False),
+    # TODO Finish the list
+})
+
+
+
 ################################################################
 #                         NOT USED ACTUALLY
 #statvalue = {'VEVENT': ['TENTATIVE', 'CONFIRMED', 'CANCELLED']}

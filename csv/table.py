@@ -276,6 +276,23 @@ def is_multilingual(datatype):
 
 
 
+def deserialize_parameters(parameters, schema, default=String(multiple=True)):
+    for name in parameters:
+        value = parameters[name]
+        datatype = schema.get(name, default)
+        # Decode
+        value = [ datatype.decode(x) for x in value ]
+        # Multiple or single
+        if not datatype.multiple:
+            if len(value) > 1:
+                msg = 'parameter "%s" must be a singleton'
+                raise ValueError, msg % name
+            value = value[0]
+        # Update
+        parameters[name] = value
+
+
+
 ###########################################################################
 # UniqueError
 ###########################################################################
@@ -444,14 +461,6 @@ class Table(File):
         return String(multiple=True)
 
 
-    def get_parameter_datatype(self, name):
-        # Record schema
-        schema = self.record_parameters
-        if name in schema:
-            return schema[name]
-        return String(multiple=True)
-
-
     def properties_to_dict(self, properties, version=None, first=False):
         """Add the given "properties" as Property objects or Property objects
         list to the given dictionnary "version".
@@ -568,19 +577,7 @@ class Table(File):
                 continue
 
             # Deserialize the parameters
-            for param_name in parameters.keys():
-                param_value = parameters[param_name]
-                param_type = self.get_parameter_datatype(param_name)
-                # Decode
-                param_value = [ param_type.decode(x) for x in param_value ]
-                # Multiple or single
-                if not param_type.multiple:
-                    if len(param_value) > 1:
-                        msg = 'parameter "%s" must be a singleton'
-                        raise ValueError, msg % param_name
-                    param_value = param_value[0]
-                # Update
-                parameters[param_name] = param_value
+            deserialize_parameters(parameters, self.record_parameters)
 
             # Timestamp (ts), Schema, or Something else
             datatype = get_datatype(name)

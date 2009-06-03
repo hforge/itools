@@ -21,7 +21,7 @@ from csv_ import CSVFile, Row
 from parser import parse
 from table import Table, Record, UniqueError
 from table import parse_table, fold_line, escape_data, is_multilingual
-from table import Property, property_to_str
+from table import Property, property_to_str, deserialize_parameters
 
 
 __all__ = [
@@ -40,6 +40,7 @@ __all__ = [
     'fold_line',
     'escape_data',
     'is_multilingual',
+    'deserialize_parameters',
     ]
 
 

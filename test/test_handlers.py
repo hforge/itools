@@ -31,8 +31,9 @@ from itools.fs import lfs
 
 class Agenda(Table):
 
-    record_schema = {'firstname': Unicode(is_indexed=True, multiple=False),
-                     'lastname': Unicode(multiple=False)}
+    record_properties = {
+        'firstname': Unicode(is_indexed=True, multiple=False),
+        'lastname': Unicode(multiple=False)}
 
 
 

@@ -183,8 +183,14 @@ def get_tokens(property):
             if c == '"':
                 param_value = c
                 status = 4
-            elif c in (';', ':', ',') :
-                raise SyntaxError, error1 % (c, status)
+            elif c == ':':
+                parameters[param_name].append('')
+                status = 7
+            elif c == ';':
+                parameters[param_name].append('')
+                status = 1
+            elif c == ',':
+                parameters[param_name].append('')
             else:
                 param_value = c
                 status = 5

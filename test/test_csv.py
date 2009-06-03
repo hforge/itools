@@ -22,7 +22,7 @@ from unittest import TestCase, main
 # Import from itools
 from itools.datatypes import Boolean, Date, Integer, Unicode, URI, String
 from itools.csv import CSVFile, Table, UniqueError
-from itools.csv.table import unfold_lines
+from itools.csv.table import parse_table, unfold_lines
 from itools import vfs
 from itools.xapian import AndQuery, OrQuery, PhraseQuery
 
@@ -359,14 +359,7 @@ class Books(Table):
 
 
 
-class TableTestCase(TestCase):
-
-    def tearDown(self):
-        for name in ['agenda', 'books']:
-            name = 'tests/%s' % name
-            if vfs.exists(name):
-                vfs.remove(name)
-
+class ParsingTableTestCase(TestCase):
 
     def test_unfolding(self):
         """Test unfolding lines."""
@@ -401,6 +394,24 @@ class TableTestCase(TestCase):
 
         for i, line in enumerate(output):
             self.assertEqual(line, expected[i])
+
+
+    def test_empty_param_value(self):
+        input = 'a;b=:'
+        lines = parse_table(input)
+        lines = list(lines)
+        self.assertEqual(lines, [('a', '', {'b': ['']})])
+
+
+
+
+class TableTestCase(TestCase):
+
+    def tearDown(self):
+        for name in ['agenda', 'books']:
+            name = 'tests/%s' % name
+            if vfs.exists(name):
+                vfs.remove(name)
 
 
     def test_de_serialize(self):

@@ -355,12 +355,12 @@ def property_to_str(name, property, datatype, p_schema, encoding='utf-8'):
 
 class Record(list, CatalogAware):
 
-    __slots__ = ['id', 'record_schema']
+    __slots__ = ['id', 'record_properties']
 
 
-    def __init__(self, id, record_schema):
+    def __init__(self, id, record_properties):
         self.id = id
-        self.record_schema  = record_schema
+        self.record_properties  = record_properties
 
 
     def __getattr__(self, name):
@@ -399,7 +399,7 @@ class Record(list, CatalogAware):
 
     def get_catalog_values(self):
         values = {'__id__': self.id}
-        for name in self.record_schema.iterkeys():
+        for name in self.record_properties.iterkeys():
             values[name] = self.get_value(name)
         return values
 
@@ -414,12 +414,14 @@ class Table(File):
     # Hash with field names and its types
     # Example: {'firstname': Unicode, 'lastname': Unicode, 'age': Integer}
     # To index some fields the schema should be declared as:
-    # record_schema = {'firstname': Unicode, 'lastname': Unicode,
-    #                  'age': Integer(is_indexed=True)}
+    # record_properties = {
+    #     'firstname': Unicode,
+    #     'lastname': Unicode,
+    #     'age': Integer(is_indexed=True)}
     #######################################################################
     schema = {}
-    record_schema = {}
-    parameters_schema = {
+    record_properties = {}
+    record_parameters = {
         'language': String(multiple=False)}
 
 
@@ -436,15 +438,15 @@ class Table(File):
         # Record schema
         if name == 'ts':
             return DateTime(multiple=False)
-        if name in self.record_schema:
-            return self.record_schema[name]
+        if name in self.record_properties:
+            return self.record_properties[name]
         # FIXME Probably we should raise an exception here
         return String(multiple=True)
 
 
     def get_parameter_datatype(self, name):
         # Record schema
-        schema = self.parameters_schema
+        schema = self.record_parameters
         if name in schema:
             return schema[name]
         return String(multiple=True)
@@ -501,15 +503,15 @@ class Table(File):
         self.added_records = []
         self.removed_records = []
         # The catalog (for index and search)
-        fields = merge_dicts(self.record_schema,
-                             __id__=Integer(is_key_field=True, is_stored=True,
-                                            is_indexed=True))
+        fields = merge_dicts(
+            self.record_properties,
+            __id__=Integer(is_key_field=True, is_stored=True, is_indexed=True))
         self.catalog = make_catalog(None, fields)
 
 
     def new(self):
         # Add the properties record
-        properties = self.record_class(-1, self.record_schema)
+        properties = self.record_class(-1, self.record_properties)
         properties.append({'ts': Property(datetime.now())})
         self.properties = properties
 
@@ -518,7 +520,7 @@ class Table(File):
         # Load the records
         records = self.records
         properties = self.properties
-        record_schema = self.record_schema
+        record_properties = self.record_properties
 
         n = 0
         version = None
@@ -532,13 +534,13 @@ class Table(File):
                 if uid == -1:
                     # Tale properties
                     if properties is None:
-                        properties = self.record_class(uid, record_schema)
+                        properties = self.record_class(uid, record_properties)
                         self.properties = properties
                     record = properties
                 elif uid >= n:
                     # New record
                     records.extend([None] * (uid - n))
-                    record = self.record_class(uid, record_schema)
+                    record = self.record_class(uid, record_properties)
                     records.append(record)
                     n = uid + 1
                 else:
@@ -607,7 +609,7 @@ class Table(File):
             get_datatype = self.get_record_datatype
 
         # Loop
-        p_schema = self.parameters_schema
+        p_schema = self.record_parameters
         for name in names:
             datatype = get_datatype(name)
             if getattr(datatype, 'multiple', False) is True:
@@ -715,7 +717,7 @@ class Table(File):
                     raise UniqueError(name, kw[name])
         # Add version to record
         id = len(self.records)
-        record = self.record_class(id, self.record_schema)
+        record = self.record_class(id, self.record_properties)
         version = self.properties_to_dict(kw)
         version['ts'] = Property(datetime.now())
         record.append(version)
@@ -758,7 +760,7 @@ class Table(File):
         if record is None:
             # if the record doesn't exist
             # we create it, it's useful during an update
-            record = self.record_class(-1, self.record_schema)
+            record = self.record_class(-1, self.record_properties)
             version = None
             self.properties = record
         else:
@@ -875,7 +877,7 @@ class Table(File):
         try:
             return getattr(record, name)
         except AttributeError:
-            if name in self.record_schema:
+            if name in self.record_properties:
                 datatype = self.get_datatype(name)
                 if getattr(datatype, 'multiple', False) is True:
                     return []
@@ -899,11 +901,11 @@ class Table(File):
         - 'columns': the CSV columns used for the mapping between the CSV
           columns and the table schema.
         """
-        record_schema = self.record_schema
-        for line in parse(data, columns, record_schema):
+        record_properties = self.record_properties
+        for line in parse(data, columns, record_properties):
             record = {}
             for index, key in enumerate(columns):
-                if key in record_schema:
+                if key in record_properties:
                     record[key] = line[index]
             self.add_record(record)
 

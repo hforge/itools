@@ -186,7 +186,7 @@ class icalendarTable(BaseCalendar, Table):
 
     record_class = Record
 
-    record_schema = merge_dicts(
+    record_properties = merge_dicts(
         data_properties,
         type=String(is_indexed=True),
         inner=Integer(multiple=True))
@@ -244,7 +244,7 @@ class icalendarTable(BaseCalendar, Table):
         c_inner_type = None
         uid = None
         records = self.records
-        record_schema = self.record_schema
+        record_properties = self.record_properties
         id = 0
         uids = {}
 
@@ -269,7 +269,7 @@ class icalendarTable(BaseCalendar, Table):
                     if uid is None:
                         raise ValueError, 'UID is not present'
 
-                    record = self.get_record(id) or Record(id, record_schema)
+                    record = self.get_record(id) or Record(id, record_properties)
                     c_properties['type'] = Property(c_type)
                     c_properties['UID'] = Property(uid)
                     sequence = c_properties.get('SEQUENCE', None)
@@ -298,7 +298,7 @@ class icalendarTable(BaseCalendar, Table):
 
                 # Inner component
                 elif value == c_inner_type:
-                    record = self.get_record(id) or Record(id, record_schema)
+                    record = self.get_record(id) or Record(id, record_properties)
                     c_inner_properties['type'] = Property(c_inner_type)
                     sequence = c_inner_properties.get('SEQUENCE', None)
                     c_inner_properties['SEQUENCE'] = sequence or Property(0)
@@ -414,7 +414,7 @@ class icalendarTable(BaseCalendar, Table):
             kw['UID'] = self.generate_uid(type)
 
         id = len(self.records)
-        record = Record(id, self.record_schema)
+        record = Record(id, self.record_properties)
         version = self.properties_to_dict(kw)
         version['ts'] = Property(datetime.now())
         record.append(version)

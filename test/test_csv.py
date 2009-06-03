@@ -328,7 +328,7 @@ email:jacques@itaapy.com
 
 class Agenda(Table):
 
-    record_schema = {
+    record_properties = {
         'firstname': Unicode(is_indexed=True, multiple=False),
         'lastname': Unicode(multiple=False),
         'email': Unicode(is_indexed=True, multiple=False, unique=True)}
@@ -350,11 +350,11 @@ title;language=es,fr:El Capital
 
 class Books(Table):
 
-    record_schema = {
+    record_properties = {
         'title': Unicode(multiple=True),
         'author': Unicode}
 
-    parameters_schema = {
+    record_parameters = {
         'language': String(multiple=False)}
 
 

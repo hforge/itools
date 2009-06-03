@@ -201,29 +201,30 @@ class Component(CatalogAware):
 
 ##          XXX url: url to access edit_event_form on current event
         """
-        properties = self.get_property
+        get_property = self.get_property
         ns = {}
-        ns['SUMMARY'] = properties('SUMMARY').value
-        ns['ORGANIZER'] = properties('ORGANIZER').value
+        ns['SUMMARY'] = get_property('SUMMARY').value
+        ns['ORGANIZER'] = get_property('ORGANIZER').value
 
         ###############################################################
         # Set dtstart and dtend values using '...' for events which
         # appear into more than one cell
-        start = properties('DTSTART')
-        end = properties('DTEND')
-        param = start.parameters
+        start = get_property('DTSTART')
+        end = get_property('DTEND')
+        start_value_type = start.parameters.get('VALUE', 'DATE-TIME')
+
         ns['start'] = Time.encode(start.value.time())
         ns['end'] = Time.encode(end.value.time())
         ns['TIME'] = None
         if grid:
             # Neither a full day event nor a multiple days event
-            if ('VALUE' not in param or 'DATE' not in param['VALUE']) \
-              and start.value.date() == end.value.date():
+            if (start_value_type != 'DATE'
+                and start.value.date() == end.value.date()):
                 ns['TIME'] = '%s - %s' % (ns['start'], ns['end'])
             else:
                 ns['start'] = ns['end'] = None
         elif not out_on:
-            if 'VALUE' not in param or 'DATE' not in param['VALUE']:
+            if start_value_type != 'DATE':
                 value = ''
                 if starts_on:
                     value = ns['start']
@@ -244,7 +245,7 @@ class Component(CatalogAware):
             ns['STATUS'] = 'cal_conflict'
         else:
             ns['STATUS'] = 'cal_busy'
-            status = properties('STATUS')
+            status = get_property('STATUS')
             if status:
                 ns['STATUS'] = status.value
 

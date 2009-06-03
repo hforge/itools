@@ -28,7 +28,7 @@ from itools.csv import parse_table, Property, Record as TableRecord, Table
 from itools.datatypes import Integer, String, Unicode
 from itools.xapian import PhraseQuery, RangeQuery, OrQuery, AndQuery
 from base import BaseCalendar
-from types import data_properties, Time
+from types import record_properties, Time
 
 
 # The smallest possible difference between non-equal timedelta objects.
@@ -187,7 +187,7 @@ class icalendarTable(BaseCalendar, Table):
     record_class = Record
 
     record_properties = merge_dicts(
-        data_properties,
+        record_properties,
         type=String(is_indexed=True),
         inner=Integer(multiple=True))
 

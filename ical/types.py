@@ -19,6 +19,7 @@
 from datetime import datetime
 
 # Import from itools
+from itools.core import freeze
 from itools.datatypes import DataType, Integer, ISOTime , URI, Unicode, String
 
 
@@ -130,7 +131,7 @@ class DateTime(DataType):
 
 # data types for each property
 # --> TO VERIFY AND COMPLETE
-data_properties = {
+record_properties = freeze({
   'BEGIN': String(multiple=False),
   'END': String(multiple=False),
   'VERSION': Unicode(multiple=False),
@@ -187,7 +188,8 @@ data_properties = {
   'RELATED-TO': Unicode(multiple=False),
   'URL': URI(multiple=False),
   'UID': String(multiple=False, is_indexed=True)
-}
+})
+
 
 ################################################################
 #                         NOT USED ACTUALLY

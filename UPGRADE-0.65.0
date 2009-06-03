@@ -21,6 +21,23 @@ See the table below for the imports to update.
   TODO
 
 
+itools.csv
+==========
+
+(1) The class variables 'record_schema' and 'parameters_schema' have been
+renamed, respectively, to 'record_properties' and 'record_parameters'.
+
+  # Before
+  class MyTable(Table):
+      record_schema = {...}
+      parameters_schema = {...}
+
+  # Now
+  class MyTable(Table):
+      record_properties = {...}
+      record_parameters = {...}
+
+
 itools.datatypes
 ================
 

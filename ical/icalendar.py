@@ -31,7 +31,7 @@ from itools.handlers import guess_encoding, TextFile
 from itools.xapian import make_catalog, CatalogAware
 from itools.xapian import PhraseQuery, RangeQuery, OrQuery, AndQuery
 from base import BaseCalendar
-from types import data_properties, Time
+from types import record_properties, Time
 
 
 # The smallest possible difference between non-equal timedelta objects.
@@ -300,22 +300,13 @@ class iCalendar(BaseCalendar, TextFile):
     class_extension = 'ics'
 
 
-    # To override a component property from the spec, or to add a new one,
-    # define this class variable.
-    schema = {
-##        'DTSTART': DateTime(multiple=False, index='keyword'),
-##        'DTEND': DateTime(multiple=False, index='keyword'),
-    }
+    record_properties = record_properties
 
 
     @classmethod
     def get_record_datatype(cls, name):
-        # Overriden schema
-        if name in cls.schema:
-            return cls.schema[name]
-        # The specs schema
-        if name in data_properties:
-            return data_properties[name]
+        if name in cls.record_properties:
+            return cls.record_properties[name]
         # Default
         return String(multiple=True)
 

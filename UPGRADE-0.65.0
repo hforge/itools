@@ -38,6 +38,23 @@ renamed, respectively, to 'record_properties' and 'record_parameters'.
       record_parameters = {...}
 
 
+itools.ical
+===========
+
+(1) The class variable 'schema' has been removed. To override the schema
+of an iCalendar file, redefine the 'record_properties' class variable.
+
+  # Before
+  class MyCalendar(iCalendar):
+      schema = {
+          'MYPROPERTY': String}
+
+  # Now
+  class MyCalendar(iCalendar):
+      record_properties = merge_dicts(iCalendar.record_properties,
+          MYPROPERTY=String)
+
+
 itools.datatypes
 ================
 

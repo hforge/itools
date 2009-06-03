@@ -58,8 +58,10 @@ def checkid(id):
     if len(id) == 0:
         return None
 
-    # Return a safe ASCII bytestring
+    # No mixed case
     id = id.lower()
+    # Most FS are limited in 255 chars per name
+    # (keep space for ".metadata" extension)
+    id = id[:246]
+    # Return a safe ASCII bytestring
     return str(id)
-
-

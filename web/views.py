@@ -15,10 +15,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from the Standard Library
+from copy import deepcopy
+
 # Import from itools
 from itools.datatypes import Enumerate
 from itools.stl import stl
 from itools.uri import decode_query
+from itools.utils import frozenlist
 from context import FormError
 
 
@@ -93,6 +97,36 @@ class BaseView(object):
 
     def get_title(self, context):
         return self.title
+
+
+    #######################################################################
+    # Canonical URI for search engines
+    # "language" is by default because too widespreaded
+    canonical_query_parameters = frozenlist(['language'])
+
+
+    def get_canonical_uri(self, context):
+        """Return the same URI stripped from redundant view name, if already
+        the default, and query parameters not affecting the resource
+        representation.
+        Search engines will keep this sole URI when crawling different
+        combinations of this view.
+        """
+        uri = deepcopy(context.uri)
+        query = uri.query
+        # Remove the view name if default
+        view_name = context.view_name
+        if view_name:
+            resource = context.resource
+            if view_name == resource.get_default_view_name():
+                uri = uri.resolve2('..')
+        # Remove noise from query parameters
+        canonical_query_parameters = self.canonical_query_parameters
+        for parameter in query.keys():
+            if parameter not in canonical_query_parameters:
+                del query[parameter]
+        uri.query = query
+        return uri
 
 
 

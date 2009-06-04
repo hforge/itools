@@ -137,6 +137,10 @@ class URI(String):
 
 
 class PathDataType(DataType):
+    # TODO Do like URI, do not decode (just an string), and use 'is_valid'
+    # instead
+
+    default = Path('')
 
     @staticmethod
     def decode(value):

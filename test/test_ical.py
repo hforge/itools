@@ -22,6 +22,8 @@ from unittest import TestCase, main
 
 # Import from itools
 from itools.csv import Property
+from itools.csv.table import encode_param_value
+from itools.datatypes import String
 from itools.ical import iCalendar, icalendarTable
 
 
@@ -84,6 +86,19 @@ END:VCALENDAR
 """
 
 
+def property_to_string(prop_name, prop):
+    """Method only used by test_load and test_load2.
+    """
+    value, params = prop.value, ''
+    for p_name in prop.parameters:
+        p_value = prop.parameters[p_name]
+        p_value = [ encode_param_value(p_name, x, String) for x in p_value ]
+        param = ';%s=%s' % (p_name, ','.join(p_value))
+        params = params + param
+    return u'%s%s:%s' % (prop_name, params, value)
+
+
+
 class icalTestCase(TestCase):
 
     def setUp(self):
@@ -92,7 +107,6 @@ class icalTestCase(TestCase):
 
 
     def test_new(self):
-        """Test new"""
         cal = iCalendar()
 
         properties = []
@@ -128,7 +142,7 @@ class icalTestCase(TestCase):
         expected = ['ATTENDEE;MEMBER="mailto:DEV-GROUP@host.com":'
                     'mailto:darwin@itaapy.com\n']
 
-        member = '"mailto:DEV-GROUP@host.com"'
+        member = 'mailto:DEV-GROUP@host.com'
         value = Property('mailto:darwin@itaapy.com', MEMBER=[member])
         output = self.cal1.encode_property('ATTENDEE', value)
         self.assertEqual(output, expected)
@@ -173,8 +187,7 @@ class icalTestCase(TestCase):
 
 
     def test_add_to_calendar(self):
-        """
-        Test to add property and component to an empty icalendar object.
+        """Test to add property and component to an empty icalendar object.
         """
         cal = iCalendar()
         cal.add_component('VEVENT')
@@ -185,20 +198,9 @@ class icalTestCase(TestCase):
         self.assertEqual(cal.get_property_values('METHOD'), value)
 
 
-    def property_to_string(self, prop_name, prop):
-        """
-        Method only used by test_load and test_load2.
-        """
-        value, params = prop.value, ''
-        for param_name in prop.parameters:
-            param_value = prop.parameters[param_name]
-            param = u';' + param_name +  u'=' + u','.join(param_value)
-            params = params + param
-        return u'%s%s:%s' % (prop_name, params, value)
-
-
     def test_load(self):
-        """Test loading a simple calendar."""
+        """Test loading a simple calendar.
+        """
         cal = self.cal1
 
         # Test icalendar properties
@@ -227,11 +229,11 @@ class icalTestCase(TestCase):
             datatype = cal.get_record_datatype(prop_name)
             if datatype.multiple is False:
                 prop = version[prop_name]
-                property = self.property_to_string(prop_name, prop)
+                property = property_to_string(prop_name, prop)
                 properties.append(property)
             else:
                 for prop in version[prop_name]:
-                    property = self.property_to_string(prop_name, prop)
+                    property = property_to_string(prop_name, prop)
                     properties.append(property)
 
         expected_event_properties = [
@@ -247,7 +249,7 @@ class icalTestCase(TestCase):
             u'LOCATION:France',
             u'X-MOZILLA-RECUR-DEFAULT-INTERVAL:0',
             u'DTEND;VALUE=DATE:2005-05-31 00:00:00',
-            u'DTSTART;VALUE="DATE":2005-05-30 00:00:00',
+            u'DTSTART;VALUE=DATE:2005-05-30 00:00:00',
             u'CLASS:PRIVATE']
 
         self.assertEqual(event.uid, '581361a0-1dd2-11b2-9a42-bd3958eeac9a')
@@ -267,7 +269,8 @@ class icalTestCase(TestCase):
 
 
     def test_load_2(self):
-        """Test loading a 2 events calendar."""
+        """Test loading a 2 events calendar.
+        """
         cal = self.cal2
 
         properties = []
@@ -295,11 +298,11 @@ class icalTestCase(TestCase):
                 datatype = cal.get_record_datatype(prop_name)
                 if datatype.multiple is False:
                     prop = version[prop_name]
-                    property = self.property_to_string(prop_name, prop)
+                    property = property_to_string(prop_name, prop)
                     properties.append(property)
                 else:
                     for prop in version[prop_name]:
-                        property = self.property_to_string(prop_name, prop)
+                        property = property_to_string(prop_name, prop)
                         properties.append(property)
 
             events.append(properties)
@@ -315,7 +318,7 @@ class icalTestCase(TestCase):
             u'LOCATION:France',
             u'X-MOZILLA-RECUR-DEFAULT-INTERVAL:0',
             u'DTEND;VALUE=DATE:2005-05-31 23:59:59.999999',
-            u'DTSTART;VALUE="DATE":2005-05-30 00:00:00',
+            u'DTSTART;VALUE=DATE:2005-05-30 00:00:00',
             u'CLASS:PRIVATE'],
             [
             u'ATTENDEE;MEMBER="mailto:DEV-GROUP@host2.com";RSVP=TRUE'\
@@ -323,7 +326,7 @@ class icalTestCase(TestCase):
             u'SUMMARY:222222222',
             u'PRIORITY:2',
             u'DTEND;VALUE=DATE:2005-07-01 00:00:00',
-            u'DTSTART;VALUE="DATE":2005-07-01 00:00:00'
+            u'DTSTART;VALUE=DATE:2005-07-01 00:00:00'
             ]]
 
         self.assertEqual(events, expected_events)
@@ -343,13 +346,15 @@ class icalTestCase(TestCase):
 
     # Just call to_str method
     def test_to_str(self):
-        """Call to_str method."""
+        """Call to_str method.
+        """
         cal = self.cal2
         cal.to_str()
 
 
     def test_add_property(self):
-        """ Test adding a property to any component """
+        """Test adding a property to any component.
+        """
         cal = self.cal2
         event = cal.get_components('VEVENT')[1]
 
@@ -383,7 +388,8 @@ class icalTestCase(TestCase):
 
 
     def test_icalendar_set_property(self):
-        """ Test setting a new value to an existant icalendar property"""
+        """Test setting a new value to an existant icalendar property.
+        """
         cal = self.cal1
 
         name, value = 'VERSION', Property('2.1')
@@ -395,7 +401,8 @@ class icalTestCase(TestCase):
 
 
     def test_component_set_property(self):
-        """ Test setting a new value to an existant component property"""
+        """Test setting a new value to an existant component property.
+        """
         cal = self.cal1
         event = cal.get_components('VEVENT')[0]
 
@@ -413,7 +420,8 @@ class icalTestCase(TestCase):
 
 
     def test_search_events(self):
-        """Test get events filtered by arguments given."""
+        """Test get events filtered by arguments given.
+        """
         # Test with 1 event
         cal = self.cal1
         attendee_value = 'mailto:jdoe@itaapy.com'
@@ -466,7 +474,8 @@ class icalTestCase(TestCase):
 
 
     def test_search_events_in_date(self):
-        """Test search events by date."""
+        """Test search events by date.
+        """
         cal = self.cal1
 
         date = datetime(2005, 5, 29)
@@ -501,7 +510,8 @@ class icalTestCase(TestCase):
 
 
     def test_search_events_in_range(self):
-        """Test search events matching given dates range."""
+        """Test search events matching given dates range.
+        """
         cal = self.cal2
 
         dtstart = datetime(2005, 1, 1)
@@ -557,8 +567,7 @@ class icalTestCase(TestCase):
 
 
     def test_get_conflicts(self):
-        """
-        Test get_conflicts method which returns uid couples of events
+        """Test get_conflicts method which returns uid couples of events
         conflicting on a given date.
         """
         cal = self.cal2
@@ -595,7 +604,6 @@ class icalTableTestCase(TestCase):
 
 
     def test_new(self):
-        """Test new"""
         cal = icalendarTable()
 
         # Test components
@@ -618,7 +626,7 @@ class icalTableTestCase(TestCase):
         expected = ['ATTENDEE;MEMBER="mailto:DEV-GROUP@host.com":'
                     'mailto:darwin@itaapy.com\n']
 
-        member = '"mailto:DEV-GROUP@host.com"'
+        member = 'mailto:DEV-GROUP@host.com'
         value = Property('mailto:darwin@itaapy.com', MEMBER=[member])
         output = self.cal1.encode_property('ATTENDEE', value)
         self.assertEqual(output, expected)
@@ -659,28 +667,16 @@ class icalTableTestCase(TestCase):
 
 
     def test_add_to_calendar(self):
-        """
-        Test to add property and component to an empty icalendar object.
+        """Test to add property and component to an empty icalendar object.
         """
         cal = icalendarTable()
         cal.add_record({'type': 'VEVENT'})
         self.assertEqual(len(cal.get_components('VEVENT')), 1)
 
 
-    def property_to_string(self, prop_name, prop):
-        """
-        Method only used by test_load and test_load2.
-        """
-        value, params = prop.value, ''
-        for param_name in prop.parameters:
-            param_value = prop.parameters[param_name]
-            param = u';' + param_name +  u'=' + u','.join(param_value)
-            params = params + param
-        return u'%s%s:%s' % (prop_name, params, value)
-
-
     def test_load(self):
-        """Test loading a simple calendar."""
+        """Test loading a simple calendar.
+        """
         cal = self.cal1
 
         # Test component properties
@@ -693,11 +689,11 @@ class icalTableTestCase(TestCase):
             datatype = cal.get_record_datatype(prop_name)
             if getattr(datatype, 'multiple', False) is False:
                 prop = version[prop_name]
-                property = self.property_to_string(prop_name, prop)
+                property = property_to_string(prop_name, prop)
                 properties.append(property)
             else:
                 for prop in version[prop_name]:
-                    property = self.property_to_string(prop_name, prop)
+                    property = property_to_string(prop_name, prop)
                     properties.append(property)
 
         expected_event_properties = [
@@ -713,7 +709,7 @@ class icalTableTestCase(TestCase):
             u'LOCATION:France',
             u'X-MOZILLA-RECUR-DEFAULT-INTERVAL:0',
             u'DTEND;VALUE=DATE:2005-05-31 00:00:00',
-            u'DTSTART;VALUE="DATE":2005-05-30 00:00:00',
+            u'DTSTART;VALUE=DATE:2005-05-30 00:00:00',
             u'CLASS:PRIVATE']
 
         self.assertEqual(event.UID, '581361a0-1dd2-11b2-9a42-bd3958eeac9a')
@@ -733,7 +729,8 @@ class icalTableTestCase(TestCase):
 
 
     def test_load_2(self):
-        """Test loading a 2 events calendar."""
+        """Test loading a 2 events calendar.
+        """
         cal = self.cal2
 
         events = []
@@ -749,11 +746,11 @@ class icalTableTestCase(TestCase):
                 datatype = cal.get_record_datatype(prop_name)
                 if getattr(datatype, 'multiple', False) is False:
                     prop = version[prop_name]
-                    property = self.property_to_string(prop_name, prop)
+                    property = property_to_string(prop_name, prop)
                     properties.append(property)
                 else:
                     for prop in version[prop_name]:
-                        property = self.property_to_string(prop_name, prop)
+                        property = property_to_string(prop_name, prop)
                         properties.append(property)
 
             events.append(properties)
@@ -765,7 +762,7 @@ class icalTableTestCase(TestCase):
             u'SUMMARY:222222222',
             u'PRIORITY:2',
             u'DTEND;VALUE=DATE:2005-07-01 00:00:00',
-            u'DTSTART;VALUE="DATE":2005-07-01 00:00:00'
+            u'DTSTART;VALUE=DATE:2005-07-01 00:00:00'
             ],
             [
             u'STATUS:TENTATIVE',
@@ -777,7 +774,7 @@ class icalTableTestCase(TestCase):
             u'LOCATION:France',
             u'X-MOZILLA-RECUR-DEFAULT-INTERVAL:0',
             u'DTEND;VALUE=DATE:2005-05-31 23:59:59.999999',
-            u'DTSTART;VALUE="DATE":2005-05-30 00:00:00',
+            u'DTSTART;VALUE=DATE:2005-05-30 00:00:00',
             u'CLASS:PRIVATE']
             ]
 
@@ -798,13 +795,15 @@ class icalTableTestCase(TestCase):
 
     # Just call to_ical method
     def test_to_ical(self):
-        """Call to_ical method."""
+        """Call to_ical method.
+        """
         cal = self.cal2
         cal.to_ical()
 
 
     def test_add_property(self):
-        """ Test adding a property to any component """
+        """Test adding a property to any component.
+        """
         cal = self.cal2
         event = cal.get_components('VEVENT')[1]
 
@@ -838,7 +837,8 @@ class icalTableTestCase(TestCase):
 
 
     def test_component_set_property(self):
-        """ Test setting a new value to an existant component property"""
+        """Test setting a new value to an existant component property.
+        """
         cal = self.cal1
         event = cal.get_components('VEVENT')[0]
 
@@ -856,7 +856,8 @@ class icalTableTestCase(TestCase):
 
 
     def test_search_events(self):
-        """Test get events filtered by arguments given."""
+        """Test get events filtered by arguments given.
+        """
         cal = self.cal1
         # Test with 1 event
         attendee_value = 'mailto:jdoe@itaapy.com'
@@ -909,7 +910,8 @@ class icalTableTestCase(TestCase):
 
 
     def test_search_events_in_date(self):
-        """Test search events by date."""
+        """Test search events by date.
+        """
         cal = self.cal1
 
         date = datetime(2005, 5, 29)
@@ -944,7 +946,8 @@ class icalTableTestCase(TestCase):
 
 
     def test_search_events_in_range(self):
-        """Test search events matching given dates range."""
+        """Test search events matching given dates range.
+        """
         cal = self.cal2
 
         dtstart = datetime(2005, 1, 1)
@@ -1000,8 +1003,7 @@ class icalTableTestCase(TestCase):
 
 
     def test_get_conflicts(self):
-        """
-        Test get_conflicts method which returns uid couples of events
+        """Test get_conflicts method which returns uid couples of events
         conflicting on a given date.
         """
         cal = self.cal2

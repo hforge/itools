@@ -181,7 +181,7 @@ def get_tokens(property):
         # param-name ended, param-value beginning
         elif status == 3:
             if c == '"':
-                param_value = c
+                param_value = ''
                 status = 4
             elif c == ':':
                 parameters[param_name].append('')
@@ -201,7 +201,6 @@ def get_tokens(property):
                 if last == '"':
                     raise SyntaxError, error2 % (c, status)
                 last = '"'
-                param_value += c
                 status = 6
             else:
                 param_value += c

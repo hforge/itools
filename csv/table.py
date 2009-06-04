@@ -329,6 +329,17 @@ class Property(object):
         self.parameters = kw
 
 
+def encode_param_value(p_name, p_value, p_datatype):
+    p_value = p_datatype.encode(p_value)
+    if '"' in p_value:
+        error = 'the "%s" parameter contains a double quote'
+        raise ValueError, error % p_name
+    if ';' in p_value or ':' in p_value or ',' in p_value:
+        return '"%s"' % p_value
+    return p_value
+
+
+
 def property_to_str(name, property, datatype, p_schema, encoding='utf-8'):
     """This method serializes the given property to a byte string:
 
@@ -350,10 +361,11 @@ def property_to_str(name, property, datatype, p_schema, encoding='utf-8'):
         # Serialize the parameter
         # FIXME Use the encoding
         if getattr(p_datatype, 'multiple', False):
-            p_value = [ p_datatype.encode(x) for x in p_value ]
+            p_value = [
+                encode_param_value(p_name, x, p_datatype) for x in p_value ]
             p_value = ','.join(p_value)
         else:
-            p_value = p_datatype.encode(p_value)
+            p_value = encode_param_value(p_name, p_value, p_datatype)
         parameters.append(';%s=%s' % (p_name, p_value))
     parameters = ''.join(parameters)
 

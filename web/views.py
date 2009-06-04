@@ -19,10 +19,10 @@
 from copy import deepcopy
 
 # Import from itools
+from itools.core import freeze
 from itools.datatypes import Enumerate
 from itools.stl import stl
 from itools.uri import decode_query
-from itools.utils import frozenlist
 from context import FormError
 
 
@@ -102,7 +102,7 @@ class BaseView(object):
     #######################################################################
     # Canonical URI for search engines
     # "language" is by default because too widespreaded
-    canonical_query_parameters = frozenlist(['language'])
+    canonical_query_parameters = freeze(['language'])
 
 
     def get_canonical_uri(self, context):

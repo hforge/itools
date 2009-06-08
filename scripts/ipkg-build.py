@@ -20,7 +20,8 @@
 # Import from the Standard Library
 from re import compile
 from optparse import OptionParser
-from os.path import islink
+from os import listdir
+from os.path import isdir, islink, join as join_path
 from subprocess import call
 import sys
 
@@ -67,23 +68,24 @@ def get_version():
     return version_name
 
 
-def get_files(excluded_paths, good_files=None, bad_files=None):
-    base = vfs.open('.')
-    for name in base.get_names('.'):
-        if base.is_folder(name):
-            if name not in excluded_paths:
-                uris = base.traverse(name)
-            else:
-                continue
-        else:
-            uris = (base.get_uri(name), )
-        for uri in uris:
-            if vfs.is_file(uri):
-                if good_files and not good_files.match(uri):
-                    continue
-                if bad_files and bad_files.match(uri):
-                    continue
-                yield uri
+def get_files(excluded_paths, filter=lambda x: True):
+    for name in listdir('.'):
+        if name in excluded_paths:
+            continue
+
+        if isdir(name):
+            stack = [name]
+            while stack:
+                base = stack.pop()
+                for name in listdir(base):
+                    path = join_path(base, name)
+                    if isdir(path):
+                        stack.append(path)
+                    elif filter(name):
+                        yield path
+        elif filter(name):
+            yield name
+
 
 
 if __name__ == '__main__':
@@ -96,9 +98,6 @@ if __name__ == '__main__':
     if len(args) != 0:
         parser.error('incorrect number of arguments')
 
-    # The base directory
-    base = vfs.open('.')
-
     # Try using git facilities
     git_available = git.is_available()
     if not git_available:
@@ -108,6 +107,9 @@ if __name__ == '__main__':
     config = ConfigFile('setup.conf')
     source_language = config.get_value('source_language', default='en')
     target_languages = config.get_value('target_languages', default='').split()
+
+    # Excluded paths
+    exclude = frozenset(['.git', 'build', 'dist'])
 
     # Initialize the manifest file
     manifest = ['MANIFEST', 'version.txt']
@@ -119,11 +121,9 @@ if __name__ == '__main__':
         filenames = git.get_filenames()
     else:
         # No git: find out source files
-        filenames = get_files(excluded_paths=('.git', 'build', 'dist'),
-                              bad_files=compile('.*(~|pyc|%s)$' %
-                                                '|'.join(target_languages)))
-    filenames = [ base.get_relative_path(x)
-                  for x in filenames if not islink(x) ]
+        bad_files = compile('.*(~|pyc|%s)$' % '|'.join(target_languages))
+        filenames = get_files(exclude, filter=lambda x: not bad_files.match(x))
+    filenames = [ x for x in filenames if not islink(x) ]
     manifest.extend(filenames)
 
     # Internationalization
@@ -147,14 +147,13 @@ if __name__ == '__main__':
             message_catalogs[lang] = (get_handler(path), vfs.get_mtime(path))
 
         # Build the templates in the target languages
-        lines = get_files(excluded_paths=('build', 'dist', '.git'),
-                          good_files=compile('.*\\.x.*ml.%s$' %
-                                             source_language))
+        good_files = compile('.*\\.x.*ml.%s$' % source_language)
+        lines = get_files(exclude, filter=lambda x: good_files.match(x))
+        lines = list(lines)
         if lines:
             print '* Build XHTML files',
             sys.stdout.flush()
             for path in lines:
-                path = base.get_relative_path(path)
                 # Load the handler
                 src_mtime = vfs.get_mtime(path)
                 src = XHTMLFile(path)

@@ -19,13 +19,13 @@ from distutils import core
 from distutils.core import Extension
 from distutils.command.build_ext import build_ext
 from distutils.errors import LinkError
-from os.path import exists, join as join_path
+from os import listdir
+from os.path import exists, isdir, join as join_path
 from re import compile
 from sys import _getframe, argv
 
 # Import from itools
 from itools.core import freeze, get_pipe, get_version
-from itools.fs import lfs
 from itools import git
 from handlers import SetupConf
 
@@ -65,23 +65,23 @@ def make_version(cwd=None):
 
 
 
-def get_files(excluded_paths, good_files=None, bad_files=None):
-    base = lfs.open('.')
-    for name in base.get_names('.'):
-        if base.is_folder(name):
-            if name not in excluded_paths:
-                uris = base.traverse(name)
-            else:
-                continue
-        else:
-            uris = (base.get_uri(name), )
-        for uri in uris:
-            if lfs.is_file(uri):
-                if good_files and not good_files.match(uri):
-                    continue
-                if bad_files and bad_files.match(uri):
-                    continue
-                yield uri
+def get_files(excluded_paths, filter=lambda x: True):
+    for name in listdir('.'):
+        if name in excluded_paths:
+            continue
+
+        if isdir(name):
+            stack = [name]
+            while stack:
+                base = stack.pop()
+                for name in listdir(base):
+                    path = join_path(base, name)
+                    if isdir(path):
+                        stack.append(path)
+                    elif filter(name):
+                        yield path
+        elif filter(name):
+            yield name
 
 
 
@@ -154,11 +154,9 @@ def get_manifest():
     config = SetupConf('setup.conf')
     target_languages = config.get_value('target_languages', default='').split()
 
-    filenames = get_files(excluded_paths=('.git', 'build', 'dist'),
-                          bad_files=compile('.*(~|pyc|%s)$' %
-                                            '|'.join(target_languages)))
-    base = lfs.open('.')
-    return [ base.get_relative_path(x) for x in filenames ]
+    exclude = frozenset(['.git', 'build', 'dist'])
+    bad_files = compile('.*(~|pyc|%s)$' % '|'.join(target_languages))
+    return get_files(exclude, filter=lambda x: not bad_files.match(x))
 
 
 

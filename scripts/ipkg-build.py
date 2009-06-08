@@ -48,9 +48,6 @@ if __name__ == '__main__':
     if len(args) != 0:
         parser.error('incorrect number of arguments')
 
-    # The base directory
-    base = lfs.open('.')
-
     # Try using git facilities
     git_available = git.is_available()
     if not git_available:
@@ -93,14 +90,14 @@ if __name__ == '__main__':
             message_catalogs[lang] = (get_handler(path), lfs.get_mtime(path))
 
         # Build the templates in the target languages
-        lines = get_files(excluded_paths=('build', 'dist', '.git'),
-                          good_files=compile('.*\\.x.*ml.%s$' %
-                                             source_language))
+        good_files = compile('.*\\.x.*ml.%s$' % source_language)
+        exclude = frozenset(['.git', 'build', 'dist'])
+        lines = get_files(exclude, filter=lambda x: good_files.match(x))
+        lines = list(lines)
         if lines:
             print '* Build XHTML files',
             stdout.flush()
             for path in lines:
-                path = base.get_relative_path(path)
                 # Load the handler
                 src_mtime = lfs.get_mtime(path)
                 src = XHTMLFile(path)

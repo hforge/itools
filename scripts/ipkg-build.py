@@ -147,10 +147,7 @@ if __name__ == '__main__':
             message_catalogs[lang] = (get_handler(path), vfs.get_mtime(path))
 
         # Build the templates in the target languages
-        # XXX The directory "skeleton" is specific to ikaaro, should not
-        # be hardcoded.
-        lines = get_files(excluded_paths=('build', 'dist', '.git',
-                                          'skeleton'),
+        lines = get_files(excluded_paths=('build', 'dist', '.git'),
                           good_files=compile('.*\\.x.*ml.%s$' %
                                              source_language))
         if lines:

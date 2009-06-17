@@ -27,7 +27,7 @@ from time import strptime
 from itools.core import freeze
 from itools.datatypes import String
 from itools.gettext import MSG
-from itools.http import Response, Unauthorized
+from itools.http import Response
 from itools.i18n import AcceptLanguageType
 from itools.uri import get_reference
 from messages import ERROR
@@ -170,8 +170,11 @@ class Context(object):
             goto = goto.replace(**form)
         # Translate the source message
         if message:
-            message = message.gettext(**kw)
-            return goto.replace(message=message)
+            text = message.gettext(**kw)
+            if isinstance(message, ERROR):
+                return goto.replace(error=text)
+            else:
+                return goto.replace(info=text)
         return goto
 
 

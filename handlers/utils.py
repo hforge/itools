@@ -17,9 +17,9 @@
 
 
 src = (ur"""ÄÅÁÀÂÃĀäåáàâãāÇçÉÈÊËĒéèêëēÍÌÎÏĪíìîïīÑñÖÓÒÔÕØŌöóòôõøōÜÚÙÛŪüúùûū"""
-       ur"""ÝŸȲýÿȳ""")
+       ur"""ÝŸȲýÿȳŽž""")
 dst = (ur"""AAAAAAAaaaaaaaCcEEEEEeeeeeIIIIIiiiiiNnOOOOOOOoooooooUUUUUuuuuu"""
-       ur"""YYYyyy""")
+       ur"""YYYyyyZz""")
 
 transmap = {}
 for i in range(len(src)):

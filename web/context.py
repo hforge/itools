@@ -248,7 +248,11 @@ class Context(object):
         # Deserialize
         if value is None:
             return type.get_default()
-        return type.decode(value)
+        value = type.decode(value)
+        if not type.is_valid(value):
+            raise ValueError, "Invalid cookie value"
+        return value
+
 
 
     def has_cookie(self, name):

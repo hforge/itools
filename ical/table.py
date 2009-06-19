@@ -484,15 +484,7 @@ class icalendarTable(BaseCalendar, Table):
         dtstart = datetime(selected_date.year, selected_date.month,
                            selected_date.day)
         dtend = dtstart + timedelta(days=1) - resolution
-        return self.search_events_in_range(dtstart, dtend, sortby=sortby,
-                                           **kw)
-
-
-    # Test if any event corresponds to a given date
-    def has_event_in_date(self, date):
-        """Return True if there is at least one event matching the given date.
-        """
-        return self.search_events_in_date(date) != []
+        return self.search_events_in_range(dtstart, dtend, sortby=sortby, **kw)
 
 
     def get_conflicts(self, start_date, end_date=None):

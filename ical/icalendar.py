@@ -736,13 +736,6 @@ class iCalendar(BaseCalendar, TextFile):
         return res
 
 
-    # Test if any event corresponds to a given date
-    def has_event_in_date(self, date):
-        """Return True if there is at least one event matching the given date.
-        """
-        return self.search_events_in_date(date) != []
-
-
     def get_conflicts(self, start_date, end_date=None):
         """Returns a list of uid couples which happen at the same time.
         We check only last occurrence of events.

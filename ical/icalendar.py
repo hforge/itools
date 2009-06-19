@@ -614,8 +614,8 @@ class iCalendar(BaseCalendar, TextFile):
         filters = kw.keys()
 
         # For each event
-        events = subset or [self.components[x]
-                            for x in self.search(type='VEVENT')]
+        events = subset or [ self.components[x]
+                             for x in self.search(type='VEVENT') ]
         for event in events:
             version = event.get_version()
 
@@ -660,15 +660,13 @@ class iCalendar(BaseCalendar, TextFile):
         return self.components.get(uid)
 
 
-    def search_events_in_date(self, selected_date, sortby=None, **kw):
+    def search_events_in_date(self, date, sortby=None, **kw):
         """Return a list of Component objects of type 'VEVENT' matching the
         given date and sorted if requested.
         """
-        dtstart = datetime(selected_date.year, selected_date.month,
-                           selected_date.day)
+        dtstart = datetime(date.year, date.month, date.day)
         dtend = dtstart + timedelta(days=1) - resolution
-        return self.search_events_in_range(dtstart, dtend, sortby=sortby,
-                                           **kw)
+        return self.search_events_in_range(dtstart, dtend, sortby=sortby, **kw)
 
 
     def search_events_in_range(self, dtstart, dtend, sortby=None, **kw):
@@ -780,6 +778,5 @@ class iCalendar(BaseCalendar, TextFile):
         query.
         """
         result = self.catalog.search(query, **kw)
-        return [ doc.__uid__
-                 for doc in result.get_documents(sort_by='__uid__') ]
+        return [ x.__uid__ for x in result.get_documents(sort_by='__uid__') ]
 

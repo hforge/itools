@@ -477,12 +477,11 @@ class icalendarTable(BaseCalendar, Table):
         return res
 
 
-    def search_events_in_date(self, selected_date, sortby=None, **kw):
+    def search_events_in_date(self, date, sortby=None, **kw):
         """Return a list of Component objects of type 'VEVENT' matching the
         given date and sorted if requested.
         """
-        dtstart = datetime(selected_date.year, selected_date.month,
-                           selected_date.day)
+        dtstart = datetime(date.year, date.month, date.day)
         dtend = dtstart + timedelta(days=1) - resolution
         return self.search_events_in_range(dtstart, dtend, sortby=sortby, **kw)
 

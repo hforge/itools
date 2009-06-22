@@ -25,7 +25,6 @@ from sys import _getframe, argv
 # Import from itools
 from itools.core import freeze, get_abspath, get_pipe, get_version
 from itools import git
-from commands import iregister, iupload
 from handlers import SetupConf
 
 
@@ -142,7 +141,7 @@ def setup(ext_modules=freeze([])):
     author_name = config.get_value('author_name')
     # XXX Workaround buggy distutils ("sdist" don't likes unicode strings,
     # and "register" don't likes normal strings).
-    if 'register' in argv or 'iregister' in argv:
+    if 'register' in argv:
         author_name = unicode(author_name, 'utf-8')
     classifiers = [ x for x in config.get_value('classifiers') if x ]
     core.setup(name = package_name,
@@ -164,8 +163,6 @@ def setup(ext_modules=freeze([])):
                provides = config.get_value('provides'),
                # Scripts
                scripts = scripts,
-               cmdclass = {'iupload': iupload,
-                           'iregister': iregister,
-                           'build_ext': OptionalBuildExt},
+               cmdclass = {'build_ext': OptionalBuildExt},
                # C extensions
                ext_modules=ext_modules)

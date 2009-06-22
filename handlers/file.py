@@ -173,6 +173,7 @@ class File(Handler):
 
         # Copy the state
         copy = object.__new__(cls)
+        copy.reset()
         for name in self.__dict__:
             if name not in cls.clone_exclude:
                 value = getattr(self, name)

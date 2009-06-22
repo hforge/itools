@@ -17,7 +17,6 @@
 
 # Import from itools
 from itools.core import add_type
-from commands import DEFAULT_REPOSITORY
 from distribution import ArchiveNotSupported, Bundle
 from metadata import PKGINFOFile
 from packages import get_installed_info, packages_infos
@@ -29,7 +28,6 @@ from utils import get_compile_flags
 __all__ = [
     'ArchiveNotSupported',
     'Bundle',
-    'DEFAULT_REPOSITORY',
     'download',
     'EXTENSIONS',
     'get_installed_info',

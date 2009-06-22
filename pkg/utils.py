@@ -23,7 +23,7 @@ from os.path import exists, join as join_path
 from sys import _getframe, argv
 
 # Import from itools
-from itools.core import freeze, get_abspath, get_pipe, get_version
+from itools.core import freeze, get_pipe, get_version
 from itools import git
 from commands import iregister, iupload
 from handlers import SetupConf
@@ -70,9 +70,9 @@ def get_compile_flags(command):
 
     if isinstance(command, str):
         command = command.split()
-    pipe = get_pipe(command)
+    data = get_pipe(command)
 
-    for line in pipe.readlines():
+    for line in data.splitlines():
         for token in line.split():
             flag, value = token[:2], token[2:]
             if flag == '-I':

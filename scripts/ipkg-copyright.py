@@ -20,7 +20,6 @@
 # Import from the Standard Library
 from datetime import datetime
 from optparse import OptionParser
-import sys
 
 # Import from itools
 import itools
@@ -102,11 +101,11 @@ if __name__ == '__main__':
     for filename in args:
         # Call "git blame"
         command = ['git', 'blame', '-p', filename]
-        pipe = get_pipe(command)
+        output = get_pipe(command)
 
         header = True
         authors = {}
-        for line in pipe.splitlines():
+        for line in output.splitlines():
             if line.startswith('author '):
                 name = line[7:]
             elif line.startswith('author-mail '):

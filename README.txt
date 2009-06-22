@@ -17,11 +17,10 @@ The packages included are:
 
 The scripts included are:
 
-  igettext-build.py       ipkg-copyright.py       ipkg-release.py
-  igettext-extract.py     ipkg-info.py            ipkg-update-locale.py
-  igettext-merge.py       ipkg-install.py         ixapian-inspect.py
-  ipkg-build.py           ipkg-quality.py
-  ipkg-cache-list.py      ipkg-register.py
+  igettext-build.py       ipkg-cache-list.py      ipkg-quality.py
+  igettext-extract.py     ipkg-copyright.py       ipkg-register.py
+  igettext-merge.py       ipkg-info.py            ipkg-update-locale.py
+  ipkg-build.py           ipkg-install.py         ixapian-inspect.py
 
 
 Requirements

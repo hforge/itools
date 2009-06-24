@@ -16,13 +16,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from odf import ODTFile, ODPFile, ODSFile
+from odf import ODFFile, ODTFile, ODPFile, ODSFile
 from oo import SXWFile, SXCFile, SXIFile
 import schema
 
 
 __all__ = [
     # Opend Document Format
+    'ODFFile',
     'ODTFile',
     'ODPFile',
     'ODSFile',

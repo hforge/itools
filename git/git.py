@@ -24,8 +24,8 @@ from itools.core import freeze, get_pipe
 def is_available():
     """Returns True if we are in a git working directory, False otherwise.
     """
-    pipe = get_pipe(['git', 'branch'])
-    return bool(pipe.read())
+    data = get_pipe(['git', 'branch'])
+    return bool(data)
 
 
 def get_filenames():
@@ -34,8 +34,8 @@ def get_filenames():
     if not is_available():
         return []
 
-    pipe = get_pipe(['git', 'ls-files'])
-    return [ x.strip() for x in pipe.readlines() ]
+    data = get_pipe(['git', 'ls-files'])
+    return [ x.strip() for x in data.splitlines() ]
 
 
 def get_metadata(reference='HEAD', cwd=None):
@@ -43,8 +43,8 @@ def get_metadata(reference='HEAD', cwd=None):
 
     For now only the commit id and the timestamp are returned.
     """
-    pipe = get_pipe(['git', 'cat-file', 'commit', reference], cwd=cwd)
-    lines = pipe.readlines()
+    data = get_pipe(['git', 'cat-file', 'commit', reference], cwd=cwd)
+    lines = data.splitlines()
 
     # Default values
     metadata = {
@@ -81,7 +81,7 @@ def get_metadata(reference='HEAD', cwd=None):
             metadata['message'].append(line)
 
     # Post-process message
-    metadata['message'] = ''.join(metadata['message'])
+    metadata['message'] = '\n'.join(metadata['message'])
 
     # Ok
     return metadata
@@ -91,10 +91,10 @@ def get_metadata(reference='HEAD', cwd=None):
 def get_branch_name():
     """Returns the name of the current branch.
     """
-    pipe = get_pipe(['git', 'branch'])
-    for line in pipe.readlines():
+    data = get_pipe(['git', 'branch'])
+    for line in data.splitlines():
         if line.startswith('*'):
-            return line[2:-1]
+            return line[2:]
 
     return None
 
@@ -102,14 +102,14 @@ def get_branch_name():
 def get_tag_names():
     """Returns the names of all the tags.
     """
-    pipe = get_pipe(['git', 'ls-remote', '--tags', '.'])
-    return [ x.strip().split('/')[-1] for x in pipe.readlines() ]
+    data = get_pipe(['git', 'ls-remote', '--tags', '.'])
+    return [ x.strip().split('/')[-1] for x in data.splitlines() ]
 
 
 
 def get_revisions(files=freeze([]), cwd=None):
     command = ['git', 'rev-list', 'HEAD', '--'] + files
-    pipe = get_pipe(command, cwd=cwd)
+    data = get_pipe(command, cwd=cwd)
 
-    return [ x.rstrip() for x in pipe.readlines() ]
+    return [ x.rstrip() for x in data.splitlines() ]
 

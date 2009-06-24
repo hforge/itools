@@ -96,9 +96,8 @@ def get_pipe(command, cwd=None):
     """Wrapper around 'subprocess.Popen'
     """
     popen = Popen(command, stdout=PIPE, stderr=PIPE, cwd=cwd)
-    errno = popen.wait()
-    if errno:
-        strerror = popen.stderr.read()
-        raise EnvironmentError, (errno, strerror)
-    return popen.stdout
+    stdoutdata, stderrdata = popen.communicate()
+    if popen.returncode != 0:
+        raise EnvironmentError, (popen.returncode, stderrdata)
+    return stdoutdata
 

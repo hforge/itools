@@ -52,7 +52,7 @@ if __name__ == '__main__':
         if exists(po):
             # a .po file already exist, merge it with locale.pot
             command = ['msgmerge', '-s', po, pot]
-            data = get_pipe(command).read()
+            data = get_pipe(command)
             output.write(data)
         else:
             # po doesn't exist, just copy locale.pot

@@ -137,6 +137,23 @@ class ODFFile(OOFile):
         return content
 
 
+    def greek(self):
+        """Anonymize the ODF file.
+        """
+        class Catalog(object):
+            @staticmethod
+            def gettext(unit, context):
+                new_unit = []
+                for x, s in unit:
+                    if type(s) in (str, unicode):
+                        s = [ 'x' if not c.isspace() else c for c in s ]
+                        s = ''.join(s)
+                    new_unit.append((x, s))
+                return new_unit
+
+        return self.translate(Catalog)
+
+
 
 class ODTFile(ODFFile):
 

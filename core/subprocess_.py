@@ -44,6 +44,7 @@ def start_subprocess(path):
         # Make and start the sub-process
         p = Process(target=subprocess, args=(path, child_pipe))
         p.start()
+        register(stop_subprocess)
 
 
 def stop_subprocess():
@@ -86,4 +87,3 @@ def subprocess(cwd, conn):
             conn.send((errno, stdout))
 
 
-register(stop_subprocess)

@@ -26,6 +26,11 @@ from vfs import make_file, make_folder
 from vfs import open, remove, copy, move
 from vfs import get_names, traverse, mount_archive
 
+# Import from gio
+from gio import Error
+
+
+
 __all__ = [
     'cwd',
     # Datatypes
@@ -54,5 +59,6 @@ __all__ = [
     'move',
     'get_names',
     'traverse',
-    'mount_archive']
+    'mount_archive',
+    'Error']
 

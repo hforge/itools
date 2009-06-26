@@ -194,12 +194,12 @@ class BaseForm(BaseView):
 
             cls = []
             if is_mandatory:
-                cls.append('field_is_required')
+                cls.append('field-is-required')
             if submit and not is_readonly:
                 try:
                     value = context.get_form_value(name, type=datatype)
                 except FormError:
-                    cls.append('field_is_missing')
+                    cls.append('field-is-missing')
                     if issubclass(datatype, Enumerate):
                         value = datatype.get_namespace(None)
                     else:

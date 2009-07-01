@@ -20,8 +20,8 @@ from xapian import Enquire, MultiValueSorter, Query
 
 # Import from itools
 from itools.datatypes import Unicode
-from utils import _decode, _get_field_cls
-
+from itools.web import select_language
+from utils import _decode, _get_field_cls, _get_xquery
 
 
 class Doc(object):

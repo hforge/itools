@@ -30,24 +30,28 @@ from itools.xml import stream_to_str
 from itools.xmlfile import get_units, translate
 
 
+def zip_data(source, data):
+    file = StringIO()
+    outzip = ZipFile(file, 'w')
+    zip = ZipFile(StringIO(source))
+    for info in zip.infolist():
+        if info.filename == 'content.xml':
+            outzip.writestr('content.xml', data)
+        else:
+            outzip.writestr(info, zip.read(info.filename))
+    outzip.close()
+    content = file.getvalue()
+    file.close()
+    return content
+
+
 def stl_to_odt(model_odt, namespace):
     # Get the content of content.xml
     events = list(model_odt.get_events('content.xml'))
     # Apply the stl
     xml_content = stl(namespace=namespace, events=events, mode='xml')
     # Reconstruct an Odt
-    file = StringIO()
-    outzip = ZipFile(file, 'w')
-    zip = ZipFile(StringIO(model_odt.data))
-    for f in zip.infolist():
-        if f.filename == 'content.xml':
-            outzip.writestr('content.xml', xml_content)
-        else:
-            outzip.writestr(f, zip.read(f.filename))
-    outzip.close()
-    content = file.getvalue()
-    file.close()
-    return content
+    return zip_data(model_odt.data, xml_content)
 
 
 
@@ -123,18 +127,7 @@ class ODFFile(OOFile):
         translation = translate(content_events, catalog, srx_handler)
         translation = stream_to_str(translation)
         # Reconstruct an Odt
-        file = StringIO()
-        outzip = ZipFile(file, 'w')
-        zip = ZipFile(StringIO(self.data))
-        for f in zip.infolist():
-            if f.filename == 'content.xml':
-                outzip.writestr('content.xml', translation)
-            else:
-                outzip.writestr(f, zip.read(f.filename))
-        outzip.close()
-        content = file.getvalue()
-        file.close()
-        return content
+        return zip_data(self.data, translation)
 
 
     def greek(self):

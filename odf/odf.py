@@ -30,24 +30,39 @@ from itools.xml import stream_to_str
 from itools.xmlfile import get_units, translate
 
 
-def stl_to_odt(model_odt, namespace):
-    # Get the content of content.xml
-    events = list(model_odt.get_events('content.xml'))
-    # Apply the stl
-    xml_content = stl(namespace=namespace, events=events, mode='xml')
-    # Reconstruct an Odt
+def zip_data(source, **kw):
     file = StringIO()
     outzip = ZipFile(file, 'w')
-    zip = ZipFile(StringIO(model_odt.data))
-    for f in zip.infolist():
-        if f.filename == 'content.xml':
-            outzip.writestr('content.xml', xml_content)
+    zip = ZipFile(StringIO(source))
+    for info in zip.infolist():
+        # Replace the data from the map
+        if info.filename in kw:
+            data = kw[info.filename]
         else:
-            outzip.writestr(f, zip.read(f.filename))
+            data = zip.read(info.filename)
+
+        # Section 17.4 says the mimetype file shall not include an extra
+        # field.  So we remove it even if present in the source.
+        if info.filename == 'mimetype':
+            info.extra = ''
+
+        # Ok
+        outzip.writestr(info, data)
+
+    # Ok
     outzip.close()
     content = file.getvalue()
     file.close()
     return content
+
+
+def stl_to_odt(model_odt, namespace):
+    # STL
+    events = list(model_odt.get_events('content.xml'))
+    xml_content = stl(namespace=namespace, events=events, mode='xml')
+    kw = {'content.xml': xml_content}
+    # Zip
+    return zip_data(model_odt.data, **kw)
 
 
 
@@ -119,22 +134,15 @@ class ODFFile(OOFile):
     def translate(self, catalog, srx_handler=None):
         """Translate the document and reconstruct an odt document.
         """
-        content_events = self.get_events('content.xml')
-        translation = translate(content_events, catalog, srx_handler)
-        translation = stream_to_str(translation)
-        # Reconstruct an Odt
-        file = StringIO()
-        outzip = ZipFile(file, 'w')
-        zip = ZipFile(StringIO(self.data))
-        for f in zip.infolist():
-            if f.filename == 'content.xml':
-                outzip.writestr('content.xml', translation)
-            else:
-                outzip.writestr(f, zip.read(f.filename))
-        outzip.close()
-        content = file.getvalue()
-        file.close()
-        return content
+        # Translate
+        kw = {}
+        for filename in ['content.xml', 'meta.xml']:
+            events = self.get_events(filename)
+            translation = translate(events, catalog, srx_handler)
+            kw[filename] = stream_to_str(translation)
+
+        # Zip
+        return zip_data(self.data, **kw)
 
 
     def greek(self):

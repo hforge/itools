@@ -35,7 +35,12 @@ def zip_data(source, data):
     outzip = ZipFile(file, 'w')
     zip = ZipFile(StringIO(source))
     for info in zip.infolist():
-        if info.filename == 'content.xml':
+        # Section 17.4 says the mimetype file shall not include an extra
+        # field.  So we remove it even if present in the source.
+        if info.filename == 'mimetype':
+            info.extra = ''
+            outzip.writestr(info, zip.read(info.filename))
+        elif info.filename == 'content.xml':
             outzip.writestr('content.xml', data)
         else:
             outzip.writestr(info, zip.read(info.filename))

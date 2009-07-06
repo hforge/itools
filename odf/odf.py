@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED
+from zipfile import ZipFile
 from cStringIO import StringIO
 
 # Import from itools
@@ -30,23 +30,26 @@ from itools.xml import stream_to_str
 from itools.xmlfile import get_units, translate
 
 
-def zip_data(source, data):
+def zip_data(source, **kw):
     file = StringIO()
     outzip = ZipFile(file, 'w')
     zip = ZipFile(StringIO(source))
     for info in zip.infolist():
+        # Replace the data from the map
+        if info.filename in kw:
+            data = kw[info.filename]
+        else:
+            data = zip.read(info.filename)
+
         # Section 17.4 says the mimetype file shall not include an extra
         # field.  So we remove it even if present in the source.
         if info.filename == 'mimetype':
             info.extra = ''
-            data = zip.read(info.filename)
-        elif info.filename == 'content.xml':
-            info = ZipInfo()
-            info.filename = 'context.xml'
-            info.compress_type = ZIP_DEFLATED
-        else:
-            data = zip.read(info.filename)
+
+        # Ok
         outzip.writestr(info, data)
+
+    # Ok
     outzip.close()
     content = file.getvalue()
     file.close()
@@ -54,12 +57,12 @@ def zip_data(source, data):
 
 
 def stl_to_odt(model_odt, namespace):
-    # Get the content of content.xml
+    # STL
     events = list(model_odt.get_events('content.xml'))
-    # Apply the stl
     xml_content = stl(namespace=namespace, events=events, mode='xml')
-    # Reconstruct an Odt
-    return zip_data(model_odt.data, xml_content)
+    kw = {'content.xml': xml_content}
+    # Zip
+    return zip_data(model_odt.data, **kw)
 
 
 
@@ -131,11 +134,15 @@ class ODFFile(OOFile):
     def translate(self, catalog, srx_handler=None):
         """Translate the document and reconstruct an odt document.
         """
-        content_events = self.get_events('content.xml')
-        translation = translate(content_events, catalog, srx_handler)
-        translation = stream_to_str(translation)
-        # Reconstruct an Odt
-        return zip_data(self.data, translation)
+        # Translate
+        kw = {}
+        for filename in ['content.xml', 'meta.xml']:
+            events = self.get_events(filename)
+            translation = translate(events, catalog, srx_handler)
+            kw[filename] = stream_to_str(translation)
+
+        # Zip
+        return zip_data(self.data, **kw)
 
 
     def greek(self):

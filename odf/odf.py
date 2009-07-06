@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from zipfile import ZipFile
+from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED
 from cStringIO import StringIO
 
 # Import from itools
@@ -39,11 +39,14 @@ def zip_data(source, data):
         # field.  So we remove it even if present in the source.
         if info.filename == 'mimetype':
             info.extra = ''
-            outzip.writestr(info, zip.read(info.filename))
+            data = zip.read(info.filename)
         elif info.filename == 'content.xml':
-            outzip.writestr('content.xml', data)
+            info = ZipInfo()
+            info.filename = 'context.xml'
+            info.compress_type = ZIP_DEFLATED
         else:
-            outzip.writestr(info, zip.read(info.filename))
+            data = zip.read(info.filename)
+        outzip.writestr(info, data)
     outzip.close()
     content = file.getvalue()
     file.close()

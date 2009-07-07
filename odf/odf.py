@@ -136,7 +136,7 @@ class ODFFile(OOFile):
         """
         # Translate
         kw = {}
-        for filename in ['content.xml', 'meta.xml']:
+        for filename in ['content.xml', 'meta.xml', 'styles.xml']:
             events = self.get_events(filename)
             translation = translate(events, catalog, srx_handler)
             kw[filename] = stream_to_str(translation)

@@ -81,7 +81,11 @@ def evaluate(expression, stack, repeat_stack):
     # Traverse
     value = stack.lookup(path[0])
     for name in path[1:]:
-        value = lookup(value, name)
+        try:
+            value = value[name]
+        except KeyError:
+            raise STLError, 'name "%s" not found in the namespace' % name
+
 
     # Call
     if hasattr(value, '__call__'):
@@ -120,23 +124,6 @@ def evaluate_repeat(expression, stack, repeat_stack):
 ###########################################################################
 # Namespace
 ###########################################################################
-def lookup(namespace, name):
-    """Looks for a variable in a namespace (an instance, a mapping, etc..)
-    """
-    # Mapping
-    if isinstance(namespace, dict):
-        if name in namespace:
-            return namespace[name]
-        raise STLError, 'name "%s" not found in the namespace' % name
-
-    # Instance
-    try:
-        return getattr(namespace, name)
-    except AttributeError:
-        raise STLError, 'name "%s" not found in the namespace' % name
-
-
-
 class NamespaceStack(list):
     """This class represents a namespace stack as used by STL. A variable
     is looked up in the stack from the top to the bottom until found.
@@ -147,8 +134,8 @@ class NamespaceStack(list):
         stack.reverse()
         for namespace in stack:
             try:
-                return lookup(namespace, name)
-            except STLError:
+                return namespace[name]
+            except KeyError:
                 pass
 
         raise STLError, 'name "%s" not found in the namespace' % name

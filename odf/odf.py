@@ -29,15 +29,22 @@ from itools.xml import XMLParser, XML_DECL, START_ELEMENT, TEXT
 from itools.xml import stream_to_str
 from itools.xmlfile import get_units, translate
 
+# Import from the Python Image Library
+try:
+    from PIL import Image as PILImage, ImageDraw as PILImageDraw
+except:
+    PILImage = None
 
-def zip_data(source, **kw):
+
+
+def zip_data(source, modified_files):
     file = StringIO()
     outzip = ZipFile(file, 'w')
     zip = ZipFile(StringIO(source))
     for info in zip.infolist():
         # Replace the data from the map
-        if info.filename in kw:
-            data = kw[info.filename]
+        if info.filename in modified_files:
+            data = modified_files[info.filename]
         else:
             data = zip.read(info.filename)
 
@@ -56,13 +63,14 @@ def zip_data(source, **kw):
     return content
 
 
+
 def stl_to_odt(model_odt, namespace):
     # STL
     events = list(model_odt.get_events('content.xml'))
     xml_content = stl(namespace=namespace, events=events, mode='xml')
-    kw = {'content.xml': xml_content}
+    modified_files = {'content.xml': xml_content}
     # Zip
-    return zip_data(model_odt.data, **kw)
+    return zip_data(model_odt.data, modified_files)
 
 
 
@@ -135,19 +143,21 @@ class ODFFile(OOFile):
         """Translate the document and reconstruct an odt document.
         """
         # Translate
-        kw = {}
+        modified_files = {}
         for filename in ['content.xml', 'meta.xml', 'styles.xml']:
             events = self.get_events(filename)
             translation = translate(events, catalog, srx_handler)
-            kw[filename] = stream_to_str(translation)
+            modified_files[filename] = stream_to_str(translation)
 
         # Zip
-        return zip_data(self.data, **kw)
+        return zip_data(self.data, modified_files)
 
 
     def greek(self):
         """Anonymize the ODF file.
         """
+
+        # A stupid translator
         class Catalog(object):
             @staticmethod
             def gettext(unit, context):
@@ -159,7 +169,43 @@ class ODFFile(OOFile):
                     new_unit.append((x, s))
                 return new_unit
 
-        return self.translate(Catalog)
+        modified_files = {}
+
+        # Translate
+        for filename in ['content.xml', 'meta.xml', 'styles.xml']:
+            events = self.get_events(filename)
+            translation = translate(events, Catalog)
+            modified_files[filename] = stream_to_str(translation)
+
+        # Transform images
+        for filename in self.get_contents():
+            if filename.startswith('Pictures'):
+                # PIL is imported ?
+                if PILImage is None:
+                    raise ImportError, ('You must install PIL to convert '
+                                        'the images')
+                try:
+                    image = PILImage.open(StringIO(self.get_file(filename)))
+                except IOError:
+                    continue
+                format = image.format
+                image = image.convert("RGBA")
+                image.filename = filename
+                draw = PILImageDraw.Draw(image)
+
+                # Make a cross
+                h, l = image.size
+                draw.rectangle((0, 0, h-1, l-1), fill="grey",
+                                                 outline="black")
+                draw.line((0, 0, h-1, l-1), fill="black")
+                draw.line((0, l-1, h-1, 0), fill="black")
+
+                # Save
+                data = StringIO()
+                image.save(data, format)
+                modified_files[filename] = data.getvalue()
+
+        return  zip_data(self.data, modified_files)
 
 
 

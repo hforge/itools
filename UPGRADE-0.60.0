@@ -52,7 +52,6 @@ See the table below for the imports to update.
   xml.MSWord                     office.MSWord
   xml.RTF                        office.RTF
   xml.translate                  xmlfile.translate
-  xml.xml_to_text                ** NOT EXPORTED **
   xml.XMLFile                    xmlfile.XMLFile
 
 

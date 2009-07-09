@@ -232,7 +232,18 @@ so there should be little impact in applications.
   else:
       ...
 
-(2) The 'context.redirect' method, which was already obsolete, has been
+(2) The method 'del_resource' also takes the 'soft' parameter, it simplifies
+some patterns:
+
+  # Before
+  if here.has_resource(path):
+      here.del_resource(path)
+
+  # Now
+  here.del_resource(path, soft=True)
+
+
+(3) The 'context.redirect' method, which was already obsolete, has been
 removed.  Return a URI instead.
 
 

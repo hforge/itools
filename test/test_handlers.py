@@ -171,9 +171,9 @@ class FolderTestCase(TestCase):
         database = self.database
         root = self.root
         # Setup
-        root.set_handler('tests/empty/toto.txt', TextFile())
+        root.set_handler('tests/empty/sub/toto.txt', TextFile())
         database.save_changes()
-        root.del_handler('tests/empty/toto.txt')
+        root.del_handler('tests/empty/sub/toto.txt')
         database.save_changes()
         self.assertEqual(vfs.exists('tests/empty'), True)
         # Test
@@ -188,7 +188,7 @@ class FolderTestCase(TestCase):
         database = self.database
         root = self.root
         # Setup
-        root.set_handler('tests/empty/toto.txt', TextFile())
+        root.set_handler('tests/empty/sub/toto.txt', TextFile())
         database.save_changes()
         # Test
         self.assertRaises(RuntimeError, root.set_handler, 'tests/empty',

@@ -271,15 +271,12 @@ class RODatabase(BaseDatabase):
         if handler is not None:
             return True
 
-        # Check the file system
-        if not vfs.exists(uri):
-            return False
+        # A folder is considered to exist only if it contains a file
+        for x in vfs.traverse(uri):
+            if vfs.is_file(x):
+                return True
 
-        # Empty folders do not exist
-        if vfs.is_folder(uri):
-            return bool(vfs.get_names(uri))
-
-        return True
+        return False
 
 
     def get_handler_names(self, reference):
@@ -564,6 +561,15 @@ class RWDatabase(RODatabase):
     # API / Safe VFS operations (not really safe)
     def safe_make_file(self, reference):
         uri = self._resolve_reference_for_writing(reference)
+
+        # Remove empty folder first
+        if vfs.is_folder(uri):
+            for x in vfs.traverse(uri):
+                if vfs.is_file(x):
+                    break
+            else:
+                vfs.remove(uri)
+
         return vfs.make_file(uri)
 
 

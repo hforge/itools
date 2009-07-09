@@ -22,12 +22,13 @@ from zipfile import ZipFile
 from cStringIO import StringIO
 
 # Import from itools
-from itools.core import add_type
+from itools.core import add_type, get_abspath
 from itools.stl import stl
 from itools.handlers import register_handler_class, ZIPFile
 from itools.xml import XMLParser, XML_DECL, START_ELEMENT, TEXT
 from itools.xml import stream_to_str, xml_to_text
 from itools.xmlfile import get_units, translate
+from itools import vfs
 
 # Import from the Python Image Library
 try:
@@ -176,12 +177,17 @@ class ODFFile(OOFile):
                 if PILImage is None:
                     raise ImportError, ('You must install PIL to convert '
                                         'the images')
+                # Try with PIL
                 try:
                     image = PILImage.open(StringIO(self.get_file(filename)))
                 except IOError:
+                    # A SVM file ?
+                    if filename.endswith('.svm'):
+                        data = vfs.open(get_abspath('square.svm')).read()
+                        modified_files[filename] = data
                     continue
                 format = image.format
-                image = image.convert("RGBA")
+                image = image.convert('RGB')
                 image.filename = filename
                 draw = PILImageDraw.Draw(image)
 

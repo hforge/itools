@@ -119,7 +119,7 @@ class Resource(object):
         raise NotImplementedError
 
 
-    def del_resource(self, path):
+    def del_resource(self, path, soft=False):
         raise NotImplementedError
 
 

@@ -25,6 +25,7 @@ from namespaces import is_empty
 from parser import XMLParser, DocType, register_dtd, XMLError, XML_DECL
 from parser import DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, TEXT, COMMENT
 from parser import PI, CDATA
+from utils import xml_to_text
 from xml import Element, stream_to_str, get_element, find_end
 from xml import get_qname, get_attribute_qname, get_start_tag, get_end_tag
 from xml import get_doctype
@@ -70,4 +71,5 @@ __all__ = [
     'Element',
     # Functions
     'register_dtd',
+    'xml_to_text',
 ]

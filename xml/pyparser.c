@@ -771,7 +771,8 @@ initparser (void)
   PyModule_AddObject (module, "DocType", (PyObject *) & PyDocTypeType);
 
   /* Register exceptions */
-  XMLError = PyErr_NewException ("itools.xml.parser.XMLError", NULL, NULL);
+  XMLError = PyErr_NewException ("itools.xml.parser.XMLError",
+                                 PyExc_StandardError, NULL);
   Py_INCREF (XMLError);
   PyModule_AddObject (module, "XMLError", XMLError);
 

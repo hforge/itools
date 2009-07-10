@@ -22,7 +22,8 @@ from optparse import OptionParser
 from os import popen
 from os.path import islink
 from subprocess import call
-import sys
+from sys import exc_info, stdout
+from traceback import print_exception
 
 # Import from itools
 import itools
@@ -88,7 +89,7 @@ if __name__ == '__main__':
     source_language = config.get_value('source_language', default='en')
     target_languages = config.get_value('target_languages', default='').split()
 
-    # Initialize the manifest file
+    # (1) Initialize the manifest file
     manifest = ['MANIFEST', 'version.txt']
     if git_available:
         # Find out the version string
@@ -104,14 +105,14 @@ if __name__ == '__main__':
     filenames = [ x for x in filenames if not islink(x) ]
     manifest.extend(filenames)
 
-    # Internationalization
+    # (2) Internationalization
     if vfs.exists('locale'):
         # Build MO files
         print '* Compile message catalogs:',
-        sys.stdout.flush()
+        stdout.flush()
         for lang in [source_language] + target_languages:
             print lang,
-            sys.stdout.flush()
+            stdout.flush()
             call([
                 'msgfmt', 'locale/%s.po' % lang, '-o', 'locale/%s.mo' % lang])
             # Add to the manifest
@@ -125,11 +126,12 @@ if __name__ == '__main__':
             message_catalogs[lang] = (get_handler(path), vfs.get_mtime(path))
 
         # Build the templates in the target languages
+        bad_templates = []
         cmd = 'find -name "*.x*ml.%s"| grep -Ev "^./(build|dist|skeleton)"'
         lines = popen(cmd % source_language).readlines()
         if lines:
             print '* Build XHTML files',
-            sys.stdout.flush()
+            stdout.flush()
             # XXX The directory "skeleton" is specific to ikaaro, should not
             # be hardcoded.
             for path in popen(cmd % source_language).readlines():
@@ -140,6 +142,7 @@ if __name__ == '__main__':
                 done = False
                 # Build the translation
                 n = path.rfind('.')
+                error = False
                 for language in target_languages:
                     po, po_mtime = message_catalogs[language]
                     dst = '%s.%s' % (path[:n], language)
@@ -152,21 +155,36 @@ if __name__ == '__main__':
                             continue
                     try:
                         data = src.translate(po)
-                    except:
-                        print 'Error with file "%s"' % path
-                        raise
-                    open(dst, 'w').write(data)
-                    done = True
+                    except StandardError:
+                        error = True
+                        bad_templates.append((path, exc_info()))
+                    else:
+                        open(dst, 'w').write(data)
+                        done = True
                 # Done
-                if done is True:
-                    sys.stdout.write('*')
+                if error is True:
+                    stdout.write('E')
+                elif done is True:
+                    stdout.write('*')
                 else:
-                    sys.stdout.write('.')
-                sys.stdout.flush()
+                    stdout.write('.')
+                stdout.flush()
             print
 
-    # Build the manifest file
+    # (3) Build the manifest file
     manifest.sort()
     lines = [ x + '\n' for x in manifest ]
     open('MANIFEST', 'w').write(''.join(lines))
     print '* Build MANIFEST file (list of files to install)'
+
+    # (4) Show errors
+    if bad_templates:
+        print
+        print '***********************************************************'
+        print 'The following templates could not be translated'
+        print '***********************************************************'
+        for (path, (type, value, traceback)) in bad_templates:
+            print
+            print path
+            print_exception(type, value, traceback)
+

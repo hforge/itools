@@ -183,10 +183,38 @@ class Resource(object):
 
 
 
-class RootResource(AccessControl, Resource):
-    """The RootResource is the main entry point of the Web application.
-    Responsible for traversal, user retrieval, and error pages.  It is a
-    handler of type Folder so check out the Handler and Folder API.
+class VirtualRoot(AccessControl, Resource):
+    """Also known as the site-root, or the virtual-host.
+    """
+
+    def before_traverse(self, context):
+        """Pre-publishing process.  Possible actions are language negotiation,
+        etc.
+        """
+
+
+    def after_traverse(self, context):
+        """Post-publishing process.  Possible actions are wrapping the body
+        into a template, etc.
+        """
+
+
+    #######################################################################
+    # API / Error Pages
+    #######################################################################
+    # FIXME Implement a default behaviour for these views.
+    unauthorized = None # 401 Unauthorized
+    forbidden = None # 403 Forbidden
+    not_found = None # 404 Not Found
+    method_not_allowed = None # 405 Method Not Allowed
+    conflict = None # 409 Conflict
+    internal_server_error = None # 500 Internal Server Error
+
+
+
+class Root(VirtualRoot):
+    """This represents the absolute or physical root of the resources tree.
+    There is one and only one instance of this in any application.
     """
 
     def get_user(self, username):
@@ -198,31 +226,3 @@ class RootResource(AccessControl, Resource):
         """
         return None
 
-
-    #######################################################################
-    # API / Publishing
-    #######################################################################
-    def before_traverse(self, context):
-        """Pre-publishing process.
-        Possible actions are language negotiation, etc.
-        """
-        pass
-
-
-    def after_traverse(self, context):
-        """Post-publishing process.
-        Possible actions are wrapping the body into a template, etc."""
-        pass
-
-
-    #######################################################################
-    # API / Error Pages
-    #######################################################################
-    # FIXME These views should be defined in the site-root
-    # FIXME Implement a default behaviour for these views.
-    unauthorized = None # 401 Unauthorized
-    forbidden = None # 403 Forbidden
-    not_found = None # 404 Not Found
-    method_not_allowed = None # 405 Method Not Allowed
-    conflict = None # 409 Conflict
-    internal_server_error = None # 500 Internal Server Error

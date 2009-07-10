@@ -166,63 +166,6 @@ class BaseForm(BaseView):
         return datatype.get_default()
 
 
-    def build_namespace(self, resource, context):
-        """This utility method builds a namespace suitable to use to produce
-        an HTML form. Its input data is a dictionnary that defines the form
-        variables to consider:
-
-          {'toto': Unicode(mandatory=True, multiple=False, default=u'toto'),
-           'tata': Unicode(mandatory=True, multiple=False, default=u'tata')}
-
-        Every element specifies the datatype of the field.
-        The output is like:
-
-            {<field name>: {'value': <field value>, 'class': <CSS class>}
-             ...}
-        """
-        # Figure out whether the form has been submit or not (FIXME This
-        # heuristic is not reliable)
-        schema = self.get_schema(resource, context)
-        submit = (context.request.method == 'POST')
-
-        # Build the namespace
-        namespace = {}
-        for name in schema:
-            datatype = schema[name]
-            is_mandatory = getattr(datatype, 'mandatory', False)
-            is_readonly = getattr(datatype, 'readonly', False)
-
-            cls = []
-            if is_mandatory:
-                cls.append('field-is-required')
-            if submit and not is_readonly:
-                try:
-                    value = context.get_form_value(name, type=datatype)
-                except FormError:
-                    cls.append('field-is-missing')
-                    if issubclass(datatype, Enumerate):
-                        value = datatype.get_namespace(None)
-                    else:
-                        value = context.get_form_value(name)
-                else:
-                    if issubclass(datatype, Enumerate):
-                        value = datatype.get_namespace(value)
-                    elif datatype.multiple:
-                        # XXX Done for table multilingual fields (fragile)
-                        value = value[0]
-                    else:
-                        value = datatype.encode(value)
-            else:
-                value = self.get_value(resource, context, name, datatype)
-                if issubclass(datatype, Enumerate):
-                    value = datatype.get_namespace(value)
-                else:
-                    value = datatype.encode(value)
-            cls = ' '.join(cls) or None
-            namespace[name] = {'name': name, 'value': value, 'class': cls}
-        return namespace
-
-
     def _get_action(self, resource, context):
         """ default function to retrieve the name of the action from a form
         """
@@ -309,4 +252,60 @@ class STLView(BaseView):
 
 
 class STLForm(STLView, BaseForm):
-    pass
+
+    def get_namespace(self, resource, context, query=None):
+        """This utility method builds a namespace suitable to use to produce
+        an HTML form. Its input data is a dictionnary that defines the form
+        variables to consider:
+
+          {'toto': Unicode(mandatory=True, multiple=False, default=u'toto'),
+           'tata': Unicode(mandatory=True, multiple=False, default=u'tata')}
+
+        Every element specifies the datatype of the field.
+        The output is like:
+
+            {<field name>: {'value': <field value>, 'class': <CSS class>}
+             ...}
+        """
+        # Figure out whether the form has been submit or not (FIXME This
+        # heuristic is not reliable)
+        schema = self.get_schema(resource, context)
+        submit = (context.request.method == 'POST')
+
+        # Build the namespace
+        namespace = {}
+        for name in schema:
+            datatype = schema[name]
+            is_mandatory = getattr(datatype, 'mandatory', False)
+            is_readonly = getattr(datatype, 'readonly', False)
+
+            cls = []
+            if is_mandatory:
+                cls.append('field-is-required')
+            if submit and not is_readonly:
+                try:
+                    value = context.get_form_value(name, type=datatype)
+                except FormError:
+                    cls.append('field-is-missing')
+                    if issubclass(datatype, Enumerate):
+                        value = datatype.get_namespace(None)
+                    else:
+                        value = context.get_form_value(name)
+                else:
+                    if issubclass(datatype, Enumerate):
+                        value = datatype.get_namespace(value)
+                    elif datatype.multiple:
+                        # XXX Done for table multilingual fields (fragile)
+                        value = value[0]
+                    else:
+                        value = datatype.encode(value)
+            else:
+                value = self.get_value(resource, context, name, datatype)
+                if issubclass(datatype, Enumerate):
+                    value = datatype.get_namespace(value)
+                else:
+                    value = datatype.encode(value)
+            cls = ' '.join(cls) or None
+            namespace[name] = {'name': name, 'value': value, 'class': cls}
+        return namespace
+

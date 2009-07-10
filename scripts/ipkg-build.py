@@ -128,6 +128,7 @@ if __name__ == '__main__':
     manifest.extend(filenames)
 
     # (2) Internationalization
+    bad_templates = []
     if vfs.exists('locale'):
         # Build MO files
         print '* Compile message catalogs:',
@@ -148,7 +149,6 @@ if __name__ == '__main__':
             message_catalogs[lang] = (get_handler(path), vfs.get_mtime(path))
 
         # Build the templates in the target languages
-        bad_templates = []
         good_files = compile('.*\\.x.*ml.%s$' % source_language)
         lines = get_files(exclude, filter=lambda x: good_files.match(x))
         lines = list(lines)

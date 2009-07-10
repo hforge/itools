@@ -410,6 +410,8 @@ def process(events, start, end, stack, repeat_stack, encoding, skip_events):
 ########################################################################
 # Set prefix
 ########################################################################
+css_uri_expr = compile (r"url\(([a-zA-Z0-9\./%\-\_]*/%3[bB]{1}download)\);")
+
 def set_prefix(stream, prefix, ns_uri=xhtml_uri):
     if isinstance(prefix, str):
         prefix = Path(prefix)
@@ -430,6 +432,18 @@ def set_prefix(stream, prefix, ns_uri=xhtml_uri):
                     elif tag_name in ('a', 'link'):
                         if attr_name == 'href':
                             value = resolve_pointer(value, prefix)
+                    elif attr_name == 'style':
+                        # Rewrite url inside style attribute
+                        # Get the chunks
+                        chunks = []
+                        segments = css_uri_expr.split(value)
+                        for index, segment in enumerate(segments):
+                            if index % 2 == 1:
+                                new_segment = resolve_pointer(segment, prefix)
+                                chunks.append('url(%s);' % new_segment)
+                            else:
+                                chunks.append(segment)
+                        value = ''.join(chunks)
                     # <param name="movie" value="X" />
                     elif tag_name == 'param':
                         if attr_name == 'value':

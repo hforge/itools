@@ -184,24 +184,9 @@ class Resource(object):
 
 
 class VirtualRoot(AccessControl, Resource):
-    """Also known as the site-root, or the virtual-host.
+    """Also known as site-root, or virtual-host.
     """
 
-    def before_traverse(self, context):
-        """Pre-publishing process.  Possible actions are language negotiation,
-        etc.
-        """
-
-
-    def after_traverse(self, context):
-        """Post-publishing process.  Possible actions are wrapping the body
-        into a template, etc.
-        """
-
-
-    #######################################################################
-    # API / Error Pages
-    #######################################################################
     # FIXME Implement a default behaviour for these views.
     unauthorized = None # 401 Unauthorized
     forbidden = None # 403 Forbidden
@@ -209,6 +194,18 @@ class VirtualRoot(AccessControl, Resource):
     method_not_allowed = None # 405 Method Not Allowed
     conflict = None # 409 Conflict
     internal_server_error = None # 500 Internal Server Error
+
+
+    def http_get(self, context):
+        if context.method is None:
+            return 'oh fuck'
+        return context.method(context.resource, context)
+
+
+    def http_post(self, context):
+        if context.method is None:
+            return 'oh fuck'
+        return context.method(context.resource, context)
 
 
 

@@ -506,7 +506,6 @@ class Server(object):
 
         # (4) The Site Root
         self.find_site_root(context)
-        context.site_root.before_traverse(context)  # Hook
 
         # (5) Keep the context
         set_context(context)
@@ -771,54 +770,40 @@ class RequestMethod(object):
         try:
             context.query = view.get_query(context)
         except FormError, error:
-            method = view.on_query_error
+            context.method = view.on_query_error
             context.query_error = error
         except:
             cls.internal_server_error(server, context)
-            method = None
+            context.method = None
         else:
             # GET, POST...
-            method = getattr(view, cls.method_name)
+            context.method = getattr(view, cls.method_name)
 
         # (3) Render
-        if method is not None:
-            try:
-                context.entity = method(resource, context)
-            except:
-                cls.internal_server_error(server, context)
+        try:
+            m = getattr(root, 'http_%s' % cls.method_name.lower())
+            context.entity = m(context)
+        except:
+            cls.internal_server_error(server, context)
+        else:
+            # Ok: set status
+            if context.status is not None:
+                pass
+            elif isinstance(context.entity, Reference):
+                context.status = 302
+            elif context.entity is None:
+                context.status = 204
             else:
-                # Ok: set status
-                if context.status is not None:
-                    pass
-                elif isinstance(context.entity, Reference):
-                    context.status = 302
-                elif context.entity is None:
-                    context.status = 204
-                else:
-                    context.status = 200
+                context.status = 200
 
         # (4) Commit the transaction
         cls.commit_transaction(server, context)
 
-        # (5) Build response, when postponed (useful for POST methods)
-        if isinstance(context.entity, (FunctionType, MethodType)):
-            try:
-                context.entity = context.entity(context.resource, context)
-            except:
-                cls.internal_server_error(server, context)
-            server.database.abort_changes()
-
-        # (6) After Traverse hook
-        try:
-            context.site_root.after_traverse(context)
-        except:
-            cls.internal_server_error(server, context)
-
-        # (7) Build and return the response
+        # (5) Build and return the response
         response.set_status(context.status)
         cls.set_body(server, context)
 
-        # (8) Ok
+        # (6) Ok
         return response
 
 
@@ -909,7 +894,7 @@ class OPTIONS(RequestMethod):
 
         # (1) Find out the requested resource and view
         if context.path == '*':
-            # (2a) Server-registered methods
+            # (1a) Server-registered methods
             allowed = known_methods
         else:
             try:
@@ -921,7 +906,7 @@ class OPTIONS(RequestMethod):
                 context.view_name = status2name[status]
                 context.view = root.get_view(context.view_name)
             else:
-                # (2b) Check methods supported by the view
+                # (1b) Check methods supported by the view
                 resource = context.resource
                 view = context.view
                 for method_name in known_methods:
@@ -945,22 +930,16 @@ class OPTIONS(RequestMethod):
                 if context.path == '/':
                     allowed.remove('DELETE')
 
-        # (3) Render
+        # (2) Render
         response.set_header('allow', ','.join(allowed))
         context.entity = None
         context.status = 200
 
-        # (5) After Traverse hook
-        try:
-            context.site_root.after_traverse(context)
-        except:
-            cls.internal_server_error(server, context)
-
-        # (6) Build and return the response
+        # (3) Build and return the response
         response.set_status(context.status)
         cls.set_body(server, context)
 
-        # (7) Ok
+        # Ok
         return response
 
 

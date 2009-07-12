@@ -337,8 +337,8 @@ class RequestMethod(object):
 
         # (3) Render
         try:
-            m = getattr(root, 'http_%s' % cls.method_name.lower())
-            context.entity = m(context)
+            m = getattr(root.http_view, cls.method_name)
+            context.entity = m(root, context)
         except Exception:
             cls.internal_server_error(server, context)
         else:

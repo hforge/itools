@@ -188,24 +188,13 @@ class VirtualRoot(AccessControl, Resource):
     """
 
     # FIXME Implement a default behaviour for these views.
+    http_view = None # Main view, called when everything is ok
     unauthorized = None # 401 Unauthorized
     forbidden = None # 403 Forbidden
     not_found = None # 404 Not Found
     method_not_allowed = None # 405 Method Not Allowed
     conflict = None # 409 Conflict
     internal_server_error = None # 500 Internal Server Error
-
-
-    def http_get(self, context):
-        if context.method is None:
-            return 'oh fuck'
-        return context.method(context.resource, context)
-
-
-    def http_post(self, context):
-        if context.method is None:
-            return 'oh fuck'
-        return context.method(context.resource, context)
 
 
 

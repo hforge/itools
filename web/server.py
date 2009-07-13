@@ -51,6 +51,8 @@ from gobject import IO_IN, IO_OUT, IO_PRI, IO_ERR, IO_HUP
 IO_READ = IO_IN | IO_PRI | IO_ERR | IO_HUP
 IO_WRITE = IO_OUT | IO_ERR | IO_HUP
 
+MAX_REQUESTS = 200 # Used to limit the load of the server
+
 
 ###########################################################################
 # Wrapper around sockets in non-blocking mode that offers a file
@@ -261,24 +263,14 @@ class Server(object):
             loader.next()
         except StopIteration:
             # We are done
-            context = Context(request)
             try:
-                self.handle_request(context)
-            except NotImplemented, exception:
-                response = Response(status_code=exception.code)
-                response.body = exception.title
-                self.log_warning(context)
-            except HTTPError, exception:
-                response = Response(status_code=exception.code)
-                response.body = exception.title
-                self.log_error(context)
+                response = self.handle_request(request)
             except:
                 # Unexpected error
+                # FIXME We still must send a response
                 self.log_error(context)
                 conn.close()
                 return
-            else:
-                response = context.response
         except BadRequest:
             # Error loading
             response = Response(status_code=400)
@@ -554,22 +546,36 @@ class Server(object):
     ########################################################################
     # Request handling: main functions
     ########################################################################
-    def handle_request(self, context):
-        # (1) Get the class that will handle the request
-        request = context.request
+    def handle_request(self, request):
+        # 503 Service Unavailable
+        if len(self.requests) > MAX_REQUESTS:
+            response = Response(status_code=503)
+            response.set_body('503 Service Unavailable')
+            return response
+
+        # 501 Not Implemented
         method_name = request.method
         method = methods.get(method_name)
         if method is None:
-            message = 'method "%s" is not implemented' % method_name
-            raise NotImplemented, message
+            response = Response(status_code=503)
+            response.set_body('501 Not Implemented')
+            return response
 
-        # (2) Initialize the context
+        # Make the context
+        context = Context(request)
         self.init_context(context)
 
-        # (3) Pass control to the Get method class
-        method.handle_request(self, context)
+        # Handle request
+        try:
+            method.handle_request(self, context)
+        except HTTPError, exception:
+            response = Response(status_code=exception.code)
+            response.body = exception.title
+            self.log_error(context)
+        else:
+            response = context.response
 
-        # (4) Return the response
+        # Ok
         return context.response
 
 

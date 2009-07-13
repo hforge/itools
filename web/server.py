@@ -890,13 +890,13 @@ class OPTIONS(RequestMethod):
         root = context.site_root
 
         known_methods = methods.keys()
-        allowed = []
 
         # (1) Find out the requested resource and view
         if context.path == '*':
             # (1a) Server-registered methods
             allowed = known_methods
         else:
+            allowed = []
             try:
                 cls.find_resource(server, context)
                 cls.find_view(server, context)

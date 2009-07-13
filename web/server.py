@@ -34,9 +34,10 @@ from sys import exc_info
 
 # Import from itools
 from itools.handlers import BaseDatabase
-from itools.http import Request, Response, ClientError, NotModified
-from itools.http import BadRequest, Forbidden, NotFound, Unauthorized
-from itools.http import HTTPError, NotImplemented, MethodNotAllowed
+from itools.http import Request, get_response
+from itools.http import ClientError, NotModified, BadRequest, Forbidden
+from itools.http import NotFound, Unauthorized, HTTPError, NotImplemented
+from itools.http import MethodNotAllowed
 from itools.i18n import init_language_selector
 from itools.uri import Reference
 from context import Context, set_context, select_language
@@ -273,8 +274,7 @@ class Server(object):
                 return
         except BadRequest:
             # Error loading
-            response = Response(status_code=400)
-            response.set_body('Bad Request')
+            response = get_response(400)
             self.log_error()
         except:
             # Unexpected error
@@ -549,17 +549,13 @@ class Server(object):
     def handle_request(self, request):
         # 503 Service Unavailable
         if len(self.requests) > MAX_REQUESTS:
-            response = Response(status_code=503)
-            response.set_body('503 Service Unavailable')
-            return response
+            return get_response(503)
 
         # 501 Not Implemented
         method_name = request.method
         method = methods.get(method_name)
         if method is None:
-            response = Response(status_code=503)
-            response.set_body('501 Not Implemented')
-            return response
+            return get_response(501)
 
         # Make the context
         context = Context(request)
@@ -569,11 +565,8 @@ class Server(object):
         try:
             method.handle_request(self, context)
         except HTTPError, exception:
-            response = Response(status_code=exception.code)
-            response.body = exception.title
             self.log_error(context)
-        else:
-            response = context.response
+            return get_response(exception.code)
 
         # Ok
         return context.response

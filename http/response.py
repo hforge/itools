@@ -194,3 +194,18 @@ class Response(Message):
 
     def get_cookie(self, name):
         return self.cookies.get(name)
+
+
+# Some pre-built responses
+responses = {}
+def get_response(code):
+    # Hit
+    if code in responses:
+        return responses[code]
+
+    # Miss
+    body = '{0} {1}'.format(code, status_messages[code])
+    response = Response(status_code=code)
+    response.set_body(body)
+    responses[code] = response
+    return response

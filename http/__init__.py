@@ -21,7 +21,7 @@ from exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 from exceptions import InternalServerError, NotImplemented, BadGateway
 from exceptions import ServiceUnavailable, MethodNotAllowed, Conflict
 from request import Request
-from response import Response
+from response import Response, get_response
 
 
 __all__ = [
@@ -40,6 +40,9 @@ __all__ = [
     'ServerError',
     'ServiceUnavailable',
     'Unauthorized',
-    # Classes
+    # Request
     'Request',
-    'Response']
+    # Responses
+    'Response',
+    'get_response',
+    ]

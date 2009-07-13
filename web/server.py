@@ -267,9 +267,7 @@ class Server(object):
             try:
                 response = self.handle_request(request)
             except:
-                # Unexpected error
-                # FIXME We still must send a response
-                self.log_error(context)
+                # This should never happen
                 conn.close()
                 return
         except BadRequest:
@@ -567,6 +565,9 @@ class Server(object):
         except HTTPError, exception:
             self.log_error(context)
             return get_response(exception.code)
+        except:
+            self.log_error(context)
+            return get_response(500)
 
         # Ok
         return context.response
@@ -578,12 +579,11 @@ class Server(object):
 ###########################################################################
 
 status2name = {
-    401: 'unauthorized',
-    403: 'forbidden',
-    404: 'not_found',
-    405: 'method_not_allowed',
-    409: 'conflict',
-}
+    401: 'http_unauthorized',
+    403: 'http_forbidden',
+    404: 'http_not_found',
+    405: 'http_method_not_allowed',
+    409: 'http_conflict'}
 
 
 def find_view_by_method(server, context):
@@ -723,7 +723,8 @@ class RequestMethod(object):
     def internal_server_error(cls, server, context):
         server.log_error(context)
         context.status = 500
-        context.entity = server.root.internal_server_error(context)
+        root = context.site_root
+        context.entity = root.http_internal_server_error.GET(root, context)
 
 
     @classmethod
@@ -780,7 +781,7 @@ class RequestMethod(object):
 
         # (3) Render
         try:
-            m = getattr(root.http_view, cls.method_name)
+            m = getattr(root.http_main, cls.method_name)
             context.entity = m(root, context)
         except:
             cls.internal_server_error(server, context)

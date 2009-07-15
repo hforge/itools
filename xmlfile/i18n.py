@@ -60,17 +60,17 @@ def _make_start_format(tag_uri, tag_name, attributes, encoding):
         datatype = get_attr_datatype(tag_uri, tag_name, attr_uri, attr_name,
                                      attributes)
         if issubclass(datatype, Unicode):
-            result.append((u' %s="' % qname, False, None))
+            result[-1] = (result[-1][0] + u' %s="' % qname, False, None)
             context = _get_attr_context(datatype, tag_name, attr_name)
             result.append((value, True, context))
             result.append((u'"', False, None))
         else:
-            result.append((u' %s="%s"' % (qname, value), False, None))
+            result[-1] = (result[-1][0] + u' %s="%s"' % (qname, value), False, None)
     # Close the start tag
     if is_empty(tag_uri, tag_name):
-        result.append((u'/>', False, None))
+        result[-1] = (result[-1][0] + u'/>', False, None)
     else:
-        result.append((u'>', False, None))
+        result[-1] = (result[-1][0] + u'>', False, None)
 
     return result
 

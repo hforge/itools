@@ -22,10 +22,6 @@ from base64 import decodestring
 from copy import copy
 from logging import getLogger, WARNING, FileHandler, StreamHandler, Formatter
 from os import fstat, getpid, remove as remove_file
-from types import FunctionType, MethodType
-from signal import signal, SIGINT
-from socket import socket as Socket, error as SocketError
-from socket import AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR
 from time import strftime
 from traceback import format_exc
 from urllib import unquote
@@ -34,7 +30,7 @@ from sys import exc_info
 
 # Import from itools
 from itools.handlers import BaseDatabase
-from itools.http import Request, get_response
+from itools.http import HTTPServer, get_response
 from itools.http import ClientError, NotModified, BadRequest, Forbidden
 from itools.http import NotFound, Unauthorized, HTTPError, NotImplemented
 from itools.http import MethodNotAllowed
@@ -44,123 +40,14 @@ from context import Context, set_context, select_language
 from context import FormError
 from views import BaseView
 
-# Import from gobject
-from gobject import MainLoop, io_add_watch, source_remove
-from gobject import IO_IN, IO_OUT, IO_PRI, IO_ERR, IO_HUP
 
-# Some constants
-IO_READ = IO_IN | IO_PRI | IO_ERR | IO_HUP
-IO_WRITE = IO_OUT | IO_ERR | IO_HUP
-
-MAX_REQUESTS = 200 # Used to limit the load of the server
-
-
-###########################################################################
-# Wrapper around sockets in non-blocking mode that offers a file
-# like API
-###########################################################################
-class SocketWrapper(object):
-    """Offers a file-like interface for sockets in non-blocking mode.
-    Read only.
-    """
-
-    __slots__ = ['socket', 'buffer']
-
-    def __init__(self, socket):
-        self.socket = socket
-        self.buffer = ''
-
-
-    def read(self, size):
-        buffer = self.buffer
-        buffer_size = len(buffer)
-        # Check we already have the required data
-        if buffer_size >= size:
-            data, self.buffer = buffer[:size], buffer[size:]
-            return data
-        # Try to read the remaining
-        try:
-            data = self.socket.recv(size - buffer_size)
-        except:
-            return None
-        # This method is supposed to be called only when there is data to be
-        # read. So if no data is available, we suppose the data is truncated
-        # and we raise the EOFError exception.
-        if not data:
-            raise EOFError
-        buffer += data
-        # Check we now have the required data
-        if len(buffer) >= size:
-            data, self.buffer = buffer[:size], buffer[size:]
-            return data
-        # Could not read the required data
-        self.buffer = buffer
-        return None
-
-
-    def readline(self):
-        """This method is like the file object readline method, but not
-        exactly.
-
-        Written specifically for the HTTP protocol, it expects the sequence
-        '\r\n' to signal line ending.
-
-        This method is supposed to be called only when there is data to be
-        read. So if no data is available, we suppose the line is truncated
-        and we raise the EOFError exception.
-
-        If the end-of-line sequence was not being received the value None
-        is returned, what means: call me again when more data is available.
-        """
-        # FIXME Try to make it more like the file interface.
-        buffer = self.buffer
-        # Check if there is already a line in the buffer
-        if '\r\n' in buffer:
-            line, self.buffer = buffer.split('\r\n', 1)
-            return line
-        # Read as much as possible
-        recv = self.socket.recv
-        # FIXME Here we assume that if the call to "recv" fails is because
-        # there is no data available, and we should try again later. But
-        # the failure maybe for something else. So we must do proper error
-        # handling here. Check http://docs.python.org/lib/module-errno.html
-        # for a list of the possible errors.
-        try:
-            data = recv(512)
-        except:
-            return None
-        if not data:
-            # Send the data read so far
-            raise EOFError, buffer
-        while data:
-            buffer += data
-            # Hit
-            if '\r\n' in buffer:
-                line, self.buffer = buffer.split('\r\n', 1)
-                return line
-            # Miss
-            if len(data) < 512:
-                self.buffer = buffer
-                return None
-            # FIXME Catch only the relevant exceptions (see note above)
-            try:
-                data = recv(512)
-            except:
-                return None
-
-
-###########################################################################
-# The Web Server
-###########################################################################
-
-
+logger_http = getLogger('itools.http')
+logger_web = getLogger('web')
 logger_data = getLogger('data')
-logger_http = getLogger('http')
-logger_loop = getLogger('loop')
 
 
 
-class Server(object):
+class Server(HTTPServer):
 
     access_log = None
     event_log = None
@@ -168,18 +55,14 @@ class Server(object):
     database = BaseDatabase()
 
 
-    def __init__(self, root, address=None, port=None, access_log=None,
+    def __init__(self, root, address='', port=8080, access_log=None,
                  event_log=None, log_level=WARNING, pid_file=None,
                  auth_type='cookie', auth_realm='Restricted Area'):
-        if address is None:
-            address = ''
-        if port is None:
-            port = 8080
+
+        HTTPServer.__init__(self, address, port)
+
         # The application's root
         self.root = root
-        # The address and port the server will listen to
-        self.address = address
-        self.port = port
         # Access log
         if access_log is not None:
             self.access_log_path = access_log
@@ -193,13 +76,13 @@ class Server(object):
         formatter = Formatter('%(asctime)s - %(name)s - %(message)s')
         handler.setFormatter(formatter)
         # Events log: set handler
-        logger_data.addHandler(handler)
         logger_http.addHandler(handler)
-        logger_loop.addHandler(handler)
+        logger_web.addHandler(handler)
+        logger_data.addHandler(handler)
         # Level
-        logger_data.setLevel(log_level)
         logger_http.setLevel(log_level)
-        logger_loop.setLevel(log_level)
+        logger_web.setLevel(log_level)
+        logger_data.setLevel(log_level)
 
         # The pid file
         self.pid_file = pid_file
@@ -207,164 +90,6 @@ class Server(object):
         # Authentication options
         self.auth_type = auth_type
         self.auth_realm = auth_realm
-
-        # The requests dict
-        # mapping {<fileno>: (conn, id, + some useful informations) }
-        self.requests = {}
-
-        # The connection
-        self.ear = None
-        self.ear_fileno = 0
-        self.ear_id = 0
-
-        # Main Loop
-        self.main_loop = MainLoop()
-
-
-    def new_connection(self):
-        """Registers the connection to read the new request.
-        """
-        # Get the connection and client address
-        try:
-            conn, client_address = self.ear.accept()
-        except SocketError:
-            return
-
-        # Debug
-        peer = conn.getpeername()
-        logger_loop.debug('%s:%s => New connection' % peer)
-
-        # Set non-blocking mode
-        conn.setblocking(0)
-        # Register the connection
-        fileno = conn.fileno()
-        id = io_add_watch(fileno, IO_READ, self.events_callback)
-        # Build and store the request
-        request = Request()
-        wrapper = SocketWrapper(conn)
-        loader = request.non_blocking_load(wrapper)
-        self.requests[fileno] = conn, id, request, loader
-
-
-    def load_request(self, fileno):
-        """Loads the request, and when it is done, handles it.
-        """
-        requests = self.requests
-
-        # Load request
-        conn, id, request, loader = requests.pop(fileno)
-        source_remove(id)
-
-        # Debug
-        peer = conn.getpeername()
-        logger_loop.debug('%s:%s => IN' % peer)
-
-        try:
-            # Read
-            loader.next()
-        except StopIteration:
-            # We are done
-            try:
-                response = self.handle_request(request)
-            except:
-                # This should never happen
-                conn.close()
-                return
-        except BadRequest:
-            # Error loading
-            response = get_response(400)
-            self.log_error()
-        except:
-            # Unexpected error
-            # FIXME Send a response to the client (BadRequest, etc.)?
-            self.log_error()
-            conn.close()
-            return
-        else:
-            # Not finished
-            id = io_add_watch(fileno, IO_READ, self.events_callback)
-            requests[fileno] = conn, id, request, loader
-            return
-
-        # We have a response to send
-        # Log access
-        self.log_access(conn, request, response)
-        # We do not support persistent connections yet
-        response.set_header('connection', 'close')
-        # Ready to send response
-        response = response.to_str()
-        id = io_add_watch(fileno, IO_WRITE, self.events_callback)
-        requests[fileno] = conn, id, response
-
-
-    def send_response(self, fileno):
-        requests = self.requests
-
-        conn, id, response = requests.pop(fileno)
-        source_remove(id)
-
-        # Debug
-        peer = conn.getpeername()
-        logger_loop.debug('%s:%s => OUT' % peer)
-
-        # Send the response
-        try:
-            n = conn.send(response)
-        except SocketError:
-            conn.close()
-        else:
-            response = response[n:]
-            if response:
-                id = io_add_watch(fileno, IO_WRITE, self.events_callback)
-                requests[fileno] = conn, id, response
-            else:
-                conn.close()
-
-
-    def events_callback(self, fileno, event):
-        requests = self.requests
-
-        try:
-            if event & IO_IN or event & IO_PRI:
-                if fileno == self.ear_fileno:
-                    self.new_connection()
-                else:
-                    self.load_request(fileno)
-            elif event & IO_OUT:
-                self.send_response(fileno)
-            elif event & IO_ERR or event & IO_HUP:
-                if event == IO_ERR:
-                    logger_loop.debug('ERROR CONDITION')
-                else:
-                    logger_loop.debug('HUNG UP')
-
-                conn, id = requests.pop(fileno)[:2]
-                source_remove(id)
-        except:
-            self.log_error()
-
-        # The end ??
-        if not requests:
-            self.stop()
-
-        return True
-
-
-    def stop_gracefully(self, signum, frame):
-        requests = self.requests
-        ear_fileno = self.ear_fileno
-
-        if ear_fileno not in requests:
-            return
-
-        source_remove(self.ear_id)
-        self.ear.close()
-        del requests[ear_fileno]
-        print 'Shutting down the server (gracefully)...'
-
-        # Yet the end ?
-        if not requests:
-            self.stop()
 
 
     def start(self):
@@ -376,37 +101,17 @@ class Server(object):
             pid = getpid()
             open(self.pid_file, 'w').write(str(pid))
 
-        # Set up the connection
-        ear = self.ear = Socket(AF_INET, SOCK_STREAM)
-        # Allow to reuse the address, this solves the bug "icms.py won't
-        # close its connection properly". But is probably not the right
-        # solution (FIXME).
-        ear.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-        ear.bind((self.address, self.port))
-        ear.listen(5)
-        ear_fileno = self.ear_fileno = ear.fileno()
-        ear_id = self.ear_id = io_add_watch(ear_fileno, IO_READ,
-                                            self.events_callback)
-        self.requests[ear_fileno] = ear, ear_id
-
-        # Set up the graceful stop
-        signal(SIGINT, self.stop_gracefully)
-
-        # Main loop !!
-        self.main_loop.run()
-
-        # Close files
-        if self.access_log is not None:
-            self.access_log.close()
-        if self.event_log is not None:
-            self.event_log.close()
-        # Remove pid file
-        if self.pid_file is not None:
-            remove_file(self.pid_file)
-
-
-    def stop(self):
-        self.main_loop.quit()
+        try:
+            HTTPServer.start(self)
+        finally:
+            # Close files
+            if self.access_log is not None:
+                self.access_log.close()
+            if self.event_log is not None:
+                self.event_log.close()
+            # Remove pid file
+            if self.pid_file is not None:
+                remove_file(self.pid_file)
 
 
     ########################################################################
@@ -471,12 +176,12 @@ class Server(object):
         details = ''.join(lines)
 
         # Log
-        logger_http.error(summary + details)
+        logger_web.error(summary + details)
 
 
     def log_warning(self, context=None):
         exc_type, exc_value, traceback = exc_info()
-        logger_http.warning("%s: %s" % (exc_type.__name__, exc_value))
+        logger_web.warning("%s: %s" % (exc_type.__name__, exc_value))
 
 
     #######################################################################
@@ -544,11 +249,7 @@ class Server(object):
     ########################################################################
     # Request handling: main functions
     ########################################################################
-    def handle_request(self, request):
-        # 503 Service Unavailable
-        if len(self.requests) > MAX_REQUESTS:
-            return get_response(503)
-
+    def _handle_request(self, request):
         # 501 Not Implemented
         method_name = request.method
         method = methods.get(method_name)

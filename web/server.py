@@ -47,7 +47,7 @@ logger_data = getLogger('data')
 
 
 
-class Server(HTTPServer):
+class WebServer(HTTPServer):
 
     access_log = None
     event_log = None

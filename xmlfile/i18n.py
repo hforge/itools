@@ -26,6 +26,7 @@ from itools.xml import get_element_schema, xmlns_uri, get_attr_datatype
 from itools.xml import is_empty, get_qname, get_attribute_qname, get_end_tag
 from itools.xml import XMLParser, XMLError, DOCUMENT_TYPE, XML_DECL
 from itools.xml import START_ELEMENT, END_ELEMENT, TEXT, COMMENT
+from itools.xml import stream_to_str
 
 
 
@@ -60,17 +61,17 @@ def _make_start_format(tag_uri, tag_name, attributes, encoding):
         datatype = get_attr_datatype(tag_uri, tag_name, attr_uri, attr_name,
                                      attributes)
         if issubclass(datatype, Unicode):
-            result.append((u' %s="' % qname, False, None))
+            result[-1] = (result[-1][0] + u' %s="' % qname, False, None)
             context = _get_attr_context(datatype, tag_name, attr_name)
             result.append((value, True, context))
             result.append((u'"', False, None))
         else:
-            result.append((u' %s="%s"' % (qname, value), False, None))
+            result[-1] = (result[-1][0] + u' %s="%s"' % (qname, value), False, None)
     # Close the start tag
     if is_empty(tag_uri, tag_name):
-        result.append((u'/>', False, None))
+        result[-1] = (result[-1][0] + u'/>', False, None)
     else:
-        result.append((u'>', False, None))
+        result[-1] = (result[-1][0] + u'>', False, None)
 
     return result
 
@@ -84,6 +85,7 @@ def _get_translatable_blocks(events):
     id = 0
     id_stack = []
     context_stack = [None]
+    stream = None
 
     message = Message()
     skip_level = 0
@@ -97,6 +99,9 @@ def _get_translatable_blocks(events):
         elif type == START_ELEMENT:
             if skip_level > 0:
                 skip_level += 1
+                if stream:
+                    stream.append(event)
+                    continue
             else:
                 tag_uri, tag_name, attributes = value
                 schema = get_element_schema(tag_uri, tag_name)
@@ -108,6 +113,9 @@ def _get_translatable_blocks(events):
                 # Skip content ?
                 if schema.skip_content:
                     skip_level = 1
+                    if id_stack:
+                        stream = [event]
+                        continue
                 # Is inline ?
                 elif schema.is_inline:
                     id += 1
@@ -117,9 +125,24 @@ def _get_translatable_blocks(events):
                                                       attributes, encoding)
                     message.append_start_format(start_format, id, line)
                     continue
+                elif id_stack:
+                    skip_level = 1
+                    stream = [event]
+                    continue
         elif type == END_ELEMENT:
             if skip_level > 0:
                 skip_level -= 1
+                if stream:
+                    stream.append(event)
+                    if skip_level == 0:
+                        id += 1
+                        aux = stream_to_str(stream, encoding)
+                        aux = unicode(aux, encoding)
+                        aux = [(aux, False, context_stack[-1])]
+                        message.append_start_format(aux, id, line)
+                        message.append_end_format([], id, line)
+                        stream = None
+                    continue
             else:
                 tag_uri, tag_name = value[:2]
                 schema = get_element_schema(tag_uri, tag_name)
@@ -135,19 +158,26 @@ def _get_translatable_blocks(events):
                     continue
         elif type == TEXT:
             # Not empty ?
-            if skip_level == 0 and (value.strip() != '' or message):
+            if stream:
+                stream.append(event)
+                continue
+            elif skip_level == 0 and (value.strip() != '' or message):
                 value = XMLContent.encode(value)
                 value = unicode(value, encoding)
                 message.append_text(value, line, context_stack[-1])
                 continue
-        elif type == COMMENT and message:
-            id += 1
-            if isinstance(value, str):
-                value = unicode(value, encoding)
-            message.append_start_format([(u'<!--%s-->' % value, False, None)],
-                                        id, line)
-            message.append_end_format([], id, line)
-            continue
+        elif type == COMMENT:
+            if stream:
+                stream.append(event)
+                continue
+            elif message:
+                id += 1
+                if isinstance(value, str):
+                    value = unicode(value, encoding)
+                value = u'<!--%s-->' % value
+                message.append_start_format([(value, False, None)], id, line)
+                message.append_end_format([], id, line)
+                continue
 
         # Not a good event => break + send the event
         if message:

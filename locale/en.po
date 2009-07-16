@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.3.0\n"
-"POT-Creation-Date: 2009-04-01 16:04+CET\n"
+"POT-Creation-Date: 2009-07-15 18:07+CET\n"
 "PO-Revision-Date: 2001-07-08 17:07+CET\n"
 "Last-Translator: jdavid\n"
 "Language-Team: ??\n"
@@ -9,15 +9,15 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
-#: ../xmlfile/i18n.py:63
+#: ../xmlfile/i18n.py:64
 msgid " %s=\""
 msgstr ""
 
-#: ../xmlfile/i18n.py:68
+#: ../xmlfile/i18n.py:69
 msgid " %s=\"%s\""
 msgstr ""
 
-#: ../xmlfile/i18n.py:66
+#: ../xmlfile/i18n.py:67
 msgid "\""
 msgstr ""
 
@@ -30,7 +30,7 @@ msgstr ""
 msgid "%s"
 msgstr ""
 
-#: ../xapian/catalog.py:76
+#: ../xapian/utils.py:107
 msgid "%s%s"
 msgstr ""
 
@@ -38,11 +38,11 @@ msgstr ""
 msgid "(WW) CSS filename \"%s\" does not exist"
 msgstr ""
 
-#: ../pdf/pml.py:1119
+#: ../pdf/pml.py:1161
 msgid "(WW) Cannot add an image inside a td without predefined size"
 msgstr ""
 
-#: ../pdf/pml.py:1115
+#: ../pdf/pml.py:1157
 msgid "(WW) Filename is None"
 msgstr ""
 
@@ -72,7 +72,7 @@ msgstr ""
 msgid ".."
 msgstr ""
 
-#: ../xmlfile/i18n.py:71
+#: ../xmlfile/i18n.py:72
 msgid "/>"
 msgstr ""
 
@@ -88,7 +88,11 @@ msgstr ""
 msgid "::"
 msgstr ""
 
-#: ../xmlfile/i18n.py:51
+#: ../xmlfile/i18n.py:177
+msgid "<!--%s-->"
+msgstr ""
+
+#: ../xmlfile/i18n.py:52
 msgid "<%s"
 msgstr ""
 
@@ -104,11 +108,11 @@ msgstr ""
 msgid "<x id='%d'/>"
 msgstr ""
 
-#: ../xmlfile/i18n.py:73
+#: ../xmlfile/i18n.py:74
 msgid ">"
 msgstr ""
 
-#: ../i18n/base.py:56
+#: ../i18n/base.py:40
 msgid "???"
 msgstr ""
 
@@ -117,22 +121,18 @@ msgid "@"
 msgstr ""
 
 #: ../handlers/utils.py:21
-msgid "AAAAAAAaaaaaaaCcEEEEEeeeeeIIIIIiiiiiNnOOOOOOOoooooooUUUUUuuuuuYYYyyy"
+msgid "AAAAAAAaaaaaaaCcEEEEEeeeeeIIIIIiiiiiNnOOOOOOOoooooooUUUUUuuuuuYYYyyyZz"
 msgstr ""
 
 #: ../handlers/utils.py:29
 msgid "AE"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:62
-msgid "Aesthetics (and readibility)"
-msgstr ""
-
 #: ../ical/icalendar.py:513 ../ical/icalendar.py:529
 msgid "BEGIN:%s\n"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:57
+#: ../scripts/ipkg-quality.py:56
 msgid "Code length"
 msgstr ""
 
@@ -140,15 +140,15 @@ msgstr ""
 msgid "END:%s\n"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:499
+#: ../scripts/ipkg-quality.py:615
 msgid "Error, your project must be versioned with GIT."
 msgstr ""
 
-#: ../web/context.py:63
+#: ../web/context.py:64
 msgid "Everything looks fine (strange)."
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:70
+#: ../scripts/ipkg-quality.py:69
 msgid "Exception handling"
 msgstr ""
 
@@ -156,11 +156,11 @@ msgstr ""
 msgid "Import problems"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:58
+#: ../scripts/ipkg-quality.py:57
 msgid "Number of lines"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:58
+#: ../scripts/ipkg-quality.py:57
 msgid "Number of tokens"
 msgstr ""
 
@@ -168,15 +168,15 @@ msgstr ""
 msgid "OE"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:491
+#: ../scripts/ipkg-quality.py:606
 msgid "Options --worse and --show-lines are mutually exclusive."
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:489
+#: ../scripts/ipkg-quality.py:603
 msgid "Please give at least one file to analyse."
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:502
+#: ../scripts/ipkg-quality.py:618
 msgid "Please install matplotlib."
 msgstr ""
 
@@ -186,23 +186,27 @@ msgid ""
 "correct them and continue."
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:493
+#: ../scripts/ipkg-quality.py:61
+msgid "Style"
+msgstr ""
+
+#: ../scripts/ipkg-quality.py:609
 msgid "The option --show-lines takes one file in parameter."
 msgstr ""
 
-#: ../web/context.py:60
+#: ../web/context.py:61
 msgid "There are {inv} field(s) invalid."
 msgstr ""
 
-#: ../web/context.py:56
+#: ../web/context.py:57
 msgid "There are {miss} field(s) missing and {inv} invalid."
 msgstr ""
 
-#: ../web/context.py:58
+#: ../web/context.py:59
 msgid "There are {miss} field(s) missing."
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:287
+#: ../scripts/ipkg-quality.py:393
 msgid "This file is perfect !"
 msgstr ""
 
@@ -228,7 +232,7 @@ msgstr ""
 msgid "ae"
 msgstr ""
 
-#: ../i18n/oracle.py:77
+#: ../i18n/oracle.py:262
 msgid "al"
 msgstr ""
 
@@ -236,111 +240,111 @@ msgstr ""
 msgid "all exceptions are catched"
 msgstr ""
 
-#: ../i18n/oracle.py:78
+#: ../i18n/oracle.py:263
 msgid "an"
 msgstr ""
 
-#: ../i18n/oracle.py:79
+#: ../i18n/oracle.py:264
 msgid "and"
 msgstr ""
 
-#: ../i18n/oracle.py:80
+#: ../i18n/oracle.py:265
 msgid "are"
 msgstr ""
 
-#: ../i18n/oracle.py:81
+#: ../i18n/oracle.py:266
 msgid "as"
 msgstr ""
 
-#: ../i18n/oracle.py:82
+#: ../i18n/oracle.py:267
 msgid "aux"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:64
+#: ../scripts/ipkg-quality.py:63
 msgid "bad indented"
 msgstr ""
 
-#: ../i18n/oracle.py:83
+#: ../i18n/oracle.py:268
 msgid "but"
 msgstr ""
 
-#: ../i18n/oracle.py:84
+#: ../i18n/oracle.py:269
 msgid "como"
 msgstr ""
 
-#: ../i18n/oracle.py:85
+#: ../i18n/oracle.py:270
 msgid "con"
 msgstr ""
 
-#: ../i18n/oracle.py:86
+#: ../i18n/oracle.py:271
 msgid "de"
 msgstr ""
 
-#: ../i18n/oracle.py:87
+#: ../i18n/oracle.py:272
 msgid "del"
 msgstr ""
 
-#: ../i18n/oracle.py:88
+#: ../i18n/oracle.py:273
 msgid "des"
 msgstr ""
 
-#: ../i18n/oracle.py:89
+#: ../i18n/oracle.py:274
 msgid "donc"
 msgstr ""
 
-#: ../i18n/oracle.py:90 ../i18n/oracle.py:149
+#: ../i18n/oracle.py:275 ../i18n/oracle.py:334
 msgid "du"
 msgstr ""
 
-#: ../i18n/oracle.py:91
+#: ../i18n/oracle.py:276
 msgid "el"
 msgstr ""
 
-#: ../i18n/oracle.py:92
+#: ../i18n/oracle.py:277
 msgid "elle"
 msgstr ""
 
-#: ../i18n/oracle.py:93
+#: ../i18n/oracle.py:278
 msgid "elles"
 msgstr ""
 
-#: ../i18n/oracle.py:94
+#: ../i18n/oracle.py:279
 msgid "es"
 msgstr ""
 
-#: ../i18n/oracle.py:95
+#: ../i18n/oracle.py:280
 msgid "est"
 msgstr ""
 
-#: ../i18n/oracle.py:96
+#: ../i18n/oracle.py:281
 msgid "está"
 msgstr ""
 
-#: ../i18n/oracle.py:97
+#: ../i18n/oracle.py:282
 msgid "et"
 msgstr ""
 
-#: ../i18n/oracle.py:98
+#: ../i18n/oracle.py:283
 msgid "from"
 msgstr ""
 
-#: ../i18n/oracle.py:99
+#: ../i18n/oracle.py:284
 msgid "hay"
 msgstr ""
 
-#: ../i18n/oracle.py:100
+#: ../i18n/oracle.py:285
 msgid "he"
 msgstr ""
 
-#: ../i18n/oracle.py:101
+#: ../i18n/oracle.py:286
 msgid "i"
 msgstr ""
 
-#: ../i18n/oracle.py:102
+#: ../i18n/oracle.py:287
 msgid "il"
 msgstr ""
 
-#: ../i18n/oracle.py:103
+#: ../i18n/oracle.py:288
 msgid "ils"
 msgstr ""
 
@@ -348,51 +352,51 @@ msgstr ""
 msgid "image not valid : %s"
 msgstr ""
 
-#: ../i18n/oracle.py:104
+#: ../i18n/oracle.py:289
 msgid "in"
 msgstr ""
 
-#: ../i18n/oracle.py:105
+#: ../i18n/oracle.py:290
 msgid "is"
 msgstr ""
 
-#: ../i18n/oracle.py:106
+#: ../i18n/oracle.py:291
 msgid "it"
 msgstr ""
 
-#: ../i18n/oracle.py:107
+#: ../i18n/oracle.py:292
 msgid "je"
 msgstr ""
 
-#: ../i18n/oracle.py:108
+#: ../i18n/oracle.py:293
 msgid "las"
 msgstr ""
 
-#: ../i18n/oracle.py:109
+#: ../i18n/oracle.py:294
 msgid "le"
 msgstr ""
 
-#: ../i18n/oracle.py:111
+#: ../i18n/oracle.py:296
 msgid "les"
 msgstr ""
 
-#: ../i18n/oracle.py:110
+#: ../i18n/oracle.py:295
 msgid "lo"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:65
+#: ../scripts/ipkg-quality.py:64
 msgid "longer than 79 characters"
 msgstr ""
 
-#: ../i18n/oracle.py:112
+#: ../i18n/oracle.py:297
 msgid "los"
 msgstr ""
 
-#: ../i18n/oracle.py:113
+#: ../i18n/oracle.py:298
 msgid "mais"
 msgstr ""
 
-#: ../i18n/oracle.py:114
+#: ../i18n/oracle.py:299
 msgid "no"
 msgstr ""
 
@@ -400,15 +404,15 @@ msgstr ""
 msgid "no title"
 msgstr ""
 
-#: ../i18n/oracle.py:115
+#: ../i18n/oracle.py:300
 msgid "nous"
 msgstr ""
 
-#: ../i18n/oracle.py:116
+#: ../i18n/oracle.py:301
 msgid "nueva"
 msgstr ""
 
-#: ../i18n/oracle.py:117
+#: ../i18n/oracle.py:302
 msgid "o"
 msgstr ""
 
@@ -416,43 +420,43 @@ msgstr ""
 msgid "oe"
 msgstr ""
 
-#: ../i18n/oracle.py:118
+#: ../i18n/oracle.py:303
 msgid "of"
 msgstr ""
 
-#: ../i18n/oracle.py:119
+#: ../i18n/oracle.py:304
 msgid "on"
 msgstr ""
 
-#: ../i18n/oracle.py:120
+#: ../i18n/oracle.py:305
 msgid "or"
 msgstr ""
 
-#: ../i18n/oracle.py:121
+#: ../i18n/oracle.py:306
 msgid "où"
 msgstr ""
 
-#: ../i18n/oracle.py:122
+#: ../i18n/oracle.py:307
 msgid "para"
 msgstr ""
 
-#: ../i18n/oracle.py:123
+#: ../i18n/oracle.py:308
 msgid "pero"
 msgstr ""
 
-#: ../i18n/oracle.py:124
+#: ../i18n/oracle.py:309
 msgid "por"
 msgstr ""
 
-#: ../i18n/oracle.py:125
+#: ../i18n/oracle.py:310
 msgid "que"
 msgstr ""
 
-#: ../i18n/oracle.py:126
+#: ../i18n/oracle.py:311
 msgid "qué"
 msgstr ""
 
-#: ../i18n/oracle.py:127
+#: ../i18n/oracle.py:312
 msgid "she"
 msgstr ""
 
@@ -464,84 +468,84 @@ msgstr ""
 msgid "string exceptions are used"
 msgstr ""
 
-#: ../i18n/oracle.py:128
+#: ../i18n/oracle.py:313
 msgid "su"
 msgstr ""
 
-#: ../i18n/oracle.py:129
+#: ../i18n/oracle.py:314
 msgid "sur"
 msgstr ""
 
-#: ../i18n/oracle.py:130
+#: ../i18n/oracle.py:315
 msgid "that"
 msgstr ""
 
-#: ../i18n/oracle.py:131
+#: ../i18n/oracle.py:316
 msgid "the"
 msgstr ""
 
-#: ../csv/table.py:286
+#: ../csv/table.py:293
 msgid ""
 "the \"{field}\" field must be unique, the \"{value}\" value is  already used."
 msgstr ""
 
-#: ../i18n/oracle.py:132
+#: ../i18n/oracle.py:317
 msgid "their"
 msgstr ""
 
-#: ../i18n/oracle.py:133
+#: ../i18n/oracle.py:318
 msgid "this"
 msgstr ""
 
-#: ../i18n/oracle.py:134
+#: ../i18n/oracle.py:319
 msgid "to"
 msgstr ""
 
-#: ../i18n/oracle.py:135
+#: ../i18n/oracle.py:320
 msgid "tu"
 msgstr ""
 
-#: ../i18n/oracle.py:136
+#: ../i18n/oracle.py:321
 msgid "un"
 msgstr ""
 
-#: ../i18n/oracle.py:137
+#: ../i18n/oracle.py:322
 msgid "una"
 msgstr ""
 
-#: ../i18n/oracle.py:138
+#: ../i18n/oracle.py:323
 msgid "une"
 msgstr ""
 
-#: ../i18n/oracle.py:139
+#: ../i18n/oracle.py:324
 msgid "vous"
 msgstr ""
 
-#: ../i18n/oracle.py:140
+#: ../i18n/oracle.py:325
 msgid "when"
 msgstr ""
 
-#: ../i18n/oracle.py:141
+#: ../i18n/oracle.py:326
 msgid "where"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:63
+#: ../scripts/ipkg-quality.py:62
 msgid "with tabulators"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:66
+#: ../scripts/ipkg-quality.py:65
 msgid "with trailing whitespaces"
 msgstr ""
 
-#: ../i18n/oracle.py:142
+#: ../i18n/oracle.py:327
 msgid "y"
 msgstr ""
 
-#: ../i18n/oracle.py:143
+#: ../i18n/oracle.py:328
 msgid "you"
 msgstr ""
 
-#: ../i18n/oracle.py:144
+#: ../i18n/oracle.py:329
 msgid "your"
 msgstr ""
 
@@ -549,31 +553,31 @@ msgstr ""
 msgid "|"
 msgstr ""
 
-#: ../i18n/oracle.py:44
+#: ../i18n/oracle.py:229
 msgid "¡"
 msgstr ""
 
-#: ../i18n/oracle.py:45
+#: ../i18n/oracle.py:230
 msgid "¿"
 msgstr ""
 
 #: ../handlers/utils.py:19
-msgid "ÄÅÁÀÂÃĀäåáàâãāÇçÉÈÊËĒéèêëēÍÌÎÏĪíìîïīÑñÖÓÒÔÕØŌöóòôõøōÜÚÙÛŪüúùûūÝŸȲýÿȳ"
+msgid "ÄÅÁÀÂÃĀäåáàâãāÇçÉÈÊËĒéèêëēÍÌÎÏĪíìîïīÑñÖÓÒÔÕØŌöóòôõøōÜÚÙÛŪüúùûūÝŸȲýÿȳŽž"
 msgstr ""
 
 #: ../handlers/utils.py:29
 msgid "Æ"
 msgstr ""
 
-#: ../handlers/utils.py:32 ../i18n/oracle.py:47
+#: ../handlers/utils.py:32 ../i18n/oracle.py:232
 msgid "ß"
 msgstr ""
 
-#: ../i18n/oracle.py:76
+#: ../i18n/oracle.py:261
 msgid "à"
 msgstr ""
 
-#: ../i18n/oracle.py:46
+#: ../i18n/oracle.py:231
 msgid "ä"
 msgstr ""
 
@@ -581,35 +585,35 @@ msgstr ""
 msgid "æ"
 msgstr ""
 
-#: ../i18n/oracle.py:48
+#: ../i18n/oracle.py:233
 msgid "ç"
 msgstr ""
 
-#: ../i18n/oracle.py:49
+#: ../i18n/oracle.py:234
 msgid "ê"
 msgstr ""
 
-#: ../i18n/oracle.py:50
+#: ../i18n/oracle.py:235
 msgid "í"
 msgstr ""
 
-#: ../i18n/oracle.py:51
+#: ../i18n/oracle.py:236
 msgid "ñ"
 msgstr ""
 
-#: ../i18n/oracle.py:53
+#: ../i18n/oracle.py:238
 msgid "ó"
 msgstr ""
 
-#: ../i18n/oracle.py:52
+#: ../i18n/oracle.py:237
 msgid "ö"
 msgstr ""
 
-#: ../i18n/oracle.py:55
+#: ../i18n/oracle.py:240
 msgid "ú"
 msgstr ""
 
-#: ../i18n/oracle.py:54
+#: ../i18n/oracle.py:239
 msgid "ü"
 msgstr ""
 
@@ -621,46 +625,46 @@ msgstr ""
 msgid "œ"
 msgstr ""
 
-#: ../i18n/oracle.py:68
+#: ../i18n/oracle.py:253
 msgid "、"
 msgstr ""
 
-#: ../i18n/oracle.py:69
+#: ../i18n/oracle.py:254
 msgid "。"
 msgstr ""
 
-#: ../i18n/oracle.py:62
+#: ../i18n/oracle.py:247
 msgid "が"
 msgstr ""
 
-#: ../i18n/oracle.py:60
+#: ../i18n/oracle.py:245
 msgid "で"
 msgstr ""
 
-#: ../i18n/oracle.py:66
+#: ../i18n/oracle.py:251
 msgid "と"
 msgstr ""
 
-#: ../i18n/oracle.py:61
+#: ../i18n/oracle.py:246
 msgid "に"
 msgstr ""
 
-#: ../i18n/oracle.py:58
+#: ../i18n/oracle.py:243
 msgid "の"
 msgstr ""
 
-#: ../i18n/oracle.py:59
+#: ../i18n/oracle.py:244
 msgid "は"
 msgstr ""
 
-#: ../i18n/oracle.py:63
+#: ../i18n/oracle.py:248
 msgid "へ"
 msgstr ""
 
-#: ../i18n/oracle.py:65
+#: ../i18n/oracle.py:250
 msgid "や"
 msgstr ""
 
-#: ../i18n/oracle.py:64
+#: ../i18n/oracle.py:249
 msgid "を"
 msgstr ""

@@ -172,36 +172,36 @@ class ODFFile(OOFile):
 
         # Transform images
         for filename in self.get_contents():
-            if filename.startswith('Pictures'):
-                # PIL is imported ?
-                if PILImage is None:
-                    raise ImportError, ('You must install PIL to convert '
-                                        'the images')
-                # Try with PIL
-                try:
-                    image = PILImage.open(StringIO(self.get_file(filename)))
-                except IOError:
-                    # A SVM file ?
-                    if filename.endswith('.svm'):
-                        data = vfs.open(get_abspath('square.svm')).read()
-                        modified_files[filename] = data
-                    continue
-                format = image.format
-                image = image.convert('RGB')
-                image.filename = filename
-                draw = PILImageDraw.Draw(image)
+            if filename[:8] != 'Pictures' and filename[:10] != 'Thumbnails':
+                continue
 
-                # Make a cross
-                h, l = image.size
-                draw.rectangle((0, 0, h-1, l-1), fill="grey",
-                                                 outline="black")
-                draw.line((0, 0, h-1, l-1), fill="black")
-                draw.line((0, l-1, h-1, 0), fill="black")
+            # PIL is imported?
+            if PILImage is None:
+                raise ImportError, 'You must install PIL to convert the images'
+            # Try with PIL
+            try:
+                image = PILImage.open(StringIO(self.get_file(filename)))
+            except IOError:
+                # A SVM file?
+                if filename.endswith('.svm'):
+                    data = vfs.open(get_abspath('square.svm')).read()
+                    modified_files[filename] = data
+                continue
+            format = image.format
+            image = image.convert('RGB')
+            image.filename = filename
+            draw = PILImageDraw.Draw(image)
 
-                # Save
-                data = StringIO()
-                image.save(data, format)
-                modified_files[filename] = data.getvalue()
+            # Make a cross
+            h, l = image.size
+            draw.rectangle((0, 0, h-1, l-1), fill="grey", outline="black")
+            draw.line((0, 0, h-1, l-1), fill="black")
+            draw.line((0, l-1, h-1, 0), fill="black")
+
+            # Save
+            data = StringIO()
+            image.save(data, format)
+            modified_files[filename] = data.getvalue()
 
         return  zip_data(self.data, modified_files)
 

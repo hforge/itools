@@ -33,15 +33,17 @@ from gobject import MainLoop, io_add_watch, source_remove
 from gobject import IO_IN, IO_OUT, IO_PRI, IO_ERR, IO_HUP
 
 
-# Constants
-IO_READ = IO_IN | IO_PRI | IO_ERR | IO_HUP
-IO_WRITE = IO_OUT | IO_ERR | IO_HUP
 # Used to limit the load of the server
-MAX_REQUESTS = 200
+MAX_CONNECTIONS = 50
 
 # Global variables
 logger = getLogger('itools.http')
 
+
+# TODO Add a timeout to connections, so they are closed after a while.
+# TODO Then change 'stop_gracefully' so it quits when there are no more
+# connections (and remove the 'activity' variable).
+# TODO Handle the IO_ERR and IO_HUP events.
 
 
 ###########################################################################
@@ -141,6 +143,29 @@ class SocketWrapper(object):
 ###########################################################################
 # The HTTP Server
 ###########################################################################
+class Connection(object):
+
+    __slots__ = ['conn', 'request', 'loader', 'response']
+
+    def __init__(self, conn):
+        self.conn = conn
+        self.request = None
+        self.loader = None
+        self.response = None
+
+        # New request
+        self.new_request()
+
+
+    def new_request(self):
+        self.request = Request()
+        self.loader = self.request.non_blocking_load(SocketWrapper(self.conn))
+
+
+
+###########################################################################
+# The HTTP Server
+###########################################################################
 
 class HTTPServer(object):
 
@@ -157,145 +182,105 @@ class HTTPServer(object):
         # Main Loop
         self.main_loop = MainLoop()
 
-        # The requests dict
-        # mapping {<fileno>: (conn, id, + some useful informations) }
-        self.requests = {}
+        # The active connections: {fileno: <Connection>}
+        self.connections = {}
+        self.activity = 0
 
 
-    def new_connection(self):
+    #######################################################################
+    # Callbacks
+    #######################################################################
+    def new_connection(self, fileno, event):
         """Registers the connection to read the new request.
         """
         # Get the connection and client address
         try:
             conn, client_address = self.ear.accept()
         except SocketError:
-            return
+            return True
 
         # Set non-blocking mode
         conn.setblocking(0)
         # Register the connection
         fileno = conn.fileno()
-        id = io_add_watch(fileno, IO_READ, self.events_callback)
-        # Build and store the request
-        request = Request()
-        wrapper = SocketWrapper(conn)
-        loader = request.non_blocking_load(wrapper)
-        self.requests[fileno] = conn, id, request, loader
-
-
-    def load_request(self, fileno):
-        """Loads the request, and when it is done, handles it.
-        """
-        requests = self.requests
-
-        # Load request
-        conn, id, request, loader = requests.pop(fileno)
-        source_remove(id)
-
-        try:
-            # Read
-            loader.next()
-        except StopIteration:
-            # We are done
-            try:
-                response = self.handle_request(request)
-            except:
-                # This should never happen
-                conn.close()
-                return
-        except BadRequest:
-            # Error loading
-            response = get_response(400)
-            self.log_error()
-        except:
-            # Unexpected error
-            # FIXME Send a response to the client (BadRequest, etc.)?
-            self.log_error()
-            conn.close()
-            return
-        else:
-            # Not finished
-            id = io_add_watch(fileno, IO_READ, self.events_callback)
-            requests[fileno] = conn, id, request, loader
-            return
-
-        # We have a response to send
-        # Log access
-        self.log_access(conn, request, response)
-        # We do not support persistent connections yet
-        response.set_header('connection', 'close')
-        # Ready to send response
-        response = response.to_str()
-        id = io_add_watch(fileno, IO_WRITE, self.events_callback)
-        requests[fileno] = conn, id, response
-
-
-    def send_response(self, fileno):
-        requests = self.requests
-
-        conn, id, response = requests.pop(fileno)
-        source_remove(id)
-
-        # Send the response
-        try:
-            n = conn.send(response)
-        except SocketError:
-            conn.close()
-        else:
-            response = response[n:]
-            if response:
-                id = io_add_watch(fileno, IO_WRITE, self.events_callback)
-                requests[fileno] = conn, id, response
-            else:
-                conn.close()
-
-
-    def events_callback(self, fileno, event):
-        requests = self.requests
-
-        try:
-            if event & IO_IN or event & IO_PRI:
-                if fileno == self.ear_fileno:
-                    self.new_connection()
-                else:
-                    self.load_request(fileno)
-            elif event & IO_OUT:
-                self.send_response(fileno)
-            elif event & IO_ERR or event & IO_HUP:
-                if event == IO_ERR:
-                    logger.debug('ERROR CONDITION')
-                else:
-                    logger.debug('HUNG UP')
-
-                conn, id = requests.pop(fileno)[:2]
-                source_remove(id)
-        except:
-            self.log_error()
-
-        # The end ??
-        if not requests:
-            self.stop()
+        id = io_add_watch(fileno, IO_PRI | IO_IN, self.load_request)
+        # Keep the connection
+        self.connections[fileno] = Connection(conn)
 
         return True
 
 
-    def stop_gracefully(self, signum, frame):
-        requests = self.requests
-        ear_fileno = self.ear_fileno
+    def load_request(self, fileno, event):
+        """Loads the request, and when it is done, handles it.
+        """
+        # Read the request
+        connection = self.connections[fileno]
+        try:
+            connection.loader.next()
+            return True
+        except StopIteration:
+            self.activity += 1
+            response = self.handle_request(connection.request)
+        except BadRequest:
+            self.activity += 1
+            self.log_error()
+            response = get_response(400)
+        except:
+            self.activity += 1
+            self.log_error()
+            response = get_response(500)
 
-        if ear_fileno not in requests:
-            return
+        # Log access
+        connection.response = response
+        self.log_access(connection)
+        connection.response = response.to_str()
 
-        source_remove(self.ear_id)
-        self.ear.close()
-        del requests[ear_fileno]
-        print 'Shutting down the server (gracefully)...'
+        # Ready to send response
+        io_add_watch(fileno, IO_OUT, self.send_response)
 
-        # Yet the end ?
-        if not requests:
+        # Is this the last request
+        if connection.request.get_header('connection') == 'close':
+            connection.request = None
+            conenection.loader = None
+            return False
+        else:
+            connection.new_request()
+            return True
+
+
+    def send_response(self, fileno, event):
+        connection = self.connections[fileno]
+
+        # Send the response
+        response = connection.response
+        try:
+            n = connection.conn.send(response)
+        except SocketError:
+            connection.conn.close()
+            del self.connections[fileno]
+            self.activity -= 1
+            if self.ear is None and self.activity == 0:
+                self.stop()
+            return False
+
+        # Continue
+        if n < len(response):
+            connection.response = response[n:]
+            return True
+
+        # Done
+        if connection.request is None:
+            connection.conn.close()
+            del self.connections[fileno]
+        self.activity -= 1
+        if self.ear is None and self.activity == 0:
             self.stop()
+        return False
 
 
+    #######################################################################
+    # Start & Stop
+    #######################################################################
     def start(self):
         # Set up the connection
         ear = self.ear = Socket(AF_INET, SOCK_STREAM)
@@ -306,9 +291,8 @@ class HTTPServer(object):
         ear.bind((self.address, self.port))
         ear.listen(5)
         ear_fileno = self.ear_fileno = ear.fileno()
-        ear_id = self.ear_id = io_add_watch(ear_fileno, IO_READ,
-                                            self.events_callback)
-        self.requests[ear_fileno] = ear, ear_id
+        ear_id = self.ear_id = io_add_watch(ear_fileno, IO_IN | IO_PRI,
+                                            self.new_connection)
 
         # Set up the graceful stop
         signal(SIGINT, self.stop_gracefully)
@@ -317,16 +301,38 @@ class HTTPServer(object):
         self.main_loop.run()
 
 
+    def stop_gracefully(self, signum, frame):
+        """Inmediately stop accepting new connections, and quit once there
+        are not more ongoing requests.
+        """
+        # Close the ear
+        if self.ear is not None:
+            source_remove(self.ear_id)
+            self.ear.close()
+            self.ear = None
+            self.ear_fileno = 0
+            self.ear_id = 0
+
+        # Quit
+        print 'Shutting down the server (gracefully)...'
+        if self.activity == 0:
+            self.main_loop.quit()
+
+
     def stop(self):
         self.main_loop.quit()
 
 
     def handle_request(self, request):
         # 503 Service Unavailable
-        if len(self.requests) > MAX_REQUESTS:
+        if len(self.connections) > MAX_CONNECTIONS:
             return get_response(503)
 
-        return self._handle_request(request)
+        try:
+            return self._handle_request(request)
+        except:
+            self.log_error()
+            return get_response(500)
 
 
     #######################################################################
@@ -336,7 +342,7 @@ class HTTPServer(object):
         raise NotImplementedError
 
 
-    def log_access(self, conn, request, response):
+    def log_access(self, connection):
         pass
 
 

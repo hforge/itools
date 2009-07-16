@@ -117,7 +117,7 @@ class WebServer(HTTPServer):
     ########################################################################
     # Logging
     ########################################################################
-    def log_access(self, conn, request, response):
+    def log_access(self, connection):
         # Common Log Format
         #  - IP address of the client
         #  - RFC 1413 identity (not available)
@@ -132,13 +132,15 @@ class WebServer(HTTPServer):
             return
 
         # The data to write
-        host = request.get_remote_ip()
+        host = connection.request.get_remote_ip()
         if host is None:
-            host, port = conn.getpeername()
-        namespace = (host, strftime('%d/%b/%Y:%H:%M:%S %Z'),
-                     request.request_line, response.status,
-                     response.get_content_length())
-        data = '%s - - [%s] "%s" %s %s\n' % namespace
+            host, port = connection.conn.getpeername()
+        ts = strftime('%d/%b/%Y:%H:%M:%S %Z')
+        request_line = connection.request.request_line
+        status = connection.response.status
+        length = connection.response.get_content_length()
+        data = '{0} - - [{1}] "{2}" {3} {4}\n'.format(host, ts, request_line,
+                                                      status, length)
 
         # Check the file has not been removed
         if fstat(log.fileno())[3] == 0:

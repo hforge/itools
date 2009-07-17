@@ -22,6 +22,7 @@ from signal import signal, SIGINT
 from socket import error as SocketError
 from socket import socket as Socket
 from socket import AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR
+from time import time
 
 # Import from itools
 from exceptions import BadRequest
@@ -29,7 +30,7 @@ from request import Request
 from response import get_response
 
 # Import from gobject
-from gobject import MainLoop, io_add_watch, source_remove
+from gobject import MainLoop, io_add_watch, source_remove, timeout_add
 from gobject import IO_IN, IO_OUT, IO_PRI, IO_ERR, IO_HUP, IO_NVAL
 
 
@@ -38,17 +39,17 @@ IO_RECV = IO_PRI | IO_IN
 IO_SEND = IO_OUT
 IO_ERRO = IO_ERR | IO_HUP | IO_NVAL
 
-# Used to limit the load of the server
+# When the number of connections hits the maximum number of connections
+# allowed, new connections will be automatically responded with the
+# "503 Service Unavailable" error
 MAX_CONNECTIONS = 50
 
-# Global variables
+# When a connection is not active for the number of seconds defined here, it
+# will be closed.
+CONN_TIMEOUT = 10
+
+# The logger for itools.http
 logger = getLogger('itools.http')
-
-
-# TODO Add a timeout to connections, so they are closed after a while.
-# TODO Then change 'stop_gracefully' so it quits when there are no more
-# connections (and remove the 'activity' variable).
-# TODO Handle the IO_ERR and IO_HUP events.
 
 
 ###########################################################################
@@ -152,7 +153,7 @@ class HTTPConnection(object):
     """This class represents a persistent HTTP connection.
     """
 
-    __slots__ = ['conn', 'recv', 'send', 'recv_id', 'send_id', 'erro_id']
+    __slots__ = ['conn', 'recv', 'send', 'recv_id', 'send_id', 'erro_id', 'ts']
 
     def __init__(self, conn):
         # Socket connection
@@ -166,6 +167,9 @@ class HTTPConnection(object):
         self.recv_id = None
         self.send_id = None
         self.erro_id = None
+
+        # Timestamp
+        self.ts = time()
 
         # New request
         self.new_request()
@@ -199,7 +203,6 @@ class HTTPServer(object):
 
         # The active connections: {fileno: <Connection>}
         self.connections = {}
-        self.activity = 0
 
 
     def close_connection(self, fileno):
@@ -212,10 +215,10 @@ class HTTPServer(object):
         return False
 
 
-    def add_watch(self, fileno, mask, callback):
-        id = io_add_watch(fileno, mask, callback)
-        self.connections[fileno].ids.add(id)
-
+    def get_connection(self, fileno):
+        connection = self.connections[fileno]
+        connection.ts = time()
+        return connection
 
 
     #######################################################################
@@ -248,31 +251,26 @@ class HTTPServer(object):
 
 
     def erro_callback(self, fileno, event):
-        print 'erro_callback %s %s' % (fileno, event)
         return self.close_connection(fileno)
 
 
     def recv_callback(self, fileno, event):
         """Loads the request, and when it is done, handles it.
         """
-        print 'recv_callback %s %s' % (fileno, event)
         # Read the request
-        connection = self.connections[fileno]
+        connection = self.get_connection(fileno)
         request, loader = connection.recv
         try:
             loader.next()
             return True
         except StopIteration:
-            self.activity += 1
             response = self.handle_request(request)
         except EOFError:
             return self.close_connection(fileno)
         except BadRequest:
-            self.activity += 1
             self.log_error()
             response = get_response(400)
         except Exception:
-            self.activity += 1
             self.log_error()
             response = get_response(500)
 
@@ -295,32 +293,40 @@ class HTTPServer(object):
 
 
     def send_callback(self, fileno, event):
-        print 'send_callback %s %s' % (fileno, event)
-        connection = self.connections[fileno]
+        connection = self.get_connection(fileno)
 
         # Send the response
         response = connection.send
         try:
             n = connection.conn.send(response)
         except SocketError:
-            self.close_connection(fileno)
-            self.activity -= 1
-            if self.ear is None and self.activity == 0:
-                self.stop()
-            return False
+            return self.close_connection(fileno)
 
         # Continue
         if n < len(response):
-            connection.response = response[n:]
+            connection.send = response[n:]
             return True
 
         # Done
         if connection.recv_id is None:
-            self.close_connection()
-        self.activity -= 1
-        if self.ear is None and self.activity == 0:
-            self.stop()
+            return self.close_connection()
         return False
+
+
+    def clean_callback(self):
+        now = time()
+        for fileno in self.connections.keys():
+            connection = self.connections[fileno]
+            if (now - connection.ts) > CONN_TIMEOUT:
+                self.close_connection(fileno)
+
+        # Quit
+        if not self.ear and not self.connections:
+            self.stop()
+            return False
+
+        # Continue
+        return True
 
 
     #######################################################################
@@ -342,6 +348,9 @@ class HTTPServer(object):
         # Set up the graceful stop
         signal(SIGINT, self.stop_gracefully)
 
+        # Set timeout callback to clean unused connections
+        timeout_add(2000, self.clean_callback)
+
         # Main loop !!
         self.main_loop.run()
 
@@ -360,8 +369,8 @@ class HTTPServer(object):
 
         # Quit
         print 'Shutting down the server (gracefully)...'
-        if self.activity == 0:
-            self.main_loop.quit()
+        if not self.connections:
+            self.stop()
 
 
     def stop(self):

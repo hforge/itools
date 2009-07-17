@@ -117,7 +117,7 @@ class WebServer(HTTPServer):
     ########################################################################
     # Logging
     ########################################################################
-    def log_access(self, connection):
+    def log_access(self, conn, request, response):
         # Common Log Format
         #  - IP address of the client
         #  - RFC 1413 identity (not available)
@@ -132,13 +132,13 @@ class WebServer(HTTPServer):
             return
 
         # The data to write
-        host = connection.request.get_remote_ip()
+        host = request.get_remote_ip()
         if host is None:
-            host, port = connection.conn.getpeername()
+            host, port = conn.getpeername()
         ts = strftime('%d/%b/%Y:%H:%M:%S %Z')
-        request_line = connection.request.request_line
-        status = connection.response.status
-        length = connection.response.get_content_length()
+        request_line = request.request_line
+        status = response.status
+        length = response.get_content_length()
         data = '{0} - - [{1}] "{2}" {3} {4}\n'.format(host, ts, request_line,
                                                       status, length)
 

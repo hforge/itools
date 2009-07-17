@@ -78,14 +78,10 @@ class Request(Message):
         sockets, it works for files too.
         """
         # Read the request line
-        try:
+        line = file.readline()
+        while line is None:
+            yield None
             line = file.readline()
-            while line is None:
-                yield None
-                line = file.readline()
-        except EOFError, e:
-            msg = 'failed to read the request line, just got %s'
-            raise BadRequest, msg % repr(e.message)
 
         # Parse the request line
         self.request_line = line

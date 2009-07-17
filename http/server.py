@@ -30,8 +30,13 @@ from response import get_response
 
 # Import from gobject
 from gobject import MainLoop, io_add_watch, source_remove
-from gobject import IO_IN, IO_OUT, IO_PRI, IO_ERR, IO_HUP
+from gobject import IO_IN, IO_OUT, IO_PRI, IO_ERR, IO_HUP, IO_NVAL
 
+
+# IO masks
+IO_RECV = IO_PRI | IO_IN
+IO_SEND = IO_OUT
+IO_ERRO = IO_ERR | IO_HUP | IO_NVAL
 
 # Used to limit the load of the server
 MAX_CONNECTIONS = 50
@@ -72,7 +77,7 @@ class SocketWrapper(object):
         # Try to read the remaining
         try:
             data = self.socket.recv(size - buffer_size)
-        except:
+        except Exception:
             return None
         # This method is supposed to be called only when there is data to be
         # read. So if no data is available, we suppose the data is truncated
@@ -118,7 +123,7 @@ class SocketWrapper(object):
         # for a list of the possible errors.
         try:
             data = recv(512)
-        except:
+        except Exception:
             return None
         if not data:
             # Send the data read so far
@@ -136,30 +141,40 @@ class SocketWrapper(object):
             # FIXME Catch only the relevant exceptions (see note above)
             try:
                 data = recv(512)
-            except:
+            except Exception:
                 return None
 
 
 ###########################################################################
 # The HTTP Server
 ###########################################################################
-class Connection(object):
+class HTTPConnection(object):
+    """This class represents a persistent HTTP connection.
+    """
 
-    __slots__ = ['conn', 'request', 'loader', 'response']
+    __slots__ = ['conn', 'recv', 'send', 'recv_id', 'send_id', 'erro_id']
 
     def __init__(self, conn):
+        # Socket connection
         self.conn = conn
-        self.request = None
-        self.loader = None
-        self.response = None
+
+        # Request & Response
+        self.recv = (None, None) # (<Request>, request loader)
+        self.send = None         # response string
+
+        # Source ids
+        self.recv_id = None
+        self.send_id = None
+        self.erro_id = None
 
         # New request
         self.new_request()
 
 
     def new_request(self):
-        self.request = Request()
-        self.loader = self.request.non_blocking_load(SocketWrapper(self.conn))
+        request = Request()
+        loader = request.non_blocking_load(SocketWrapper(self.conn))
+        self.recv = (request, loader)
 
 
 
@@ -187,77 +202,108 @@ class HTTPServer(object):
         self.activity = 0
 
 
+    def close_connection(self, fileno):
+        connection = self.connections.pop(fileno)
+        connection.conn.close()
+        for id in connection.recv_id, connection.send_id, connection.erro_id:
+            if id is not None:
+                source_remove(id)
+
+        return False
+
+
+    def add_watch(self, fileno, mask, callback):
+        id = io_add_watch(fileno, mask, callback)
+        self.connections[fileno].ids.add(id)
+
+
+
     #######################################################################
     # Callbacks
     #######################################################################
     def new_connection(self, fileno, event):
         """Registers the connection to read the new request.
         """
-        # Get the connection and client address
+        # Accept the connection
         try:
             conn, client_address = self.ear.accept()
         except SocketError:
             return True
 
-        # Set non-blocking mode
+        # Non-blocking mode
         conn.setblocking(0)
-        # Register the connection
+
+        # Watch
         fileno = conn.fileno()
-        id = io_add_watch(fileno, IO_PRI | IO_IN, self.load_request)
-        # Keep the connection
-        self.connections[fileno] = Connection(conn)
+        recv_id = io_add_watch(fileno, IO_RECV, self.recv_callback)
+        erro_id = io_add_watch(fileno, IO_ERRO, self.erro_callback)
+
+        # Make the <HTTPConnection> object
+        connection = HTTPConnection(conn)
+        connection.recv_id = recv_id
+        connection.erro_id = erro_id
+        self.connections[fileno] = connection
 
         return True
 
 
-    def load_request(self, fileno, event):
+    def erro_callback(self, fileno, event):
+        print 'erro_callback %s %s' % (fileno, event)
+        return self.close_connection(fileno)
+
+
+    def recv_callback(self, fileno, event):
         """Loads the request, and when it is done, handles it.
         """
+        print 'recv_callback %s %s' % (fileno, event)
         # Read the request
         connection = self.connections[fileno]
+        request, loader = connection.recv
         try:
-            connection.loader.next()
+            loader.next()
             return True
         except StopIteration:
             self.activity += 1
-            response = self.handle_request(connection.request)
+            response = self.handle_request(request)
+        except EOFError:
+            return self.close_connection(fileno)
         except BadRequest:
             self.activity += 1
             self.log_error()
             response = get_response(400)
-        except:
+        except Exception:
             self.activity += 1
             self.log_error()
             response = get_response(500)
 
         # Log access
-        connection.response = response
-        self.log_access(connection)
-        connection.response = response.to_str()
+        self.log_access(connection.conn, request, response)
 
         # Ready to send response
-        io_add_watch(fileno, IO_OUT, self.send_response)
+        connection.send = response.to_str()
+        connection.send_id = io_add_watch(fileno, IO_OUT, self.send_callback)
 
         # Is this the last request
-        if connection.request.get_header('connection') == 'close':
-            connection.request = None
-            conenection.loader = None
+        if request.get_header('connection') == 'close':
+            source_remove(connection.recv_id)
+            connection.recv = (None, None)
+            connection.recv_id = None
             return False
         else:
             connection.new_request()
             return True
 
 
-    def send_response(self, fileno, event):
+    def send_callback(self, fileno, event):
+        print 'send_callback %s %s' % (fileno, event)
         connection = self.connections[fileno]
 
         # Send the response
-        response = connection.response
+        response = connection.send
         try:
             n = connection.conn.send(response)
         except SocketError:
-            connection.conn.close()
-            del self.connections[fileno]
+            self.close_connection(fileno)
             self.activity -= 1
             if self.ear is None and self.activity == 0:
                 self.stop()
@@ -269,9 +315,8 @@ class HTTPServer(object):
             return True
 
         # Done
-        if connection.request is None:
-            connection.conn.close()
-            del self.connections[fileno]
+        if connection.recv_id is None:
+            self.close_connection()
         self.activity -= 1
         if self.ear is None and self.activity == 0:
             self.stop()
@@ -290,9 +335,9 @@ class HTTPServer(object):
         ear.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
         ear.bind((self.address, self.port))
         ear.listen(5)
-        ear_fileno = self.ear_fileno = ear.fileno()
-        ear_id = self.ear_id = io_add_watch(ear_fileno, IO_IN | IO_PRI,
-                                            self.new_connection)
+        self.ear_fileno = ear.fileno()
+        self.ear_id = io_add_watch(self.ear_fileno, IO_IN | IO_PRI,
+                                   self.new_connection)
 
         # Set up the graceful stop
         signal(SIGINT, self.stop_gracefully)
@@ -330,7 +375,7 @@ class HTTPServer(object):
 
         try:
             return self._handle_request(request)
-        except:
+        except Exception:
             self.log_error()
             return get_response(500)
 

@@ -80,7 +80,7 @@ class BaseDatabase(object):
 
 
     def _has_changed(self):
-        """Returns whethere there is something that has changed or not.
+        """Returns whether there is something that has changed or not.
         This is to avoid superfluos actions by the 'save' and 'abort'
         methods.
         """
@@ -259,6 +259,10 @@ class RODatabase(BaseDatabase):
             n -= 1
             if n == 0:
                 return
+
+
+    def _has_changed(self):
+        return False
 
 
     #######################################################################

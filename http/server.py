@@ -396,7 +396,7 @@ class HTTPServer(object):
         raise NotImplementedError
 
 
-    def log_access(self, connection):
+    def log_access(self, conn, request, response):
         pass
 
 

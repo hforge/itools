@@ -41,8 +41,7 @@ from views import BaseView
 
 
 logger_http = getLogger('itools.http')
-logger_web = getLogger('web')
-logger_data = getLogger('data')
+logger_web = getLogger('itools.web')
 
 
 
@@ -77,11 +76,9 @@ class WebServer(HTTPServer):
         # Events log: set handler
         logger_http.addHandler(handler)
         logger_web.addHandler(handler)
-        logger_data.addHandler(handler)
         # Level
         logger_http.setLevel(log_level)
         logger_web.setLevel(log_level)
-        logger_data.setLevel(log_level)
 
         # The pid file
         self.pid_file = pid_file

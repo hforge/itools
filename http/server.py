@@ -22,7 +22,7 @@ from signal import signal, SIGINT
 from socket import error as SocketError
 from socket import socket as Socket
 from socket import AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR
-from time import time
+from time import strftime, time
 
 # Import from itools
 from exceptions import BadRequest
@@ -390,13 +390,39 @@ class HTTPServer(object):
 
 
     #######################################################################
+    # Logging
+    #######################################################################
+    def log_access(self, conn, request, response):
+        # Common Log Format
+        #  - IP address of the client
+        #  - RFC 1413 identity (not available)
+        #  - username (XXX not provided right now, should we?)
+        #  - time (XXX we use the timezone name, while we should use the
+        #    offset, e.g. +0100)
+        #  - the request line
+        #  - the status code
+        #  - content length of the response
+        host = request.get_remote_ip()
+        if host is None:
+            host, port = conn.getpeername()
+        ts = strftime('%d/%b/%Y:%H:%M:%S %Z')
+        request_line = request.request_line
+        status = response.status
+        length = response.get_content_length()
+        line = '{0} - - [{1}] "{2}" {3} {4}\n'
+        line = line.format(host, ts, request_line, status, length)
+
+        self._log_access(line)
+
+
+    #######################################################################
     # To override by subclasses
     #######################################################################
     def _handle_request(self, request):
         raise NotImplementedError
 
 
-    def log_access(self, conn, request, response):
+    def _log_access(self, line):
         pass
 
 

@@ -22,7 +22,6 @@ from base64 import decodestring
 from copy import copy
 from logging import getLogger, WARNING, FileHandler, StreamHandler, Formatter
 from os import fstat, getpid, remove as remove_file
-from time import strftime
 from traceback import format_exc
 from urllib import unquote
 from warnings import warn
@@ -117,30 +116,10 @@ class WebServer(HTTPServer):
     ########################################################################
     # Logging
     ########################################################################
-    def log_access(self, conn, request, response):
-        # Common Log Format
-        #  - IP address of the client
-        #  - RFC 1413 identity (not available)
-        #  - username (XXX not provided right now, should we?)
-        #  - time (XXX we use the timezone name, while we should use the
-        #    offset, e.g. +0100)
-        #  - the request line
-        #  - the status code
-        #  - content length of the response
+    def _log_access(self, line):
         log = self.access_log
         if log is None:
             return
-
-        # The data to write
-        host = request.get_remote_ip()
-        if host is None:
-            host, port = conn.getpeername()
-        ts = strftime('%d/%b/%Y:%H:%M:%S %Z')
-        request_line = request.request_line
-        status = response.status
-        length = response.get_content_length()
-        data = '{0} - - [{1}] "{2}" {3} {4}\n'.format(host, ts, request_line,
-                                                      status, length)
 
         # Check the file has not been removed
         if fstat(log.fileno())[3] == 0:
@@ -148,7 +127,7 @@ class WebServer(HTTPServer):
             self.access_log = log
 
         # Write
-        log.write(data)
+        log.write(line)
         log.flush()
 
 

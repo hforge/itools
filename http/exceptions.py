@@ -16,7 +16,8 @@
 
 
 class HTTPError(Exception):
-    """Base class for all errors, client or server side."""
+    """Base class for all errors, client or server side.
+    """
 
 
 
@@ -27,7 +28,8 @@ class NotModified(HTTPError):
 
 
 class ClientError(HTTPError):
-    """Base class for 4xx responses."""
+    """Base class for 4xx responses.
+    """
 
 
 class BadRequest(ClientError):
@@ -61,7 +63,8 @@ class Conflict(ClientError):
 
 
 class ServerError(HTTPError):
-    """Base class for 5xx responses."""
+    """Base class for 5xx responses.
+    """
 
 
 class InternalServerError(ServerError):

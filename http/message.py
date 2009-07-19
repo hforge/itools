@@ -20,8 +20,7 @@ import headers
 
 
 class Message(File):
-    """
-    Base class, for HTTP request and responses.
+    """Base class for HTTP request and responses.
     """
 
     def set_header(self, name, value):

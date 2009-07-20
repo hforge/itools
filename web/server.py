@@ -42,21 +42,25 @@ from views import BaseView
 
 
 
-def web_logger(domain, level, message, filepath, log_level):
+def web_logger(domain, level, message, filepath, min_level):
     # Log only if mimimum level reached
-    if level < log_level:
+    if level < min_level:
         return
 
+    # Build message
     now = strftime('%Y-%m-%d %H:%M:%S')
     message = '{0} - {1} - {2}\n'.format(now, domain, message)
 
+    # Case 1: Standard error
     if filepath is None:
         stderr.write(message)
         stderr.flush()
-    else:
-        with open(filepath, 'a') as f:
-            f.write(message)
-            f.flush()
+        return
+
+    # Case 2: File
+    with open(filepath, 'a') as f:
+        f.write(message)
+        f.flush()
 
 
 

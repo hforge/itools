@@ -20,8 +20,8 @@
 # Import from the Standard Library
 from base64 import decodestring
 from copy import copy
-from logging import getLogger, WARNING, FileHandler, StreamHandler, Formatter
 from os import fstat, getpid, remove as remove_file
+from time import strftime
 from traceback import format_exc
 from urllib import unquote
 from warnings import warn
@@ -34,14 +34,29 @@ from itools.http import ClientError, NotModified, BadRequest, Forbidden
 from itools.http import NotFound, Unauthorized, HTTPError, NotImplemented
 from itools.http import MethodNotAllowed
 from itools.i18n import init_language_selector
+from itools.log import WARNING, register_logger, log_error, log_warning
 from itools.uri import Reference
 from context import Context, set_context, select_language
 from context import FormError
 from views import BaseView
 
 
-logger_http = getLogger('itools.http')
-logger_web = getLogger('itools.web')
+
+def web_logger(domain, level, message, filepath, log_level):
+    # Log only if mimimum level reached
+    if level < log_level:
+        return
+
+    now = strftime('%Y-%m-%d %H:%M:%S')
+    message = '{0} - {1} - {2}\n'.format(now, domain, message)
+
+    if filepath is None:
+        stderr.write(message)
+        stderr.flush()
+    else:
+        with open(filepath, 'a') as f:
+            f.write(message)
+            f.flush()
 
 
 
@@ -67,18 +82,7 @@ class WebServer(HTTPServer):
             self.access_log = open(access_log, 'a+')
 
         # Events log: build handler
-        if event_log is None:
-            handler = StreamHandler()
-        else:
-            handler = FileHandler(event_log)
-        formatter = Formatter('%(asctime)s - %(name)s - %(message)s')
-        handler.setFormatter(formatter)
-        # Events log: set handler
-        logger_http.addHandler(handler)
-        logger_web.addHandler(handler)
-        # Level
-        logger_http.setLevel(log_level)
-        logger_web.setLevel(log_level)
+        register_logger(None, web_logger, event_log, log_level)
 
         # The pid file
         self.pid_file = pid_file
@@ -154,12 +158,12 @@ class WebServer(HTTPServer):
         details = ''.join(lines)
 
         # Log
-        logger_web.error(summary + details)
+        log_error(summary + details)
 
 
     def log_warning(self, context=None):
         exc_type, exc_value, traceback = exc_info()
-        logger_web.warning("%s: %s" % (exc_type.__name__, exc_value))
+        log_warning("%s: %s" % (exc_type.__name__, exc_value))
 
 
     #######################################################################

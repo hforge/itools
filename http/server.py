@@ -17,7 +17,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from logging import getLogger
 from signal import signal, SIGINT
 from socket import error as SocketError
 from socket import socket as Socket
@@ -48,8 +47,6 @@ MAX_CONNECTIONS = 50
 # will be closed.
 CONN_TIMEOUT = 10
 
-# The logger for itools.http
-logger = getLogger('itools.http')
 
 
 ###########################################################################

@@ -18,8 +18,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from zipfile import ZipFile
 from cStringIO import StringIO
+from random import choice
+from zipfile import ZipFile
 
 # Import from itools
 from itools.core import add_type, get_abspath
@@ -152,13 +153,35 @@ class ODFFile(OOFile):
 
         # A stupid translator
         class Catalog(object):
-            @staticmethod
-            def gettext(unit, context):
+
+            # This table is derived from the Times New Roman font 12px
+            table = [
+                # 6-14
+                'ijlt', 'frI', 'sJ', 'acez', 'bdghknopquvxy', 'FPS', 'ELTZ',
+                'BCR', 'wADGHKNOQUVXY',
+                # 16
+                'm',
+                # 18+19
+                'MW']
+
+            @classmethod
+            def gettext(cls, unit, context):
+                table = {}
+                for chars in cls.table:
+                    for c in chars:
+                        table[c] = chars
+
+                def f(c):
+                    if c.isspace():
+                        return c
+                    if c in table:
+                        return choice(table[c])
+                    return 'x'
+
                 new_unit = []
                 for x, s in unit:
                     if type(s) in (str, unicode):
-                        s = [ 'x' if not c.isspace() else c for c in s ]
-                        s = ''.join(s)
+                        s = ''.join([ f(c) for c in s ])
                     new_unit.append((x, s))
                 return new_unit
 

@@ -31,7 +31,7 @@ from sys import exc_info
 from itools.handlers import BaseDatabase
 from itools.http import HTTPServer, get_response
 from itools.http import ClientError, NotModified, BadRequest, Forbidden
-from itools.http import NotFound, Unauthorized, HTTPError, NotImplemented
+from itools.http import NotFound, Unauthorized, NotImplemented
 from itools.http import MethodNotAllowed
 from itools.i18n import init_language_selector
 from itools.log import WARNING, register_logger, log_error, log_warning
@@ -235,30 +235,35 @@ class WebServer(HTTPServer):
     ########################################################################
     # Request handling: main functions
     ########################################################################
-    def _handle_request(self, request):
-        # 501 Not Implemented
-        method_name = request.method
-        method = methods.get(method_name)
-        if method is None:
-            return get_response(501)
+#   def http_options(self, request):
+#       return OPTIONS.handle_request(self, request)
 
-        # Make the context
-        context = Context(request)
-        self.init_context(context)
 
-        # Handle request
-        try:
-            method.handle_request(self, context)
-        except HTTPError, exception:
-            self.log_error(context)
-            return get_response(exception.code)
-        except:
-            self.log_error(context)
-            return get_response(500)
+    def http_get(self, request):
+        return GET.handle_request(self, request)
 
-        # Ok
-        return context.response
 
+    def http_post(self, request):
+        return POST.handle_request(self, request)
+
+
+    def http_put(self, request):
+        from webdav import PUT
+        return PUT.handle_request(self, request)
+
+
+    def http_delete(self, request):
+        return DELETE.handle_request(self, request)
+
+
+    def http_lock(self, request):
+        from webdav import LOCK
+        return LOCK.handle_request(self, request)
+
+
+    def http_unlock(self, request):
+        from webdav import UNLOCK
+        return UNLOCK.handle_request(self, request)
 
 
 ###########################################################################
@@ -415,11 +420,14 @@ class RequestMethod(object):
 
 
     @classmethod
-    def handle_request(cls, server, context):
-        response = context.response
-        root = context.site_root
+    def handle_request(cls, server, request):
+        # Make the context
+        context = Context(request)
+        server.init_context(context)
 
         # (1) Find out the requested resource and view
+        response = context.response
+        root = context.site_root
         try:
             # The requested resource and view
             cls.find_resource(server, context)
@@ -533,21 +541,6 @@ class GET(RequestMethod):
 
 
 
-class HEAD(GET):
-
-    @classmethod
-    def check_method(cls, server, context):
-        GET.check_method(server, context, method_name='GET')
-
-
-    @classmethod
-    def set_body(cls, server, context):
-        GET.set_body(server, context)
-        # Drop the body from the response
-        context.response.set_body(None)
-
-
-
 class POST(RequestMethod):
 
     method_name = 'POST'
@@ -569,79 +562,64 @@ class POST(RequestMethod):
 
 
 
-class OPTIONS(RequestMethod):
-
-    @classmethod
-    def handle_request(cls, server, context):
-        response = context.response
-        root = context.site_root
-
-        known_methods = methods.keys()
-
-        # (1) Find out the requested resource and view
-        if context.path == '*':
-            # (1a) Server-registered methods
-            allowed = known_methods
-        else:
-            allowed = []
-            try:
-                cls.find_resource(server, context)
-                cls.find_view(server, context)
-            except ClientError, error:
-                status = error.code
-                context.status = status
-                context.view_name = status2name[status]
-                context.view = root.get_view(context.view_name)
-            else:
-                # (1b) Check methods supported by the view
-                resource = context.resource
-                view = context.view
-                for method_name in known_methods:
-                    # Search on the resource's view
-                    method = getattr(view, method_name, None)
-                    if method is not None:
-                        allowed.append(method_name)
-                        continue
-                    # Search on the resource itself
-                    # PUT -> "put" view instance
-                    view_name = "http_%s" % method_name.lower()
-                    http_view = getattr(resource, view_name, None)
-                    if isinstance(http_view, BaseView):
-                        if getattr(http_view, method_name, None) is not None:
-                            allowed.append(method_name)
-                # OPTIONS is built-in
-                allowed.append('OPTIONS')
-                # TRACE is built-in
-                allowed.append('TRACE')
-                # DELETE is unsupported at the root
-                if context.path == '/':
-                    allowed.remove('DELETE')
-
-        # (2) Render
-        response.set_header('allow', ','.join(allowed))
-        context.entity = None
-        context.status = 200
-
-        # (3) Build and return the response
-        response.set_status(context.status)
-        cls.set_body(server, context)
-
-        # Ok
-        return response
-
-
-
-class TRACE(RequestMethod):
-
-    @classmethod
-    def handle_request(cls, server, context):
-        request = context.request
-        context.entity = request.to_str()
-        cls.set_body(server, context)
-        response = context.response
-        response.set_header('content-type', 'message/http')
-        response.set_status(200)
-        return response
+#class OPTIONS(RequestMethod):
+#
+#    @classmethod
+#    def handle_request(cls, server, request):
+#        # Make the context
+#        context = Context(request)
+#        server.init_context(context)
+#
+#        # (1) Find out the requested resource and view
+#        known_methods = methods.keys()
+#        allowed = set(['HEAD', 'TRACE', 'OPTIONS'])
+#        if context.path == '*':
+#            # (1a) Server-registered methods
+#            for method in known_methods:
+#                allowed.add(method)
+#        else:
+#            root = context.site_root
+#            try:
+#                cls.find_resource(server, context)
+#                cls.find_view(server, context)
+#            except ClientError, error:
+#                status = error.code
+#                context.status = status
+#                context.view_name = status2name[status]
+#                context.view = root.get_view(context.view_name)
+#            else:
+#                # (1b) Check methods supported by the view
+#                resource = context.resource
+#                view = context.view
+#                for method_name in known_methods:
+#                    # Search on the resource's view
+#                    method = getattr(view, method_name, None)
+#                    if method is not None:
+#                        allowed.add(method_name)
+#                        continue
+#                    # Search on the resource itself
+#                    # PUT -> "put" view instance
+#                    view_name = "http_%s" % method_name.lower()
+#                    http_view = getattr(resource, view_name, None)
+#                    if isinstance(http_view, BaseView):
+#                        if getattr(http_view, method_name, None) is not None:
+#                            allowed.add(method_name)
+#                # DELETE is unsupported at the root
+#                if context.path == '/':
+#                    allowed.remove('DELETE')
+#
+#        # (2) Render
+#        response = context.response
+#        response.set_header('allow', ','.join(allowed))
+#        context.entity = None
+#        context.status = 200
+#
+#        # (3) Build and return the response
+#        response.set_status(context.status)
+#        cls.set_body(server, context)
+#
+#        # Ok
+#        return response
 
 
 
@@ -668,23 +646,3 @@ class DELETE(RequestMethod):
     @classmethod
     def check_transaction(cls, server, context):
         return getattr(context, 'commit', True) and context.status < 400
-
-
-
-###########################################################################
-# Registry
-###########################################################################
-
-methods = {}
-
-
-def register_method(method, method_handler):
-    methods[method] = method_handler
-
-
-register_method('GET', GET)
-register_method('HEAD', HEAD)
-register_method('POST', POST)
-register_method('OPTIONS', OPTIONS)
-register_method('TRACE', TRACE)
-register_method('DELETE', DELETE)

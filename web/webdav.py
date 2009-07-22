@@ -16,7 +16,7 @@
 
 # Import from itools
 from itools.http import ClientError, BadRequest, Conflict, NotImplemented
-from server import RequestMethod, register_method, find_view_by_method
+from server import RequestMethod, find_view_by_method
 
 
 # This module is meant to provide support for the WebDav protocol.  Though so
@@ -135,13 +135,3 @@ class PUT(RequestMethod):
     @classmethod
     def check_transaction(cls, server, context):
         return getattr(context, 'commit', True) and context.status < 400
-
-
-
-###########################################################################
-# Register
-###########################################################################
-
-register_method('LOCK', LOCK)
-register_method('UNLOCK', UNLOCK)
-register_method('PUT', PUT)

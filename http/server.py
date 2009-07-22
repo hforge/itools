@@ -24,7 +24,7 @@ from socket import AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR
 from time import strftime, time
 
 # Import from itools
-from exceptions import BadRequest
+from exceptions import HTTPError, BadRequest
 from request import Request
 from response import get_response
 
@@ -374,16 +374,42 @@ class HTTPServer(object):
         self.main_loop.quit()
 
 
+    #######################################################################
+    # Request handling
+    #######################################################################
     def handle_request(self, request):
         # 503 Service Unavailable
         if len(self.connections) > MAX_CONNECTIONS:
             return get_response(503)
 
+        # 501 Not Implemented
+        method = request.method.lower()
+        method = getattr(self, 'http_%s' % method, None)
+        if method is None:
+            return get_response(501)
+
+        # Go
         try:
-            return self._handle_request(request)
+            return method(request)
+        except HTTPError, exception:
+            self.log_error(context)
+            return get_response(exception.code)
         except Exception:
             self.log_error()
             return get_response(500)
+
+
+    def http_head(self, request):
+        response = self.http_get(request)
+        response.set_body(None)
+        return response
+
+
+    def http_trace(self, request):
+        response = Response()
+        response.set_header('content-type', 'message/http')
+        response.set_body(request.to_str())
+        return response
 
 
     #######################################################################
@@ -415,14 +441,9 @@ class HTTPServer(object):
     #######################################################################
     # To override by subclasses
     #######################################################################
-    def _handle_request(self, request):
-        raise NotImplementedError
-
-
     def _log_access(self, line):
         pass
 
 
     def log_error(self, context=None):
         pass
-

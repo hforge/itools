@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.http import ClientError, BadRequest, Conflict
+from itools.http import ClientError, BadRequest, Conflict, NotImplemented
 from server import RequestMethod, register_method, find_view_by_method
 
 
@@ -120,10 +120,15 @@ class PUT(RequestMethod):
 
     @classmethod
     def check_conditions(cls, server, context):
-        resource = context.resource
+        request = context.request
+        if request.has_header('content-range'):
+            raise NotImplemented
+
         # In WebDAV the resource must be locked
+        resource = context.resource
         if not resource.is_locked():
             raise Conflict
+
         # TODO check the lock matches the "If:" header
 
 

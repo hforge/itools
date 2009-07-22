@@ -114,7 +114,8 @@ class WebServer(HTTPServer):
     def path_callback(self, soup_message, path):
         # (1) Get the class that will handle the request
         method_name = soup_message.get_method()
-        method = methods.get(method_name)
+        method = method_name.lower()
+        method = getattr(self, 'http_%s' % method, None)
         # 501 Not Implemented
         if method is None:
             log_warning('Unexpected "%s" HTTP method' % method_name,
@@ -125,13 +126,47 @@ class WebServer(HTTPServer):
         context = Context(soup_message, path)
         self.init_context(context)
 
-        # (3) Pass control to the Get method class
+        # (3) Go
         try:
-            method.handle_request(self, context)
+            method(self, context)
         except Exception:
             log_error('Failed to handle request', domain='itools.web')
             set_response(soup_message, 500)
 
+
+#   def http_options(self, request):
+#       return OPTIONS.handle_request(self, request)
+
+
+    def http_head(self, request):
+        return HEAD.handle_request(self, request)
+
+
+    def http_get(self, request):
+        return GET.handle_request(self, request)
+
+
+    def http_post(self, request):
+        return POST.handle_request(self, request)
+
+
+    def http_put(self, request):
+        from webdav import PUT
+        return PUT.handle_request(self, request)
+
+
+    def http_delete(self, request):
+        return DELETE.handle_request(self, request)
+
+
+    def http_lock(self, request):
+        from webdav import LOCK
+        return LOCK.handle_request(self, request)
+
+
+    def http_unlock(self, request):
+        from webdav import UNLOCK
+        return UNLOCK.handle_request(self, request)
 
 
 ###########################################################################
@@ -430,55 +465,55 @@ class POST(RequestMethod):
 
 
 
-class OPTIONS(RequestMethod):
-
-    @classmethod
-    def handle_request(cls, server, context):
-        root = context.site_root
-
-        known_methods = methods.keys()
-        allowed = []
-
-        # (1) Find out the requested resource and view
-        try:
-            cls.find_resource(server, context)
-            cls.find_view(server, context)
-        except ClientError, error:
-            status = error.code
-            context.status = status
-            context.view_name = status2name[status]
-            context.view = root.get_view(context.view_name)
-        else:
-            # Check methods supported by the view
-            resource = context.resource
-            view = context.view
-            for method_name in known_methods:
-                # Search on the resource's view
-                method = getattr(view, method_name, None)
-                if method is not None:
-                    allowed.append(method_name)
-                    continue
-                # Search on the resource itself
-                # PUT -> "put" view instance
-                view_name = "http_%s" % method_name.lower()
-                http_view = getattr(resource, view_name, None)
-                if isinstance(http_view, BaseView):
-                    if getattr(http_view, method_name, None) is not None:
-                        allowed.append(method_name)
-            # OPTIONS is built-in
-            allowed.append('OPTIONS')
-            # DELETE is unsupported at the root
-            if context.path == '/':
-                allowed.remove('DELETE')
-
-        # (2) Render
-        context.set_header('allow', ','.join(allowed))
-        context.entity = None
-        context.status = 200
-
-        # (3) Build and return the response
-        context.soup_message.set_status(context.status)
-        cls.set_body(context)
+#class OPTIONS(RequestMethod):
+#
+#    @classmethod
+#    def handle_request(cls, server, context):
+#        root = context.site_root
+#
+#        known_methods = methods.keys()
+#        allowed = []
+#
+#        # (1) Find out the requested resource and view
+#        try:
+#            cls.find_resource(server, context)
+#            cls.find_view(server, context)
+#        except ClientError, error:
+#            status = error.code
+#            context.status = status
+#            context.view_name = status2name[status]
+#            context.view = root.get_view(context.view_name)
+#        else:
+#            # Check methods supported by the view
+#            resource = context.resource
+#            view = context.view
+#            for method_name in known_methods:
+#                # Search on the resource's view
+#                method = getattr(view, method_name, None)
+#                if method is not None:
+#                    allowed.append(method_name)
+#                    continue
+#                # Search on the resource itself
+#                # PUT -> "put" view instance
+#                view_name = "http_%s" % method_name.lower()
+#                http_view = getattr(resource, view_name, None)
+#                if isinstance(http_view, BaseView):
+#                    if getattr(http_view, method_name, None) is not None:
+#                        allowed.append(method_name)
+#            # OPTIONS is built-in
+#            allowed.append('OPTIONS')
+#            # DELETE is unsupported at the root
+#            if context.path == '/':
+#                allowed.remove('DELETE')
+#
+#        # (2) Render
+#        context.set_header('allow', ','.join(allowed))
+#        context.entity = None
+#        context.status = 200
+#
+#        # (3) Build and return the response
+#        context.soup_message.set_status(context.status)
+#        cls.set_body(context)
 
 
 
@@ -505,22 +540,3 @@ class DELETE(RequestMethod):
     @classmethod
     def check_transaction(cls, server, context):
         return getattr(context, 'commit', True) and context.status < 400
-
-
-
-###########################################################################
-# Registry
-###########################################################################
-
-methods = {}
-
-
-def register_method(method, method_handler):
-    methods[method] = method_handler
-
-
-register_method('GET', GET)
-register_method('HEAD', HEAD)
-register_method('POST', POST)
-register_method('OPTIONS', OPTIONS)
-register_method('DELETE', DELETE)

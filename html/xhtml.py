@@ -149,7 +149,7 @@ safe_attrs = frozenset([
 uri_attrs = frozenset([
     'action', 'background', 'data', 'dynsrc', 'href', 'lowsrc', 'src'])
 
-safe_schemes = frozenset(['file', 'ftp', 'http', 'https', 'mailto', None])
+safe_schemes = frozenset(['file', 'ftp', 'http', 'https', 'irc', 'mailto', None])
 
 
 def sanitize_stream(stream):

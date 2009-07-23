@@ -235,8 +235,17 @@ class WebServer(HTTPServer):
     ########################################################################
     # Request handling: main functions
     ########################################################################
-#   def http_options(self, request):
-#       return OPTIONS.handle_request(self, request)
+    def http_options(self, request):
+        # Case 1: Test capabilities of the server
+        uri = request.request_uri
+        if uri == '*':
+            response = Response()
+            methods = [ x[5:].upper() for x in dir(self) if x[:5] == 'http_' ]
+            response.set_header('allow', ','.join(methods))
+            return response
+
+        # Case 2: Test capabilities of a resource
+        return OPTIONS.handle_request(self, request)
 
 
     def http_get(self, request):
@@ -562,64 +571,55 @@ class POST(RequestMethod):
 
 
 
-#class OPTIONS(RequestMethod):
-#
-#    @classmethod
-#    def handle_request(cls, server, request):
-#        # Make the context
-#        context = Context(request)
-#        server.init_context(context)
-#
-#        # (1) Find out the requested resource and view
-#        known_methods = methods.keys()
-#        allowed = set(['HEAD', 'TRACE', 'OPTIONS'])
-#        if context.path == '*':
-#            # (1a) Server-registered methods
-#            for method in known_methods:
-#                allowed.add(method)
-#        else:
-#            root = context.site_root
-#            try:
-#                cls.find_resource(server, context)
-#                cls.find_view(server, context)
-#            except ClientError, error:
-#                status = error.code
-#                context.status = status
-#                context.view_name = status2name[status]
-#                context.view = root.get_view(context.view_name)
-#            else:
-#                # (1b) Check methods supported by the view
-#                resource = context.resource
-#                view = context.view
-#                for method_name in known_methods:
-#                    # Search on the resource's view
-#                    method = getattr(view, method_name, None)
-#                    if method is not None:
-#                        allowed.add(method_name)
-#                        continue
-#                    # Search on the resource itself
-#                    # PUT -> "put" view instance
-#                    view_name = "http_%s" % method_name.lower()
-#                    http_view = getattr(resource, view_name, None)
-#                    if isinstance(http_view, BaseView):
-#                        if getattr(http_view, method_name, None) is not None:
-#                            allowed.add(method_name)
-#                # DELETE is unsupported at the root
-#                if context.path == '/':
-#                    allowed.remove('DELETE')
-#
-#        # (2) Render
-#        response = context.response
-#        response.set_header('allow', ','.join(allowed))
-#        context.entity = None
-#        context.status = 200
-#
-#        # (3) Build and return the response
-#        response.set_status(context.status)
-#        cls.set_body(server, context)
-#
-#        # Ok
-#        return response
+class OPTIONS(RequestMethod):
+
+    @classmethod
+    def handle_request(cls, server, request):
+        # Make the context
+        context = Context(request)
+        server.init_context(context)
+
+        # (1) Find out the requested resource and view
+        root = context.site_root
+        cls.find_resource(server, context)
+        cls.find_view(server, context)
+        resource = context.resource
+        view = context.view
+
+        # (2) Check methods supported by the view
+        allowed = set(['TRACE', 'OPTIONS'])
+        methods = [ x[5:].upper() for x in dir(server) if x[:5] == 'http_' ]
+        methods = set(methods) - allowed
+        for method_name in known_methods:
+            # Search on the resource's view
+            method = getattr(view, method_name, None)
+            if method is not None:
+                allowed.add(method_name)
+                continue
+            # Search on the resource itself
+            # PUT -> "put" view instance
+            view_name = "http_%s" % method_name.lower()
+            http_view = getattr(resource, view_name, None)
+            if isinstance(http_view, BaseView):
+                if getattr(http_view, method_name, None) is not None:
+                    allowed.add(method_name)
+
+        # (3) DELETE is unsupported at the root
+        if context.path == '/':
+            allowed.remove('DELETE')
+
+        # (4) Render
+        response = context.response
+        response.set_header('allow', ','.join(allowed))
+        context.entity = None
+        context.status = 200
+
+        # (5) Build and return the response
+        response.set_status(context.status)
+        cls.set_body(server, context)
+
+        # Ok
+        return response
 
 
 

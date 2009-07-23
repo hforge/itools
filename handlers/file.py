@@ -213,7 +213,7 @@ class File(Handler):
         # Check nothing weird happened
         database = self.database
         if self.uri is None or database.cache.get(self.uri) is not self:
-            raise RuntimeError, 'database incosistency!'
+            raise RuntimeError, 'database inconsistency!'
 
         # Update database state
         if self.timestamp is None and self.dirty is not None:

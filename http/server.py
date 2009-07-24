@@ -26,6 +26,7 @@ from gobject import MainLoop
 # Import from itools
 from itools.i18n import init_language_selector
 from itools.soup import SoupServer
+from response import Response, get_response
 
 
 class HTTPServer(SoupServer):
@@ -184,7 +185,8 @@ class HTTPServer(SoupServer):
         # 405 Method Not Allowed
         method = getattr(resource, 'http_get', None)
         if method is None:
-            response = get_response(405)
+            response = Response()
+            response.set_status(405)
             server_methods = set(self._get_server_methods())
             resource_methods = set(resource._get_reource_methods)
             methods = server_methods & resource_methods
@@ -208,7 +210,8 @@ class HTTPServer(SoupServer):
         # 405 Method Not Allowed
         method = getattr(resource, 'http_post', None)
         if method is None:
-            response = get_response(405)
+            response = Response()
+            response.set_status(405)
             server_methods = set(self._get_server_methods())
             resource_methods = set(resource._get_reource_methods)
             methods = server_methods & resource_methods

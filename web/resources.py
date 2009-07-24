@@ -17,12 +17,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
+from itools.http import HTTPResource
 from itools.uri import Path
 from access import AccessControl
 from views import BaseView
 
 
-class Resource(object):
+class Resource(HTTPResource):
     """This is the base class for all web resources.
     """
 
@@ -37,10 +38,6 @@ class Resource(object):
 
     def _get_resource(self, name):
         return None
-
-
-    def get_allowed_methods(self):
-        return [ x[5:].upper() for x in dir(self) if x[:5] == 'http_' ]
 
 
     #######################################################################

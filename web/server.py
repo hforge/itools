@@ -134,27 +134,6 @@ class WebServer(HTTPServer):
             set_response(soup_message, 500)
 
 
-    def http_options(self, context):
-        methods = [ x[5:].upper() for x in dir(self) if x[:5] == 'http_' ]
-
-        # Test capabilities of a resource
-        resource = self.get_resource(context.uri.authority, context.path)
-        resource_methods = resource.get_allowed_methods()
-        methods = [ x for x in methods if x in resource_methods ]
-        # Special cases
-        if 'OPTIONS' not in methods:
-            methods.append('OPTIONS')
-        if 'GET' in methods and 'HEAD' not in methods:
-            methods.append('HEAD')
-        # DELETE is unsupported at the root
-        if context.path == '/':
-            allowed.remove('DELETE')
-
-        # Ok
-        context.set_header('allow', ','.join(allowed))
-        context.soup_message.set_status(200)
-
-
     def http_head(self, request):
         return HEAD.handle_request(self, request)
 

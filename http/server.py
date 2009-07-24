@@ -135,10 +135,109 @@ class HTTPServer(SoupServer):
             soup_message.set_header('Allow', 'OPTIONS')
             return
 
-        methods = [ x[5:].upper() for x in dir(self) if x[:5] == 'http_' ]
+        methods = self._get_server_methods()
         soup_message.set_status(200)
         soup_message.set_header('Allow', ','.join(methods))
 
 
     def path_callback(self, soup_message, path):
         raise NotImplementedError
+
+
+    #######################################################################
+    # Request methods
+    def _get_server_methods(self):
+        return [ x[5:].upper() for x in dir(self) if x[:5] == 'http_' ]
+
+
+    def http_options(self, context):
+        # Methods supported by the server
+        methods = self._get_server_methods()
+
+        # Test capabilities of a resource
+        resource = self.get_resource(context.uri.authority, context.path)
+        resource_methods = resource._get_resource_methods()
+        methods = set(methods) & set(resource_methods)
+        # Special cases
+        methods.add('OPTIONS')
+        if 'GET' in methods:
+            methods.add('HEAD')
+        # DELETE is unsupported at the root
+        if context.path == '/':
+            methods.discard('DELETE')
+
+        # Ok
+        context.set_header('allow', ','.join(methods))
+        context.soup_message.set_status(200)
+
+
+    def http_get(self, request):
+        # Get the resource
+        host = request.get_host()
+        uri = request.request_uri
+        resource = self.get_resource(host, uri)
+
+        # 404 Not Found
+        if resource is None:
+            return get_response(404)
+
+        # 405 Method Not Allowed
+        method = getattr(resource, 'http_get', None)
+        if method is None:
+            response = get_response(405)
+            server_methods = set(self._get_server_methods())
+            resource_methods = set(resource._get_reource_methods)
+            methods = server_methods & resource_methods
+            response.set_header('allow', ','.join(methods))
+            return response
+
+        # Ok
+        return method(request)
+
+
+    def http_post(self, request):
+        # Get the resource
+        host = request.get_host()
+        uri = request.request_uri
+        resource = self.get_resource(host, uri)
+
+        # 404 Not Found
+        if resource is None:
+            return get_response(404)
+
+        # 405 Method Not Allowed
+        method = getattr(resource, 'http_post', None)
+        if method is None:
+            response = get_response(405)
+            server_methods = set(self._get_server_methods())
+            resource_methods = set(resource._get_reource_methods)
+            methods = server_methods & resource_methods
+            response.set_header('allow', ','.join(methods))
+            return response
+
+        # Ok
+        return method(request)
+
+
+    def http_head(self, request):
+        response = self.http_get(request)
+        response.set_body(None)
+        return response
+
+
+    #######################################################################
+    # To override by subclasses
+    #######################################################################
+    def get_resource(self, host, uri):
+        return None
+
+
+###########################################################################
+# HTTP Resources
+###########################################################################
+
+class HTTPResource(object):
+
+    def _get_resource_methods(self):
+        return [ x[5:].upper() for x in dir(self) if x[:5] == 'http_' ]
+

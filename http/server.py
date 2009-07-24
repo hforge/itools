@@ -398,29 +398,82 @@ class HTTPServer(object):
             return get_response(500)
 
 
+    #######################################################################
+    # Request methods
+
+    def _get_server_methods(self):
+        return [ x[5:].upper() for x in dir(self) if x[:5] == 'http_' ]
+
+
     def http_options(self, request):
         # Methods supported by the server
-        methods = [ x[5:].upper() for x in dir(self) if x[:5] == 'http_' ]
+        methods = self._get_server_methods()
 
         # Test capabilities of a resource
         uri = request.request_uri
         if uri != '*':
             host = request.get_host()
             resource = self.get_resource(host, uri)
-            resource_methods = resource.get_allowed_methods()
-            methods = [ x for x in methods if x in resource_methods ]
+            resource_methods = resource._get_resource_methods()
+            methods = set(methods) & set(resource_methods)
             # Special cases
-            if 'OPTIONS' not in methods:
-                methods.append('OPTIONS')
-            if 'TRACE' not in methods:
-                methods.append('TRACE')
-            if 'GET' in methods and 'HEAD' not in methods:
-                methods.append('HEAD')
+            methods.add('OPTIONS')
+            methods.add('TRACE')
+            if 'GET' in methods:
+                methods.add('HEAD')
 
         # Ok
         response = Response()
         response.set_header('allow', ','.join(methods))
         return response
+
+
+    def http_get(self, request):
+        # Get the resource
+        host = request.get_host()
+        uri = request.request_uri
+        resource = self.get_resource(host, uri)
+
+        # 404 Not Found
+        if resource is None:
+            return get_response(404)
+
+        # 405 Method Not Allowed
+        method = getattr(resource, 'http_get', None)
+        if method is None:
+            response = get_response(405)
+            server_methods = set(self._get_server_methods())
+            resource_methods = set(resource._get_reource_methods)
+            methods = server_methods & resource_methods
+            response.set_header('allow', ','.join(methods))
+            return response
+
+        # Ok
+        return method(request)
+
+
+    def http_post(self, request):
+        # Get the resource
+        host = request.get_host()
+        uri = request.request_uri
+        resource = self.get_resource(host, uri)
+
+        # 404 Not Found
+        if resource is None:
+            return get_response(404)
+
+        # 405 Method Not Allowed
+        method = getattr(resource, 'http_post', None)
+        if method is None:
+            response = get_response(405)
+            server_methods = set(self._get_server_methods())
+            resource_methods = set(resource._get_reource_methods)
+            methods = server_methods & resource_methods
+            response.set_header('allow', ','.join(methods))
+            return response
+
+        # Ok
+        return method(request)
 
 
     def http_head(self, request):
@@ -466,7 +519,7 @@ class HTTPServer(object):
     # To override by subclasses
     #######################################################################
     def get_resource(self, host, uri):
-        raise NotImplementedError
+        return None
 
 
     def _log_access(self, line):
@@ -483,6 +536,6 @@ class HTTPServer(object):
 
 class HTTPResource(object):
 
-    def get_allowed_methods(self):
+    def _get_resource_methods(self):
         return [ x[5:].upper() for x in dir(self) if x[:5] == 'http_' ]
 

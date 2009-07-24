@@ -119,10 +119,6 @@ class HTTPServer(SoupServer):
     #######################################################################
     # Callbacks
     #######################################################################
-    known_methods = [
-        'OPTIONS', 'GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'LOCK', 'UNLOCK']
-
-
     def star_callback(self, soup_message, path):
         """This method is called for the special "*" request URI, which means
         the request concerns the server itself, and not any particular
@@ -139,7 +135,7 @@ class HTTPServer(SoupServer):
             soup_message.set_header('Allow', 'OPTIONS')
             return
 
-        methods = self.known_methods
+        methods = [ x[5:].upper() for x in dir(self) if x[:5] == 'http_' ]
         soup_message.set_status(200)
         soup_message.set_header('Allow', ','.join(methods))
 

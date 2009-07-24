@@ -39,6 +39,10 @@ class Resource(object):
         return None
 
 
+    def get_allowed_methods(self):
+        return [ x[5:].upper() for x in dir(self) if x[:5] == 'http_' ]
+
+
     #######################################################################
     # API / Tree
     #######################################################################

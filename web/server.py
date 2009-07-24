@@ -134,8 +134,25 @@ class WebServer(HTTPServer):
             set_response(soup_message, 500)
 
 
-    def http_options(self, request):
-        return OPTIONS.handle_request(self, request)
+    def http_options(self, context):
+        methods = [ x[5:].upper() for x in dir(self) if x[:5] == 'http_' ]
+
+        # Test capabilities of a resource
+        resource = self.get_resource(context.uri.authority, context.path)
+        resource_methods = resource.get_allowed_methods()
+        methods = [ x for x in methods if x in resource_methods ]
+        # Special cases
+        if 'OPTIONS' not in methods:
+            methods.append('OPTIONS')
+        if 'GET' in methods and 'HEAD' not in methods:
+            methods.append('HEAD')
+        # DELETE is unsupported at the root
+        if context.path == '/':
+            allowed.remove('DELETE')
+
+        # Ok
+        context.set_header('allow', ','.join(allowed))
+        context.soup_message.set_status(200)
 
 
     def http_head(self, request):
@@ -167,6 +184,14 @@ class WebServer(HTTPServer):
     def http_unlock(self, request):
         from webdav import UNLOCK
         return UNLOCK.handle_request(self, request)
+
+
+    #######################################################################
+    # To override by subclasses
+    #######################################################################
+    def get_resource(self, host, uri):
+        raise NotImplementedError
+
 
 
 ###########################################################################
@@ -462,59 +487,6 @@ class POST(RequestMethod):
     @classmethod
     def check_transaction(cls, server, context):
         return getattr(context, 'commit', True) and context.status < 400
-
-
-
-class OPTIONS(RequestMethod):
-
-    @classmethod
-    def handle_request(cls, server, context):
-        root = context.site_root
-
-        methods = [ x[5:].upper() for x in dir(server) if x[:5] == 'http_' ]
-        methods = set(methods)
-        allowed = []
-
-        # (1) Find out the requested resource and view
-        try:
-            cls.find_resource(server, context)
-            cls.find_view(server, context)
-        except ClientError, error:
-            status = error.code
-            context.status = status
-            context.view_name = status2name[status]
-            context.view = root.get_view(context.view_name)
-        else:
-            # Check methods supported by the view
-            resource = context.resource
-            view = context.view
-            for method_name in methods:
-                # Search on the resource's view
-                method = getattr(view, method_name, None)
-                if method is not None:
-                    allowed.append(method_name)
-                    continue
-                # Search on the resource itself
-                # PUT -> "put" view instance
-                view_name = "http_%s" % method_name.lower()
-                http_view = getattr(resource, view_name, None)
-                if isinstance(http_view, BaseView):
-                    if getattr(http_view, method_name, None) is not None:
-                        allowed.append(method_name)
-            # OPTIONS is built-in
-            allowed.append('OPTIONS')
-            # DELETE is unsupported at the root
-            if context.path == '/':
-                allowed.remove('DELETE')
-
-        # (2) Render
-        context.set_header('allow', ','.join(allowed))
-        context.entity = None
-        context.status = 200
-
-        # (3) Build and return the response
-        context.soup_message.set_status(context.status)
-        cls.set_body(context)
 
 
 

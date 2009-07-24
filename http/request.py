@@ -178,6 +178,13 @@ class Request(Message):
     #######################################################################
     # API
     #######################################################################
+    def get_host(self):
+        uri = self.request_uri
+        if uri.authority:
+            return uri.authority
+        return self.headers.get('host')
+
+
     def get_referrer(self):
         return self.headers.get('referer', None)
 

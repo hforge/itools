@@ -50,8 +50,7 @@ CONN_TIMEOUT = 10
 
 
 ###########################################################################
-# Wrapper around sockets in non-blocking mode that offers a file
-# like API
+# Wrapper around sockets in non-blocking mode that offers a file like API
 ###########################################################################
 class SocketWrapper(object):
     """Offers a file-like interface for sockets in non-blocking mode.
@@ -399,6 +398,31 @@ class HTTPServer(object):
             return get_response(500)
 
 
+    def http_options(self, request):
+        # Methods supported by the server
+        methods = [ x[5:].upper() for x in dir(self) if x[:5] == 'http_' ]
+
+        # Test capabilities of a resource
+        uri = request.request_uri
+        if uri != '*':
+            host = request.get_host()
+            resource = self.get_resource(host, uri)
+            resource_methods = resource.get_allowed_methods()
+            methods = [ x for x in methods if x in resource_methods ]
+            # Special cases
+            if 'OPTIONS' not in methods:
+                methods.append('OPTIONS')
+            if 'TRACE' not in methods:
+                methods.append('TRACE')
+            if 'GET' in methods and 'HEAD' not in methods:
+                methods.append('HEAD')
+
+        # Ok
+        response = Response()
+        response.set_header('allow', ','.join(methods))
+        return response
+
+
     def http_head(self, request):
         response = self.http_get(request)
         response.set_body(None)
@@ -441,9 +465,24 @@ class HTTPServer(object):
     #######################################################################
     # To override by subclasses
     #######################################################################
+    def get_resource(self, host, uri):
+        raise NotImplementedError
+
+
     def _log_access(self, line):
         pass
 
 
     def log_error(self, context=None):
         pass
+
+
+###########################################################################
+# HTTP Resources
+###########################################################################
+
+class HTTPResource(object):
+
+    def get_allowed_methods(self):
+        return [ x[5:].upper() for x in dir(self) if x[:5] == 'http_' ]
+

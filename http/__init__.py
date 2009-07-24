@@ -22,7 +22,7 @@ from exceptions import InternalServerError, NotImplemented, BadGateway
 from exceptions import ServiceUnavailable, MethodNotAllowed, Conflict
 from request import Request
 from response import Response, get_response
-from server import HTTPServer
+from server import HTTPServer, HTTPResource
 
 
 __all__ = [
@@ -48,4 +48,5 @@ __all__ = [
     'get_response',
     # Server
     'HTTPServer',
+    'HTTPResource',
     ]

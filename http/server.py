@@ -156,7 +156,7 @@ class HTTPServer(SoupServer):
         methods = self._get_server_methods()
 
         # Test capabilities of a resource
-        resource = self.get_resource(context.uri.authority, context.path)
+        resource = self.root.get_resource(context.uri.authority, context.path)
         resource_methods = resource._get_resource_methods()
         methods = set(methods) & set(resource_methods)
         # Special cases
@@ -176,11 +176,18 @@ class HTTPServer(SoupServer):
         # Get the resource
         host = request.get_host()
         uri = request.request_uri
-        resource = self.get_resource(host, uri)
+        resource = self.root.get_resource(host, uri)
 
         # 404 Not Found
         if resource is None:
             return get_response(404)
+
+        # 302 Found
+        if type(resource) is str:
+            response = Response()
+            response.set_status(302)
+            response.set_header('location', resource)
+            return response
 
         # 405 Method Not Allowed
         method = getattr(resource, 'http_get', None)
@@ -193,7 +200,7 @@ class HTTPServer(SoupServer):
             response.set_header('allow', ','.join(methods))
             return response
 
-        # Ok
+        # 200 Ok
         return method(request)
 
 
@@ -201,7 +208,7 @@ class HTTPServer(SoupServer):
         # Get the resource
         host = request.get_host()
         uri = request.request_uri
-        resource = self.get_resource(host, uri)
+        resource = self.root.get_resource(host, uri)
 
         # 404 Not Found
         if resource is None:
@@ -228,12 +235,6 @@ class HTTPServer(SoupServer):
         return response
 
 
-    #######################################################################
-    # To override by subclasses
-    #######################################################################
-    def get_resource(self, host, uri):
-        return None
-
 
 ###########################################################################
 # HTTP Resources
@@ -243,4 +244,31 @@ class HTTPResource(object):
 
     def _get_resource_methods(self):
         return [ x[5:].upper() for x in dir(self) if x[:5] == 'http_' ]
+
+
+
+class Root(HTTPResource):
+
+    def get_resource(self, host, uri):
+        if uri == '/':
+            return self
+
+        return None
+
+
+    def http_get(self, request):
+        response = Response()
+        response.set_body("Hello, I'am itools.http")
+        return response
+
+
+HTTPServer.root = Root()
+
+
+
+# For testing purposes
+if __name__ == '__main__':
+    server = HTTPServer()
+    print 'Start server..'
+    server.start()
 

@@ -18,6 +18,7 @@
 from unittest import TestCase, main
 
 # Import from itools
+from itools.http import HTTPServer, Request
 from itools.http.cookies import Cookie, CookieDataType, SetCookieDataType
 from itools.http.headers import ContentType, ContentDisposition
 from itools.http.parsing import read_token, read_quoted_string, read_parameter
@@ -163,6 +164,19 @@ class CookieTestCase(TestCase):
         cookie = 'a=1; toto; b=2'
         expected = {'a': Cookie('1'), 'b': Cookie('2')}
         self.assertEqual(CookieDataType.decode(cookie), expected)
+
+
+
+class ServerTestCase(TestCase):
+
+    def setUp(self):
+        self.server = HTTPServer()
+
+
+    def test_trace(self):
+        request = Request(method='TRACE')
+        response = self.server.handle_request(request)
+        self.assertEqual(response.body, request.to_str())
 
 
 

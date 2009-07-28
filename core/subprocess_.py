@@ -16,10 +16,12 @@
 
 # Import from the Standard Library
 from atexit import register
+from errno import ENOEXEC
 from multiprocessing import Process, Pipe
 from os import chdir
 from signal import signal, SIGINT, SIG_IGN
 from subprocess import Popen, PIPE, CalledProcessError
+from traceback import format_exc
 
 
 # Contants.  The commands the sub-process accepts.
@@ -77,13 +79,20 @@ def subprocess(cwd, conn):
         # Stop
         if command == CMD_STOP:
             break
+
         # Spawn subprocess
-        popen = Popen(data, stdout=PIPE, stderr=PIPE)
+        try:
+            popen = Popen(data, stdout=PIPE, stderr=PIPE)
+        except TypeError:
+            err = format_exc()
+            conn.send((ENOEXEC, err))
+            continue
+
+        # Communicate
         stdout, stderr = popen.communicate()
         errno = popen.returncode
         if errno:
             conn.send((errno, stderr))
         else:
             conn.send((errno, stdout))
-
 

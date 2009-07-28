@@ -23,15 +23,16 @@ from socket import socket as Socket
 from socket import AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR
 from time import time
 
+# Import from pygobject
+from gobject import MainLoop, io_add_watch, source_remove, timeout_add
+from gobject import IO_IN, IO_OUT, IO_PRI, IO_ERR, IO_HUP, IO_NVAL
+
 # Import from itools
+from auth import Realm
 from exceptions import HTTPError, BadRequest
 from logging import Log
 from request import Request
 from response import Response, get_response
-
-# Import from gobject
-from gobject import MainLoop, io_add_watch, source_remove, timeout_add
-from gobject import IO_IN, IO_OUT, IO_PRI, IO_ERR, IO_HUP, IO_NVAL
 
 
 # IO masks
@@ -457,6 +458,11 @@ class HTTPServer(object):
             response.set_header('allow', ','.join(methods))
             return response
 
+        # Authorization (typically 401 Unauthorized)
+        realm = self.root.get_realm(resource.realm)
+        if realm.authenticate(request) is False:
+            return realm.challenge(request)
+
         # 200 Ok
         return method(request)
 
@@ -505,12 +511,18 @@ class HTTPServer(object):
 
 class HTTPResource(object):
 
+    realm = 'default'
+
     def _get_resource_methods(self):
         return [ x[5:].upper() for x in dir(self) if x[:5] == 'http_' ]
 
 
 
-class Root(HTTPResource):
+class HTTPRoot(HTTPResource):
+
+    def get_realm(self, realm):
+        return Realm()
+
 
     def get_resource(self, host, uri):
         if uri == '/':
@@ -525,7 +537,7 @@ class Root(HTTPResource):
         return response
 
 
-HTTPServer.root = Root()
+HTTPServer.root = HTTPRoot()
 HTTPServer.log = Log()
 
 

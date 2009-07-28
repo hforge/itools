@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
+from auth import Realm
 from exceptions import HTTPError, ClientError, ServerError
 from exceptions import NotModified
 from exceptions import BadRequest, Unauthorized, Forbidden, NotFound
@@ -22,7 +23,7 @@ from exceptions import InternalServerError, NotImplemented, BadGateway
 from exceptions import ServiceUnavailable, MethodNotAllowed, Conflict
 from request import Request
 from response import Response, get_response
-from server import HTTPServer, HTTPResource
+from server import HTTPServer, HTTPResource, HTTPRoot
 
 
 __all__ = [
@@ -49,4 +50,7 @@ __all__ = [
     # Server
     'HTTPServer',
     'HTTPResource',
+    'HTTPRoot',
+    # Authorization
+    'Realm',
     ]

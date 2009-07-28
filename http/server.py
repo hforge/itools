@@ -21,16 +21,18 @@ from signal import signal, SIGINT
 from socket import error as SocketError
 from socket import socket as Socket
 from socket import AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR
-from time import time
+from sys import stdout
+from time import strftime, time
+from traceback import format_exc
 
 # Import from pygobject
 from gobject import MainLoop, io_add_watch, source_remove, timeout_add
 from gobject import IO_IN, IO_OUT, IO_PRI, IO_ERR, IO_HUP, IO_NVAL
 
 # Import from itools
+from itools.log import log_error
 from auth import Realm
 from exceptions import HTTPError, BadRequest
-from logging import Log
 from request import Request
 from response import Response, get_response
 
@@ -186,7 +188,7 @@ class HTTPConnection(object):
 
 class HTTPServer(object):
 
-    def __init__(self, address='', port=8080):
+    def __init__(self, address='', port=8080, access_log=None):
         # The server listens to...
         self.address = address
         self.port = port
@@ -201,6 +203,11 @@ class HTTPServer(object):
 
         # The active connections: {fileno: <Connection>}
         self.connections = {}
+
+        # Logging
+        self.access_log = access_log
+        if access_log is not None:
+            self.access_log_file = open(access_log, 'a+')
 
 
     def close_connection(self, fileno):
@@ -266,14 +273,14 @@ class HTTPServer(object):
         except EOFError:
             return self.close_connection(fileno)
         except BadRequest:
-            self.log.log_error()
+            self.log_error()
             response = get_response(400)
         except Exception:
-            self.log.log_error()
+            self.log_error()
             response = get_response(500)
 
         # Log access
-        self.log.log_access(connection.conn, request, response)
+        self.log_access(connection.conn, request, response)
 
         # Ready to send response
         connection.send = response.to_str()
@@ -325,6 +332,51 @@ class HTTPServer(object):
 
         # Continue
         return True
+
+
+    #######################################################################
+    # Logging
+    #######################################################################
+    def format_access(self, conn, request, response):
+        # Common Log Format
+        #  - IP address of the client
+        #  - RFC 1413 identity (not available)
+        #  - username (XXX not provided right now, should we?)
+        #  - time (XXX we use the timezone name, while we should use the
+        #    offset, e.g. +0100)
+        #  - the request line
+        #  - the status code
+        #  - content length of the response
+        host = request.get_remote_ip()
+        if host is None:
+            host, port = conn.getpeername()
+        ts = strftime('%d/%b/%Y:%H:%M:%S %Z')
+        request_line = request.request_line
+        status = response.status
+        length = response.get_content_length()
+        line = '{0} - - [{1}] "{2}" {3} {4}\n'
+        return line.format(host, ts, request_line, status, length)
+
+
+    def log_access(self, conn, request, response):
+        line = self.format_access(conn, request, response)
+
+        # Default: stdout
+        if self.access_log is None:
+            stdout.write(line)
+            return
+
+        # File
+        log = self.access_log_file
+        if fstat(log.fileno())[3] == 0:
+            log = open(self.access_log, 'a+')
+            self.access_log_file = log
+        log.write(line)
+
+
+    def log_error(self):
+        error = format_exc()
+        log_error(error)
 
 
     #######################################################################
@@ -393,10 +445,10 @@ class HTTPServer(object):
         try:
             return method(request)
         except HTTPError, exception:
-            self.log.log_error(context)
+            self.log_error()
             return get_response(exception.code)
         except Exception:
-            self.log.log_error()
+            self.log_error()
             return get_response(500)
 
 
@@ -538,7 +590,6 @@ class HTTPRoot(HTTPResource):
 
 
 HTTPServer.root = HTTPRoot()
-HTTPServer.log = Log()
 
 
 

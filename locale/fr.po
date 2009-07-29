@@ -285,7 +285,7 @@ msgstr ""
 
 #: ../i18n/languages.py:47
 msgid "English"
-msgstr ""
+msgstr "Anglais"
 
 #: ../i18n/languages.py:48
 msgid "English/United Kingdom"
@@ -329,7 +329,7 @@ msgstr ""
 
 #: ../i18n/languages.py:62
 msgid "French"
-msgstr ""
+msgstr "Français"
 
 #: ../i18n/languages.py:63
 msgid "French/Belgium"

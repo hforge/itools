@@ -22,7 +22,7 @@ from copy import deepcopy
 from itools.core import freeze
 from itools.datatypes import Enumerate
 from itools.stl import stl
-from itools.uri import decode_query
+from itools.uri import decode_query, Reference
 from context import FormError
 
 
@@ -297,13 +297,13 @@ class STLView(BaseView):
 
 
     def GET(self, resource, context):
-        # Get the template
-        template = self.get_template(resource, context)
-
         # Get the namespace
         namespace = self.get_namespace(resource, context)
+        if isinstance(namespace, Reference):
+            return namespace
 
-        # Ok
+        # STL
+        template = self.get_template(resource, context)
         return stl(template, namespace)
 
 

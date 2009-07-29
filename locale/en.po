@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.3.0\n"
-"POT-Creation-Date: 2009-07-15 18:07+CET\n"
+"POT-Creation-Date: 2009-07-29 15:07+CET\n"
 "PO-Revision-Date: 2001-07-08 17:07+CET\n"
 "Last-Translator: jdavid\n"
 "Language-Team: ??\n"
@@ -112,7 +112,7 @@ msgstr ""
 msgid ">"
 msgstr ""
 
-#: ../i18n/base.py:40
+#: ../i18n/languages.py:206
 msgid "???"
 msgstr ""
 
@@ -128,20 +128,172 @@ msgstr ""
 msgid "AE"
 msgstr ""
 
+#: ../i18n/languages.py:20
+msgid "Abkhazian"
+msgstr ""
+
+#: ../i18n/languages.py:19
+msgid "Afar"
+msgstr ""
+
+#: ../i18n/languages.py:21
+msgid "Afrikaans"
+msgstr ""
+
+#: ../i18n/languages.py:144
+msgid "Albanian"
+msgstr ""
+
+#: ../i18n/languages.py:22
+msgid "Amharic"
+msgstr ""
+
+#: ../i18n/languages.py:23
+msgid "Arabic"
+msgstr ""
+
+#: ../i18n/languages.py:78
+msgid "Armenian"
+msgstr ""
+
+#: ../i18n/languages.py:24
+msgid "Assamese"
+msgstr ""
+
+#: ../i18n/languages.py:25
+msgid "Aymara"
+msgstr ""
+
+#: ../i18n/languages.py:26
+msgid "Azerbaijani"
+msgstr ""
+
 #: ../ical/icalendar.py:513 ../ical/icalendar.py:529
 msgid "BEGIN:%s\n"
+msgstr ""
+
+#: ../i18n/languages.py:27
+msgid "Bashkir"
+msgstr ""
+
+#: ../i18n/languages.py:57
+msgid "Basque"
+msgstr ""
+
+#: ../i18n/languages.py:28
+msgid "Belarusian"
+msgstr ""
+
+#: ../i18n/languages.py:32
+msgid "Bengali"
+msgstr ""
+
+#: ../i18n/languages.py:45
+msgid "Bhutani"
+msgstr ""
+
+#: ../i18n/languages.py:30
+msgid "Bihari"
+msgstr ""
+
+#: ../i18n/languages.py:31
+msgid "Bislama"
+msgstr ""
+
+#: ../i18n/languages.py:35
+msgid "Bosnian"
+msgstr ""
+
+#: ../i18n/languages.py:34
+msgid "Breton"
+msgstr ""
+
+#: ../i18n/languages.py:29
+msgid "Bulgarian"
+msgstr ""
+
+#: ../i18n/languages.py:113
+msgid "Burmese"
+msgstr ""
+
+#: ../i18n/languages.py:91
+msgid "Cambodian"
+msgstr ""
+
+#: ../i18n/languages.py:36
+msgid "Catalan"
+msgstr ""
+
+#: ../i18n/languages.py:175
+msgid "Chinese"
+msgstr ""
+
+#: ../i18n/languages.py:176
+msgid "Chinese/China"
+msgstr ""
+
+#: ../i18n/languages.py:177
+msgid "Chinese/Taiwan"
 msgstr ""
 
 #: ../scripts/ipkg-quality.py:56
 msgid "Code length"
 msgstr ""
 
+#: ../i18n/languages.py:96
+msgid "Cornish"
+msgstr ""
+
+#: ../i18n/languages.py:37
+msgid "Corsican"
+msgstr ""
+
+#: ../i18n/languages.py:76
+msgid "Croatian"
+msgstr ""
+
+#: ../i18n/languages.py:38
+msgid "Czech"
+msgstr ""
+
+#: ../i18n/languages.py:40
+msgid "Danish"
+msgstr ""
+
+#: ../i18n/languages.py:116
+msgid "Dutch"
+msgstr ""
+
+#: ../i18n/languages.py:117
+msgid "Dutch/Belgium"
+msgstr ""
+
 #: ../ical/icalendar.py:537 ../ical/icalendar.py:540
 msgid "END:%s\n"
 msgstr ""
 
+#: ../i18n/languages.py:47
+msgid "English"
+msgstr ""
+
+#: ../i18n/languages.py:48
+msgid "English/United Kingdom"
+msgstr ""
+
+#: ../i18n/languages.py:49
+msgid "English/United States"
+msgstr ""
+
 #: ../scripts/ipkg-quality.py:615
 msgid "Error, your project must be versioned with GIT."
+msgstr ""
+
+#: ../i18n/languages.py:50
+msgid "Esperanto"
+msgstr ""
+
+#: ../i18n/languages.py:56
+msgid "Estonian"
 msgstr ""
 
 #: ../web/context.py:64
@@ -152,8 +304,248 @@ msgstr ""
 msgid "Exception handling"
 msgstr ""
 
+#: ../i18n/languages.py:61
+msgid "Faroese"
+msgstr ""
+
+#: ../i18n/languages.py:60
+msgid "Fiji"
+msgstr ""
+
+#: ../i18n/languages.py:59
+msgid "Finnish"
+msgstr ""
+
+#: ../i18n/languages.py:62
+msgid "French"
+msgstr ""
+
+#: ../i18n/languages.py:63
+msgid "French/Belgium"
+msgstr ""
+
+#: ../i18n/languages.py:64
+msgid "French/Canada"
+msgstr ""
+
+#: ../i18n/languages.py:65
+msgid "French/France"
+msgstr ""
+
+#: ../i18n/languages.py:66
+msgid "French/Switzerland"
+msgstr ""
+
+#: ../i18n/languages.py:67
+msgid "Frisian"
+msgstr ""
+
+#: ../i18n/languages.py:70
+msgid "Galician"
+msgstr ""
+
+#: ../i18n/languages.py:88
+msgid "Georgian"
+msgstr ""
+
+#: ../i18n/languages.py:41
+msgid "German"
+msgstr ""
+
+#: ../i18n/languages.py:42
+msgid "German/Austria"
+msgstr ""
+
+#: ../i18n/languages.py:43
+msgid "German/Germany"
+msgstr ""
+
+#: ../i18n/languages.py:44
+msgid "German/Switzerland"
+msgstr ""
+
+#: ../i18n/languages.py:46
+msgid "Greek"
+msgstr ""
+
+#: ../i18n/languages.py:90
+msgid "Greenlandic"
+msgstr ""
+
+#: ../i18n/languages.py:71
+msgid "Guarani"
+msgstr ""
+
+#: ../i18n/languages.py:72
+msgid "Gujarati"
+msgstr ""
+
+#: ../i18n/languages.py:73
+msgid "Hausa"
+msgstr ""
+
+#: ../i18n/languages.py:74
+msgid "Hebrew"
+msgstr ""
+
+#: ../i18n/languages.py:75
+msgid "Hindi"
+msgstr ""
+
+#: ../i18n/languages.py:77
+msgid "Hungarian"
+msgstr ""
+
+#: ../i18n/languages.py:83
+msgid "Icelandic"
+msgstr ""
+
 #: ../scripts/ipkg-quality.py:76
 msgid "Import problems"
+msgstr ""
+
+#: ../i18n/languages.py:80
+msgid "Indonesian"
+msgstr ""
+
+#: ../i18n/languages.py:79
+msgid "Interlingua"
+msgstr ""
+
+#: ../i18n/languages.py:81
+msgid "Interlingue"
+msgstr ""
+
+#: ../i18n/languages.py:85
+msgid "Inuktitut"
+msgstr ""
+
+#: ../i18n/languages.py:82
+msgid "Inupiak"
+msgstr ""
+
+#: ../i18n/languages.py:68
+msgid "Irish"
+msgstr ""
+
+#: ../i18n/languages.py:84
+msgid "Italian"
+msgstr ""
+
+#: ../i18n/languages.py:86
+msgid "Japanese"
+msgstr ""
+
+#: ../i18n/languages.py:87
+msgid "Javanese"
+msgstr ""
+
+#: ../i18n/languages.py:92
+msgid "Kannada"
+msgstr ""
+
+#: ../i18n/languages.py:94
+msgid "Kashmiri"
+msgstr ""
+
+#: ../i18n/languages.py:89
+msgid "Kazakh"
+msgstr ""
+
+#: ../i18n/languages.py:132
+msgid "Kinyarwanda"
+msgstr ""
+
+#: ../i18n/languages.py:97
+msgid "Kirghiz"
+msgstr ""
+
+#: ../i18n/languages.py:129
+msgid "Kirundi"
+msgstr ""
+
+#: ../i18n/languages.py:93
+msgid "Korean"
+msgstr ""
+
+#: ../i18n/languages.py:95
+msgid "Kurdish"
+msgstr ""
+
+#: ../i18n/languages.py:101
+msgid "Laothian"
+msgstr ""
+
+#: ../i18n/languages.py:98
+msgid "Latin"
+msgstr ""
+
+#: ../i18n/languages.py:103
+msgid "Latvian"
+msgstr ""
+
+#: ../i18n/languages.py:100
+msgid "Lingala"
+msgstr ""
+
+#: ../i18n/languages.py:102
+msgid "Lithuanian"
+msgstr ""
+
+#: ../i18n/languages.py:99
+msgid "Luxembourgish"
+msgstr ""
+
+#: ../i18n/languages.py:106
+msgid "Macedonian"
+msgstr ""
+
+#: ../i18n/languages.py:104
+msgid "Malagasy"
+msgstr ""
+
+#: ../i18n/languages.py:111
+msgid "Malay"
+msgstr ""
+
+#: ../i18n/languages.py:107
+msgid "Malayalam"
+msgstr ""
+
+#: ../i18n/languages.py:112
+msgid "Maltese"
+msgstr ""
+
+#: ../i18n/languages.py:105
+msgid "Maori"
+msgstr ""
+
+#: ../i18n/languages.py:110
+msgid "Marathi"
+msgstr ""
+
+#: ../i18n/languages.py:109
+msgid "Moldavian"
+msgstr ""
+
+#: ../i18n/languages.py:108
+msgid "Mongolian"
+msgstr ""
+
+#: ../i18n/languages.py:114
+msgid "Nauru"
+msgstr ""
+
+#: ../i18n/languages.py:115
+msgid "Nepali"
+msgstr ""
+
+#: ../i18n/languages.py:135
+msgid "Northern Saami"
+msgstr ""
+
+#: ../i18n/languages.py:118
+msgid "Norwegian"
 msgstr ""
 
 #: ../scripts/ipkg-quality.py:57
@@ -168,8 +560,28 @@ msgstr ""
 msgid "OE"
 msgstr ""
 
+#: ../i18n/languages.py:119
+msgid "Occitan"
+msgstr ""
+
 #: ../scripts/ipkg-quality.py:606
 msgid "Options --worse and --show-lines are mutually exclusive."
+msgstr ""
+
+#: ../i18n/languages.py:121
+msgid "Oriya"
+msgstr ""
+
+#: ../i18n/languages.py:120
+msgid "Oromo"
+msgstr ""
+
+#: ../i18n/languages.py:124
+msgid "Pashto"
+msgstr ""
+
+#: ../i18n/languages.py:58
+msgid "Persian"
 msgstr ""
 
 #: ../scripts/ipkg-quality.py:603
@@ -180,14 +592,162 @@ msgstr ""
 msgid "Please install matplotlib."
 msgstr ""
 
+#: ../i18n/languages.py:123
+msgid "Polish"
+msgstr ""
+
+#: ../i18n/languages.py:125
+msgid "Portuguese"
+msgstr ""
+
+#: ../i18n/languages.py:126
+msgid "Portuguese/Brazil"
+msgstr ""
+
+#: ../i18n/languages.py:122
+msgid "Punjabi"
+msgstr ""
+
+#: ../i18n/languages.py:127
+msgid "Quechua"
+msgstr ""
+
+#: ../i18n/languages.py:128
+msgid "Rhaeto-Romance"
+msgstr ""
+
+#: ../i18n/languages.py:130
+msgid "Romanian"
+msgstr ""
+
+#: ../i18n/languages.py:131
+msgid "Russian"
+msgstr ""
+
+#: ../i18n/languages.py:141
+msgid "Samoan"
+msgstr ""
+
+#: ../i18n/languages.py:136
+msgid "Sangho"
+msgstr ""
+
+#: ../i18n/languages.py:133
+msgid "Sanskrit"
+msgstr ""
+
+#: ../i18n/languages.py:69
+msgid "Scots Gaelic"
+msgstr ""
+
+#: ../i18n/languages.py:145
+msgid "Serbian"
+msgstr ""
+
+#: ../i18n/languages.py:137
+msgid "Serbo-Croatian"
+msgstr ""
+
+#: ../i18n/languages.py:147
+msgid "Sesotho"
+msgstr ""
+
+#: ../i18n/languages.py:158
+msgid "Setswana"
+msgstr ""
+
+#: ../i18n/languages.py:142
+msgid "Shona"
+msgstr ""
+
+#: ../i18n/languages.py:134
+msgid "Sindhi"
+msgstr ""
+
+#: ../i18n/languages.py:138
+msgid "Sinhalese"
+msgstr ""
+
+#: ../i18n/languages.py:146
+msgid "Siswati"
+msgstr ""
+
+#: ../i18n/languages.py:139
+msgid "Slovak"
+msgstr ""
+
+#: ../i18n/languages.py:140
+msgid "Slovenian"
+msgstr ""
+
+#: ../i18n/languages.py:143
+msgid "Somali"
+msgstr ""
+
 #: ../web/messages.py:46
 msgid ""
 "Some required fields are missing, or some values are not valid. Please "
 "correct them and continue."
 msgstr ""
 
+#: ../i18n/languages.py:51
+msgid "Spanish"
+msgstr ""
+
+#: ../i18n/languages.py:52
+msgid "Spanish/Argentina"
+msgstr ""
+
+#: ../i18n/languages.py:53
+msgid "Spanish/Colombia"
+msgstr ""
+
+#: ../i18n/languages.py:54
+msgid "Spanish/Mexico"
+msgstr ""
+
+#: ../i18n/languages.py:55
+msgid "Spanish/Spain"
+msgstr ""
+
 #: ../scripts/ipkg-quality.py:61
 msgid "Style"
+msgstr ""
+
+#: ../i18n/languages.py:148
+msgid "Sundanese"
+msgstr ""
+
+#: ../i18n/languages.py:150
+msgid "Swahili"
+msgstr ""
+
+#: ../i18n/languages.py:149
+msgid "Swedish"
+msgstr ""
+
+#: ../i18n/languages.py:157
+msgid "Tagalog"
+msgstr ""
+
+#: ../i18n/languages.py:153
+msgid "Tajik"
+msgstr ""
+
+#: ../i18n/languages.py:151
+msgid "Tamil"
+msgstr ""
+
+#: ../i18n/languages.py:162
+msgid "Tatar"
+msgstr ""
+
+#: ../i18n/languages.py:152
+msgid "Telugu"
+msgstr ""
+
+#: ../i18n/languages.py:154
+msgid "Thai"
 msgstr ""
 
 #: ../scripts/ipkg-quality.py:609
@@ -208,6 +768,86 @@ msgstr ""
 
 #: ../scripts/ipkg-quality.py:393
 msgid "This file is perfect !"
+msgstr ""
+
+#: ../i18n/languages.py:33
+msgid "Tibetan"
+msgstr ""
+
+#: ../i18n/languages.py:155
+msgid "Tigrinya"
+msgstr ""
+
+#: ../i18n/languages.py:159
+msgid "Tonga"
+msgstr ""
+
+#: ../i18n/languages.py:161
+msgid "Tsonga"
+msgstr ""
+
+#: ../i18n/languages.py:160
+msgid "Turkish"
+msgstr ""
+
+#: ../i18n/languages.py:156
+msgid "Turkmen"
+msgstr ""
+
+#: ../i18n/languages.py:163
+msgid "Twi"
+msgstr ""
+
+#: ../i18n/languages.py:164
+msgid "Uighur"
+msgstr ""
+
+#: ../i18n/languages.py:165
+msgid "Ukrainian"
+msgstr ""
+
+#: ../i18n/languages.py:166
+msgid "Urdu"
+msgstr ""
+
+#: ../i18n/languages.py:167
+msgid "Uzbek"
+msgstr ""
+
+#: ../i18n/languages.py:168
+msgid "Vietnamese"
+msgstr ""
+
+#: ../i18n/languages.py:169
+msgid "Volapuk"
+msgstr ""
+
+#: ../i18n/languages.py:39
+msgid "Welsh"
+msgstr ""
+
+#: ../i18n/languages.py:170
+msgid "Wolof"
+msgstr ""
+
+#: ../i18n/languages.py:171
+msgid "Xhosa"
+msgstr ""
+
+#: ../i18n/languages.py:172
+msgid "Yiddish"
+msgstr ""
+
+#: ../i18n/languages.py:173
+msgid "Yoruba"
+msgstr ""
+
+#: ../i18n/languages.py:174
+msgid "Zhuang"
+msgstr ""
+
+#: ../i18n/languages.py:178
+msgid "Zulu"
 msgstr ""
 
 #: ../rest/parser.py:288 ../rest/parser.py:292

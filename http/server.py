@@ -31,6 +31,9 @@ from response import Response, get_response
 
 class HTTPServer(SoupServer):
 
+    app = None
+
+
     def __init__(self, address='', port=8080, access_log=None, pid_file=None,
                  profile=None):
         SoupServer.__init__(self, address=address, port=port)
@@ -156,7 +159,7 @@ class HTTPServer(SoupServer):
         methods = self._get_server_methods()
 
         # Test capabilities of a resource
-        resource = self.root.get_resource(context.uri.authority, context.path)
+        resource = self.app.get_resource(context.uri.authority, context.path)
         resource_methods = resource._get_resource_methods()
         methods = set(methods) & set(resource_methods)
         # Special cases
@@ -176,7 +179,7 @@ class HTTPServer(SoupServer):
         # Get the resource
         host = request.get_host()
         uri = request.request_uri
-        resource = self.root.get_resource(host, uri)
+        resource = self.app.get_resource(host, uri)
 
         # 404 Not Found
         if resource is None:
@@ -208,7 +211,7 @@ class HTTPServer(SoupServer):
         # Get the resource
         host = request.get_host()
         uri = request.request_uri
-        resource = self.root.get_resource(host, uri)
+        resource = self.app.get_resource(host, uri)
 
         # 404 Not Found
         if resource is None:
@@ -233,42 +236,4 @@ class HTTPServer(SoupServer):
         response = self.http_get(request)
         response.set_body(None)
         return response
-
-
-
-###########################################################################
-# HTTP Resources
-###########################################################################
-
-class HTTPResource(object):
-
-    def _get_resource_methods(self):
-        return [ x[5:].upper() for x in dir(self) if x[:5] == 'http_' ]
-
-
-
-class Root(HTTPResource):
-
-    def get_resource(self, host, uri):
-        if uri == '/':
-            return self
-
-        return None
-
-
-    def http_get(self, request):
-        response = Response()
-        response.set_body("Hello, I'am itools.http")
-        return response
-
-
-HTTPServer.root = Root()
-
-
-
-# For testing purposes
-if __name__ == '__main__':
-    server = HTTPServer()
-    print 'Start server..'
-    server.start()
 

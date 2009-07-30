@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
+from app import Application, HTTPResource
 from cookies import Cookie, SetCookieDataType
 from entities import Entity
 from exceptions import HTTPError, ClientError, ServerError
@@ -23,13 +24,14 @@ from exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 from exceptions import InternalServerError, NotImplemented, BadGateway
 from exceptions import ServiceUnavailable, MethodNotAllowed, Conflict
 from headers import get_type
-from server import HTTPServer, HTTPResource
+from server import HTTPServer
 from utils import set_response
 
 
 __all__ = [
     'HTTPServer',
     'HTTPResource',
+    'Application',
     'Entity',
     'get_type',
     'set_response',

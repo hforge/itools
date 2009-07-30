@@ -17,7 +17,6 @@
 # Import from itools
 from auth import Realm
 from response import Response
-from server import HTTPServer
 
 
 class HTTPResource(object):
@@ -56,13 +55,4 @@ class Application(object):
             return Root()
 
         return None
-
-
-
-# For testing purposes
-if __name__ == '__main__':
-    server = HTTPServer()
-    server.app = Application()
-    print 'Start server..'
-    server.start()
 

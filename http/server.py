@@ -26,12 +26,14 @@ from gobject import MainLoop
 # Import from itools
 from itools.i18n import init_language_selector
 from itools.soup import SoupServer
+from app import Application
 from response import Response, get_response
 
 
 class HTTPServer(SoupServer):
 
-    app = None
+    # The default application says "hello"
+    app = Application()
 
 
     def __init__(self, address='', port=8080, access_log=None, pid_file=None,
@@ -236,4 +238,13 @@ class HTTPServer(SoupServer):
         response = self.http_get(request)
         response.set_body(None)
         return response
+
+
+###########################################################################
+# For testing purposes
+###########################################################################
+if __name__ == '__main__':
+    server = HTTPServer()
+    print 'Start server..'
+    server.start()
 

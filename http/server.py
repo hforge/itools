@@ -31,6 +31,7 @@ from gobject import IO_IN, IO_OUT, IO_PRI, IO_ERR, IO_HUP, IO_NVAL
 
 # Import from itools
 from itools.log import log_error
+from app import Application
 from exceptions import HTTPError, BadRequest
 from request import Request
 from response import Response, get_response
@@ -187,7 +188,8 @@ class HTTPConnection(object):
 
 class HTTPServer(object):
 
-    app = None
+    # The default application says "hello"
+    app = Application()
 
 
     def __init__(self, address='', port=8080, access_log=None):
@@ -557,4 +559,13 @@ class HTTPServer(object):
         response.set_header('content-type', 'message/http')
         response.set_body(request.to_str())
         return response
+
+
+###########################################################################
+# For testing purposes
+###########################################################################
+if __name__ == '__main__':
+    server = HTTPServer()
+    print 'Start server..'
+    server.start()
 

@@ -31,7 +31,6 @@ from gobject import IO_IN, IO_OUT, IO_PRI, IO_ERR, IO_HUP, IO_NVAL
 
 # Import from itools
 from itools.log import log_error
-from auth import Realm
 from exceptions import HTTPError, BadRequest
 from request import Request
 from response import Response, get_response
@@ -187,6 +186,9 @@ class HTTPConnection(object):
 ###########################################################################
 
 class HTTPServer(object):
+
+    app = None
+
 
     def __init__(self, address='', port=8080, access_log=None):
         # The server listens to...
@@ -467,7 +469,7 @@ class HTTPServer(object):
         uri = request.request_uri
         if uri != '*':
             host = request.get_host()
-            resource = self.root.get_resource(host, uri)
+            resource = self.app.get_resource(host, uri)
             resource_methods = resource._get_resource_methods()
             methods = set(methods) & set(resource_methods)
             # Special cases
@@ -486,7 +488,7 @@ class HTTPServer(object):
         # Get the resource
         host = request.get_host()
         uri = request.request_uri
-        resource = self.root.get_resource(host, uri)
+        resource = self.app.get_resource(host, uri)
 
         # 404 Not Found
         if resource is None:
@@ -511,7 +513,7 @@ class HTTPServer(object):
             return response
 
         # Authorization (typically 401 Unauthorized)
-        realm = self.root.get_realm(resource.realm)
+        realm = self.app.get_realm(resource.realm)
         if realm.authenticate(request) is False:
             return realm.challenge(request)
 
@@ -523,7 +525,7 @@ class HTTPServer(object):
         # Get the resource
         host = request.get_host()
         uri = request.request_uri
-        resource = self.root.get_resource(host, uri)
+        resource = self.app.get_resource(host, uri)
 
         # 404 Not Found
         if resource is None:
@@ -555,47 +557,4 @@ class HTTPServer(object):
         response.set_header('content-type', 'message/http')
         response.set_body(request.to_str())
         return response
-
-
-###########################################################################
-# HTTP Resources
-###########################################################################
-
-class HTTPResource(object):
-
-    realm = 'default'
-
-    def _get_resource_methods(self):
-        return [ x[5:].upper() for x in dir(self) if x[:5] == 'http_' ]
-
-
-
-class HTTPRoot(HTTPResource):
-
-    def get_realm(self, realm):
-        return Realm()
-
-
-    def get_resource(self, host, uri):
-        if uri == '/':
-            return self
-
-        return None
-
-
-    def http_get(self, request):
-        response = Response()
-        response.set_body("Hello, I'am itools.http")
-        return response
-
-
-HTTPServer.root = HTTPRoot()
-
-
-
-# For testing purposes
-if __name__ == '__main__':
-    server = HTTPServer()
-    print 'Start server..'
-    server.start()
 

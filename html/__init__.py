@@ -64,7 +64,7 @@ register_dtd(get_abspath('xhtml1-frameset.dtd'),
 register_dtd(get_abspath('xhtml-lat1.ent'),
              urn='urn:publicid:-:W3C:ENTITIES+Latin+1+for+XHTML:EN')
 
-# -//W3C//ENTITIES Symbols for XHTML//EN
+# -//W3C//ENTITIES Symbols for XHTML//EN
 register_dtd(get_abspath('xhtml-symbol.ent'),
              urn='urn:publicid:-:W3C:ENTITIES+Symbols+for+XHTML:EN')
 
@@ -72,8 +72,23 @@ register_dtd(get_abspath('xhtml-symbol.ent'),
 register_dtd(get_abspath('xhtml-special.ent'),
              urn='urn:publicid:-:W3C:ENTITIES+Special+for+XHTML:EN')
 
+# -//W3C//DTD HTML 4.01//EN
+register_dtd(get_abspath('html4.01-strict.dtd'),
+             urn='urn:publicid:-:W3C:DTD+HTML+4.01:EN')
 
+# -//W3C//ENTITIES Latin 1//EN//HTML
+register_dtd(get_abspath('html-lat1.ent'),
+             urn='urn:publicid:-:W3C:ENTITIES+Latin1:EN:HTML')
+
+# -//W3C//ENTITIES Symbols//EN//HTML
+register_dtd(get_abspath('html-symbol.ent'),
+             urn='urn:publicid:-:W3C:ENTITIES+Symbols:EN:HTML')
+
+# -//W3C//ENTITIES Special//EN//HTML
+register_dtd(get_abspath('html-special.ent'),
+             urn='urn:publicid:-:W3C:ENTITIES+Special:EN:HTML')
 
 xhtml_doctype = DocType(
     '-//W3C//DTD XHTML 1.0 Strict//EN',
     'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd')
+

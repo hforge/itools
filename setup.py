@@ -69,5 +69,21 @@ if __name__ == '__main__':
         extension = Extension('itools.office.doctotext', sources, **flags)
         ext_modules.append(extension)
 
+    # libsoup wrapper
+    line = 'pkg-config --cflags --libs pygobject-2.0 libsoup-2.4'
+    try:
+        flags = get_compile_flags(line)
+    except EnvironmentError:
+        print >> stderr, 'Error: libsoup library or headers not found.'
+        raise
+    else:
+        for include in flags['include_dirs']:
+            if include.endswith('/libsoup-2.4'):
+                flags['include_dirs'].append('%s/libsoup' % include)
+                break
+        sources = ['http/soup.c']
+        extension = Extension('itools.http.soup', sources, **flags)
+        ext_modules.append(extension)
+
     # Ok
     setup(ext_modules=ext_modules)

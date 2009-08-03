@@ -146,7 +146,7 @@ s_server_callback (SoupServer * s_server, SoupMessage * s_msg,
   p_message->s_message = s_msg;
 
   /* Call the Python callback */
-  if (!PyObject_CallMethod (server, "callback", "O", p_message))
+  if (!PyObject_CallMethod (server, "callback", "Os", p_message, path))
     /* TODO How to trigger the Python error? */
     printf("Error\n");
 }

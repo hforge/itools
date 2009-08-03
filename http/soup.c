@@ -38,7 +38,23 @@ typedef struct
 } PyMessage;
 
 
+static PyObject *
+PyMessage_set_status (PyMessage * self, PyObject * args, PyObject * kwdict)
+{
+  guint status;
+
+  if (!PyArg_ParseTuple (args, "I", &status))
+    return NULL;
+
+  soup_message_set_status (self->s_message, status);
+
+  Py_RETURN_NONE;
+}
+
+
 static PyMethodDef PyMessage_methods[] = {
+  {"set_status", (PyCFunction) PyMessage_set_status, METH_VARARGS,
+   "Set the response status code"},
   {NULL} /* Sentinel */
 };
 

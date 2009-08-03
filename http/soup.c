@@ -127,6 +127,7 @@ static PyTypeObject PyMessageType = {
 typedef struct
 {
   PyObject_HEAD
+  SoupServer * s_server;
 } PyServer;
 
 
@@ -153,14 +154,22 @@ s_server_callback (SoupServer * s_server, SoupMessage * s_msg,
 
 
 static PyObject *
-PyServer_start (PyObject * self, PyObject * args, PyObject * kwdict)
+PyServer_stop (PyServer * self, PyObject * args, PyObject * kwdict)
+{
+  soup_server_quit (self->s_server);
+
+  Py_RETURN_NONE;
+}
+
+
+static PyObject *
+PyServer_start (PyServer * self, PyObject * args, PyObject * kwdict)
 {
   /* Defines the parameters */
   static char *kwlist[] = { "address", "port", NULL };
   char *address = "";
   guint port = 8080;
-  /* Glib and libsoup variables */
-  GMainLoop *g_mainloop;
+  /* libsoup variables */
   SoupAddress *s_address;
   SoupServer *s_server;
 
@@ -187,20 +196,20 @@ PyServer_start (PyObject * self, PyObject * args, PyObject * kwdict)
   if (!s_server)
     /* TODO Set Python error condition */
     return NULL;
+  self->s_server = s_server;
 
   /* Handler */
   soup_server_add_handler (s_server, "/", s_server_callback, self, NULL);
 
   /* Run */
   soup_server_run_async (s_server);
-  g_mainloop = g_main_loop_new (NULL, FALSE);
-  g_main_loop_run (g_mainloop);
 
   Py_RETURN_NONE;
 }
 
 
 static PyMethodDef PyServer_methods[] = {
+  {"stop", (PyCFunction) PyServer_stop, METH_NOARGS, "Stop the server"},
   {"start", (PyCFunction) PyServer_start, METH_VARARGS | METH_KEYWORDS,
    "Start the server"},
   {NULL} /* Sentinel */

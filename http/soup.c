@@ -27,15 +27,73 @@
  */
 
 
-
-/*
- * HTTP Server
- */
+/**************************************************************************
+ * Wrap SoupMessage
+ *************************************************************************/
 
 typedef struct
 {
   PyObject_HEAD
-} Server;
+  SoupMessage * s_message;
+} PyMessage;
+
+
+static PyMethodDef PyMessage_methods[] = {
+  {NULL} /* Sentinel */
+};
+
+
+static PyTypeObject PyMessageType = {
+  PyObject_HEAD_INIT(NULL)
+  0,                                         /* ob_size */
+  "itools.http.soup.SoupMessage",            /* tp_name */
+  sizeof (PyMessage),                        /* tp_basicsize */
+  0,                                         /* tp_itemsize */
+  0,                                         /* tp_dealloc */
+  0,                                         /* tp_print */
+  0,                                         /* tp_getattr */
+  0,                                         /* tp_setattr */
+  0,                                         /* tp_compare */
+  0,                                         /* tp_repr */
+  0,                                         /* tp_as_number */
+  0,                                         /* tp_as_sequence */
+  0,                                         /* tp_as_mapping */
+  0,                                         /* tp_hash */
+  0,                                         /* tp_call */
+  0,                                         /* tp_str */
+  0,                                         /* tp_getattro */
+  0,                                         /* tp_setattro */
+  0,                                         /* tp_as_buffer */
+  Py_TPFLAGS_DEFAULT,                        /* tp_flags */
+  "Wrapper of SoupMessage",                  /* tp_doc */
+  0,                                         /* tp_traverse */
+  0,                                         /* tp_clear */
+  0,                                         /* tp_richcompare */
+  0,                                         /* tp_weaklistoffset */
+  0,                                         /* tp_iter */
+  0,                                         /* tp_iternext */
+  PyMessage_methods,                         /* tp_methods */
+  0,                                         /* tp_members */
+  0,                                         /* tp_getset */
+  0,                                         /* tp_base */
+  0,                                         /* tp_dict */
+  0,                                         /* tp_descr_get */
+  0,                                         /* tp_descr_set */
+  0,                                         /* tp_dictoffset */
+  0,                                         /* tp_init */
+  0,                                         /* tp_alloc */
+  PyType_GenericNew,                         /* tp_new */
+};
+
+
+/**************************************************************************
+ * HTTP Server
+ *************************************************************************/
+
+typedef struct
+{
+  PyObject_HEAD
+} PyServer;
 
 
 void
@@ -43,9 +101,18 @@ s_server_callback (SoupServer * s_server, SoupMessage * s_msg,
                    const char * path, GHashTable * g_query,
                    SoupClientContext * s_client, gpointer server)
 {
-  PyObject * p_result;
+  PyMessage * p_message;
 
-  if (!PyObject_CallMethod (server, "callback", NULL))
+  /* Create the Python Message object */
+  p_message = PyObject_New (PyMessage, &PyMessageType);
+  if (!p_message)
+    /* ERROR */
+    return;
+
+  p_message->s_message = s_msg;
+
+  /* Call the Python callback */
+  if (!PyObject_CallMethod (server, "callback", "O", p_message))
     /* TODO How to trigger the Python error? */
     printf("Error\n");
 }
@@ -106,11 +173,11 @@ static PyMethodDef PyServer_methods[] = {
 };
 
 
-static PyTypeObject PyServer = {
+static PyTypeObject PyServerType = {
   PyObject_HEAD_INIT(NULL)
   0,                                         /* ob_size */
   "itools.http.soup.SoupServer",             /* tp_name */
-  sizeof (Server),                           /* tp_basicsize */
+  sizeof (PyServer),                         /* tp_basicsize */
   0,                                         /* tp_itemsize */
   0,                                         /* tp_dealloc */
   0,                                         /* tp_print */
@@ -175,9 +242,15 @@ initsoup (void)
   if (module == NULL)
     return;
 
-  /* Server Object */
-  if (PyType_Ready (&PyServer) != 0)
+  /* Server Type */
+  if (PyType_Ready (&PyServerType) != 0)
     return;
-  Py_INCREF (&PyServer);
-  PyModule_AddObject (module, "SoupServer", (PyObject *) & PyServer);
+  Py_INCREF (&PyServerType);
+  PyModule_AddObject (module, "SoupServer", (PyObject *) & PyServerType);
+
+  /* Message Type */
+  if (PyType_Ready (&PyMessageType) != 0)
+    return;
+  Py_INCREF (&PyMessageType);
+  PyModule_AddObject (module, "SoupMessage", (PyObject *) & PyMessageType);
 }

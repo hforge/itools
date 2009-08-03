@@ -153,17 +153,8 @@ s_server_callback (SoupServer * s_server, SoupMessage * s_msg,
 }
 
 
-static PyObject *
-PyServer_stop (PyServer * self, PyObject * args, PyObject * kwdict)
-{
-  soup_server_quit (self->s_server);
-
-  Py_RETURN_NONE;
-}
-
-
-static PyObject *
-PyServer_start (PyServer * self, PyObject * args, PyObject * kwdict)
+static int
+PyServerType_init (PyServer * self, PyObject * args, PyObject * kwdict)
 {
   /* Defines the parameters */
   static char *kwlist[] = { "address", "port", NULL };
@@ -176,11 +167,10 @@ PyServer_start (PyServer * self, PyObject * args, PyObject * kwdict)
   /* Arguments */
   if (!PyArg_ParseTupleAndKeywords (args, kwdict, "|sI", kwlist, &address,
                                     &port))
-    return NULL;
+    return -1;
 
-  /* HTTP Server */
-  printf("Listen %s:%d\n", address, port);
-  g_thread_init (NULL); /* http://bugzilla.gnome.org/show_bug.cgi?id=532778 */
+  /* http://bugzilla.gnome.org/show_bug.cgi?id=532778 */
+  g_thread_init (NULL);
 
   /* TODO This does not work, soup_server_new fails with SOUP_SERVER_INTERFACE
    * Loosely related, http://bugzilla.gnome.org/show_bug.cgi?id=561547
@@ -188,30 +178,45 @@ PyServer_start (PyServer * self, PyObject * args, PyObject * kwdict)
   s_address = soup_address_new (address, port);
   if (!s_address)
     /* TODO Set Python error condition */
-    return NULL;
+    return -1;
 
   s_server = soup_server_new (SOUP_SERVER_SERVER_HEADER, "itools.http",
                               /* SOUP_SERVER_INTERFACE, s_address, */
                               SOUP_SERVER_PORT, port, NULL);
   if (!s_server)
     /* TODO Set Python error condition */
-    return NULL;
+    return -1;
   self->s_server = s_server;
 
   /* Handler */
   soup_server_add_handler (s_server, "/", s_server_callback, self, NULL);
 
+  return 0;
+}
+
+
+static PyObject *
+PyServerType_stop (PyServer * self, PyObject * args, PyObject * kwdict)
+{
+  soup_server_quit (self->s_server);
+
+  Py_RETURN_NONE;
+}
+
+
+static PyObject *
+PyServerType_start (PyServer * self, PyObject * args, PyObject * kwdict)
+{
   /* Run */
-  soup_server_run_async (s_server);
+  soup_server_run_async (self->s_server);
 
   Py_RETURN_NONE;
 }
 
 
 static PyMethodDef PyServer_methods[] = {
-  {"stop", (PyCFunction) PyServer_stop, METH_NOARGS, "Stop the server"},
-  {"start", (PyCFunction) PyServer_start, METH_VARARGS | METH_KEYWORDS,
-   "Start the server"},
+  {"stop", (PyCFunction) PyServerType_stop, METH_NOARGS, "Stop the server"},
+  {"start", (PyCFunction) PyServerType_start, METH_NOARGS, "Start the server"},
   {NULL} /* Sentinel */
 };
 
@@ -253,7 +258,7 @@ static PyTypeObject PyServerType = {
   0,                                         /* tp_descr_get */
   0,                                         /* tp_descr_set */
   0,                                         /* tp_dictoffset */
-  0,                                         /* tp_init */
+  (initproc) PyServerType_init,              /* tp_init */
   0,                                         /* tp_alloc */
   PyType_GenericNew,                         /* tp_new */
 };

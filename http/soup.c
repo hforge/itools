@@ -18,6 +18,15 @@
 #include <Python.h>
 #include <soup.h>
 
+/* Variable names are prefixed by one letter:
+ *   p_xxx - is a Python object
+ *   g_xxx - is a glib object
+ *   s_xxx - is a libsoup object
+ *
+ * Variables without a prefix are standard C types.
+ */
+
+
 
 /*
  * HTTP Server
@@ -30,26 +39,48 @@ typedef struct
 
 
 static PyObject *
-PyServer_start (PyObject * self, PyObject * args, PyObject * kwds)
+PyServer_start (PyObject * self, PyObject * args, PyObject * kwdict)
 {
-  GMainLoop *loop;
-  SoupServer *server;
+  /* Defines the parameters */
+  static char *kwlist[] = { "address", "port", NULL };
+  char *address = "";
+  guint port = 8080;
+  /* Glib and libsoup variables */
+  GMainLoop *g_mainloop;
+  SoupAddress *s_address;
+  SoupServer *s_server;
+
+  /* Arguments */
+  if (!PyArg_ParseTupleAndKeywords (args, kwdict, "|sI", kwlist, &address,
+                                    &port))
+    return NULL;
 
   /* HTTP Server */
+  printf("Listen %s:%d\n", address, port);
   g_thread_init (NULL);
-  server = soup_server_new (SOUP_SERVER_PORT, 8080, NULL);
-  soup_server_run_async (server);
+  s_address = soup_address_new (address, port);
+  if (!s_address)
+    return NULL;
+
+  s_server = soup_server_new (SOUP_SERVER_SERVER_HEADER, "itools.http",
+                              /* SOUP_SERVER_INTERFACE, s_address, */
+                              SOUP_SERVER_PORT, port, NULL);
+  if (!s_server)
+    return NULL;
+
+  soup_server_run_async (s_server);
 
   /* Main loop */
-  loop = g_main_loop_new (NULL, FALSE);
-  g_main_loop_run (loop);
+  g_mainloop = g_main_loop_new (NULL, FALSE);
+  g_main_loop_run (g_mainloop);
 
   return Py_None;
 }
 
 
 static PyMethodDef PyServer_methods[] = {
-  {"start", (PyCFunction) PyServer_start, METH_NOARGS, "Start the server"},
+  {"start", (PyCFunction) PyServer_start, METH_VARARGS | METH_KEYWORDS,
+   "Start the server"},
   {NULL} /* Sentinel */
 };
 

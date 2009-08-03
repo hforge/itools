@@ -39,6 +39,22 @@ typedef struct
 
 
 static PyObject *
+PyMessage_set_response (PyMessage * self, PyObject * args, PyObject *kwdict)
+{
+  char *content_type, *body;
+  gsize content_length;
+
+  if (!PyArg_ParseTuple (args, "ss#", &content_type, &body, &content_length))
+    return NULL;
+
+  soup_message_set_response (self->s_message, content_type, SOUP_MEMORY_COPY,
+                             body, content_length);
+
+  Py_RETURN_NONE;
+}
+
+
+static PyObject *
 PyMessage_set_status (PyMessage * self, PyObject * args, PyObject * kwdict)
 {
   guint status;
@@ -53,6 +69,8 @@ PyMessage_set_status (PyMessage * self, PyObject * args, PyObject * kwdict)
 
 
 static PyMethodDef PyMessage_methods[] = {
+  {"set_response", (PyCFunction) PyMessage_set_response, METH_VARARGS,
+   "Set the repsonse body"},
   {"set_status", (PyCFunction) PyMessage_set_status, METH_VARARGS,
    "Set the response status code"},
   {NULL} /* Sentinel */

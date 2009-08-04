@@ -28,6 +28,72 @@
 
 
 /**************************************************************************
+ * Access Log
+ *************************************************************************/
+
+static gchar *
+get_request_line (SoupMessage * s_msg)
+{
+  SoupHTTPVersion s_http_version;
+  gchar * format;
+  SoupURI * s_uri;
+  char * uri;
+  gchar * request_line;
+
+  /* The request URI */
+  s_uri = soup_message_get_uri (s_msg);
+  uri = soup_uri_to_string (s_uri, TRUE);
+
+  /* The HTTP version */
+  s_http_version = soup_message_get_http_version (s_msg);
+  if (s_http_version == SOUP_HTTP_1_0)
+    format = "%s %s HTTP/1.0";
+  else
+    format = "%s %s HTTP/1.1";
+
+  request_line = g_strdup_printf (format, s_msg->method, uri);
+  free (uri);
+  return request_line;
+}
+
+
+static gchar *
+get_access_log_line (SoupMessage * s_msg, SoupClientContext * s_client)
+{
+  /* Common Log Format
+   *  - IP address of the client
+   *  - RFC 1413 identity (not available)
+   *  - username (TODO not provided right now, should we?)
+   *  - time (FIXME we use the timezone name, use the offset, e.g. +0100)
+   *  - the request line
+   *  - the status code
+   *  - content length of the response
+   */
+  time_t ts_t;
+  struct tm * ts_tm;
+  char ts[32];
+  gchar * request_line;
+  gchar * log_line;
+
+  /* Timestamp */
+  ts_t = time (NULL);
+  ts_tm = gmtime (&ts_t);
+  strftime (ts, sizeof(ts), "%d/%b/%Y:%H:%M:%S %Z", ts_tm);
+
+  /* The log line */
+  request_line = get_request_line (s_msg),
+  log_line = g_strdup_printf ("%s - - [%s] \"%s\" %d %d\n",
+                              soup_client_context_get_host (s_client),
+                              ts, request_line, s_msg->status_code,
+                              (int) s_msg->response_body->length);
+  free (request_line);
+
+  return log_line;
+}
+
+
+
+/**************************************************************************
  * Wrap SoupMessage
  *************************************************************************/
 
@@ -137,6 +203,7 @@ s_server_callback (SoupServer * s_server, SoupMessage * s_msg,
                    SoupClientContext * s_client, gpointer server)
 {
   PyMessage * p_message;
+  gchar * log_line;
 
   /* Create the Python Message object */
   p_message = PyObject_New (PyMessage, &PyMessageType);
@@ -147,13 +214,27 @@ s_server_callback (SoupServer * s_server, SoupMessage * s_msg,
   p_message->s_message = s_msg;
 
   /* Call the Python callback */
-  if (PyObject_CallMethod (server, "callback", "Os", p_message, path))
-    return;
+  if (!PyObject_CallMethod (server, "callback", "Os", p_message, path))
+    {
+      /* The Python callback should never fail, it is its responsability to
+       * catch and handle exceptions */
+      printf("ERROR! Python's callback failed, this should never happen\n");
+      abort ();
+    }
 
-  /* The Python callback should never fail, it is its responsability to
-   * catch and handle exceptions */
-  printf("ERROR! Python's callback failed, that should never happen\n");
-  abort ();
+  /* Acces Log */
+  log_line = get_access_log_line (s_msg, s_client);
+  if (!PyObject_CallMethod (server, "log_access", "s", log_line))
+    {
+      /* The Python callback should never fail, it is its responsability to
+       * catch and handle exceptions */
+      printf("ERROR! Python's access log failed, this should never happen\n");
+      abort ();
+    }
+
+  /* Ok */
+  free (log_line);
+  return;
 }
 
 

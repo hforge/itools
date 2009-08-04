@@ -65,30 +65,7 @@ class HTTPServer(SoupServer):
     #######################################################################
     # Logging
     #######################################################################
-    def format_access(self, conn, request, response):
-        # Common Log Format
-        #  - IP address of the client
-        #  - RFC 1413 identity (not available)
-        #  - username (XXX not provided right now, should we?)
-        #  - time (XXX we use the timezone name, while we should use the
-        #    offset, e.g. +0100)
-        #  - the request line
-        #  - the status code
-        #  - content length of the response
-        host = request.get_remote_ip()
-        if host is None:
-            host, port = conn.getpeername()
-        ts = strftime('%d/%b/%Y:%H:%M:%S %Z')
-        request_line = request.request_line
-        status = response.status
-        length = response.get_content_length()
-        line = '{0} - - [{1}] "{2}" {3} {4}\n'
-        return line.format(host, ts, request_line, status, length)
-
-
-    def log_access(self, conn, request, response):
-        line = self.format_access(conn, request, response)
-
+    def log_access(self, line):
         # Default: stdout
         if self.access_log is None:
             stdout.write(line)

@@ -100,14 +100,14 @@ get_access_log_line (SoupMessage * s_msg, SoupClientContext * s_client)
 typedef struct
 {
   PyObject_HEAD
-  SoupMessage * s_message;
+  SoupMessage * s_msg;
 } PyMessage;
 
 
 static PyObject *
 PyMessage_get_method (PyMessage * self, PyObject * args, PyObject *kwdict)
 {
-  return PyString_FromString (self->s_message->method);
+  return PyString_FromString (self->s_msg->method);
 }
 
 
@@ -119,12 +119,26 @@ PyMessage_get_uri (PyMessage * self, PyObject * args, PyObject *kwdict)
   PyObject * p_uri;
 
   /* The request URI */
-  s_uri = soup_message_get_uri (self->s_message);
+  s_uri = soup_message_get_uri (self->s_msg);
   uri = soup_uri_to_string (s_uri, FALSE);
 
   p_uri = PyString_FromString (uri);
   free (uri);
   return p_uri;
+}
+
+
+static PyObject *
+PyMessage_set_header (PyMessage * self, PyObject * args, PyObject *kwdict)
+{
+  char *name, *value;
+
+  if (!PyArg_ParseTuple (args, "ss", &name, &value))
+    return NULL;
+
+  soup_message_headers_replace (self->s_msg->response_headers, name, value);
+
+  Py_RETURN_NONE;
 }
 
 
@@ -137,8 +151,8 @@ PyMessage_set_response (PyMessage * self, PyObject * args, PyObject *kwdict)
   if (!PyArg_ParseTuple (args, "ss#", &content_type, &body, &content_length))
     return NULL;
 
-  soup_message_set_response (self->s_message, content_type, SOUP_MEMORY_COPY,
-                             body, content_length);
+  soup_message_set_response (self->s_msg, content_type, SOUP_MEMORY_COPY, body,
+                             content_length);
 
   Py_RETURN_NONE;
 }
@@ -152,7 +166,7 @@ PyMessage_set_status (PyMessage * self, PyObject * args, PyObject * kwdict)
   if (!PyArg_ParseTuple (args, "I", &status))
     return NULL;
 
-  soup_message_set_status (self->s_message, status);
+  soup_message_set_status (self->s_msg, status);
 
   Py_RETURN_NONE;
 }
@@ -163,6 +177,8 @@ static PyMethodDef PyMessage_methods[] = {
    "Get the request method"},
   {"get_uri", (PyCFunction) PyMessage_get_uri, METH_NOARGS,
    "Get the request uri"},
+  {"set_header", (PyCFunction) PyMessage_set_header, METH_VARARGS,
+   "Set the given response header"},
   {"set_response", (PyCFunction) PyMessage_set_response, METH_VARARGS,
    "Set the repsonse body"},
   {"set_status", (PyCFunction) PyMessage_set_status, METH_VARARGS,
@@ -239,7 +255,7 @@ s_server_callback (SoupServer * s_server, SoupMessage * s_msg,
     /* ERROR */
     return;
 
-  p_message->s_message = s_msg;
+  p_message->s_msg = s_msg;
 
   /* Call the Python callback */
   if (!PyObject_CallMethod (server, "callback", "Os", p_message, path))

@@ -147,9 +147,13 @@ s_server_callback (SoupServer * s_server, SoupMessage * s_msg,
   p_message->s_message = s_msg;
 
   /* Call the Python callback */
-  if (!PyObject_CallMethod (server, "callback", "Os", p_message, path))
-    /* TODO How to trigger the Python error? */
-    printf("Error\n");
+  if (PyObject_CallMethod (server, "callback", "Os", p_message, path))
+    return;
+
+  /* The Python callback should never fail, it is its responsability to
+   * catch and handle exceptions */
+  printf("ERROR! Python's callback failed, that should never happen\n");
+  abort ();
 }
 
 

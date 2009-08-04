@@ -137,6 +137,15 @@ class HTTPServer(SoupServer):
     # Request handling
     #######################################################################
     def callback(self, message, path):
+        try:
+            self._callback(message, path)
+        except Exception:
+            self.log_error()
+            message.set_status(500)
+            message.set_response('text/plain', '500 Internal Server Error')
+
+
+    def _callback(self, message, path):
         if path == '/':
             message.set_status(200)
             message.set_response('text/plain', 'Viva Fidel')

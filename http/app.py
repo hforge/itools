@@ -34,10 +34,9 @@ class Root(HTTPResource):
     """This is a demonstration class, used only as an example.
     """
 
-    def http_get(self, request):
-        response = Response()
-        response.set_body("Hello, I'am itools.http")
-        return response
+    def http_get(self, message):
+        message.set_status(200)
+        message.set_response('text/plain', "Hello, I'am itools.http")
 
 
 

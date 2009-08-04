@@ -26,8 +26,10 @@ from gobject import MainLoop
 # Import from itools
 from itools.i18n import init_language_selector
 from itools.soup import SoupServer
+from itools.uri import get_reference
 from app import Application
-from response import Response, get_response
+from exceptions import HTTPError
+from response import Response, get_response, status_messages
 
 
 class HTTPServer(SoupServer):
@@ -147,7 +149,27 @@ class HTTPServer(SoupServer):
 
 
     def path_callback(self, soup_message, path):
-        raise NotImplementedError
+        # 501 Not Implemented
+        method = soup_message.get_method()
+        method = method.lower()
+        method = getattr(self, 'http_%s' % method, None)
+        if method is None:
+            soup_message.set_status(501)
+            soup_message.set_response('text/plain', '501 Not Implemented')
+            return
+
+        try:
+            method(soup_message, path)
+        except HTTPError, exception:
+            self.log_error()
+            status = exception.code
+            reason = status_messages.get(status)
+            soup_message.set_status(status)
+            soup_message.set_response('text/plain', '%s %s' % (status, reason))
+        except Exception:
+            self.log_error()
+            soup_message.set_status(500)
+            soup_message.set_response('text/plain', '500 Internal Server Error')
 
 
     #######################################################################
@@ -177,15 +199,16 @@ class HTTPServer(SoupServer):
         context.soup_message.set_status(200)
 
 
-    def http_get(self, request):
+    def http_get(self, message, path):
         # Get the resource
-        host = request.get_host()
-        uri = request.request_uri
-        resource = self.app.get_resource(host, uri)
+        uri = message.get_uri()
+        uri = get_reference(uri)
+        host = uri.authority
+        resource = self.app.get_resource(host, path)
 
         # 404 Not Found
         if resource is None:
-            return get_response(404)
+            return get_response(message, 404)
 
         # 302 Found
         if type(resource) is str:
@@ -206,18 +229,19 @@ class HTTPServer(SoupServer):
             return response
 
         # 200 Ok
-        return method(request)
+        return method(message)
 
 
-    def http_post(self, request):
+    def http_post(self, message, path):
         # Get the resource
-        host = request.get_host()
-        uri = request.request_uri
-        resource = self.app.get_resource(host, uri)
+        uri = message.get_uri()
+        uri = get_reference(uri)
+        host = uri.authority
+        resource = self.app.get_resource(host, path)
 
         # 404 Not Found
         if resource is None:
-            return get_response(404)
+            return get_response(message, 404)
 
         # 405 Method Not Allowed
         method = getattr(resource, 'http_post', None)

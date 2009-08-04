@@ -29,7 +29,7 @@ from itools.soup import SoupServer
 from itools.uri import get_reference
 from app import Application
 from exceptions import HTTPError
-from response import Response, get_response, status_messages
+from response import get_response, status_messages
 
 
 class HTTPServer(SoupServer):
@@ -195,8 +195,8 @@ class HTTPServer(SoupServer):
             methods.discard('DELETE')
 
         # Ok
-        context.set_header('allow', ','.join(methods))
         context.soup_message.set_status(200)
+        context.set_header('Allow', ','.join(methods))
 
 
     def http_get(self, message, path):
@@ -212,21 +212,19 @@ class HTTPServer(SoupServer):
 
         # 302 Found
         if type(resource) is str:
-            response = Response()
-            response.set_status(302)
-            response.set_header('location', resource)
-            return response
+            message.set_status(302)
+            message.set_header('location', resource)
+            return
 
         # 405 Method Not Allowed
         method = getattr(resource, 'http_get', None)
         if method is None:
-            response = Response()
-            response.set_status(405)
+            message.set_status(405)
             server_methods = set(self._get_server_methods())
             resource_methods = set(resource._get_reource_methods)
             methods = server_methods & resource_methods
-            response.set_header('allow', ','.join(methods))
-            return response
+            message.set_header('allow', ','.join(methods))
+            return
 
         # 200 Ok
         return method(message)
@@ -246,22 +244,18 @@ class HTTPServer(SoupServer):
         # 405 Method Not Allowed
         method = getattr(resource, 'http_post', None)
         if method is None:
-            response = Response()
-            response.set_status(405)
+            message.set_status(405)
             server_methods = set(self._get_server_methods())
             resource_methods = set(resource._get_reource_methods)
             methods = server_methods & resource_methods
-            response.set_header('allow', ','.join(methods))
-            return response
+            message.set_header('allow', ','.join(methods))
+            return
 
         # Ok
-        return method(request)
+        return method(message)
 
 
-    def http_head(self, request):
-        response = self.http_get(request)
-        response.set_body(None)
-        return response
+    http_head = http_get
 
 
 ###########################################################################

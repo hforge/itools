@@ -94,7 +94,7 @@ get_access_log_line (SoupMessage * s_msg, SoupClientContext * s_client)
 
 
 /**************************************************************************
- * Wrap SoupMessage
+ * PyMessage
  *************************************************************************/
 
 typedef struct
@@ -102,6 +102,30 @@ typedef struct
   PyObject_HEAD
   SoupMessage * s_message;
 } PyMessage;
+
+
+static PyObject *
+PyMessage_get_method (PyMessage * self, PyObject * args, PyObject *kwdict)
+{
+  return PyString_FromString (self->s_message->method);
+}
+
+
+static PyObject *
+PyMessage_get_uri (PyMessage * self, PyObject * args, PyObject *kwdict)
+{
+  SoupURI * s_uri;
+  char * uri;
+  PyObject * p_uri;
+
+  /* The request URI */
+  s_uri = soup_message_get_uri (self->s_message);
+  uri = soup_uri_to_string (s_uri, FALSE);
+
+  p_uri = PyString_FromString (uri);
+  free (uri);
+  return p_uri;
+}
 
 
 static PyObject *
@@ -135,6 +159,10 @@ PyMessage_set_status (PyMessage * self, PyObject * args, PyObject * kwdict)
 
 
 static PyMethodDef PyMessage_methods[] = {
+  {"get_method", (PyCFunction) PyMessage_get_method, METH_NOARGS,
+   "Get the request method"},
+  {"get_uri", (PyCFunction) PyMessage_get_uri, METH_NOARGS,
+   "Get the request uri"},
   {"set_response", (PyCFunction) PyMessage_set_response, METH_VARARGS,
    "Set the repsonse body"},
   {"set_status", (PyCFunction) PyMessage_set_status, METH_VARARGS,
@@ -187,7 +215,7 @@ static PyTypeObject PyMessageType = {
 
 
 /**************************************************************************
- * HTTP Server
+ * PyServer
  *************************************************************************/
 
 typedef struct

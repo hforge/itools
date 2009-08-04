@@ -197,15 +197,8 @@ class Response(Message):
 
 
 # Some pre-built responses
-responses = {}
-def get_response(code):
-    # Hit
-    if code in responses:
-        return responses[code]
-
-    # Miss
+def get_response(message, code):
+    message.set_status(code)
     body = '{0} {1}'.format(code, status_messages[code])
-    response = Response(status_code=code)
-    response.set_body(body)
-    responses[code] = response
-    return response
+    message.set_response('text/plain', body)
+

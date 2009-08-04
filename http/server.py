@@ -27,10 +27,11 @@ from gobject import MainLoop, io_add_watch, source_remove
 
 # Import from itools
 from itools.log import log_error
+from itools.uri import get_reference
 from app import Application
 from exceptions import HTTPError, BadRequest
 from request import Request
-from response import Response, get_response
+from response import Response, get_response, status_messages
 from soup import SoupServer
 
 
@@ -114,43 +115,33 @@ class HTTPServer(SoupServer):
     # Request handling
     #######################################################################
     def callback(self, message, path):
+        # 503 Service Unavailable
+#       if len(self.connections) > MAX_CONNECTIONS:
+#           message.set_status(503)
+#           message.set_response('text/plain', '503 Service Unavailable')
+#           return
+
+        # 501 Not Implemented
+        method = message.get_method()
+        method = method.lower()
+        method = getattr(self, 'http_%s' % method, None)
+        if method is None:
+            message.set_status(501)
+            message.set_response('text/plain', '501 Not Implemented')
+            return
+
         try:
-            self._callback(message, path)
+            method(message, path)
+        except HTTPError, exception:
+            self.log_error()
+            status = exception.code
+            reason = status_messages.get(status)
+            message.set_status(status)
+            message.set_response('text/plain', '%s %s' % (status, reason))
         except Exception:
             self.log_error()
             message.set_status(500)
             message.set_response('text/plain', '500 Internal Server Error')
-
-
-    def _callback(self, message, path):
-        if path == '/':
-            message.set_status(200)
-            message.set_response('text/plain', 'Viva Fidel')
-        else:
-            message.set_status(404)
-            message.set_response('text/plain', '404 Not Found')
-
-
-    def handle_request(self, request):
-        # 503 Service Unavailable
-        if len(self.connections) > MAX_CONNECTIONS:
-            return get_response(503)
-
-        # 501 Not Implemented
-        method = request.method.lower()
-        method = getattr(self, 'http_%s' % method, None)
-        if method is None:
-            return get_response(501)
-
-        # Go
-        try:
-            return method(request)
-        except HTTPError, exception:
-            self.log_error()
-            return get_response(exception.code)
-        except Exception:
-            self.log_error()
-            return get_response(500)
 
 
     #######################################################################
@@ -183,15 +174,16 @@ class HTTPServer(SoupServer):
         return response
 
 
-    def http_get(self, request):
+    def http_get(self, message, path):
         # Get the resource
-        host = request.get_host()
-        uri = request.request_uri
-        resource = self.app.get_resource(host, uri)
+        uri = message.get_uri()
+        uri = get_reference(uri)
+        host = uri.authority
+        resource = self.app.get_resource(host, path)
 
         # 404 Not Found
         if resource is None:
-            return get_response(404)
+            return get_response(message, 404)
 
         # 302 Found
         if type(resource) is str:
@@ -212,23 +204,24 @@ class HTTPServer(SoupServer):
             return response
 
         # Authorization (typically 401 Unauthorized)
-        realm = self.app.get_realm(resource.realm)
-        if realm.authenticate(request) is False:
-            return realm.challenge(request)
+#       realm = self.app.get_realm(resource.realm)
+#       if realm.authenticate(request) is False:
+#           return realm.challenge(request)
 
         # 200 Ok
-        return method(request)
+        return method(message)
 
 
-    def http_post(self, request):
+    def http_post(self, message, path):
         # Get the resource
-        host = request.get_host()
-        uri = request.request_uri
-        resource = self.app.get_resource(host, uri)
+        uri = message.get_uri()
+        uri = get_reference(uri)
+        host = uri.authority
+        resource = self.app.get_resource(host, path)
 
         # 404 Not Found
         if resource is None:
-            return get_response(404)
+            return get_response(message, 404)
 
         # 405 Method Not Allowed
         method = getattr(resource, 'http_post', None)

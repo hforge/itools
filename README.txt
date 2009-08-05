@@ -33,6 +33,7 @@ Python          2.6  itools           http://www.python.org/
 pkg-config     0.23  itools           http://pkg-config.freedesktop.org/
 glib           2.16  itools.vfs       http://www.gtk.org/
 pygobject    2.16.1  itools.vfs       http://www.pygtk.org/
+libsoup      2.26.3  itools.http      http://live.gnome.org/LibSoup
 reportlab       2.3  itools.pdf       http://www.reportlab.org/
 xapian        1.0.8  itools.xapian    http://www.xapian.org/
 pywin32         212  (Windows)        http://sf.net/projects/pywin32/

@@ -319,6 +319,7 @@ PyServerType_init (PyServer * self, PyObject * args, PyObject * kwdict)
 
   /* Handler */
   soup_server_add_handler (s_server, "/", s_server_callback, self, NULL);
+  soup_server_add_handler (s_server, "*", s_server_callback, self, NULL);
 
   return 0;
 }

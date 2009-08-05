@@ -27,12 +27,49 @@ from gobject import MainLoop, io_add_watch, source_remove
 
 # Import from itools
 from itools.log import log_error
-from itools.uri import get_reference
+from itools.uri import get_reference, Path
 from app import Application
 from exceptions import HTTPError, BadRequest
 from response import get_response, status_messages
 from soup import SoupServer
 
+
+###########################################################################
+# HTTP Message
+###########################################################################
+
+class HTTPMessage(object):
+
+    def __init__(self, soup_message, path):
+        self.soup_message = soup_message
+        # Host
+        uri = soup_message.get_uri()
+        uri = get_reference(uri)
+        self.host = uri.authority
+        # Path
+        self.path = Path(path)
+
+
+    def get_method(self):
+        return self.soup_message.get_method()
+
+
+    def set_header(self, name, value):
+        self.soup_message.set_header(name, value)
+
+
+    def set_response(self, content_type, body):
+        self.soup_message.set_response(content_type, body)
+
+
+    def set_status(self, status):
+        self.soup_message.set_status(status)
+
+
+
+###########################################################################
+# HTTP Server
+###########################################################################
 
 # When the number of connections hits the maximum number of connections
 # allowed, new connections will be automatically responded with the
@@ -113,7 +150,16 @@ class HTTPServer(SoupServer):
     #######################################################################
     # Request handling
     #######################################################################
-    def callback(self, message, path):
+    def callback(self, soup_message, path):
+        try:
+            message = HTTPMessage(soup_message, path)
+        except Exception:
+            self.log_error()
+            soup_message.set_status(500)
+            soup_message.set_response('text/plain',
+                                      '500 Internal Server Error')
+            return
+
         # 503 Service Unavailable
 #       if len(self.connections) > MAX_CONNECTIONS:
 #           message.set_status(503)
@@ -130,7 +176,7 @@ class HTTPServer(SoupServer):
             return
 
         try:
-            method(message, path)
+            method(message)
         except HTTPError, exception:
             self.log_error()
             status = exception.code
@@ -150,16 +196,15 @@ class HTTPServer(SoupServer):
         return [ x[5:].upper() for x in dir(self) if x[:5] == 'http_' ]
 
 
-    def http_options(self, message, path):
+    def http_options(self, message):
         # Methods supported by the server
         methods = self._get_server_methods()
 
         # Test capabilities of a resource
+        path = message.path
         if path != '*':
-            uri = message.get_uri()
-            uri = get_reference(uri)
-            host = uri.authority
-            resource = self.app.get_resource(host, path)
+            host = message.host
+            resource = self.app.get_resource(message.host, path)
             resource_methods = resource._get_resource_methods()
             methods = set(methods) & set(resource_methods)
             # Special cases
@@ -173,12 +218,9 @@ class HTTPServer(SoupServer):
         message.set_header('Allow', ','.join(methods))
 
 
-    def http_get(self, message, path):
+    def http_get(self, message):
         # Get the resource
-        uri = message.get_uri()
-        uri = get_reference(uri)
-        host = uri.authority
-        resource = self.app.get_resource(host, path)
+        resource = self.app.get_resource(message.host, message.path)
 
         # 404 Not Found
         if resource is None:
@@ -209,12 +251,9 @@ class HTTPServer(SoupServer):
         return method(message)
 
 
-    def http_post(self, message, path):
+    def http_post(self, message):
         # Get the resource
-        uri = message.get_uri()
-        uri = get_reference(uri)
-        host = uri.authority
-        resource = self.app.get_resource(host, path)
+        resource = self.app.get_resource(message.host, message.path)
 
         # 404 Not Found
         if resource is None:
@@ -237,10 +276,10 @@ class HTTPServer(SoupServer):
     http_head = http_get
 
 
-    def http_trace(self, message, path):
-        # TODO
-        body = request.to_str()
-        message.set_response('message/http', body)
+#   def http_trace(self, message):
+#       # TODO
+#       body = request.to_str()
+#       message.set_response('message/http', body)
 
 
 ###########################################################################

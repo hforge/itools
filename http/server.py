@@ -26,11 +26,48 @@ from gobject import MainLoop
 # Import from itools
 from itools.i18n import init_language_selector
 from itools.soup import SoupServer
-from itools.uri import get_reference
+from itools.uri import get_reference, Path
 from app import Application
 from exceptions import HTTPError
 from response import get_response, status_messages
 
+
+###########################################################################
+# HTTP Message
+###########################################################################
+
+class HTTPMessage(object):
+
+    def __init__(self, soup_message, path):
+        self.soup_message = soup_message
+        # Host
+        uri = soup_message.get_uri()
+        uri = get_reference(uri)
+        self.host = uri.authority
+        # Path
+        self.path = Path(path)
+
+
+    def get_method(self):
+        return self.soup_message.get_method()
+
+
+    def set_header(self, name, value):
+        self.soup_message.set_header(name, value)
+
+
+    def set_response(self, content_type, body):
+        self.soup_message.set_response(content_type, body)
+
+
+    def set_status(self, status):
+        self.soup_message.set_status(status)
+
+
+
+###########################################################################
+# HTTP Server
+###########################################################################
 
 class HTTPServer(SoupServer):
 
@@ -159,7 +196,16 @@ class HTTPServer(SoupServer):
             return
 
         try:
-            method(soup_message, path)
+            message = HTTPMessage(soup_message, path)
+        except Exception:
+            self.log_error()
+            soup_message.set_status(500)
+            soup_message.set_response('text/plain',
+                                      '500 Internal Server Error')
+            return
+
+        try:
+            method(message)
         except HTTPError, exception:
             self.log_error()
             status = exception.code
@@ -183,7 +229,7 @@ class HTTPServer(SoupServer):
         methods = self._get_server_methods()
 
         # Test capabilities of a resource
-        resource = self.app.get_resource(context.uri.authority, context.path)
+        resource = self.app.get_resource(context.host, context.path)
         resource_methods = resource._get_resource_methods()
         methods = set(methods) & set(resource_methods)
         # Special cases
@@ -199,12 +245,9 @@ class HTTPServer(SoupServer):
         context.set_header('Allow', ','.join(methods))
 
 
-    def http_get(self, message, path):
+    def http_get(self, message):
         # Get the resource
-        uri = message.get_uri()
-        uri = get_reference(uri)
-        host = uri.authority
-        resource = self.app.get_resource(host, path)
+        resource = self.app.get_resource(message.host, message.path)
 
         # 404 Not Found
         if resource is None:
@@ -230,12 +273,9 @@ class HTTPServer(SoupServer):
         return method(message)
 
 
-    def http_post(self, message, path):
+    def http_post(self, message):
         # Get the resource
-        uri = message.get_uri()
-        uri = get_reference(uri)
-        host = uri.authority
-        resource = self.app.get_resource(host, path)
+        resource = self.app.get_resource(message.host, message.path)
 
         # 404 Not Found
         if resource is None:

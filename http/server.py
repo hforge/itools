@@ -26,7 +26,7 @@ from gobject import MainLoop
 # Import from itools
 from itools.i18n import init_language_selector
 from itools.soup import SoupServer
-from itools.uri import get_reference, Path
+from itools.uri import decode_query, Path
 from app import Application
 from exceptions import HTTPError
 from headers import get_type
@@ -41,12 +41,10 @@ class HTTPMessage(object):
 
     def __init__(self, soup_message, path):
         self.soup_message = soup_message
-        # Host
-        uri = soup_message.get_uri()
-        uri = get_reference(uri)
-        self.host = uri.authority
-        # Path
+        self.host = soup_message.get_host()
         self.path = Path(path)
+        query = soup_message.get_query()
+        self.query = decode_query(query)
 
 
     def get_header(self, name):

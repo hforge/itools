@@ -229,13 +229,12 @@ msgid "Catalan"
 msgstr "加泰隆尼语"
 
 #: ../i18n/languages.py:175
-#, fuzzy
 msgid "Chinese"
-msgstr "改换"
+msgstr "简体中文"
 
 #: ../i18n/languages.py:176
 msgid "Chinese/China"
-msgstr ""
+msgstr "简体中文"
 
 #: ../i18n/languages.py:177
 msgid "Chinese/Taiwan"
@@ -325,7 +324,6 @@ msgid "Finnish"
 msgstr ""
 
 #: ../i18n/languages.py:62
-#, fuzzy
 msgid "French"
 msgstr "法语"
 

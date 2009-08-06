@@ -151,6 +151,16 @@ PyMessage_get_header (PyMessage * self, PyObject * args, PyObject *kwdict)
 
 
 static PyObject *
+PyMessage_get_host (PyMessage * self, PyObject * args, PyObject *kwdict)
+{
+  SoupURI * s_uri;
+
+  s_uri = soup_message_get_uri (self->s_msg);
+  return PyString_FromString(s_uri->host);
+}
+
+
+static PyObject *
 PyMessage_get_method (PyMessage * self, PyObject * args, PyObject *kwdict)
 {
   return PyString_FromString (self->s_msg->method);
@@ -158,19 +168,15 @@ PyMessage_get_method (PyMessage * self, PyObject * args, PyObject *kwdict)
 
 
 static PyObject *
-PyMessage_get_uri (PyMessage * self, PyObject * args, PyObject *kwdict)
+PyMessage_get_query (PyMessage * self, PyObject * args, PyObject *kwdict)
 {
   SoupURI * s_uri;
-  char * uri;
-  PyObject * p_uri;
 
-  /* The request URI */
   s_uri = soup_message_get_uri (self->s_msg);
-  uri = soup_uri_to_string (s_uri, FALSE);
+  if (s_uri->query == NULL)
+    Py_RETURN_NONE;
 
-  p_uri = PyString_FromString (uri);
-  free (uri);
-  return p_uri;
+  return PyString_FromString(s_uri->query);
 }
 
 
@@ -221,10 +227,12 @@ PyMessage_set_status (PyMessage * self, PyObject * args, PyObject * kwdict)
 static PyMethodDef PyMessage_methods[] = {
   {"get_header", (PyCFunction) PyMessage_get_header, METH_VARARGS,
    "Returns the value of the given request header"},
+  {"get_host", (PyCFunction) PyMessage_get_host, METH_NOARGS,
+   "Get the host from the request uri"},
   {"get_method", (PyCFunction) PyMessage_get_method, METH_NOARGS,
    "Get the request method"},
-  {"get_uri", (PyCFunction) PyMessage_get_uri, METH_NOARGS,
-   "Get the request uri"},
+  {"get_query", (PyCFunction) PyMessage_get_query, METH_NOARGS,
+   "Get the query from the request uri"},
   {"set_header", (PyCFunction) PyMessage_set_header, METH_VARARGS,
    "Set the given response header"},
   {"set_response", (PyCFunction) PyMessage_set_response, METH_VARARGS,

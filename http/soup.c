@@ -105,6 +105,22 @@ typedef struct
 
 
 static PyObject *
+PyMessage_get_header (PyMessage * self, PyObject * args, PyObject *kwdict)
+{
+  char *name, *value;
+
+  if (!PyArg_ParseTuple (args, "s", &name))
+    return NULL;
+
+  value = soup_message_headers_get_one (self->s_msg->request_headers, name);
+  if (value == NULL)
+    Py_RETURN_NONE;
+
+  return PyString_FromString (value);
+}
+
+
+static PyObject *
 PyMessage_get_method (PyMessage * self, PyObject * args, PyObject *kwdict)
 {
   return PyString_FromString (self->s_msg->method);
@@ -173,6 +189,8 @@ PyMessage_set_status (PyMessage * self, PyObject * args, PyObject * kwdict)
 
 
 static PyMethodDef PyMessage_methods[] = {
+  {"get_header", (PyCFunction) PyMessage_get_header, METH_VARARGS,
+   "Returns the value of the given request header"},
   {"get_method", (PyCFunction) PyMessage_get_method, METH_NOARGS,
    "Get the request method"},
   {"get_uri", (PyCFunction) PyMessage_get_uri, METH_NOARGS,

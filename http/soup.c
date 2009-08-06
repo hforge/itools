@@ -81,7 +81,7 @@ get_access_log_line (SoupMessage * s_msg, SoupClientContext * s_client)
   strftime (ts, sizeof(ts), "%d/%b/%Y:%H:%M:%S %Z", ts_tm);
 
   /* The log line */
-  request_line = get_request_line (s_msg),
+  request_line = get_request_line (s_msg);
   log_line = g_strdup_printf ("%s - - [%s] \"%s\" %d %d\n",
                               soup_client_context_get_host (s_client),
                               ts, request_line, s_msg->status_code,
@@ -89,6 +89,36 @@ get_access_log_line (SoupMessage * s_msg, SoupClientContext * s_client)
   free (request_line);
 
   return log_line;
+}
+
+
+static gboolean
+log_access (GSignalInvocationHint *ihint, guint n_param_values,
+            const GValue *param_values, gpointer data)
+{
+  PyObject * p_server;
+  SoupMessage * s_msg;
+  SoupClientContext * s_client;
+  gchar * log_line;
+
+  /* The log line */
+  s_msg = (SoupMessage*) g_value_get_object (param_values + 1);
+  s_client = (SoupClientContext*) g_value_get_boxed(param_values + 2);
+  log_line = get_access_log_line (s_msg, s_client);
+
+  /* Python callback */
+  p_server = (PyObject*) data;
+  if (!PyObject_CallMethod (p_server, "log_access", "s", log_line))
+    {
+      /* The Python callback should never fail, it is its responsability to
+       * catch and handle exceptions */
+      printf("ERROR! Python's access log failed, this should never happen\n");
+      abort ();
+    }
+
+  free (log_line);
+
+  return TRUE;
 }
 
 
@@ -265,7 +295,6 @@ s_server_callback (SoupServer * s_server, SoupMessage * s_msg,
                    SoupClientContext * s_client, gpointer server)
 {
   PyMessage * p_message;
-  gchar * log_line;
 
   /* Create the Python Message object */
   p_message = PyObject_New (PyMessage, &PyMessageType);
@@ -284,18 +313,6 @@ s_server_callback (SoupServer * s_server, SoupMessage * s_msg,
       abort ();
     }
 
-  /* Acces Log */
-  log_line = get_access_log_line (s_msg, s_client);
-  if (!PyObject_CallMethod (server, "log_access", "s", log_line))
-    {
-      /* The Python callback should never fail, it is its responsability to
-       * catch and handle exceptions */
-      printf("ERROR! Python's access log failed, this should never happen\n");
-      abort ();
-    }
-
-  /* Ok */
-  free (log_line);
   return;
 }
 
@@ -308,6 +325,7 @@ PyServerType_init (PyServer * self, PyObject * args, PyObject * kwdict)
   char *address = "";
   guint port = 8080;
   /* libsoup variables */
+  guint signal_id;
   SoupAddress *s_address;
   SoupServer *s_server;
 
@@ -339,6 +357,11 @@ PyServerType_init (PyServer * self, PyObject * args, PyObject * kwdict)
   soup_server_add_handler (s_server, "/", s_server_callback, self, NULL);
   soup_server_add_handler (s_server, "*", s_server_callback, self, NULL);
 
+  /* Signals */
+  signal_id = g_signal_lookup ("request-finished", SOUP_TYPE_SERVER);
+  g_signal_add_emission_hook (signal_id, 0, log_access, self, NULL);
+
+  /* Ok */
   return 0;
 }
 
@@ -355,7 +378,6 @@ PyServerType_stop (PyServer * self, PyObject * args, PyObject * kwdict)
 static PyObject *
 PyServerType_start (PyServer * self, PyObject * args, PyObject * kwdict)
 {
-  /* Run */
   soup_server_run_async (self->s_server);
 
   Py_RETURN_NONE;

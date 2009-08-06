@@ -17,6 +17,7 @@
 
 # Import from the standard library
 from hashlib import sha1
+from marshal import dumps, loads
 
 # Import from xapian
 from xapian import sortable_serialise, sortable_unserialise
@@ -34,10 +35,10 @@ OP_PHRASE = Query.OP_PHRASE
 
 
 
-def _decode(field_cls, data):
+def _decode_simple_value(field_cls, data):
     """Used to decode values in stored fields.
     """
-    # Overload the Integer type, cf _encode
+    # Overload the Integer type, cf _encode_simple_value
     if issubclass(field_cls, Integer):
         if data == '':
             return None
@@ -47,16 +48,44 @@ def _decode(field_cls, data):
 
 
 
+def _decode(field_cls, data):
+    if field_cls.multiple:
+        try:
+            value = loads(data)
+        except (ValueError, MemoryError):
+            return _decode_simple_value(field_cls, data)
+        return [ _decode_simple_value(field_cls, a_value)
+                 for a_value in value ]
+    else:
+        return _decode_simple_value(field_cls, data)
+
+
+
 # We must overload the normal behaviour (range + optimization)
-def _encode(field_cls, value):
-    """Used to encode values in stored fields.
-    """
+def _encode_simple_value(field_cls, value):
     # Overload the Integer type
     # XXX warning: this doesn't work with the big integers!
     if issubclass(field_cls, Integer):
         return sortable_serialise(value)
     # A common field or a new field
     return field_cls.encode(value)
+
+
+
+def _encode(field_cls, value):
+    """Used to encode values in stored fields.
+    """
+
+    is_multiple = (
+        field_cls.multiple
+        and isinstance(value, (tuple, list, set, frozenset)))
+
+    if is_multiple:
+        value = [ _encode_simple_value(field_cls, a_value)
+                  for a_value in value ]
+        return dumps(value)
+    else:
+        return _encode_simple_value(field_cls, value)
 
 
 

@@ -242,11 +242,6 @@ class HTTPServer(SoupServer):
             message.set_header('allow', ','.join(methods))
             return
 
-        # Authorization (typically 401 Unauthorized)
-#       realm = self.app.get_realm(resource.realm)
-#       if realm.authenticate(request) is False:
-#           return realm.challenge(request)
-
         # 200 Ok
         return method(message)
 

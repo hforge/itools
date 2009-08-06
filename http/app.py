@@ -15,15 +15,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from auth import Realm
 from response import Response
 
 
 class HTTPResource(object):
     """This class is the base class for any HTTP resource.
     """
-
-    realm = 'default'
 
     def _get_resource_methods(self):
         return [ x[5:].upper() for x in dir(self) if x[:5] == 'http_' ]
@@ -44,10 +41,6 @@ class Application(object):
     """This is at the same time the base class for every Web application,
     and a demo class that says "hello".
     """
-
-    def get_realm(self, realm):
-        return Realm()
-
 
     def get_resource(self, host, uri):
         if uri == '/':

@@ -16,7 +16,6 @@
 
 # Import from itools
 from app import Application, HTTPResource
-from auth import Realm
 from exceptions import HTTPError, ClientError, ServerError
 from exceptions import NotModified
 from exceptions import BadRequest, Unauthorized, Forbidden, NotFound
@@ -49,6 +48,4 @@ __all__ = [
     'HTTPServer',
     'HTTPResource',
     'Application',
-    # Authorization
-    'Realm',
     ]

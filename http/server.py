@@ -70,7 +70,7 @@ class HTTPMessage(object):
         name = name.lower()
         datatype = get_type(name)
         value = datatype.encode(value)
-        self.soup_message.set_header(name)
+        self.soup_message.set_header(name, value)
 
 
     def set_response(self, content_type, body):

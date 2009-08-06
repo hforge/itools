@@ -29,6 +29,7 @@ from itools.soup import SoupServer
 from itools.uri import get_reference, Path
 from app import Application
 from exceptions import HTTPError
+from headers import get_type
 from response import get_response, status_messages
 
 
@@ -48,12 +49,26 @@ class HTTPMessage(object):
         self.path = Path(path)
 
 
+    def get_header(self, name):
+        name = name.lower()
+        datatype = get_type(name)
+        value = self.soup_message.get_header(name)
+        return datatype.decode(value)
+
+
     def get_method(self):
         return self.soup_message.get_method()
 
 
+    def get_referrer(self):
+        return self.soup_message.get_header('referer')
+
+
     def set_header(self, name, value):
-        self.soup_message.set_header(name, value)
+        name = name.lower()
+        datatype = get_type(name)
+        value = datatype.encode(value)
+        self.soup_message.set_header(name)
 
 
     def set_response(self, content_type, body):

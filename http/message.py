@@ -80,7 +80,7 @@ class HTTPMessage(object):
     def __init__(self, soup_message, path):
         self.soup_message = soup_message
         self.host = soup_message.get_host()
-        self.path = Path(path)
+        self.path = path if type(path) is Path else Path(path)
         query = soup_message.get_query()
         self.query = decode_query(query)
 

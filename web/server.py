@@ -25,7 +25,6 @@ from urllib import unquote
 from warnings import warn
 
 # Import from itools
-from itools.handlers import BaseDatabase
 from itools.http import HTTPServer
 from itools.http import ClientError, NotModified, Forbidden, NotFound
 from itools.http import NotImplemented, MethodNotAllowed, Unauthorized
@@ -44,7 +43,6 @@ class WebServer(HTTPServer):
 
     access_log = None
     event_log = None
-    database = BaseDatabase()
 
 
     def __init__(self, root, address=None, port=None, access_log=None,
@@ -66,21 +64,17 @@ class WebServer(HTTPServer):
     # Stage 0: Initialize the context
     #######################################################################
     def init_context(self, context):
-        # (1) Initialize the response status to None, it will be changed
-        # through the request handling process.
-        context.status = None
-
-        # (2) The server, the data root and the authenticated user
+        # (1) The server, the data root and the authenticated user
         context.server = self
         context.root = self.root
 
-        # (3) The authenticated user
+        # (2) The authenticated user
         self.find_user(context)
 
-        # (4) The Site Root
+        # (3) The Site Root
         self.find_site_root(context)
 
-        # (5) Keep the context
+        # (4) Keep the context
         set_context(context)
 
 
@@ -103,12 +97,6 @@ class WebServer(HTTPServer):
         user = context.root.get_user(username)
         if user is not None and user.authenticate(password):
             context.user = user
-
-
-    def find_site_root(self, context):
-        """This method may be overriden to support virtual hosting.
-        """
-        context.site_root = self.root
 
 
     ########################################################################
@@ -200,32 +188,6 @@ def find_view_by_method(server, context):
 
 
 class RequestMethod(object):
-
-    @classmethod
-    def find_resource(cls, server, context):
-        """Sets 'context.resource' to the requested resource if it exists.
-
-        Otherwise sets 'context.status' to 404 (not found error) and
-        'context.resource' to the latest resource in the path that does exist.
-        """
-        # We start at the sire-root
-        root = context.site_root
-        path = copy(context.path)
-        path.startswith_slash = False
-
-        # Found
-        resource = root.get_resource(path, soft=True)
-        if resource is not None:
-            context.resource = resource
-            return
-
-        # Not Found
-        while resource is None:
-            path = path[:-1]
-            resource = root.get_resource(path, soft=True)
-        context.resource = resource
-        raise NotFound
-
 
     @classmethod
     def find_view(cls, server, context):

@@ -15,8 +15,35 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
+from itools.handlers import BaseDatabase
 from itools.http import Application
 
 
+
 class WebApplication(Application):
-    pass
+
+    database = BaseDatabase()
+
+
+    def __init__(self, root):
+        self.root = root
+
+
+    def get_host(self, context):
+        """This method may be overriden to support virtual hosting.
+        """
+        context.site_root = self.root
+
+
+    def get_resource(self, context):
+        """Sets 'context.resource' to the requested resource if it exists.
+
+        Otherwise sets 'context.status' to 404 (not found error) and
+        'context.resource' to the latest resource in the path that does exist.
+        """
+        # We start at the sire-root
+        root = context.site_root
+        path = copy(context.path)
+        path.startswith_slash = False
+
+        return root.get_resource(path, soft=True)

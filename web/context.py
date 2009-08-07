@@ -76,6 +76,7 @@ class Context(HTTPMessage):
 
     user = None
     resource = None
+    status = None
 
 
     def __init__(self, soup_message, path):
@@ -83,7 +84,7 @@ class Context(HTTPMessage):
 
         # Set 'web_path' and 'web_view_name'
         # Split the path into path and method ("a/b/c/;view")
-        path = request.request_uri.path
+        path = self.path
         name = path.get_name()
         if name and name[0] == ';':
             self.web_path = path[:-1]
@@ -115,7 +116,7 @@ class Context(HTTPMessage):
         """
         # By default we come back to the referrer
         if goto is None:
-            goto = self.request.referrer
+            goto = self.get_referrer()
             # Replace goto if no referrer
             if goto is None:
                 uri = str(self.uri)
@@ -251,7 +252,7 @@ class Context(HTTPMessage):
             'LinkChecker', 'msnbot', 'Python-urllib', 'Yahoo', 'Wget',
             'Zope External Editor']
 
-        user_agent = self.request.get_header('User-Agent')
+        user_agent = self.get_header('User-Agent')
         for footprint in footprints:
             if footprint in user_agent:
                 return True

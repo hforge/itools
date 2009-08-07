@@ -76,8 +76,7 @@ class WebServer(HTTPServer):
 
 
     def __init__(self, root, address='', port=8080, access_log=None,
-                 event_log=None, log_level=WARNING, pid_file=None,
-                 auth_type='cookie', auth_realm='Restricted Area'):
+                 event_log=None, log_level=WARNING, pid_file=None):
 
         HTTPServer.__init__(self, address, port)
 
@@ -93,10 +92,6 @@ class WebServer(HTTPServer):
 
         # The pid file
         self.pid_file = pid_file
-
-        # Authentication options
-        self.auth_type = auth_type
-        self.auth_realm = auth_realm
 
 
     def start(self):
@@ -198,27 +193,14 @@ class WebServer(HTTPServer):
     def find_user(self, context):
         context.user = None
 
-        # (1) Choose the Authentication method
-        if self.auth_type == 'cookie':
-            # (1bis) Read the id/auth cookie
-            cookie = context.get_cookie('__ac')
-            if cookie is None:
-                return
+        # (1) Read the id/auth cookie
+        cookie = context.get_cookie('__ac')
+        if cookie is None:
+            return
 
-            cookie = unquote(cookie)
-            cookie = decodestring(cookie)
-            username, password = cookie.split(':', 1)
-        elif self.auth_type == 'http_basic':
-            # (1bis) Read the username/password from header
-            authorization = context.request.get_header('Authorization')
-            if authorization is None:
-                return
-
-            # Basic Authentication
-            method, value = authorization
-            if method != 'basic':
-                raise BadRequest, 'XXX'
-            username, password = value
+        cookie = unquote(cookie)
+        cookie = decodestring(cookie)
+        username, password = cookie.split(':', 1)
 
         if username is None or password is None:
             return
@@ -444,9 +426,6 @@ class RequestMethod(object):
             context.status = status
             context.view_name = status2name[status]
             context.view = root.get_view(context.view_name)
-            if server.auth_type == 'http_basic':
-                basic_header = 'Basic realm="%s"' % server.auth_realm
-                response.set_header('WWW-Authenticate', basic_header)
         except ClientError, error:
             status = error.code
             context.status = status

@@ -40,8 +40,12 @@ class Application(object):
     and a demo class that says "hello".
     """
 
-    def get_resource(self, host, uri):
-        if uri == '/':
+    def get_host(self, message):
+        pass
+
+
+    def get_resource(self, message):
+        if message.path == '/':
             return Root()
 
         return None

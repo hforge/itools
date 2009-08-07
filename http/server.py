@@ -170,13 +170,24 @@ class HTTPServer(SoupServer):
     def _path_callback(self, soup_message, path):
         message = self.message_class(soup_message, path)
 
-        # Get the resource
-        resource = self.app.get_resource(message.host, path)
-        # 404 Not Found
+        # 501 Not Implemented
+        method = message.get_method()
+        method = method.lower()
+        method = getattr(self, 'http_%s' % method, None)
+        if method is None:
+            return message.set_response(501)
+
+        # Step 1: Host
+        app = self.app
+        app.get_host(message)
+
+        # Step 2: Resource
+        resource = app.get_resource(message)
         if resource is None:
+            # 404 Not Found
             return message.set_response(404)
-        # 307 Temporary redirect
         if type(resource) is str:
+            # 307 Temporary redirect
             message.set_status(307)
             message.set_header('Location', resource)
             return

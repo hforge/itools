@@ -24,12 +24,14 @@ from exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 from exceptions import InternalServerError, NotImplemented, BadGateway
 from exceptions import ServiceUnavailable, MethodNotAllowed, Conflict
 from headers import get_type
+from message import HTTPMessage
 from server import HTTPServer
 from utils import set_response
 
 
 __all__ = [
     'HTTPServer',
+    'HTTPMessage',
     'HTTPResource',
     'Application',
     'Entity',

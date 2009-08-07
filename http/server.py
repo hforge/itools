@@ -58,6 +58,54 @@ class HTTPMessage(object):
         else:
             self.uri = '%s://%s%s' % (src_scheme, src_host, path)
 
+        # The request body
+        self.body = {}
+        body = soup_message.get_body()
+        if body:
+            type, type_parameters = self.get_header('content-type')
+            if type == 'application/x-www-form-urlencoded':
+                self.body = decode_query(body)
+            elif type.startswith('multipart/'):
+                boundary = type_parameters.get('boundary')
+                boundary = '--%s' % boundary
+                for part in body.split(boundary)[1:-1]:
+                    if part.startswith('\r\n'):
+                        part = part[2:]
+                    elif part.startswith('\n'):
+                        part = part[1:]
+                    # Parse the entity
+                    entity = Entity()
+                    entity.load_state_from_string(part)
+                    # Find out the parameter name
+                    header = entity.get_header('Content-Disposition')
+                    value, header_parameters = header
+                    name = header_parameters['name']
+                    # Load the value
+                    body = entity.get_body()
+                    if 'filename' in header_parameters:
+                        filename = header_parameters['filename']
+                        if filename:
+                            # Strip the path (for IE).
+                            filename = filename.split('\\')[-1]
+                            # Default content-type, see
+                            # http://tools.ietf.org/html/rfc2045#section-5.2
+                            if not entity.has_header('content-type'):
+                                mimetype = 'text/plain'
+                            else:
+                                mimetype = entity.get_header(
+                                              'content-type')[0]
+                            self.body[name] = filename, mimetype, body
+                    else:
+                        if name not in self.body:
+                            self.body[name] = body
+                        else:
+                            if isinstance(self.body[name], list):
+                                self.body[name].append(body)
+                            else:
+                                self.body[name] = [self.body[name], body]
+            else:
+                self.body['body'] = body
+
 
     def get_header(self, name):
         name = name.lower()

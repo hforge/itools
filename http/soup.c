@@ -135,6 +135,19 @@ typedef struct
 
 
 static PyObject *
+PyMessage_get_body (PyMessage * self, PyObject * args, PyObject * kwdict)
+{
+  goffset length;
+
+  length = self->s_msg->request_body->length;
+  if (length == 0)
+    Py_RETURN_NONE;
+
+  return PyString_FromStringAndSize (self->s_msg->request_body->data, length);
+}
+
+
+static PyObject *
 PyMessage_get_header (PyMessage * self, PyObject * args, PyObject *kwdict)
 {
   char *name, *value;
@@ -225,6 +238,8 @@ PyMessage_set_status (PyMessage * self, PyObject * args, PyObject * kwdict)
 
 
 static PyMethodDef PyMessage_methods[] = {
+  {"get_body", (PyCFunction) PyMessage_get_body, METH_NOARGS,
+   "Returns the body of the request"},
   {"get_header", (PyCFunction) PyMessage_get_header, METH_VARARGS,
    "Returns the value of the given request header"},
   {"get_host", (PyCFunction) PyMessage_get_host, METH_NOARGS,

@@ -27,7 +27,7 @@ from time import strptime
 from itools.core import freeze
 from itools.datatypes import String
 from itools.gettext import MSG
-from itools.http import Response
+from itools.http import HTTPMessage
 from itools.i18n import AcceptLanguageType
 from itools.uri import get_reference
 from messages import ERROR
@@ -72,55 +72,29 @@ class FormError(StandardError):
 
 
 
-class Context(object):
+class Context(HTTPMessage):
 
     user = None
     resource = None
 
 
-    def __init__(self, request):
-        self.request = request
-        self.response = Response()
+    def __init__(self, soup_message, path):
+        HTTPMessage.__init__(self, soup_message, path)
 
-        # Read the origin host
-        if request.has_header('X-Forwarded-Host'):
-            host = request.get_header('X-Forwarded-Host')
-        elif request.has_header('Host'):
-            host = request.get_header('Host')
-        else:
-            # XXX We should return a 400 response with HTTP 1.1
-            # XXX What to do with 1.0?
-            host = None
-
-        if request.has_header('X_FORWARDED_PROTO'):
-            scheme = request.get_header('X_FORWARDED_PROTO')
-        else:
-            # By default http
-            scheme = 'http'
-
-        # The requested uri
-        reference = '%s://%s%s' % (scheme, host, request.request_uri)
-        self.uri = get_reference(reference)
-
+        # Set 'web_path' and 'web_view_name'
         # Split the path into path and method ("a/b/c/;view")
         path = request.request_uri.path
         name = path.get_name()
         if name and name[0] == ';':
-            self.path = path[:-1]
-            self.view_name = name[1:]
+            self.web_path = path[:-1]
+            self.web_view_name = name[1:]
         else:
-            self.path = path
-            self.view_name = None
+            self.web_path = path
+            self.web_view_name = None
 
-        # Language negotiation
-        headers = request.headers
-        if 'accept-language' in headers:
-            # FIXME Done this way the programmer may modify the request object
-            # TODO The 'Accept-Language' header should be deserialized here,
-            # not in the 'Request' object.
-            self.accept_language = headers['accept-language']
-        else:
-            self.accept_language = AcceptLanguageType.decode('')
+        # accept_language
+        accept_language = self.get_header('Accept-Language') or ''
+        self.accept_language = AcceptLanguageType.decode(accept_language)
 
 
     def get_link(self, resource):

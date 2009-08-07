@@ -36,6 +36,7 @@ from itools.http import MethodNotAllowed
 from itools.i18n import init_language_selector
 from itools.log import WARNING, register_logger, log_error, log_warning
 from itools.uri import Reference
+from app import WebApplication
 from context import Context, set_context, select_language
 from context import FormError
 from views import BaseView
@@ -66,9 +67,11 @@ def web_logger(domain, level, message, filepath, min_level):
 
 class WebServer(HTTPServer):
 
+    app = WebApplication()
+    message_class = Context
+
     access_log = None
     event_log = None
-
     database = BaseDatabase()
 
 

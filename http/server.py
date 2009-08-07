@@ -48,6 +48,16 @@ class HTTPMessage(object):
         query = soup_message.get_query()
         self.query = decode_query(query)
 
+        # The URI as it was typed by the client
+        xfp = soup_message.get_header('X_FORWARDED_PROTO')
+        src_scheme = xfp or 'http'
+        xff = soup_message.get_header('X-Forwarded-Host')
+        src_host = xff or soup_message.get_header('Host') or self.host
+        if query:
+            self.uri = '%s://%s%s?%s' % (src_scheme, src_host, path, query)
+        else:
+            self.uri = '%s://%s%s' % (src_scheme, src_host, path)
+
 
     def get_header(self, name):
         name = name.lower()

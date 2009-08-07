@@ -146,13 +146,17 @@ class HTTPServer(SoupServer):
         if method is None:
             return message.set_response(501)
 
-        # Get the resource
-        resource = self.app.get_resource(message.host, path)
-        # 404 Not Found
+        # Step 1: Host
+        app = self.app
+        app.get_host(message)
+
+        # Step 2: Resource
+        resource = app.get_resource(message)
         if resource is None:
+            # 404 Not Found
             return message.set_response(404)
-        # 307 Temporary redirect
         if type(resource) is str:
+            # 307 Temporary redirect
             message.set_status(307)
             message.set_header('Location', resource)
             return

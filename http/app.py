@@ -14,8 +14,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from itools
-from response import Response
 
 
 class HTTPResource(object):
@@ -33,7 +31,7 @@ class Root(HTTPResource):
 
     def http_get(self, message):
         message.set_status(200)
-        message.set_response('text/plain', "Hello, I'am itools.http")
+        message.set_body('text/plain', "Hello, I'am itools.http")
 
 
 

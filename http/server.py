@@ -1,7 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2005-2009 Juan David Ibáñez Palomar <jdavid@itaapy.com>
-# Copyright (C) 2008-2009 David Versmisse <david.versmisse@itaapy.com>
-# Copyright (C) 2009 Hervé Cauwelier <herve@itaapy.com>
+# Copyright (C) 2009 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,128 +17,18 @@
 # Import from the Standard Library
 from signal import signal, SIGINT
 from sys import stdout
-from time import strftime, time
 from traceback import format_exc
 
 # Import from pygobject
-from gobject import MainLoop, io_add_watch, source_remove
+from gobject import MainLoop
 
 # Import from itools
 from itools.log import log_error
-from itools.uri import decode_query, Path
 from app import Application
-from exceptions import HTTPError, BadRequest
-from headers import get_type
-from response import get_response, status_messages
+from exceptions import HTTPError
+from message import HTTPMessage
 from soup import SoupServer
 
-
-###########################################################################
-# HTTP Message
-###########################################################################
-
-class HTTPMessage(object):
-
-    def __init__(self, soup_message, path):
-        self.soup_message = soup_message
-        self.host = soup_message.get_host()
-        self.path = Path(path)
-        query = soup_message.get_query()
-        self.query = decode_query(query)
-
-        # The URI as it was typed by the client
-        xfp = soup_message.get_header('X_FORWARDED_PROTO')
-        src_scheme = xfp or 'http'
-        xff = soup_message.get_header('X-Forwarded-Host')
-        src_host = xff or soup_message.get_header('Host') or self.host
-        if query:
-            self.uri = '%s://%s%s?%s' % (src_scheme, src_host, path, query)
-        else:
-            self.uri = '%s://%s%s' % (src_scheme, src_host, path)
-
-        # The request body
-        self.body = {}
-        body = soup_message.get_body()
-        if body:
-            type, type_parameters = self.get_header('content-type')
-            if type == 'application/x-www-form-urlencoded':
-                self.body = decode_query(body)
-            elif type.startswith('multipart/'):
-                boundary = type_parameters.get('boundary')
-                boundary = '--%s' % boundary
-                for part in body.split(boundary)[1:-1]:
-                    if part.startswith('\r\n'):
-                        part = part[2:]
-                    elif part.startswith('\n'):
-                        part = part[1:]
-                    # Parse the entity
-                    entity = Entity()
-                    entity.load_state_from_string(part)
-                    # Find out the parameter name
-                    header = entity.get_header('Content-Disposition')
-                    value, header_parameters = header
-                    name = header_parameters['name']
-                    # Load the value
-                    body = entity.get_body()
-                    if 'filename' in header_parameters:
-                        filename = header_parameters['filename']
-                        if filename:
-                            # Strip the path (for IE).
-                            filename = filename.split('\\')[-1]
-                            # Default content-type, see
-                            # http://tools.ietf.org/html/rfc2045#section-5.2
-                            if not entity.has_header('content-type'):
-                                mimetype = 'text/plain'
-                            else:
-                                mimetype = entity.get_header(
-                                              'content-type')[0]
-                            self.body[name] = filename, mimetype, body
-                    else:
-                        if name not in self.body:
-                            self.body[name] = body
-                        else:
-                            if isinstance(self.body[name], list):
-                                self.body[name].append(body)
-                            else:
-                                self.body[name] = [self.body[name], body]
-            else:
-                self.body['body'] = body
-
-
-    def get_header(self, name):
-        name = name.lower()
-        datatype = get_type(name)
-        value = self.soup_message.get_header(name)
-        return datatype.decode(value)
-
-
-    def get_method(self):
-        return self.soup_message.get_method()
-
-
-    def get_referrer(self):
-        return self.soup_message.get_header('referer')
-
-
-    def set_header(self, name, value):
-        name = name.lower()
-        datatype = get_type(name)
-        value = datatype.encode(value)
-        self.soup_message.set_header(name, value)
-
-
-    def set_response(self, content_type, body):
-        self.soup_message.set_response(content_type, body)
-
-
-    def set_status(self, status):
-        self.soup_message.set_status(status)
-
-
-
-###########################################################################
-# HTTP Server
-###########################################################################
 
 # When the number of connections hits the maximum number of connections
 # allowed, new connections will be automatically responded with the
@@ -227,37 +115,29 @@ class HTTPServer(SoupServer):
         except Exception:
             self.log_error()
             soup_message.set_status(500)
-            soup_message.set_response('text/plain',
-                                      '500 Internal Server Error')
+            soup_message.set_body('text/plain', '500 Internal Server Error')
             return
 
         # 503 Service Unavailable
 #       if len(self.connections) > MAX_CONNECTIONS:
-#           message.set_status(503)
-#           message.set_response('text/plain', '503 Service Unavailable')
-#           return
+#           return message.set_response(503)
 
         # 501 Not Implemented
         method = message.get_method()
         method = method.lower()
         method = getattr(self, 'http_%s' % method, None)
         if method is None:
-            message.set_status(501)
-            message.set_response('text/plain', '501 Not Implemented')
-            return
+            return message.set_response(501)
 
         try:
             method(message)
         except HTTPError, exception:
             self.log_error()
             status = exception.code
-            reason = status_messages.get(status)
-            message.set_status(status)
-            message.set_response('text/plain', '%s %s' % (status, reason))
+            message.set_response(status)
         except Exception:
             self.log_error()
-            message.set_status(500)
-            message.set_response('text/plain', '500 Internal Server Error')
+            message.set_response(500)
 
 
     #######################################################################
@@ -295,7 +175,7 @@ class HTTPServer(SoupServer):
 
         # 404 Not Found
         if resource is None:
-            return get_response(message, 404)
+            return message.set_response(404)
 
         # 302 Found
         if type(resource) is str:
@@ -323,7 +203,7 @@ class HTTPServer(SoupServer):
 
         # 404 Not Found
         if resource is None:
-            return get_response(message, 404)
+            return message.set_response(404)
 
         # 405 Method Not Allowed
         method = getattr(resource, 'http_post', None)
@@ -345,7 +225,7 @@ class HTTPServer(SoupServer):
 #   def http_trace(self, message):
 #       # TODO
 #       body = request.to_str()
-#       message.set_response('message/http', body)
+#       message.set_body('message/http', body)
 
 
 ###########################################################################

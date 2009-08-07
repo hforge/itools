@@ -21,7 +21,6 @@ from exceptions import NotModified
 from exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 from exceptions import InternalServerError, NotImplemented, BadGateway
 from exceptions import ServiceUnavailable, MethodNotAllowed, Conflict
-from response import Response, get_response
 from server import HTTPServer
 
 
@@ -41,9 +40,6 @@ __all__ = [
     'ServerError',
     'ServiceUnavailable',
     'Unauthorized',
-    # Responses
-    'Response',
-    'get_response',
     # Server
     'HTTPServer',
     'HTTPResource',

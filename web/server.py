@@ -32,15 +32,18 @@ from itools.http import NotImplemented, MethodNotAllowed, Unauthorized
 from itools.http import set_response
 from itools.log import log_error, log_warning, register_logger
 from itools.uri import Reference
+from app import WebApplication
 from context import Context, FormError, set_context, WebLogger
 from views import BaseView
 
 
 class WebServer(HTTPServer):
 
+    app = WebApplication()
+    message_class = Context
+
     access_log = None
     event_log = None
-
     database = BaseDatabase()
 
 

@@ -27,6 +27,7 @@ from itools.datatypes import String
 from itools.gettext import MSG
 from itools.http import get_type, Entity
 from itools.http import Cookie, SetCookieDataType
+from itools.http import HTTPMessage
 from itools.i18n import AcceptLanguageType
 from itools.log import Logger
 from itools.uri import decode_query, get_reference, Path
@@ -72,56 +73,29 @@ class FormError(StandardError):
 
 
 
-class Context(object):
+class Context(HTTPMessage):
 
     user = None
     resource = None
 
 
     def __init__(self, soup_message, path):
-        self.soup_message = soup_message
+        HTTPMessage.__init__(self, soup_message, path)
 
-        # The request method
-        self.method = soup_message.get_method()
-        # The query
-        query = soup_message.get_query()
-        self.query = decode_query(query)
-
-        # The URI as it was typed by the client
-        xfp = soup_message.get_header('X_FORWARDED_PROTO')
-        src_scheme = xfp or 'http'
-        xff = soup_message.get_header('X-Forwarded-Host')
-        if xff:
-            xff = xff.split(',', 1)[0].strip()
-        hostname = soup_message.get_host()
-        src_host = xff or soup_message.get_header('Host') or hostname
-        if query:
-            uri = '%s://%s%s?%s' % (src_scheme, src_host, path, query)
-        else:
-            uri = '%s://%s%s' % (src_scheme, src_host, path)
-        self.uri = get_reference(uri)
-
+        # Set 'web_path' and 'web_view_name'
         # Split the path into path and method ("a/b/c/;view")
         path = path if type(path) is Path else Path(path)
         name = path.get_name()
         if name and name[0] == ';':
-            self.path = path[:-1]
-            self.view_name = name[1:]
+            self.web_path = path[:-1]
+            self.web_view_name = name[1:]
         else:
-            self.path = path
-            self.view_name = None
+            self.web_path = path
+            self.web_view_name = None
 
-        # Language negotiation
-        accept_language = soup_message.get_header('accept_language')
-        if accept_language is None:
-            accept_language = ''
+        # accept_language
+        accept_language = self.get_header('Accept-Language') or ''
         self.accept_language = AcceptLanguageType.decode(accept_language)
-
-        # Form
-        self.body = self.load_body()
-
-        # Cookies
-        self.cookies = {}
 
         # Media files (CSS, javascript)
         # Set the list of needed resources. The method we are going to

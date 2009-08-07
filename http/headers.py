@@ -17,7 +17,6 @@
 
 # Import from itools
 from itools.datatypes import DataType, Integer, String, URI, HTTPDate
-from itools.i18n import AcceptLanguageType
 from cookies import CookieDataType, SetCookieDataType
 from parsing import read_media_type, read_parameters, read_token
 from parsing import read_white_space, UNEXPECTED_CHAR
@@ -131,7 +130,7 @@ headers = {
     'accept': String,
     'accept-charset': String,
     'accept-encoding': String,
-    'accept-language': AcceptLanguageType,
+    'accept-language': String,
     'expect': String,
     'host': String,
     'if-match': String,

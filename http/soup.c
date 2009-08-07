@@ -313,9 +313,8 @@ typedef struct
 
 
 void
-s_server_callback (SoupServer * s_server, SoupMessage * s_msg,
-                   const char * path, GHashTable * g_query,
-                   SoupClientContext * s_client, gpointer server)
+s_server_callback (SoupMessage * s_msg, const char * path, gpointer server,
+                   const char * p_server_callback)
 {
   PyMessage * p_message;
 
@@ -328,7 +327,7 @@ s_server_callback (SoupServer * s_server, SoupMessage * s_msg,
   p_message->s_msg = s_msg;
 
   /* Call the Python callback */
-  if (!PyObject_CallMethod (server, "callback", "Os", p_message, path))
+  if (!PyObject_CallMethod (server, p_server_callback, "Os", p_message, path))
     {
       /* The Python callback should never fail, it is its responsability to
        * catch and handle exceptions */
@@ -337,6 +336,24 @@ s_server_callback (SoupServer * s_server, SoupMessage * s_msg,
     }
 
   return;
+}
+
+
+void
+s_server_path_callback (SoupServer * s_server, SoupMessage * s_msg,
+                        const char * path, GHashTable * g_query,
+                        SoupClientContext * s_client, gpointer server)
+{
+  s_server_callback (s_msg, path, server, "path_callback");
+}
+
+
+void
+s_server_star_callback (SoupServer * s_server, SoupMessage * s_msg,
+                        const char * path, GHashTable * g_query,
+                        SoupClientContext * s_client, gpointer server)
+{
+  s_server_callback (s_msg, path, server, "star_callback");
 }
 
 
@@ -377,8 +394,8 @@ PyServerType_init (PyServer * self, PyObject * args, PyObject * kwdict)
   self->s_server = s_server;
 
   /* Handler */
-  soup_server_add_handler (s_server, "/", s_server_callback, self, NULL);
-  soup_server_add_handler (s_server, "*", s_server_callback, self, NULL);
+  soup_server_add_handler (s_server, "/", s_server_path_callback, self, NULL);
+  soup_server_add_handler (s_server, "*", s_server_star_callback, self, NULL);
 
   /* Signals */
   signal_id = g_signal_lookup ("request-finished", SOUP_TYPE_SERVER);

@@ -74,6 +74,7 @@ class HTTPServer(SoupServer):
             log = open(self.access_log, 'a+')
             self.access_log_file = log
         log.write(line)
+        log.flush()
 
 
     def log_error(self):
@@ -110,18 +111,33 @@ class HTTPServer(SoupServer):
     #######################################################################
     # Request handling
     #######################################################################
-    def callback(self, soup_message, path):
+    def star_callback(self, soup_message, path):
+        method = soup_message.get_method()
+        if method != 'OPTIONS':
+            soup_message.set_status(405)
+            soup_message.set_header('Allow', 'OPTIONS')
+            return
+
+        methods = self._get_server_methods()
+        soup_message.set_status(200)
+        soup_message.set_header('Allow', ','.join(methods))
+
+
+    def path_callback(self, soup_message, path):
+        # 503 Service Unavailable
+#       if len(self.connections) > MAX_CONNECTIONS:
+#           return message.set_response(503)
+
         try:
-            message = self.message_class(soup_message, path)
+            self._path_callback(soup_message, path)
         except Exception:
             self.log_error()
             soup_message.set_status(500)
             soup_message.set_body('text/plain', '500 Internal Server Error')
-            return
 
-        # 503 Service Unavailable
-#       if len(self.connections) > MAX_CONNECTIONS:
-#           return message.set_response(503)
+
+    def _path_callback(self, soup_message, path):
+        message = self.message_class(soup_message, path)
 
         # 501 Not Implemented
         method = message.get_method()
@@ -130,15 +146,25 @@ class HTTPServer(SoupServer):
         if method is None:
             return message.set_response(501)
 
+        # Get the resource
+        resource = self.app.get_resource(message.host, path)
+        # 404 Not Found
+        if resource is None:
+            return message.set_response(404)
+        # 307 Temporary redirect
+        if type(resource) is str:
+            message.set_status(307)
+            message.set_header('Location', resource)
+            return
+
+        # Continue
+        message.resource = resource
         try:
             method(message)
         except HTTPError, exception:
             self.log_error()
             status = exception.code
             message.set_response(status)
-        except Exception:
-            self.log_error()
-            message.set_response(500)
 
 
     #######################################################################
@@ -149,21 +175,20 @@ class HTTPServer(SoupServer):
 
 
     def http_options(self, message):
+        resource = message.resource
+
         # Methods supported by the server
         methods = self._get_server_methods()
 
         # Test capabilities of a resource
         path = message.path
-        if path != '*':
-            host = message.host
-            resource = self.app.get_resource(message.host, path)
-            resource_methods = resource._get_resource_methods()
-            methods = set(methods) & set(resource_methods)
-            # Special cases
-            methods.add('OPTIONS')
-            methods.add('TRACE')
-            if 'GET' in methods:
-                methods.add('HEAD')
+        host = message.host
+        resource_methods = resource._get_resource_methods()
+        methods = set(methods) & set(resource_methods)
+        # Special cases
+        methods.add('OPTIONS')
+        if 'GET' in methods:
+            methods.add('HEAD')
 
         # Ok
         message.set_status(200)
@@ -171,18 +196,7 @@ class HTTPServer(SoupServer):
 
 
     def http_get(self, message):
-        # Get the resource
-        resource = self.app.get_resource(message.host, message.path)
-
-        # 404 Not Found
-        if resource is None:
-            return message.set_response(404)
-
-        # 302 Found
-        if type(resource) is str:
-            message.set_status(302)
-            message.set_header('location', resource)
-            return
+        resource = message.resource
 
         # 405 Method Not Allowed
         method = getattr(resource, 'http_get', None)
@@ -194,17 +208,12 @@ class HTTPServer(SoupServer):
             message.set_header('allow', ','.join(methods))
             return
 
-        # 200 Ok
+        # Continue
         return method(message)
 
 
     def http_post(self, message):
-        # Get the resource
-        resource = self.app.get_resource(message.host, message.path)
-
-        # 404 Not Found
-        if resource is None:
-            return message.set_response(404)
+        resource = message.resource
 
         # 405 Method Not Allowed
         method = getattr(resource, 'http_post', None)
@@ -216,7 +225,7 @@ class HTTPServer(SoupServer):
             message.set_header('allow', ','.join(methods))
             return
 
-        # Ok
+        # Continue
         return method(message)
 
 

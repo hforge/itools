@@ -11,4 +11,8 @@
 
 - Select address to listen
 
-- Support for 503 "Service Unavailable"
+- Support "503 Service Unavailable"
+
+- Support "301 Moved Permanently"
+
+- Request methods are case sensitive

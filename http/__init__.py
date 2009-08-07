@@ -21,10 +21,15 @@ from exceptions import NotModified
 from exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 from exceptions import InternalServerError, NotImplemented, BadGateway
 from exceptions import ServiceUnavailable, MethodNotAllowed, Conflict
+from message import HTTPMessage
 from server import HTTPServer
 
 
 __all__ = [
+    'HTTPServer',
+    'HTTPMessage',
+    'HTTPResource',
+    'Application',
     # Exceptions
     'BadGateway',
     'BadRequest',
@@ -40,8 +45,4 @@ __all__ = [
     'ServerError',
     'ServiceUnavailable',
     'Unauthorized',
-    # Server
-    'HTTPServer',
-    'HTTPResource',
-    'Application',
     ]

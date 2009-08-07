@@ -40,6 +40,7 @@ class HTTPServer(SoupServer):
 
     # The default application says "hello"
     app = Application()
+    message_class = HTTPMessage
 
 
     def __init__(self, address='', port=8080, access_log=None):
@@ -111,7 +112,7 @@ class HTTPServer(SoupServer):
     #######################################################################
     def callback(self, soup_message, path):
         try:
-            message = HTTPMessage(soup_message, path)
+            message = self.message_class(soup_message, path)
         except Exception:
             self.log_error()
             soup_message.set_status(500)

@@ -118,7 +118,7 @@ class HTTPServer(SoupServer):
             soup_message.set_header('Allow', 'OPTIONS')
             return
 
-        methods = self._get_server_methods()
+        methods = self.app.known_methods
         soup_message.set_status(200)
         soup_message.set_header('Allow', ','.join(methods))
 
@@ -142,14 +142,12 @@ class HTTPServer(SoupServer):
         context = self.context_class(soup_message, path)
 
         # 501 Not Implemented
-        method = context.get_method()
-        method = method.lower()
-        method = getattr(self, 'http_%s' % method, None)
-        if method is None:
+        app = self.app
+        method_name = context.get_method()
+        if method_name not in app.known_methods:
             return context.set_response(501)
 
         # Step 1: Host
-        app = self.app
         app.get_host(context)
 
         # Step 2: Resource
@@ -164,10 +162,19 @@ class HTTPServer(SoupServer):
             return
         context.resource = resource
 
+        # 405 Method Not Allowed
+        allowed_methods = app.get_allowed_methods(resource)
+        if method_name not in allowed_methods:
+            context.set_response(405)
+            context.set_header('allow', ','.join(allowed_methods))
+            return
+
         # Step 3: User
         context.user = app.get_user(context)
 
         # Continue
+        method_name = app.known_methods[method_name]
+        method = getattr(app, method_name)
         try:
             method(context)
         except HTTPError, exception:
@@ -175,76 +182,6 @@ class HTTPServer(SoupServer):
             status = exception.code
             context.set_response(status)
 
-
-    #######################################################################
-    # Request methods
-
-    def _get_server_methods(self):
-        return [ x[5:].upper() for x in dir(self) if x[:5] == 'http_' ]
-
-
-    def http_options(self, context):
-        resource = context.resource
-
-        # Methods supported by the server
-        methods = self._get_server_methods()
-
-        # Test capabilities of a resource
-        path = context.path
-        host = context.host
-        resource_methods = resource._get_resource_methods()
-        methods = set(methods) & set(resource_methods)
-        # Special cases
-        methods.add('OPTIONS')
-        if 'GET' in methods:
-            methods.add('HEAD')
-
-        # Ok
-        context.set_status(200)
-        context.set_header('Allow', ','.join(methods))
-
-
-    def http_get(self, context):
-        resource = context.resource
-
-        # 405 Method Not Allowed
-        method = getattr(resource, 'http_get', None)
-        if method is None:
-            context.set_status(405)
-            server_methods = set(self._get_server_methods())
-            resource_methods = set(resource._get_reource_methods)
-            methods = server_methods & resource_methods
-            context.set_header('allow', ','.join(methods))
-            return
-
-        # Continue
-        return method(context)
-
-
-    def http_post(self, context):
-        resource = context.resource
-
-        # 405 Method Not Allowed
-        method = getattr(resource, 'http_post', None)
-        if method is None:
-            context.set_status(405)
-            server_methods = set(self._get_server_methods())
-            resource_methods = set(resource._get_reource_methods)
-            methods = server_methods & resource_methods
-            context.set_header('allow', ','.join(methods))
-            return
-
-        # Continue
-        return method(context)
-
-
-    http_head = http_get
-
-
-#   def http_trace(self, context):
-#       # TODO
-#       body = request.to_str()
-#       context.set_body('context/http', body)
 
 
 ###########################################################################

@@ -20,9 +20,6 @@ class HTTPResource(object):
     """This class is the base class for any HTTP resource.
     """
 
-    def _get_resource_methods(self):
-        return [ x[5:].upper() for x in dir(self) if x[:5] == 'http_' ]
-
 
 
 class Root(HTTPResource):
@@ -53,4 +50,36 @@ class Application(object):
 
     def get_user(self, context):
         pass
+
+
+    known_methods = {
+        'OPTIONS': 'http_options',
+        'GET': 'http_get',
+        'HEAD': 'http_get',
+        'POST': 'http_post'}
+
+
+    def get_allowed_methods(self, resource):
+        methods = [
+            x for x in self.known_methods
+            if getattr(resource, self.known_methods[x], None) ]
+        methods = set(methods)
+        methods.add('OPTIONS')
+        return methods
+
+
+    def http_options(self, context):
+        methods = self.get_allowed_methods(context.resource)
+        context.set_status(200)
+        context.set_header('Allow', ','.join(methods))
+
+
+    def http_get(self, context):
+        resource = context.resource
+        resource.http_get(context)
+
+
+    def http_post(self, context):
+        resource = context.resource
+        resource.http_post(context)
 

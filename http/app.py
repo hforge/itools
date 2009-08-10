@@ -29,9 +29,9 @@ class Root(HTTPResource):
     """This is a demonstration class, used only as an example.
     """
 
-    def http_get(self, message):
-        message.set_status(200)
-        message.set_body('text/plain', "Hello, I'am itools.http")
+    def http_get(self, context):
+        context.set_status(200)
+        context.set_body('text/plain', "Hello, I'am itools.http")
 
 
 
@@ -40,17 +40,17 @@ class Application(object):
     and a demo class that says "hello".
     """
 
-    def get_host(self, message):
+    def get_host(self, context):
         pass
 
 
-    def get_resource(self, message):
-        if message.path == '/':
+    def get_resource(self, context):
+        if context.path == '/':
             return Root()
 
         return None
 
 
-    def get_user(self, message):
+    def get_user(self, context):
         pass
 

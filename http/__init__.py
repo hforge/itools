@@ -16,6 +16,7 @@
 
 # Import from itools
 from app import Application, HTTPResource
+from app import FOUND, NOT_FOUND, GONE, REDIRECT, MOVED
 from context import HTTPContext
 from cookies import Cookie, SetCookieDataType
 from entities import Entity
@@ -40,6 +41,12 @@ __all__ = [
     # Cookies
     'Cookie',
     'SetCookieDataType',
+    # Values returned by 'Application.find_resource'
+    'FOUND',
+    'NOT_FOUND',
+    'GONE',
+    'REDIRECT',
+    'MOVED',
     # Exceptions
     'BadGateway',
     'BadRequest',

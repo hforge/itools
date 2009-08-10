@@ -50,3 +50,7 @@ class Application(object):
 
         return None
 
+
+    def get_user(self, message):
+        pass
+

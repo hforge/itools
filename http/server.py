@@ -160,9 +160,12 @@ class HTTPServer(SoupServer):
             message.set_status(307)
             message.set_header('Location', resource)
             return
+        message.resource = resource
+
+        # Step 3: User
+        message.user = app.get_user(message)
 
         # Continue
-        message.resource = resource
         try:
             method(message)
         except HTTPError, exception:

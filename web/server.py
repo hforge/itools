@@ -152,35 +152,8 @@ class WebServer(HTTPServer):
         context.server = self
         context.root = self.root
 
-        # (2) The authenticated user
-        self.find_user(context)
-
-        # (3) The Site Root
-        self.find_site_root(context)
-
-        # (4) Keep the context
+        # (3) Keep the context
         set_context(context)
-
-
-    def find_user(self, context):
-        context.user = None
-
-        # (1) Read the id/auth cookie
-        cookie = context.get_cookie('__ac')
-        if cookie is None:
-            return
-
-        cookie = unquote(cookie)
-        cookie = decodestring(cookie)
-        username, password = cookie.split(':', 1)
-
-        if username is None or password is None:
-            return
-
-        # (2) Get the user resource and authenticate
-        user = context.root.get_user(username)
-        if user is not None and user.authenticate(password):
-            context.user = user
 
 
     ########################################################################
@@ -351,7 +324,6 @@ class RequestMethod(object):
         root = context.site_root
         try:
             # The requested resource and view
-            cls.find_resource(server, context)
             cls.find_view(server, context)
             # Access Control
             cls.check_access(server, context)

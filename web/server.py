@@ -67,7 +67,7 @@ def web_logger(domain, level, message, filepath, min_level):
 class WebServer(HTTPServer):
 
     app = WebApplication()
-    message_class = Context
+    context_class = Context
 
     access_log = None
     event_log = None

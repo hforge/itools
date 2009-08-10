@@ -26,7 +26,7 @@ from gobject import MainLoop
 from itools.log import log_error
 from app import Application
 from exceptions import HTTPError
-from message import HTTPMessage
+from context import HTTPContext
 from soup import SoupServer
 
 
@@ -40,7 +40,7 @@ class HTTPServer(SoupServer):
 
     # The default application says "hello"
     app = Application()
-    message_class = HTTPMessage
+    context_class = HTTPContext
 
 
     def __init__(self, address='', port=8080, access_log=None):
@@ -126,7 +126,9 @@ class HTTPServer(SoupServer):
     def path_callback(self, soup_message, path):
         # 503 Service Unavailable
 #       if len(self.connections) > MAX_CONNECTIONS:
-#           return message.set_response(503)
+#           soup_message.set_status(503)
+#           soup_message.set_body('text/plain', '503 Service Unavailable')
+#           return
 
         try:
             self._path_callback(soup_message, path)
@@ -137,41 +139,41 @@ class HTTPServer(SoupServer):
 
 
     def _path_callback(self, soup_message, path):
-        message = self.message_class(soup_message, path)
+        context = self.context_class(soup_message, path)
 
         # 501 Not Implemented
-        method = message.get_method()
+        method = context.get_method()
         method = method.lower()
         method = getattr(self, 'http_%s' % method, None)
         if method is None:
-            return message.set_response(501)
+            return context.set_response(501)
 
         # Step 1: Host
         app = self.app
-        app.get_host(message)
+        app.get_host(context)
 
         # Step 2: Resource
-        resource = app.get_resource(message)
+        resource = app.get_resource(context)
         if resource is None:
             # 404 Not Found
-            return message.set_response(404)
+            return context.set_response(404)
         if type(resource) is str:
             # 307 Temporary redirect
-            message.set_status(307)
-            message.set_header('Location', resource)
+            context.set_status(307)
+            context.set_header('Location', resource)
             return
-        message.resource = resource
+        context.resource = resource
 
         # Step 3: User
-        message.user = app.get_user(message)
+        context.user = app.get_user(context)
 
         # Continue
         try:
-            method(message)
+            method(context)
         except HTTPError, exception:
             self.log_error()
             status = exception.code
-            message.set_response(status)
+            context.set_response(status)
 
 
     #######################################################################
@@ -181,15 +183,15 @@ class HTTPServer(SoupServer):
         return [ x[5:].upper() for x in dir(self) if x[:5] == 'http_' ]
 
 
-    def http_options(self, message):
-        resource = message.resource
+    def http_options(self, context):
+        resource = context.resource
 
         # Methods supported by the server
         methods = self._get_server_methods()
 
         # Test capabilities of a resource
-        path = message.path
-        host = message.host
+        path = context.path
+        host = context.host
         resource_methods = resource._get_resource_methods()
         methods = set(methods) & set(resource_methods)
         # Special cases
@@ -198,51 +200,51 @@ class HTTPServer(SoupServer):
             methods.add('HEAD')
 
         # Ok
-        message.set_status(200)
-        message.set_header('Allow', ','.join(methods))
+        context.set_status(200)
+        context.set_header('Allow', ','.join(methods))
 
 
-    def http_get(self, message):
-        resource = message.resource
+    def http_get(self, context):
+        resource = context.resource
 
         # 405 Method Not Allowed
         method = getattr(resource, 'http_get', None)
         if method is None:
-            message.set_status(405)
+            context.set_status(405)
             server_methods = set(self._get_server_methods())
             resource_methods = set(resource._get_reource_methods)
             methods = server_methods & resource_methods
-            message.set_header('allow', ','.join(methods))
+            context.set_header('allow', ','.join(methods))
             return
 
         # Continue
-        return method(message)
+        return method(context)
 
 
-    def http_post(self, message):
-        resource = message.resource
+    def http_post(self, context):
+        resource = context.resource
 
         # 405 Method Not Allowed
         method = getattr(resource, 'http_post', None)
         if method is None:
-            message.set_status(405)
+            context.set_status(405)
             server_methods = set(self._get_server_methods())
             resource_methods = set(resource._get_reource_methods)
             methods = server_methods & resource_methods
-            message.set_header('allow', ','.join(methods))
+            context.set_header('allow', ','.join(methods))
             return
 
         # Continue
-        return method(message)
+        return method(context)
 
 
     http_head = http_get
 
 
-#   def http_trace(self, message):
+#   def http_trace(self, context):
 #       # TODO
 #       body = request.to_str()
-#       message.set_body('message/http', body)
+#       context.set_body('context/http', body)
 
 
 ###########################################################################

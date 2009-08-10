@@ -20,7 +20,7 @@ from entities import Entity
 from headers import get_type
 
 
-status_messages = {
+reason_phrases = {
     # Informational (HTTP 1.1)
     100: 'Continue',
     101: 'Switching Protocols',
@@ -75,7 +75,7 @@ status_messages = {
     }
 
 
-class HTTPMessage(object):
+class HTTPContext(object):
 
     def __init__(self, soup_message, path):
         self.soup_message = soup_message
@@ -181,6 +181,6 @@ class HTTPMessage(object):
 
     def set_response(self, status):
         self.soup_message.set_status(status)
-        body = '{0} {1}'.format(status, status_messages[status])
+        body = '{0} {1}'.format(status, reason_phrases[status])
         self.soup_message.set_response('text/plain', body)
 

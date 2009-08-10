@@ -16,18 +16,18 @@
 
 # Import from itools
 from app import Application, HTTPResource
+from context import HTTPContext
 from exceptions import HTTPError, ClientError, ServerError
 from exceptions import NotModified
 from exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 from exceptions import InternalServerError, NotImplemented, BadGateway
 from exceptions import ServiceUnavailable, MethodNotAllowed, Conflict
-from message import HTTPMessage
 from server import HTTPServer
 
 
 __all__ = [
     'HTTPServer',
-    'HTTPMessage',
+    'HTTPContext',
     'HTTPResource',
     'Application',
     # Exceptions

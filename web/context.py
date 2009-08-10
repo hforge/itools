@@ -27,7 +27,7 @@ from time import strptime
 from itools.core import freeze
 from itools.datatypes import String
 from itools.gettext import MSG
-from itools.http import HTTPMessage
+from itools.http import HTTPContext
 from itools.i18n import AcceptLanguageType
 from itools.uri import get_reference
 from messages import ERROR
@@ -72,7 +72,7 @@ class FormError(StandardError):
 
 
 
-class Context(HTTPMessage):
+class Context(HTTPContext):
 
     user = None
     resource = None
@@ -80,7 +80,7 @@ class Context(HTTPMessage):
 
 
     def __init__(self, soup_message, path):
-        HTTPMessage.__init__(self, soup_message, path)
+        HTTPContext.__init__(self, soup_message, path)
 
         # Set 'web_path' and 'web_view_name'
         # Split the path into path and method ("a/b/c/;view")

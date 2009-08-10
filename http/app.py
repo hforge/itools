@@ -15,6 +15,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+# These are the values that 'Application.find_resource' may return
+FOUND = 0
+NOT_FOUND = 404
+GONE = 410 # Not available in HTTP 1.0
+REDIRECT = 307 # 302 in HTTP 1.0
+MOVED = 301
+
 
 class HTTPResource(object):
     """This class is the base class for any HTTP resource.
@@ -37,18 +44,19 @@ class Application(object):
     and a demo class that says "hello".
     """
 
-    def get_host(self, context):
+    def find_host(self, context):
         pass
 
 
-    def get_resource(self, context):
+    def find_resource(self, context):
         if context.path == '/':
-            return Root()
+            context.resource = Root()
+            return FOUND
 
-        return None
+        return NOT_FOUND
 
 
-    def get_user(self, context):
+    def find_user(self, context):
         pass
 
 
@@ -59,7 +67,8 @@ class Application(object):
         'POST': 'http_post'}
 
 
-    def get_allowed_methods(self, resource):
+    def get_allowed_methods(self, context):
+        resource = context.resource
         methods = [
             x for x in self.known_methods
             if getattr(resource, self.known_methods[x], None) ]

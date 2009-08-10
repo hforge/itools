@@ -77,9 +77,14 @@ reason_phrases = {
 
 class HTTPContext(object):
 
+    # Default values
+    host = None
+    resource = None
+    user = None
+
     def __init__(self, soup_message, path):
         self.soup_message = soup_message
-        self.host = soup_message.get_host()
+        self.hostname = soup_message.get_host()
         self.path = Path(path)
         query = soup_message.get_query()
         self.query = decode_query(query)
@@ -88,7 +93,7 @@ class HTTPContext(object):
         xfp = soup_message.get_header('X_FORWARDED_PROTO')
         src_scheme = xfp or 'http'
         xff = soup_message.get_header('X-Forwarded-Host')
-        src_host = xff or soup_message.get_header('Host') or self.host
+        src_host = xff or soup_message.get_header('Host') or self.hostname
         if query:
             self.uri = '%s://%s%s?%s' % (src_scheme, src_host, path, query)
         else:

@@ -24,7 +24,7 @@ from gobject import MainLoop
 
 # Import from itools
 from itools.log import log_error
-from app import Application
+from app import Application, FOUND, NOT_FOUND, GONE, REDIRECT, MOVED
 from exceptions import HTTPError
 from context import HTTPContext
 from soup import SoupServer
@@ -148,29 +148,31 @@ class HTTPServer(SoupServer):
             return context.set_response(501)
 
         # Step 1: Host
-        app.get_host(context)
+        app.find_host(context)
 
         # Step 2: Resource
-        resource = app.get_resource(context)
-        if resource is None:
-            # 404 Not Found
-            return context.set_response(404)
-        if type(resource) is str:
-            # 307 Temporary redirect
-            context.set_status(307)
-            context.set_header('Location', resource)
-            return
-        context.resource = resource
+        action = app.find_resource(context)
+        if action == FOUND:
+            pass
+        elif action == NOT_FOUND:
+            return context.set_response(404) # 404 Not Found
+        elif action == GONE:
+            return context.set_response(410) # 410 Gone
+        elif action == REDIRECT:
+            context.set_status(307) # 307 Temporary redirect
+            return context.set_header('Location', context.resource)
+        elif action == MOVED:
+            context.set_status(301) # 301 Moved Permanently
+            return context.set_header('Location', context.resource)
 
         # 405 Method Not Allowed
-        allowed_methods = app.get_allowed_methods(resource)
+        allowed_methods = app.get_allowed_methods(context)
         if method_name not in allowed_methods:
             context.set_response(405)
-            context.set_header('allow', ','.join(allowed_methods))
-            return
+            return context.set_header('allow', ','.join(allowed_methods))
 
         # Step 3: User
-        context.user = app.get_user(context)
+        app.find_user(context)
 
         # Continue
         method_name = app.known_methods[method_name]

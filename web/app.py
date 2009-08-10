@@ -16,7 +16,7 @@
 
 # Import from itools
 from itools.handlers import BaseDatabase
-from itools.http import Application
+from itools.http import Application, FOUND, NOT_FOUND
 
 
 
@@ -29,43 +29,43 @@ class WebApplication(Application):
         self.root = root
 
 
-    def get_host(self, context):
+    def find_host(self, context):
         """This method may be overriden to support virtual hosting.
         """
-        context.site_root = self.root
+        context.host = self.root
 
 
-    def get_resource(self, context):
+    def find_resource(self, context):
         """Sets 'context.resource' to the requested resource if it exists.
 
         Otherwise sets 'context.status' to 404 (not found error) and
         'context.resource' to the latest resource in the path that does exist.
         """
-        # We start at the sire-root
-        root = context.site_root
+        host = context.host
         path = copy(context.path)
         path.startswith_slash = False
 
-        return root.get_resource(path, soft=True)
+        resource = host.get_resource(path, soft=True)
+        if resource is None:
+            return NOT_FOUND
+        context.resource = resource
+        return FOUND
 
 
-    def get_user(self, context):
+    def find_user(self, context):
         # Credentials
         cookie = context.get_cookie('__ac')
         if cookie is None:
-            return None
+            return
 
         cookie = unquote(cookie)
         cookie = decodestring(cookie)
         username, password = cookie.split(':', 1)
-
         if username is None or password is None:
-            return None
+            return
 
         # Authentication
-        user = context.root.get_user(username)
+        user = self.root.find_user(username)
         if user is not None and user.authenticate(password):
-            return user
-
-        return None
+            context.user = user
 

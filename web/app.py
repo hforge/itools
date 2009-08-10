@@ -47,3 +47,25 @@ class WebApplication(Application):
         path.startswith_slash = False
 
         return root.get_resource(path, soft=True)
+
+
+    def get_user(self, context):
+        # Credentials
+        cookie = context.get_cookie('__ac')
+        if cookie is None:
+            return None
+
+        cookie = unquote(cookie)
+        cookie = decodestring(cookie)
+        username, password = cookie.split(':', 1)
+
+        if username is None or password is None:
+            return None
+
+        # Authentication
+        user = context.root.get_user(username)
+        if user is not None and user.authenticate(password):
+            return user
+
+        return None
+

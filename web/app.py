@@ -14,6 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from the Standard Library
+from base64 import decodestring
+from copy import copy
+from urllib import unquote
+
 # Import from itools
 from itools.handlers import BaseDatabase
 from itools.http import Application, FOUND, NOT_FOUND

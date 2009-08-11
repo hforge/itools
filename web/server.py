@@ -25,7 +25,7 @@ from warnings import warn
 from sys import exc_info
 
 # Import from itools
-from itools.http import HTTPServer, get_response
+from itools.http import HTTPServer
 from itools.http import ClientError, NotModified, BadRequest, Forbidden
 from itools.http import NotFound, Unauthorized, NotImplemented
 from itools.http import MethodNotAllowed

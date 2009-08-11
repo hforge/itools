@@ -194,6 +194,20 @@ PyMessage_get_query (PyMessage * self, PyObject * args, PyObject *kwdict)
 
 
 static PyObject *
+PyMessage_append_header (PyMessage * self, PyObject * args, PyObject *kwdict)
+{
+  char *name, *value;
+
+  if (!PyArg_ParseTuple (args, "ss", &name, &value))
+    return NULL;
+
+  soup_message_headers_append (self->s_msg->response_headers, name, value);
+
+  Py_RETURN_NONE;
+}
+
+
+static PyObject *
 PyMessage_set_header (PyMessage * self, PyObject * args, PyObject *kwdict)
 {
   char *name, *value;
@@ -238,6 +252,8 @@ PyMessage_set_status (PyMessage * self, PyObject * args, PyObject * kwdict)
 
 
 static PyMethodDef PyMessage_methods[] = {
+  {"append_header", (PyCFunction) PyMessage_append_header, METH_VARARGS,
+   "Append the given response header"},
   {"get_body", (PyCFunction) PyMessage_get_body, METH_NOARGS,
    "Returns the body of the request"},
   {"get_header", (PyCFunction) PyMessage_get_header, METH_VARARGS,

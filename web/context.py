@@ -193,56 +193,6 @@ class Context(HTTPContext):
 
 
     #######################################################################
-    # API / Cookies
-    #######################################################################
-    def get_cookie(self, name, type=None):
-        request, response = self.request, self.response
-        # Get the value
-        cookie = response.get_cookie(name)
-        if cookie is None:
-            cookie = request.get_cookie(name)
-            if cookie is None:
-                value = None
-            else:
-                value = cookie.value
-        else:
-            # Check expiration time
-            value = cookie.value
-            expires = cookie.expires
-            if expires is not None:
-                expires = expires[5:-4]
-                expires = strptime(expires, '%d-%b-%y %H:%M:%S')
-                year, month, day, hour, min, sec, kk, kk, kk = expires
-                expires = datetime(year, month, day, hour, min, sec)
-                if expires < datetime.now():
-                    value = None
-
-        if type is None:
-            return value
-
-        # Deserialize
-        if value is None:
-            return type.get_default()
-        value = type.decode(value)
-        if not type.is_valid(value):
-            raise ValueError, "Invalid cookie value"
-        return value
-
-
-
-    def has_cookie(self, name):
-        return self.get_cookie(name) is not None
-
-
-    def set_cookie(self, name, value, **kw):
-        self.response.set_cookie(name, value, **kw)
-
-
-    def del_cookie(self, name):
-        self.response.del_cookie(name)
-
-
-    #######################################################################
     # API / Utilities
     #######################################################################
     def agent_is_a_robot(self):

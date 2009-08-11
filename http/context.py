@@ -16,6 +16,7 @@
 
 # Import from itools
 from itools.uri import decode_query, Path
+from cookies import Cookie, SetCookieDataType
 from entities import Entity
 from headers import get_type
 
@@ -188,4 +189,40 @@ class HTTPContext(object):
         self.soup_message.set_status(status)
         body = '{0} {1}'.format(status, reason_phrases[status])
         self.soup_message.set_response('text/plain', body)
+
+
+    #######################################################################
+    # Cookies
+    #######################################################################
+    def get_cookie(self, name, datatype=None):
+        value = None
+
+        # Read the cookie from the request
+        cookies = self.get_header('cookie')
+        if cookies:
+            cookie = cookies.get(name)
+            if cookie:
+                value = cookie.value
+
+        if datatype is None:
+            return value
+
+        # Deserialize
+        if value is None:
+            return datatype.get_default()
+        value = datatype.decode(value)
+        if not datatype.is_valid(value):
+            raise ValueError, "Invalid cookie value"
+        return value
+
+
+    def set_cookie(self, name, value, **kw):
+        cookie = Cookie(value, **kw)
+        cookie = SetCookieDataType.encode({name: cookie})
+        self.soup_message.append_header(cookie)
+
+
+    def del_cookie(self, name):
+        expires = 'Wed, 31-Dec-97 23:59:59 GMT'
+        self.set_cookie(name, 'deleted', expires=expires, max_age='0')
 

@@ -16,6 +16,7 @@
 
 # Import from itools
 from itools.uri import decode_query, Path
+from cookies import Cookie, SetCookieDataType
 from entities import Entity
 from headers import get_type
 
@@ -100,6 +101,9 @@ class HTTPContext(object):
             self.uri = '%s://%s%s?%s' % (src_scheme, src_host, path, query)
         else:
             self.uri = '%s://%s%s' % (src_scheme, src_host, path)
+
+        # Cookies
+        self.cookies = {}
 
         # The request body
         self.body = {}
@@ -190,4 +194,49 @@ class HTTPContext(object):
         self.soup_message.set_status(status)
         body = '{0} {1}'.format(status, reason_phrases[status])
         self.soup_message.set_response('text/plain', body)
+
+
+    #######################################################################
+    # Cookies
+    #######################################################################
+    def get_cookie(self, name, datatype=None):
+        value = None
+        if name in self.cookies:
+            # Case 1: the cookie was set in this request
+            value = self.cookies[name]
+        else:
+            # Case 2: read the cookie from the request
+            cookies = self.get_header('cookie')
+            if cookies:
+                cookie = cookies.get(name)
+                if cookie:
+                    value = cookie.value
+
+        if datatype is None:
+            return value
+
+        # Deserialize
+        if value is None:
+            return datatype.get_default()
+        value = datatype.decode(value)
+        if not datatype.is_valid(value):
+            raise ValueError, "Invalid cookie value"
+        return value
+
+
+    def set_cookie(self, name, value, **kw):
+        self.cookies[name] = value
+        # libsoup
+        cookie = Cookie(value, **kw)
+        cookie = SetCookieDataType.encode({name: cookie})
+        self.soup_message.append_header('Set-Cookie', cookie)
+
+
+    def del_cookie(self, name):
+        self.cookies[name] = None
+        # libsoup
+        expires = 'Wed, 31-Dec-97 23:59:59 GMT'
+        cookie = Cookie('deleted', expires=expires, max_age='0')
+        cookie = SetCookieDataType.encode({name: cookie})
+        self.soup_message.append_header('Set-Cookie', cookie)
 

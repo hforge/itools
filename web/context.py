@@ -308,51 +308,6 @@ class Context(HTTPContext):
 
 
     #######################################################################
-    # Cookies
-    #######################################################################
-    def get_cookie(self, name, datatype=None):
-        value = None
-        if name in self.cookies:
-            # Case 1: the cookie was set in this request
-            value = self.cookies[name]
-        else:
-            # Case 2: read the cookie from the request
-            cookies = self.get_header('cookie')
-            if cookies:
-                cookie = cookies.get(name)
-                if cookie:
-                    value = cookie.value
-
-        if datatype is None:
-            return value
-
-        # Deserialize
-        if value is None:
-            return datatype.get_default()
-        value = datatype.decode(value)
-        if not datatype.is_valid(value):
-            raise ValueError, "Invalid cookie value"
-        return value
-
-
-    def set_cookie(self, name, value, **kw):
-        self.cookies[name] = value
-        # libsoup
-        cookie = Cookie(value, **kw)
-        cookie = SetCookieDataType.encode({name: cookie})
-        self.soup_message.append_header('Set-Cookie', cookie)
-
-
-    def del_cookie(self, name):
-        self.cookies[name] = None
-        # libsoup
-        expires = 'Wed, 31-Dec-97 23:59:59 GMT'
-        cookie = Cookie('deleted', expires=expires, max_age='0')
-        cookie = SetCookieDataType.encode({name: cookie})
-        self.soup_message.append_header('Set-Cookie', cookie)
-
-
-    #######################################################################
     # API / Utilities
     #######################################################################
     def agent_is_a_robot(self):

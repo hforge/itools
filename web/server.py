@@ -18,10 +18,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from base64 import decodestring
-from copy import copy
-from types import FunctionType, MethodType
-from urllib import unquote
 from warnings import warn
 
 # Import from itools

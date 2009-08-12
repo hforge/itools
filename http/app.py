@@ -16,11 +16,12 @@
 
 
 # These are the values that 'Application.find_resource' may return
-FOUND = 0
+MOVED = 301
+REDIRECT = 307 # 302 in HTTP 1.0
+UNAUTHORIZED = 401
+FORBIDDEN = 403
 NOT_FOUND = 404
 GONE = 410 # Not available in HTTP 1.0
-REDIRECT = 307 # 302 in HTTP 1.0
-MOVED = 301
 
 
 class HTTPResource(object):
@@ -51,7 +52,7 @@ class Application(object):
     def find_resource(self, context):
         if context.path == '/':
             context.resource = Root()
-            return FOUND
+            return
 
         return NOT_FOUND
 

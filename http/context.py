@@ -85,6 +85,9 @@ class HTTPContext(object):
 
     def __init__(self, soup_message, path):
         self.soup_message = soup_message
+
+        # Request method and URI
+        self.method = soup_message.get_method()
         self.hostname = soup_message.get_host()
         self.path = path if type(path) is Path else Path(path)
         query = soup_message.get_query()
@@ -157,10 +160,6 @@ class HTTPContext(object):
     #######################################################################
     # Request
     #######################################################################
-    def get_method(self):
-        return self.soup_message.get_method()
-
-
     def get_header(self, name):
         name = name.lower()
         datatype = get_type(name)

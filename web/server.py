@@ -209,19 +209,6 @@ def find_view_by_method(server, context):
 class RequestMethod(object):
 
     @classmethod
-    def check_method(cls, server, context, method_name=None):
-        if method_name is None:
-            method_name = context.request.method
-        # Get the method
-        view = context.view
-        method = getattr(view, method_name, None)
-        if method is None:
-            message = '%s has no "%s" method' % (view, method_name)
-            raise NotImplemented, message
-        context.view_method = method
-
-
-    @classmethod
     def check_cache(cls, server, context):
         """Implement cache if your method supports it.
         Most methods don't, hence the default implementation.
@@ -290,8 +277,6 @@ class RequestMethod(object):
         response = context.response
         root = context.site_root
         try:
-            # Check the request method is supported
-            cls.check_method(server, context)
             # Check the client's cache
             cls.check_cache(server, context)
             # Check pre-conditions
@@ -397,16 +382,6 @@ class GET(RequestMethod):
 class POST(RequestMethod):
 
     method_name = 'POST'
-
-
-    @classmethod
-    def check_method(cls, server, context):
-        # If there was an error, the method name always will be 'GET'
-        if context.status is None:
-            method_name = 'POST'
-        else:
-            method_name = 'GET'
-        RequestMethod.check_method(server, context, method_name=method_name)
 
 
     @classmethod

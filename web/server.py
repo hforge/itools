@@ -159,14 +159,6 @@ def find_view_by_method(server, context):
 class RequestMethod(object):
 
     @classmethod
-    def find_view(cls, server, context):
-        query = context.uri.query
-        context.view = context.resource.get_view(context.view_name, query)
-        if context.view is None:
-            raise NotFound
-
-
-    @classmethod
     def check_access(cls, server, context):
         """Tell whether the user is allowed to access the view on the
         resource.
@@ -268,8 +260,6 @@ class RequestMethod(object):
 
         # (1) Find out the requested resource and view
         try:
-            # The requested resource and view
-            cls.find_view(server, context)
             # Access Control
             cls.check_access(server, context)
             # Check the request method is supported

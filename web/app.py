@@ -16,7 +16,6 @@
 
 # Import from the Standard Library
 from base64 import decodestring
-from copy import copy
 from urllib import unquote
 
 # Import from itools
@@ -46,14 +45,28 @@ class WebApplication(Application):
         Otherwise sets 'context.status' to 404 (not found error) and
         'context.resource' to the latest resource in the path that does exist.
         """
-        host = context.host
-        path = copy(context.path)
-        path.startswith_slash = False
+        # Split the path so '/a/b/c/;view' becomes ('/a/b/c', 'view')
+        name = context.path.get_name()
+        if name and name[0] == ';':
+            path = context.path[:-1]
+            view = name[1:]
+        else:
+            path = context.path[:]
+            view = None
 
+        # Get the resource
+        host = context.host
+        path.startswith_slash = False
         resource = host.get_resource(path, soft=True)
         if resource is None:
             return NOT_FOUND
         context.resource = resource
+
+        # Get the view
+        context.view = resource.get_view(view, context.query)
+        if context.view is None:
+            return NOT_FOUND
+
         return FOUND
 
 

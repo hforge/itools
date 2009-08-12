@@ -82,17 +82,6 @@ class Context(HTTPContext):
     def __init__(self, soup_message, path):
         HTTPContext.__init__(self, soup_message, path)
 
-        # Set 'web_path' and 'web_view_name'
-        # Split the path into path and method ("a/b/c/;view")
-        path = self.path
-        name = path.get_name()
-        if name and name[0] == ';':
-            self.web_path = path[:-1]
-            self.web_view_name = name[1:]
-        else:
-            self.web_path = path
-            self.web_view_name = None
-
         # accept_language
         accept_language = self.get_header('Accept-Language') or ''
         self.accept_language = AcceptLanguageType.decode(accept_language)

@@ -171,7 +171,12 @@ class HTTPContext(object):
 
 
     def load_user(self):
-        self.user = self.app.get_user(self)
+        app = self.app
+        credentials = app.get_credentials(self)
+        if credentials is None:
+            self.user = None
+        else:
+            self.user = app.get_user(credentials)
 
 
     #######################################################################

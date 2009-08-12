@@ -57,7 +57,14 @@ class Application(object):
         return NOT_FOUND
 
 
-    def get_user(self, context):
+    #######################################################################
+    # Authorization
+    #######################################################################
+    def get_credentials(self, context):
+        return None
+
+
+    def get_user(self, credentials):
         return None
 
 
@@ -65,6 +72,9 @@ class Application(object):
         pass
 
 
+    #######################################################################
+    # Request methods
+    #######################################################################
     known_methods = {
         'OPTIONS': 'http_options',
         'GET': 'http_get',

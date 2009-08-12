@@ -74,7 +74,7 @@ class WebApplication(Application):
     #######################################################################
     # Authorization
     #######################################################################
-    def get_user(self, context):
+    def get_credentials(self, context):
         # Credentials
         cookie = context.get_cookie('__ac')
         if cookie is None:
@@ -86,7 +86,11 @@ class WebApplication(Application):
         if username is None or password is None:
             return None
 
-        # Authentication
+        return username, password
+
+
+    def get_user(self, credentials):
+        username, password = credentials
         user = self.root.get_user(username)
         if user is None or not user.authenticate(password):
             return None

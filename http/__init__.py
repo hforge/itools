@@ -16,7 +16,7 @@
 
 # Import from itools
 from app import Application, HTTPResource
-from app import FOUND, NOT_FOUND, GONE, REDIRECT, MOVED
+from app import MOVED, REDIRECT, UNAUTHORIZED, FORBIDDEN, NOT_FOUND, GONE
 from context import HTTPContext
 from exceptions import HTTPError, ClientError, ServerError
 from exceptions import NotModified
@@ -32,11 +32,12 @@ __all__ = [
     'HTTPResource',
     'Application',
     # Values returned by 'Application.find_resource'
-    'FOUND',
+    'MOVED',
+    'REDIRECT',
+    'UNAUTHORIZED',
+    'FORBIDDEN',
     'NOT_FOUND',
     'GONE',
-    'REDIRECT',
-    'MOVED',
     # Exceptions
     'BadGateway',
     'BadRequest',

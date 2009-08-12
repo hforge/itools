@@ -24,7 +24,8 @@ from gobject import MainLoop
 
 # Import from itools
 from itools.log import log_error
-from app import Application, FOUND, NOT_FOUND, GONE, REDIRECT, MOVED
+from app import Application
+from app import MOVED, REDIRECT, UNAUTHORIZED, FORBIDDEN, NOT_FOUND, GONE
 from exceptions import HTTPError
 from context import HTTPContext
 from soup import SoupServer
@@ -152,9 +153,7 @@ class HTTPServer(SoupServer):
 
         # Step 2: Resource
         action = app.find_resource(context)
-        if action == FOUND:
-            pass
-        elif action == NOT_FOUND:
+        if action == NOT_FOUND:
             return context.set_response(404) # 404 Not Found
         elif action == GONE:
             return context.set_response(410) # 410 Gone
@@ -171,8 +170,12 @@ class HTTPServer(SoupServer):
             context.set_response(405)
             return context.set_header('allow', ','.join(allowed_methods))
 
-        # Step 3: User
-        app.find_user(context)
+        # Step 3: User (authentication)
+        action = app.find_user(context)
+        if action == UNAUTHORIZED:
+            return context.set_response(401) # 401 Unauthorized
+        elif action == FORBIDDEN:
+            return context.set_response(403) # 403 Forbidden
 
         # Continue
         method_name = app.known_methods[method_name]

@@ -209,28 +209,6 @@ def find_view_by_method(server, context):
 class RequestMethod(object):
 
     @classmethod
-    def check_access(cls, server, context):
-        """Tell whether the user is allowed to access the view on the
-        resource.
-        """
-        user = context.user
-        resource = context.resource
-        view = context.view
-
-        # Get the check-point
-        ac = resource.get_access_control()
-        if ac.is_access_allowed(user, resource, view):
-            return
-
-        # Unauthorized (401)
-        if user is None:
-            raise Unauthorized
-
-        # Forbidden (403)
-        raise Forbidden
-
-
-    @classmethod
     def check_method(cls, server, context, method_name=None):
         if method_name is None:
             method_name = context.request.method
@@ -312,8 +290,6 @@ class RequestMethod(object):
         response = context.response
         root = context.site_root
         try:
-            # Access Control
-            cls.check_access(server, context)
             # Check the request method is supported
             cls.check_method(server, context)
             # Check the client's cache

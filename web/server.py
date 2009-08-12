@@ -95,7 +95,7 @@ class WebServer(HTTPServer):
 
 
     def http_head(self, request):
-        return HEAD.handle_request(self, request)
+        return GET.handle_request(self, request)
 
 
     def http_get(self, request):
@@ -157,19 +157,6 @@ def find_view_by_method(server, context):
 
 
 class RequestMethod(object):
-
-    @classmethod
-    def check_method(cls, server, context, method_name=None):
-        if method_name is None:
-            method_name = context.method
-        # Get the method
-        view = context.view
-        method = getattr(view, method_name, None)
-        if method is None:
-            message = '%s has no "%s" method' % (view, method_name)
-            raise NotImplemented, message
-        context.view_method = method
-
 
     @classmethod
     def check_cache(cls, server, context):
@@ -238,8 +225,6 @@ class RequestMethod(object):
 
         # (1) Find out the requested resource and view
         try:
-            # Check the request method is supported
-            cls.check_method(server, context)
             # Check the client's cache
             cls.check_cache(server, context)
             # Check pre-conditions
@@ -339,27 +324,9 @@ class GET(RequestMethod):
 
 
 
-class HEAD(GET):
-
-    @classmethod
-    def check_method(cls, server, context):
-        GET.check_method(server, context, method_name='GET')
-
-
-
 class POST(RequestMethod):
 
     method_name = 'POST'
-
-
-    @classmethod
-    def check_method(cls, server, context):
-        # If there was an error, the method name always will be 'GET'
-        if context.status is None:
-            method_name = 'POST'
-        else:
-            method_name = 'GET'
-        RequestMethod.check_method(server, context, method_name=method_name)
 
 
     @classmethod

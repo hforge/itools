@@ -57,7 +57,11 @@ class Application(object):
         return NOT_FOUND
 
 
-    def find_user(self, context):
+    def get_user(self, context):
+        return None
+
+
+    def check_access(self, context):
         pass
 
 

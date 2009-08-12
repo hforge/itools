@@ -141,9 +141,11 @@ class HTTPServer(SoupServer):
 
     def _path_callback(self, soup_message, path):
         context = self.context_class(soup_message, path)
+        # Attach the application to the context
+        app = self.app
+        context.app = self.app
 
         # 501 Not Implemented
-        app = self.app
         if context.method not in app.known_methods:
             return context.set_response(501)
 
@@ -169,8 +171,8 @@ class HTTPServer(SoupServer):
             context.set_response(405)
             return context.set_header('allow', ','.join(allowed_methods))
 
-        # Step 3: User (authentication)
-        action = app.find_user(context)
+        # Step 3: Access Control
+        action = app.check_access(context)
         if action == UNAUTHORIZED:
             return context.set_response(401) # 401 Unauthorized
         elif action == FORBIDDEN:

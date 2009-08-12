@@ -87,18 +87,19 @@ class WebApplication(Application):
             return None
 
         # Authentication
-        user = self.root.find_user(username)
-        if user is not None and user.authenticate(password):
-            return user
+        user = self.root.get_user(username)
+        if user is None or not user.authenticate(password):
+            return None
+
+        return user
 
 
-    def find_user(self, context):
-        # Authentication
-        user = self.get_user(context)
-        context.user = user
+    def check_access(self, context):
+        user = context.user
 
         # Access Control
         resource = context.resource
         ac = resource.get_access_control()
         if not ac.is_access_allowed(user, resource, context.view):
             return FORBIDDEN if user else UNAUTHORIZED
+

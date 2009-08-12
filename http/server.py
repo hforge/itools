@@ -144,8 +144,7 @@ class HTTPServer(SoupServer):
 
         # 501 Not Implemented
         app = self.app
-        method_name = context.get_method()
-        if method_name not in app.known_methods:
+        if context.method not in app.known_methods:
             return context.set_response(501)
 
         # Step 1: Host
@@ -166,7 +165,7 @@ class HTTPServer(SoupServer):
 
         # 405 Method Not Allowed
         allowed_methods = app.get_allowed_methods(context)
-        if method_name not in allowed_methods:
+        if context.method not in allowed_methods:
             context.set_response(405)
             return context.set_header('allow', ','.join(allowed_methods))
 
@@ -178,8 +177,8 @@ class HTTPServer(SoupServer):
             return context.set_response(403) # 403 Forbidden
 
         # Continue
-        method_name = app.known_methods[method_name]
-        method = getattr(app, method_name)
+        method = app.known_methods[context.method]
+        method = getattr(app, method)
         try:
             method(context)
         except HTTPError, exception:

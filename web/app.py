@@ -20,7 +20,7 @@ from urllib import unquote
 
 # Import from itools
 from itools.handlers import BaseDatabase
-from itools.http import Application, NOT_FOUND
+from itools.http import Application, UNAUTHORIZED, FORBIDDEN, NOT_FOUND
 
 
 
@@ -28,20 +28,9 @@ class WebApplication(Application):
 
     database = BaseDatabase()
 
-
-    def __init__(self, root):
-        self.root = root
-
-
     #######################################################################
     # Resource
     #######################################################################
-    def find_host(self, context):
-        """This method may be overriden to support virtual hosting.
-        """
-        context.host = self.root
-
-
     def find_resource(self, context):
         """Sets 'context.resource' to the requested resource if it exists.
 
@@ -54,13 +43,11 @@ class WebApplication(Application):
             path = context.path[:-1]
             view = name[1:]
         else:
-            path = context.path[:]
+            path = context.path
             view = None
 
         # Get the resource
-        host = context.host
-        path.startswith_slash = False
-        resource = host.get_resource(path, soft=True)
+        resource = self.get_resource(path, soft=True)
         if resource is None:
             return NOT_FOUND
         context.resource = resource
@@ -89,21 +76,26 @@ class WebApplication(Application):
         return username, password
 
 
-    def get_user(self, credentials):
-        username, password = credentials
-        user = self.root.get_user(username)
-        if user is None or not user.authenticate(password):
-            return None
-
-        return user
-
-
     def check_access(self, context):
-        user = context.user
-
         # Access Control
         resource = context.resource
         ac = resource.get_access_control()
-        if not ac.is_access_allowed(user, resource, context.view):
-            return FORBIDDEN if user else UNAUTHORIZED
+        if not ac.is_access_allowed(context, resource, context.view):
+            return FORBIDDEN if context.user else UNAUTHORIZED
+
+
+    #######################################################################
+    # Authorization
+    #######################################################################
+    def get_allowed_methods(self, context):
+        if context.view is None:
+            return HTTPApplication.get_allowed_methods(self, context)
+
+        view = context.view
+        methods = [
+            x for x in self.known_methods
+            if getattr(view, self.known_methods[x], None) ]
+        methods = set(methods)
+        methods.add('OPTIONS')
+        return methods
 

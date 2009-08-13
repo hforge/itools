@@ -17,6 +17,7 @@
 
 # Import from itools
 from access import AccessControl
+from app import WebApplication
 from context import Context, get_context, set_context, FormError
 from context import select_language
 from context import WebLogger
@@ -28,9 +29,10 @@ from webdav import lock_body
 
 
 __all__ = [
-    'AccessControl',
     'WebServer',
     'WebLogger',
+    'WebApplication',
+    'AccessControl',
     # Context
     'Context',
     'set_context',

@@ -28,7 +28,7 @@ from itools.http import set_response
 from itools.log import log_error, log_warning, register_logger
 from itools.uri import Reference
 from app import WebApplication
-from context import Context, FormError, set_context, WebLogger
+from context import Context, FormError, WebLogger
 from views import BaseView
 
 
@@ -63,9 +63,6 @@ class WebServer(HTTPServer):
         # (1) The server, the data root and the authenticated user
         context.server = self
         context.root = self.root
-
-        # (3) Keep the context
-        set_context(context)
 
 
     ########################################################################

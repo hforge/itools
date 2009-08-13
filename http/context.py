@@ -266,3 +266,19 @@ class HTTPContext(object):
         cookie = SetCookieDataType.encode({name: cookie})
         self.soup_message.append_header('Set-Cookie', cookie)
 
+
+
+###########################################################################
+# Keep the context globally
+###########################################################################
+
+context = None
+
+
+def set_context(ctx):
+    global context
+    context = ctx
+
+
+def get_context():
+    return context

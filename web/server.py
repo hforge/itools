@@ -34,7 +34,7 @@ from views import BaseView
 
 class WebServer(HTTPServer):
 
-    app = WebApplication()
+#    app = WebApplication()
     context_class = Context
 
     access_log = None

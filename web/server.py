@@ -63,7 +63,7 @@ def web_logger(domain, level, message, filepath, min_level):
 
 class WebServer(HTTPServer):
 
-    app = WebApplication()
+#    app = WebApplication()
     context_class = Context
 
     access_log = None

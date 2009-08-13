@@ -17,6 +17,7 @@
 
 # Import from itools
 from access import AccessControl
+from app import WebApplication
 from context import Context, get_context, set_context, FormError
 from context import select_language
 from messages import INFO, ERROR, MSG_MISSING_OR_INVALID
@@ -27,8 +28,9 @@ from webdav import lock_body
 
 
 __all__ = [
-    'AccessControl',
     'WebServer',
+    'WebApplication',
+    'AccessControl',
     # Context
     'Context',
     'set_context',

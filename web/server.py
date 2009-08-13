@@ -33,7 +33,7 @@ from itools.i18n import init_language_selector
 from itools.log import WARNING, register_logger, log_error, log_warning
 from itools.uri import Reference
 from app import WebApplication
-from context import Context, set_context, select_language
+from context import Context, select_language
 from context import FormError
 from views import BaseView
 
@@ -148,9 +148,6 @@ class WebServer(HTTPServer):
         # (1) The server, the data root and the authenticated user
         context.server = self
         context.root = self.root
-
-        # (3) Keep the context
-        set_context(context)
 
 
     ########################################################################

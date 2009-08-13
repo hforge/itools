@@ -252,3 +252,19 @@ class HTTPContext(object):
         expires = 'Wed, 31-Dec-97 23:59:59 GMT'
         self.set_cookie(name, 'deleted', expires=expires, max_age='0')
 
+
+
+###########################################################################
+# Keep the context globally
+###########################################################################
+
+context = None
+
+
+def set_context(ctx):
+    global context
+    context = ctx
+
+
+def get_context():
+    return context

@@ -27,7 +27,7 @@ from itools.log import log_error
 from app import Application
 from app import MOVED, REDIRECT, UNAUTHORIZED, FORBIDDEN, NOT_FOUND, GONE
 from exceptions import HTTPError
-from context import HTTPContext
+from context import HTTPContext, set_context
 from soup import SoupServer
 
 
@@ -140,12 +140,13 @@ class HTTPServer(SoupServer):
 
 
     def _path_callback(self, soup_message, path):
+        # Make context
         context = self.context_class(soup_message, path)
-        # Attach the application to the context
-        app = self.app
+        set_context(context)
         context.app = self.app
 
         # 501 Not Implemented
+        app = self.app
         if context.method not in app.known_methods:
             return context.set_response(501)
 
@@ -187,6 +188,9 @@ class HTTPServer(SoupServer):
             self.log_error()
             status = exception.code
             context.set_response(status)
+
+        # Free context as soon as possible
+        set_context(None)
 
 
 

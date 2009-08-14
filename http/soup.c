@@ -133,6 +133,48 @@ typedef struct
   SoupMessage * s_msg;
 } PyMessage;
 
+static PyObject *
+PyMessage_new (PyTypeObject * type, PyObject * args, PyObject * kwdict)
+{
+  PyMessage * self;
+
+  self = (PyMessage *) type->tp_alloc (type, 0);
+  if (self != NULL)
+    self->s_msg = NULL;
+
+  return (PyObject *) self;
+}
+
+
+static void
+PyMessage_dealloc (PyMessage * self)
+{
+  if (self->s_msg)
+  {
+    g_type_free_instance ((GTypeInstance *) self->s_msg);
+    self->s_msg = NULL;
+  }
+
+  self->ob_type->tp_free ((PyObject *) self);
+}
+
+
+static int
+PyMessage_init (PyMessage * self, PyObject * args, PyObject * kwdict)
+{
+  if (self->s_msg)
+    g_type_free_instance ((GTypeInstance *) self->s_msg);
+
+  self->s_msg = soup_message_new ("GET", "http://localhost/");
+  if (self->s_msg == NULL)
+  {
+    PyErr_Format (PyExc_RuntimeError, "call to 'soup_message_new' failed");
+    return -1;
+  }
+
+  return 0;
+}
+
 
 static PyObject *
 PyMessage_get_body (PyMessage * self, PyObject * args, PyObject * kwdict)
@@ -150,7 +192,8 @@ PyMessage_get_body (PyMessage * self, PyObject * args, PyObject * kwdict)
 static PyObject *
 PyMessage_get_header (PyMessage * self, PyObject * args, PyObject *kwdict)
 {
-  char *name, *value;
+  char * name;
+  const char * value;
 
   if (!PyArg_ParseTuple (args, "s", &name))
     return NULL;
@@ -280,7 +323,7 @@ static PyTypeObject PyMessageType = {
   "itools.http.soup.SoupMessage",            /* tp_name */
   sizeof (PyMessage),                        /* tp_basicsize */
   0,                                         /* tp_itemsize */
-  0,                                         /* tp_dealloc */
+  (destructor) PyMessage_dealloc,            /* tp_dealloc */
   0,                                         /* tp_print */
   0,                                         /* tp_getattr */
   0,                                         /* tp_setattr */
@@ -311,9 +354,9 @@ static PyTypeObject PyMessageType = {
   0,                                         /* tp_descr_get */
   0,                                         /* tp_descr_set */
   0,                                         /* tp_dictoffset */
-  0,                                         /* tp_init */
+  (initproc) PyMessage_init,                 /* tp_init */
   0,                                         /* tp_alloc */
-  PyType_GenericNew,                         /* tp_new */
+  (newfunc) PyMessage_new,                   /* tp_new */
 };
 
 
@@ -330,7 +373,7 @@ typedef struct
 
 void
 s_server_callback (SoupMessage * s_msg, const char * path, gpointer server,
-                   const char * p_server_callback)
+                   char * p_server_callback)
 {
   PyMessage * p_message;
 

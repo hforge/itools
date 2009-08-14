@@ -78,7 +78,6 @@ class HTTPServer(SoupServer):
             log = open(self.access_log, 'a+')
             self.access_log_file = log
         log.write(line)
-        log.flush()
 
 
     def log_error(self):
@@ -116,6 +115,8 @@ class HTTPServer(SoupServer):
         self.main_loop.quit()
         if self.pid_file:
             remove_file(self.pid_file)
+        if self.access_log:
+            self.access_log_file.close()
 
 
     #######################################################################

@@ -62,10 +62,7 @@ def web_logger(domain, level, message, filepath, min_level):
 
 class WebServer(HTTPServer):
 
-#    app = WebApplication()
     context_class = Context
-
-    access_log = None
     event_log = None
 
 
@@ -84,9 +81,7 @@ class WebServer(HTTPServer):
 
 
     def stop(self):
-        # Close files
-        if self.access_log is not None:
-            self.access_log.close()
+        HTTPServer.stop(self)
         if self.event_log is not None:
             self.event_log.close()
 

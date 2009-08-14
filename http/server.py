@@ -24,10 +24,9 @@ from gobject import MainLoop
 
 # Import from itools
 from itools.log import log_error
-from app import Application
-from app import MOVED, REDIRECT, UNAUTHORIZED, FORBIDDEN, NOT_FOUND, GONE
+from itools.uri import Path
 from exceptions import HTTPError
-from context import HTTPContext, set_context
+from context import HTTPContext, set_context, set_response
 from soup import SoupServer
 
 
@@ -40,7 +39,6 @@ MAX_CONNECTIONS = 50
 class HTTPServer(SoupServer):
 
     # The default application says "hello"
-    app = Application()
     context_class = HTTPContext
 
 
@@ -50,6 +48,9 @@ class HTTPServer(SoupServer):
         # The server listens to...
         self.address = address
         self.port = port
+
+        # Mounts
+        self.mounts = [None, {}]
 
         # Main Loop
         self.main_loop = MainLoop()
@@ -110,16 +111,54 @@ class HTTPServer(SoupServer):
 
 
     #######################################################################
-    # Request handling
+    # Mounts
     #######################################################################
+    def mount(self, path, mount):
+        if type(path) is str:
+            path = Path(path)
+
+        aux = self.mounts
+        for name in path:
+            target, aux = aux.setdefault(name, [None, {}])
+        aux[0] = mount
+
+
+    def get_mount(self, path):
+        mount, aux = self.mounts
+        for name in path:
+            aux = aux.get(name)
+            if not aux:
+                return mount
+            if aux[0]:
+                mount = aux[0]
+            aux = aux[1]
+
+        return mount
+
+
+    #######################################################################
+    # Callbacks
+    #######################################################################
+    known_methods = ['OPTIONS', 'GET', 'HEAD', 'POST', 'PUT', 'DELETE']
+
+
     def star_callback(self, soup_message, path):
+        """This method is called for the special "*" request URI, which means
+        the request concerns the server itself, and not any particular
+        resource.
+
+        Currently this feature is only supported for the OPTIONS request
+        method:
+
+          OPTIONS * HTTP/1.1
+        """
         method = soup_message.get_method()
         if method != 'OPTIONS':
             soup_message.set_status(405)
             soup_message.set_header('Allow', 'OPTIONS')
             return
 
-        methods = self.app.known_methods
+        methods = self.known_methods
         soup_message.set_status(200)
         soup_message.set_header('Allow', ','.join(methods))
 
@@ -127,78 +166,28 @@ class HTTPServer(SoupServer):
     def path_callback(self, soup_message, path):
         # 503 Service Unavailable
 #       if len(self.connections) > MAX_CONNECTIONS:
-#           soup_message.set_status(503)
-#           soup_message.set_body('text/plain', '503 Service Unavailable')
-#           return
+#           return set_response(soup_message, 503)
 
+        # New context
         try:
-            self._path_callback(soup_message, path)
+            context = self.context_class(soup_message, path)
         except Exception:
             self.log_error()
-            soup_message.set_status(500)
-            soup_message.set_body('text/plain', '500 Internal Server Error')
-
-
-    def _path_callback(self, soup_message, path):
-        # Make context
-        context = self.context_class(soup_message, path)
-        set_context(context)
-        context.app = self.app
+            return set_response(soup_message, 500)
 
         # 501 Not Implemented
-        app = self.app
-        if context.method not in app.known_methods:
-            return context.set_response(501)
+        if context.method not in self.known_methods:
+            return set_response(soup_message, 501)
 
-        # Step 1: Host
-        app.find_host(context)
-
-        # Step 2: Resource
-        action = app.find_resource(context)
-        if action == NOT_FOUND:
-            return context.set_response(404) # 404 Not Found
-        elif action == GONE:
-            return context.set_response(410) # 410 Gone
-        elif action == REDIRECT:
-            context.set_status(307) # 307 Temporary redirect
-            return context.set_header('Location', context.resource)
-        elif action == MOVED:
-            context.set_status(301) # 301 Moved Permanently
-            return context.set_header('Location', context.resource)
-
-        # 405 Method Not Allowed
-        allowed_methods = app.get_allowed_methods(context)
-        if context.method not in allowed_methods:
-            context.set_response(405)
-            return context.set_header('allow', ','.join(allowed_methods))
-
-        # Step 3: Access Control
-        action = app.check_access(context)
-        if action == UNAUTHORIZED:
-            return context.set_response(401) # 401 Unauthorized
-        elif action == FORBIDDEN:
-            return context.set_response(403) # 403 Forbidden
-
-        # Continue
-        method = app.known_methods[context.method]
-        method = getattr(app, method)
+        # Mount
+        set_context(context)
+        mount = self.get_mount(context.path)
+        context.mount = mount
         try:
-            method(context)
-        except HTTPError, exception:
+            mount.handle_request(context)
+        except Exception:
             self.log_error()
-            status = exception.code
-            context.set_response(status)
-
-        # Free context as soon as possible
-        set_context(None)
-
-
-
-###########################################################################
-# For testing purposes
-###########################################################################
-if __name__ == '__main__':
-    server = HTTPServer()
-    print 'Start server..'
-    server.start()
+            set_response(soup_message, 500)
+        finally:
+            set_context(None)
 

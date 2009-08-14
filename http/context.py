@@ -21,61 +21,6 @@ from entities import Entity
 from headers import get_type
 
 
-reason_phrases = {
-    # Informational (HTTP 1.1)
-    100: 'Continue',
-    101: 'Switching Protocols',
-    # Success (HTTP 1.0)
-    200: 'OK',
-    201: 'Created',
-    202: 'Accepted',
-    204: 'No Content',
-    # Success (HTTP 1.1)
-    203: 'Non-Authoritative Information',
-    205: 'Reset Content',
-    206: 'Partial Content',
-    # Redirection (HTTP 1.0)
-    301: 'Moved Permanently',
-    302: 'Found',
-    304: 'Not Modified',
-    # Redirection (HTTP 1.1)
-    300: 'Multiple Choices',
-    303: 'See Other',
-    305: 'Use Proxy',
-    307: 'Temporary Redirect',
-    # Client error (HTTP 1.0)
-    400: 'Bad Request',
-    401: 'Unauthorized',
-    403: 'Forbidden',
-    404: 'Not Found',
-    # Client error (HTTP 1.1)
-    402: 'Payment Required',
-    405: 'Method Not Allowed',
-    406: 'Not Acceptable',
-    407: 'Proxy Authentication Required',
-    408: 'Request Timeout',
-    409: 'Conflict',
-    410: 'Gone',
-    411: 'Length Required',
-    412: 'Precondition Failed',
-    413: 'Request Entity Too Large',
-    414: 'Request-URI Too Long',
-    415: 'Unsupported Media Type',
-    416: 'Requested Range Not Satisfiable',
-    417: 'Expectation Failed',
-    # Client error (WebDAV),
-    423: 'Locked',
-    # Server error (HTTP 1.0)
-    500: 'Internal error',
-    501: 'Not Implemented',
-    502: 'Bad Gateway',
-    503: 'Service Unavailable',
-    # Server error (HTTP 1.1)
-    504: 'Gateway Timeout',
-    505: 'HTTP Version Not Supported',
-    }
-
-
 class HTTPContext(object):
 
     # Default values
@@ -212,9 +157,7 @@ class HTTPContext(object):
 
 
     def set_response(self, status):
-        self.soup_message.set_status(status)
-        body = '{0} {1}'.format(status, reason_phrases[status])
-        self.soup_message.set_response('text/plain', body)
+        set_response(self.soup_message, status)
 
 
     #######################################################################
@@ -257,7 +200,6 @@ class HTTPContext(object):
 ###########################################################################
 # Keep the context globally
 ###########################################################################
-
 context = None
 
 
@@ -268,3 +210,68 @@ def set_context(ctx):
 
 def get_context():
     return context
+
+
+###########################################################################
+# Utility function 'set_response'
+###########################################################################
+reason_phrases = {
+    # Informational (HTTP 1.1)
+    100: 'Continue',
+    101: 'Switching Protocols',
+    # Success (HTTP 1.0)
+    200: 'OK',
+    201: 'Created',
+    202: 'Accepted',
+    204: 'No Content',
+    # Success (HTTP 1.1)
+    203: 'Non-Authoritative Information',
+    205: 'Reset Content',
+    206: 'Partial Content',
+    # Redirection (HTTP 1.0)
+    301: 'Moved Permanently',
+    302: 'Found',
+    304: 'Not Modified',
+    # Redirection (HTTP 1.1)
+    300: 'Multiple Choices',
+    303: 'See Other',
+    305: 'Use Proxy',
+    307: 'Temporary Redirect',
+    # Client error (HTTP 1.0)
+    400: 'Bad Request',
+    401: 'Unauthorized',
+    403: 'Forbidden',
+    404: 'Not Found',
+    # Client error (HTTP 1.1)
+    402: 'Payment Required',
+    405: 'Method Not Allowed',
+    406: 'Not Acceptable',
+    407: 'Proxy Authentication Required',
+    408: 'Request Timeout',
+    409: 'Conflict',
+    410: 'Gone',
+    411: 'Length Required',
+    412: 'Precondition Failed',
+    413: 'Request Entity Too Large',
+    414: 'Request-URI Too Long',
+    415: 'Unsupported Media Type',
+    416: 'Requested Range Not Satisfiable',
+    417: 'Expectation Failed',
+    # Client error (WebDAV),
+    423: 'Locked',
+    # Server error (HTTP 1.0)
+    500: 'Internal error',
+    501: 'Not Implemented',
+    502: 'Bad Gateway',
+    503: 'Service Unavailable',
+    # Server error (HTTP 1.1)
+    504: 'Gateway Timeout',
+    505: 'HTTP Version Not Supported',
+    }
+
+
+def set_response(soup_message, status):
+    soup_message.set_status(status)
+    body = '{0} {1}'.format(status, reason_phrases[status])
+    soup_message.set_response('text/plain', body)
+

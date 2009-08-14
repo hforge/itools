@@ -15,8 +15,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from app import Application, HTTPResource
-from app import MOVED, REDIRECT, UNAUTHORIZED, FORBIDDEN, NOT_FOUND, GONE
 from context import HTTPContext, get_context
 from exceptions import HTTPError, ClientError, ServerError
 from exceptions import NotModified
@@ -29,16 +27,7 @@ from server import HTTPServer
 __all__ = [
     'HTTPServer',
     'HTTPContext',
-    'HTTPResource',
-    'Application',
     'get_context',
-    # Values returned by 'Application.find_resource'
-    'MOVED',
-    'REDIRECT',
-    'UNAUTHORIZED',
-    'FORBIDDEN',
-    'NOT_FOUND',
-    'GONE',
     # Exceptions
     'BadGateway',
     'BadRequest',

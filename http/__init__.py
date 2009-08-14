@@ -22,12 +22,14 @@ from exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 from exceptions import InternalServerError, NotImplemented, BadGateway
 from exceptions import ServiceUnavailable, MethodNotAllowed, Conflict
 from server import HTTPServer
+from static import Static
 
 
 __all__ = [
     'HTTPServer',
     'HTTPContext',
     'get_context',
+    'Static',
     # Exceptions
     'BadGateway',
     'BadRequest',

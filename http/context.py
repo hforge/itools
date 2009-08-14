@@ -104,6 +104,8 @@ class HTTPContext(object):
         name = name.lower()
         datatype = get_type(name)
         value = self.soup_message.get_header(name)
+        if value is None:
+            return datatype.get_default()
         return datatype.decode(value)
 
 

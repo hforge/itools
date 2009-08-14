@@ -49,15 +49,15 @@ class HTTPServer(SoupServer):
         self.pid_file = pid_file
         self.profile = profile
 
-        # Mounts
-        self.mounts = [None, {}]
-
         # Main Loop
         self.main_loop = MainLoop()
 
-        # Open log files
+        # Open access log
         if access_log is not None:
             self.access_log_file = open(access_log, 'a+')
+
+        # Mounts (the link to the application code)
+        self.mounts = [None, {}]
 
 
     #######################################################################

@@ -15,13 +15,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from context import HTTPContext, get_context
+from context import HTTPContext, get_context, set_context
 from exceptions import HTTPError, ClientError, ServerError
 from exceptions import NotModified
 from exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 from exceptions import InternalServerError, NotImplemented, BadGateway
 from exceptions import ServiceUnavailable, MethodNotAllowed, Conflict
 from server import HTTPServer
+from soup import SoupMessage
 from static import Static
 
 
@@ -29,7 +30,10 @@ __all__ = [
     'HTTPServer',
     'HTTPContext',
     'get_context',
+    'set_context',
     'Static',
+    # Low-level soup interface
+    'SoupMessage',
     # Exceptions
     'BadGateway',
     'BadRequest',

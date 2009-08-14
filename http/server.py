@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from os import fstat, getpid, remove as remove_file
 from signal import signal, SIGINT
 from sys import stdout
 from traceback import format_exc
@@ -42,23 +43,24 @@ class HTTPServer(SoupServer):
     context_class = HTTPContext
 
 
-    def __init__(self, address='', port=8080, access_log=None):
+    def __init__(self, address='', port=8080, access_log=None, pid_file=None):
         SoupServer.__init__(self, address=address, port=port)
 
-        # The server listens to...
+        # Keep arguments
         self.address = address
         self.port = port
-
-        # Mounts
-        self.mounts = [None, {}]
+        self.access_log = access_log
+        self.pid_file = pid_file
 
         # Main Loop
         self.main_loop = MainLoop()
 
-        # Logging
-        self.access_log = access_log
+        # Open access log
         if access_log is not None:
             self.access_log_file = open(access_log, 'a+')
+
+        # Mounts (the link to the application code)
+        self.mounts = [None, {}]
 
 
     #######################################################################
@@ -89,6 +91,10 @@ class HTTPServer(SoupServer):
     #######################################################################
     def start(self):
         signal(SIGINT, self.stop_gracefully)
+        if self.pid_file:
+            pid = getpid()
+            open(self.pid_file, 'w').write(str(pid))
+
         SoupServer.start(self)
         print 'Listen %s:%d' % (self.address, self.port)
         self.main_loop.run()
@@ -108,6 +114,8 @@ class HTTPServer(SoupServer):
 
     def stop(self):
         self.main_loop.quit()
+        if self.pid_file:
+            remove_file(self.pid_file)
 
 
     #######################################################################

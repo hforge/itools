@@ -18,7 +18,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from os import fstat, getpid, remove as remove_file
 from time import strftime
 from traceback import format_exc
 from warnings import warn
@@ -72,24 +71,15 @@ class WebServer(HTTPServer):
 
     def __init__(self, address='', port=8080, access_log=None, event_log=None,
                  log_level=WARNING, pid_file=None):
-        HTTPServer.__init__(self, address, port, access_log)
+        HTTPServer.__init__(self, address, port, access_log, pid_file)
 
         # Events log
         register_logger(None, web_logger, event_log, log_level)
-
-        # The pid file
-        self.pid_file = pid_file
 
 
     def start(self):
         # Language negotiation
         init_language_selector(select_language)
-
-        # PID file
-        if self.pid_file is not None:
-            pid = getpid()
-            open(self.pid_file, 'w').write(str(pid))
-
         HTTPServer.start(self)
 
 
@@ -99,9 +89,6 @@ class WebServer(HTTPServer):
             self.access_log.close()
         if self.event_log is not None:
             self.event_log.close()
-        # Remove pid file
-        if self.pid_file is not None:
-            remove_file(self.pid_file)
 
 
     ########################################################################

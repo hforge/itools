@@ -27,7 +27,7 @@ from gobject import MainLoop
 from itools.i18n import init_language_selector
 from itools.soup import SoupServer
 from itools.uri import Path
-from context import HTTPContext, set_context, set_response
+from context import HTTPContext, set_context, set_response, select_language
 from exceptions import HTTPError
 
 
@@ -82,7 +82,6 @@ class HTTPServer(SoupServer):
     #######################################################################
     def start(self):
         # Language negotiation
-        from itools.web import select_language
         init_language_selector(select_language)
 
         # Graceful stop

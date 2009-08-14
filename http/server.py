@@ -75,7 +75,6 @@ class HTTPServer(SoupServer):
             log = open(self.access_log, 'a+')
             self.access_log_file = log
         log.write(line)
-        log.flush()
 
 
     #######################################################################

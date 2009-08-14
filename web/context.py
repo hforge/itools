@@ -199,14 +199,6 @@ class Context(HTTPContext):
 
 
 #######################################################################
-# Internationalization
-#######################################################################
-def select_language(languages):
-    accept = get_context().accept_language
-    return accept.select_language(languages)
-
-
-#######################################################################
 # Get from the form or query
 #######################################################################
 def get_form_value(form, name, type=String, default=None):

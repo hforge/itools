@@ -187,6 +187,10 @@ def get_context():
     return context
 
 
+def select_language(languages):
+    return context.accept_language.select_language(languages)
+
+
 ###########################################################################
 # Utility function 'set_response'
 ###########################################################################

@@ -19,7 +19,6 @@
 from access import AccessControl
 from app import WebApplication
 from context import Context, FormError
-from context import select_language
 from messages import INFO, ERROR, MSG_MISSING_OR_INVALID
 from resources import Resource, Root, VirtualRoot
 from server import WebServer
@@ -33,7 +32,6 @@ __all__ = [
     'AccessControl',
     # Context
     'Context',
-    'select_language',
     # Model
     'Resource',
     'VirtualRoot',

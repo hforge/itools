@@ -25,9 +25,10 @@ from gobject import MainLoop
 
 # Import from itools
 from itools.log import log_error
+from itools.i18n import init_language_selector
 from itools.uri import Path
 from exceptions import HTTPError
-from context import HTTPContext, set_context, set_response
+from context import HTTPContext, set_context, set_response, select_language
 from soup import SoupServer
 
 
@@ -89,6 +90,7 @@ class HTTPServer(SoupServer):
     # Start & Stop
     #######################################################################
     def start(self):
+        init_language_selector(select_language)
         signal(SIGINT, self.stop_gracefully)
         if self.pid_file:
             pid = getpid()

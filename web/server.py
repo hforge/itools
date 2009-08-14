@@ -28,11 +28,10 @@ from itools.http import HTTPServer
 from itools.http import ClientError, NotModified, BadRequest, Forbidden
 from itools.http import NotFound, Unauthorized, NotImplemented
 from itools.http import MethodNotAllowed
-from itools.i18n import init_language_selector
 from itools.log import WARNING, register_logger, log_error, log_warning
 from itools.uri import Reference
 from app import WebApplication
-from context import Context, select_language
+from context import Context
 from context import FormError
 from views import BaseView
 
@@ -72,12 +71,6 @@ class WebServer(HTTPServer):
 
         # Events log
         register_logger(None, web_logger, event_log, log_level)
-
-
-    def start(self):
-        # Language negotiation
-        init_language_selector(select_language)
-        HTTPServer.start(self)
 
 
     def stop(self):

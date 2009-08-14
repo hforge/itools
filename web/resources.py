@@ -17,13 +17,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.http import HTTPResource
 from itools.uri import Path
 from access import AccessControl
 from views import BaseView
 
 
-class Resource(HTTPResource):
+class Resource(object):
     """This is the base class for all web resources.
     """
 

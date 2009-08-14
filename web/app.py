@@ -20,7 +20,6 @@ from urllib import unquote
 
 # Import from itools
 from itools.handlers import BaseDatabase
-from itools.http import Application, UNAUTHORIZED, FORBIDDEN, NOT_FOUND
 
 
 # These are the values that 'WebApplication.find_resource' may return
@@ -30,22 +29,6 @@ UNAUTHORIZED = 401
 FORBIDDEN = 403
 NOT_FOUND = 404
 GONE = 410 # Not available in HTTP 1.0
-
-
-class HTTPResource(object):
-    """This class is the base class for any HTTP resource.
-    """
-
-
-
-class Root(HTTPResource):
-    """This is a demonstration class, used only as an example.
-    """
-
-    def http_get(self, context):
-        context.set_status(200)
-        context.set_body('text/plain', "Hello, I'am itools.http")
-
 
 
 class WebApplication(object):
@@ -76,7 +59,10 @@ class WebApplication(object):
             context.set_response(405)
             return context.set_header('allow', ','.join(allowed_methods))
 
-        # Step 3: Access Control
+        # Step 3: User (authentication)
+        self.find_user(context)
+
+        # Step 4: Access Control
         action = self.check_access(context)
         if action == UNAUTHORIZED:
             return context.set_response(401) # 401 Unauthorized
@@ -148,6 +134,14 @@ class WebApplication(object):
 
     def get_user(self, credentials):
         return None
+
+
+    def find_user(self, context):
+        credentials = self.get_credentials(context)
+        if credentials is None:
+            self.user = None
+        else:
+            self.user = self.get_user(credentials)
 
 
     def check_access(self, context):

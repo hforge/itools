@@ -191,8 +191,12 @@ class HTTPServer(SoupServer):
             return set_response(soup_message, 501)
 
         # Mount
-        set_context(context)
         mount = self.get_mount(context.path)
+        if mount is None:
+            return set_response(soup_message, 404)
+
+        # Handle request
+        set_context(context)
         context.mount = mount
         try:
             mount.handle_request(context)

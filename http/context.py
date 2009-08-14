@@ -26,6 +26,7 @@ class HTTPContext(object):
     # Default values
     host = None
     resource = None
+    user = None
 
     def __init__(self, soup_message, path):
         self.soup_message = soup_message
@@ -94,34 +95,6 @@ class HTTPContext(object):
                                 self.body[name] = [self.body[name], body]
             else:
                 self.body['body'] = body
-
-
-    #######################################################################
-    # Lazy load
-    #######################################################################
-    loaders = {
-        'user': 'load_user'}
-
-
-    def __getattr__(self, name):
-        loader = self.loaders.get(name)
-        if loader is None:
-            message = "'%s' object has no attribute '%s'"
-            raise AttributeError, message % (self.__class__.__name__, name)
-
-        # Load and try again
-        loader = getattr(self, loader)
-        loader()
-        return getattr(self, name)
-
-
-    def load_user(self):
-        app = self.app
-        credentials = app.get_credentials(self)
-        if credentials is None:
-            self.user = None
-        else:
-            self.user = app.get_user(credentials)
 
 
     #######################################################################

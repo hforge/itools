@@ -18,12 +18,11 @@
 
 # Import from itools
 from itools.uri import Path
-from itools.http import HTTPResource
 from access import AccessControl
 from views import BaseView
 
 
-class Resource(HTTPResource):
+class Resource(object):
     """This is the base class for all web resources.
     """
 

@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from cProfile import runctx
 from os import fstat, getpid, remove as remove_file
 from signal import signal, SIGINT
 from sys import stdout
@@ -44,7 +45,8 @@ class HTTPServer(SoupServer):
     context_class = HTTPContext
 
 
-    def __init__(self, address='', port=8080, access_log=None, pid_file=None):
+    def __init__(self, address='', port=8080, access_log=None, pid_file=None,
+                 profile=None):
         SoupServer.__init__(self, address=address, port=port)
 
         # Keep arguments
@@ -52,6 +54,7 @@ class HTTPServer(SoupServer):
         self.port = port
         self.access_log = access_log
         self.pid_file = pid_file
+        self.profile = profile
 
         # Main Loop
         self.main_loop = MainLoop()
@@ -90,15 +93,22 @@ class HTTPServer(SoupServer):
     # Start & Stop
     #######################################################################
     def start(self):
+        # Language negotiation
         init_language_selector(select_language)
+
+        # Graceful stop
         signal(SIGINT, self.stop_gracefully)
         if self.pid_file:
             pid = getpid()
             open(self.pid_file, 'w').write(str(pid))
 
+        # Run
         SoupServer.start(self)
         print 'Listen %s:%d' % (self.address, self.port)
-        self.main_loop.run()
+        if self.profile:
+            runctx("self.main_loop.run()", globals(), locals(), self.profile)
+        else:
+            self.main_loop.run()
 
 
     def stop_gracefully(self, signum, frame):

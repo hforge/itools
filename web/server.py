@@ -28,13 +28,13 @@ from itools.http import set_response
 from itools.log import log_error, log_warning, register_logger
 from itools.uri import Reference
 from app import WebApplication
-from context import Context, FormError, WebLogger
+from context import WebContext, FormError, WebLogger
 from views import BaseView
 
 
 class WebServer(HTTPServer):
 
-    context_class = Context
+    context_class = WebContext
     event_log = None
 
 
@@ -68,7 +68,7 @@ class WebServer(HTTPServer):
             return set_response(soup_message, 501)
 
         # (2) Initialize the context
-        context = Context(soup_message, path)
+        context = WebContext(soup_message, path)
         self.init_context(context)
 
         # (3) Go

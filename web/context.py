@@ -73,7 +73,7 @@ class FormError(StandardError):
 
 
 
-class Context(HTTPContext):
+class WebContext(HTTPContext):
 
     user = None
     resource = None

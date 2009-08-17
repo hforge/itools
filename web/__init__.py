@@ -18,7 +18,7 @@
 # Import from itools
 from access import AccessControl
 from app import WebApplication
-from context import Context, FormError
+from context import WebContext, FormError
 from messages import INFO, ERROR, MSG_MISSING_OR_INVALID
 from resources import Resource, Root, VirtualRoot
 from server import WebServer
@@ -30,8 +30,7 @@ __all__ = [
     'WebServer',
     'WebApplication',
     'AccessControl',
-    # Context
-    'Context',
+    'WebContext',
     # Model
     'Resource',
     'VirtualRoot',

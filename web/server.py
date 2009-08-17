@@ -31,8 +31,7 @@ from itools.http import MethodNotAllowed
 from itools.log import WARNING, register_logger, log_error, log_warning
 from itools.uri import Reference
 from app import WebApplication
-from context import Context
-from context import FormError
+from context import FormError, WebContext
 from views import BaseView
 
 
@@ -61,7 +60,7 @@ def web_logger(domain, level, message, filepath, min_level):
 
 class WebServer(HTTPServer):
 
-    context_class = Context
+    context_class = WebContext
     event_log = None
 
 
@@ -242,7 +241,7 @@ class RequestMethod(object):
     @classmethod
     def handle_request(cls, server, request):
         # Make the context
-        context = Context(request)
+        context = WebContext(request)
         server.init_context(context)
 
         # (1) Find out the requested resource and view

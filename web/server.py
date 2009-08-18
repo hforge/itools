@@ -18,63 +18,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from traceback import format_exc
 from warnings import warn
 
 # Import from itools
-from itools.http import HTTPServer
-from itools.http import ClientError, NotModified, BadRequest, Forbidden
-from itools.http import NotFound, Unauthorized, NotImplemented
+from itools.http import ClientError, NotModified
+from itools.http import Unauthorized, NotImplemented
 from itools.http import MethodNotAllowed
 from itools.log import log_error
 from itools.uri import Reference
-from app import WebApplication
 from context import FormError, WebContext
-from views import BaseView
 
 
-class WebServer(HTTPServer):
-
-    context_class = WebContext
-
-
-    def init_context(self, context):
-        # (1) The server, the data root and the authenticated user
-        context.server = self
-        context.root = self.root
-
-
-    def http_get(self, request):
-        return GET.handle_request(self, request)
-
-
-    def http_post(self, request):
-        return POST.handle_request(self, request)
-
-
-    def http_put(self, request):
-        from webdav import PUT
-        return PUT.handle_request(self, request)
-
-
-    def http_delete(self, request):
-        return DELETE.handle_request(self, request)
-
-
-    def http_lock(self, request):
-        from webdav import LOCK
-        return LOCK.handle_request(self, request)
-
-
-    def http_unlock(self, request):
-        from webdav import UNLOCK
-        return UNLOCK.handle_request(self, request)
-
-
-
-###########################################################################
-# The Request Methods
-###########################################################################
 
 status2name = {
     401: 'http_unauthorized',

@@ -24,7 +24,11 @@ of the Glib API).
 """
 
 # Import from the Standard Library
-from sys import exit, stdout, stderr
+from os import getpid
+from socket import gethostname
+from sys import exc_info, exit, stdout, stderr
+from time import strftime
+from traceback import format_exception
 
 
 # Log levels
@@ -78,7 +82,26 @@ def register_logger(domain, logger):
 
 class Logger(object):
 
+    def format(self, domain, level, message):
+        # <date> <host> <domain>[<pid>]: <message>
+        date = strftime('%Y-%m-%d %H:%M:%S')
+        host = gethostname()
+        domain = domain or ''
+        pid = getpid()
+
+        type, value, traceback = exc_info()
+        if type is None:
+            template = '{0} {1} {2}[{3}]: {4}\n'
+            return template.format(date, host, domain, pid, message)
+
+        traceback = format_exception(type, value, traceback)
+        traceback = ''.join([ '  %s' % x for x in traceback ])
+        template = '{0} {1} {2}[{3}]: {4}\n{5}\n'
+        return template.format(date, host, domain, pid, message, traceback)
+
+
     def log(self, domain, level, message):
+        message = self.format(domain, level, message)
         if level & FATAL:
             stderr.write(message)
             stderr.flush()

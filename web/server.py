@@ -18,17 +18,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from time import strftime
 from traceback import format_exc
 from warnings import warn
-from sys import exc_info
 
 # Import from itools
 from itools.http import HTTPServer
 from itools.http import ClientError, NotModified, BadRequest, Forbidden
 from itools.http import NotFound, Unauthorized, NotImplemented
 from itools.http import MethodNotAllowed
-from itools.log import WARNING, register_logger, log_error, log_warning
+from itools.log import WARNING, Logger, register_logger, log_error
 from itools.uri import Reference
 from app import WebApplication
 from context import FormError, WebContext
@@ -49,8 +47,7 @@ class WebLogger(Logger):
             return
 
         # Build message
-        now = strftime('%Y-%m-%d %H:%M:%S')
-        message = '{0} - {1} - {2}\n'.format(now, domain, message)
+        message = self.format(domain, level, message)
 
         # Case 1: Standard error
         if self.filepath is None:
@@ -116,11 +113,6 @@ class WebServer(HTTPServer):
 
         # Log
         log_error(summary + details)
-
-
-    def log_warning(self, context=None):
-        exc_type, exc_value, traceback = exc_info()
-        log_warning("%s: %s" % (exc_type.__name__, exc_value))
 
 
     #######################################################################

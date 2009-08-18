@@ -126,10 +126,12 @@ class MailSpool(object):
             if self.smtp_login and self.smtp_password:
                 smtp.login(self.smtp_login, self.smtp_password)
         except gaierror, excp:
-            log_warning('%s: "%s"' % (excp[1], smtp_host))
+            log_warning('Failed to connect to SMTP host (%s)' % smtp_host,
+                        domain='itools.mail')
             return 1
-        except:
-            self.smtp_log_error()
+        except Exception:
+            log_error('Failed to connect to SMTP host (%s)' % smtp_host,
+                      domain='itools.mail')
             return 1
 
         # Send emails
@@ -148,18 +150,18 @@ class MailSpool(object):
                 spool.remove(name)
                 # Log
                 log_msg = 'Email "%s" sent from "%s" to "%s"'
-                log_info(msg % (subject, from_addr, to_addr))
+                log_info(log_msg % (subject, from_addr, to_addr),
+                         domain='itools.mail')
             except (SMTPRecipientsRefused, SMTPResponseException):
-                # the SMTP server returns an error code
-                # or the recipient addresses has been refused
-                # Log
-                self.smtp_log_error()
+                # The SMTP server returns an error code or the recipient
+                # addresses has been refused
+                log_error('Failed to send email', domain='itools.mail')
                 # Remove
                 spool.remove(name)
                 error = 1
             except Exception:
                 # Other error ...
-                self.smtp_log_error()
+                log_error('Failed to send email', domain='itools.mail')
                 error = 1
 
         # Close connection
@@ -182,12 +184,6 @@ class MailSpool(object):
             return True
 
         return False
-
-
-    def smtp_log_error(self):
-        summary = 'Error sending email\n'
-        details = format_exc()
-        log_error(summary + details)
 
 
     def connect_to_loop(self):

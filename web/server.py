@@ -36,25 +36,32 @@ from views import BaseView
 
 
 
-def web_logger(domain, level, message, filepath, min_level):
-    # Log only if mimimum level reached
-    if level < min_level:
-        return
+class WebLogger(Logger):
 
-    # Build message
-    now = strftime('%Y-%m-%d %H:%M:%S')
-    message = '{0} - {1} - {2}\n'.format(now, domain, message)
+    def __init__(self, filepath, min_level):
+        self.filepath = filepath
+        self.min_level = min_level
 
-    # Case 1: Standard error
-    if filepath is None:
-        stderr.write(message)
-        stderr.flush()
-        return
 
-    # Case 2: File
-    with open(filepath, 'a') as f:
-        f.write(message)
-        f.flush()
+    def log(self, domain, level, message):
+        # Log only if mimimum level reached
+        if level < self.min_level:
+            return
+
+        # Build message
+        now = strftime('%Y-%m-%d %H:%M:%S')
+        message = '{0} - {1} - {2}\n'.format(now, domain, message)
+
+        # Case 1: Standard error
+        if self.filepath is None:
+            stderr.write(message)
+            stderr.flush()
+            return
+
+        # Case 2: File
+        with open(self.filepath, 'a') as f:
+            f.write(message)
+            f.flush()
 
 
 
@@ -69,7 +76,8 @@ class WebServer(HTTPServer):
         HTTPServer.__init__(self, address, port, access_log, pid_file)
 
         # Events log
-        register_logger(None, web_logger, event_log, log_level)
+        logger = WebLogger(event_log, log_level)
+        register_logger(None, logger)
 
 
     def stop(self):

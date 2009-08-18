@@ -15,19 +15,20 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from log import FATAL, ERROR, WARNING, INFO, DEBUG, register_logger
+from log import Logger, register_logger
+from log import FATAL, ERROR, WARNING, INFO, DEBUG
 from log import log_fatal, log_error, log_warning, log_info, log_debug
 
 
 __all__ = [
+    'Logger'
+    'register_logger',
     # Log levels
     'FATAL',
     'ERROR',
     'WARNING',
     'INFO',
     'DEBUG',
-    # Register function
-    'register_logger',
     # Log functions
     'log_fatal',
     'log_error',

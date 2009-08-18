@@ -42,8 +42,7 @@ def log(domain, level, message):
     if domain not in registry:
         domain = None
 
-    logger, args = registry.get(domain)
-    logger(domain, level, message, *args)
+    registry[domain].log(domain, level, message)
 
 
 
@@ -73,23 +72,24 @@ def log_debug(message, domain=None):
 registry = {}
 
 
-def register_logger(domain, logger, *args):
-    registry[domain] = (logger, args)
+def register_logger(domain, logger):
+    registry[domain] = logger
 
 
-# Default logger
-def default_logger(domain, level, message):
-    if level & FATAL:
-        stderr.write(message)
-        stderr.flush()
-        exit()
-    elif level & (ERROR | WARNING):
-        stderr.write(message)
-        stderr.flush()
-    else:
-        stdout.write(message)
-        stdout.flush()
+class Logger(object):
+
+    def log(self, domain, level, message):
+        if level & FATAL:
+            stderr.write(message)
+            stderr.flush()
+            exit()
+        elif level & (ERROR | WARNING):
+            stderr.write(message)
+            stderr.flush()
+        else:
+            stdout.write(message)
+            stdout.flush()
 
 
-register_logger(None, default_logger)
+register_logger(None, Logger())
 

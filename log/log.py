@@ -82,6 +82,11 @@ def register_logger(domain, logger):
 
 class Logger(object):
 
+    def __init__(self, log_file=None, min_level=INFO):
+        self.log_file = log_file
+        self.min_level = min_level
+
+
     def format(self, domain, level, message):
         # <date> <host> <domain>[<pid>]: <message>
         date = strftime('%Y-%m-%d %H:%M:%S')
@@ -101,17 +106,25 @@ class Logger(object):
 
 
     def log(self, domain, level, message):
+        if level < self.min_level:
+            return
+
         message = self.format(domain, level, message)
-        if level & FATAL:
+
+        # Case 1: log file
+        if self.log_file:
+            with open(self.log_file, 'a') as log_file:
+                log_file.write(message)
+
+        # Case 2: standard output & error
+        elif level & (FATAL | ERROR | WARNING):
             stderr.write(message)
-            stderr.flush()
-            exit()
-        elif level & (ERROR | WARNING):
-            stderr.write(message)
-            stderr.flush()
         else:
             stdout.write(message)
-            stdout.flush()
+
+        # Exit on fatal errors
+        if level & FATAL:
+            exit()
 
 
 register_logger(None, Logger())

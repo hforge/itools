@@ -26,7 +26,7 @@ from itools.http import HTTPServer
 from itools.http import ClientError, NotModified, BadRequest, Forbidden
 from itools.http import NotFound, Unauthorized, NotImplemented
 from itools.http import MethodNotAllowed
-from itools.log import WARNING, Logger, register_logger, log_error
+from itools.log import log_error
 from itools.uri import Reference
 from app import WebApplication
 from context import FormError, WebContext
@@ -34,58 +34,11 @@ from views import BaseView
 
 
 
-class WebLogger(Logger):
-
-    def __init__(self, filepath, min_level):
-        self.filepath = filepath
-        self.min_level = min_level
-
-
-    def log(self, domain, level, message):
-        # Log only if mimimum level reached
-        if level < self.min_level:
-            return
-
-        # Build message
-        message = self.format(domain, level, message)
-
-        # Case 1: Standard error
-        if self.filepath is None:
-            stderr.write(message)
-            stderr.flush()
-            return
-
-        # Case 2: File
-        with open(self.filepath, 'a') as f:
-            f.write(message)
-            f.flush()
-
-
-
 class WebServer(HTTPServer):
 
     context_class = WebContext
-    event_log = None
 
 
-    def __init__(self, address='', port=8080, access_log=None, event_log=None,
-                 log_level=WARNING, pid_file=None):
-        HTTPServer.__init__(self, address, port, access_log, pid_file)
-
-        # Events log
-        logger = WebLogger(event_log, log_level)
-        register_logger(None, logger)
-
-
-    def stop(self):
-        HTTPServer.stop(self)
-        if self.event_log is not None:
-            self.event_log.close()
-
-
-    ########################################################################
-    # Logging
-    ########################################################################
     def log_error(self, context=None):
         if context is None:
             summary = ''

@@ -26,11 +26,10 @@ from itools.core import freeze
 from itools.datatypes import String
 from itools.gettext import MSG
 from itools.http import get_type, Entity
-from itools.http import Cookie, SetCookieDataType
-from itools.http import HTTPContext
+from itools.http import HTTPContext, get_context
 from itools.i18n import AcceptLanguageType
 from itools.log import Logger
-from itools.uri import decode_query, get_reference, Path
+from itools.uri import decode_query, get_reference
 from messages import ERROR
 
 

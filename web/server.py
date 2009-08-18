@@ -25,10 +25,10 @@ from itools.http import HTTPServer
 from itools.http import ClientError, NotModified, Forbidden, NotFound
 from itools.http import NotImplemented, MethodNotAllowed, Unauthorized
 from itools.http import set_response
-from itools.log import log_error, log_warning, register_logger
+from itools.log import log_error, log_warning
 from itools.uri import Reference
 from app import WebApplication
-from context import WebContext, FormError, WebLogger
+from context import WebContext, FormError
 from views import BaseView
 
 
@@ -38,16 +38,6 @@ class WebServer(HTTPServer):
     event_log = None
 
 
-    def __init__(self, address='', port=8080, access_log=None, event_log=None,
-                 pid_file=None):
-        register_logger(WebLogger(log_file=event_log), 'itools.web')
-        super(WebServer, self).__init__(address, port, access_log, pid_file,
-                                        profile)
-
-
-    #######################################################################
-    # Stage 0: Initialize the context
-    #######################################################################
     def init_context(self, context):
         # (1) The server, the data root and the authenticated user
         context.server = self
@@ -108,13 +98,6 @@ class WebServer(HTTPServer):
     def http_unlock(self, request):
         from webdav import UNLOCK
         return UNLOCK.handle_request(self, request)
-
-
-    #######################################################################
-    # To override by subclasses
-    #######################################################################
-    def get_resource(self, host, uri):
-        raise NotImplementedError
 
 
 

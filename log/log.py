@@ -87,22 +87,37 @@ class Logger(object):
         self.min_level = min_level
 
 
-    def format(self, domain, level, message):
+    def format_header(self, domain, level, message):
         # <date> <host> <domain>[<pid>]: <message>
         date = strftime('%Y-%m-%d %H:%M:%S')
         host = gethostname()
         domain = domain or ''
         pid = getpid()
+        header = '{0} {1} {2}[{3}]: {4}\n'
+        return header.format(date, host, domain, pid, message)
 
+
+    def get_body(self):
         type, value, traceback = exc_info()
         if type is None:
-            template = '{0} {1} {2}[{3}]: {4}\n'
-            return template.format(date, host, domain, pid, message)
+            return []
 
-        traceback = format_exception(type, value, traceback)
-        traceback = ''.join([ '  %s' % x for x in traceback ])
-        template = '{0} {1} {2}[{3}]: {4}\n{5}\n'
-        return template.format(date, host, domain, pid, message, traceback)
+        return format_exception(type, value, traceback)
+
+
+    def format_body(self):
+        body = self.get_body()
+        if not body:
+            return ''
+        body = ''.join([ '  %s' % x for x in body ])
+        body += '\n'
+        return body
+
+
+    def format(self, domain, level, message):
+        header = self.format_header(domain, level, message)
+        body = self.format_body()
+        return header + body
 
 
     def log(self, domain, level, message):

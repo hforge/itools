@@ -27,8 +27,9 @@ from time import strptime
 from itools.core import freeze
 from itools.datatypes import String
 from itools.gettext import MSG
-from itools.http import HTTPContext
+from itools.http import HTTPContext, get_context
 from itools.i18n import AcceptLanguageType
+from itools.log import Logger
 from itools.uri import get_reference
 from messages import ERROR
 
@@ -255,3 +256,32 @@ def get_form_value(form, name, type=String, default=None):
     elif not type.is_valid(value):
         raise FormError(invalid=[name])
     return value
+
+
+
+class WebLogger(Logger):
+
+    def get_body(self):
+        context = get_context()
+        if context is None:
+            return Logger.get_body(self)
+
+        # The URI and user
+        if context.user:
+            lines = ['%s (user: %s)\n' % (context.uri, context.user.name)]
+        else:
+            lines = ['%s\n' % context.uri]
+
+        # TODO
+        # Request headers
+#       request = context.request
+#       details = (
+#           request.request_line_to_str()
+#           + request.headers_to_str()
+#           + '\n')
+
+        # Ok
+        body = Logger.get_body(self)
+        lines.extend(body)
+        return lines
+

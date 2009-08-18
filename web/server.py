@@ -33,53 +33,17 @@ from context import FormError, WebContext
 from views import BaseView
 
 
-
 class WebServer(HTTPServer):
 
     context_class = WebContext
 
 
-    def log_error(self, context=None):
-        if context is None:
-            summary = ''
-            details = ''
-        else:
-            # The summary
-            user = context.user
-            if user is None:
-                summary = '%s\n' % context.uri
-            else:
-                summary = '%s (user: %s)\n' % (context.uri, user.name)
-            # Details, the headers
-            request = context.request
-            details = (
-                request.request_line_to_str()
-                + request.headers_to_str()
-                + '\n')
-
-        # The traceback
-        details = details + format_exc()
-
-        # Indent the details
-        lines = [ ('  %s\n' % x) for x in details.splitlines() ]
-        details = ''.join(lines)
-
-        # Log
-        log_error(summary + details)
-
-
-    #######################################################################
-    # Stage 0: Initialize the context
-    #######################################################################
     def init_context(self, context):
         # (1) The server, the data root and the authenticated user
         context.server = self
         context.root = self.root
 
 
-    ########################################################################
-    # Request handling: main functions
-    ########################################################################
     def http_get(self, request):
         return GET.handle_request(self, request)
 
@@ -105,6 +69,7 @@ class WebServer(HTTPServer):
     def http_unlock(self, request):
         from webdav import UNLOCK
         return UNLOCK.handle_request(self, request)
+
 
 
 ###########################################################################
@@ -185,7 +150,7 @@ class RequestMethod(object):
 
     @classmethod
     def internal_server_error(cls, server, context):
-        server.log_error(context)
+        log_error('Internal Server Error', domain='itools.web')
         context.status = 500
         root = context.site_root
         context.entity = root.http_internal_server_error.GET(root, context)

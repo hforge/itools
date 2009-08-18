@@ -183,7 +183,7 @@ class HTTPServer(SoupServer):
         try:
             context = self.context_class(soup_message, path)
         except Exception:
-            self.log_error()
+            log_error('Failed to make context instance', domain='itools.http')
             return set_response(soup_message, 500)
 
         # 501 Not Implemented
@@ -201,7 +201,7 @@ class HTTPServer(SoupServer):
         try:
             mount.handle_request(context)
         except Exception:
-            self.log_error()
+            log_error('Failed to handle request', domain='itools.http')
             set_response(soup_message, 500)
         finally:
             set_context(None)

@@ -43,10 +43,10 @@ DEBUG = (0 << 5)
 # Log functions
 ###########################################################################
 def log(domain, level, message):
-    if domain not in registry:
-        domain = None
-
-    registry[domain].log(domain, level, message)
+    if domain in registry:
+        registry[domain].log(domain, level, message)
+    else:
+        registry[None].log(domain, level, message)
 
 
 

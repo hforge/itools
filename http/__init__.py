@@ -25,7 +25,6 @@ from exceptions import InternalServerError, NotImplemented, BadGateway
 from exceptions import ServiceUnavailable, MethodNotAllowed, Conflict
 from headers import get_type
 from server import HTTPServer
-from soup import SoupMessage
 from static import Static
 from utils import set_response
 
@@ -42,8 +41,6 @@ __all__ = [
     # Cookies
     'Cookie',
     'SetCookieDataType',
-    # Low-level soup interface
-    'SoupMessage',
     # Exceptions
     'BadGateway',
     'BadRequest',

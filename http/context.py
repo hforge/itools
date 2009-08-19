@@ -16,9 +16,8 @@
 
 # Import from itools
 from itools.uri import decode_query, Path
-from cookies import Cookie, SetCookieDataType
 from entities import Entity
-from headers import get_type
+from headers import get_type, Cookie, SetCookieDataType
 
 
 class HTTPContext(object):

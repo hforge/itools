@@ -4,17 +4,17 @@ meta-package for easier development and deployment.
 
 The packages included are:
 
-  itools.abnf             itools.log              itools.stl
-  itools.core             itools.mail             itools.tmx
-  itools.csv              itools.odf              itools.uri
-  itools.datatypes        itools.office           itools.vfs
-  itools.gettext          itools.pdf              itools.web
-  itools.git              itools.pkg              itools.workflow
-  itools.handlers         itools.python           itools.xapian
-  itools.html             itools.relaxng          itools.xliff
-  itools.http             itools.rest             itools.xml
-  itools.i18n             itools.rss              itools.xmlfile
-  itools.ical             itools.srx
+  itools.abnf             itools.log              itools.srx
+  itools.core             itools.mail             itools.stl
+  itools.csv              itools.odf              itools.tmx
+  itools.datatypes        itools.office           itools.uri
+  itools.gettext          itools.pdf              itools.vfs
+  itools.git              itools.pkg              itools.web
+  itools.handlers         itools.python           itools.workflow
+  itools.html             itools.relaxng          itools.xapian
+  itools.http             itools.rest             itools.xliff
+  itools.i18n             itools.rss              itools.xml
+  itools.ical             itools.soup             itools.xmlfile
 
 The scripts included are:
 
@@ -33,7 +33,7 @@ Python          2.6  itools           http://www.python.org/
 pkg-config     0.23  itools           http://pkg-config.freedesktop.org/
 glib           2.16  itools.vfs       http://www.gtk.org/
 pygobject    2.16.1  itools.vfs       http://www.pygtk.org/
-libsoup      2.26.3  itools.http      http://live.gnome.org/LibSoup
+libsoup      2.26.3  itools.soup      http://live.gnome.org/LibSoup
 reportlab       2.3  itools.pdf       http://www.reportlab.org/
 xapian        1.0.8  itools.xapian    http://www.xapian.org/
 pywin32         212  (Windows)        http://sf.net/projects/pywin32/

@@ -22,7 +22,6 @@ from exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 from exceptions import InternalServerError, NotImplemented, BadGateway
 from exceptions import ServiceUnavailable, MethodNotAllowed, Conflict
 from server import HTTPServer
-from soup import SoupMessage
 from static import Static
 
 
@@ -32,8 +31,6 @@ __all__ = [
     'get_context',
     'set_context',
     'Static',
-    # Low-level soup interface
-    'SoupMessage',
     # Exceptions
     'BadGateway',
     'BadRequest',

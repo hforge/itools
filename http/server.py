@@ -27,10 +27,10 @@ from gobject import MainLoop
 # Import from itools
 from itools.log import log_error
 from itools.i18n import init_language_selector
+from itools.soup import SoupServer
 from itools.uri import Path
 from exceptions import HTTPError
 from context import HTTPContext, set_context, set_response, select_language
-from soup import SoupServer
 
 
 # When the number of connections hits the maximum number of connections

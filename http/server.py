@@ -135,7 +135,7 @@ class HTTPServer(SoupServer):
 
         aux = self.mounts
         for name in path:
-            target, aux = aux.setdefault(name, [None, {}])
+            aux = aux[1].setdefault(name, [None, {}])
         aux[0] = mount
 
 

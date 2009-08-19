@@ -76,8 +76,9 @@ def log_debug(message, domain=None):
 registry = {}
 
 
-def register_logger(domain, logger):
-    registry[domain] = logger
+def register_logger(logger, *args):
+    for domain in args:
+        registry[domain] = logger
 
 
 class Logger(object):

@@ -434,22 +434,27 @@ PyServerType_init (PyServer * self, PyObject * args, PyObject * kwdict)
     return -1;
 
   /* http://bugzilla.gnome.org/show_bug.cgi?id=532778 */
-  g_thread_init (NULL);
+  if (!g_thread_supported ())
+    g_thread_init (NULL);
 
   /* TODO This does not work, soup_server_new fails with SOUP_SERVER_INTERFACE
    * Loosely related, http://bugzilla.gnome.org/show_bug.cgi?id=561547
    */
   s_address = soup_address_new (address, port);
   if (!s_address)
-    /* TODO Set Python error condition */
+  {
+    PyErr_Format (PyExc_RuntimeError, "could not make the SoupAddress");
     return -1;
+  }
 
   s_server = soup_server_new (SOUP_SERVER_SERVER_HEADER, "itools.http",
                               /* SOUP_SERVER_INTERFACE, s_address, */
                               SOUP_SERVER_PORT, port, NULL);
   if (!s_server)
-    /* TODO Set Python error condition */
+  {
+    PyErr_Format (PyExc_RuntimeError, "could not make the SoupServer");
     return -1;
+  }
   self->s_server = s_server;
 
   /* Handler */

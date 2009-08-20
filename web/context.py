@@ -28,6 +28,7 @@ from itools.core import freeze
 from itools.datatypes import String
 from itools.gettext import MSG
 from itools.http import HTTPContext, get_context
+from itools.http import Unauthorized, Forbidden
 from itools.i18n import AcceptLanguageType
 from itools.log import Logger
 from itools.uri import get_reference
@@ -38,6 +39,8 @@ from messages import ERROR
 class FormError(StandardError):
     """Raised when a form is invalid (missing or invalid fields).
     """
+
+    status = None
 
     def __init__(self, message=None, missing=freeze([]), invalid=freeze([])):
         self.msg = message
@@ -75,17 +78,18 @@ class FormError(StandardError):
 
 class WebContext(HTTPContext):
 
-    user = None
-    resource = None
-    status = None
-
-
     def __init__(self, soup_message, path):
         HTTPContext.__init__(self, soup_message, path)
 
-        # accept_language
-        accept_language = self.get_header('Accept-Language') or ''
-        self.accept_language = AcceptLanguageType.decode(accept_language)
+        # Split the path so '/a/b/c/;view' becomes ('/a/b/c', 'view')
+        path = self.path
+        name = path.get_name()
+        if name and name[0] == ';':
+            self.resource_path = path[:-1]
+            self.view_name = name[1:]
+        else:
+            self.resource_path = path
+            self.view_name = None
 
 
     def get_link(self, resource):
@@ -93,8 +97,63 @@ class WebContext(HTTPContext):
         """
         # FIXME This method should give an error if the given resource is
         # not within the site root.
-        site_root = self.site_root
-        return '/%s' % site_root.get_pathto(resource)
+        host = self.host
+        return '/%s' % host.get_pathto(resource)
+
+
+    #######################################################################
+    # Lazy load
+    #######################################################################
+    def load_accept_language(self):
+        accept_language = self.get_header('Accept-Language') or ''
+        return AcceptLanguageType.decode(accept_language)
+
+
+    def load_host(self):
+        return self.mount.get_host(self)
+
+
+    def load_resource(self):
+        resource = self.mount.get_resource(self.resource_path, soft=True)
+        if resource is None:
+            raise NotFound
+        return resource
+
+
+    def load_view(self):
+        return self.resource.get_view(self.view_name, self.query)
+
+
+    def get_credentials(self):
+        # Credentials
+        cookie = self.get_cookie('__ac')
+        if cookie is None:
+            return None
+
+        cookie = unquote(cookie)
+        cookie = decodestring(cookie)
+        username, password = cookie.split(':', 1)
+        if username is None or password is None:
+            return None
+
+        return username, password
+
+
+    def load_user(self):
+        credentials = self.get_credentials()
+        if credentials is None:
+            return None
+        mount = self.mount
+        return mount.get_user(credentials)
+
+
+    def load_access(self):
+        resource = self.resource
+        ac = resource.get_access_control()
+        if not ac.is_access_allowed(self, resource, self.view):
+            if self.user:
+                raise Forbidden
+            raise Unauthorized
 
 
     #######################################################################

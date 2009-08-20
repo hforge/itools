@@ -114,7 +114,6 @@ class RequestMethod(object):
     def handle_request(cls, server, request):
         # Make the context
         context = WebContext(request)
-        server.init_context(context)
 
         # (1) Find out the requested resource and view
         response = context.response

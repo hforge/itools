@@ -16,10 +16,14 @@
 
 # Import from the Standard Library
 from base64 import decodestring
+from types import GeneratorType
 from urllib import unquote
 
 # Import from itools
 from itools.handlers import BaseDatabase
+from itools.html import stream_to_str_as_html
+from itools.http import HTTPError, HTTPMount
+from context import WebContext
 
 
 # These are the values that 'WebApplication.find_resource' may return
@@ -30,126 +34,47 @@ FORBIDDEN = 403
 NOT_FOUND = 404
 GONE = 410 # Not available in HTTP 1.0
 
+status2name = {
+    401: 'http_unauthorized',
+    403: 'http_forbidden',
+    404: 'http_not_found',
+    405: 'http_method_not_allowed',
+    409: 'http_conflict'}
 
-class WebApplication(object):
 
+
+class WebApplication(HTTPMount):
+
+    context_class = WebContext
     database = BaseDatabase()
 
 
     def handle_request(self, context):
-        # Step 1: Host
-        self.find_host(context)
-
-        # Step 2: Resource
-        action = self.find_resource(context)
-        if action == NOT_FOUND:
-            return context.set_response(404) # 404 Not Found
-        elif action == GONE:
-            return context.set_response(410) # 410 Gone
-        elif action == REDIRECT:
-            context.set_status(307) # 307 Temporary redirect
-            return context.set_header('Location', context.resource)
-        elif action == MOVED:
-            context.set_status(301) # 301 Moved Permanently
-            return context.set_header('Location', context.resource)
-
-        # 405 Method Not Allowed
-        allowed_methods = self.get_allowed_methods(context)
-        if context.method not in allowed_methods:
-            context.set_response(405)
-            return context.set_header('allow', ','.join(allowed_methods))
-
-        # Step 3: User (authentication)
-        self.find_user(context)
-
-        # Step 4: Access Control
-        action = self.check_access(context)
-        if action == UNAUTHORIZED:
-            return context.set_response(401) # 401 Unauthorized
-        elif action == FORBIDDEN:
-            return context.set_response(403) # 403 Forbidden
-
-        # Continue
-        method = self.known_methods[context.method]
-        method = getattr(self, method)
         try:
+            context.access
+            method = self.known_methods[context.method]
+            method = getattr(self, method)
             method(context)
         except HTTPError, exception:
-            self.log_error()
             status = exception.code
-            context.set_response(status)
-
-
-    #######################################################################
-    # Resource
-    #######################################################################
-    def find_host(self, context):
-        pass
-
-
-    def find_resource(self, context):
-        """Sets 'context.resource' to the requested resource if it exists.
-
-        Otherwise sets 'context.status' to 404 (not found error) and
-        'context.resource' to the latest resource in the path that does exist.
-        """
-        # Split the path so '/a/b/c/;view' becomes ('/a/b/c', 'view')
-        name = context.path.get_name()
-        if name and name[0] == ';':
-            path = context.path[:-1]
-            view = name[1:]
+            context.status = status
+            context.resource = context.host
+            del context.view
+            context.view_name = status2name[status]
+            context.access = True
+            self.handle_request(context)
         else:
-            path = context.path
-            view = None
-
-        # Get the resource
-        resource = self.get_resource(path, soft=True)
-        if resource is None:
-            return NOT_FOUND
-        context.resource = resource
-
-        # Get the view
-        context.view = resource.get_view(view, context.query)
-        if context.view is None:
-            return NOT_FOUND
+            if context.status is None:
+                context.status = 200
+            context.set_status(context.status)
 
 
-    #######################################################################
-    # Authorization
-    #######################################################################
-    def get_credentials(self, context):
-        # Credentials
-        cookie = context.get_cookie('__ac')
-        if cookie is None:
-            return None
-
-        cookie = unquote(cookie)
-        cookie = decodestring(cookie)
-        username, password = cookie.split(':', 1)
-        if username is None or password is None:
-            return None
-
-        return username, password
+    def get_host(self, context):
+        return None
 
 
     def get_user(self, credentials):
         return None
-
-
-    def find_user(self, context):
-        credentials = self.get_credentials(context)
-        if credentials is None:
-            self.user = None
-        else:
-            self.user = self.get_user(credentials)
-
-
-    def check_access(self, context):
-        # Access Control
-        resource = context.resource
-        ac = resource.get_access_control()
-        if not ac.is_access_allowed(context, resource, context.view):
-            return FORBIDDEN if context.user else UNAUTHORIZED
 
 
     #######################################################################
@@ -180,8 +105,11 @@ class WebApplication(object):
 
 
     def http_get(self, context):
-        resource = context.resource
-        resource.http_get(context)
+        view = context.view
+        body = view.http_get(context.resource, context)
+        if type(body) is GeneratorType:
+            body = stream_to_str_as_html(body)
+        context.set_body('text/html', body)
 
 
     def http_post(self, context):

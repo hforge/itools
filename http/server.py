@@ -192,14 +192,13 @@ class HTTPServer(SoupServer):
 
         # New context
         try:
-            context = mount.context_class(soup_message, path)
+            context = mount.get_context(soup_message, path)
         except Exception:
             log_error('Failed to make context instance', domain='itools.http')
             return set_response(soup_message, 500)
 
         # Handle request
         set_context(context)
-        context.mount = mount
         try:
             mount.handle_request(context)
         except Exception:

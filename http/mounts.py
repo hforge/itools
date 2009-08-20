@@ -25,6 +25,13 @@ class HTTPMount(object):
 
     context_class = HTTPContext
 
+
+    def get_context(self, soup_message, path):
+        context = self.context_class(soup_message, path)
+        context.mount = self
+        return context
+
+
     def handle_request(self, context):
         raise NotImplementedError
 

@@ -58,6 +58,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <define name="link">
   <element name="pml:link">
     <attribute name="pml:rel"><data type="string"/></attribute>
+    <attribute name="pml:href"><data type="anyURI"/></attribute>
+    <attribute name="pml:type"><data type="string"/></attribute>
   </element>
 </define>
 
@@ -85,6 +87,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <zeroOrMore><ref name="hr" /></zeroOrMore>
     <zeroOrMore><ref name="i" /></zeroOrMore>
     <zeroOrMore><ref name="img" /></zeroOrMore>
+    <zeroOrMore><ref name="nobreak" /></zeroOrMore>
     <zeroOrMore><ref name="ol" /></zeroOrMore>
     <zeroOrMore><ref name="p" /></zeroOrMore>
     <zeroOrMore><ref name="pagebreak" /></zeroOrMore>
@@ -439,6 +442,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <zeroOrMore><ref name="br" /></zeroOrMore>
     <zeroOrMore><ref name="pagenumber" /></zeroOrMore>
     <zeroOrMore><ref name="pagetotal" /></zeroOrMore>
+  </element>
+</define>
+
+<define name="nobreak">
+  <element name="pml:nobreak">
+    <zeroOrMore><ref name="b" /></zeroOrMore>
+    <zeroOrMore><ref name="div" /></zeroOrMore>
+    <zeroOrMore><ref name="dl" /></zeroOrMore>
+    <zeroOrMore><ref name="font" /></zeroOrMore>
+    <zeroOrMore><ref name="hX" /></zeroOrMore>
+    <zeroOrMore><ref name="hr" /></zeroOrMore>
+    <zeroOrMore><ref name="i" /></zeroOrMore>
+    <zeroOrMore><ref name="img" /></zeroOrMore>
+    <zeroOrMore><ref name="nobreak" /></zeroOrMore>
+    <zeroOrMore><ref name="ol" /></zeroOrMore>
+    <zeroOrMore><ref name="p" /></zeroOrMore>
+    <zeroOrMore><ref name="pagebreak" /></zeroOrMore>
+    <zeroOrMore><ref name="pre" /></zeroOrMore>
+    <zeroOrMore><ref name="sub" /></zeroOrMore>
+    <zeroOrMore><ref name="sup" /></zeroOrMore>
+    <zeroOrMore><ref name="table" /></zeroOrMore>
+    <zeroOrMore><ref name="tt" /></zeroOrMore>
+    <zeroOrMore><ref name="u" /></zeroOrMore>
+    <zeroOrMore><ref name="ul" /></zeroOrMore>
   </element>
 </define>
 

@@ -32,6 +32,7 @@ from itools import git
 from itools.handlers import ConfigFile, get_handler
 from itools.html import XHTMLFile
 import itools.stl
+import itools.pdf
 from itools import vfs
 
 

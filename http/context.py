@@ -33,7 +33,7 @@ class HTTPContext(object):
         # Request method and URI
         self.method = soup_message.get_method()
         self.hostname = soup_message.get_host()
-        self.path = Path(path)
+        self.path = path if type(path) is Path else Path(path)
         query = soup_message.get_query()
         self.query = decode_query(query)
 

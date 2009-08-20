@@ -17,10 +17,20 @@
 # Import from itools
 from itools.uri import Path
 from itools.handlers import get_handler, File
+from context import HTTPContext
 
 
 
-class Static(object):
+class HTTPMount(object):
+
+    context_class = HTTPContext
+
+    def handle_request(self, context):
+        raise NotImplementedError
+
+
+
+class StaticMount(HTTPMount):
 
     def __init__(self, prefix, path):
         self.prefix = Path(prefix)

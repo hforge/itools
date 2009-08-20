@@ -22,7 +22,7 @@ from exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 from exceptions import InternalServerError, NotImplemented, BadGateway
 from exceptions import ServiceUnavailable, MethodNotAllowed, Conflict
 from server import HTTPServer
-from static import Static
+from mounts import HTTPMount, StaticMount
 
 
 __all__ = [
@@ -30,7 +30,9 @@ __all__ = [
     'HTTPContext',
     'get_context',
     'set_context',
-    'Static',
+    # Mounts
+    'HTTPMount',
+    'StaticMount',
     # Exceptions
     'BadGateway',
     'BadRequest',

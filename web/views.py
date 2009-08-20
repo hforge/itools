@@ -83,11 +83,11 @@ class BaseView(object):
 
     #######################################################################
     # Request methods
-    def GET(self, resource, context):
+    def http_get(self, resource, context):
         raise NotImplementedError
 
 
-    def POST(self, resource, context):
+    def http_post(self, resource, context):
         raise NotImplementedError
 
 
@@ -238,7 +238,7 @@ class STLView(BaseView):
         return resource.get_resource(self.template)
 
 
-    def GET(self, resource, context):
+    def http_get(self, resource, context):
         # Get the namespace
         namespace = self.get_namespace(resource, context)
         if isinstance(namespace, Reference):

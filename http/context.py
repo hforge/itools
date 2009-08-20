@@ -48,7 +48,7 @@ class HTTPContext(object):
     #######################################################################
     def __getattr__(self, name):
         loader = 'load_%s' % name
-        loader = getattr(self, loader, None)
+        loader = getattr(self.__class__, loader, None)
 
         # Miss
         if not loader:
@@ -56,7 +56,7 @@ class HTTPContext(object):
             raise AttributeError, msg % (self.__class__.__name__, name)
 
         # Hit
-        value = loader()
+        value = loader(self)
         setattr(self, name, value)
         return value
 

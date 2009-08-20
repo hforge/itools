@@ -29,7 +29,6 @@ from itools.log import log_error
 from itools.i18n import init_language_selector
 from itools.soup import SoupServer
 from itools.uri import Path
-from exceptions import HTTPError
 from context import set_context, set_response, select_language
 
 

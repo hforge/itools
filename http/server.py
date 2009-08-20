@@ -27,15 +27,11 @@ from gobject import MainLoop
 from itools.i18n import init_language_selector
 from itools.soup import SoupServer
 from itools.uri import Path
-from context import HTTPContext, set_context, set_response, select_language
+from context import set_context, set_response, select_language
 
 
 
 class HTTPServer(SoupServer):
-
-    # The default application says "hello"
-    context_class = HTTPContext
-
 
     def __init__(self, address='', port=8080, access_log=None, pid_file=None,
                  profile=None):
@@ -178,21 +174,22 @@ class HTTPServer(SoupServer):
 
 
     def path_callback(self, soup_message, path):
-        # New context
-        try:
-            context = self.context_class(soup_message, path)
-        except Exception:
-            log_error('Failed to make context instance', domain='itools.http')
-            return set_response(soup_message, 500)
-
         # 501 Not Implemented
-        if context.method not in self.known_methods:
+        if soup_message.get_method() not in self.known_methods:
             return set_response(soup_message, 501)
 
         # Mount
-        mount = self.get_mount(context.path)
+        path = Path(path)
+        mount = self.get_mount(path)
         if mount is None:
             return set_response(soup_message, 404)
+
+        # New context
+        try:
+            context = mount.context_class(soup_message, path)
+        except Exception:
+            log_error('Failed to make context instance', domain='itools.http')
+            return set_response(soup_message, 500)
 
         # Handle request
         set_context(context)

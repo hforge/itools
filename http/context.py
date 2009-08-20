@@ -22,11 +22,6 @@ from headers import get_type, Cookie, SetCookieDataType
 
 class HTTPContext(object):
 
-    # Default values
-    host = None
-    resource = None
-    user = None
-
     def __init__(self, soup_message, path):
         self.soup_message = soup_message
 
@@ -52,7 +47,26 @@ class HTTPContext(object):
         # Cookies
         self.cookies = {}
 
-        # The request body
+
+    #######################################################################
+    # Lazy load
+    #######################################################################
+    def __getattr__(self, name):
+        loader = 'load_%s' % name
+        loader = getattr(self, loader, None)
+
+        # Miss
+        if not loader:
+            msg = "'%s' object has no attribute '%s'"
+            raise AttributeError, msg % (self.__class__.__name__, name)
+
+        # Hit
+        value = loader()
+        setattr(self, name, value)
+        return value
+
+
+    def load_body(self):
         self.body = {}
         body = soup_message.get_body()
         if body:

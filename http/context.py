@@ -61,53 +61,62 @@ class HTTPContext(object):
         return value
 
 
-    def load_body(self):
-        self.body = {}
+    def load_form(self):
+        # Case 1: nothing
         body = self.soup_message.get_body()
-        if body:
-            type, type_parameters = self.get_header('content-type')
-            if type == 'application/x-www-form-urlencoded':
-                self.body = decode_query(body)
-            elif type.startswith('multipart/'):
-                boundary = type_parameters.get('boundary')
-                boundary = '--%s' % boundary
-                for part in body.split(boundary)[1:-1]:
-                    if part.startswith('\r\n'):
-                        part = part[2:]
-                    elif part.startswith('\n'):
-                        part = part[1:]
-                    # Parse the entity
-                    entity = Entity()
-                    entity.load_state_from_string(part)
-                    # Find out the parameter name
-                    header = entity.get_header('Content-Disposition')
-                    value, header_parameters = header
-                    name = header_parameters['name']
-                    # Load the value
-                    body = entity.get_body()
-                    if 'filename' in header_parameters:
-                        filename = header_parameters['filename']
-                        if filename:
-                            # Strip the path (for IE).
-                            filename = filename.split('\\')[-1]
-                            # Default content-type, see
-                            # http://tools.ietf.org/html/rfc2045#section-5.2
-                            if not entity.has_header('content-type'):
-                                mimetype = 'text/plain'
-                            else:
-                                mimetype = entity.get_header(
-                                              'content-type')[0]
-                            self.body[name] = filename, mimetype, body
-                    else:
-                        if name not in self.body:
-                            self.body[name] = body
+        if not body:
+            self.form = {}
+            return
+
+        # Case 2: urlencoded
+        type, type_parameters = self.get_header('content-type')
+        if type == 'application/x-www-form-urlencoded':
+            self.form = decode_query(body)
+            return
+
+        # Case 3: multipart
+        if type.startswith('multipart/'):
+            boundary = type_parameters.get('boundary')
+            boundary = '--%s' % boundary
+            self.form = {}
+            for part in body.split(boundary)[1:-1]:
+                if part.startswith('\r\n'):
+                    part = part[2:]
+                elif part.startswith('\n'):
+                    part = part[1:]
+                # Parse the entity
+                entity = Entity()
+                entity.load_state_from_string(part)
+                # Find out the parameter name
+                header = entity.get_header('Content-Disposition')
+                value, header_parameters = header
+                name = header_parameters['name']
+                # Load the value
+                body = entity.get_body()
+                if 'filename' in header_parameters:
+                    filename = header_parameters['filename']
+                    if filename:
+                        # Strip the path (for IE).
+                        filename = filename.split('\\')[-1]
+                        # Default content-type, see
+                        # http://tools.ietf.org/html/rfc2045#section-5.2
+                        if entity.has_header('content-type'):
+                            mimetype = entity.get_header('content-type')[0]
                         else:
-                            if isinstance(self.body[name], list):
-                                self.body[name].append(body)
-                            else:
-                                self.body[name] = [self.body[name], body]
-            else:
-                self.body['body'] = body
+                            mimetype = 'text/plain'
+                        self.form[name] = filename, mimetype, body
+                else:
+                    if name not in self.form:
+                        self.form[name] = body
+                    else:
+                        if isinstance(self.form[name], list):
+                            self.form[name].append(body)
+                        else:
+                            self.form[name] = [self.form[name], body]
+            return
+
+        # Case 4: ?
+        self.form = {'body': body}
 
 
     #######################################################################

@@ -63,7 +63,7 @@ class HTTPContext(object):
 
     def load_body(self):
         self.body = {}
-        body = soup_message.get_body()
+        body = self.soup_message.get_body()
         if body:
             type, type_parameters = self.get_header('content-type')
             if type == 'application/x-www-form-urlencoded':

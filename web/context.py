@@ -18,16 +18,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the Standard Library
-from thread import get_ident, allocate_lock
-
 # Import from itools
 from itools.core import freeze
 from itools.datatypes import String
 from itools.gettext import MSG
 from itools.http import get_type, Entity
 from itools.http import HTTPContext, get_context
-from itools.http import Unauthorized, Forbidden
+from itools.http import Unauthorized, Forbidden, NotFound
 from itools.i18n import AcceptLanguageType
 from itools.log import Logger
 from itools.uri import decode_query, get_reference

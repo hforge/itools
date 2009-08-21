@@ -204,17 +204,15 @@ class WebContext(HTTPContext):
         """Returns the value for the given name from the query.  Useful for
         POST requests.
         """
-        form = self.uri.query
-        return get_form_value(form, name, type, default)
+        return get_form_value(self.query, name, type, default)
 
 
     def get_form_value(self, name, type=String, default=None):
-        form = self.request.get_form()
-        return get_form_value(form, name, type, default)
+        return get_form_value(self.form, name, type, default)
 
 
     def get_form_keys(self):
-        return self.request.get_form().keys()
+        return self.form.keys()
 
 
     # FIXME Obsolete since 0.20.4, to be removed by the next major release

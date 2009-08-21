@@ -32,11 +32,11 @@ from traceback import format_exception
 
 
 # Log levels
-FATAL = (0 << 1)
-ERROR = (0 << 2)
-WARNING = (0 << 3)
-INFO = (0 << 4)
-DEBUG = (0 << 5)
+FATAL = (1 << 4)
+ERROR = (1 << 3)
+WARNING = (1 << 2)
+INFO = (1 << 1)
+DEBUG = (1 << 0)
 
 
 ###########################################################################
@@ -143,5 +143,5 @@ class Logger(object):
             exit()
 
 
-register_logger(None, Logger())
+register_logger(Logger(), None)
 

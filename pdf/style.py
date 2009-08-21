@@ -293,6 +293,8 @@ def build_paragraph_style(context, element, style_css):
             style_attr['textColor'] = get_color_as_hexa(value)
         elif key in ('background-color'):
             style_attr['backColor'] = get_color_as_hexa(value)
+        elif key == 'text-indent':
+            style_attr['firstLineIndent'] = format_size(value)
         elif key == 'text-align':
             if value in P_ALIGNMENTS.keys():
                 style_attr['alignment'] = P_ALIGNMENTS.get(value)

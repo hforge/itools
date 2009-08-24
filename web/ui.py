@@ -69,7 +69,7 @@ class UI(StaticMount):
 
         # Miss
         if not languages:
-            raise LookupError, 'XXX'
+            raise LookupError, 'template "%s" not found' % path
 
         # Get the best variant
         context = get_context()

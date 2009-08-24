@@ -195,7 +195,7 @@ class BaseForm(BaseView):
         return self.GET
 
 
-    def POST(self, resource, context):
+    def http_post(self, resource, context):
         # (1) Find out which button has been pressed, if more than one
         self._get_action(resource, context)
 

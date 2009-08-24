@@ -70,20 +70,18 @@ class HTTPContext(object):
         # Case 1: nothing
         body = self.soup_message.get_body()
         if not body:
-            self.form = {}
-            return
+            return {}
 
         # Case 2: urlencoded
         type, type_parameters = self.get_header('content-type')
         if type == 'application/x-www-form-urlencoded':
-            self.form = decode_query(body)
-            return
+            return decode_query(body)
 
         # Case 3: multipart
         if type.startswith('multipart/'):
             boundary = type_parameters.get('boundary')
             boundary = '--%s' % boundary
-            self.form = {}
+            form = {}
             for part in body.split(boundary)[1:-1]:
                 if part.startswith('\r\n'):
                     part = part[2:]
@@ -109,19 +107,19 @@ class HTTPContext(object):
                             mimetype = entity.get_header('content-type')[0]
                         else:
                             mimetype = 'text/plain'
-                        self.form[name] = filename, mimetype, body
+                        form[name] = filename, mimetype, body
                 else:
-                    if name not in self.form:
-                        self.form[name] = body
+                    if name not in form:
+                        form[name] = body
                     else:
-                        if isinstance(self.form[name], list):
-                            self.form[name].append(body)
+                        if isinstance(form[name], list):
+                            form[name].append(body)
                         else:
-                            self.form[name] = [self.form[name], body]
-            return
+                            form[name] = [form[name], body]
+            return form
 
         # Case 4: ?
-        self.form = {'body': body}
+        return {'body': body}
 
 
     #######################################################################
@@ -153,8 +151,9 @@ class HTTPContext(object):
 
     def set_header(self, name, value):
         name = name.lower()
-        datatype = get_type(name)
-        value = datatype.encode(value)
+        if type(value) is not str:
+            datatype = get_type(name)
+            value = datatype.encode(value)
         self.soup_message.set_header(name, value)
 
 

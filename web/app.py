@@ -23,6 +23,7 @@ from urllib import unquote
 from itools.handlers import BaseDatabase
 from itools.html import stream_to_str_as_html
 from itools.http import HTTPError, HTTPMount
+from itools.log import log_error
 from itools.uri import Reference
 from itools.xml import XMLParser
 from context import FormError, WebContext
@@ -41,7 +42,9 @@ status2name = {
     403: 'http_forbidden',
     404: 'http_not_found',
     405: 'http_method_not_allowed',
-    409: 'http_conflict'}
+    409: 'http_conflict',
+    500: 'http_internal_server_error',
+    }
 
 
 
@@ -68,6 +71,15 @@ class WebApplication(HTTPMount):
         except FormError, exception:
             context.message = exception.get_message()
             context.method = 'GET'
+            self.handle_request(context)
+        except Exception:
+            log_error('Internal Server Error', domain='itools.web')
+            context.status = 500
+            context.method = 'GET'
+            context.resource = context.host
+            del context.view
+            context.view_name = 'http_internal_server_error'
+            context.access = True
             self.handle_request(context)
         else:
             if context.status is None:

@@ -21,6 +21,7 @@ from app import WebApplication
 from context import FormError, WebContext, WebLogger
 from messages import INFO, ERROR, MSG_MISSING_OR_INVALID
 from resources import Resource, Root, VirtualRoot
+from ui import UI
 from views import BaseView, BaseForm, STLView, STLForm
 from webdav import lock_body
 
@@ -30,6 +31,7 @@ __all__ = [
     'AccessControl',
     'WebContext',
     'WebLogger',
+    'UI',
     # Model
     'Resource',
     'VirtualRoot',

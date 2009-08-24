@@ -191,33 +191,19 @@ class BaseForm(BaseView):
         return getattr(self, context.form_action, None)
 
 
-    def on_form_error(self, resource, context):
-        context.message = context.form_error.get_message()
-        return self.GET
-
-
     def http_post(self, resource, context):
         # (1) Find out which button has been pressed, if more than one
         self._get_action(resource, context)
 
         # (2) Automatically validate and get the form input (from the schema).
-        try:
-            form = self._get_form(resource, context)
-        except FormError, error:
-            context.form_error = error
-            return self.on_form_error(resource, context)
+        form = self._get_form(resource, context)
 
         # (3) Action
         method = self.get_action_method(resource, context)
         if method is None:
             msg = "the '%s' method is not defined"
             raise NotImplementedError, msg % context.form_action
-        goto = method(resource, context, form)
-
-        # (4) Return
-        if goto is None:
-            return self.GET
-        return goto
+        return method(resource, context, form)
 
 
 
@@ -266,10 +252,7 @@ class STLForm(STLView, BaseForm):
             {<field name>: {'value': <field value>, 'class': <CSS class>}
              ...}
         """
-        # Figure out whether the form has been submit or not (FIXME This
-        # heuristic is not reliable)
         schema = self.get_schema(resource, context)
-        submit = (context.method == 'POST')
 
         # Build the namespace
         namespace = {}
@@ -281,7 +264,8 @@ class STLForm(STLView, BaseForm):
             cls = []
             if is_mandatory:
                 cls.append('field-is-required')
-            if submit and not is_readonly:
+
+            if not is_readonly and name in context.form:
                 try:
                     value = context.get_form_value(name, type=datatype)
                 except FormError:

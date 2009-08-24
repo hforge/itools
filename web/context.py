@@ -39,8 +39,6 @@ class FormError(StandardError):
     """Raised when a form is invalid (missing or invalid fields).
     """
 
-    status = None
-
     def __init__(self, message=None, missing=freeze([]), invalid=freeze([])):
         self.msg = message
         self.missing = missing
@@ -76,6 +74,8 @@ class FormError(StandardError):
 
 
 class WebContext(HTTPContext):
+
+    status = None
 
     def __init__(self, soup_message, path):
         HTTPContext.__init__(self, soup_message, path)

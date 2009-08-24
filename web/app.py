@@ -25,7 +25,7 @@ from itools.html import stream_to_str_as_html
 from itools.http import HTTPError, HTTPMount
 from itools.uri import Reference
 from itools.xml import XMLParser
-from context import WebContext
+from context import FormError, WebContext
 
 
 # These are the values that 'WebApplication.find_resource' may return
@@ -53,7 +53,6 @@ class WebApplication(HTTPMount):
 
     def handle_request(self, context):
         try:
-            context.status = 200
             context.access
             method = self.known_methods[context.method]
             method = getattr(self, method)
@@ -66,8 +65,14 @@ class WebApplication(HTTPMount):
             context.view_name = status2name[status]
             context.access = True
             self.handle_request(context)
-
-        context.set_status(context.status)
+        except FormError, exception:
+            context.message = exception.get_message()
+            context.method = 'GET'
+            self.handle_request(context)
+        else:
+            if context.status is None:
+                context.status = 200
+            context.set_status(context.status)
 
 
     def get_host(self, context):
@@ -135,8 +140,11 @@ class WebApplication(HTTPMount):
         view = context.view
         body = view.http_post(context.resource, context)
 
-        # Case 1. Redirect
-        if type(body) is Reference:
+        # Case 1. No content
+        if body is None:
+            context.status = 204
+        # Case 2. Redirect
+        elif type(body) is Reference:
             context.set_header('Location', str(body))
             context.status = 303 # See Other
 

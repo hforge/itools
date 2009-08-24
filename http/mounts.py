@@ -16,7 +16,7 @@
 
 # Import from itools
 from itools.uri import Path
-from itools.handlers import get_handler, File
+from itools.handlers import File, RODatabase
 from context import HTTPContext
 
 
@@ -40,16 +40,24 @@ class HTTPMount(object):
 class StaticMount(HTTPMount):
 
     def __init__(self, prefix, path):
+        self.database = RODatabase()
         self.prefix = Path(prefix)
         self.path = path
 
 
+    def get_local_path(self, path):
+        return '%s/%s' % (self.path, path)
+
+
     def handle_request(self, context):
-        # Load the handler
+        # Get the physical path
         n = len(self.prefix)
-        path = '%s/%s' % (self.path, context.path[n:])
+        path = context.path[n:]
+        path = self.get_local_path(path)
+
+        # Load the handler
         try:
-            handler = get_handler(path)
+            handler = self.database.get_handler(path)
         except LookupError:
             return context.set_response(404)
 
@@ -65,6 +73,7 @@ class StaticMount(HTTPMount):
 
         # Ok
         context.set_header('Last-Modified', mtime)
+        # FIXME Check we set the encoding for text files
         mimetype = handler.get_mimetype()
         context.set_status(200)
         context.set_body(mimetype, handler.to_str())

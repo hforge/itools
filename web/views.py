@@ -235,8 +235,7 @@ class STLView(BaseView):
         if self.template is None:
             msg = "%s is missing the 'template' variable"
             raise NotImplementedError, msg % repr(self.__class__)
-        # XXX A handler actually
-        return resource.get_resource(self.template)
+        return context.get_template(self.template)
 
 
     def http_get(self, resource, context):

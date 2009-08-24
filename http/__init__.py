@@ -19,7 +19,7 @@ from context import HTTPContext, get_context, set_context
 from cookies import Cookie, SetCookieDataType
 from entities import Entity
 from exceptions import HTTPError, ClientError, ServerError
-from exceptions import NotModified
+from exceptions import HTTP_OK, NotModified
 from exceptions import BadRequest, Unauthorized, Forbidden, NotFound
 from exceptions import InternalServerError, NotImplemented, BadGateway
 from exceptions import ServiceUnavailable, MethodNotAllowed, Conflict
@@ -49,6 +49,7 @@ __all__ = [
     'ClientError',
     'Conflict',
     'Forbidden',
+    'HTTP_OK',
     'HTTPError',
     'InternalServerError',
     'MethodNotAllowed',

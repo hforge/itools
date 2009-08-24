@@ -20,6 +20,10 @@ class HTTPError(Exception):
     """
 
 
+class HTTP_OK(HTTPError):
+    code = 200
+    title = 'Ok'
+
 
 class NotModified(HTTPError):
     code = 304

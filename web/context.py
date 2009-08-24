@@ -18,6 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from the Standard Library
+from base64 import decodestring
+from urllib import unquote
+
 # Import from itools
 from itools.core import freeze
 from itools.datatypes import String
@@ -25,7 +29,7 @@ from itools.gettext import MSG
 from itools.http import HTTPContext, get_context
 from itools.http import Unauthorized, Forbidden, NotFound
 from itools.i18n import AcceptLanguageType
-from itools.log import Logger
+from itools.log import Logger, log_warning
 from itools.uri import get_reference
 from messages import ERROR
 
@@ -125,9 +129,14 @@ class WebContext(HTTPContext):
         if cookie is None:
             return None
 
-        cookie = unquote(cookie)
-        cookie = decodestring(cookie)
-        username, password = cookie.split(':', 1)
+        try:
+            cookie = unquote(cookie)
+            cookie = decodestring(cookie)
+            username, password = cookie.split(':', 1)
+        except Exception:
+            log_warning('bad authentication cookie "%s"' % cookie)
+            return None
+
         if username is None or password is None:
             return None
 
@@ -172,7 +181,7 @@ class WebContext(HTTPContext):
 
         # Preserve some form values
         form = {}
-        for key, value in self.request.get_form().items():
+        for key, value in self.form.items():
             # Be robust
             if not key:
                 continue

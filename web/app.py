@@ -23,6 +23,8 @@ from urllib import unquote
 from itools.handlers import BaseDatabase
 from itools.html import stream_to_str_as_html
 from itools.http import HTTPError, HTTPMount
+from itools.uri import Reference
+from itools.xml import XMLParser
 from context import WebContext
 
 
@@ -51,6 +53,7 @@ class WebApplication(HTTPMount):
 
     def handle_request(self, context):
         try:
+            context.status = 200
             context.access
             method = self.known_methods[context.method]
             method = getattr(self, method)
@@ -63,10 +66,8 @@ class WebApplication(HTTPMount):
             context.view_name = status2name[status]
             context.access = True
             self.handle_request(context)
-        else:
-            if context.status is None:
-                context.status = 200
-            context.set_status(context.status)
+
+        context.set_status(context.status)
 
 
     def get_host(self, context):
@@ -105,14 +106,37 @@ class WebApplication(HTTPMount):
 
 
     def http_get(self, context):
+        # View
         view = context.view
         body = view.http_get(context.resource, context)
-        if type(body) is GeneratorType:
-            body = stream_to_str_as_html(body)
+
+        # Case 1: a redirect or something
+        is_str = type(body) is str
+        is_xml = isinstance(body, (list, GeneratorType, XMLParser))
+        if not is_str and not is_xml:
+            return body
+
+        # Case 2: no wrap (e.g. download)
+        if not getattr(view, 'wrap', True):
+            if is_xml:
+                return stream_to_str_as_html(body)
+            return body
+
+        # Case 3: wrap
+        if is_str:
+            content = XMLParser(content, doctype=xhtml_doctype)
+
+        skin = context.host.skin
+        body = skin.render(body, context)
         context.set_body('text/html', body)
 
 
     def http_post(self, context):
-        resource = context.resource
-        resource.http_post(context)
+        view = context.view
+        body = view.http_post(context.resource, context)
+
+        # Case 1. Redirect
+        if type(body) is Reference:
+            context.set_header('Location', str(body))
+            context.status = 303 # See Other
 

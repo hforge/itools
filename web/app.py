@@ -21,12 +21,13 @@ from urllib import unquote
 
 # Import from itools
 from itools.handlers import BaseDatabase
-from itools.html import stream_to_str_as_html
-from itools.http import HTTPMount, Successful, ClientError, ServerError
+from itools.html import stream_to_str_as_html, xhtml_doctype
+from itools.http import HTTPMount, ClientError, ServerError
 from itools.log import log_error
 from itools.uri import Reference
 from itools.xml import XMLParser
-from context import FormError, WebContext
+from context import WebContext
+from exceptions import InternalRedirect, FormError, DO_NOT_CHANGE
 
 
 # These are the values that 'WebApplication.find_resource' may return
@@ -60,8 +61,17 @@ class WebApplication(HTTPMount):
             method = self.known_methods[context.method]
             method = getattr(self, method)
             method(context)
-        except Successful, exception:
-            context.status = exception.status
+        except InternalRedirect, exception:
+            context.method = 'GET'
+            if exception.resource is not DO_NOT_CHANGE:
+                context.resource_path = exception.resource
+                del context.resource
+            if exception.view is not DO_NOT_CHANGE:
+                context.view_name = exception.view
+                del context.view
+            self.handle_request(context)
+        except FormError, exception:
+            context.message = exception.get_message()
             context.method = 'GET'
             self.handle_request(context)
         except (ClientError, ServerError), exception:
@@ -71,10 +81,6 @@ class WebApplication(HTTPMount):
             del context.view
             context.view_name = status2name[status]
             context.access = True
-            self.handle_request(context)
-        except FormError, exception:
-            context.message = exception.get_message()
-            context.method = 'GET'
             self.handle_request(context)
         except Exception:
             log_error('Internal Server Error', domain='itools.web')
@@ -145,7 +151,7 @@ class WebApplication(HTTPMount):
 
         # Case 3: wrap
         if is_str:
-            content = XMLParser(content, doctype=xhtml_doctype)
+            body = XMLParser(body, doctype=xhtml_doctype)
 
         skin = context.host.skin
         body = skin.render(body, context)

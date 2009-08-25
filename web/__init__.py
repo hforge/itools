@@ -18,7 +18,8 @@
 # Import from itools
 from access import AccessControl
 from app import WebApplication
-from context import FormError, WebContext, WebLogger
+from context import WebContext, WebLogger
+from exceptions import InternalRedirect, FormError
 from messages import INFO, ERROR, MSG_MISSING_OR_INVALID
 from resources import Resource, Root, VirtualRoot
 from ui import UI
@@ -42,6 +43,7 @@ __all__ = [
     'STLView',
     'STLForm',
     # Exceptions
+    'InternalRedirect',
     'FormError',
     # Messages
     'INFO',

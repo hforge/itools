@@ -108,7 +108,7 @@ class WebContext(HTTPContext):
 
 
     def load_host(self):
-        return self.mount.get_host(self)
+        return self.mount.get_host(self.hostname)
 
 
     def load_resource(self):
@@ -153,10 +153,14 @@ class WebContext(HTTPContext):
     def load_access(self):
         resource = self.resource
         ac = resource.get_access_control()
-        if not ac.is_access_allowed(self, resource, self.view):
-            if self.user:
-                raise ClientError(403)
-            raise ClientError(401)
+        if ac.is_access_allowed(self, resource, self.view):
+            return True
+
+        # XXX Special case, we raise an error instead of returning 'False'
+        self.access = False
+        if self.user:
+            raise ClientError(403)
+        raise ClientError(401)
 
 
     #######################################################################

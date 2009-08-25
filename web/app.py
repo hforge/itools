@@ -22,7 +22,7 @@ from urllib import unquote
 # Import from itools
 from itools.handlers import BaseDatabase
 from itools.html import stream_to_str_as_html
-from itools.http import HTTPError, HTTPMount, Successful
+from itools.http import HTTPMount, Successful, ClientError, ServerError
 from itools.log import log_error
 from itools.uri import Reference
 from itools.xml import XMLParser
@@ -64,8 +64,8 @@ class WebApplication(HTTPMount):
             context.status = exception.status
             context.method = 'GET'
             self.handle_request(context)
-        except HTTPError, exception:
-            status = exception.code
+        except (ClientError, ServerError), exception:
+            status = exception.status
             context.status = status
             context.resource = context.host
             del context.view
@@ -91,7 +91,7 @@ class WebApplication(HTTPMount):
             context.set_status(context.status)
 
 
-    def get_host(self, context):
+    def get_host(self, hostname):
         return None
 
 

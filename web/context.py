@@ -70,12 +70,20 @@ class WebContext(HTTPContext):
         return AcceptLanguageType.decode(accept_language)
 
 
+    def get_host(self, hostname):
+        return None
+
+
     def load_host(self):
-        return self.mount.get_host(self.hostname)
+        return self.get_host(self.hostname)
+
+
+    def get_resource(self, path, soft=False):
+        raise NotImplementedError
 
 
     def load_resource(self):
-        resource = self.mount.get_resource(self.resource_path, soft=True)
+        resource = self.get_resource(self.resource_path, soft=True)
         if resource is None:
             raise ClientError(404)
         return resource
@@ -105,12 +113,15 @@ class WebContext(HTTPContext):
         return username, password
 
 
+    def get_user(self, credentials):
+        return None
+
+
     def load_user(self):
         credentials = self.get_credentials()
         if credentials is None:
             return None
-        mount = self.mount
-        return mount.get_user(credentials)
+        return self.get_user(credentials)
 
 
     def load_access(self):

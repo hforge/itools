@@ -22,7 +22,7 @@ from urllib import unquote
 # Import from itools
 from itools.handlers import BaseDatabase
 from itools.html import stream_to_str_as_html
-from itools.http import HTTPError, HTTPMount, HTTP_OK
+from itools.http import HTTPError, HTTPMount, Successful
 from itools.log import log_error
 from itools.uri import Reference
 from itools.xml import XMLParser
@@ -60,8 +60,8 @@ class WebApplication(HTTPMount):
             method = self.known_methods[context.method]
             method = getattr(self, method)
             method(context)
-        except HTTP_OK, exception:
-            context.status = 200
+        except Successful, exception:
+            context.status = exception.status
             context.method = 'GET'
             self.handle_request(context)
         except HTTPError, exception:

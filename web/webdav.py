@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.http import ClientError, BadRequest, Conflict, NotImplemented
+from itools.http import ClientError, ServerError
 from server import RequestMethod, find_view_by_method
 
 
@@ -86,16 +86,16 @@ class UNLOCK(RequestMethod):
     def check_conditions(cls, server, context):
         resource = context.resource
         if not resource.is_locked():
-            raise Conflict
+            raise ClientError(409)
         # Check wether we have the right key
         key = context.get_header('Lock-Token')
         if key is None:
-            raise BadRequest
+            raise ClientError(400)
         key = key[len('opaquelocktoken:'):]
         lock = resource.get_lock()
         if lock.lock_key != key:
             # FIXME find the good response
-            raise BadRequest
+            raise ClientError(400)
 
 
     @classmethod
@@ -121,12 +121,12 @@ class PUT(RequestMethod):
     def check_conditions(cls, server, context):
         request = context.request
         if request.has_header('content-range'):
-            raise NotImplemented
+            raise ServerError(501)
 
         # In WebDAV the resource must be locked
         resource = context.resource
         if not resource.is_locked():
-            raise Conflict
+            raise ClientError(409)
 
         # TODO check the lock matches the "If:" header
 

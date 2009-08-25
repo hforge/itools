@@ -16,11 +16,8 @@
 
 # Import from itools
 from context import HTTPContext, get_context, set_context
-from exceptions import HTTPError, ClientError, ServerError
-from exceptions import HTTP_OK, NotModified
-from exceptions import BadRequest, Unauthorized, Forbidden, NotFound
-from exceptions import InternalServerError, NotImplemented, BadGateway
-from exceptions import ServiceUnavailable, MethodNotAllowed, Conflict
+from exceptions import HTTPError
+from exceptions import Successful, Redirection, ClientError, ServerError
 from server import HTTPServer
 from mounts import HTTPMount, StaticMount
 
@@ -34,19 +31,9 @@ __all__ = [
     'HTTPMount',
     'StaticMount',
     # Exceptions
-    'BadGateway',
-    'BadRequest',
-    'ClientError',
-    'Conflict',
-    'Forbidden',
-    'HTTP_OK',
     'HTTPError',
-    'InternalServerError',
-    'MethodNotAllowed',
-    'NotFound',
-    'NotImplemented',
-    'NotModified',
+    'Successful',
+    'Redirection',
+    'ClientError',
     'ServerError',
-    'ServiceUnavailable',
-    'Unauthorized',
     ]

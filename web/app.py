@@ -97,14 +97,6 @@ class WebApplication(HTTPMount):
             context.set_status(context.status)
 
 
-    def get_host(self, hostname):
-        return None
-
-
-    def get_user(self, credentials):
-        return None
-
-
     #######################################################################
     # Request handlers
     #######################################################################

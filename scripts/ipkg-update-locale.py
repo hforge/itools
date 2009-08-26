@@ -32,6 +32,7 @@ from itools.handlers import ConfigFile, get_handler
 import itools.html
 import itools.python
 import itools.stl
+import itools.pdf
 import itools.srx
 from itools.uri import Path
 from itools import vfs

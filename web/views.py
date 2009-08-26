@@ -192,6 +192,7 @@ class BaseForm(BaseView):
 
 
     def http_post(self, resource, context):
+        context.add_query_schema(self.get_query_schema())
         # (1) Find out which button has been pressed, if more than one
         self._get_action(resource, context)
 
@@ -225,6 +226,7 @@ class STLView(BaseView):
 
 
     def http_get(self, resource, context):
+        context.add_query_schema(self.get_query_schema())
         # Get the namespace
         namespace = self.get_namespace(resource, context)
         if isinstance(namespace, Reference):

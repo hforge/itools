@@ -42,6 +42,9 @@ class WebContext(HTTPContext):
     def __init__(self, soup_message, path):
         HTTPContext.__init__(self, soup_message, path)
 
+        # Query
+        self.query_schema = {}
+
         # Split the path so '/a/b/c/;view' becomes ('/a/b/c', 'view')
         path = self.path
         name = path.get_name()
@@ -186,10 +189,17 @@ class WebContext(HTTPContext):
     #######################################################################
     # API / Forms
     #######################################################################
-    def get_query_value(self, name, type=String, default=None):
+    def add_query_schema(self, schema):
+        self.query_schema.update(schema)
+
+
+    def get_query_value(self, name, type=None, default=None):
         """Returns the value for the given name from the query.  Useful for
         POST requests.
         """
+        if type is None:
+            type = self.query_schema.get(name, String)
+
         return get_form_value(self.query, name, type, default)
 
 

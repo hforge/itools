@@ -134,7 +134,11 @@ class WebApplication(HTTPMount):
     def http_get(self, context):
         # View
         view = context.view
-        body = view.http_get(context.resource, context)
+        try:
+            body = view.http_get(context.resource, context)
+        finally:
+            commit = getattr(context, 'commit', True)
+            self.close_transaction(commit)
 
         # Case 1: a redirect or something
         is_str = type(body) is str
@@ -159,7 +163,11 @@ class WebApplication(HTTPMount):
 
     def http_post(self, context):
         view = context.view
-        body = view.http_post(context.resource, context)
+        try:
+            body = view.http_post(context.resource, context)
+        finally:
+            commit = getattr(context, 'commit', True)
+            self.close_transaction(commit)
 
         # Case 1. No content
         if body is None:
@@ -169,3 +177,10 @@ class WebApplication(HTTPMount):
             context.set_header('Location', str(body))
             context.status = 303 # See Other
 
+
+    def close_transaction(self, commit=True):
+        database = self.database
+        if commit is True:
+            database.save_changes()
+        else:
+            database.abort_changes()

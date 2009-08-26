@@ -20,20 +20,25 @@
 
 # Import from the Standard Library
 from base64 import decodestring
+from types import GeneratorType
 from urllib import unquote
 
 # Import from itools
 from itools.core import freeze
 from itools.datatypes import String
 from itools.gettext import MSG
-from itools.http import get_type, Entity
+from itools.html import stream_to_str_as_html, xhtml_doctype
+from itools.http import Entity
 from itools.http import HTTPContext, ClientError, get_context
 from itools.i18n import AcceptLanguageType
 from itools.log import Logger, log_warning
-from itools.uri import decode_query, get_reference
+from itools.uri import Path, Reference, decode_query, get_reference
+from itools.xml import XMLParser
 from exceptions import FormError
 from messages import ERROR
 
+
+DO_NOT_CHANGE = 'do not change'
 
 
 class WebContext(HTTPContext):
@@ -226,34 +231,9 @@ class WebContext(HTTPContext):
     def get_request_line(self):
         return self.soup_message.get_request_line()
 
+
     def get_headers(self):
         return  self.soup_message.get_headers()
-
-
-    def get_header(self, name):
-        name = name.lower()
-        datatype = get_type(name)
-        value = self.soup_message.get_header(name)
-        if value is None:
-            return datatype.get_default()
-        return datatype.decode(value)
-
-
-    def set_header(self, name, value):
-        datatype = get_type(name)
-        value = datatype.encode(value)
-        self.soup_message.set_header(name, value)
-
-
-    def get_referrer(self):
-        return self.soup_message.get_header('referer')
-
-
-    def get_form(self):
-        if self.method in ('GET', 'HEAD'):
-            return self.uri.query
-        # XXX What parameters with the fields defined in the query?
-        return self.body
 
 
     def set_content_type(self, content_type):
@@ -268,10 +248,59 @@ class WebContext(HTTPContext):
 
 
     #######################################################################
-    # API / Status
+    # Return conditions
     #######################################################################
-    def http_not_modified(self):
-        self.soup_message.set_status(304)
+    def ok(self, content_type, body, wrap=True):
+        # Wrap
+        if wrap:
+            if type(body) is str:
+                body = XMLParser(body, doctype=xhtml_doctype)
+
+            skin = self.host.skin
+            body = skin.render(body, self)
+        else:
+            is_xml = isinstance(body, (list, GeneratorType, XMLParser))
+            if is_xml:
+                body = stream_to_str_as_html(body)
+
+        # Ok
+        self.status = 200
+        self.set_body(content_type, body)
+
+
+    def no_content(self):
+        self.status = 204
+
+
+    def see_other(self, location):
+        if type(location) is Reference:
+            location = str(location)
+
+        self.status = 303
+        self.set_header('Location', location)
+
+
+    def redirect(self, resource=DO_NOT_CHANGE, view=DO_NOT_CHANGE):
+        self.method = 'GET'
+
+        if resource is not DO_NOT_CHANGE:
+            self.resource_path = resource
+            self.del_attribute('resource')
+            self.del_attribute('uri')
+
+        if view is not DO_NOT_CHANGE:
+            self.view_name = view
+            self.del_attribute('view')
+            self.del_attribute('uri')
+
+        if self.view_name:
+            path = '%s/;%s' % (self.resource_path, self.view_name)
+        else:
+            path = self.resource_path
+        self.path = Path(path)
+
+        # Redirect
+        self.repeat = True
 
 
     #######################################################################

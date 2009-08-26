@@ -81,29 +81,8 @@ class Resource(object):
 
 
     def get_resource(self, path, soft=False):
-        if type(path) is not Path:
-            path = Path(path)
-
-        if path.is_absolute():
-            here = self.get_root()
-        else:
-            here = self
-
-        while path and path[0] == '..':
-            here = here.parent
-            path = path[1:]
-
-        for name in path:
-            resource = here._get_resource(name)
-            if resource is None:
-                if soft is True:
-                    return None
-                raise LookupError, 'resource "%s" not found' % path
-            resource.parent = here
-            resource.name = name
-            here = resource
-
-        return here
+        path = self.path.resolve2(path)
+        return self.context.get_resource(path, soft=soft)
 
 
     def get_resources(self, path='.'):

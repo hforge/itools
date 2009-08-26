@@ -24,7 +24,7 @@ from itools.handlers import BaseDatabase
 from itools.html import stream_to_str_as_html, xhtml_doctype
 from itools.http import HTTPMount, ClientError, ServerError
 from itools.log import log_error
-from itools.uri import Reference
+from itools.uri import Reference, Path
 from itools.xml import XMLParser
 from context import WebContext
 from exceptions import InternalRedirect, FormError, DO_NOT_CHANGE
@@ -61,21 +61,28 @@ class WebApplication(HTTPMount):
             method = self.known_methods[context.method]
             method = getattr(self, method)
             method(context)
-        except InternalRedirect, exception:
+        except InternalRedirect, error:
             context.method = 'GET'
-            if exception.resource is not DO_NOT_CHANGE:
-                context.resource_path = exception.resource
-                del context.resource
-            if exception.view is not DO_NOT_CHANGE:
-                context.view_name = exception.view
-                del context.view
+            if error.resource is not DO_NOT_CHANGE:
+                context.resource_path = error.resource
+                context.del_attribute('resource')
+                context.del_attribute('uri')
+            if error.view is not DO_NOT_CHANGE:
+                context.view_name = error.view
+                context.del_attribute('view')
+                context.del_attribute('uri')
+            if context.view_name:
+                path = '%s/;%s' % (context.resource_path, context.view_name)
+            else:
+                path = context.resource_path
+            context.path = Path(path)
             self.handle_request(context)
-        except FormError, exception:
-            context.message = exception.get_message()
+        except FormError, error:
+            context.message = error.get_message()
             context.method = 'GET'
             self.handle_request(context)
-        except (ClientError, ServerError), exception:
-            status = exception.status
+        except (ClientError, ServerError), error:
+            status = error.status
             context.status = status
             context.resource = context.host
             del context.view

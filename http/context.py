@@ -33,16 +33,6 @@ class HTTPContext(object):
         query = soup_message.get_query()
         self.query = decode_query(query)
 
-        # The URI as it was typed by the client
-        xfp = soup_message.get_header('X_FORWARDED_PROTO')
-        src_scheme = xfp or 'http'
-        xff = soup_message.get_header('X-Forwarded-Host')
-        src_host = xff or soup_message.get_header('Host') or self.hostname
-        if query:
-            self.uri = '%s://%s%s?%s' % (src_scheme, src_host, path, query)
-        else:
-            self.uri = '%s://%s%s' % (src_scheme, src_host, path)
-
 
     #######################################################################
     # Lazy load
@@ -60,6 +50,26 @@ class HTTPContext(object):
         value = loader(self)
         setattr(self, name, value)
         return value
+
+
+    def del_attribute(self, name):
+        try:
+            delattr(self, name)
+        except AttributeError:
+            pass
+
+
+    def load_uri(self):
+        # The URI as it was typed by the client
+        soup_message = self.soup_message
+        xfp = soup_message.get_header('X_FORWARDED_PROTO')
+        src_scheme = xfp or 'http'
+        xff = soup_message.get_header('X-Forwarded-Host')
+        src_host = xff or soup_message.get_header('Host') or self.hostname
+        query = soup_message.get_query()
+        if query:
+            return '%s://%s%s?%s' % (src_scheme, src_host, self.path, query)
+        return '%s://%s%s' % (src_scheme, src_host, self.path)
 
 
     def load_form(self):

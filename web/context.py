@@ -20,19 +20,24 @@
 
 # Import from the Standard Library
 from base64 import decodestring
+from types import GeneratorType
 from urllib import unquote
 
 # Import from itools
 from itools.core import freeze
 from itools.datatypes import String
 from itools.gettext import MSG
+from itools.html import stream_to_str_as_html, xhtml_doctype
 from itools.http import HTTPContext, ClientError, get_context
 from itools.i18n import AcceptLanguageType
 from itools.log import Logger, log_warning
-from itools.uri import get_reference
+from itools.uri import Path, Reference, get_reference
+from itools.xml import XMLParser
 from exceptions import FormError
 from messages import ERROR
 
+
+DO_NOT_CHANGE = 'do not change'
 
 
 class WebContext(HTTPContext):
@@ -138,6 +143,62 @@ class WebContext(HTTPContext):
         if self.user:
             raise ClientError(403)
         raise ClientError(401)
+
+
+    #######################################################################
+    # Return conditions
+    #######################################################################
+    def ok(self, content_type, body, wrap=True):
+        # Wrap
+        if wrap:
+            if type(body) is str:
+                body = XMLParser(body, doctype=xhtml_doctype)
+
+            skin = self.host.skin
+            body = skin.render(body, self)
+        else:
+            is_xml = isinstance(body, (list, GeneratorType, XMLParser))
+            if is_xml:
+                body = stream_to_str_as_html(body)
+
+        # Ok
+        self.status = 200
+        self.set_body(content_type, body)
+
+
+    def no_content(self):
+        self.status = 204
+
+
+    def see_other(self, location):
+        if type(location) is Reference:
+            location = str(location)
+
+        self.status = 303
+        self.set_header('Location', location)
+
+
+    def redirect(self, resource=DO_NOT_CHANGE, view=DO_NOT_CHANGE):
+        self.method = 'GET'
+
+        if resource is not DO_NOT_CHANGE:
+            self.resource_path = resource
+            self.del_attribute('resource')
+            self.del_attribute('uri')
+
+        if view is not DO_NOT_CHANGE:
+            self.view_name = view
+            self.del_attribute('view')
+            self.del_attribute('uri')
+
+        if self.view_name:
+            path = '%s/;%s' % (self.resource_path, self.view_name)
+        else:
+            path = self.resource_path
+        self.path = Path(path)
+
+        # Redirect
+        self.repeat = True
 
 
     #######################################################################

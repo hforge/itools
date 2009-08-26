@@ -234,7 +234,8 @@ class STLView(BaseView):
 
         # STL
         template = self.get_template(resource, context)
-        return stl(template, namespace)
+        body = stl(template, namespace)
+        context.ok('text/html', body)
 
 
 

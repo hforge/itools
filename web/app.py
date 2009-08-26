@@ -16,18 +16,14 @@
 
 # Import from the Standard Library
 from base64 import decodestring
-from types import GeneratorType
 from urllib import unquote
 
 # Import from itools
 from itools.handlers import BaseDatabase
-from itools.html import stream_to_str_as_html, xhtml_doctype
 from itools.http import HTTPMount, ClientError, ServerError
 from itools.log import log_error
-from itools.uri import Reference, Path
-from itools.xml import XMLParser
 from context import WebContext
-from exceptions import InternalRedirect, FormError, DO_NOT_CHANGE
+from exceptions import FormError
 
 
 # These are the values that 'WebApplication.find_resource' may return
@@ -56,31 +52,16 @@ class WebApplication(HTTPMount):
 
 
     def handle_request(self, context):
+        context.repeat = False
         try:
             context.access
             method = self.known_methods[context.method]
             method = getattr(self, method)
             method(context)
-        except InternalRedirect, error:
-            context.method = 'GET'
-            if error.resource is not DO_NOT_CHANGE:
-                context.resource_path = error.resource
-                context.del_attribute('resource')
-                context.del_attribute('uri')
-            if error.view is not DO_NOT_CHANGE:
-                context.view_name = error.view
-                context.del_attribute('view')
-                context.del_attribute('uri')
-            if context.view_name:
-                path = '%s/;%s' % (context.resource_path, context.view_name)
-            else:
-                path = context.resource_path
-            context.path = Path(path)
-            self.handle_request(context)
         except FormError, error:
             context.message = error.get_message()
             context.method = 'GET'
-            self.handle_request(context)
+            context.repeat = True
         except (ClientError, ServerError), error:
             status = error.status
             context.status = status
@@ -88,7 +69,7 @@ class WebApplication(HTTPMount):
             del context.view
             context.view_name = status2name[status]
             context.access = True
-            self.handle_request(context)
+            context.repeat = True
         except Exception:
             log_error('Internal Server Error', domain='itools.web')
             context.status = 500
@@ -97,11 +78,15 @@ class WebApplication(HTTPMount):
             del context.view
             context.view_name = 'http_internal_server_error'
             context.access = True
-            self.handle_request(context)
+            context.repeat = True
         else:
             if context.status is None:
                 context.status = 200
             context.set_status(context.status)
+
+        # Internal redirection
+        if context.repeat:
+            self.handle_request(context)
 
 
     #######################################################################
@@ -132,55 +117,26 @@ class WebApplication(HTTPMount):
 
 
     def http_get(self, context):
-        # View
         view = context.view
-        try:
-            body = view.http_get(context.resource, context)
-        finally:
-            commit = getattr(context, 'commit', True)
-            self.close_transaction(commit)
+        context.commit = False
+        view.http_get(context.resource, context)
 
-        # Case 1: a redirect or something
-        is_str = type(body) is str
-        is_xml = isinstance(body, (list, GeneratorType, XMLParser))
-        if not is_str and not is_xml:
-            return body
-
-        # Case 2: no wrap (e.g. download)
-        if not getattr(view, 'wrap', True):
-            if is_xml:
-                return stream_to_str_as_html(body)
-            return body
-
-        # Case 3: wrap
-        if is_str:
-            body = XMLParser(body, doctype=xhtml_doctype)
-
-        skin = context.host.skin
-        body = skin.render(body, context)
-        context.set_body('text/html', body)
+        # Close transaction
+        self.close_transaction(context)
 
 
     def http_post(self, context):
         view = context.view
-        try:
-            body = view.http_post(context.resource, context)
-        finally:
-            commit = getattr(context, 'commit', True)
-            self.close_transaction(commit)
+        context.commit = True
+        view.http_post(context.resource, context)
 
-        # Case 1. No content
-        if body is None:
-            context.status = 204
-        # Case 2. Redirect
-        elif type(body) is Reference:
-            context.set_header('Location', str(body))
-            context.status = 303 # See Other
+        # Close transaction
+        self.close_transaction(context)
 
 
-    def close_transaction(self, commit=True):
+    def close_transaction(self, context):
         database = self.database
-        if commit is True:
+        if context.commit is True:
             database.save_changes()
         else:
             database.abort_changes()

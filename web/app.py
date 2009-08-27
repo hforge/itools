@@ -65,7 +65,7 @@ class WebApplication(HTTPMount):
         except (ClientError, ServerError), error:
             status = error.status
             context.status = status
-            context.resource = context.host
+            context.resource = context.get_resource('/')
             del context.view
             context.view_name = status2name[status]
             context.access = True
@@ -74,7 +74,7 @@ class WebApplication(HTTPMount):
             log_error('Internal Server Error', domain='itools.web')
             context.status = 500
             context.method = 'GET'
-            context.resource = context.host
+            context.resource = context.get_resource('/')
             del context.view
             context.view_name = 'http_internal_server_error'
             context.access = True

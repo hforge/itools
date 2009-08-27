@@ -61,15 +61,6 @@ class WebContext(HTTPContext):
             self.view_name = None
 
 
-    def get_link(self, resource):
-        """Return a link to the given resource, from the given context.
-        """
-        # FIXME This method should give an error if the given resource is
-        # not within the site root.
-        host = self.host
-        return '/%s' % host.get_pathto(resource)
-
-
     #######################################################################
     # Lazy load
     #######################################################################
@@ -154,8 +145,8 @@ class WebContext(HTTPContext):
             if type(body) is str:
                 body = XMLParser(body, doctype=xhtml_doctype)
 
-            skin = self.host.skin
-            body = skin.render(body, self)
+            root = self.get_resource('/')
+            body = root.skin.render(body, self)
         else:
             is_xml = isinstance(body, (list, GeneratorType, XMLParser))
             if is_xml:

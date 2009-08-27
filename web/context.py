@@ -50,6 +50,11 @@ class WebContext(HTTPContext):
         # Query
         self.query_schema = {}
 
+        # Resource path and view
+        self.split_path()
+
+
+    def split_path(self):
         # Split the path so '/a/b/c/;view' becomes ('/a/b/c', 'view')
         path = self.path
         name = path.get_name()
@@ -155,6 +160,17 @@ class WebContext(HTTPContext):
         # Ok
         self.status = 200
         self.set_body(content_type, body)
+
+
+    def created(self, location):
+        self.status = 201
+        self.set_header('Location', location)
+        self.del_attribute('uri')
+        self.del_attribute('resource')
+        self.del_attribute('view')
+        self.path = Path(location)
+        self.split_path()
+        self.repeat = True
 
 
     def no_content(self):

@@ -16,6 +16,7 @@
 
 # Import from itools
 from itools.core import freeze
+from itools.gettext import MSG
 from messages import ERROR
 
 

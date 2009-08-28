@@ -210,21 +210,13 @@ class WebContext(HTTPContext):
 
 
     def http_get(self):
-        view = self.view
         self.commit = False
-        view.http_get(self.resource, self)
-
-        # Close transaction
-        self.close_transaction()
+        self.view.http_get(self.resource, self)
 
 
     def http_post(self):
-        view = self.view
         self.commit = True
-        view.http_post(self.resource, self)
-
-        # Close transaction
-        self.close_transaction()
+        self.view.http_post(self.resource, self)
 
 
     def close_transaction(self):
@@ -239,6 +231,7 @@ class WebContext(HTTPContext):
     # Return conditions
     #######################################################################
     def ok(self, content_type, body, wrap=True):
+        self.close_transaction()
         # Wrap
         if wrap:
             if type(body) is str:
@@ -257,7 +250,9 @@ class WebContext(HTTPContext):
 
 
     def created(self, location):
+        self.close_transaction()
         self.status = 201
+        self.method = 'GET'
         self.set_header('Location', location)
         self.del_attribute('uri')
         self.del_attribute('resource')
@@ -268,10 +263,12 @@ class WebContext(HTTPContext):
 
 
     def no_content(self):
+        self.close_transaction()
         self.status = 204
 
 
     def see_other(self, location):
+        self.close_transaction()
         if type(location) is Reference:
             location = str(location)
 
@@ -280,6 +277,7 @@ class WebContext(HTTPContext):
 
 
     def redirect(self, resource=DO_NOT_CHANGE, view=DO_NOT_CHANGE):
+        self.close_transaction()
         self.method = 'GET'
 
         if resource is not DO_NOT_CHANGE:

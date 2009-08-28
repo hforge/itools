@@ -186,11 +186,11 @@ class WebContext(HTTPContext):
             self.set_status(self.status)
 
 
-    known_methods = {
+    known_methods = freeze({
         'OPTIONS': 'http_options',
         'GET': 'http_get',
         'HEAD': 'http_get',
-        'POST': 'http_post'}
+        'POST': 'http_post'})
 
 
     def get_allowed_methods(self):

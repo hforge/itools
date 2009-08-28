@@ -230,22 +230,22 @@ class WebContext(HTTPContext):
     #######################################################################
     # Return conditions
     #######################################################################
-    def ok(self, content_type, body, wrap=True):
+    def ok(self, content_type, body):
         self.close_transaction()
-        # Wrap
-        if wrap:
-            if type(body) is str:
-                body = XMLParser(body, doctype=xhtml_doctype)
-
-            root = self.get_resource('/')
-            body = root.skin.render(body, self)
-        else:
-            is_xml = isinstance(body, (list, GeneratorType, XMLParser))
-            if is_xml:
-                body = stream_to_str_as_html(body)
-
-        # Ok
         self.status = 200
+        self.set_body(content_type, body)
+
+
+    def ok_wrap(self, content_type, body):
+        self.close_transaction()
+        self.status = 200
+
+        # Wrap
+        if type(body) is str:
+            body = XMLParser(body, doctype=xhtml_doctype)
+
+        root = self.get_resource('/')
+        body = root.skin.render(body, self)
         self.set_body(content_type, body)
 
 

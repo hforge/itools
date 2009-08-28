@@ -29,16 +29,25 @@ from itools.datatypes import String
 from itools.gettext import MSG
 from itools.html import stream_to_str_as_html, xhtml_doctype
 from itools.http import Entity
-from itools.http import HTTPContext, ClientError, get_context
+from itools.http import HTTPContext, ClientError, ServerError, get_context
 from itools.i18n import AcceptLanguageType
-from itools.log import Logger, log_warning
-from itools.uri import Path, Reference, decode_query, get_reference
+from itools.log import Logger, log_warning, log_error
+from itools.uri import Path, Reference, get_reference
 from itools.xml import XMLParser
 from exceptions import FormError
 from messages import ERROR
 
 
 DO_NOT_CHANGE = 'do not change'
+
+status2name = {
+    401: 'http_unauthorized',
+    403: 'http_forbidden',
+    404: 'http_not_found',
+    405: 'http_method_not_allowed',
+    409: 'http_conflict',
+    500: 'http_internal_server_error'}
+
 
 
 class WebContext(HTTPContext):
@@ -74,62 +83,6 @@ class WebContext(HTTPContext):
         # attribute lets the interface to add those resources.
         self.styles = []
         self.scripts = []
-
-
-    def load_body(self):
-        # Case 1: nothing
-        body = self.soup_message.get_body()
-        if not body:
-            return {}
-
-        # Case 2: urlencoded
-        type, type_parameters = self.get_header('content-type')
-        if type == 'application/x-www-form-urlencoded':
-            return decode_query(body)
-
-        # Case 3: multipart
-        if type.startswith('multipart/'):
-            boundary = type_parameters.get('boundary')
-            boundary = '--%s' % boundary
-            form = {}
-            for part in body.split(boundary)[1:-1]:
-                if part.startswith('\r\n'):
-                    part = part[2:]
-                elif part.startswith('\n'):
-                    part = part[1:]
-                # Parse the entity
-                entity = Entity()
-                entity.load_state_from_string(part)
-                # Find out the parameter name
-                header = entity.get_header('Content-Disposition')
-                value, header_parameters = header
-                name = header_parameters['name']
-                # Load the value
-                body = entity.get_body()
-                if 'filename' in header_parameters:
-                    filename = header_parameters['filename']
-                    if filename:
-                        # Strip the path (for IE).
-                        filename = filename.split('\\')[-1]
-                        # Default content-type, see
-                        # http://tools.ietf.org/html/rfc2045#section-5.2
-                        if entity.has_header('content-type'):
-                            mimetype = entity.get_header('content-type')[0]
-                        else:
-                            mimetype = 'text/plain'
-                        form[name] = filename, mimetype, body
-                else:
-                    if name not in form:
-                        form[name] = body
-                    else:
-                        if isinstance(form[name], list):
-                            form[name].append(body)
-                        else:
-                            form[name] = [form[name], body]
-            return form
-
-        # Case 4: ?
-        return {'body': body}
 
 
     def add_style(self, *args):
@@ -244,6 +197,94 @@ class WebContext(HTTPContext):
 
 
     #######################################################################
+    # Handle requests
+    #######################################################################
+    def handle_request(self):
+        try:
+            self.access
+            method = self.known_methods[self.method]
+            method = getattr(self, method)
+            method()
+        except FormError, error:
+            self.message = error.get_message()
+            self.method = 'GET'
+            self.handle_request()
+        except (ClientError, ServerError), error:
+            status = error.status
+            self.status = status
+            self.resource = self.get_resource('/')
+            del self.view
+            self.view_name = status2name[status]
+            self.access = True
+            self.handle_request()
+        except Exception:
+            log_error('Internal Server Error', domain='itools.web')
+            self.status = 500
+            self.method = 'GET'
+            self.resource = self.get_resource('/')
+            del self.view
+            self.view_name = 'http_internal_server_error'
+            self.access = True
+            self.handle_request()
+        else:
+            if self.status is None:
+                self.status = 200
+            self.set_status(self.status)
+
+
+    known_methods = {
+        'OPTIONS': 'http_options',
+        'GET': 'http_get',
+        'HEAD': 'http_get',
+        'POST': 'http_post'}
+
+
+    def get_allowed_methods(self):
+        obj = self.view or self.resource
+        methods = [
+            x for x in self.known_methods
+            if getattr(obj, self.known_methods[x], None) ]
+        methods = set(methods)
+        methods.add('OPTIONS')
+        # DELETE is unsupported at the root
+        if obj.path == '/':
+            methods.discard('DELETE')
+        return methods
+
+
+    def http_options(self):
+        methods = self.get_allowed_methods()
+        self.set_status(200)
+        self.set_header('Allow', ','.join(methods))
+
+
+    def http_get(self):
+        view = self.view
+        self.commit = False
+        view.http_get(self.resource, self)
+
+        # Close transaction
+        self.close_transaction()
+
+
+    def http_post(self):
+        view = self.view
+        self.commit = True
+        view.http_post(self.resource, self)
+
+        # Close transaction
+        self.close_transaction()
+
+
+    def close_transaction(self):
+        database = self.mount.database
+        if self.commit is True:
+            database.save_changes()
+        else:
+            database.abort_changes()
+
+
+    #######################################################################
     # Return conditions
     #######################################################################
     def ok(self, content_type, body, wrap=True):
@@ -272,7 +313,7 @@ class WebContext(HTTPContext):
         self.del_attribute('view')
         self.path = Path(location)
         self.split_path()
-        self.repeat = True
+        self.handle_request()
 
 
     def no_content(self):
@@ -307,7 +348,7 @@ class WebContext(HTTPContext):
         self.path = Path(path)
 
         # Redirect
-        self.repeat = True
+        self.handle_request()
 
 
     #######################################################################

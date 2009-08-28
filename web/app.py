@@ -15,7 +15,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.handlers import BaseDatabase
 from itools.http import HTTPMount
 from context import WebContext
 
@@ -23,7 +22,6 @@ from context import WebContext
 class WebApplication(HTTPMount):
 
     context_class = WebContext
-    database = BaseDatabase()
 
 
     def handle_request(self, context):

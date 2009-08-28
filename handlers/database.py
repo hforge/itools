@@ -46,17 +46,6 @@ class ReadOnlyError(RuntimeError):
 
 class BaseDatabase(object):
 
-    def _before_commit(self):
-        """This method is called before 'save_changes', and gives a chance
-        to the database to check for preconditions, if an error occurs here
-        the transaction will be aborted.
-
-        The value returned by this method will be passed to '_save_changes',
-        so it can be used to pre-calculate whatever data is needed.
-        """
-        return None
-
-
     def _save_changes(self, data):
         raise NotImplementedError
 
@@ -89,18 +78,9 @@ class BaseDatabase(object):
 
     #######################################################################
     # Public API
-    def save_changes(self):
+    def save_changes(self, data=None):
         if self._has_changed() is False:
             return
-
-        # Prepare for commit, do here the most you can, if something fails
-        # the transaction will be aborted
-        try:
-            data = self._before_commit()
-        except:
-            self._abort_changes()
-            self._cleanup()
-            raise
 
         # Commit
         try:

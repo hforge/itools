@@ -220,11 +220,21 @@ class WebContext(HTTPContext):
 
 
     def close_transaction(self):
-        database = self.mount.database
         if self.commit is True:
-            database.save_changes()
+            try:
+                self.save_changes()
+            finally:
+                self.abort_changes()
         else:
-            database.abort_changes()
+            self.abort_changes()
+
+
+    def abort_changes(self):
+        raise NotImplementedError
+
+
+    def save_changes(self):
+        raise NotImplementedError
 
 
     #######################################################################

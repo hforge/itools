@@ -25,6 +25,7 @@ from gobject import MainLoop
 
 # Import from itools
 from itools.i18n import init_language_selector
+from itools.log import log_error, log_warning
 from itools.soup import SoupServer
 from itools.uri import Path
 from context import set_context, set_response, select_language
@@ -70,6 +71,7 @@ class HTTPServer(SoupServer):
             log = open(self.access_log, 'a+')
             self.access_log_file = log
         log.write(line)
+        log.flush()
 
 
     #######################################################################
@@ -149,7 +151,8 @@ class HTTPServer(SoupServer):
     #######################################################################
     # Callbacks
     #######################################################################
-    known_methods = ['OPTIONS', 'GET', 'HEAD', 'POST', 'PUT', 'DELETE']
+    known_methods = [
+        'OPTIONS', 'GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'LOCK', 'UNLOCK']
 
 
     def star_callback(self, soup_message, path):
@@ -175,7 +178,10 @@ class HTTPServer(SoupServer):
 
     def path_callback(self, soup_message, path):
         # 501 Not Implemented
-        if soup_message.get_method() not in self.known_methods:
+        method = soup_message.get_method()
+        if method not in self.known_methods:
+            log_warning('Unexpected "%s" HTTP method' % method,
+                        domain='itools.http')
             return set_response(soup_message, 501)
 
         # Mount

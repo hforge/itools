@@ -19,6 +19,7 @@
 # Import from itools
 from itools.uri import Path
 from access import AccessControl
+from context import get_context
 from views import BaseView
 
 
@@ -51,11 +52,10 @@ class Resource(object):
 
 
     def get_canonical_path(self):
-        if self.parent is None:
-            return Path('/')
-        parent_path = self.parent.get_canonical_path()
-
-        return parent_path.resolve_name(self.name)
+        context = get_context()
+        if context.host is None:
+            return self.path
+        return '/%s%s' % (context.host, self.path)
 
 
     def get_real_resource(self):

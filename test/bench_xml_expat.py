@@ -50,7 +50,7 @@ if __name__ == '__main__':
             p.EndElementHandler = end_element
             try:
                 p.ParseFile(test_file)
-            except:
+            except Exception:
                 # Error
                 test_file.close()
                 exit(1)

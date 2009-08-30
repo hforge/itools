@@ -442,7 +442,7 @@ def get_form_value(form, name, type=String, default=None):
             value = [value]
         try:
             values = [ type.decode(x) for x in value ]
-        except:
+        except Exception:
             raise FormError(invalid=[name])
         # Check the values are valid
         for value in values:
@@ -456,7 +456,7 @@ def get_form_value(form, name, type=String, default=None):
         value = value[0]
     try:
         value = type.decode(value)
-    except:
+    except Exception:
         raise FormError(invalid=[name])
 
     # We consider that if the type deserializes the value to None, then we

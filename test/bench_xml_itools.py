@@ -42,7 +42,7 @@ if __name__ == '__main__':
                         pass
                     elif type == END_ELEMENT:
                         pass
-            except:
+            except Exception:
                 # Error
                 test_file.close()
                 exit(1)

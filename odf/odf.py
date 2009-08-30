@@ -34,7 +34,7 @@ from itools import vfs
 # Import from the Python Image Library
 try:
     from PIL import Image as PILImage, ImageDraw as PILImageDraw
-except:
+except ImportError:
     PILImage = None
 
 

@@ -83,7 +83,7 @@ class RequestMethod(object):
         # Save changes
         try:
             database.save_changes()
-        except:
+        except Exception:
             cls.internal_server_error(server, context)
 
 
@@ -140,7 +140,7 @@ class RequestMethod(object):
         except FormError, error:
             context.method = view.on_query_error
             context.query_error = error
-        except:
+        except Exception:
             cls.internal_server_error(server, context)
             context.method = None
         else:
@@ -151,7 +151,7 @@ class RequestMethod(object):
         try:
             m = getattr(root.http_main, cls.method_name)
             context.entity = m(root, context)
-        except:
+        except Exception:
             cls.internal_server_error(server, context)
         else:
             # Ok: set status

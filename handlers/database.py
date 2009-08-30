@@ -85,7 +85,7 @@ class BaseDatabase(object):
         # Commit
         try:
             self._save_changes(data)
-        except:
+        except Exception:
             self._rollback()
             self._abort_changes()
             raise

@@ -130,7 +130,7 @@ class URI(String):
     def is_valid(value):
         try:
             get_reference(value)
-        except:
+        except Exception:
             return False
         return True
 

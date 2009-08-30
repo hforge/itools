@@ -172,7 +172,7 @@ def parse_setupconf(package_dir):
 def get_package_version(package_name):
     try:
         mod = __import__(package_name)
-    except:
+    except ImportError:
         return '?'
 
     for name in ['Version', '__version__', 'version']:

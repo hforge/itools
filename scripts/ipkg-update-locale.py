@@ -94,7 +94,7 @@ if __name__ == '__main__':
         try:
             units = handler.get_units(srx_handler=srx_handler)
             units = list(units)
-        except:
+        except Exception:
             print
             print '*'
             print '* Error:', path

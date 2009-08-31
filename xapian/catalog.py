@@ -27,7 +27,7 @@ from itools.fs import lfs
 from base import CatalogAware
 from queries import AllQuery, AndQuery, NotQuery, OrQuery, PhraseQuery
 from queries import RangeQuery, StartQuery
-from results import SearchResults
+from results import SearchResults, SearchDocument
 from utils import _encode, _get_field_cls, _reduce_size, _make_PhraseQuery
 from utils import _index, _get_xquery
 
@@ -57,6 +57,9 @@ def _get_prefix(number):
 
 
 class Catalog(object):
+
+    search_document = SearchDocument
+
 
     def __init__(self, ref, fields, read_only=False, asynchronous_mode=True):
         # Load the database

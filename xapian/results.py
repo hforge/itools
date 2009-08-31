@@ -23,7 +23,7 @@ from itools.datatypes import Unicode
 from utils import _decode, _get_field_cls, _get_xquery
 
 
-class Doc(object):
+class SearchDocument(object):
 
     def __init__(self, xdoc, fields, metadata):
         self._xdoc = xdoc
@@ -112,7 +112,6 @@ class SearchResults(object):
         By default all the documents are returned.
         """
         enquire = self._enquire
-        fields = self._catalog._fields
         metadata = self._catalog._metadata
 
         # sort_by != None
@@ -138,7 +137,9 @@ class SearchResults(object):
             size = self._max
 
         # Construction of the results
-        results = [ Doc(x.get_document(), fields, metadata)
+        fields = self._catalog._fields
+        cls = self._catalog.search_document
+        results = [ cls(x.get_document(), fields, metadata)
                     for x in enquire.get_mset(start, size) ]
 
         # sort_by=None/reverse=True

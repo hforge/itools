@@ -199,7 +199,7 @@ class MultiLinesTokens(DataType):
 
     @staticmethod
     def decode(data):
-        return tuple(data.split('\n'))
+        return tuple(data.splitlines())
 
 
     @staticmethod

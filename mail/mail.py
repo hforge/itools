@@ -15,6 +15,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from email.mime.application import MIMEApplication
+from email.MIMEImage import MIMEImage
 from email.parser import HeaderParser
 from os import fdopen
 from smtplib import SMTP, SMTPRecipientsRefused, SMTPResponseException
@@ -42,7 +44,8 @@ class MailSpool(object):
 
 
     def send_email(self, to_addr, subject, from_addr=None, text=None,
-                   html=None, encoding='utf-8', return_receipt=False):
+                   html=None, encoding='utf-8', return_receipt=False,
+                   attachment=None):
         # Check input data
         if not isinstance(subject, unicode):
             raise TypeError, 'the subject must be a Unicode string'
@@ -89,6 +92,19 @@ class MailSpool(object):
             message.attach(message_html)
         elif text:
             message.attach(message_text)
+         # Attach attachment
+         if attachment:
+             subtype = attachment.get_mimetype()
+             data = attachment.to_str()
+             if subtype[:6] == 'image/':
+                 subtype = subtype[6:]
+                 mime_cls = MIMEImage
+             else:
+                 mime_cls = MIMEApplication
+             message_attachment = mime_cls(data, subtype)
+             message_attachment.add_header('Content-Disposition', 'attachment',
+                                           filename=attachment.name)
+             message.attach(message_attachment)
         # Send email
         self.send_raw_email(message)
 

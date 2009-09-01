@@ -167,7 +167,7 @@ class WebContext(HTTPContext):
             status = error.status
             self.status = status
             self.resource = self.get_resource('/')
-            del self.view
+            self.del_attribute('view')
             self.view_name = status2name[status]
             self.access = True
             self.handle_request()
@@ -176,7 +176,7 @@ class WebContext(HTTPContext):
             self.status = 500
             self.method = 'GET'
             self.resource = self.get_resource('/')
-            del self.view
+            self.del_attribute('view')
             self.view_name = 'http_internal_server_error'
             self.access = True
             self.handle_request()

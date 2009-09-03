@@ -500,7 +500,7 @@ class Reference(object):
                              reference.fragment)
 
         # Internal references
-        if isinstance(reference, EmptyReference):
+        if type(reference) is EmptyReference:
             return Reference(self.scheme, self.authority,
                              copy(self.path),
                              self.query.copy(),
@@ -548,7 +548,7 @@ class Reference(object):
                              reference.fragment)
 
         # Internal references
-        if isinstance(reference, EmptyReference):
+        if type(reference) is EmptyReference:
             return Reference(self.scheme, self.authority,
                              copy(self.path),
                              copy(self.query),

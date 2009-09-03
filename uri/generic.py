@@ -54,7 +54,7 @@ from urllib import quote_plus, unquote, unquote_plus
 ##########################################################################
 
 def _normalize_path(path):
-    if not isinstance(path, str):
+    if type(path) is not str:
         raise TypeError, 'path must be an string, not a %s' % type(path)
 
     # Does the path start and/or end with an slash?
@@ -131,14 +131,14 @@ class Path(list):
 
 
     def __init__(self, path):
-        if isinstance(path, (tuple, list)):
-            self.startswith_slash = False
-            self.endswith_slash = False
-            path = [ str(x) for x in path ]
-        else:
+        if type(path) is str:
             startswith_slash, path, endswith_slash = _normalize_path(path)
             self.startswith_slash = startswith_slash
             self.endswith_slash = path and endswith_slash
+        else:
+            self.startswith_slash = False
+            self.endswith_slash = False
+            path = [ str(x) for x in path ]
 
         list.__init__(self, path)
 
@@ -500,7 +500,7 @@ class Reference(object):
                              reference.fragment)
 
         # Internal references
-        if type(reference) is EmptyReference:
+        if reference is empty_reference:
             return Reference(self.scheme, self.authority,
                              copy(self.path),
                              self.query.copy(),
@@ -548,7 +548,7 @@ class Reference(object):
                              reference.fragment)
 
         # Internal references
-        if type(reference) is EmptyReference:
+        if reference is empty_reference:
             return Reference(self.scheme, self.authority,
                              copy(self.path),
                              copy(self.query),
@@ -620,6 +620,9 @@ class EmptyReference(Reference):
         return ''
 
 
+empty_reference = EmptyReference()
+
+
 ##########################################################################
 # Factory
 ##########################################################################
@@ -628,15 +631,16 @@ class GenericDataType(object):
 
     @staticmethod
     def decode(data):
-        if isinstance(data, Path):
+        data_type = type(data)
+        if data_type is Path:
             return Reference('', '', data, {}, None)
 
-        if type(data) is not str:
+        if data_type is not str:
             raise TypeError, 'unexpected %s' % type(data)
 
         # Special case, the empty reference
         if data == '':
-            return EmptyReference()
+            return empty_reference
 
         # Special case, the empty fragment
         if data == '#':

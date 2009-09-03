@@ -395,17 +395,18 @@ class RWDatabase(RODatabase):
 
         # The State
         base = self._resolve_reference(reference)
+        base = get_reference(base)
         # Removed
         removed = set()
         for uri in self.removed:
             name = get_uri_name(uri)
-            if resolve_uri2(base, name) == uri:
+            if base.resolve2(name) == uri:
                 removed.add(name)
         # Added
         added = set()
         for uri in self.added:
             name = get_uri_name(uri)
-            if resolve_uri2(base, name) == uri:
+            if base.resolve2(name) == uri:
                 added.add(name)
         names = set(names) - removed | added
 

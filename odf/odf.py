@@ -19,6 +19,7 @@
 
 # Import from the Standard Library
 from cStringIO import StringIO
+from os.path import splitext
 from random import choice
 from zipfile import ZipFile
 
@@ -47,6 +48,8 @@ def zip_data(source, modified_files):
         # Replace the data from the map
         if info.filename in modified_files:
             data = modified_files[info.filename]
+            if data is None:
+                continue
         else:
             data = zip.read(info.filename)
 
@@ -73,6 +76,43 @@ def stl_to_odt(model_odt, namespace):
     modified_files = {'content.xml': xml_content}
     # Zip
     return zip_data(model_odt.data, modified_files)
+
+
+
+class GreekCatalog(object):
+    """A stupid translator.
+    """
+
+    # This table is derived from the Times New Roman font 12px
+    table = [
+        # 6-14
+        'ijlt', 'frI', 'sJ', 'acez', 'bdghknopquvxy', 'FPS', 'ELTZ', 'BCR',
+        'wADGHKNOQUVXY',
+        # 16
+        'm',
+        # 18+19
+        'MW']
+
+    @classmethod
+    def gettext(cls, unit, context):
+        table = {}
+        for chars in cls.table:
+            for c in chars:
+                table[c] = chars
+
+        def f(c):
+            if c.isspace():
+                return c
+            if c in table:
+                return choice(table[c])
+            return 'x'
+
+        new_unit = []
+        for x, s in unit:
+            if type(s) in (str, unicode):
+                s = ''.join([ f(c) for c in s ])
+            new_unit.append((x, s))
+        return new_unit
 
 
 
@@ -150,81 +190,70 @@ class ODFFile(OOFile):
     def greek(self):
         """Anonymize the ODF file.
         """
+        # Verify PIL is installed
+        if PILImage is None:
+            err = 'The greeking feature requires the Python Imaging Library'
+            raise ImportError, err
 
-        # A stupid translator
-        class Catalog(object):
-
-            # This table is derived from the Times New Roman font 12px
-            table = [
-                # 6-14
-                'ijlt', 'frI', 'sJ', 'acez', 'bdghknopquvxy', 'FPS', 'ELTZ',
-                'BCR', 'wADGHKNOQUVXY',
-                # 16
-                'm',
-                # 18+19
-                'MW']
-
-            @classmethod
-            def gettext(cls, unit, context):
-                table = {}
-                for chars in cls.table:
-                    for c in chars:
-                        table[c] = chars
-
-                def f(c):
-                    if c.isspace():
-                        return c
-                    if c in table:
-                        return choice(table[c])
-                    return 'x'
-
-                new_unit = []
-                for x, s in unit:
-                    if type(s) in (str, unicode):
-                        s = ''.join([ f(c) for c in s ])
-                    new_unit.append((x, s))
-                return new_unit
+        folder = vfs.open(get_abspath('.'))
+        err = 'Unexpected "%s" file will be omitted from the greeked document'
 
         modified_files = {}
-
-        # Translate
-        for filename in ['content.xml', 'meta.xml', 'styles.xml']:
-            events = self.get_events(filename)
-            translation = translate(events, Catalog)
-            modified_files[filename] = stream_to_str(translation)
-
-        # Transform images
         for filename in self.get_contents():
-            if filename[:8] != 'Pictures' and filename[:10] != 'Thumbnails':
-                continue
+            extension = splitext(filename)[1]
+            # Files to keep as they are
+            # TODO the manifest.xml file should be properly updated
+            keep = ['mimetype', 'settings.xml', 'META-INF/manifest.xml']
+            if filename in keep:
+                pass
 
-            # PIL is imported?
-            if PILImage is None:
-                raise ImportError, 'You must install PIL to convert the images'
-            # Try with PIL
-            try:
-                image = PILImage.open(StringIO(self.get_file(filename)))
-            except IOError:
-                # A SVM file?
-                if filename.endswith('.svm'):
-                    data = vfs.open(get_abspath('square.svm')).read()
-                    modified_files[filename] = data
-                continue
-            format = image.format
-            image = image.convert('RGB')
-            image.filename = filename
-            draw = PILImageDraw.Draw(image)
+            # Content, metadata and style
+            elif filename in ['content.xml', 'meta.xml', 'styles.xml']:
+                events = self.get_events(filename)
+                translation = translate(events, GreekCatalog)
+                modified_files[filename] = stream_to_str(translation)
 
-            # Make a cross
-            h, l = image.size
-            draw.rectangle((0, 0, h-1, l-1), fill="grey", outline="black")
-            draw.line((0, 0, h-1, l-1), fill="black")
-            draw.line((0, l-1, h-1, 0), fill="black")
+            # Thumbnails
+            elif filename.startswith('Thumbnails'):
+                if extension == '.pdf':
+                    modified_files[filename] = folder.open('thumb.pdf').read()
+                elif extension == '.png':
+                    modified_files[filename] = folder.open('thumb.png').read()
+                else:
+                    # Unexpected (TODO use the logging system)
+                    modified_files[filename] = None
+                    print err % filename
 
-            # Save
-            data = StringIO()
-            image.save(data, format)
-            modified_files[filename] = data.getvalue()
+            # SVM files (usually they are in the Pictures folder)
+            elif extension == '.svm':
+                modified_files[filename] = folder.open('square.svm').read()
+
+            # Pictures
+            elif filename.startswith('Pictures'):
+                # Try with PIL
+                file = self.get_file(filename)
+                file = StringIO(file)
+                image = PILImage.open(file)
+                format = image.format
+                image = image.convert('RGB')
+                image.filename = filename
+                draw = PILImageDraw.Draw(image)
+
+                # Make a cross
+                h, l = image.size
+                draw.rectangle((0, 0, h-1, l-1), fill="grey", outline="black")
+                draw.line((0, 0, h-1, l-1), fill="black")
+                draw.line((0, l-1, h-1, 0), fill="black")
+
+                # Save
+                data = StringIO()
+                image.save(data, format)
+                modified_files[filename] = data.getvalue()
+
+            # Unexpected (TODO use the logging system)
+            else:
+                modified_files[filename] = None
+                print err % filename
 
         return  zip_data(self.data, modified_files)
 

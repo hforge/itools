@@ -92,19 +92,19 @@ class MailSpool(object):
             message.attach(message_html)
         elif text:
             message.attach(message_text)
-         # Attach attachment
-         if attachment:
-             subtype = attachment.get_mimetype()
-             data = attachment.to_str()
-             if subtype[:6] == 'image/':
-                 subtype = subtype[6:]
-                 mime_cls = MIMEImage
-             else:
-                 mime_cls = MIMEApplication
-             message_attachment = mime_cls(data, subtype)
-             message_attachment.add_header('Content-Disposition', 'attachment',
-                                           filename=attachment.name)
-             message.attach(message_attachment)
+        # Attach attachment
+        if attachment:
+            subtype = attachment.get_mimetype()
+            data = attachment.to_str()
+            if subtype[:6] == 'image/':
+                subtype = subtype[6:]
+                mime_cls = MIMEImage
+            else:
+                mime_cls = MIMEApplication
+            message_attachment = mime_cls(data, subtype)
+            message_attachment.add_header('Content-Disposition', 'attachment',
+                                          filename=attachment.name)
+            message.attach(message_attachment)
         # Send email
         self.send_raw_email(message)
 

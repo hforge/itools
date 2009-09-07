@@ -15,7 +15,10 @@
    sodipodi:version="0.32"
    inkscape:version="0.46"
    sodipodi:docname="thumb.svg"
-   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   inkscape:export-filename="/home/jdavid/sandboxes/itools/odf/thumb.png"
+   inkscape:export-xdpi="49.155094"
+   inkscape:export-ydpi="49.155094">
   <defs
      id="defs4">
     <inkscape:perspective
@@ -82,7 +85,7 @@
        x="375.2496"
        y="193.94496"
        id="text4461"
-       sodipodi:linespacing="100%"><tspan
+       sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan4463"
          x="375.2496"
@@ -101,12 +104,21 @@
        id="text4475"
        sodipodi:linespacing="100%"><tspan
          sodipodi:role="line"
-         id="tspan4477"
          x="376.08456"
          y="460.40845"
-         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;writing-mode:lr-tb;text-anchor:middle;font-family:Bitstream Vera Sans Mono;-inkscape-font-specification:Bitstream Vera Sans Mono"><tspan
+         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;writing-mode:lr-tb;text-anchor:middle;font-family:Bitstream Vera Sans Mono;-inkscape-font-specification:Bitstream Vera Sans Mono"
+         id="tspan2404"><tspan
    style="font-size:32px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;writing-mode:lr-tb;text-anchor:middle;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
-   id="tspan4511">by </tspan>itools from</tspan><tspan
+   id="tspan4511">by </tspan>itools<tspan
+   style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+   id="tspan2392">,</tspan></tspan><tspan
+         sodipodi:role="line"
+         x="376.08456"
+         y="460.40845"
+         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;writing-mode:lr-tb;text-anchor:middle;font-family:Bitstream Vera Sans Mono;-inkscape-font-specification:Bitstream Vera Sans Mono"
+         id="tspan2420"><tspan
+   style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+   id="tspan2422">download for free </tspan>from</tspan><tspan
          sodipodi:role="line"
          x="376.08456"
          y="492.40845"
@@ -114,22 +126,8 @@
          style="font-size:32px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;writing-mode:lr-tb;text-anchor:middle;font-family:Bitstream Vera Sans Mono;-inkscape-font-specification:Bitstream Vera Sans Mono" /><tspan
          sodipodi:role="line"
          x="376.08456"
-         y="529.51953"
-         id="tspan4479"
-         style="font-size:40px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:center;line-height:100%;writing-mode:lr-tb;text-anchor:middle;font-family:URW Bookman L;-inkscape-font-specification:URW Bookman L Bold">The Hacker's Forge</tspan><tspan
-         sodipodi:role="line"
-         x="376.08456"
-         y="569.51953"
-         id="tspan4481" /><tspan
-         sodipodi:role="line"
-         x="376.08456"
-         y="604.40845"
-         id="tspan4489"
-         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;writing-mode:lr-tb;text-anchor:middle;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans">download it for free at</tspan><tspan
-         sodipodi:role="line"
-         x="376.08456"
-         y="636.40845"
+         y="547.89624"
          id="tspan4483"
-         style="font-size:32px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;writing-mode:lr-tb;text-anchor:middle;font-family:Bitstream Vera Sans Mono;-inkscape-font-specification:Bitstream Vera Sans Mono">www.hforge.org/itools</tspan></text>
+         style="font-size:64px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:center;line-height:100%;writing-mode:lr-tb;text-anchor:middle;font-family:URW Bookman L;-inkscape-font-specification:URW Bookman L Bold">HForge.org</tspan></text>
   </g>
 </svg>

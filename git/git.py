@@ -34,9 +34,6 @@ def is_available():
 def get_filenames():
     """Returns the list of filenames tracked by git.
     """
-    if not is_available():
-        return []
-
     data = get_pipe(['git', 'ls-files'])
     return [ x.strip() for x in data.splitlines() ]
 

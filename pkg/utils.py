@@ -20,6 +20,7 @@ from distutils.core import Extension
 from distutils.command.build_ext import build_ext
 from distutils.errors import LinkError
 from os.path import exists, join as join_path
+from os import popen
 from sys import _getframe, argv
 
 # Import from itools
@@ -38,7 +39,6 @@ class OptionalExtension(Extension):
 
     Simply Use OptionalExtension instead of Extension in your setup.
     """
-    pass
 
 
 
@@ -90,6 +90,20 @@ def get_compile_flags(command):
 
 
 
+def get_manifest():
+    if git.is_available():
+        return git.get_filenames()
+
+    # No git: find out source files
+    config = SetupConf('setup.conf')
+    target_languages = config.get_value('target_languages', default='').split()
+    cmd = (
+        'find -type f|grep -Ev "^./(build|dist)"|grep -Ev "*.(~|pyc|%s)"'
+        % '|'.join(target_languages))
+    return [ x.strip() for x in popen(cmd).readlines() ]
+
+
+
 def setup(ext_modules=freeze([])):
     mname = _getframe(1).f_globals.get('__name__')
     version = get_version(mname)
@@ -113,7 +127,7 @@ def setup(ext_modules=freeze([])):
     if exists('MANIFEST'):
         filenames = [ x.strip() for x in open('MANIFEST').readlines() ]
     else:
-        filenames = git.get_filenames()
+        filenames = get_manifest()
         lines = [ x + '\n' for x in filenames ]
         open('MANIFEST', 'w').write(''.join(lines))
 

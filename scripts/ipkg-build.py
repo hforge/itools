@@ -29,10 +29,11 @@ from traceback import print_exception
 import itools
 import itools.gettext
 from itools import git
-from itools.handlers import ConfigFile, get_handler
+from itools.handlers import get_handler
 from itools.html import XHTMLFile
-import itools.stl
 import itools.pdf
+from itools.pkg import SetupConf, get_manifest
+import itools.stl
 from itools import vfs
 
 
@@ -86,25 +87,19 @@ if __name__ == '__main__':
         print "Warning: not using git."
 
     # Read configuration for languages
-    config = ConfigFile('setup.conf')
+    config = SetupConf('setup.conf')
     source_language = config.get_value('source_language', default='en')
     target_languages = config.get_value('target_languages', default='').split()
 
     # (1) Initialize the manifest file
-    manifest = ['MANIFEST', 'version.txt']
+    manifest = [ x for x in get_manifest() if not islink(x) ]
+    manifest.append('MANIFEST')
+    # Find out the version string
     if git_available:
-        # Find out the version string
         version = get_version()
         open('version.txt', 'w').write(version)
         print '* Version:', version
-        filenames = git.get_filenames()
-    else:
-        # No git: find out source files
-        cmd = ('find -type f|grep -Ev "^./(build|dist)"'
-               '|grep -Ev "*.(~|pyc|%s)"' % '|'.join(target_languages))
-        filenames = [ x.strip() for x in popen(cmd).readlines() ]
-    filenames = [ x for x in filenames if not islink(x) ]
-    manifest.extend(filenames)
+        manifest.append('version.txt')
 
     # (2) Internationalization
     bad_templates = []

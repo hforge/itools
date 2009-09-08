@@ -18,11 +18,11 @@
 # Import from itools
 from itools.core import add_type
 from distribution import ArchiveNotSupported, Bundle
+from handlers import SetupConf
 from metadata import PKGINFOFile
 from packages import get_installed_info, packages_infos
 from repository import parse_package_name, download, EXTENSIONS
-from utils import setup, OptionalExtension, OptionalBuildExt
-from utils import get_compile_flags
+from utils import get_compile_flags, get_manifest, setup, OptionalExtension
 
 
 __all__ = [
@@ -30,13 +30,14 @@ __all__ = [
     'Bundle',
     'download',
     'EXTENSIONS',
+    'get_compile_flags',
     'get_installed_info',
+    'get_manifest',
     'packages_infos',
     'parse_package_name',
+    'OptionalExtension',
     'PKGINFOFile',
     'setup',
-    'OptionalExtension',
-    'get_compile_flags',
-    ]
+    'SetupConf']
 
 add_type('text/x-egg-info', '.egg-info')

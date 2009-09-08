@@ -24,7 +24,10 @@ from itools.core import freeze, get_pipe
 def is_available():
     """Returns True if we are in a git working directory, False otherwise.
     """
-    data = get_pipe(['git', 'branch'])
+    try:
+        data = get_pipe(['git', 'branch'])
+    except EnvironmentError:
+        return False
     return bool(data)
 
 

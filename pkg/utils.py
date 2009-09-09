@@ -19,7 +19,9 @@ from distutils import core
 from distutils.core import Extension
 from distutils.command.build_ext import build_ext
 from distutils.errors import LinkError
-from os.path import exists, join as join_path
+from os.path import exists, isdir, join as join_path
+from os import listdir, popen
+from re import compile
 from sys import _getframe, argv
 
 # Import from itools
@@ -38,7 +40,6 @@ class OptionalExtension(Extension):
 
     Simply Use OptionalExtension instead of Extension in your setup.
     """
-    pass
 
 
 
@@ -90,6 +91,39 @@ def get_compile_flags(command):
 
 
 
+def get_files(excluded_paths, filter=lambda x: True):
+    for name in listdir('.'):
+        if name in excluded_paths:
+            continue
+
+        if isdir(name):
+            stack = [name]
+            while stack:
+                base = stack.pop()
+                for name in listdir(base):
+                    path = join_path(base, name)
+                    if isdir(path):
+                        stack.append(path)
+                    elif filter(name):
+                        yield path
+        elif filter(name):
+            yield name
+
+
+
+def get_manifest():
+    if git.is_available():
+        return git.get_filenames()
+
+    # No git: find out source files
+    config = SetupConf('setup.conf')
+    target_languages = config.get_value('target_languages', default='').split()
+    bad_files = compile('.*(~|pyc|%s)$' % '|'.join(target_languages))
+    exclude = frozenset(['.git', 'build', 'dist'])
+    return get_files(exclude, filter=lambda x: not bad_files.match(x))
+
+
+
 def setup(ext_modules=freeze([])):
     mname = _getframe(1).f_globals.get('__name__')
     version = get_version(mname)
@@ -113,7 +147,7 @@ def setup(ext_modules=freeze([])):
     if exists('MANIFEST'):
         filenames = [ x.strip() for x in open('MANIFEST').readlines() ]
     else:
-        filenames = git.get_filenames()
+        filenames = get_manifest()
         lines = [ x + '\n' for x in filenames ]
         open('MANIFEST', 'w').write(''.join(lines))
 

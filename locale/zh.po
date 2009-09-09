@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: zh\n"
-"POT-Creation-Date: 2009-07-29 15:07+CET\n"
+"POT-Creation-Date: 2009-09-08 16:09+CET\n"
 "PO-Revision-Date: 2007-10-30 17:58+0100\n"
 "Last-Translator: Zhouli <zhouli@in-girum.net>\n"
 "Language-Team:  <zh@li.org>\n"
@@ -32,7 +32,7 @@ msgstr ""
 msgid "%s"
 msgstr ""
 
-#: ../xapian/utils.py:107
+#: ../xapian/utils.py:136
 msgid "%s%s"
 msgstr ""
 
@@ -114,7 +114,7 @@ msgstr ""
 msgid ">"
 msgstr ""
 
-#: ../i18n/languages.py:206
+#: ../i18n/languages.py:250
 msgid "???"
 msgstr ""
 
@@ -130,43 +130,60 @@ msgstr ""
 msgid "AE"
 msgstr ""
 
-#: ../i18n/languages.py:20
+#: ../i18n/languages.py:23
 msgid "Abkhazian"
 msgstr ""
 
-#: ../i18n/languages.py:19
+#: ../i18n/languages.py:22
 msgid "Afar"
 msgstr ""
 
-#: ../i18n/languages.py:21
+#: ../i18n/languages.py:25
 msgid "Afrikaans"
 msgstr ""
 
-#: ../i18n/languages.py:144
+#: ../i18n/languages.py:26
+msgid "Akan"
+msgstr ""
+
+#: ../i18n/languages.py:185
 msgid "Albanian"
 msgstr ""
 
-#: ../i18n/languages.py:22
+#: ../i18n/languages.py:27
 msgid "Amharic"
 msgstr ""
 
-#: ../i18n/languages.py:23
+#: ../i18n/languages.py:29
 msgid "Arabic"
 msgstr ""
 
-#: ../i18n/languages.py:78
+#: ../i18n/languages.py:28
+#, fuzzy
+msgid "Aragonese"
+msgstr "对照"
+
+#: ../i18n/languages.py:97
 msgid "Armenian"
 msgstr ""
 
-#: ../i18n/languages.py:24
+#: ../i18n/languages.py:30
 msgid "Assamese"
 msgstr ""
 
-#: ../i18n/languages.py:25
+#: ../i18n/languages.py:31
+msgid "Avaric"
+msgstr ""
+
+#: ../i18n/languages.py:24
+msgid "Avestan"
+msgstr ""
+
+#: ../i18n/languages.py:32
 msgid "Aymara"
 msgstr ""
 
-#: ../i18n/languages.py:26
+#: ../i18n/languages.py:33
 msgid "Azerbaijani"
 msgstr ""
 
@@ -174,119 +191,148 @@ msgstr ""
 msgid "BEGIN:%s\n"
 msgstr ""
 
-#: ../i18n/languages.py:27
+#: ../i18n/languages.py:39
+msgid "Bambara"
+msgstr ""
+
+#: ../i18n/languages.py:34
 msgid "Bashkir"
 msgstr ""
 
-#: ../i18n/languages.py:57
+#: ../i18n/languages.py:72
 #, fuzzy
 msgid "Basque"
 msgstr "巴斯克语"
 
-#: ../i18n/languages.py:28
+#: ../i18n/languages.py:35
 msgid "Belarusian"
 msgstr ""
 
-#: ../i18n/languages.py:32
+#: ../i18n/languages.py:40
 msgid "Bengali"
 msgstr ""
 
-#: ../i18n/languages.py:45
-msgid "Bhutani"
-msgstr ""
-
-#: ../i18n/languages.py:30
+#: ../i18n/languages.py:37
 msgid "Bihari"
 msgstr ""
 
-#: ../i18n/languages.py:31
+#: ../i18n/languages.py:38
 msgid "Bislama"
 msgstr ""
 
-#: ../i18n/languages.py:35
+#: ../i18n/languages.py:43
 msgid "Bosnian"
 msgstr ""
 
-#: ../i18n/languages.py:34
+#: ../i18n/languages.py:42
 msgid "Breton"
 msgstr ""
 
-#: ../i18n/languages.py:29
+#: ../i18n/languages.py:36
 #, fuzzy
 msgid "Bulgarian"
 msgstr "匈牙利语"
 
-#: ../i18n/languages.py:113
+#: ../i18n/languages.py:144
 msgid "Burmese"
 msgstr ""
 
-#: ../i18n/languages.py:91
-msgid "Cambodian"
-msgstr ""
-
-#: ../i18n/languages.py:36
+#: ../i18n/languages.py:44
 msgid "Catalan"
 msgstr "加泰隆尼语"
 
-#: ../i18n/languages.py:175
+#: ../i18n/languages.py:46
+msgid "Chamorro"
+msgstr ""
+
+#: ../i18n/languages.py:45
+msgid "Chechen"
+msgstr ""
+
+#: ../i18n/languages.py:156
+msgid "Chichewa; Chewa; Nyanja"
+msgstr ""
+
+#: ../i18n/languages.py:219
 msgid "Chinese"
 msgstr "简体中文"
 
-#: ../i18n/languages.py:176
+#: ../i18n/languages.py:220
 msgid "Chinese/China"
 msgstr "简体中文"
 
-#: ../i18n/languages.py:177
+#: ../i18n/languages.py:221
 msgid "Chinese/Taiwan"
+msgstr ""
+
+#: ../i18n/languages.py:50
+msgid "Church Slavic"
+msgstr ""
+
+#: ../i18n/languages.py:51
+msgid "Chuvash"
 msgstr ""
 
 #: ../scripts/ipkg-quality.py:56
 msgid "Code length"
 msgstr ""
 
-#: ../i18n/languages.py:96
+#: ../i18n/languages.py:124
 msgid "Cornish"
 msgstr ""
 
-#: ../i18n/languages.py:37
+#: ../i18n/languages.py:47
 msgid "Corsican"
 msgstr ""
 
-#: ../i18n/languages.py:76
+#: ../i18n/languages.py:48
+#, fuzzy
+msgid "Cree"
+msgstr "概略"
+
+#: ../i18n/languages.py:94
 #, fuzzy
 msgid "Croatian"
 msgstr "加泰隆尼语"
 
-#: ../i18n/languages.py:38
+#: ../i18n/languages.py:49
 msgid "Czech"
 msgstr ""
 
-#: ../i18n/languages.py:40
+#: ../i18n/languages.py:53
 #, fuzzy
 msgid "Danish"
 msgstr "英语"
 
-#: ../i18n/languages.py:116
+#: ../i18n/languages.py:58
+msgid "Divehi; Dhivehi; Maldivian"
+msgstr ""
+
+#: ../i18n/languages.py:150
 msgid "Dutch"
 msgstr ""
 
-#: ../i18n/languages.py:117
+#: ../i18n/languages.py:151
 msgid "Dutch/Belgium"
+msgstr ""
+
+#: ../i18n/languages.py:59
+msgid "Dzongkha"
 msgstr ""
 
 #: ../ical/icalendar.py:537 ../ical/icalendar.py:540
 msgid "END:%s\n"
 msgstr ""
 
-#: ../i18n/languages.py:47
+#: ../i18n/languages.py:62
 msgid "English"
 msgstr "英语"
 
-#: ../i18n/languages.py:48
+#: ../i18n/languages.py:63
 msgid "English/United Kingdom"
 msgstr ""
 
-#: ../i18n/languages.py:49
+#: ../i18n/languages.py:64
 msgid "English/United States"
 msgstr ""
 
@@ -294,11 +340,11 @@ msgstr ""
 msgid "Error, your project must be versioned with GIT."
 msgstr ""
 
-#: ../i18n/languages.py:50
+#: ../i18n/languages.py:65
 msgid "Esperanto"
 msgstr ""
 
-#: ../i18n/languages.py:56
+#: ../i18n/languages.py:71
 msgid "Estonian"
 msgstr ""
 
@@ -306,269 +352,359 @@ msgstr ""
 msgid "Everything looks fine (strange)."
 msgstr ""
 
+#: ../i18n/languages.py:60
+msgid "Ewe"
+msgstr ""
+
 #: ../scripts/ipkg-quality.py:69
 msgid "Exception handling"
 msgstr ""
 
-#: ../i18n/languages.py:61
+#: ../i18n/languages.py:77
 #, fuzzy
 msgid "Faroese"
 msgstr "对照"
 
-#: ../i18n/languages.py:60
-msgid "Fiji"
+#: ../i18n/languages.py:76
+msgid "Fijian"
 msgstr ""
 
-#: ../i18n/languages.py:59
+#: ../i18n/languages.py:75
 msgid "Finnish"
 msgstr ""
 
-#: ../i18n/languages.py:62
+#: ../i18n/languages.py:78
 msgid "French"
 msgstr "法语"
 
-#: ../i18n/languages.py:63
+#: ../i18n/languages.py:79
 msgid "French/Belgium"
 msgstr ""
 
-#: ../i18n/languages.py:64
+#: ../i18n/languages.py:80
 msgid "French/Canada"
 msgstr ""
 
-#: ../i18n/languages.py:65
+#: ../i18n/languages.py:81
 msgid "French/France"
 msgstr ""
 
-#: ../i18n/languages.py:66
+#: ../i18n/languages.py:82
 msgid "French/Switzerland"
 msgstr ""
 
-#: ../i18n/languages.py:67
+#: ../i18n/languages.py:83
 msgid "Frisian"
 msgstr ""
 
-#: ../i18n/languages.py:70
+#: ../i18n/languages.py:74
+msgid "Fulah"
+msgstr ""
+
+#: ../i18n/languages.py:85
+msgid "Gaelic"
+msgstr ""
+
+#: ../i18n/languages.py:86
 msgid "Galician"
 msgstr ""
 
-#: ../i18n/languages.py:88
+#: ../i18n/languages.py:128
+msgid "Ganda"
+msgstr ""
+
+#: ../i18n/languages.py:111
 #, fuzzy
 msgid "Georgian"
 msgstr "德语"
 
-#: ../i18n/languages.py:41
+#: ../i18n/languages.py:54
 msgid "German"
 msgstr "德语"
 
-#: ../i18n/languages.py:42
+#: ../i18n/languages.py:55
 #, fuzzy
 msgid "German/Austria"
 msgstr "德语"
 
-#: ../i18n/languages.py:43
+#: ../i18n/languages.py:56
 #, fuzzy
 msgid "German/Germany"
 msgstr "德语"
 
-#: ../i18n/languages.py:44
+#: ../i18n/languages.py:57
 msgid "German/Switzerland"
 msgstr ""
 
-#: ../i18n/languages.py:46
+#: ../i18n/languages.py:61
 msgid "Greek"
 msgstr ""
 
-#: ../i18n/languages.py:90
-msgid "Greenlandic"
-msgstr ""
-
-#: ../i18n/languages.py:71
+#: ../i18n/languages.py:87
 #, fuzzy
 msgid "Guarani"
 msgstr "匈牙利语"
 
-#: ../i18n/languages.py:72
+#: ../i18n/languages.py:88
 msgid "Gujarati"
 msgstr ""
 
-#: ../i18n/languages.py:73
+#: ../i18n/languages.py:95
+#, fuzzy
+msgid "Haitian"
+msgstr "登录"
+
+#: ../i18n/languages.py:90
 msgid "Hausa"
 msgstr ""
 
-#: ../i18n/languages.py:74
+#: ../i18n/languages.py:91
 msgid "Hebrew"
 msgstr ""
 
-#: ../i18n/languages.py:75
+#: ../i18n/languages.py:98
+msgid "Herero"
+msgstr ""
+
+#: ../i18n/languages.py:92
 msgid "Hindi"
 msgstr ""
 
-#: ../i18n/languages.py:77
+#: ../i18n/languages.py:93
+msgid "Hiri Motu"
+msgstr ""
+
+#: ../i18n/languages.py:96
 msgid "Hungarian"
 msgstr "匈牙利语"
 
-#: ../i18n/languages.py:83
+#: ../i18n/languages.py:106
 msgid "Icelandic"
+msgstr ""
+
+#: ../i18n/languages.py:105
+msgid "Ido"
+msgstr ""
+
+#: ../i18n/languages.py:102
+msgid "Igbo"
 msgstr ""
 
 #: ../scripts/ipkg-quality.py:76
 msgid "Import problems"
 msgstr ""
 
-#: ../i18n/languages.py:80
+#: ../i18n/languages.py:100
 msgid "Indonesian"
 msgstr ""
 
-#: ../i18n/languages.py:79
+#: ../i18n/languages.py:99
 #, fuzzy
 msgid "Interlingua"
 msgstr "直接从内部写入."
 
-#: ../i18n/languages.py:81
+#: ../i18n/languages.py:101
 #, fuzzy
-msgid "Interlingue"
+msgid "Interlingue; Occidental"
 msgstr "直接从内部写入."
 
-#: ../i18n/languages.py:85
+#: ../i18n/languages.py:108
 msgid "Inuktitut"
 msgstr ""
 
-#: ../i18n/languages.py:82
+#: ../i18n/languages.py:104
 #, fuzzy
 msgid "Inupiak"
 msgstr "卸下"
 
-#: ../i18n/languages.py:68
+#: ../i18n/languages.py:84
 msgid "Irish"
 msgstr ""
 
-#: ../i18n/languages.py:84
+#: ../i18n/languages.py:107
 #, fuzzy
 msgid "Italian"
 msgstr "意在利语"
 
-#: ../i18n/languages.py:86
+#: ../i18n/languages.py:109
 msgid "Japanese"
 msgstr "日本语"
 
-#: ../i18n/languages.py:87
+#: ../i18n/languages.py:110
 #, fuzzy
 msgid "Javanese"
 msgstr "日本语"
 
-#: ../i18n/languages.py:92
+#: ../i18n/languages.py:116
+msgid "Kalaallisut; Greenlandic"
+msgstr ""
+
+#: ../i18n/languages.py:118
 msgid "Kannada"
 msgstr ""
 
-#: ../i18n/languages.py:94
+#: ../i18n/languages.py:120
+msgid "Kanuri"
+msgstr ""
+
+#: ../i18n/languages.py:121
 msgid "Kashmiri"
 msgstr ""
 
-#: ../i18n/languages.py:89
+#: ../i18n/languages.py:115
 msgid "Kazakh"
 msgstr ""
 
-#: ../i18n/languages.py:132
+#: ../i18n/languages.py:117
+msgid "Khmer"
+msgstr ""
+
+#: ../i18n/languages.py:113
+msgid "Kikuyu; Gikuyu"
+msgstr ""
+
+#: ../i18n/languages.py:173
 msgid "Kinyarwanda"
 msgstr ""
 
-#: ../i18n/languages.py:97
-msgid "Kirghiz"
+#: ../i18n/languages.py:125
+msgid "Kirghiz; Kyrgyz"
 msgstr ""
 
-#: ../i18n/languages.py:129
-msgid "Kirundi"
+#: ../i18n/languages.py:123
+#, fuzzy
+msgid "Komi"
+msgstr "格式"
+
+#: ../i18n/languages.py:112
+msgid "Kongo"
 msgstr ""
 
-#: ../i18n/languages.py:93
+#: ../i18n/languages.py:119
 msgid "Korean"
 msgstr ""
 
-#: ../i18n/languages.py:95
+#: ../i18n/languages.py:114
+msgid "Kuanyama; Kwanyama"
+msgstr ""
+
+#: ../i18n/languages.py:122
 msgid "Kurdish"
 msgstr ""
 
-#: ../i18n/languages.py:101
-#, fuzzy
-msgid "Laothian"
-msgstr "登录"
+#: ../i18n/languages.py:131
+msgid "Lao"
+msgstr ""
 
-#: ../i18n/languages.py:98
+#: ../i18n/languages.py:126
 #, fuzzy
 msgid "Latin"
 msgstr "登录"
 
-#: ../i18n/languages.py:103
+#: ../i18n/languages.py:134
 #, fuzzy
 msgid "Latvian"
 msgstr "登录"
 
-#: ../i18n/languages.py:100
+#: ../i18n/languages.py:129
+msgid "Limburgan"
+msgstr ""
+
+#: ../i18n/languages.py:130
 msgid "Lingala"
 msgstr ""
 
-#: ../i18n/languages.py:102
+#: ../i18n/languages.py:132
 msgid "Lithuanian"
 msgstr ""
 
-#: ../i18n/languages.py:99
+#: ../i18n/languages.py:133
+msgid "Luba-Katanga"
+msgstr ""
+
+#: ../i18n/languages.py:127
 msgid "Luxembourgish"
 msgstr ""
 
-#: ../i18n/languages.py:106
+#: ../i18n/languages.py:138
 msgid "Macedonian"
 msgstr ""
 
-#: ../i18n/languages.py:104
+#: ../i18n/languages.py:135
 msgid "Malagasy"
 msgstr ""
 
-#: ../i18n/languages.py:111
+#: ../i18n/languages.py:142
 msgid "Malay"
 msgstr ""
 
-#: ../i18n/languages.py:107
+#: ../i18n/languages.py:139
 msgid "Malayalam"
 msgstr ""
 
-#: ../i18n/languages.py:112
+#: ../i18n/languages.py:143
 #, fuzzy
 msgid "Maltese"
 msgstr "粘贴"
 
-#: ../i18n/languages.py:105
+#: ../i18n/languages.py:89
+msgid "Manx"
+msgstr ""
+
+#: ../i18n/languages.py:137
 #, fuzzy
 msgid "Maori"
 msgstr "搜索"
 
-#: ../i18n/languages.py:110
+#: ../i18n/languages.py:141
 #, fuzzy
 msgid "Marathi"
 msgstr "搜索"
 
-#: ../i18n/languages.py:109
-msgid "Moldavian"
-msgstr ""
+#: ../i18n/languages.py:136
+#, fuzzy
+msgid "Marshallese"
+msgstr "粘贴"
 
-#: ../i18n/languages.py:108
+#: ../i18n/languages.py:140
 msgid "Mongolian"
 msgstr ""
 
-#: ../i18n/languages.py:114
+#: ../i18n/languages.py:145
 msgid "Nauru"
 msgstr ""
 
-#: ../i18n/languages.py:115
+#: ../i18n/languages.py:155
+msgid "Navajo; Navaho"
+msgstr ""
+
+#: ../i18n/languages.py:147
+msgid "Ndebele, North"
+msgstr ""
+
+#: ../i18n/languages.py:154
+msgid "Ndebele, South"
+msgstr ""
+
+#: ../i18n/languages.py:149
+msgid "Ndonga"
+msgstr ""
+
+#: ../i18n/languages.py:148
 #, fuzzy
 msgid "Nepali"
 msgstr "查阅"
 
-#: ../i18n/languages.py:135
-msgid "Northern Saami"
+#: ../i18n/languages.py:153
+msgid "Norwegian"
 msgstr ""
 
-#: ../i18n/languages.py:118
-msgid "Norwegian"
+#: ../i18n/languages.py:146
+msgid "Norwegian Bokmal"
+msgstr ""
+
+#: ../i18n/languages.py:152
+msgid "Norwegian Nyrnosk"
 msgstr ""
 
 #: ../scripts/ipkg-quality.py:57
@@ -583,29 +719,42 @@ msgstr ""
 msgid "OE"
 msgstr ""
 
-#: ../i18n/languages.py:119
+#: ../i18n/languages.py:157
 msgid "Occitan"
+msgstr ""
+
+#: ../i18n/languages.py:158
+msgid "Ojibwa"
 msgstr ""
 
 #: ../scripts/ipkg-quality.py:606
 msgid "Options --worse and --show-lines are mutually exclusive."
 msgstr ""
 
-#: ../i18n/languages.py:121
+#: ../i18n/languages.py:160
 msgid "Oriya"
 msgstr ""
 
-#: ../i18n/languages.py:120
+#: ../i18n/languages.py:159
 #, fuzzy
 msgid "Oromo"
 msgstr "格式"
 
-#: ../i18n/languages.py:124
-#, fuzzy
-msgid "Pashto"
-msgstr "粘贴"
+#: ../i18n/languages.py:161
+msgid "Ossetian; Ossetic"
+msgstr ""
 
-#: ../i18n/languages.py:58
+#: ../i18n/languages.py:163
+#, fuzzy
+msgid "Pali"
+msgstr "查阅"
+
+#: ../i18n/languages.py:162
+#, fuzzy
+msgid "Panjabi; Punjabi"
+msgstr "公共"
+
+#: ../i18n/languages.py:73
 #, fuzzy
 msgid "Persian"
 msgstr "个人"
@@ -619,101 +768,100 @@ msgstr "你必须选择删除成员."
 msgid "Please install matplotlib."
 msgstr ""
 
-#: ../i18n/languages.py:123
+#: ../i18n/languages.py:164
 #, fuzzy
 msgid "Polish"
 msgstr "英语"
 
-#: ../i18n/languages.py:125
+#: ../i18n/languages.py:166
 msgid "Portuguese"
 msgstr "葡萄牙语"
 
-#: ../i18n/languages.py:126
+#: ../i18n/languages.py:167
 #, fuzzy
 msgid "Portuguese/Brazil"
 msgstr "葡萄牙语"
 
-#: ../i18n/languages.py:122
+#: ../i18n/languages.py:165
 #, fuzzy
-msgid "Punjabi"
-msgstr "公共"
+msgid "Pushto; Pashto"
+msgstr "粘贴"
 
-#: ../i18n/languages.py:127
+#: ../i18n/languages.py:168
 msgid "Quechua"
 msgstr ""
 
-#: ../i18n/languages.py:128
-msgid "Rhaeto-Romance"
+#: ../i18n/languages.py:171
+msgid "Romanian; Moldavian"
 msgstr ""
 
-#: ../i18n/languages.py:130
-msgid "Romanian"
+#: ../i18n/languages.py:169
+#, fuzzy
+msgid "Romansh"
+msgstr "英语"
+
+#: ../i18n/languages.py:170
+msgid "Rundi"
 msgstr ""
 
-#: ../i18n/languages.py:131
+#: ../i18n/languages.py:172
 msgid "Russian"
 msgstr ""
 
-#: ../i18n/languages.py:141
+#: ../i18n/languages.py:177
+#, fuzzy
+msgid "Sami"
+msgstr "名称"
+
+#: ../i18n/languages.py:182
 msgid "Samoan"
 msgstr ""
 
-#: ../i18n/languages.py:136
-msgid "Sangho"
+#: ../i18n/languages.py:178
+msgid "Sango"
 msgstr ""
 
-#: ../i18n/languages.py:133
+#: ../i18n/languages.py:174
 #, fuzzy
 msgid "Sanskrit"
 msgstr "状态"
 
-#: ../i18n/languages.py:69
-msgid "Scots Gaelic"
-msgstr ""
+#: ../i18n/languages.py:175
+#, fuzzy
+msgid "Sardinian"
+msgstr "德语"
 
-#: ../i18n/languages.py:145
+#: ../i18n/languages.py:186
 #, fuzzy
 msgid "Serbian"
 msgstr "德语"
 
-#: ../i18n/languages.py:137
-msgid "Serbo-Croatian"
-msgstr ""
-
-#: ../i18n/languages.py:147
-msgid "Sesotho"
-msgstr ""
-
-#: ../i18n/languages.py:158
-msgid "Setswana"
-msgstr ""
-
-#: ../i18n/languages.py:142
+#: ../i18n/languages.py:183
 msgid "Shona"
 msgstr ""
 
-#: ../i18n/languages.py:134
+#: ../i18n/languages.py:103
+msgid "Sichuan Yi; Nuosu"
+msgstr ""
+
+#: ../i18n/languages.py:176
 #, fuzzy
 msgid "Sindhi"
 msgstr "发送"
 
-#: ../i18n/languages.py:138
-msgid "Sinhalese"
+#: ../i18n/languages.py:179
+msgid "Sinhala; Sinhalese"
 msgstr ""
 
-#: ../i18n/languages.py:146
-msgid "Siswati"
-msgstr ""
-
-#: ../i18n/languages.py:139
+#: ../i18n/languages.py:180
 msgid "Slovak"
 msgstr ""
 
-#: ../i18n/languages.py:140
+#: ../i18n/languages.py:181
 msgid "Slovenian"
 msgstr ""
 
-#: ../i18n/languages.py:143
+#: ../i18n/languages.py:184
 #, fuzzy
 msgid "Somali"
 msgstr "格式"
@@ -724,25 +872,29 @@ msgid ""
 "correct them and continue."
 msgstr ""
 
-#: ../i18n/languages.py:51
+#: ../i18n/languages.py:188
+msgid "Sotho"
+msgstr ""
+
+#: ../i18n/languages.py:66
 #, fuzzy
 msgid "Spanish"
 msgstr "西班牙语"
 
-#: ../i18n/languages.py:52
+#: ../i18n/languages.py:67
 msgid "Spanish/Argentina"
 msgstr ""
 
-#: ../i18n/languages.py:53
+#: ../i18n/languages.py:68
 msgid "Spanish/Colombia"
 msgstr ""
 
-#: ../i18n/languages.py:54
+#: ../i18n/languages.py:69
 #, fuzzy
 msgid "Spanish/Mexico"
 msgstr "西班牙语"
 
-#: ../i18n/languages.py:55
+#: ../i18n/languages.py:70
 msgid "Spanish/Spain"
 msgstr ""
 
@@ -751,42 +903,52 @@ msgstr ""
 msgid "Style"
 msgstr "状态"
 
-#: ../i18n/languages.py:148
+#: ../i18n/languages.py:189
 msgid "Sundanese"
 msgstr ""
 
-#: ../i18n/languages.py:150
+#: ../i18n/languages.py:191
 msgid "Swahili"
 msgstr ""
 
-#: ../i18n/languages.py:149
+#: ../i18n/languages.py:187
+#, fuzzy
+msgid "Swati"
+msgstr "登录"
+
+#: ../i18n/languages.py:190
 msgid "Swedish"
 msgstr ""
 
-#: ../i18n/languages.py:157
+#: ../i18n/languages.py:198
 #, fuzzy
 msgid "Tagalog"
 msgstr "分类"
 
-#: ../i18n/languages.py:153
+#: ../i18n/languages.py:205
+#, fuzzy
+msgid "Tahitian"
+msgstr "登录"
+
+#: ../i18n/languages.py:194
 msgid "Tajik"
 msgstr ""
 
-#: ../i18n/languages.py:151
+#: ../i18n/languages.py:192
 #, fuzzy
 msgid "Tamil"
 msgstr "名称"
 
-#: ../i18n/languages.py:162
+#: ../i18n/languages.py:203
 #, fuzzy
 msgid "Tatar"
 msgstr "状态"
 
-#: ../i18n/languages.py:152
+#: ../i18n/languages.py:193
 msgid "Telugu"
 msgstr ""
 
-#: ../i18n/languages.py:154
+#: ../i18n/languages.py:195
 #, fuzzy
 msgid "Thai"
 msgstr "读入"
@@ -815,85 +977,97 @@ msgstr "用户名错误,请再输入."
 msgid "This file is perfect !"
 msgstr "空文件夹."
 
-#: ../i18n/languages.py:33
+#: ../i18n/languages.py:41
 msgid "Tibetan"
 msgstr ""
 
-#: ../i18n/languages.py:155
+#: ../i18n/languages.py:196
 msgid "Tigrinya"
 msgstr ""
 
-#: ../i18n/languages.py:159
+#: ../i18n/languages.py:200
 msgid "Tonga"
 msgstr ""
 
-#: ../i18n/languages.py:161
+#: ../i18n/languages.py:202
 msgid "Tsonga"
 msgstr ""
 
-#: ../i18n/languages.py:160
+#: ../i18n/languages.py:199
+msgid "Tswana"
+msgstr ""
+
+#: ../i18n/languages.py:201
 msgid "Turkish"
 msgstr ""
 
-#: ../i18n/languages.py:156
+#: ../i18n/languages.py:197
 msgid "Turkmen"
 msgstr ""
 
-#: ../i18n/languages.py:163
+#: ../i18n/languages.py:204
 msgid "Twi"
 msgstr ""
 
-#: ../i18n/languages.py:164
-msgid "Uighur"
+#: ../i18n/languages.py:206
+msgid "Uighur; Uyghur"
 msgstr ""
 
-#: ../i18n/languages.py:165
+#: ../i18n/languages.py:207
 msgid "Ukrainian"
 msgstr ""
 
-#: ../i18n/languages.py:166
+#: ../i18n/languages.py:208
 msgid "Urdu"
 msgstr ""
 
-#: ../i18n/languages.py:167
+#: ../i18n/languages.py:209
 msgid "Uzbek"
 msgstr ""
 
-#: ../i18n/languages.py:168
+#: ../i18n/languages.py:210
+msgid "Venda"
+msgstr ""
+
+#: ../i18n/languages.py:211
 #, fuzzy
 msgid "Vietnamese"
 msgstr "重命名"
 
-#: ../i18n/languages.py:169
+#: ../i18n/languages.py:212
 msgid "Volapuk"
 msgstr ""
 
-#: ../i18n/languages.py:39
+#: ../i18n/languages.py:213
+msgid "Walloon"
+msgstr ""
+
+#: ../i18n/languages.py:52
 msgid "Welsh"
 msgstr ""
 
-#: ../i18n/languages.py:170
+#: ../i18n/languages.py:214
 msgid "Wolof"
 msgstr ""
 
-#: ../i18n/languages.py:171
+#: ../i18n/languages.py:215
 msgid "Xhosa"
 msgstr ""
 
-#: ../i18n/languages.py:172
+#: ../i18n/languages.py:216
 msgid "Yiddish"
 msgstr ""
 
-#: ../i18n/languages.py:173
+#: ../i18n/languages.py:217
 msgid "Yoruba"
 msgstr ""
 
-#: ../i18n/languages.py:174
+#: ../i18n/languages.py:218
 #, fuzzy
-msgid "Zhuang"
+msgid "Zhuang; Chuang"
 msgstr "改换"
 
-#: ../i18n/languages.py:178
+#: ../i18n/languages.py:222
 msgid "Zulu"
 msgstr ""
 
@@ -1674,10 +1848,6 @@ msgstr ""
 #~ msgstr "改换"
 
 #, fuzzy
-#~ msgid "Center"
-#~ msgstr "概略"
-
-#, fuzzy
 #~ msgid "Change account"
 #~ msgstr "改变内设"
 
@@ -1975,6 +2145,10 @@ msgstr ""
 #~ msgstr "新链接"
 
 #, fuzzy
+#~ msgid "Interlingue"
+#~ msgstr "直接从内部写入."
+
+#, fuzzy
 #~ msgid "Issues"
 #~ msgstr "用户"
 
@@ -1997,6 +2171,10 @@ msgstr ""
 
 #~ msgid "Languages removed."
 #~ msgstr "语言被改变."
+
+#, fuzzy
+#~ msgid "Laothian"
+#~ msgstr "登录"
 
 #, fuzzy
 #~ msgid "Last Changes"

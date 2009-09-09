@@ -20,8 +20,7 @@
 # Import from the Standard Library
 from re import compile
 from optparse import OptionParser
-from os import listdir
-from os.path import isdir, islink, join as join_path
+from os.path import islink
 from subprocess import call
 from sys import exc_info, stdout
 from traceback import print_exception
@@ -30,10 +29,11 @@ from traceback import print_exception
 import itools
 import itools.gettext
 from itools import git
-from itools.handlers import ConfigFile, get_handler
+from itools.handlers import get_handler
 from itools.html import XHTMLFile
-import itools.stl
 import itools.pdf
+from itools.pkg import SetupConf, get_files, get_manifest
+import itools.stl
 from itools import vfs
 
 
@@ -70,25 +70,6 @@ def get_version():
     return version_name
 
 
-def get_files(excluded_paths, filter=lambda x: True):
-    for name in listdir('.'):
-        if name in excluded_paths:
-            continue
-
-        if isdir(name):
-            stack = [name]
-            while stack:
-                base = stack.pop()
-                for name in listdir(base):
-                    path = join_path(base, name)
-                    if isdir(path):
-                        stack.append(path)
-                    elif filter(name):
-                        yield path
-        elif filter(name):
-            yield name
-
-
 
 if __name__ == '__main__':
     # The command line parser
@@ -106,7 +87,7 @@ if __name__ == '__main__':
         print "Warning: not using git."
 
     # Read configuration for languages
-    config = ConfigFile('setup.conf')
+    config = SetupConf('setup.conf')
     source_language = config.get_value('source_language', default='en')
     target_languages = config.get_value('target_languages', default='').split()
 
@@ -114,19 +95,14 @@ if __name__ == '__main__':
     exclude = frozenset(['.git', 'build', 'dist'])
 
     # (1) Initialize the manifest file
-    manifest = ['MANIFEST', 'version.txt']
+    manifest = [ x for x in get_manifest() if not islink(x) ]
+    manifest.append('MANIFEST')
+    # Find out the version string
     if git_available:
-        # Find out the version string
         version = get_version()
         open('version.txt', 'w').write(version)
         print '* Version:', version
-        filenames = git.get_filenames()
-    else:
-        # No git: find out source files
-        bad_files = compile('.*(~|pyc|%s)$' % '|'.join(target_languages))
-        filenames = get_files(exclude, filter=lambda x: not bad_files.match(x))
-    filenames = [ x for x in filenames if not islink(x) ]
-    manifest.extend(filenames)
+        manifest.append('version.txt')
 
     # (2) Internationalization
     bad_templates = []

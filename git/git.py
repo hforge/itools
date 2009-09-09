@@ -24,16 +24,16 @@ from itools.core import freeze, get_pipe
 def is_available():
     """Returns True if we are in a git working directory, False otherwise.
     """
-    data = get_pipe(['git', 'branch'])
+    try:
+        data = get_pipe(['git', 'branch'])
+    except EnvironmentError:
+        return False
     return bool(data)
 
 
 def get_filenames():
     """Returns the list of filenames tracked by git.
     """
-    if not is_available():
-        return []
-
     data = get_pipe(['git', 'ls-files'])
     return [ x.strip() for x in data.splitlines() ]
 

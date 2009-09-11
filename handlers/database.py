@@ -398,6 +398,14 @@ class RWDatabase(RODatabase):
         return cwd.get_uri(reference)
 
 
+    def is_phantom(self, handler):
+        # Phantom handlers are "new"
+        if handler.timestamp or not handler.dirty:
+            return False
+        # But they are not in the 'added' list
+        return handler.uri not in self.added
+
+
     def has_handler(self, reference):
         uri = self._resolve_reference(reference)
 
@@ -484,7 +492,7 @@ class RWDatabase(RODatabase):
 
         # Check for phantom handlers
         handler = self.cache.get(uri)
-        if handler and not handler.timestamp and handler.dirty:
+        if handler and self.is_phantom(handler):
             self._discard_handler(uri)
             return
 
@@ -543,6 +551,11 @@ class RWDatabase(RODatabase):
                 self.move_handler(resolve_uri2(source, name),
                                   resolve_uri2(target, name))
         else:
+            # Phantom
+            if self.is_phantom(handler):
+                self._discard_handler(source)
+                return
+
             # Load if needed
             if handler.timestamp is None and handler.dirty is None:
                 handler.load_state()

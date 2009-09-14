@@ -331,7 +331,7 @@ class RODatabase(BaseDatabase):
 
     def get_handlers(self, reference):
         base = self._resolve_reference(reference)
-        for name in vfs.get_names(uri):
+        for name in vfs.get_names(base):
             ref = resolve_uri2(base, name)
             yield self.get_handler(ref)
 

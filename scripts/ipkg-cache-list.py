@@ -43,20 +43,18 @@ if __name__ == '__main__':
     description = ("List packages from the cache dir")
     parser = OptionParser(usage, version=version, description=description)
 
-    parser.add_option("-c", "--cache-dir",
-                  dest="cache_dir", default=TMP_DIR,
-                  help="")
+    parser.add_option("-c", "--cache-dir", dest="cache_dir", default=TMP_DIR,
+                      help="")
 
     options, args = parser.parse_args()
 
     CACHE_DIR = options.cache_dir
-
     if not exists(CACHE_DIR):
         make_folder(CACHE_DIR)
 
     cache_dir = open(CACHE_DIR)
 
-    print "Packages in cache %s" % cache_dir.uri
+    print "Packages in cache %s" % CACHE_DIR
     for filename in cache_dir.get_names('.'):
         dist = parse_package_name(filename)
         if dist['extension'] in EXTENSIONS:

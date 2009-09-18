@@ -44,16 +44,19 @@ class LRUCache(dict):
       and so does 'popitem' too.
 
     - The constructor is different from that of a dict, it expects first a
-      'size' parameter that defines the maximum number of values that should
-      be stored in the cache.  Optionally it can take an 'automatic' boolean
-      parameter, which defaults to 'True'.
+      'size_min' argument, and optionally a 'size_max' argument, they are
+      used to control the dict size.
 
-    - The cache automatically removes the least-recently used values when its
-      size surpasses the defined maximum size.
+      Optionally it can take an 'automatic' boolean argument, which defaults
+      to 'True'.
 
-      Unless the 'automatic' parameter is set to 'False'.  Then it will be the
-      responsability of external code to explicitly remove the least-recently
-      used values.
+    - When the size of the cache surpasses the defined maximum size, then
+      the least-recently used values from the cache will be removed, until its
+      size reaches the defined minimum.
+
+      This happens unless the 'automatic' parameter is set to 'False'.  Then
+      it will be the responsability of external code to explicitly remove the
+      least-recently used values.
 
     Some of the dict methods have been de-activated on purpose: 'copy',
     'fromkeys', 'setdefault' and 'update'.
@@ -64,14 +67,22 @@ class LRUCache(dict):
       accessed, hence it will be at the end of the list.
     """
 
-    def __init__(self, size, automatic=True):
+    def __init__(self, size_min, size_max=None, automatic=True):
         # Check arguments type
-        if type(size) is not int:
-            error = "the 'size' argument must be an int, not '%s'"
-            raise TypeError, error % type(size)
+        if type(size_min) is not int:
+            error = "the 'size_min' argument must be an int, not '%s'"
+            raise TypeError, error % type(size_min)
         if type(automatic) is not bool:
             error = "the 'automatic' argument must be an int, not '%s'"
             raise TypeError, error % type(automatic)
+
+        if size_max is None:
+            size_max = size_min
+        elif type(size_max) is not int:
+            error = "the 'size_max' argument must be an int, not '%s'"
+            raise TypeError, error % type(size_max)
+        elif size_max < size_min:
+            raise ValueError, "the 'size_max' is smaller than 'size_min'"
 
         # Initialize the dict
         dict.__init__(self)
@@ -81,7 +92,8 @@ class LRUCache(dict):
         # Map from key-to-node
         self.key2node = {}
         # The cache size
-        self.size = size
+        self.size_min = size_min
+        self.size_max = size_max
         # Whether to free memory automatically or not (boolean)
         self.automatic = automatic
 
@@ -126,8 +138,8 @@ class LRUCache(dict):
         self.last = node
 
         # Free memory if needed
-        if self.automatic is True:
-            while len(self) > self.size:
+        if self.automatic is True and len(self) > self.size_max:
+            while len(self) > self.size_min:
                 self.popitem()
 
 

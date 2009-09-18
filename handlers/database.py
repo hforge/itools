@@ -276,12 +276,8 @@ class RODatabase(BaseDatabase):
         if handler is not None:
             return True
 
-        # A folder is considered to exist only if it contains a file
-        for x in vfs.traverse(uri):
-            if vfs.is_file(x):
-                return True
-
-        return False
+        # Ask vfs
+        return vfs.exists(uri)
 
 
     def get_handler_names(self, reference):

@@ -24,7 +24,7 @@ from cStringIO import StringIO
 from itools.datatypes import XMLContent, XMLAttribute
 from itools.handlers import register_handler_class
 from itools.xml import XMLParser, XML_DECL, DOCUMENT_TYPE, START_ELEMENT
-from itools.xml import END_ELEMENT, TEXT, COMMENT
+from itools.xml import END_ELEMENT, TEXT, COMMENT, CDATA
 from itools.xml import stream_to_str, get_qname, get_attribute_qname
 from itools.xml import get_end_tag, get_doctype
 from itools.xml import XMLFile, get_element
@@ -61,6 +61,8 @@ def stream_to_html(stream, encoding='UTF-8'):
         elif event == DOCUMENT_TYPE:
             name, doctype = value
             data.append(get_doctype(name, doctype))
+        elif event == CDATA:
+            data.append(value)
     return ''.join(data)
 
 

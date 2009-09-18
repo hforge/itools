@@ -284,13 +284,15 @@ class CacheTestCase(TestCase):
     def test_init(self):
         self.assertRaises(TypeError, LRUCache)
         self.assertRaises(TypeError, LRUCache, 'aa')
-        self.assertRaises(TypeError, LRUCache, 5, 5)
+        self.assertRaises(TypeError, LRUCache, 5, 'aa')
+        self.assertRaises(ValueError, LRUCache, 5, 3)
+        self.assertRaises(TypeError, LRUCache, 5, 5, 'aa')
         self.assertRaises(TypeError, LRUCache, 5, True, 4)
 
 
     def test_len(self):
         cache = self.cache
-        self.assertEqual(len(cache), cache.size)
+        self.assertEqual(len(cache), cache.size_min)
 
 
     def test_setitem(self):
@@ -302,10 +304,10 @@ class CacheTestCase(TestCase):
 
     def test_delitem(self):
         cache = self.cache
-        self.assertEqual(len(cache), cache.size)
+        self.assertEqual(len(cache), cache.size_min)
         key = 'y'
         del cache[key]
-        self.assertEqual(len(cache), cache.size - 1)
+        self.assertEqual(len(cache), cache.size_min - 1)
         self.assertRaises(KeyError, cache.__getitem__, key)
 
 
@@ -317,7 +319,7 @@ class CacheTestCase(TestCase):
 
     def test_clear(self):
         cache = self.cache
-        self.assertEqual(len(cache), cache.size)
+        self.assertEqual(len(cache), cache.size_min)
         cache.clear()
         self.assertEqual(len(cache), 0)
 
@@ -374,19 +376,19 @@ class CacheTestCase(TestCase):
 
     def test_pop(self):
         cache = self.cache
-        self.assertEqual(len(cache), cache.size)
+        self.assertEqual(len(cache), cache.size_min)
         key = 'y'
         value = cache.pop(key)
         self.assertEqual(value, key.upper())
-        self.assertEqual(len(cache), cache.size - 1)
+        self.assertEqual(len(cache), cache.size_min - 1)
         self.assertRaises(KeyError, cache.__getitem__, key)
 
 
     def test_popitem(self):
         cache = self.cache
-        self.assertEqual(len(cache), cache.size)
+        self.assertEqual(len(cache), cache.size_min)
         item = cache.popitem()
-        self.assertEqual(len(cache), cache.size - 1)
+        self.assertEqual(len(cache), cache.size_min - 1)
         self.assertEqual(item, ('x', 'X'))
 
 

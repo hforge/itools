@@ -110,9 +110,9 @@ class RODatabase(BaseDatabase):
     """The read-only database works as a cache for file handlers.
     """
 
-    def __init__(self, cache_size=5000):
+    def __init__(self, size_min=4800, size_max=5200):
         # A mapping from URI to handler
-        self.cache = LRUCache(cache_size, automatic=False)
+        self.cache = LRUCache(size_min, size_max, automatic=False)
 
 
     def _resolve_reference(self, reference):
@@ -218,11 +218,12 @@ class RODatabase(BaseDatabase):
         then there will be an error.
         """
         # Find out how many handlers should be removed
-        n = len(self.cache) - self.cache.size
-        if n <= 0:
+        size = len(self.cache)
+        if size >= self.cache.size_max:
             return
 
         # Discard as many handlers as needed
+        n = size - self.cache.size_min
         for uri, handler in self.cache.iteritems():
             # Skip externally referenced handlers (refcount should be 3:
             # one for the cache, one for the local variable and one for
@@ -255,12 +256,8 @@ class RODatabase(BaseDatabase):
         if handler is not None:
             return True
 
-        # A folder is considered to exist only if it contains a file
-        for x in vfs.traverse(uri):
-            if vfs.is_file(x):
-                return True
-
-        return False
+        # Ask vfs
+        return vfs.exists(uri)
 
 
     def get_handler_names(self, reference):
@@ -364,8 +361,8 @@ class RODatabase(BaseDatabase):
 ###########################################################################
 class RWDatabase(RODatabase):
 
-    def __init__(self, cache_size):
-        RODatabase.__init__(self, cache_size)
+    def __init__(self, size_min, size_max):
+        RODatabase.__init__(self, size_min, size_max)
         # The state, for transactions
         self.changed = set()
         self.added = set()
@@ -633,8 +630,8 @@ class RWDatabase(RODatabase):
 ###########################################################################
 class ROGitDatabase(RODatabase):
 
-    def __init__(self, path, cache_size=5000):
-        RODatabase.__init__(self, cache_size)
+    def __init__(self, path, size_min=4800, size_max=5200):
+        RODatabase.__init__(self, size_min, size_max)
         uri = cwd.get_uri(path)
         uri = get_reference(uri)
         if uri.scheme != 'file':
@@ -660,9 +657,9 @@ class ROGitDatabase(RODatabase):
 
 class GitDatabase(RWDatabase, ROGitDatabase):
 
-    def __init__(self, path, cache_size):
-        RWDatabase.__init__(self, cache_size)
-        ROGitDatabase.__init__(self, path, cache_size)
+    def __init__(self, path, size_min, size_max):
+        RWDatabase.__init__(self, size_min, size_max)
+        ROGitDatabase.__init__(self, path, size_min, size_max)
 
 
     def _resolve_reference_for_writing(self, reference):
@@ -717,7 +714,7 @@ class GitDatabase(RWDatabase, ROGitDatabase):
                 raise
 
 
-def make_git_database(path, size):
+def make_git_database(path, size_min, size_max):
     """Create a new empty Git database if the given path does not exists or
     is a folder.
 
@@ -739,4 +736,4 @@ def make_git_database(path, size):
         call(command, cwd=path, stdout=PIPE)
 
     # Ok
-    return GitDatabase(path, size)
+    return GitDatabase(path, size_min, size_max)

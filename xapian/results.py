@@ -81,7 +81,7 @@ class SearchResults(object):
 
         xquery = _get_xquery(catalog, query, **kw)
         query = Query(Query.OP_AND, [self._xquery, xquery])
-        return SearchResults(catalog, query)
+        return catalog.search_results(catalog, query)
 
 
     def get_documents(self, sort_by=None, reverse=False, start=0, size=0):
@@ -138,15 +138,13 @@ class SearchResults(object):
 
         # Construction of the results
         fields = self._catalog._fields
-        cls = self._catalog.search_document
-        results = [ cls(x.get_document(), fields, metadata)
-                    for x in enquire.get_mset(start, size) ]
+        results = [
+            SearchDocument(x.get_document(), fields, metadata)
+            for x in enquire.get_mset(start, size) ]
 
         # sort_by=None/reverse=True
         if sort_by is None and reverse:
             results.reverse()
 
         return results
-
-
 

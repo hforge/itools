@@ -28,7 +28,7 @@ from itools.vfs import cwd
 from base import CatalogAware
 from queries import AllQuery, AndQuery, NotQuery, OrQuery, PhraseQuery
 from queries import RangeQuery, StartQuery
-from results import SearchResults, SearchDocument
+from results import SearchResults
 from utils import _encode, _get_field_cls, _reduce_size, _make_PhraseQuery
 from utils import _index, _get_xquery
 
@@ -59,7 +59,7 @@ def _get_prefix(number):
 
 class Catalog(object):
 
-    search_document = SearchDocument
+    search_results = SearchResults
 
 
     def __init__(self, ref, fields, read_only=False, asynchronous_mode=True):
@@ -227,7 +227,7 @@ class Catalog(object):
         """Launch a search in the catalog.
         """
         xquery = _get_xquery(self, query, **kw)
-        return SearchResults(self, xquery)
+        return self.search_results(self, xquery)
 
 
     def get_unique_values(self, name):

@@ -19,7 +19,7 @@ from base import CatalogAware
 from catalog import Catalog, make_catalog
 from queries import AllQuery, NotQuery, StartQuery
 from queries import RangeQuery, PhraseQuery, AndQuery, OrQuery
-from results import SearchDocument
+from results import SearchResults
 from utils import split_unicode
 
 
@@ -28,7 +28,7 @@ __all__ = [
     'Catalog',
     'CatalogAware',
     'split_unicode',
-    'SearchDocument',
+    'SearchResults',
     # Queries
     'RangeQuery',
     'PhraseQuery',

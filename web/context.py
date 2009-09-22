@@ -117,7 +117,8 @@ class WebContext(HTTPContext):
             cookie = decodestring(cookie)
             username, password = cookie.split(':', 1)
         except Exception:
-            log_warning('bad authentication cookie "%s"' % cookie)
+            log_warning('bad authentication cookie "%s"' % cookie,
+                        domain='itools.web')
             return None
 
         if username is None or password is None:

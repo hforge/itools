@@ -28,18 +28,18 @@ class Mailto(object):
         self.address = address
 
 
-    def get_username(self):
+    @property
+    def username(self):
         if '@' in self.address:
             return self.address.split('@', 1)[0]
         return None
-    username = property(get_username, None, None, "")
 
 
-    def get_host(self):
+    @property
+    def host(self):
         if '@' in self.address:
             return self.address.split('@', 1)[1]
         return None
-    host = property(get_host, None, None, "")
 
 
     def __str__(self):

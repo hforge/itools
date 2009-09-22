@@ -32,9 +32,8 @@ class Doc(object):
 
 
     def __getattr__(self, name):
-        try:
-            info = self._metadata[name]
-        except KeyError:
+        info = self._metadata.get(name)
+        if not info:
             msg = 'the "%s" field is not indexed nor stored'
             raise AttributeError, msg % name
 

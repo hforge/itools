@@ -32,7 +32,9 @@ class SearchDocument(object):
 
 
     def __getattr__(self, name):
-        info = self._metadata[name]
+        info = self._metadata.get(name)
+        if not info:
+            raise AttributeError
         field_cls = _get_field_cls(name, self._fields, info)
 
         # Get the data

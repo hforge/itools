@@ -439,10 +439,9 @@ class Reference(object):
         self.fragment = fragment
 
 
-##    def get_netpath(self):
+##    @property
+##    def netpath(self):
 ##        return NetPath('//%s/%s' % (self.authority, self.path))
-##
-##    netpath = property(get_netpath, None, None, '')
 
 
     def __str__(self):

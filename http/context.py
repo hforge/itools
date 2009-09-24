@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
+from itools.core import lazy
 from itools.uri import decode_query, Path
 from entities import Entity
 from exceptions import reason_phrases
@@ -37,21 +38,6 @@ class HTTPContext(object):
     #######################################################################
     # Lazy load
     #######################################################################
-    def __getattr__(self, name):
-        loader = 'load_%s' % name
-        loader = getattr(self.__class__, loader, None)
-
-        # Miss
-        if not loader:
-            msg = "'%s' object has no attribute '%s'"
-            raise AttributeError, msg % (self.__class__.__name__, name)
-
-        # Hit
-        value = loader(self)
-        setattr(self, name, value)
-        return value
-
-
     def del_attribute(self, name):
         try:
             delattr(self, name)
@@ -59,7 +45,8 @@ class HTTPContext(object):
             pass
 
 
-    def load_uri(self):
+    @lazy
+    def uri(self):
         # The URI as it was typed by the client
         soup_message = self.soup_message
         xfp = soup_message.get_header('X_FORWARDED_PROTO')
@@ -72,7 +59,8 @@ class HTTPContext(object):
         return '%s://%s%s' % (src_scheme, src_host, self.path)
 
 
-    def load_form(self):
+    @lazy
+    def form(self):
         # Case 1: nothing
         body = self.soup_message.get_body()
         if not body:

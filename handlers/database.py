@@ -239,7 +239,7 @@ class RODatabase(BaseDatabase):
         """
         # Find out how many handlers should be removed
         size = len(self.cache)
-        if size >= self.cache.size_max:
+        if size < self.cache.size_max:
             return
 
         # Discard as many handlers as needed

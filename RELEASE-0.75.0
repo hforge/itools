@@ -18,6 +18,36 @@ meta-package for easier development and deployment:
   itools.ical             itools.soup             itools.xmlfile
 
 
+git log --stat --no-merges 326787a7eedb9~1..master
+
+Now itools uses the HTTP server from the libsoup [1] library.  This
+brings a better support of the HTTP protocol and improved performance.
+As a side effect the itools.soup package has been added, it is a
+minimalistic Python wrapper around the libsoup library.
+
+The web stack (itools.http, itools.web) has considerably changed,
+partly because of the introduction of libsoup.  Overall the programming
+interface is friendlier, and the performance much better.  For further
+details check the upgrade notes and the documentation.
+
+The new package itools.log is a simple alternative to the Pythons's
+standard library "logging" package.  It is inspired by the logging
+facilities from the Glib [2] library, and may eventually become just
+a wrapper.
+
+The new itools.mail package allows to send emails asynchronously, it
+uses the Glibs loop.  This feature has been moved from ikaaro [3].
+
+Refactor common code in itools.csv and itools.ical, general cleanup,
+including moving some features to ikaaro.
+
+bugs: #123
+
+
+[1] http://live.gnome.org/LibSoup
+[2] http://www.gtk.org/
+[3] http://www.hforge.org/ikaaro
+
 
 Resources
 ---------

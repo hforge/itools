@@ -78,6 +78,21 @@ And:
   new_datatype = datatype(a=5, b=3, ...)
 
 
+itools.stl
+==========
+
+(1) The __getattr__ protocol is not supported anymore to lookup in STL
+namespaces.  This feature was rarely used.
+
+
+itools.web
+==========
+
+(1) BaseForm.build_namespace => STLForm.get_namespace
+
+(2) Remove 'before_traverse' and 'after_traverse'
+
+
 itools.xapian
 =============
 
@@ -88,3 +103,4 @@ itools.xapian
 
   # Now
   n = len(results)
+

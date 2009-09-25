@@ -27,7 +27,14 @@ class lazy(object):
 
 
     def __get__(self, instance, owner):
+        if instance is None:
+            return self
         name = self.meth.func_name
         value = self.meth(instance)
         instance.__dict__[name] = value
         return value
+
+
+    def __repr__(self):
+        return '%s wrapps %s' % (object.__repr__(self), repr(self.meth))
+

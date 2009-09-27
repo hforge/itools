@@ -88,10 +88,7 @@ class Resource(object):
     def get_resources(self, path='.'):
         here = self.get_resource(path)
         for name in here._get_names():
-            resource = here._get_resource(name)
-            resource.parent = here
-            resource.name = name
-            yield resource
+            yield self.get_resource(name)
 
 
     def set_resource(self, path, resource):

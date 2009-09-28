@@ -445,7 +445,7 @@ class Table(File):
     # record_properties = {
     #     'firstname': Unicode,
     #     'lastname': Unicode,
-    #     'age': Integer(is_indexed=True)}
+    #     'age': Integer(indexed=True)}
     #######################################################################
     schema = {}
     record_properties = {}
@@ -525,7 +525,7 @@ class Table(File):
         # The catalog (for index and search)
         fields = merge_dicts(
             self.record_properties,
-            __id__=Integer(is_key_field=True, is_stored=True, is_indexed=True))
+            __id__=Integer(key_field=True, stored=True, indexed=True))
         self.catalog = make_catalog(None, fields)
 
 

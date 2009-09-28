@@ -33,7 +33,7 @@ from itools import vfs
 class Agenda(Table):
 
     record_properties = {
-        'firstname': Unicode(is_indexed=True, multiple=False),
+        'firstname': Unicode(indexed=True, multiple=False),
         'lastname': Unicode(multiple=False)}
 
 

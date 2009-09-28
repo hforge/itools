@@ -63,7 +63,7 @@ class CSVFile(TextFile):
     # Example: {'firstname': Unicode, 'lastname': Unicode, 'age': Integer}
     # To index some columns the schema should be declared as:
     # schema = {'firstname': Unicode, 'lastname': Unicode,
-    #           'age': Integer(is_indexed=True)}
+    #           'age': Integer(indexed=True)}
     schema = None
 
     # List of the schema column names
@@ -94,11 +94,11 @@ class CSVFile(TextFile):
         if schema is not None:
             for name in self.columns:
                 field_cls = schema[name]
-                if getattr(field_cls, 'is_indexed', False):
+                if getattr(field_cls, 'indexed', False):
                     fields = merge_dicts(schema,
-                                         __number__=Integer(is_key_field=True,
-                                                            is_stored=True,
-                                                            is_indexed=True))
+                                         __number__=Integer(key_field=True,
+                                                            stored=True,
+                                                            indexed=True))
                     self.catalog = make_catalog(None, fields)
                     break
 
@@ -174,12 +174,6 @@ class CSVFile(TextFile):
     #########################################################################
     # API / Public
     #########################################################################
-    def is_indexed(self):
-        """Check if at least one index is available for searching, etc.
-        """
-        return self.catalog is not None
-
-
     def get_nrows(self):
         return len([ x for x in self.lines if x is not None])
 

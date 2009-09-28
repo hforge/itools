@@ -394,13 +394,12 @@ class MultilingualTestCase(TestCase):
 
 class Document(CatalogAware):
 
-    fields = {'name': String(is_key_field=True, is_stored=True,
-                             is_indexed=True),
-              'title': Unicode(is_stored=True, is_indexed=True),
-              'data': Unicode(is_indexed=True),
-              'size': Integer(is_indexed=True),
-              'about_wolf': Boolean(is_indexed=True),
-              'is_long': Boolean(is_indexed=False, is_stored=True)}
+    fields = {'name': String(key_field=True, stored=True, indexed=True),
+              'title': Unicode(stored=True, indexed=True),
+              'data': Unicode(indexed=True),
+              'size': Integer(indexed=True),
+              'about_wolf': Boolean(indexed=True),
+              'is_long': Boolean(indexed=False, stored=True)}
 
 
     def __init__(self, uri):
@@ -424,9 +423,8 @@ class Document(CatalogAware):
 
 class Document_2(CatalogAware):
 
-    fields = {'id': Integer(is_key_field=True, is_stored=True,
-                            is_indexed=True),
-              'data': Unicode(is_stored=True, is_indexed=True)}
+    fields = {'id': Integer(key_field=True, stored=True, indexed=True),
+              'data': Unicode(stored=True, indexed=True)}
 
 
     def __init__(self, id, data):

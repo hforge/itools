@@ -44,14 +44,14 @@ class Languages(CSVFile):
     columns = ['name', 'url', 'number', 'date']
     schema = {'name': Unicode,
               'url': URI,
-              'number': Integer(is_indexed=True),
-              'date': Date(is_indexed=True)}
+              'number': Integer(indexed=True),
+              'date': Date(indexed=True)}
 
 
 class Things(CSVFile):
 
     columns = ['name', 'date']
-    schema = {'name': Unicode(is_indexed=True), 'date': Date(is_indexed=True)}
+    schema = {'name': Unicode(indexed=True), 'date': Date(indexed=True)}
 
 
 class Numbers(CSVFile):
@@ -64,8 +64,8 @@ class People(CSVFile):
 
     columns = ['name', 'surname', 'date']
     schema = {'name': Unicode,
-              'surname': Unicode(is_indexed=True),
-              'date': Date(is_indexed=True)}
+              'surname': Unicode(indexed=True),
+              'date': Date(indexed=True)}
 
 
 class Countries(CSVFile):
@@ -73,15 +73,15 @@ class Countries(CSVFile):
     class_csv_guess = True
     columns = ['id', 'name', 'country', 'date']
     schema = {'id': Integer,
-              'name': Unicode(is_indexed=True),
-              'country': Unicode(is_indexed=True),
-              'date': Date(is_indexed=True)}
+              'name': Unicode(indexed=True),
+              'country': Unicode(indexed=True),
+              'date': Date(indexed=True)}
 
 
 class Politicians(CSVFile):
 
     columns = ['name', 'is_good']
-    schema = {'name': Unicode, 'is_good': Boolean(is_indexed=True)}
+    schema = {'name': Unicode, 'is_good': Boolean(indexed=True)}
 
 
 
@@ -331,9 +331,9 @@ email:jacques@itaapy.com
 class Agenda(Table):
 
     record_properties = {
-        'firstname': Unicode(is_indexed=True, multiple=False),
+        'firstname': Unicode(indexed=True, multiple=False),
         'lastname': Unicode(multiple=False),
-        'email': Unicode(is_indexed=True, multiple=False, unique=True)}
+        'email': Unicode(indexed=True, multiple=False, unique=True)}
 
 
 books_file = """id:0/0

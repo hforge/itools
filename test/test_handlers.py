@@ -34,7 +34,7 @@ rw_database = RWDatabase(fs=lfs)
 class Agenda(Table):
 
     record_properties = {
-        'firstname': Unicode(is_indexed=True, multiple=False),
+        'firstname': Unicode(indexed=True, multiple=False),
         'lastname': Unicode(multiple=False)}
 
 

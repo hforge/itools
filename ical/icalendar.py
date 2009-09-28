@@ -232,11 +232,10 @@ class iCalendar(BaseCalendar, TextFile):
         self.components = {}
 
         # A Catalog "in memory"
-        fields = {'__uid__': String(is_key_field=True, is_stored=True,
-                                    is_indexed=True),
-                  'type': String(is_indexed=True),
-                  'dtstart': DateTime(is_stored=True, is_indexed=True),
-                  'dtend': DateTime(is_stored=True, is_indexed=True)}
+        fields = {'__uid__': String(key_field=True, stored=True, indexed=True),
+                  'type': String(indexed=True),
+                  'dtstart': DateTime(stored=True, indexed=True),
+                  'dtend': DateTime(stored=True, indexed=True)}
         self.catalog = make_catalog(None, fields)
 
 

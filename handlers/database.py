@@ -231,8 +231,8 @@ class RODatabase(BaseDatabase):
             refcount = getrefcount(handler)
             if refcount > 3:
                 continue
-            # Skip modified handlers
-            if handler.dirty is not None:
+            # Skip modified (not new) handlers
+            if handler.dirty is not None and not self.is_phantom(handler):
                 continue
             # Discard this handler
             self._discard_handler(uri)
@@ -248,6 +248,10 @@ class RODatabase(BaseDatabase):
 
     #######################################################################
     # Database API
+    def is_phantom(self, handler):
+        return handler.timestamp is None and handler.dirty is not None
+
+
     def has_handler(self, reference):
         uri = self._resolve_reference(reference)
 

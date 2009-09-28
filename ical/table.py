@@ -189,7 +189,7 @@ class icalendarTable(BaseCalendar, Table):
 
     record_properties = merge_dicts(
         record_properties,
-        type=String(is_indexed=True),
+        type=String(indexed=True),
         inner=Integer(multiple=True))
 
 

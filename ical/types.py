@@ -150,12 +150,12 @@ record_properties = freeze({
   'PRIORITY': Integer(multiple=False),
   'RESOURCES': Unicode(multiple=True),
   'STATUS': Unicode(multiple=False),
-  'SUMMARY': Unicode(multiple=False, is_indexed=True, mandatory=True),
+  'SUMMARY': Unicode(multiple=False, indexed=True, mandatory=True),
   # Date & Time component properties
   'COMPLETED': DateTime(multiple=False),
-  'DTEND': DateTime(multiple=False, is_stored=True, is_indexed=True),
+  'DTEND': DateTime(multiple=False, stored=True, indexed=True),
   'DUE': DateTime(multiple=False),
-  'DTSTART': DateTime(multiple=False, is_stored=True, is_indexed=True),
+  'DTSTART': DateTime(multiple=False, stored=True, indexed=True),
   'DURATION': Unicode(multiple=False),
   'FREEBUSY': Unicode(multiple=False),
   'TRANSP': Unicode(multiple=False),
@@ -187,7 +187,7 @@ record_properties = freeze({
   'RECURRENCE-ID': DateTime(multiple=False),
   'RELATED-TO': Unicode(multiple=False),
   'URL': URI(multiple=False),
-  'UID': String(multiple=False, is_indexed=True)
+  'UID': String(multiple=False, indexed=True)
 })
 
 

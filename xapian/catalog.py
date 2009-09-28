@@ -141,7 +141,16 @@ class Catalog(object):
             else:
                 info = metadata[name]
 
-            # A multilingual value ?
+            # Store the key field with the prefix 'Q'
+            # Comment: the key field is indexed twice, but we must do it
+            #          one => to index (as the others)
+            #          two => to index without split
+            #          the problem is that "_encode != _index"
+            if getattr(field_cls, 'key_field', False):
+                key_value = _reduce_size(_encode(field_cls, value))
+                xdoc.add_term('Q' + key_value)
+
+            # A multilingual value?
             if isinstance(value, dict):
                 for language, lang_value in value.iteritems():
                     lang_name = name + '_' + language
@@ -177,18 +186,6 @@ class Catalog(object):
                 if 'prefix' in info:
                     # By default language='en'
                     _index(xdoc, field_cls, value, info['prefix'], 'en')
-
-        # Store the key field with the prefix 'Q'
-        # Comment: the key field is indexed twice, but we must do it
-        #          one => to index (as the others)
-        #          two => to index without split
-        #          the problem is that "_encode != _index"
-        key_field = self._key_field
-        if (key_field is None or key_field not in doc_values or
-            doc_values[key_field] is None):
-            raise ValueError, 'the "key_field" value is compulsory'
-        data = _reduce_size(_encode(fields[key_field], doc_values[key_field]))
-        xdoc.add_term('Q' + data)
 
         # TODO: Don't store two documents with the same key field!
 
@@ -241,21 +238,20 @@ class Catalog(object):
         info = {}
 
         # The key field ?
-        if getattr(field_cls, 'is_key_field', False):
+        if getattr(field_cls, 'key_field', False):
             if self._key_field is not None:
                 raise ValueError, ('You must have only one key field, '
                                    'not multiple, not multilingual')
-            if not (field_cls.is_stored and field_cls.is_indexed):
-                raise ValueError, ('the key field must be stored '
-                                   'and indexed')
+            if not (field_cls.stored and field_cls.indexed):
+                raise ValueError, 'the key field must be stored and indexed'
             self._key_field = name
             info['key_field'] = True
         # Stored ?
-        if getattr(field_cls, 'is_stored', False):
+        if getattr(field_cls, 'stored', False):
             info['value'] = self._value_nb
             self._value_nb += 1
         # Indexed ?
-        if getattr(field_cls, 'is_indexed', False):
+        if getattr(field_cls, 'indexed', False):
             info['prefix'] = _get_prefix(self._prefix_nb)
             self._prefix_nb += 1
 
@@ -406,12 +402,13 @@ class Catalog(object):
 def make_catalog(uri, fields):
     """Creates a new and empty catalog in the given uri.
 
-       If uri=None the catalog is made "in memory".
-       fields must be a dict. It contains some informations about the
-       fields in the database.
-       By example:
-       fields = {'id': Integer(is_key_field=True, is_stored=True,
-                               is_indexed=True), ...}
+    If uri=None the catalog is made "in memory".
+    fields must be a dict. It contains some informations about the
+    fields in the database.
+
+    For example:
+
+      fields = {'id': Integer(key_field=True, stored=True, indexed=True), ...}
     """
     # In memory
     if uri is None:

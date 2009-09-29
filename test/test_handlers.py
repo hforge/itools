@@ -177,9 +177,8 @@ class FolderTestCase(TestCase):
         database.save_changes()
         self.assertEqual(vfs.exists('tests/empty'), True)
         # Test
-        root.set_handler('tests/empty', TextFile())
-        database.save_changes()
-        self.assertEqual(vfs.is_file('tests/empty'), True)
+        self.assertRaises(RuntimeError, root.set_handler, 'tests/empty',
+                          TextFile())
 
 
     def test_not_empty_folder(self):

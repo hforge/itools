@@ -97,7 +97,7 @@ PyDocType_init (PyDocType * self, PyObject * args, PyObject * kwds)
   doctype = doctype_new (PubidLiteral, SystemLiteral, intSubset, &error_msg);
   if (!doctype)
     {
-      PyErr_Format (XMLError, error_msg);
+      PyErr_SetString (XMLError, error_msg);
       return -1;
     }
   self->doctype = doctype;

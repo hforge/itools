@@ -493,7 +493,8 @@ class WebLogger(Logger):
 
         # The URI and user
         if context.user:
-            lines = ['%s (user: %s)\n' % (context.uri, context.user.name)]
+            username = context.user.get_name()
+            lines = ['%s (user: %s)\n' % (context.uri, username)]
         else:
             lines = ['%s\n' % context.uri]
 

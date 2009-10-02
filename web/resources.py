@@ -153,7 +153,7 @@ class Resource(object):
         while resource is not None:
             if isinstance(resource, AccessControl):
                 return resource
-            resource = resource.parent
+            resource = resource.get_parent()
 
         return None
 

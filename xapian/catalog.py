@@ -23,7 +23,6 @@ from xapian import Database, WritableDatabase, DB_CREATE, DB_OPEN
 from xapian import Document, Query, inmemory_open
 
 # Import from itools
-from itools.log import log_warning
 from itools.uri import get_reference
 from itools.vfs import cwd
 from base import CatalogAware
@@ -130,6 +129,7 @@ class Catalog(object):
         # Check the input
         if not isinstance(document, CatalogAware):
             raise ValueError, 'the document must be a CatalogAware object'
+        values = document.get_catalog_values()
 
         # Load local variables
         db = self._db
@@ -141,12 +141,7 @@ class Catalog(object):
         metadata_modified = False
         xdoc = Document()
         for name in fields:
-            try:
-                value = getattr(document, name, None)
-            except Exception:
-                msg = 'Error indexing "%s" field' % name
-                log_warning(msg, domain='itools.xapian')
-                continue
+            value = values.get(name)
             if value is None:
                 continue
 

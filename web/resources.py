@@ -58,13 +58,6 @@ class Resource(object):
         return '/%s%s' % (context.host, self.path)
 
 
-    def get_real_resource(self):
-        cpath = self.get_canonical_path()
-        if cpath == self.get_abspath():
-            return self
-        return self.get_resource(cpath)
-
-
     def get_root(self):
         if self.parent is None:
             return self

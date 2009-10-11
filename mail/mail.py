@@ -64,11 +64,11 @@ class MailSpool(object):
         message = MIMEMultipart('related')
         message['Subject'] = Header(subject.encode(encoding), encoding)
         message['Date'] = formatdate(localtime=True)
-        message['From'] = from_addr
-        if type(to_addr) is tuple:
-            real_name, address = to_addr
-            to_addr = '%s <%s>' % (Header(real_name, encoding), address)
-        message['To'] = to_addr
+        for key, addr in [('From', from_addr), ('To', to_addr)]:
+            if type(addr) is tuple:
+                real_name, address = addr
+                addr = '%s <%s>' % (Header(real_name, encoding), address)
+            message[key] = addr
         # Return Receipt
         if return_receipt is True:
             # Somewhat standard

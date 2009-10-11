@@ -19,7 +19,6 @@
 # Import from itools
 from itools.uri import Path
 from access import AccessControl
-from context import get_context
 from views import BaseView
 
 
@@ -44,7 +43,7 @@ class Resource(object):
     # API / Tree
     #######################################################################
     def get_canonical_path(self):
-        context = get_context()
+        context = self.context
         if context.host is None:
             return self.path
         return '/%s%s' % (context.host, self.path)

@@ -15,9 +15,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from email.charset import add_charset, add_codec, QP
+from email.header import Header
 from email.mime.application import MIMEApplication
 from email.MIMEImage import MIMEImage
+from email.MIMEMultipart import MIMEMultipart
+from email.MIMEText import MIMEText
 from email.parser import HeaderParser
+from email.Utils import formatdate
 from os import fdopen
 from smtplib import SMTP, SMTPRecipientsRefused, SMTPResponseException
 from socket import gaierror
@@ -30,6 +35,11 @@ from gobject import idle_add, timeout_add_seconds
 # Import from itools
 from itools.log import log_info, log_warning, log_error
 from itools import vfs
+
+
+# Force email to send UTF-8 mails in plain text
+add_charset('utf-8', QP, None, 'utf-8')
+add_codec('utf-8', 'utf_8')
 
 
 

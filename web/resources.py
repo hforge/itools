@@ -43,14 +43,6 @@ class Resource(object):
     #######################################################################
     # API / Tree
     #######################################################################
-    def get_abspath(self):
-        if self.parent is None:
-            return Path('/')
-        parent_path = self.parent.get_abspath()
-
-        return parent_path.resolve_name(self.name)
-
-
     def get_canonical_path(self):
         context = get_context()
         if context.host is None:
@@ -65,7 +57,7 @@ class Resource(object):
 
 
     def get_pathto(self, handler):
-        return self.get_abspath().get_pathto(handler.get_abspath())
+        return self.path.get_pathto(handler.path)
 
 
     def get_names(self, path='.'):

@@ -42,7 +42,7 @@ class Resource(object):
     #######################################################################
     # API / Tree
     #######################################################################
-    def get_canonical_path(self):
+    def get_physical_path(self):
         context = self.context
         if context.host is None:
             return self.path

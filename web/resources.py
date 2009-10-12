@@ -43,11 +43,7 @@ class Resource(object):
     # API / Tree
     #######################################################################
     def get_physical_path(self):
-        context = self.context
-        if context.host is None:
-            return self.path
-        path = '/%s%s' % (context.host, self.path)
-        return Path(path)
+        return self.context.get_physical_path(self.path)
 
 
     def get_root(self):

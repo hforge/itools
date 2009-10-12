@@ -75,6 +75,25 @@ class WebContext(HTTPContext):
             self.view_name = None
 
 
+    def get_physical_path(self, logical_path):
+        """Returns the physical path from the given logical path.
+        """
+        if self.host is None:
+            return logical_path
+        path = '/%s%s' % (self.host, logical_path)
+        return Path(path)
+
+
+    def get_logical_path(self, physical_path):
+        """Returns the logical path from the given physical path.
+        """
+        if self.host is None:
+            return physical_path
+        if physical_path[0] != self.host:
+            return None
+        return physical_path[1:]
+
+
     #######################################################################
     # Lazy load
     #######################################################################

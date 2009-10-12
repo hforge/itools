@@ -46,7 +46,8 @@ class Resource(object):
         context = self.context
         if context.host is None:
             return self.path
-        return '/%s%s' % (context.host, self.path)
+        path = '/%s%s' % (context.host, self.path)
+        return Path(path)
 
 
     def get_root(self):

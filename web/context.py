@@ -317,7 +317,9 @@ class WebContext(HTTPContext):
         self.method = 'GET'
 
         if resource is not DO_NOT_CHANGE:
-            self.resource_path = resource
+            path = resource if type(resource) is Path else Path(resource)
+            # FIXME Check the path is absolute
+            self.resource_path = path
             self.del_attribute('resource')
             self.del_attribute('uri')
 
@@ -327,10 +329,9 @@ class WebContext(HTTPContext):
             self.del_attribute('uri')
 
         if self.view_name:
-            path = '%s/;%s' % (self.resource_path, self.view_name)
+            self.path = self.resource_path.resolve2(self.view_name)
         else:
-            path = self.resource_path
-        self.path = Path(path)
+            self.path = self.resource_path
 
         # Redirect
         self.handle_request()

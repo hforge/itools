@@ -46,12 +46,6 @@ class Resource(object):
         return self.context.get_physical_path(self.path)
 
 
-    def get_root(self):
-        if self.parent is None:
-            return self
-        return self.parent.get_root()
-
-
     def get_pathto(self, handler):
         return self.path.get_pathto(handler.path)
 

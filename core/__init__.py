@@ -20,7 +20,7 @@ from sys import platform
 # Import from itools
 from cache import LRUCache
 from freeze import freeze, frozendict, frozenlist
-from lazy import lazy
+from lazy import lazy, lazy_classmethod
 from mimetypes_ import add_type, guess_all_extensions, guess_extension
 from mimetypes_ import guess_type, has_encoding, has_extension
 from subprocess_ import start_subprocess, stop_subprocess
@@ -42,6 +42,7 @@ __all__ = [
     'frozenlist',
     # Lazy load
     'lazy',
+    'lazy_classmethod',
     # Caching
     'LRUCache',
     # Mimetypes

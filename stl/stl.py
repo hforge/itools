@@ -31,6 +31,7 @@ from types import GeneratorType
 from itools.core import freeze
 from itools.datatypes import Boolean
 from itools.gettext import MSG
+from itools.log import log_error
 from itools.uri import Path, Reference, get_reference
 from itools.xml import XMLError, XMLParser, find_end, stream_to_str
 from itools.xml import DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, TEXT, COMMENT
@@ -133,10 +134,17 @@ class NamespaceStack(list):
         stack = self[:]
         stack.reverse()
         for namespace in stack:
+            # Case 1: dict
+            if type(namespace) is dict:
+                try:
+                    return namespace[name]
+                except KeyError:
+                    continue
+            # Case 2: instance
             try:
-                return namespace[name]
-            except KeyError:
-                pass
+                return getattr(namespace, name)
+            except AttributeError:
+                continue
 
         raise STLError, 'name "%s" not found in the namespace' % name
 
@@ -494,14 +502,10 @@ class STLTemplate(object):
         raise NotImplementedError
 
 
-    def get_namespace(self):
-        return {}
-
-
     def render(self):
         if self.show() is False:
             return None
 
         template = self.get_template()
-        namespace = self.get_namespace()
-        return stl(template, namespace)
+        return stl(template, self)
+

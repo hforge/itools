@@ -28,7 +28,7 @@ from re import compile
 from types import GeneratorType
 
 # Import from itools
-from itools.core import freeze
+from itools.core import freeze, thingy
 from itools.datatypes import Boolean
 from itools.gettext import MSG
 from itools.uri import Path, Reference, get_reference
@@ -88,23 +88,6 @@ def evaluate(expression, stack, repeat_stack):
         except KeyError:
             raise STLError, ERR_EXPR_NAME % (name, expression)
 
-
-    # Call
-    if hasattr(value, '__call__'):
-        try:
-            value = value()
-        except AttributeError, error_value:
-            # XXX "callable" could return true even if the object is not
-            # callable (see Python's documentation).
-            #
-            # This happens, for example, in the context of Zope, maybe
-            # because of extension classes and acquisition. So we catch
-            # the AttributeError exception, we should test also for the
-            # exception value to be "__call__". This is dangereous
-            # because we could hide real errors. Further exploration
-            # needed..
-            pass
-
     return value
 
 
@@ -135,10 +118,17 @@ class NamespaceStack(list):
         stack = self[:]
         stack.reverse()
         for namespace in stack:
+            # Case 1: dict
+            if type(namespace) is dict:
+                try:
+                    return namespace[name]
+                except KeyError:
+                    continue
+            # Case 2: instance
             try:
-                return namespace[name]
-            except KeyError:
-                pass
+                return getattr(namespace, name)
+            except AttributeError:
+                continue
 
         raise STLError, 'name "%s" not found in the namespace' % name
 
@@ -222,9 +212,10 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
         if i % 2:
             # Evaluate expression
             value = evaluate(segment, stack, repeat_stack)
-            # An STL template
-            if isinstance(value, STLTemplate):
-                value = value.render()
+            # An STL template (duck typing)
+            render = getattr(value, 'render', None)
+            if render:
+                value = render()
             # Ignore if None
             if value is None:
                 continue
@@ -485,14 +476,7 @@ def rewrite_uris(stream, rewrite, ns_uri=xhtml_uri):
 # Templates
 ###########################################################################
 
-class STLTemplate(object):
-
-    def __init__(self):
-        """To be overriden.  It should accept and keep the information
-        required by 'get_template' and 'get_namespace'.
-        """
-        raise NotImplementedError
-
+class STLTemplate(thingy):
 
     def show(self):
         return True
@@ -502,14 +486,10 @@ class STLTemplate(object):
         raise NotImplementedError
 
 
-    def get_namespace(self):
-        return {}
-
-
     def render(self):
         if self.show() is False:
             return None
 
         template = self.get_template()
-        namespace = self.get_namespace()
-        return stl(template, namespace)
+        return stl(template, self)
+

@@ -87,23 +87,6 @@ def evaluate(expression, stack, repeat_stack):
         except KeyError:
             raise STLError, 'name "%s" not found in the namespace' % name
 
-
-    # Call
-    if hasattr(value, '__call__'):
-        try:
-            value = value()
-        except AttributeError, error_value:
-            # XXX "callable" could return true even if the object is not
-            # callable (see Python's documentation).
-            #
-            # This happens, for example, in the context of Zope, maybe
-            # because of extension classes and acquisition. So we catch
-            # the AttributeError exception, we should test also for the
-            # exception value to be "__call__". This is dangereous
-            # because we could hide real errors. Further exploration
-            # needed..
-            pass
-
     return value
 
 
@@ -229,7 +212,7 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
             # Evaluate expression
             value = evaluate(segment, stack, repeat_stack)
             # An STL template
-            if isinstance(value, STLTemplate):
+            if type(value) is type and issubclass(value, STLTemplate):
                 value = value.render()
             # Ignore if None
             if value is None:
@@ -487,25 +470,29 @@ def resolve_pointer(value, offset):
 
 class STLTemplate(object):
 
-    def __init__(self):
-        """To be overriden.  It should accept and keep the information
-        required by 'get_template' and 'get_namespace'.
-        """
-        raise NotImplementedError
+    def __new__(cls, **kw):
+        new_class_name = "%s(%s)" % (cls.__name__, kw)
+        new_class = type(new_class_name, (cls,), kw)
+        for key, value in kw.iteritems():
+            setattr(new_class, key, value)
+        return new_class
 
 
-    def show(self):
+    @classmethod
+    def show(cls):
         return True
 
 
-    def get_template(self):
+    @classmethod
+    def get_template(cls):
         raise NotImplementedError
 
 
-    def render(self):
-        if self.show() is False:
+    @classmethod
+    def render(cls):
+        if cls.show() is False:
             return None
 
-        template = self.get_template()
-        return stl(template, self)
+        template = cls.get_template()
+        return stl(template, cls)
 

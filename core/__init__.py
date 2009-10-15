@@ -20,12 +20,12 @@ from sys import platform
 # Import from itools
 from cache import LRUCache
 from freeze import freeze, frozendict, frozenlist
-from lazy import lazy, lazy_classmethod
+from lazy import lazy
 from mimetypes_ import add_type, guess_all_extensions, guess_extension
 from mimetypes_ import guess_type, has_encoding, has_extension
 from subprocess_ import start_subprocess, stop_subprocess
 from subprocess_ import read_subprocess, send_subprocess
-from thingy import thingy
+from thingy import thingy, thingy_lazy_property
 from utils import get_abspath, merge_dicts, get_sizeof, get_pipe, get_version
 
 
@@ -39,13 +39,13 @@ else:
 __all__ = [
     # Thingies are cool
     'thingy',
+    'thingy_lazy_property',
     # Frozen types
     'freeze',
     'frozendict',
     'frozenlist',
     # Lazy load
     'lazy',
-    'lazy_classmethod',
     # Caching
     'LRUCache',
     # Mimetypes

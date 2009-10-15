@@ -26,7 +26,6 @@ class DataType(thingy):
     multiple = False
 
 
-    @classmethod
     def get_default(cls):
         default = cls.default
         if cls.multiple:

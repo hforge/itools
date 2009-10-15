@@ -38,16 +38,3 @@ class lazy(object):
     def __repr__(self):
         return '%s wrapps %s' % (object.__repr__(self), repr(self.meth))
 
-
-
-class lazy_classmethod(lazy):
-
-    def __get__(self, instance, owner):
-        name = self.__name__
-        for cls in owner.__mro__:
-            if name in cls.__dict__:
-                name = self.meth.func_name
-                value = self.meth(owner)
-                setattr(owner, name, value)
-                return value
-

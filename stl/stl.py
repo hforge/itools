@@ -28,7 +28,7 @@ from re import compile
 from types import GeneratorType
 
 # Import from itools
-from itools.core import freeze
+from itools.core import freeze, thingy
 from itools.datatypes import Boolean
 from itools.gettext import MSG
 from itools.log import log_error
@@ -476,15 +476,7 @@ def rewrite_uris(stream, rewrite, ns_uri=xhtml_uri):
 # Templates
 ###########################################################################
 
-class STLTemplate(object):
-
-    def __new__(cls, **kw):
-        new_class_name = "%s(%s)" % (cls.__name__, kw)
-        new_class = type(new_class_name, (cls,), kw)
-        for key, value in kw.iteritems():
-            setattr(new_class, key, value)
-        return new_class
-
+class STLTemplate(thingy):
 
     @classmethod
     def show(cls):

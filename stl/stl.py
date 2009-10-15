@@ -213,9 +213,10 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
         if i % 2:
             # Evaluate expression
             value = evaluate(segment, stack, repeat_stack)
-            # An STL template
-            if type(value) is type and issubclass(value, STLTemplate):
-                value = value.render()
+            # An STL template (duck typing)
+            render = getattr(value, 'render', None)
+            if render:
+                value = render()
             # Ignore if None
             if value is None:
                 continue
@@ -478,17 +479,14 @@ def rewrite_uris(stream, rewrite, ns_uri=xhtml_uri):
 
 class STLTemplate(thingy):
 
-    @classmethod
     def show(cls):
         return True
 
 
-    @classmethod
     def get_template(cls):
         raise NotImplementedError
 
 
-    @classmethod
     def render(cls):
         if cls.show() is False:
             return None

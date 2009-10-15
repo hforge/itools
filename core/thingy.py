@@ -14,6 +14,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from the Standard Library
+from types import FunctionType
+
+# Import from itools
+from lazy import lazy
+
+
 """
 This module implements what we call so far a "thingy", till we find a better
 name.
@@ -34,7 +41,26 @@ There are two ways to create a thingy:
 """
 
 
+
+class thingy_metaclass(type):
+
+    def __new__(mcs, name, bases, dict):
+        # We don't have instance methods
+        for name, value in dict.iteritems():
+            if type(value) is not FunctionType or name == '__new__':
+                continue
+            dict[name] = classmethod(value)
+
+        # Make and return the class
+        cls = type.__new__(mcs, name, bases, dict)
+        return cls
+
+
+
 class thingy(object):
+
+    __metaclass__ = thingy_metaclass
+
 
     def __new__(cls, *args, **kw):
         # Make the new class
@@ -46,7 +72,19 @@ class thingy(object):
         return new_class
 
 
-    @classmethod
     def __init__(self, *args, **kw):
         pass
+
+
+
+class thingy_lazy_property(lazy):
+
+    def __get__(self, instance, owner):
+        name = self.__name__
+        for cls in owner.__mro__:
+            if name in cls.__dict__:
+                name = self.meth.func_name
+                value = self.meth(owner)
+                setattr(owner, name, value)
+                return value
 

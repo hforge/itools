@@ -66,7 +66,6 @@ class Unicode(DataType):
     default = u''
 
 
-    @classmethod
     def get_default(cls):
         return cls.default
 
@@ -218,7 +217,6 @@ class Enumerate(String):
     options = freeze([])
 
 
-    @classmethod
     def get_options(cls):
         """Returns a list of dictionaries in the format
             [{'name': <str>, 'value': <unicode>}, ...]
@@ -229,7 +227,6 @@ class Enumerate(String):
         return deepcopy(cls.options)
 
 
-    @classmethod
     def is_valid(cls, name):
         """Returns True if the given name is part of this Enumerate's options.
         """
@@ -237,7 +234,6 @@ class Enumerate(String):
         return enumerate_is_valid(options, name)
 
 
-    @classmethod
     def get_namespace(cls, name):
         """Extends the options with information about which one is matching
         the given name.
@@ -246,7 +242,6 @@ class Enumerate(String):
         return enumerate_get_namespace(options, name)
 
 
-    @classmethod
     def get_value(cls, name, default=None):
         """Returns the value matching the given name, or the default value.
         """

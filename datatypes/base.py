@@ -14,18 +14,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from itools
+from itools.core import thingy
 
 
-class DataType(object):
+
+class DataType(thingy):
 
     # Default value
     default = None
     multiple = False
-
-
-    def __new__(cls, **kw):
-        class_name = "%s(%s)" % (cls.__name__, kw)
-        return type(class_name, (cls,), kw)
 
 
     @classmethod

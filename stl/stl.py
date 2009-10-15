@@ -29,7 +29,7 @@ from re import compile
 from types import GeneratorType
 
 # Import from itools
-from itools.core import freeze
+from itools.core import freeze, thingy
 from itools.datatypes import Boolean
 from itools.gettext import MSG
 from itools.uri import Path, Reference, get_reference

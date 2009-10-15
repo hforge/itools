@@ -25,6 +25,7 @@ from mimetypes_ import add_type, guess_all_extensions, guess_extension
 from mimetypes_ import guess_type, has_encoding, has_extension
 from odict import OrderedDict
 from utils import get_abspath, merge_dicts, get_pipe, get_version
+from thingy import thingy
 
 # Python 2.6 or 2.5
 if version_info[1] == 5:
@@ -45,6 +46,8 @@ else:
 
 
 __all__ = [
+    # Thingies are cool
+    'thingy',
     # Frozen types
     'freeze',
     'frozendict',

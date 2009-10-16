@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from sys import _getframe
 from types import FunctionType
 
 # Import from itools
@@ -75,8 +76,10 @@ class thingy(object):
             thingy(...)
         """
         # Make the new class
-        name = "%s(%s)" % (cls.__name__, kw)
+        name = '[anonymous] from %s.%s' % (cls.__module__, cls.__name__)
         new_class = type.__new__(thingy_metaclass, name, (cls,), kw)
+        # Fix the module so repr(...) gives something meaningful
+        new_class.__module__ = _getframe(1).f_globals.get('__name__')
         # Initialize
         new_class.__init__(*args, **kw)
         # Ok

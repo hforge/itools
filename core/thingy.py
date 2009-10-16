@@ -45,6 +45,12 @@ There are two ways to create a thingy:
 class thingy_metaclass(type):
 
     def __new__(mcs, name, bases, dict):
+        """
+        This method is called when a thingy is created "statically":
+
+            class A(thingy):
+               ...
+        """
         # We don't have instance methods
         for key, value in dict.iteritems():
             if type(value) is not FunctionType or key == '__new__':
@@ -63,9 +69,14 @@ class thingy(object):
 
 
     def __new__(cls, *args, **kw):
+        """
+        This method is called when a thingy is created "dynamically":
+
+            thingy(...)
+        """
         # Make the new class
         name = "%s(%s)" % (cls.__name__, kw)
-        new_class = type(name, (cls,), kw)
+        new_class = type.__new__(thingy_metaclass, name, (cls,), kw)
         # Initialize
         new_class.__init__(*args, **kw)
         # Ok

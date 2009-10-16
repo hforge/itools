@@ -46,10 +46,10 @@ class thingy_metaclass(type):
 
     def __new__(mcs, name, bases, dict):
         # We don't have instance methods
-        for name, value in dict.iteritems():
-            if type(value) is not FunctionType or name == '__new__':
+        for key, value in dict.iteritems():
+            if type(value) is not FunctionType or key == '__new__':
                 continue
-            dict[name] = classmethod(value)
+            dict[key] = classmethod(value)
 
         # Make and return the class
         cls = type.__new__(mcs, name, bases, dict)

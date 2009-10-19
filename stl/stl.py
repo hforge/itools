@@ -25,7 +25,7 @@ language I could imagine.
 # Import from the Standard Library
 from copy import copy
 from re import compile
-from types import GeneratorType
+from types import GeneratorType, MethodType
 
 # Import from itools
 from itools.core import freeze, thingy
@@ -123,11 +123,16 @@ class NamespaceStack(list):
                     return namespace[name]
                 except KeyError:
                     continue
+
             # Case 2: instance
             try:
-                return getattr(namespace, name)
+                value = getattr(namespace, name)
             except AttributeError:
                 continue
+
+            if type(value) is MethodType:
+                value = value()
+            return value
 
         raise STLError, 'name "%s" not found in the namespace' % name
 

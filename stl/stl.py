@@ -490,6 +490,11 @@ class STLTemplate(thingy):
         if self.show() is False:
             return None
 
+        # Case 1: a ready made list of events
         template = self.get_template()
+        if type(template) is list:
+            return stl(events=template, namespace=self)
+
+        # Case 2: we assume it is a handler
         return stl(template, self)
 

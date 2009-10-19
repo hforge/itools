@@ -105,7 +105,7 @@ class Resource(object):
 
         # Explicit view, defined by name
         view = getattr(self, name, None)
-        if view is None or not isinstance(view, BaseView):
+        if view is None or not issubclass(view, BaseView):
             return None
 
         return view

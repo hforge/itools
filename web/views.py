@@ -19,7 +19,7 @@
 from copy import deepcopy
 
 # Import from itools
-from itools.core import freeze, thingy_type
+from itools.core import freeze, thingy, thingy_type
 from itools.datatypes import Enumerate
 from itools.gettext import MSG
 from itools.stl import stl
@@ -29,9 +29,9 @@ from messages import ERROR
 from views_fields import ViewField
 
 
-class view_metaclass(type):
+class view_metaclass(thingy_type):
 
-    def __new__(mcs, name, bases, dict):
+    def __new__(mcs, class_name, bases, dict):
         # Add the 'field_names' attribute, if not explicitly defined
         if 'field_names' not in dict:
             field_names = set()
@@ -57,11 +57,11 @@ class view_metaclass(type):
                 field.name = name
 
         # Make and return the class
-        return type.__new__(mcs, name, bases, dict)
+        return thingy_type.__new__(mcs, class_name, bases, dict)
 
 
 
-class BaseView(object):
+class BaseView(thingy):
 
     __metaclass__ = view_metaclass
 
@@ -77,17 +77,17 @@ class BaseView(object):
     #######################################################################
     # Schema
     #######################################################################
-    def get_field_names(self, resource, context):
+    def get_field_names(self):
         return self.field_names
 
 
-    def get_field(self, name, resource, context):
+    def get_field(self, name):
         return getattr(self, name)
 
 
-    def get_fields(self, resource, context):
-        for name in self.get_field_names(resource, context):
-            field = self.get_field(name, resource, context)
+    def get_fields(self):
+        for name in self.get_field_names():
+            field = self.get_field(name)
             if field is None:
                 continue
             yield field
@@ -99,7 +99,7 @@ class BaseView(object):
         input = context.input
 
         error = False
-        for field in self.get_fields(resource, context):
+        for field in self.get_fields():
             field = field(resource=resource, context=context)
             if field.source == 'query':
                 field.cook(query)
@@ -109,7 +109,7 @@ class BaseView(object):
                     error = True
             else:
                 field.cook(query, required=False)
-            input[field.name] = field
+            setattr(self, field.name, field)
         if error:
             raise FormError
 
@@ -122,11 +122,11 @@ class BaseView(object):
 
     #######################################################################
     # Request methods
-    def http_get(self, resource, context):
+    def http_get(self):
         raise NotImplementedError
 
 
-    def http_post(self, resource, context):
+    def http_post(self):
         raise NotImplementedError
 
 
@@ -171,9 +171,9 @@ class BaseView(object):
 
 class BaseForm(BaseView):
 
-    def get_field_names(self, resource, context):
+    def get_field_names(self):
         # Check for specific fields
-        action = getattr(context, 'form_action', None)
+        action = getattr(self.context, 'form_action', None)
         if action is not None:
             fields = getattr(self, '%s_fields' % action, None)
             if fields is not None:
@@ -187,9 +187,10 @@ class BaseForm(BaseView):
         return field.datatype.get_default()
 
 
-    def _get_action(self, resource, context):
+    def _get_action(self):
         """Default function to retrieve the name of the action from a form
         """
+        context = self.context
         for name in context.form:
             if name.startswith(';'):
                 # Browsers send the mouse coordinates with image submits
@@ -208,20 +209,20 @@ class BaseForm(BaseView):
             context.form_action = 'action'
 
 
-    def get_action_method(self, resource, context):
-        return getattr(self, context.form_action, None)
+    def get_action_method(self):
+        return getattr(self, self.context.form_action, None)
 
 
-    def http_post(self, resource, context):
+    def http_post(self):
         # Find out which button has been pressed, if more than one
-        self._get_action(resource, context)
+        self._get_action()
 
         # Action
-        method = self.get_action_method(resource, context)
+        method = self.get_action_method()
         if method is None:
             msg = "the '%s' method is not defined"
             raise NotImplementedError, msg % context.form_action
-        return method(resource, context)
+        return method(self.resource, self.context)
 
 
 
@@ -230,73 +231,27 @@ class STLView(BaseView):
     template = None
 
 
-    def get_namespace(self, resource, context, query=None):
-        return {}
-
-
-    def get_template(self, resource, context):
+    def get_template(self):
         # Check there is a template defined
         if self.template is None:
             msg = "%s is missing the 'template' variable"
             raise NotImplementedError, msg % repr(self.__class__)
-        return context.get_template(self.template)
+        return self.context.get_template(self.template)
 
 
-    def http_get(self, resource, context):
+    def render(self):
+        template = self.get_template()
+        return stl(template, self)
+
+
+    def http_get(self):
+        context = self.context
         # Get the namespace
-        namespace = self.get_namespace(resource, context)
-        if isinstance(namespace, Reference):
-            return namespace
-
-        # STL
-        template = self.get_template(resource, context)
-        body = stl(template, namespace)
+        body = self.render()
         context.ok_wrap('text/html', body)
 
 
 
 class STLForm(STLView, BaseForm):
-
-    def get_namespace(self, resource, context, query=None):
-        """This utility method builds a namespace suitable to use to produce
-        an HTML form. Its input data is a dictionnary that defines the form
-        variables to consider:
-
-          {'toto': Unicode(mandatory=True, multiple=False, default=u'toto'),
-           'tata': Unicode(mandatory=True, multiple=False, default=u'tata')}
-
-        Every element specifies the datatype of the field.
-        The output is like:
-
-            {<field name>: {'value': <field value>, 'class': <CSS class>}
-             ...}
-        """
-        fields = self.get_field_names(resource, context)
-
-        # Build the namespace
-        namespace = {}
-        for name in fields:
-            field = context.input[name]
-            datatype = field.datatype
-
-            if not field.readonly and name in context.input:
-                value = field.value
-                if value is None:
-                    pass
-                elif issubclass(datatype, Enumerate):
-                    value = datatype.get_namespace(value)
-                elif datatype.multiple:
-                    # XXX Done for table multilingual fields (fragile)
-                    value = value[0]
-                else:
-                    value = datatype.encode(value)
-            else:
-                value = self.get_value(resource, context, name, field)
-                if issubclass(datatype, Enumerate):
-                    value = datatype.get_namespace(value)
-                else:
-                    value = datatype.encode(value)
-            namespace[name] = {
-                'name': name, 'value': value, 'error': field.error}
-        return namespace
+    pass
 

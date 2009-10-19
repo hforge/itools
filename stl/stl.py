@@ -84,8 +84,8 @@ def evaluate(expression, stack, repeat_stack):
     value = stack.lookup(path[0])
     for name in path[1:]:
         try:
-            value = value[name]
-        except KeyError:
+            value = lookup(value, name)
+        except (AttributeError, KeyError):
             raise STLError, ERR_EXPR_NAME % (name, expression)
 
     return value
@@ -109,6 +109,19 @@ def evaluate_repeat(expression, stack, repeat_stack):
 ###########################################################################
 # Namespace
 ###########################################################################
+
+def lookup(namespace, name):
+    # Case 1: dict
+    if type(namespace) is dict:
+        return namespace[name]
+
+    # Case 2: instance
+    value = getattr(namespace, name)
+    if type(value) is MethodType:
+        value = value()
+    return value
+
+
 class NamespaceStack(list):
     """This class represents a namespace stack as used by STL. A variable
     is looked up in the stack from the top to the bottom until found.
@@ -118,22 +131,10 @@ class NamespaceStack(list):
         stack = self[:]
         stack.reverse()
         for namespace in stack:
-            # Case 1: dict
-            if type(namespace) is dict:
-                try:
-                    return namespace[name]
-                except KeyError:
-                    continue
-
-            # Case 2: instance
             try:
-                value = getattr(namespace, name)
-            except AttributeError:
+                return lookup(namespace, name)
+            except (AttributeError, KeyError):
                 continue
-
-            if type(value) is MethodType:
-                value = value()
-            return value
 
         raise STLError, 'name "%s" not found in the namespace' % name
 

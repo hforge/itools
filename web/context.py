@@ -149,7 +149,9 @@ class WebContext(HTTPContext):
 
     @lazy
     def view(self):
-        return self.resource.get_view(self.view_name, self.query)
+        resource = self.resource
+        view = resource.get_view(self.view_name, self.query)
+        return view(resource=resource, context=self)
 
 
     def get_credentials(self):
@@ -289,7 +291,7 @@ class WebContext(HTTPContext):
             raise
         else:
             self.commit = False
-            view.http_get(self.resource, self)
+            view.http_get()
 
 
     def http_post(self):
@@ -300,10 +302,10 @@ class WebContext(HTTPContext):
         except FormError, error:
             self.message = error.get_message()
             self.commit = False
-            view.http_get(resource, self)
+            view.http_get()
         else:
             self.commit = True
-            view.http_post(resource, self)
+            view.http_post()
 
 
     def close_transaction(self):
@@ -342,9 +344,9 @@ class WebContext(HTTPContext):
             body = XMLParser(body, doctype=xhtml_doctype)
 
         root = self.get_resource('/')
-        skin = root.skin
+        skin = root.get_skin(body, self)
         skin.cook(root, self, 'get')
-        body = skin.render(body, self)
+        body = skin.render()
         self.set_body(content_type, body)
 
 
@@ -403,10 +405,6 @@ class WebContext(HTTPContext):
     #######################################################################
     # API
     #######################################################################
-    def get_input_value(self, name):
-        return self.input[name].value
-
-
     # TODO For backwards compatibility, to be removed
     def get_query_value(self, name, datatype=String, default=None):
         value = self.query.get(name)

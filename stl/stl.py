@@ -471,18 +471,23 @@ def resolve_pointer(value, offset):
 
 class STLTemplate(thingy):
 
-    def show(cls):
+    def show(self):
         return True
 
 
-    def get_template(cls):
+    def get_template(self):
         raise NotImplementedError
 
 
-    def render(cls):
-        if cls.show() is False:
+    def render(self):
+        if self.show() is False:
             return None
 
-        template = cls.get_template()
-        return stl(template, cls)
+        # Case 1: a ready made list of events
+        template = self.get_template()
+        if type(template) is list:
+            return stl(events=template, namespace=self)
+
+        # Case 2: we assume it is a handler
+        return stl(template, self)
 

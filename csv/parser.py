@@ -26,14 +26,17 @@ from itools.datatypes import String
 sniffer = Sniffer()
 
 
-def parse(data, columns=None, schema=None, guess=False, encoding='UTF-8',
-          **kw):
+def parse(data, columns=None, schema=None, guess=False, skip_header=False,
+          encoding='UTF-8', **kw):
     """This method is a generator that returns one CSV row at a time.  To
     do the job it wraps the standard Python's csv parser.
     """
     # Find out the dialect
     if data:
         lines = data.splitlines(True)
+        # The first line is a header
+        if skip_header is True:
+            del lines[0]
         # The dialect
         if guess is True:
             dialect = sniffer.sniff('\n'.join(lines[:10]))

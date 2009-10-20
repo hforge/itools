@@ -76,6 +76,7 @@ class CSVFile(TextFile):
 
     # Parsing options
     class_csv_guess = False
+    skip_header = False
 
 
     #########################################################################
@@ -116,6 +117,7 @@ class CSVFile(TextFile):
         columns = self.columns
 
         for line in parse(data, columns, schema, guess=self.class_csv_guess,
+                          skip_header=self.skip_header,
                           encoding=self.encoding):
             self._add_row(line)
 

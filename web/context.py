@@ -458,7 +458,7 @@ def get_form_value(form, name, type=String, default=None):
     if is_missing:
         # Mandatory: raise an error
         if is_mandatory and is_missing:
-            raise FormError(missing=[name])
+            raise FormError(missing=True)
         # Optional: return the default value
         return default
 
@@ -470,11 +470,11 @@ def get_form_value(form, name, type=String, default=None):
         try:
             values = [ type.decode(x) for x in value ]
         except Exception:
-            raise FormError(invalid=[name])
+            raise FormError(invalid=True)
         # Check the values are valid
         for value in values:
             if not type.is_valid(value):
-                raise FormError(invalid=[name])
+                raise FormError(invalid=True)
         return values
 
     # Single value
@@ -484,22 +484,22 @@ def get_form_value(form, name, type=String, default=None):
     try:
         value = type.decode(value)
     except Exception:
-        raise FormError(invalid=[name])
+        raise FormError(invalid=True)
 
     # We consider that if the type deserializes the value to None, then we
     # must use the default.
     if value is None:
         if is_mandatory:
-            raise FormError(missing=[name])
+            raise FormError(missing=True)
         return default
 
     # We consider a blank string to be a missing value (FIXME not reliable).
     is_blank = isinstance(value, (str, unicode)) and not value.strip()
     if is_blank:
         if is_mandatory:
-            raise FormError(missing=[name])
+            raise FormError(missing=True)
     elif not type.is_valid(value):
-        raise FormError(invalid=[name])
+        raise FormError(invalid=True)
     return value
 
 

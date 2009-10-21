@@ -21,27 +21,27 @@ from copy import deepcopy
 # Import from itools
 from itools.core import freeze
 from itools.datatypes import Enumerate
+from itools.gettext import MSG
 from itools.stl import stl
 from itools.uri import decode_query, get_reference, Reference
 from context import FormError
+from messages import ERROR
 
 
 
 def process_form(get_value, schema):
     values = {}
-    invalid = []
-    missing = []
+    error = None
     for name in schema:
         datatype = schema[name]
         try:
             value = get_value(name, type=datatype)
         except FormError, error:
+            error = ERROR(u'There are errors, check below.')
             value = get_value(name)
-            missing.extend(error.missing)
-            invalid.extend(error.invalid)
         values[name] = value
-    if missing or invalid:
-        raise FormError(missing=missing, invalid=invalid)
+    if error:
+        raise FormError, error
     return values
 
 
@@ -261,18 +261,18 @@ class STLForm(STLView, BaseForm):
         namespace = {}
         for name in schema:
             datatype = schema[name]
-            is_mandatory = getattr(datatype, 'mandatory', False)
             is_readonly = getattr(datatype, 'readonly', False)
 
-            cls = []
-            if is_mandatory:
-                cls.append('field-is-required')
-
+            error = None
             if not is_readonly and name in context.form:
                 try:
                     value = context.get_form_value(name, type=datatype)
-                except FormError:
-                    cls.append('field-is-missing')
+                except FormError, err:
+                    if err.missing:
+                        error = MSG(u'This field is required.')
+                    else:
+                        error = MSG(u'Invalid value.')
+
                     if issubclass(datatype, Enumerate):
                         value = datatype.get_namespace(None)
                     else:
@@ -291,7 +291,6 @@ class STLForm(STLView, BaseForm):
                     value = datatype.get_namespace(value)
                 else:
                     value = datatype.encode(value)
-            cls = ' '.join(cls) or None
-            namespace[name] = {'name': name, 'value': value, 'class': cls}
+            namespace[name] = {'name': name, 'value': value, 'error': error}
         return namespace
 

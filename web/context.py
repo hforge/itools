@@ -30,45 +30,8 @@ from itools.http import Cookie, SetCookieDataType
 from itools.i18n import AcceptLanguageType
 from itools.log import Logger
 from itools.uri import decode_query, get_reference, Path
+from exceptions import FormError
 from messages import ERROR
-
-
-
-class FormError(StandardError):
-    """Raised when a form is invalid (missing or invalid fields).
-    """
-
-    def __init__(self, message=None, missing=freeze([]), invalid=freeze([])):
-        self.msg = message
-        self.missing = missing
-        self.invalid = invalid
-
-
-    def get_message(self):
-        # Custom message
-        if self.msg is not None:
-            if isinstance(self.msg, MSG):
-                return self.msg
-            return ERROR(self.msg)
-        # Default message
-        missing = len(self.missing)
-        invalid = len(self.invalid)
-        if missing and invalid:
-            msg = u"There are {miss} field(s) missing and {inv} invalid."
-        elif missing:
-            msg = u"There are {miss} field(s) missing."
-        elif invalid:
-            msg = u"There are {inv} field(s) invalid."
-        else:
-            # We should never be here
-            msg = u"Everything looks fine (strange)."
-
-        # Ok
-        return ERROR(msg, miss=missing, inv=invalid)
-
-
-    def __str__(self):
-        return self.get_message().gettext()
 
 
 
@@ -459,7 +422,7 @@ def get_form_value(form, name, type=String, default=None):
     if is_missing:
         # Mandatory: raise an error
         if is_mandatory and is_missing:
-            raise FormError(missing=[name])
+            raise FormError(missing=True)
         # Optional: return the default value
         return default
 
@@ -471,11 +434,11 @@ def get_form_value(form, name, type=String, default=None):
         try:
             values = [ type.decode(x) for x in value ]
         except Exception:
-            raise FormError(invalid=[name])
+            raise FormError(invalid=True)
         # Check the values are valid
         for value in values:
             if not type.is_valid(value):
-                raise FormError(invalid=[name])
+                raise FormError(invalid=True)
         return values
 
     # Single value
@@ -485,22 +448,22 @@ def get_form_value(form, name, type=String, default=None):
     try:
         value = type.decode(value)
     except Exception:
-        raise FormError(invalid=[name])
+        raise FormError(invalid=True)
 
     # We consider that if the type deserializes the value to None, then we
     # must use the default.
     if value is None:
         if is_mandatory:
-            raise FormError(missing=[name])
+            raise FormError(missing=True)
         return default
 
     # We consider a blank string to be a missing value (FIXME not reliable).
     is_blank = isinstance(value, (str, unicode)) and not value.strip()
     if is_blank:
         if is_mandatory:
-            raise FormError(missing=[name])
+            raise FormError(missing=True)
     elif not type.is_valid(value):
-        raise FormError(invalid=[name])
+        raise FormError(invalid=True)
     return value
 
 

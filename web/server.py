@@ -32,7 +32,8 @@ from itools.http import NotImplemented, MethodNotAllowed, Unauthorized
 from itools.http import set_response
 from itools.log import log_error, log_warning, register_logger
 from itools.uri import Reference
-from context import Context, FormError, set_context, WebLogger
+from context import Context, set_context, WebLogger
+from exceptions import FormError
 from views import BaseView
 
 

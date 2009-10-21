@@ -17,9 +17,10 @@
 
 # Import from itools
 from access import AccessControl
-from context import Context, get_context, set_context, FormError
+from context import Context, get_context, set_context
 from context import select_language
 from context import WebLogger
+from exceptions import FormError
 from messages import INFO, ERROR, MSG_MISSING_OR_INVALID
 from resources import Resource, RootResource
 from server import WebServer

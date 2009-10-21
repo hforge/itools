@@ -15,7 +15,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.core import freeze
 from itools.gettext import MSG
 from messages import ERROR
 
@@ -25,7 +24,7 @@ class FormError(StandardError):
     """Raised when a form is invalid (missing or invalid fields).
     """
 
-    def __init__(self, message=None, missing=freeze([]), invalid=freeze([])):
+    def __init__(self, message=None, missing=False, invalid=False):
         self.msg = message
         self.missing = missing
         self.invalid = invalid
@@ -38,20 +37,8 @@ class FormError(StandardError):
                 return self.msg
             return ERROR(self.msg)
         # Default message
-        missing = len(self.missing)
-        invalid = len(self.invalid)
-        if missing and invalid:
-            msg = u"There are {miss} field(s) missing and {inv} invalid."
-        elif missing:
-            msg = u"There are {miss} field(s) missing."
-        elif invalid:
-            msg = u"There are {inv} field(s) invalid."
-        else:
-            # We should never be here
-            msg = u"Everything looks fine (strange)."
-
-        # Ok
-        return ERROR(msg, miss=missing, inv=invalid)
+        msg = u'There are errors... XXX'
+        return ERROR(msg)
 
 
     def __str__(self):

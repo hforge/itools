@@ -125,7 +125,7 @@ def rtf_to_text(data):
 class RTF(File):
 
     class_mimetypes = ['text/rtf']
-    class_extenstion = 'rtf'
+    class_extension = 'rtf'
 
 
     def to_text(self):

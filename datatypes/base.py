@@ -40,10 +40,7 @@ class DataType(object):
 
     def __new__(cls, **kw):
         class_name = "%s(%s)" % (cls.__name__, kw)
-        new_datatype = type(class_name, (cls,), kw)
-        for key, value in kw.iteritems():
-            setattr(new_datatype, key, value)
-        return new_datatype
+        return type(class_name, (cls,), kw)
 
 
     @classmethod

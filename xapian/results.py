@@ -38,7 +38,10 @@ class SearchDocument(object):
         field_cls = _get_field_cls(name, self._fields, info)
 
         # Get the data
-        value = info['value']
+        try:
+            value = info['value']
+        except KeyError:
+            raise ValueError, 'the field "%s" is not a stored field' % name
         data = self._xdoc.get_value(value)
 
         # Multilingual field: language negotiation

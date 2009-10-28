@@ -312,7 +312,10 @@ class Catalog(object):
             if name not in metadata:
                 return Query()
             info = metadata[name]
-            prefix = info['prefix']
+            try:
+                prefix = info['prefix']
+            except KeyError:
+                raise ValueError, 'the field "%s" must be indexed' % name
             field_cls = _get_field_cls(name, fields, info)
             return _make_PhraseQuery(field_cls, query.value, prefix)
 

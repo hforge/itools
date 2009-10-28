@@ -43,7 +43,7 @@ There are two ways to create a thingy:
 
 
 
-class thingy_metaclass(type):
+class thingy_type(type):
 
     def __new__(mcs, name, bases, dict):
         """
@@ -66,7 +66,7 @@ class thingy_metaclass(type):
 
 class thingy(object):
 
-    __metaclass__ = thingy_metaclass
+    __metaclass__ = thingy_type
 
 
     def __new__(cls, *args, **kw):
@@ -77,7 +77,7 @@ class thingy(object):
         """
         # Make the new class
         name = '[anonymous] from %s.%s' % (cls.__module__, cls.__name__)
-        new_class = type.__new__(thingy_metaclass, name, (cls,), kw)
+        new_class = type.__new__(thingy_type, name, (cls,), kw)
         # Fix the module so repr(...) gives something meaningful
         new_class.__module__ = _getframe(1).f_globals.get('__name__')
         # Initialize

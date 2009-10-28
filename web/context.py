@@ -26,7 +26,6 @@ from urllib import unquote
 # Import from itools
 from itools.core import freeze, lazy
 from itools.datatypes import String
-from itools.gettext import MSG
 from itools.html import stream_to_str_as_html, xhtml_doctype
 from itools.http import HTTPContext, ClientError, ServerError, get_context
 from itools.i18n import AcceptLanguageType
@@ -56,11 +55,11 @@ class WebContext(HTTPContext):
     def __init__(self, soup_message, path):
         HTTPContext.__init__(self, soup_message, path)
 
-        # Query
-        self.query_schema = {}
-
         # Resource path and view
         self.split_path()
+
+        # Input (the query & form, cooked)
+        self.input = {}
 
 
     def split_path(self):
@@ -185,10 +184,6 @@ class WebContext(HTTPContext):
             method = self.known_methods[self.method]
             method = getattr(self, method)
             method()
-        except FormError, error:
-            self.message = error.get_message()
-            self.method = 'GET'
-            self.handle_request()
         except (ClientError, ServerError), error:
             status = error.status
             self.status = status
@@ -236,13 +231,30 @@ class WebContext(HTTPContext):
 
 
     def http_get(self):
-        self.commit = False
-        self.view.http_get(self.resource, self)
+        resource = self.resource
+        view = self.view
+        try:
+            view.cook(resource, self, 'get')
+        except FormError, error:
+            # FIXME
+            raise
+        else:
+            self.commit = False
+            view.http_get(self.resource, self)
 
 
     def http_post(self):
-        self.commit = True
-        self.view.http_post(self.resource, self)
+        resource = self.resource
+        view = self.view
+        try:
+            view.cook(resource, self, 'post')
+        except FormError, error:
+            self.message = error.get_message()
+            self.commit = False
+            view.http_get(resource, self)
+        else:
+            self.commit = True
+            view.http_post(resource, self)
 
 
     def close_transaction(self):
@@ -281,7 +293,9 @@ class WebContext(HTTPContext):
             body = XMLParser(body, doctype=xhtml_doctype)
 
         root = self.get_resource('/')
-        body = root.skin.render(body, self)
+        skin = root.skin
+        skin.cook(root, self, 'get')
+        body = skin.render(body, self)
         self.set_body(content_type, body)
 
 
@@ -338,8 +352,23 @@ class WebContext(HTTPContext):
 
 
     #######################################################################
-    # API / Redirect
+    # API
     #######################################################################
+    def get_input_value(self, name):
+        return self.input[name].value
+
+
+    # TODO For backwards compatibility, to be removed
+    def get_query_value(self, name, datatype=String, default=None):
+        value = self.query.get(name)
+        if value is None:
+            if default is None:
+                return datatype.get_default()
+            return default
+
+        return datatype.decode(value)
+
+
     def come_back(self, message, goto=None, keep=freeze([]), **kw):
         """This is a handy method that builds a resource URI from some
         parameters.  It exists to make short some common patterns.
@@ -384,50 +413,6 @@ class WebContext(HTTPContext):
 
 
     #######################################################################
-    # API / Forms
-    #######################################################################
-    def add_query_schema(self, schema):
-        self.query_schema.update(schema)
-
-
-    def get_query_value(self, name, type=None, default=None):
-        """Returns the value for the given name from the query.  Useful for
-        POST requests.
-        """
-        if type is None:
-            type = self.query_schema.get(name, String)
-
-        return get_form_value(self.query, name, type, default)
-
-
-    def get_form_value(self, name, type=String, default=None):
-        return get_form_value(self.form, name, type, default)
-
-
-    def get_form_keys(self):
-        return self.form.keys()
-
-
-    # FIXME Obsolete since 0.20.4, to be removed by the next major release
-    def get_form_values(self, name, default=freeze([]), type=None):
-        request = self.request
-        if request.has_parameter(name):
-            value = request.get_parameter(name)
-            if not isinstance(value, list):
-                value = [value]
-
-            if type is None:
-                return value
-            return [ type.decode(x) for x in value ]
-
-        return default
-
-
-    def has_form_value(self, name):
-        return self.request.has_parameter(name)
-
-
-    #######################################################################
     # API / Utilities
     #######################################################################
     def agent_is_a_robot(self):
@@ -442,65 +427,6 @@ class WebContext(HTTPContext):
             if footprint in user_agent:
                 return True
         return False
-
-
-#######################################################################
-# Get from the form or query
-#######################################################################
-def get_form_value(form, name, type=String, default=None):
-    # Figure out the default value
-    if default is None:
-        default = type.get_default()
-
-    # Missing
-    is_mandatory = getattr(type, 'mandatory', False)
-    is_missing = form.get(name) is None
-    if is_missing:
-        # Mandatory: raise an error
-        if is_mandatory and is_missing:
-            raise FormError(missing=True)
-        # Optional: return the default value
-        return default
-
-    # Multiple values
-    if type.multiple:
-        value = form.get(name)
-        if not isinstance(value, list):
-            value = [value]
-        try:
-            values = [ type.decode(x) for x in value ]
-        except Exception:
-            raise FormError(invalid=True)
-        # Check the values are valid
-        for value in values:
-            if not type.is_valid(value):
-                raise FormError(invalid=True)
-        return values
-
-    # Single value
-    value = form.get(name)
-    if isinstance(value, list):
-        value = value[0]
-    try:
-        value = type.decode(value)
-    except Exception:
-        raise FormError(invalid=True)
-
-    # We consider that if the type deserializes the value to None, then we
-    # must use the default.
-    if value is None:
-        if is_mandatory:
-            raise FormError(missing=True)
-        return default
-
-    # We consider a blank string to be a missing value (FIXME not reliable).
-    is_blank = isinstance(value, (str, unicode)) and not value.strip()
-    if is_blank:
-        if is_mandatory:
-            raise FormError(missing=True)
-    elif not type.is_valid(value):
-        raise FormError(invalid=True)
-    return value
 
 
 

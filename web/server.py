@@ -24,7 +24,8 @@ from warnings import warn
 from itools.http import Redirection, ClientError, ServerError
 from itools.log import log_error
 from itools.uri import Reference
-from context import FormError, WebContext
+from context import WebContext
+from exceptions import FormError
 
 
 

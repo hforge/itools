@@ -21,28 +21,20 @@ from messages import ERROR
 
 
 class FormError(StandardError):
-    """Raised when a form is invalid (missing or invalid fields).
-    """
 
-    def __init__(self, message=None, missing=False, invalid=False):
-        self.msg = message
-        self.missing = missing
-        self.invalid = invalid
+    msg = ERROR(u'There are errors, check below.')
+
+    def __init__(self, message=None):
+        if message:
+            self.msg = message
 
 
     def get_message(self):
-        # Custom message
-        if self.msg is not None:
-            if isinstance(self.msg, MSG):
-                return self.msg
-            return ERROR(self.msg)
-        # Default message
-        msg = u'There are errors... XXX'
-        return ERROR(msg)
+        if isinstance(self.msg, MSG):
+            return self.msg
+        return ERROR(self.msg)
 
 
     def __str__(self):
         return self.get_message().gettext()
-
-
 

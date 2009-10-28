@@ -19,34 +19,52 @@
 from copy import deepcopy
 
 # Import from itools
-from itools.core import freeze
+from itools.core import freeze, thingy_type
 from itools.datatypes import Enumerate
 from itools.gettext import MSG
 from itools.stl import stl
 from itools.uri import decode_query, get_reference, Reference
-from context import FormError
+from exceptions import FormError
 from messages import ERROR
+from views_fields import ViewField
 
 
+class view_metaclass(type):
 
-def process_form(get_value, schema):
-    values = {}
-    error = None
-    for name in schema:
-        datatype = schema[name]
-        try:
-            value = get_value(name, type=datatype)
-        except FormError, error:
-            error = ERROR(u'There are errors, check below.')
-            value = get_value(name)
-        values[name] = value
-    if error:
-        raise FormError, error
-    return values
+    def __new__(mcs, name, bases, dict):
+        # Add the 'field_names' attribute, if not explicitly defined
+        if 'field_names' not in dict:
+            field_names = set()
+
+            # Inherit from the base classes
+            for base in bases:
+                base_fields = getattr(base, 'field_names', None)
+                if base_fields:
+                    field_names.update(base_fields)
+
+            # Add this class fields
+            for name, value in dict.iteritems():
+                if type(value) is thingy_type and issubclass(value, ViewField):
+                    field_names.add(name)
+
+            # Ok
+            dict['field_names'] = list(field_names)
+
+        # Add the name to fields that miss them
+        for name in dict['field_names']:
+            field = dict.get(name)
+            if field and field.name is None:
+                field.name = name
+
+        # Make and return the class
+        return type.__new__(mcs, name, bases, dict)
 
 
 
 class BaseView(object):
+
+    __metaclass__ = view_metaclass
+
 
     # Access Control
     access = False
@@ -57,22 +75,43 @@ class BaseView(object):
 
 
     #######################################################################
-    # Query
-    query_schema = {}
+    # Schema
+    #######################################################################
+    def get_field_names(self, resource, context):
+        return self.field_names
 
 
-    def get_query_schema(self):
-        return self.query_schema
+    def get_field(self, name, resource, context):
+        return getattr(self, name)
 
 
-    def get_query(self, context):
-        get_value = context.get_query_value
-        schema = self.get_query_schema()
-        return process_form(get_value, schema)
+    def get_fields(self, resource, context):
+        for name in self.get_field_names(resource, context):
+            field = self.get_field(name, resource, context)
+            if field is None:
+                continue
+            yield field
 
 
-    def on_query_error(self, resource, context):
-        return 'The query could not be processed.'
+    def cook(self, resource, context, method):
+        form = context.form
+        query = context.query
+        input = context.input
+
+        error = False
+        for field in self.get_fields(resource, context):
+            field = field(resource=resource, context=context)
+            if field.source == 'query':
+                field.cook(query)
+            elif method == 'post':
+                field.cook(form)
+                if field.error:
+                    error = True
+            else:
+                field.cook(query, required=False)
+            input[field.name] = field
+        if error:
+            raise FormError
 
 
     #######################################################################
@@ -93,10 +132,10 @@ class BaseView(object):
 
     #######################################################################
     # View's metadata
-    title = None
+    view_title = None
 
-    def get_title(self, context):
-        return self.title
+    def get_view_title(self, context):
+        return self.view_title
 
 
     #######################################################################
@@ -132,44 +171,26 @@ class BaseView(object):
 
 class BaseForm(BaseView):
 
-    schema = {}
-
-
-    def get_schema(self, resource, context):
-        # Check for specific schema
+    def get_field_names(self, resource, context):
+        # Check for specific fields
         action = getattr(context, 'form_action', None)
         if action is not None:
-            schema = getattr(self, '%s_schema' % action, None)
-            if schema is not None:
-                return schema
+            fields = getattr(self, '%s_fields' % action, None)
+            if fields is not None:
+                return fields
 
         # Default
-        return self.schema
+        return self.field_names
 
 
-    def _get_form(self, resource, context):
-        """Form checks the request form and collect inputs consider the
-        schema.  This method also checks the request form and raise an
-        FormError if there is something wrong (a mandatory field is missing,
-        or a value is not valid) or None if everything is ok.
-
-        Its input data is a list (fields) that defines the form variables to
-          {'toto': Unicode(mandatory=True, multiple=False, default=u'toto'),
-           'tata': Unicode(mandatory=True, multiple=False, default=u'tata')}
-        """
-        get_value = context.get_form_value
-        schema = self.get_schema(resource, context)
-        return process_form(get_value, schema)
-
-
-    def get_value(self, resource, context, name, datatype):
-        return datatype.get_default()
+    def get_value(self, resource, context, name, field):
+        return field.datatype.get_default()
 
 
     def _get_action(self, resource, context):
-        """ default function to retrieve the name of the action from a form
+        """Default function to retrieve the name of the action from a form
         """
-        for name in context.get_form_keys():
+        for name in context.form:
             if name.startswith(';'):
                 # Browsers send the mouse coordinates with image submits
                 if name.endswith(('.x', '.y')):
@@ -192,19 +213,15 @@ class BaseForm(BaseView):
 
 
     def http_post(self, resource, context):
-        context.add_query_schema(self.get_query_schema())
-        # (1) Find out which button has been pressed, if more than one
+        # Find out which button has been pressed, if more than one
         self._get_action(resource, context)
 
-        # (2) Automatically validate and get the form input (from the schema).
-        form = self._get_form(resource, context)
-
-        # (3) Action
+        # Action
         method = self.get_action_method(resource, context)
         if method is None:
             msg = "the '%s' method is not defined"
             raise NotImplementedError, msg % context.form_action
-        return method(resource, context, form)
+        return method(resource, context)
 
 
 
@@ -226,7 +243,6 @@ class STLView(BaseView):
 
 
     def http_get(self, resource, context):
-        context.add_query_schema(self.get_query_schema())
         # Get the namespace
         namespace = self.get_namespace(resource, context)
         if isinstance(namespace, Reference):
@@ -255,42 +271,32 @@ class STLForm(STLView, BaseForm):
             {<field name>: {'value': <field value>, 'class': <CSS class>}
              ...}
         """
-        schema = self.get_schema(resource, context)
+        fields = self.get_field_names(resource, context)
 
         # Build the namespace
         namespace = {}
-        for name in schema:
-            datatype = schema[name]
-            is_readonly = getattr(datatype, 'readonly', False)
+        for name in fields:
+            field = context.input[name]
+            datatype = field.datatype
 
-            error = None
-            if not is_readonly and name in context.form:
-                try:
-                    value = context.get_form_value(name, type=datatype)
-                except FormError, err:
-                    if err.missing:
-                        error = MSG(u'This field is required.')
-                    else:
-                        error = MSG(u'Invalid value.')
-
-                    if issubclass(datatype, Enumerate):
-                        value = datatype.get_namespace(None)
-                    else:
-                        value = context.get_form_value(name)
+            if not field.readonly and name in context.input:
+                value = field.value
+                if value is None:
+                    pass
+                elif issubclass(datatype, Enumerate):
+                    value = datatype.get_namespace(value)
+                elif datatype.multiple:
+                    # XXX Done for table multilingual fields (fragile)
+                    value = value[0]
                 else:
-                    if issubclass(datatype, Enumerate):
-                        value = datatype.get_namespace(value)
-                    elif datatype.multiple:
-                        # XXX Done for table multilingual fields (fragile)
-                        value = value[0]
-                    else:
-                        value = datatype.encode(value)
+                    value = datatype.encode(value)
             else:
-                value = self.get_value(resource, context, name, datatype)
+                value = self.get_value(resource, context, name, field)
                 if issubclass(datatype, Enumerate):
                     value = datatype.get_namespace(value)
                 else:
                     value = datatype.encode(value)
-            namespace[name] = {'name': name, 'value': value, 'error': error}
+            namespace[name] = {
+                'name': name, 'value': value, 'error': field.error}
         return namespace
 

@@ -91,6 +91,13 @@ class thingy(object):
 
 
 
+class thingy_property(lazy):
+
+    def __get__(self, instance, owner):
+        return self.meth(owner)
+
+
+
 class thingy_lazy_property(lazy):
 
     def __get__(self, instance, owner):

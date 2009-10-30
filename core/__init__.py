@@ -24,7 +24,7 @@ from lazy import lazy
 from mimetypes_ import add_type, guess_all_extensions, guess_extension
 from mimetypes_ import guess_type, has_encoding, has_extension
 from odict import OrderedDict
-from thingy import thingy_type, thingy, thingy_lazy_property
+from thingy import thingy_type, thingy, thingy_property, thingy_lazy_property
 from utils import get_abspath, merge_dicts, get_pipe, get_version
 
 # Python 2.6 or 2.5
@@ -49,6 +49,7 @@ __all__ = [
     # Thingies are cool
     'thingy_type',
     'thingy',
+    'thingy_property',
     'thingy_lazy_property',
     # Frozen types
     'freeze',

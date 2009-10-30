@@ -134,9 +134,6 @@ class BaseView(thingy):
     # View's metadata
     view_title = None
 
-    def get_view_title(self, context):
-        return self.view_title
-
 
     #######################################################################
     # Canonical URI for search engines

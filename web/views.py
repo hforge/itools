@@ -53,7 +53,7 @@ class view_metaclass(thingy_type):
         # Add the name to fields that miss them
         for name in dict['field_names']:
             field = dict.get(name)
-            if field and field.name is None:
+            if type(field) is thingy_type and field.name is None:
                 field.name = name
 
         # Make and return the class

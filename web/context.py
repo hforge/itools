@@ -58,9 +58,6 @@ class WebContext(HTTPContext):
         # Resource path and view
         self.split_path()
 
-        # Input (the query & form, cooked)
-        self.input = {}
-
 
     def split_path(self):
         # Split the path so '/a/b/c/;view' becomes ('/a/b/c', 'view')
@@ -236,7 +233,7 @@ class WebContext(HTTPContext):
         resource = self.resource
         view = self.view
         try:
-            view.cook(resource, self, 'get')
+            view.cook('get')
         except FormError, error:
             # FIXME
             raise
@@ -249,7 +246,7 @@ class WebContext(HTTPContext):
         resource = self.resource
         view = self.view
         try:
-            view.cook(resource, self, 'post')
+            view.cook('post')
         except FormError, error:
             self.message = error.get_message()
             self.commit = False
@@ -295,8 +292,9 @@ class WebContext(HTTPContext):
             body = XMLParser(body, doctype=xhtml_doctype)
 
         root = self.get_resource('/')
-        skin = root.get_skin(body, self)
-        skin.cook(root, self, 'get')
+        skin = root.get_skin()
+        skin = skin(resource=root, context=self, body=body)
+        skin.cook('get')
         body = skin.render()
         self.set_body(content_type, body)
 

@@ -93,14 +93,14 @@ class BaseView(thingy):
             yield field
 
 
-    def cook(self, resource, context, method):
+    def cook(self, method):
+        context = self.context
         form = context.form
         query = context.query
-        input = context.input
 
         error = False
         for field in self.get_fields():
-            field = field(resource=resource, context=context)
+            field = field(resource=self.resource, context=context)
             if field.source == 'query':
                 field.cook(query)
             elif method == 'post':

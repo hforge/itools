@@ -34,21 +34,24 @@ class view_metaclass(thingy_type):
     def __new__(mcs, class_name, bases, dict):
         # Add the 'field_names' attribute, if not explicitly defined
         if 'field_names' not in dict:
-            field_names = set()
+            field_names = []
 
             # Inherit from the base classes
             for base in bases:
-                base_fields = getattr(base, 'field_names', None)
-                if base_fields:
-                    field_names.update(base_fields)
+                for name in getattr(base, 'field_names', []):
+                    if name in dict and dict[name] is None:
+                        continue
+                    if name not in field_names:
+                        field_names.append(name)
 
             # Add this class fields
             for name, value in dict.iteritems():
                 if type(value) is thingy_type and issubclass(value, ViewField):
-                    field_names.add(name)
+                    if name not in field_names:
+                        field_names.append(name)
 
             # Ok
-            dict['field_names'] = list(field_names)
+            dict['field_names'] = field_names
 
         # Add the name to fields that miss them
         for name in dict['field_names']:

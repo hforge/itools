@@ -90,9 +90,9 @@ class BaseView(thingy):
 
     def get_fields(self):
         for name in self.get_field_names():
-            field = self.get_field(name)
+            field = getattr(self, name, None)
             if field is None:
-                continue
+                field = self.get_field(name)
             yield field
 
 

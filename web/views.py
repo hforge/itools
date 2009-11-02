@@ -222,7 +222,7 @@ class BaseForm(BaseView):
         if method is None:
             msg = "the '%s' method is not defined"
             raise NotImplementedError, msg % context.form_action
-        return method(self.resource, self.context)
+        return method()
 
 
 

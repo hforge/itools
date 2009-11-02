@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.core import thingy
+from itools.core import thingy, thingy_property
 from itools.datatypes import String
 from itools.gettext import MSG
 from exceptions import FormError
@@ -27,7 +27,6 @@ class ViewField(thingy):
     name = None
     source = 'form' # Possible values: query & form
     datatype = String
-    multiple = False
     readonly = False
     required = False
 
@@ -43,6 +42,11 @@ class ViewField(thingy):
     def __init__(self, name=None, **kw):
         if name and not self.name:
             self.name = name
+
+
+    @thingy_property
+    def multiple(self):
+        return self.datatype.multiple
 
 
     def get_default(self):

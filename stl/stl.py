@@ -85,7 +85,8 @@ def evaluate(expression, stack, repeat_stack):
         try:
             value = lookup(value, name)
         except (AttributeError, KeyError):
-            raise STLError, 'name "%s" not found in the namespace' % name
+            err = 'evaluation of "%s" failed, "%s" could not be resolved'
+            raise STLError, err % (expression, name)
 
     return value
 

@@ -80,12 +80,16 @@ def evaluate(expression, stack, repeat_stack):
         path = path[1:]
 
     # Traverse
-    value = stack.lookup(path[0])
+    err = "evaluation of '%s' failed, '%s' could not be resolved"
+    try:
+        value = stack.lookup(path[0])
+    except STLError:
+        raise STLError, err % (expression, path[0])
+
     for name in path[1:]:
         try:
             value = lookup(value, name)
         except (AttributeError, KeyError):
-            err = 'evaluation of "%s" failed, "%s" could not be resolved'
             raise STLError, err % (expression, name)
 
     return value
@@ -134,7 +138,7 @@ class NamespaceStack(list):
             try:
                 return lookup(namespace, name)
             except (AttributeError, KeyError):
-                continue
+                pass
 
         raise STLError, 'name "%s" not found in the namespace' % name
 

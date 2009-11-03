@@ -31,11 +31,11 @@ from types import GeneratorType, MethodType
 from itools.core import freeze, thingy
 from itools.datatypes import Boolean
 from itools.gettext import MSG
+from itools.log import log_error
 from itools.uri import Path, Reference, get_reference
-from itools.xml import XMLParser, find_end, stream_to_str
+from itools.xml import XMLParser, find_end, get_attr_datatype, stream_to_str
 from itools.xml import DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, TEXT
 from itools.xml import xmlns_uri
-from itools.xml import get_attr_datatype
 from itools.html import xhtml_uri
 from itools.html import stream_to_str_as_html, stream_to_str_as_xhtml
 from schema import stl_uri
@@ -49,8 +49,6 @@ class STLError(StandardError):
     pass
 
 
-ERR_EXPR_NAME = 'name "%s" not found in "${%s}" expression'
-ERR_EXPR_VALUE = 'unexpected value of type "%s" in "${%s}" expression'
 ERR_EXPR_XML = 'expected XML stream not "%s" in "${%s}" expression'
 
 
@@ -81,12 +79,17 @@ def evaluate(expression, stack, repeat_stack):
         path = path[1:]
 
     # Traverse
-    value = stack.lookup(path[0])
+    err = "evaluation of '%s' failed, '%s' could not be resolved"
+    try:
+        value = stack.lookup(path[0])
+    except STLError:
+        raise STLError, err % (expression, path[0])
+
     for name in path[1:]:
         try:
             value = lookup(value, name)
-        except (AttributeError, KeyError):
-            raise STLError, ERR_EXPR_NAME % (name, expression)
+        except STLError:
+            raise STLError, err % (expression, name)
 
     return value
 
@@ -113,10 +116,16 @@ def evaluate_repeat(expression, stack, repeat_stack):
 def lookup(namespace, name):
     # Case 1: dict
     if type(namespace) is dict:
+        if name not in namespace:
+            raise STLError
         return namespace[name]
 
     # Case 2: instance
-    value = getattr(namespace, name)
+    try:
+        value = getattr(namespace, name)
+    except AttributeError:
+        log_error('lookup failed', domain='itools.stl')
+        raise STLError
     if type(value) is MethodType:
         value = value()
     return value
@@ -133,8 +142,8 @@ class NamespaceStack(list):
         for namespace in stack:
             try:
                 return lookup(namespace, name)
-            except (AttributeError, KeyError):
-                continue
+            except STLError:
+                pass
 
         raise STLError, 'name "%s" not found in the namespace' % name
 

@@ -56,7 +56,6 @@ class ViewField(thingy):
     def cook(self, source, required=None):
         if required is None:
             required = self.required
-        datatype = self.datatype
         value = source.get(self.name)
 
         # Case 1: missing
@@ -64,10 +63,11 @@ class ViewField(thingy):
             if required:
                 self.error = self.error_required
             else:
-                self.value = datatype.get_default()
+                self.value = self.get_default()
             return
 
         # Case 2: multiple
+        datatype = self.datatype
         if self.multiple:
             if type(value) is not list:
                 value = [value]
@@ -104,7 +104,7 @@ class ViewField(thingy):
             if required:
                 self.error = self.error_required
             else:
-                self.value = datatype.get_default()
+                self.value = self.get_default()
             return
 
         # Validate

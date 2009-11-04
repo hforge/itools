@@ -155,7 +155,7 @@ class BaseView(thingy):
         view_name = context.view_name
         if view_name:
             resource = context.resource
-            if view_name == resource.get_default_view_name():
+            if view_name == resource.default_view_name:
                 uri = uri.resolve2('..')
         # Remove noise from query parameters
         canonical_query_parameters = self.canonical_query_parameters

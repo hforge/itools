@@ -97,7 +97,9 @@ class BaseView(thingy):
 
         error = False
         for field in self.get_fields():
-            field = field(resource=self.resource, context=context)
+            # Bind the field to the view
+            field = field(view=self)
+            # Cook the field
             if field.source == 'query':
                 field.cook(query)
             elif method == 'post':
@@ -106,7 +108,9 @@ class BaseView(thingy):
                     error = True
             else:
                 field.cook(query, required=False)
+            # Assign the bound & cooked field to the view
             setattr(self, field.name, field)
+
         if error:
             raise FormError
 

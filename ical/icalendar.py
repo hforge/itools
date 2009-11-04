@@ -23,14 +23,13 @@ from datetime import datetime, timedelta
 from operator import itemgetter
 
 # Import from itools
-from itools.core import freeze
 from itools.csv import Property, parse_table, deserialize_parameters
 from itools.datatypes import String, Unicode, DateTime
 from itools.handlers import guess_encoding, TextFile
 from itools.xapian import make_catalog, CatalogAware
 from itools.xapian import PhraseQuery, RangeQuery, OrQuery, AndQuery
 from base import BaseCalendar
-from types import record_properties, record_parameters, Time
+from types import record_properties, record_parameters
 
 
 # The smallest possible difference between non-equal timedelta objects.

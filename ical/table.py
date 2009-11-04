@@ -23,12 +23,12 @@ from datetime import datetime, timedelta
 from operator import itemgetter
 
 # Import from itools
-from itools.core import freeze, merge_dicts
+from itools.core import merge_dicts
 from itools.csv import parse_table, Property, Record as TableRecord, Table
 from itools.datatypes import Integer, String, Unicode
 from itools.xapian import PhraseQuery, RangeQuery, OrQuery, AndQuery
 from base import BaseCalendar
-from types import record_properties, Time
+from types import record_properties
 
 
 # The smallest possible difference between non-equal timedelta objects.

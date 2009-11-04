@@ -18,7 +18,6 @@
 from itools.core import thingy, thingy_property
 from itools.datatypes import String
 from itools.gettext import MSG
-from exceptions import FormError
 
 
 

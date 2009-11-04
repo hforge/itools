@@ -213,7 +213,6 @@ class MultiLinesTokens(DataType):
 
 class Enumerate(String):
 
-    is_enumerate = True
     options = freeze([])
 
 

@@ -115,6 +115,12 @@ class BaseView(thingy):
             raise FormError
 
 
+    def get_value(self, field):
+        """This method is to be called to get the default value of fields.
+        """
+        return field.default
+
+
     #######################################################################
     # Caching
     def get_mtime(self, resource):
@@ -179,10 +185,6 @@ class BaseForm(BaseView):
 
         # Default
         return self.field_names
-
-
-    def get_value(self, resource, context, name, field):
-        return field.datatype.get_default()
 
 
     def _get_action(self):

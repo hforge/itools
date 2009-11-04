@@ -48,7 +48,8 @@ class ViewField(thingy):
         return self.datatype.multiple
 
 
-    def get_default(self):
+    @thingy_property
+    def default(self):
         return self.datatype.get_default()
 
 
@@ -62,7 +63,7 @@ class ViewField(thingy):
             if required:
                 self.error = self.error_required
             else:
-                self.value = self.get_default()
+                self.value = self.view.get_value(self)
             return
 
         # Case 2: multiple
@@ -103,7 +104,7 @@ class ViewField(thingy):
             if required:
                 self.error = self.error_required
             else:
-                self.value = self.get_default()
+                self.value = self.view.get_value(self)
             return
 
         # Validate

@@ -23,7 +23,6 @@
 from math import floor
 
 # Import from itools
-from itools.core import freeze
 from itools.datatypes import Unicode, Integer
 from itools.handlers import Image as ItoolsImage
 from itools import vfs

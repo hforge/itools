@@ -20,7 +20,7 @@
 from warnings import warn
 
 # Import from itools
-from itools.datatypes import String, Unicode
+from itools.datatypes import String
 from parser import XMLError
 
 

@@ -19,7 +19,6 @@ from cProfile import runctx
 from os import fstat, getpid, remove as remove_file
 from signal import signal, SIGINT
 from sys import stdout
-from traceback import format_exc
 
 # Import from pygobject
 from gobject import MainLoop

@@ -15,17 +15,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the Standard Library
-from copy import deepcopy
-
 # Import from itools
 from itools.core import freeze, thingy, thingy_type
-from itools.datatypes import Enumerate
-from itools.gettext import MSG
 from itools.stl import stl
-from itools.uri import decode_query, get_reference, Reference
+from itools.uri import decode_query, get_reference
 from exceptions import FormError
-from messages import ERROR
 from views_fields import ViewField
 
 
@@ -221,7 +215,7 @@ class BaseForm(BaseView):
         method = self.get_action_method()
         if method is None:
             msg = "the '%s' method is not defined"
-            raise NotImplementedError, msg % context.form_action
+            raise NotImplementedError, msg % self.context.form_action
         return method()
 
 

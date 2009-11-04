@@ -20,7 +20,7 @@ from distutils.core import Extension
 from distutils.command.build_ext import build_ext
 from distutils.errors import LinkError
 from os.path import exists, isdir, join as join_path
-from os import listdir, popen
+from os import listdir
 from re import compile
 from sys import _getframe, argv
 

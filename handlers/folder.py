@@ -18,10 +18,8 @@
 
 # Import from itools
 from itools import vfs
-from itools.uri import resolve_uri2
 from itools.vfs import cwd
 from base import Handler
-from messages import *
 from registry import register_handler_class
 
 

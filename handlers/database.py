@@ -24,7 +24,7 @@ from subprocess import call, PIPE, CalledProcessError
 from sys import getrefcount
 
 # Import from itools
-from itools.core import LRUCache, send_subprocess, read_subprocess
+from itools.core import LRUCache, send_subprocess
 from itools.uri import get_reference, get_uri_name, get_uri_path, resolve_uri2
 from itools import vfs
 from itools.vfs import cwd, READ, WRITE, READ_WRITE, APPEND

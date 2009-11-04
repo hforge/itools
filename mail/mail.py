@@ -27,7 +27,6 @@ from os import fdopen
 from smtplib import SMTP, SMTPRecipientsRefused, SMTPResponseException
 from socket import gaierror
 from tempfile import mkstemp
-from traceback import format_exc
 
 # Import from pygobject
 from gobject import idle_add, timeout_add_seconds

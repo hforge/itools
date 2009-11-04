@@ -43,7 +43,7 @@ import socket
 from itools import __version__
 from itools.pkg import parse_package_name, download, get_installed_info
 from itools.pkg import EXTENSIONS, Bundle
-from itools.vfs import exists, get_names, make_folder
+from itools.vfs import exists, make_folder
 from itools import vfs
 
 

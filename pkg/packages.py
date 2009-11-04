@@ -16,7 +16,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from distutils.versionpredicate import split_provision
 from operator import itemgetter
 from os import sep
 from os.path import join, split

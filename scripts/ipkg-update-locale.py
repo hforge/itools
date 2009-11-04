@@ -21,7 +21,6 @@
 # Import from the Standard Library
 from optparse import OptionParser
 from os import sep
-from os.path import basename
 from subprocess import call
 import sys
 
@@ -36,7 +35,7 @@ import itools.pdf
 import itools.srx
 from itools.uri import Path
 from itools import vfs
-from itools.vfs import WRITE, FileName
+from itools.vfs import WRITE
 
 
 def write(text):

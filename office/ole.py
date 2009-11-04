@@ -18,7 +18,6 @@
 
 # Import from the Standard Library
 from struct import unpack, error as UnpackError
-from sys import stderr
 
 SEEK_SET = 0
 SEEK_CUR = 1

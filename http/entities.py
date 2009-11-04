@@ -31,18 +31,6 @@ def parse_header(line):
 
 
 
-def parse_header(line):
-    if line:
-        name, value = line.split(':', 1)
-        name = name.strip().lower()
-        value = value.strip()
-        type = get_type(name)
-        return name, type.decode(value)
-
-    return None, None
-
-
-
 def read_headers(file):
     entity_headers = {}
     # Setup

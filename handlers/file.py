@@ -21,7 +21,6 @@ from cStringIO import StringIO
 from datetime import datetime
 
 # Import from itools
-from itools.uri import get_reference
 from itools import vfs
 from itools.vfs import cwd
 from registry import register_handler_class

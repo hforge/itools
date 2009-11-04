@@ -230,8 +230,10 @@ class Enumerate(String):
     def is_valid(cls, name):
         """Returns True if the given name is part of this Enumerate's options.
         """
-        options = cls.get_options()
-        return enumerate_is_valid(options, name)
+        for option in cls.get_options():
+            if name == option['name']:
+                return True
+        return False
 
 
     def get_namespace(cls, name):
@@ -239,41 +241,24 @@ class Enumerate(String):
         the given name.
         """
         options = cls.get_options()
-        return enumerate_get_namespace(options, name)
+        if isinstance(name, list):
+            for option in options:
+                option['selected'] = option['name'] in name
+        else:
+            for option in options:
+                option['selected'] = option['name'] == name
+        return options
 
 
     def get_value(cls, name, default=None):
         """Returns the value matching the given name, or the default value.
         """
-        options = cls.get_options()
-        return enumerate_get_value(options, name, default)
+        for option in cls.get_options():
+            if option['name'] == name:
+                return option['value']
 
+        return default
 
-
-# TODO suppress now there is a single Enumerate class?
-def enumerate_is_valid(options, name):
-    for option in options:
-        if name == option['name']:
-            return True
-    return False
-
-
-def enumerate_get_namespace(options, name):
-    if isinstance(name, list):
-        for option in options:
-            option['selected'] = option['name'] in name
-    else:
-        for option in options:
-            option['selected'] = option['name'] == name
-    return options
-
-
-def enumerate_get_value(options, name, default=None):
-    for option in options:
-        if option['name'] == name:
-            return option['value']
-
-    return default
 
 
 ###########################################################################

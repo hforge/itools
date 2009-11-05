@@ -53,6 +53,10 @@ class ViewField(thingy):
         return self.datatype.get_default()
 
 
+    def is_valid(self, value):
+        return self.datatype.is_valid(value)
+
+
     def cook(self, source, required=None):
         if required is None:
             required = self.required
@@ -79,7 +83,7 @@ class ViewField(thingy):
                 return
             # Validate
             for value in values:
-                if not datatype.is_valid(value):
+                if not self.is_valid(value):
                     self.error = self.error_invalid
                     return
             self.value = values
@@ -108,7 +112,7 @@ class ViewField(thingy):
             return
 
         # Validate
-        if not datatype.is_valid(value):
+        if not self.is_valid(value):
             self.error = self.error_invalid
 
         # Ok

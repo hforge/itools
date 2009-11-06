@@ -30,6 +30,7 @@ from types import GeneratorType, MethodType
 from itools.core import freeze, thingy
 from itools.datatypes import Boolean
 from itools.gettext import MSG
+from itools.log import log_error
 from itools.uri import Path, Reference, get_reference
 from itools.xml import XMLParser, find_end, get_attr_datatype , stream_to_str
 from itools.xml import DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, TEXT
@@ -86,7 +87,7 @@ def evaluate(expression, stack, repeat_stack):
     for name in path[1:]:
         try:
             value = lookup(value, name)
-        except (AttributeError, KeyError):
+        except STLError:
             raise STLError, err % (expression, name)
 
     return value
@@ -114,10 +115,16 @@ def evaluate_repeat(expression, stack, repeat_stack):
 def lookup(namespace, name):
     # Case 1: dict
     if type(namespace) is dict:
+        if name not in namespace:
+            raise STLError
         return namespace[name]
 
     # Case 2: instance
-    value = getattr(namespace, name)
+    try:
+        value = getattr(namespace, name)
+    except AttributeError:
+        log_error('lookup failed', domain='itools.stl')
+        raise STLError
     if type(value) is MethodType:
         value = value()
     return value
@@ -134,7 +141,7 @@ class NamespaceStack(list):
         for namespace in stack:
             try:
                 return lookup(namespace, name)
-            except (AttributeError, KeyError):
+            except STLError:
                 pass
 
         raise STLError, 'name "%s" not found in the namespace' % name

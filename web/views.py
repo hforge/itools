@@ -20,7 +20,7 @@ from itools.core import freeze, thingy, thingy_type
 from itools.stl import stl
 from itools.uri import decode_query, get_reference
 from exceptions import FormError
-from views_fields import ViewField
+from fields import hidden_field
 
 
 class view_metaclass(thingy_type):
@@ -40,9 +40,10 @@ class view_metaclass(thingy_type):
 
             # Add this class fields
             for name, value in dict.iteritems():
-                if type(value) is thingy_type and issubclass(value, ViewField):
-                    if name not in field_names:
-                        field_names.append(name)
+                if (type(value) is thingy_type
+                    and issubclass(value, hidden_field)
+                    and name not in field_names):
+                    field_names.append(name)
 
             # Ok
             dict['field_names'] = field_names
@@ -92,22 +93,23 @@ class BaseView(thingy):
 
     def cook(self, method):
         context = self.context
-        form = context.form
-        query = context.query
+        get_from_query = context.query.get
+        get_from_form = context.form.get
 
         error = False
         for field in self.get_fields():
-            # Bind the field to the view
-            field = field(view=self)
             # Cook the field
             if field.source == 'query':
-                field.cook(query)
+                field = field(view=self, getter=get_from_query)
+                field.cook()
             elif method == 'post':
-                field.cook(form)
+                field = field(view=self, getter=get_from_form)
+                field.cook()
                 if field.error:
                     error = True
             else:
-                field.cook(query, required=False)
+                field = field(view=self, getter=get_from_query)
+                field.cook(required=False)
             # Assign the bound & cooked field to the view
             setattr(self, field.name, field)
 

@@ -100,6 +100,11 @@ class String(DataType):
         return value
 
 
+    @staticmethod
+    def is_empty(value):
+        return value.strip() == ''
+
+
 
 class Boolean(DataType):
 
@@ -117,8 +122,17 @@ class Boolean(DataType):
             return '1'
         elif value is False:
             return '0'
-        else:
-            raise ValueError, 'value is not a boolean'
+
+        raise ValueError, 'value is not a boolean'
+
+
+
+class Enumerate(String):
+
+    values = frozenset()
+
+    def is_valid(self, value):
+        return value in self.values
 
 
 
@@ -204,59 +218,6 @@ class MultiLinesTokens(DataType):
     @staticmethod
     def encode(value):
         return '\n'.join(value)
-
-
-
-
-###########################################################################
-# Enumerates
-
-class Enumerate(String):
-
-    options = freeze([])
-
-
-    def get_options(cls):
-        """Returns a list of dictionaries in the format
-            [{'name': <str>, 'value': <unicode>}, ...]
-        The default implementation returns a copy of the "options" class
-        attribute. Both the list and the dictionaries may be modified
-        afterwards.
-        """
-        return deepcopy(cls.options)
-
-
-    def is_valid(cls, name):
-        """Returns True if the given name is part of this Enumerate's options.
-        """
-        for option in cls.get_options():
-            if name == option['name']:
-                return True
-        return False
-
-
-    def get_namespace(cls, name):
-        """Extends the options with information about which one is matching
-        the given name.
-        """
-        options = cls.get_options()
-        if isinstance(name, list):
-            for option in options:
-                option['selected'] = option['name'] in name
-        else:
-            for option in options:
-                option['selected'] = option['name'] == name
-        return options
-
-
-    def get_value(cls, name, default=None):
-        """Returns the value matching the given name, or the default value.
-        """
-        for option in cls.get_options():
-            if option['name'] == name:
-                return option['value']
-
-        return default
 
 
 

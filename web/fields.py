@@ -307,7 +307,7 @@ class choice_field(input_field):
         value = self.value
         return [
             {'value': k, 'title': v.get('title', v), 'selected': k == value }
-            for k, v in self.values ]
+            for k, v in self.values.iteritems() ]
 
 
 
@@ -330,6 +330,10 @@ class multiple_choice_field(choice_field):
         return value if type(value) is list else [value]
 
 
+    def decode(self, raw_value):
+        return [ self.datatype.decode(x) for x in raw_value ]
+
+
     def is_valid(self, values):
         for value in values:
             if value not in self.values:
@@ -345,5 +349,5 @@ class multiple_choice_field(choice_field):
         value = self.value
         return [
             {'value': k, 'title': v.get('title', v), 'selected': k in value }
-            for k, v in self.values ]
+            for k, v in self.values.iteritems() ]
 

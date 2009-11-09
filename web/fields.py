@@ -76,15 +76,15 @@ class hidden_field(thingy):
 
 
     def decode(self, raw_value):
-        return self.datatype.decode(raw_value)
+        self.value = self.datatype.decode(raw_value)
 
 
-    def is_empty(self, value):
-        return self.datatype.is_empty(value)
+    def is_empty(self):
+        return self.datatype.is_empty(self.value)
 
 
-    def is_valid(self, value):
-        return self.datatype.is_valid(value)
+    def is_valid(self):
+        return self.datatype.is_valid(self.value)
 
 
     #######################################################################
@@ -114,13 +114,13 @@ class hidden_field(thingy):
 
         # (2) Get the cooked value
         try:
-            value = self.decode(raw_value)
+            self.decode(raw_value)
         except Exception:
             self.error = self.error_invalid
             return
 
         # (3) Check it is not empty
-        if self.is_empty(value):
+        if self.is_empty():
             if required:
                 self.error = self.error_required
                 return
@@ -128,10 +128,8 @@ class hidden_field(thingy):
             return
 
         # (4) Validate
-        if not self.is_valid(value):
+        if not self.is_valid():
             self.error = self.error_invalid
-
-        self.value = value
 
 
     #######################################################################
@@ -227,7 +225,9 @@ class file_field(input_field):
         elif guessed is not None:
             mimetype = guessed
 
-        return filename, mimetype, body
+        self.filename = filename
+        self.mimetype = mimetype
+        self.body = body
 
 
 
@@ -299,8 +299,8 @@ class choice_field(input_field):
     values = OrderedDict()
 
 
-    def is_valid(self, value):
-        return value in self.values
+    def is_valid(self):
+        return self.value in self.values
 
 
     def options(self):
@@ -331,18 +331,18 @@ class multiple_choice_field(choice_field):
 
 
     def decode(self, raw_value):
-        return [ self.datatype.decode(x) for x in raw_value ]
+        self.value = [ self.datatype.decode(x) for x in raw_value ]
 
 
-    def is_valid(self, values):
-        for value in values:
+    def is_valid(self):
+        for value in self.value:
             if value not in self.values:
                 return False
         return True
 
 
-    def is_empty(self, value):
-        return len(value) == 0
+    def is_empty(self):
+        return len(self.value) == 0
 
 
     def options(self):

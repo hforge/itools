@@ -17,7 +17,7 @@
 # Import from itools
 from itools.core import OrderedDict
 from itools.core import thingy, thingy_property, thingy_lazy_property
-from itools.datatypes import Boolean, Integer, String, Unicode
+from itools.datatypes import Boolean, Email, Integer, String, Unicode
 from itools.gettext import MSG
 from itools.stl import stl
 from itools.xml import XMLParser
@@ -204,21 +204,53 @@ class input_field(hidden_field):
 
 
 
-class integer_field(input_field):
+class email_field(input_field):
+    datatype = Email
+    size = 40
 
+
+class file_field(input_field):
+    type = 'file'
+
+    def decode(self, raw_value):
+        """Find out the resource class (the mimetype sent by the browser can be
+        minimalistic).
+        """
+        filename, mimetype, body = data
+        # Find out the mimetype
+        guessed, encoding = guess_type(filename)
+        if encoding is not None:
+            encoding_map = {'gzip': 'application/x-gzip',
+                            'bzip2': 'application/x-bzip2'}
+            if encoding in encoding_map:
+                mimetype = encoding_map[encoding]
+        elif guessed is not None:
+            mimetype = guessed
+
+        return filename, mimetype, body
+
+
+
+class integer_field(input_field):
     datatype = Integer
 
 
 
-class text_field(input_field):
+class password_field(input_field):
+    type = 'password'
 
+    def encoded_value(self):
+        return self.view.resource.context.query.get(self.name)
+
+
+
+class text_field(input_field):
     datatype = Unicode
     size = 40
 
 
 
 class textarea_field(input_field):
-
     datatype = Unicode
 
     input_template = make_stl_template("""
@@ -251,7 +283,6 @@ class boolean_field(input_field):
 
     def no(self):
         return self.value is False
-
 
 
 

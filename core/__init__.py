@@ -23,6 +23,7 @@ from freeze import freeze, frozendict, frozenlist
 from lazy import lazy
 from mimetypes_ import add_type, guess_all_extensions, guess_extension
 from mimetypes_ import guess_type, has_encoding, has_extension
+from odict import OrderedDict
 from utils import get_abspath, merge_dicts, get_pipe, get_version
 
 # Python 2.6 or 2.5
@@ -50,7 +51,8 @@ __all__ = [
     'frozenlist',
     # Lazy load
     'lazy',
-    # Caching
+    # Ordered dict and caching
+    'OrderedDict',
     'LRUCache',
     # Mimetypes
     'add_type',

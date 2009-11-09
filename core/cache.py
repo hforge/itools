@@ -19,20 +19,11 @@ This module implements a LRU (Least Recently Used) Cache.
 http://en.wikipedia.org/wiki/Cache_algorithms
 """
 
-
-class DNode(object):
-    """This class makes the nodes of a doubly-linked list.
-    """
-
-    __slots__ = ['prev', 'next', 'key']
+# Import from itools
+from odict import OrderedDict
 
 
-    def __init__(self, key):
-        self.key = key
-
-
-
-class LRUCache(dict):
+class LRUCache(OrderedDict):
     """LRU stands for Least-Recently-Used.
 
     The LRUCache is a mapping from key to value, it is implemented as a dict
@@ -85,12 +76,7 @@ class LRUCache(dict):
             raise ValueError, "the 'size_max' is smaller than 'size_min'"
 
         # Initialize the dict
-        dict.__init__(self)
-        # The doubly-linked list
-        self.first = None
-        self.last = None
-        # Map from key-to-node
-        self.key2node = {}
+        super(LRUCache, self).__init__()
         # The cache size
         self.size_min = size_min
         self.size_max = size_max
@@ -98,44 +84,8 @@ class LRUCache(dict):
         self.automatic = automatic
 
 
-    def _check_integrity(self):
-        """This method is for testing purposes, it checks the internal
-        data structures are consistent.
-        """
-        keys = self.keys()
-        keys.sort()
-        # Check the key-to-node mapping
-        keys2 = self.key2node.keys()
-        keys2.sort()
-        assert keys == keys2
-        # Check the key-to-node against the doubly-linked list
-        for key, node in self.key2node.iteritems():
-            assert type(key) is type(node.key)
-            assert key == node.key
-        # Check the doubly-linked list against the cache
-        keys = set(keys)
-        node = self.first
-        while node is not None:
-            assert node.key in keys
-            keys.discard(node.key)
-            node = node.next
-        assert len(keys) == 0
-
-
     def _append(self, key):
-        node = DNode(key)
-
-        # (1) Insert into the key-to-node map
-        self.key2node[key] = node
-
-        # (2) Append to the doubly-linked list
-        node.prev = self.last
-        node.next = None
-        if self.first is None:
-            self.first = node
-        else:
-            self.last.next = node
-        self.last = node
+        super(LRUCache, self)._append(key)
 
         # Free memory if needed
         if self.automatic is True and len(self) > self.size_max:
@@ -143,112 +93,6 @@ class LRUCache(dict):
                 self.popitem()
 
 
-    def _remove(self, key):
-        # (1) Pop the node from the key-to-node map
-        node = self.key2node.pop(key)
-
-        # (2) Remove from the doubly-linked list
-        if node.prev is None:
-            self.first = node.next
-        else:
-            node.prev.next = node.next
-
-        if node.next is None:
-            self.last = node.prev
-        else:
-            node.next.prev = node.prev
-
-
-    ######################################################################
-    # Override dict API
-    def __iter__(self):
-        node = self.first
-        while node is not None:
-            yield node.key
-            node = node.next
-
-
-    def __setitem__(self, key, value):
-        dict.__setitem__(self, key, value)
-        self._append(key)
-
-
-    def __delitem__(self, key):
-        self._remove(key)
-        dict.__delitem__(self, key)
-
-
-    def clear(self):
-        dict.clear(self)
-        self.key2node.clear()
-        self.first = self.last = None
-
-
-    def copy(self):
-        raise NotImplementedError, "use 'copy.deepcopy' to copy a cache"
-
-
-    def fromkeys(self, seq, value=None):
-        raise NotImplementedError, "the 'fromkeys' method is not supported"
-
-
-    def items(self):
-        return list(self.iteritems())
-
-
-    def iteritems(self):
-        node = self.first
-        while node is not None:
-            yield node.key, self[node.key]
-            node = node.next
-
-
-    def iterkeys(self):
-        node = self.first
-        while node is not None:
-            yield node.key
-            node = node.next
-
-
-    def itervalues(self):
-        node = self.first
-        while node is not None:
-            yield self[node.key]
-            node = node.next
-
-
-    def keys(self):
-        return list(self.iterkeys())
-
-
-    def pop(self, key):
-        self._remove(key)
-        return dict.pop(self, key)
-
-
-    def popitem(self):
-        if self.first is None:
-            raise KeyError, 'popitem(): cache is empty'
-        key = self.first.key
-        value = self[key]
-        del self[key]
-        return (key, value)
-
-
-    def setdefault(self, key, default=None):
-        raise NotImplementedError, "the 'setdefault' method is not supported"
-
-
-    def update(self, value=None, **kw):
-        raise NotImplementedError, "the 'update' method is not supported"
-
-
-    def values(self):
-        return list(self.itervalues())
-
-
-    ######################################################################
-    # Specific public API
     def touch(self, key):
         # (1) Get the node from the key-to-node map
         node = self.key2node[key]

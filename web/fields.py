@@ -218,7 +218,13 @@ class email_field(input_field):
 
 
 class file_field(input_field):
-    type = 'file'
+    input_template = make_stl_template("""
+    <input type="file" name="${name}" id="${name}" size="${size}" />
+    <stl:block stl:if="preview"><br/><img src="${preview}" /></stl:block>
+    """)
+
+    preview = None
+
 
     def decode(self, raw_value):
         """Find out the resource class (the mimetype sent by the browser can be

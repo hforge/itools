@@ -288,13 +288,34 @@ class boolean_field(input_field):
 
 class choice_field(input_field):
 
-    input_template = make_stl_template("""
+    select_template = make_stl_template("""
     <select name="${name}" id="${name}" size="${size}" class="${css}">
       <option stl:repeat="option options" value="${option/value}"
         selected="${option/selected}">${option/title}</option>
     </select>""")
 
+    radio_template = make_stl_template("""
+    <stl:block stl:repeat="option options">
+      <input type="radio" id="${name}-${option/value}" name="${name}"
+        value="${option/value}" checked="${option/selected}" />
+      <label for="${name}-${option/value}">${option/title}</label>
+      <br stl:if="not oneline" />
+    </stl:block>""")
+
+
+    mode = 'select'
     css = None
+    oneline = False
+
+
+    @thingy_property
+    def input_template(self):
+        if self.mode == 'select':
+            return self.select_template
+        elif self.mode == 'radio':
+            return self.radio_template
+        raise ValueError, "unkown '%s' mode" % self.mode
+
 
     values = OrderedDict()
 

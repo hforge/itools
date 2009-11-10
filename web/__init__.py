@@ -22,8 +22,8 @@ from context import WebContext, WebLogger
 from exceptions import FormError
 from fields import boolean_field, choice_field, email_field, file_field
 from fields import hidden_field, input_field, integer_field
-from fields import multiple_choice_field, password_field, text_field
-from fields import textarea_field
+from fields import multiple_choice_field, password_field, readonly_field
+from fields import text_field, textarea_field
 from fields import make_stl_template
 from messages import INFO, ERROR, MSG_MISSING_OR_INVALID
 from resources import Resource, Root, VirtualRoot
@@ -57,6 +57,7 @@ __all__ = [
     'integer_field',
     'multiple_choice_field',
     'password_field',
+    'readonly_field',
     'text_field',
     'textarea_field',
     # Exceptions

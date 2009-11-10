@@ -320,11 +320,10 @@ class choice_field(input_field):
 
     @thingy_property
     def input_template(self):
-        if self.mode == 'select':
-            return self.select_template
-        elif self.mode == 'radio':
-            return self.radio_template
-        raise ValueError, "unkown '%s' mode" % self.mode
+        try:
+            return getattr(self, '%s_template' % self.mode)
+        except AttributeError:
+            raise ValueError, "unkown '%s' mode" % self.mode
 
 
     values = OrderedDict()
@@ -344,12 +343,21 @@ class choice_field(input_field):
 
 class multiple_choice_field(choice_field):
 
-    input_template = make_stl_template("""
+    select_template = make_stl_template("""
     <select name="${name}" id="${name}" multiple="multiple" size="${size}"
       class="${css}">
       <option stl:repeat="option options" value="${option/value}"
         selected="${option/selected}">${option/title}</option>
     </select>""")
+
+
+    checkbox_template = make_stl_template("""
+    <stl:block stl:repeat="option options">
+      <input type="checkbox" id="${name}-${option/value}" name="${name}"
+        value="${option/value}" checked="${option/selected}" />
+      <label for="${name}-${option/value}">${option/title}</label>
+      <br stl:if="not oneline" />
+    </stl:block>""")
 
 
     default = freeze([])

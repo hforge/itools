@@ -69,7 +69,7 @@ class TextFile(File):
 
 
     def is_empty(self):
-        self.to_text().strip() == u""
+        return self.to_text().strip() == u""
 
 
 

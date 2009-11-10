@@ -37,7 +37,8 @@ def make_stl_template(data):
 
 
 ###########################################################################
-# The 'hidden_field' class is the base class for all view fields
+# The 'hidden_field' class is the base class for all view fields (because
+# the most simple)
 ###########################################################################
 
 class hidden_field(thingy):
@@ -149,21 +150,29 @@ class hidden_field(thingy):
         return stl(events=self.template, namespace=self)
 
 
+###########################################################################
+# Read Only field
+###########################################################################
+
+class readonly_field(hidden_field):
+
+    template = make_stl_template("""
+    <input type="hidden" name="${name}" value="${encoded_value}" />
+    ${title}: ${displayed}""")
+
+    title = None
+    displayed = None
+
+
 
 ###########################################################################
-# Visible fields
+# Input fields
 ###########################################################################
 
-class input_field(hidden_field):
+class input_field(readonly_field):
     """This is the base class for all visible fields, by default a simple
     input element is used.
     """
-
-    readonly = False
-
-    title = None
-    description = None
-
 
     # First block: the field header
     template = make_stl_template("""
@@ -183,6 +192,7 @@ class input_field(hidden_field):
     <input type="${type}" name="${name}" id="${name}" value="${encoded_value}"
       size="${size}" />""")
 
+    description = None
     size = None
     type = None
 

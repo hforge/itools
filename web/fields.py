@@ -15,8 +15,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
+from itools.core import freeze, thingy, thingy_property, thingy_lazy_property
 from itools.core import OrderedDict
-from itools.core import thingy, thingy_property, thingy_lazy_property
 from itools.datatypes import Boolean, Email, Integer, String, Unicode
 from itools.gettext import MSG
 from itools.stl import stl
@@ -350,6 +350,9 @@ class multiple_choice_field(choice_field):
       <option stl:repeat="option options" value="${option/value}"
         selected="${option/selected}">${option/title}</option>
     </select>""")
+
+
+    default = freeze([])
 
 
     @thingy_lazy_property

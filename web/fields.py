@@ -192,6 +192,7 @@ class input_field(readonly_field):
     <input type="${type}" name="${name}" id="${name}" value="${encoded_value}"
       size="${size}" />""")
 
+    readonly = False
     description = None
     size = None
     type = None

@@ -117,12 +117,6 @@ class BaseView(thingy):
             raise FormError
 
 
-    def get_value(self, field):
-        """This method is to be called to get the default value of fields.
-        """
-        return field.default
-
-
     #######################################################################
     # Caching
     def get_mtime(self, resource):

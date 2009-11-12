@@ -123,6 +123,8 @@ class WebContext(HTTPContext):
     def view(self):
         resource = self.resource
         view = resource.get_view(self.view_name, self.query)
+        if view is None:
+            raise ClientError(404)
         return view(resource=resource, context=self)
 
 

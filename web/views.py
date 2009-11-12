@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.core import freeze, thingy, thingy_type
+from itools.core import freeze, thingy_type, thingy, thingy_lazy_property
 from itools.stl import stl
 from itools.uri import decode_query, get_reference
 from exceptions import FormError
@@ -173,7 +173,7 @@ class BaseForm(BaseView):
 
     def get_field_names(self):
         # Check for specific fields
-        action = getattr(self.context, 'form_action', None)
+        action = self.action_name
         if action is not None:
             fields = getattr(self, '%s_fields' % action, None)
             if fields is not None:
@@ -183,7 +183,8 @@ class BaseForm(BaseView):
         return self.field_names
 
 
-    def _get_action(self):
+    @thingy_lazy_property
+    def action_name(self):
         """Default function to retrieve the name of the action from a form
         """
         context = self.context
@@ -199,25 +200,19 @@ class BaseForm(BaseView):
                     # Deserialize query using action specific schema
                     schema = getattr(self, '%s_query_schema' % action, None)
                     context.form_query = decode_query(query, schema)
-                context.form_action = action
-                break
-        else:
-            context.form_action = 'action'
+                return action
+        return 'action'
 
 
     def get_action_method(self):
-        return getattr(self, self.context.form_action, None)
+        return getattr(self, self.action_name, None)
 
 
     def http_post(self):
-        # Find out which button has been pressed, if more than one
-        self._get_action()
-
-        # Action
         method = self.get_action_method()
         if method is None:
             msg = "the '%s' method is not defined"
-            raise NotImplementedError, msg % self.context.form_action
+            raise NotImplementedError, msg % self.action_name
         return method()
 
 

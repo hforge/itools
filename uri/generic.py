@@ -216,11 +216,14 @@ class Path(list):
         if not isinstance(path, Path):
             path = Path(path)
 
-        if path.is_absolute():
+        if path.startswith_slash:
             return path
 
         if self.endswith_slash:
             return Path('%s/%s' % (self, path))
+
+        if str(self) == '.':
+            return path
 
         return Path('%s/../%s' % (self, path))
 

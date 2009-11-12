@@ -55,7 +55,6 @@ class hidden_field(thingy):
     getter = None
 
     # Output values for the 'cook' method
-    value = None
     error = None
 
     # Error messages
@@ -71,8 +70,8 @@ class hidden_field(thingy):
     #######################################################################
     # To be overriden by subclasses when a datatype is not enough
     #######################################################################
-    @thingy_property
-    def default(self):
+    @thingy_lazy_property
+    def value(self):
         return self.datatype.get_default()
 
 
@@ -110,7 +109,6 @@ class hidden_field(thingy):
             if required:
                 self.error = self.error_required
                 return
-            self.value = self.default
             return
 
         # (2) Get the cooked value
@@ -125,7 +123,6 @@ class hidden_field(thingy):
             if required:
                 self.error = self.error_required
                 return
-            self.value = self.default
             return
 
         # (4) Validate
@@ -142,7 +139,7 @@ class hidden_field(thingy):
 
     def encoded_value(self):
         if self.raw_value is None:
-            return self.datatype.encode(self.default)
+            return self.datatype.encode(self.value)
         return self.raw_value
 
 

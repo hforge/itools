@@ -148,7 +148,7 @@ class WebContext(HTTPContext):
         view = resource.get_view(self.view_name, self.query)
         if view is None:
             raise ClientError(404)
-        return view(resource=resource, context=self)
+        return view(resource=resource)
 
 
     def get_credentials(self):

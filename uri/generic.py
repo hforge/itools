@@ -134,7 +134,7 @@ class Path(list):
         if type(path) is str:
             startswith_slash, path, endswith_slash = _normalize_path(path)
             self.startswith_slash = startswith_slash
-            self.endswith_slash = path and endswith_slash
+            self.endswith_slash = bool(path) and endswith_slash
         else:
             # XXX Here the path is not normalized:
             #
@@ -216,11 +216,14 @@ class Path(list):
         if not isinstance(path, Path):
             path = Path(path)
 
-        if path.is_absolute():
+        if path.startswith_slash:
             return path
 
         if self.endswith_slash:
             return Path('%s/%s' % (self, path))
+
+        if str(self) == '.':
+            return path
 
         return Path('%s/../%s' % (self, path))
 

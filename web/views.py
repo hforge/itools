@@ -63,6 +63,8 @@ class view_metaclass(thingy_type):
                 if name not in subviews:
                     subviews.append(name)
         for name, value in dict.iteritems():
+            if name == 'view':
+                continue
             if type(value) is view_metaclass and name not in subviews:
                 subviews.append(name)
         dict['subviews'] = subviews
@@ -80,9 +82,18 @@ class BaseView(thingy):
     # Access Control
     access = False
 
+    # Bindings
+    resource = None
+    view = None
+
     def __init__(self, **kw):
         for key in kw:
             setattr(self, key, kw[key])
+
+
+    @thingy_lazy_property
+    def context(self):
+        return self.resource.context
 
 
     #######################################################################
@@ -131,7 +142,7 @@ class BaseView(thingy):
         for name in self.subviews:
             view = getattr(self, name)
             if view is not None:
-                view = view(resource=self.resource, context=context)
+                view = view(resource=self.resource, view=self)
                 view.cook(method)
                 setattr(self, name, view)
 
@@ -245,16 +256,29 @@ class STLView(BaseView):
 
 
     def get_template(self):
-        # Check there is a template defined
-        if self.template is None:
+        template = self.template
+
+        # Case 1: None
+        if template is None:
             msg = "%s is missing the 'template' variable"
             raise NotImplementedError, msg % repr(self.__class__)
-        return self.context.get_template(self.template)
+
+        # Case 2: events
+        if type(template) is list:
+            return template
+
+        # Case 3: str
+        if type(template) is str:
+            return self.context.get_template(template).events
+
+        # Case 4: type error
+        msg = 'unexpected "%s" type for the template attribute'
+        raise TypeError, msg % type(template)
 
 
     def render(self):
-        template = self.get_template()
-        return stl(template, self)
+        events = self.get_template()
+        return stl(events=events, namespace=self)
 
 
     def http_get(self):

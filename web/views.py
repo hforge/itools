@@ -54,6 +54,19 @@ class view_metaclass(thingy_type):
             if type(field) is thingy_type and field.name is None:
                 field.name = name
 
+        # Subviews
+        subviews = []
+        for base in bases:
+            for name in getattr(base, 'subviews', []):
+                if name in dict and dict[name] is None:
+                    continue
+                if name not in subviews:
+                    subviews.append(name)
+        for name, value in dict.iteritems():
+            if type(value) is view_metaclass and name not in subviews:
+                subviews.append(name)
+        dict['subviews'] = subviews
+
         # Make and return the class
         return thingy_type.__new__(mcs, class_name, bases, dict)
 
@@ -96,6 +109,7 @@ class BaseView(thingy):
         get_from_query = context.query.get
         get_from_form = context.form.get
 
+        # Cook fields
         error = False
         for field in self.get_fields():
             # Cook the field
@@ -112,6 +126,14 @@ class BaseView(thingy):
                 field.cook(required=False)
             # Assign the bound & cooked field to the view
             setattr(self, field.name, field)
+
+        # Cook subviews
+        for name in self.subviews:
+            view = getattr(self, name)
+            if view is not None:
+                view = view(resource=self.resource, context=context)
+                view.cook(method)
+                setattr(self, name, view)
 
         if error:
             raise FormError

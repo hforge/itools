@@ -55,19 +55,20 @@ class view_metaclass(thingy_type):
                 field.name = name
 
         # Subviews
-        subviews = []
-        for base in bases:
-            for name in getattr(base, 'subviews', []):
-                if name in dict and dict[name] is None:
+        if 'subviews' not in dict:
+            subviews = []
+            for base in bases:
+                for name in getattr(base, 'subviews', []):
+                    if name in dict and dict[name] is None:
+                        continue
+                    if name not in subviews:
+                        subviews.append(name)
+            for name, value in dict.iteritems():
+                if name == 'view':
                     continue
-                if name not in subviews:
+                if type(value) is view_metaclass and name not in subviews:
                     subviews.append(name)
-        for name, value in dict.iteritems():
-            if name == 'view':
-                continue
-            if type(value) is view_metaclass and name not in subviews:
-                subviews.append(name)
-        dict['subviews'] = subviews
+            dict['subviews'] = subviews
 
         # Make and return the class
         return thingy_type.__new__(mcs, class_name, bases, dict)

@@ -35,23 +35,26 @@ def make_version():
     be written to the 'version.txt' file, which will be read once the software
     is installed to get the version number.
     """
-    # Find out the name of the active branch
-    branch_name = git.get_branch_name()
-    if branch_name is None:
+    # The name of the active branch
+    branch = git.get_branch_name()
+    if branch is None:
         return None
 
-    # Look for tags
-    match = '%s*' % branch_name
-    description = git.describe(match)
+    # The tag
+    description = git.describe()
 
-    # And the version name is...
+    # The version name
     if description:
-        version, n, commit = description
+        tag, n, commit = description
+        if tag.startswith(branch):
+            version = tag
+        else:
+            version = '%s-%s' % (branch, tag)
         # Exact match
         if n == 0:
             return version
     else:
-        version = branch_name
+        version = branch
 
     # Get the timestamp
     head = git.get_metadata()

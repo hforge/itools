@@ -47,12 +47,22 @@ class Doc(object):
         if not data and issubclass(field_cls, Unicode) and 'from' not in info:
             prefix = '%s_' % name
             n = len(prefix)
-            languages = [ k[n:] for k in self._metadata if k[:n] == prefix ]
+
+            languages = []
+            values = {}
+            for k in self._metadata:
+                if k[:n] == prefix:
+                    language = k[n:]
+                    value = getattr(self, '%s_%s' % (name, language))
+                    if not field_cls.is_empty(value):
+                        languages.append(language)
+                        values[language] = value
+
             if languages:
                 language = select_language(languages)
                 if language is None:
                     language = languages[0]
-                return getattr(self, '%s_%s' % (name, language))
+                return values[language]
 
         # Standard (monolingual)
         return _decode(field_cls, data)

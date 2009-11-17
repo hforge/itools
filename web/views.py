@@ -97,6 +97,13 @@ class BaseView(thingy):
         return self.resource.context
 
 
+    @thingy_lazy_property
+    def root_view(self):
+        if self.view is None:
+            return self
+        return self.view.root_view
+
+
     #######################################################################
     # Schema
     #######################################################################

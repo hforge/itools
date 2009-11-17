@@ -45,29 +45,23 @@ def get_version():
         return None
 
     # Look for tags
-    tags = git.get_tag_names()
-    tags = [ x for x in tags if x.startswith(branch_name) ]
+    match = '%s*' % branch_name
+    description = git.describe(match)
 
     # And the version name is...
-    if tags:
-        # Sort so "0.13.10" > "0.13.9"
-        key = lambda tag: tuple([ int(x) for x in tag.split('.')])
-        tags.sort(key=key)
-        # Get the version name
-        version_name = tags[-1]
+    if description:
+        version, n, commit = description
+        # Exact match
+        if n == 0:
+            return version
     else:
-        version_name = branch_name
+        version = branch_name
 
     # Get the timestamp
     head = git.get_metadata()
-    tag = git.get_metadata(version_name)
-
-    if not tags or tag['tree'] != head['tree']:
-        timestamp = head['committer'][1]
-        timestamp = timestamp.strftime('%Y%m%d%H%M')
-        return '%s-%s' % (version_name, timestamp)
-
-    return version_name
+    timestamp = head['committer'][1]
+    timestamp = timestamp.strftime('%Y%m%d%H%M')
+    return '%s-%s' % (version, timestamp)
 
 
 

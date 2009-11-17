@@ -29,6 +29,37 @@ from itools import git
 from handlers import SetupConf
 
 
+
+def make_version():
+    """This function finds out the version number from the source, this will
+    be written to the 'version.txt' file, which will be read once the software
+    is installed to get the version number.
+    """
+    # Find out the name of the active branch
+    branch_name = git.get_branch_name()
+    if branch_name is None:
+        return None
+
+    # Look for tags
+    match = '%s*' % branch_name
+    description = git.describe(match)
+
+    # And the version name is...
+    if description:
+        version, n, commit = description
+        # Exact match
+        if n == 0:
+            return version
+    else:
+        version = branch_name
+
+    # Get the timestamp
+    head = git.get_metadata()
+    timestamp = head['committer'][1]
+    timestamp = timestamp.strftime('%Y%m%d%H%M')
+    return '%s-%s' % (version, timestamp)
+
+
 class OptionalExtension(Extension):
     """An Optional Extension is a C extension that complements the package
     without being mandatory. It typically depends on external libraries. If the

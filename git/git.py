@@ -99,11 +99,20 @@ def get_branch_name():
     return None
 
 
-def get_tag_names():
-    """Returns the names of all the tags.
-    """
-    data = get_pipe(['git', 'ls-remote', '--tags', '.'])
-    return [ x.strip().split('/')[-1] for x in data.splitlines() ]
+
+def describe(match=None):
+    # The command
+    command = ['git', 'describe', '--tags', '--long']
+    if match:
+        command.extend(['--match', match])
+
+    # Call
+    try:
+        data = get_pipe(command)
+    except EnvironmentError:
+        return None
+    tag, n, commit = data.split('-')
+    return tag, int(n), commit
 
 
 

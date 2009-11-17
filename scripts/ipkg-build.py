@@ -32,42 +32,9 @@ from itools import git
 from itools.handlers import get_handler
 from itools.html import XHTMLFile
 import itools.pdf
-from itools.pkg import SetupConf, get_files, get_manifest
+from itools.pkg import SetupConf, get_files, get_manifest, make_version
 import itools.stl
 from itools import vfs
-
-
-
-def get_version():
-    # Find out the name of the active branch
-    branch_name = git.get_branch_name()
-    if branch_name is None:
-        return None
-
-    # Look for tags
-    tags = git.get_tag_names()
-    tags = [ x for x in tags if x.startswith(branch_name) ]
-
-    # And the version name is...
-    if tags:
-        # Sort so "0.13.10" > "0.13.9"
-        key = lambda tag: tuple([ int(x) for x in tag.split('.')])
-        tags.sort(key=key)
-        # Get the version name
-        version_name = tags[-1]
-    else:
-        version_name = branch_name
-
-    # Get the timestamp
-    head = git.get_metadata()
-    tag = git.get_metadata(version_name)
-
-    if not tags or tag['tree'] != head['tree']:
-        timestamp = head['committer'][1]
-        timestamp = timestamp.strftime('%Y%m%d%H%M')
-        return '%s-%s' % (version_name, timestamp)
-
-    return version_name
 
 
 
@@ -99,7 +66,7 @@ if __name__ == '__main__':
     manifest.append('MANIFEST')
     # Find out the version string
     if git_available:
-        version = get_version()
+        version = make_version()
         open('version.txt', 'w').write(version)
         print '* Version:', version
         manifest.append('version.txt')

@@ -634,7 +634,8 @@ class RWDatabase(RODatabase):
             handler.timestamp = vfs.get_mtime(uri)
             handler.dirty = None
         # Remove handlers
-        for uri in self.removed:
+        removed = sorted(self.removed, reverse=True)
+        for uri in removed:
             self.safe_remove(uri)
         # Add new handlers
         for uri in self.added:

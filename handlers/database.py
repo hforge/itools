@@ -551,6 +551,7 @@ class RWDatabase(RODatabase):
             for name in handler.get_handler_names():
                 self.move_handler(resolve_uri2(source, name),
                                   resolve_uri2(target, name))
+            self.removed.add(source)
         else:
             # Phantom
             if self.is_phantom(handler):

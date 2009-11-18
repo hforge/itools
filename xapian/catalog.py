@@ -120,8 +120,9 @@ class Catalog(object):
         """Add a new document.
         """
         # Check the input
-        if not isinstance(document, CatalogAware):
-            raise ValueError, 'the document must be a CatalogAware object'
+        if (not issubclass(document, CatalogAware)
+            and not isinstance(document, CatalogAware)):
+            raise TypeError, 'the document must be a CatalogAware object'
         values = document.get_catalog_values()
 
         # Load local variables

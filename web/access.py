@@ -14,8 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from itools
+from itools.core import thingy
 
-class AccessControl(object):
+
+class AccessControl(thingy):
     """Base class to control access. Provides default implementation; maybe
     overriden.
     """

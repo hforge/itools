@@ -164,7 +164,7 @@ class WebContext(HTTPContext):
     @lazy
     def access(self):
         resource = self.resource
-        ac = resource.get_access_control()
+        ac = resource.access_control
         if ac.is_access_allowed(self, resource, self.view):
             return True
 
@@ -179,6 +179,8 @@ class WebContext(HTTPContext):
     # Handle requests
     #######################################################################
     def handle_request(self):
+#       import pdb
+#       pdb.set_trace()
         try:
             self.access
             method = self.known_methods[self.method]

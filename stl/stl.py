@@ -24,6 +24,7 @@ language I could imagine.
 
 # Import from the Standard Library
 from copy import copy
+from functools import partial
 from re import compile
 from types import GeneratorType
 
@@ -425,9 +426,11 @@ def process(events, start, end, stack, repeat_stack, encoding, skip_events):
 ########################################################################
 css_uri_expr = compile (r"url\(([a-zA-Z0-9\./%\-\_]*/%3[bB]{1}download)\);")
 
-def set_prefix(stream, prefix, ns_uri=xhtml_uri):
+def set_prefix(stream, prefix, ns_uri=xhtml_uri, f=None):
     if isinstance(prefix, str):
         prefix = Path(prefix)
+    if f is None:
+        f = partial(resolve_pointer, prefix)
 
     for event in stream:
         type, value, line = event
@@ -440,11 +443,11 @@ def set_prefix(stream, prefix, ns_uri=xhtml_uri):
                 if tag_uri == ns_uri and attr_uri in (None, ns_uri):
                     # <... src="X" />
                     if attr_name == 'src':
-                        value = resolve_pointer(value, prefix)
+                        value = f(value)
                     # <a href="X"> or <link href="X">
                     elif tag_name in ('a', 'link'):
                         if attr_name == 'href':
-                            value = resolve_pointer(value, prefix)
+                            value = f(value)
                     elif attr_name == 'style':
                         # Rewrite url inside style attribute
                         # Get the chunks
@@ -452,7 +455,7 @@ def set_prefix(stream, prefix, ns_uri=xhtml_uri):
                         segments = css_uri_expr.split(value)
                         for index, segment in enumerate(segments):
                             if index % 2 == 1:
-                                new_segment = resolve_pointer(segment, prefix)
+                                new_segment = f(segment)
                                 chunks.append('url(%s);' % new_segment)
                             else:
                                 chunks.append(segment)
@@ -462,7 +465,7 @@ def set_prefix(stream, prefix, ns_uri=xhtml_uri):
                         if attr_name == 'value':
                             param_name = attributes.get((attr_uri, 'name'))
                             if param_name == 'movie':
-                                value = resolve_pointer(value, prefix)
+                                value = f(value)
                 aux[(attr_uri, attr_name)] = value
             yield START_ELEMENT, (tag_uri, tag_name, aux), line
         else:
@@ -470,7 +473,7 @@ def set_prefix(stream, prefix, ns_uri=xhtml_uri):
 
 
 
-def resolve_pointer(value, offset):
+def resolve_pointer(offset, value):
     # FIXME Exception for STL
     if value[:2] == '${':
         return value

@@ -426,50 +426,12 @@ def process(events, start, end, stack, repeat_stack, encoding, skip_events):
 ########################################################################
 css_uri_expr = compile (r"url\(([a-zA-Z0-9\./%\-\_]*/%3[bB]{1}download)\);")
 
-def set_prefix(stream, prefix, ns_uri=xhtml_uri, f=None):
+def set_prefix(stream, prefix, ns_uri=xhtml_uri):
     if isinstance(prefix, str):
         prefix = Path(prefix)
-    if f is None:
-        f = partial(resolve_pointer, prefix)
+    rewrite = partial(resolve_pointer, prefix)
 
-    for event in stream:
-        type, value, line = event
-        # Rewrite URLs (XXX specific to HTML)
-        if type == START_ELEMENT:
-            tag_uri, tag_name, attributes = value
-            aux = {}
-            for attr_uri, attr_name in attributes:
-                value = attributes[(attr_uri, attr_name)]
-                if tag_uri == ns_uri and attr_uri in (None, ns_uri):
-                    # <... src="X" />
-                    if attr_name == 'src':
-                        value = f(value)
-                    # <a href="X"> or <link href="X">
-                    elif tag_name in ('a', 'link'):
-                        if attr_name == 'href':
-                            value = f(value)
-                    elif attr_name == 'style':
-                        # Rewrite url inside style attribute
-                        # Get the chunks
-                        chunks = []
-                        segments = css_uri_expr.split(value)
-                        for index, segment in enumerate(segments):
-                            if index % 2 == 1:
-                                new_segment = f(segment)
-                                chunks.append('url(%s);' % new_segment)
-                            else:
-                                chunks.append(segment)
-                        value = ''.join(chunks)
-                    # <param name="movie" value="X" />
-                    elif tag_name == 'param':
-                        if attr_name == 'value':
-                            param_name = attributes.get((attr_uri, 'name'))
-                            if param_name == 'movie':
-                                value = f(value)
-                aux[(attr_uri, attr_name)] = value
-            yield START_ELEMENT, (tag_uri, tag_name, aux), line
-        else:
-            yield event
+    return rewrite_uris(stream, rewrite, ns_uri)
 
 
 
@@ -487,6 +449,48 @@ def resolve_pointer(offset, value):
     path = offset.resolve(uri.path)
     value = Reference('', '', path, uri.query.copy(), uri.fragment)
     return str(value)
+
+
+
+def rewrite_uris(stream, rewrite, ns_uri=xhtml_uri):
+    for event in stream:
+        type, value, line = event
+        # Rewrite URLs (XXX specific to HTML)
+        if type == START_ELEMENT:
+            tag_uri, tag_name, attributes = value
+            aux = {}
+            for attr_uri, attr_name in attributes:
+                value = attributes[(attr_uri, attr_name)]
+                if tag_uri == ns_uri and attr_uri in (None, ns_uri):
+                    # <... src="X" />
+                    if attr_name == 'src':
+                        value = rewrite(value)
+                    # <a href="X"> or <link href="X">
+                    elif tag_name in ('a', 'link'):
+                        if attr_name == 'href':
+                            value = rewrite(value)
+                    elif attr_name == 'style':
+                        # Rewrite url inside style attribute
+                        # Get the chunks
+                        chunks = []
+                        segments = css_uri_expr.split(value)
+                        for index, segment in enumerate(segments):
+                            if index % 2 == 1:
+                                new_segment = rewrite(segment)
+                                chunks.append('url(%s);' % new_segment)
+                            else:
+                                chunks.append(segment)
+                        value = ''.join(chunks)
+                    # <param name="movie" value="X" />
+                    elif tag_name == 'param':
+                        if attr_name == 'value':
+                            param_name = attributes.get((attr_uri, 'name'))
+                            if param_name == 'movie':
+                                value = rewrite(value)
+                aux[(attr_uri, attr_name)] = value
+            yield START_ELEMENT, (tag_uri, tag_name, aux), line
+        else:
+            yield event
 
 
 ###########################################################################

@@ -15,7 +15,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.core import freeze, thingy, thingy_property, thingy_lazy_property
+from itools.core import freeze, guess_type
+from itools.core import thingy, thingy_property, thingy_lazy_property
 from itools.core import OrderedDict
 from itools.datatypes import Boolean, Email, Integer, String, Unicode
 from itools.gettext import MSG
@@ -228,7 +229,7 @@ class file_field(input_field):
         """Find out the resource class (the mimetype sent by the browser can be
         minimalistic).
         """
-        filename, mimetype, body = data
+        filename, mimetype, body = raw_value
         # Find out the mimetype
         guessed, encoding = guess_type(filename)
         if encoding is not None:
@@ -242,6 +243,10 @@ class file_field(input_field):
         self.filename = filename
         self.mimetype = mimetype
         self.body = body
+
+
+    def is_empty(self):
+        return False
 
 
 

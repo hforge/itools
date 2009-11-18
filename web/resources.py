@@ -17,11 +17,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
+from itools.core import thingy, thingy_property
 from access import AccessControl
 from views import BaseView
 
 
-class Resource(object):
+class Resource(thingy):
     """This is the base class for all web resources.
     """
 
@@ -108,10 +109,11 @@ class Resource(object):
     #######################################################################
     # API / Security
     #######################################################################
-    def get_access_control(self):
+    @thingy_property
+    def access_control(self):
         resource = self
         while resource is not None:
-            if isinstance(resource, AccessControl):
+            if issubclass(resource, AccessControl):
                 return resource
             resource = resource.get_parent()
 

@@ -62,8 +62,11 @@ class ZIPFile(File):
         try:
             for filename in zip.namelist():
                 path = join(dst, filename)
-                with vfs.make_file(path) as file:
+                file = vfs.make_file(path)
+                try:
                     file.write(zip.read(filename))
+                finally:
+                    file.close()
         finally:
             zip.close()
 

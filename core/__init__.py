@@ -15,18 +15,26 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from sys import platform
+from sys import platform, version_info
 
 # Import from itools
 from cache import LRUCache
 from freeze import freeze, frozendict, frozenlist
 from mimetypes_ import add_type, guess_all_extensions, guess_extension
 from mimetypes_ import guess_type, has_encoding, has_extension
-from subprocess_ import start_subprocess, stop_subprocess
-from subprocess_ import read_subprocess, send_subprocess
-from utils import get_abspath, merge_dicts, get_sizeof, get_pipe, get_version
+from utils import get_abspath, merge_dicts, get_pipe, get_version
 
+# Python 2.6 or 2.5
+if version_info[1] == 5:
+    from py25 import get_sizeof
+    start_subprocess = stop_subprocess = None
+    read_subprocess = send_subprocess = None
+else:
+    from py26 import get_sizeof
+    from subprocess_ import start_subprocess, stop_subprocess
+    from subprocess_ import read_subprocess, send_subprocess
 
+# Posix or Windows
 if platform[:3] == 'win':
     from _win import become_daemon, fork, get_time_spent, vmsize
 else:

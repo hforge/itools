@@ -111,7 +111,7 @@ def describe(match=None):
         data = get_pipe(command)
     except EnvironmentError:
         return None
-    tag, n, commit = data.split('-')
+    tag, n, commit = data.rsplit('-', 2)
     return tag, int(n), commit
 
 

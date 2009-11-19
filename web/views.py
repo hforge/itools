@@ -229,20 +229,19 @@ class BaseForm(BaseView):
         """Default function to retrieve the name of the action from a form
         """
         context = self.context
-        for name in context.form:
-            if name.startswith(';'):
-                # Browsers send the mouse coordinates with image submits
-                if name.endswith(('.x', '.y')):
-                    name = name[:-2]
-                action = 'action_%s' % name[1:]
-                # Save the query of the action into context.form_query
-                if '?' in action:
-                    action, query = action.split('?')
-                    # Deserialize query using action specific schema
-                    schema = getattr(self, '%s_query_schema' % action, None)
-                    context.form_query = decode_query(query, schema)
-                return action
-        return 'action'
+        action = context.form.get('action')
+        if action is None:
+            return 'action'
+
+        action = 'action_%s' % action
+        # Save the query of the action into context.form_query
+        if '?' in action:
+            action, query = action.split('?')
+            # Deserialize query using action specific schema
+            schema = getattr(self, '%s_query_schema' % action, None)
+            context.form_query = decode_query(query, schema)
+
+        return action
 
 
     def get_action_method(self):

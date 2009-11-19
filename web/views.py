@@ -16,14 +16,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.core import freeze, thingy_type, thingy, thingy_lazy_property
+from itools.core import freeze, thingy_type, thingy, thingy_property
+from itools.core import thingy_lazy_property
 from itools.stl import stl
 from itools.uri import decode_query, get_reference
 from exceptions import FormError
 from fields import hidden_field
 
 
-class view_metaclass(thingy_type):
+class view_type(thingy_type):
 
     def __new__(mcs, class_name, bases, dict):
         # Add the 'field_names' attribute, if not explicitly defined
@@ -66,7 +67,7 @@ class view_metaclass(thingy_type):
             for name, value in dict.iteritems():
                 if name == 'view':
                     continue
-                if type(value) is view_metaclass and name not in subviews:
+                if type(value) is view_type and name not in subviews:
                     subviews.append(name)
             dict['subviews'] = subviews
 
@@ -75,9 +76,9 @@ class view_metaclass(thingy_type):
 
 
 
-class BaseView(thingy):
+class view(thingy):
 
-    __metaclass__ = view_metaclass
+    __metaclass__ = view_type
 
 
     # Access Control
@@ -108,6 +109,14 @@ class BaseView(thingy):
     # Schema
     #######################################################################
     def get_field_names(self):
+        # Check for specific fields
+        action = self.action_name
+        if action:
+            fields = getattr(self, '%s_fields' % action, None)
+            if fields is not None:
+                return fields
+
+        # Default
         return self.field_names
 
 
@@ -209,21 +218,9 @@ class BaseView(thingy):
         return uri
 
 
-
-class BaseForm(BaseView):
-
-    def get_field_names(self):
-        # Check for specific fields
-        action = self.action_name
-        if action is not None:
-            fields = getattr(self, '%s_fields' % action, None)
-            if fields is not None:
-                return fields
-
-        # Default
-        return self.field_names
-
-
+    #######################################################################
+    # Posts
+    #######################################################################
     @thingy_lazy_property
     def action_name(self):
         """Default function to retrieve the name of the action from a form
@@ -231,7 +228,7 @@ class BaseForm(BaseView):
         context = self.context
         action = context.form.get('action')
         if action is None:
-            return 'action'
+            return None
 
         action = 'action_%s' % action
         # Save the query of the action into context.form_query
@@ -244,12 +241,14 @@ class BaseForm(BaseView):
         return action
 
 
-    def get_action_method(self):
-        return getattr(self, self.action_name, None)
+    @thingy_property
+    def action_method(self):
+        name = self.action_name or 'action'
+        return getattr(self, name, None)
 
 
     def http_post(self):
-        method = self.get_action_method()
+        method = self.action_method
         if method is None:
             msg = "the '%s' method is not defined"
             raise NotImplementedError, msg % self.action_name
@@ -257,7 +256,7 @@ class BaseForm(BaseView):
 
 
 
-class STLView(BaseView):
+class stl_view(view):
 
     template = None
 
@@ -293,9 +292,4 @@ class STLView(BaseView):
         # Get the namespace
         body = self.render()
         context.ok_wrap('text/html', body)
-
-
-
-class STLForm(STLView, BaseForm):
-    pass
 

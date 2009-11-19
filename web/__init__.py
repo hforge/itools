@@ -28,7 +28,7 @@ from fields import make_stl_template
 from messages import INFO, ERROR, MSG_MISSING_OR_INVALID
 from resources import Resource, Root, VirtualRoot
 from ui import UI
-from views import BaseView, BaseForm, STLView, STLForm
+from views import view_type, view, stl_view
 from webdav import lock_body
 
 
@@ -43,10 +43,9 @@ __all__ = [
     'VirtualRoot',
     'Root',
     # View-Controller
-    'BaseView',
-    'BaseForm',
-    'STLView',
-    'STLForm',
+    'view_type',
+    'view',
+    'stl_view',
     # Fields
     'boolean_field',
     'choice_field',

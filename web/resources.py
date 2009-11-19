@@ -19,7 +19,7 @@
 # Import from itools
 from itools.core import thingy, thingy_property
 from access import AccessControl
-from views import BaseView
+from views import view_type
 
 
 class Resource(thingy):
@@ -101,7 +101,7 @@ class Resource(thingy):
 
         # Explicit view, defined by name
         view = getattr(self, name, None)
-        if view is None or not issubclass(view, BaseView):
+        if view is None or not type(view) is view_type:
             return None
 
         return view

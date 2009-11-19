@@ -274,6 +274,8 @@ html_elements = [
     BlockElement('blockquote', common_attrs + ['cite']),
     BlockElement('body', common_attrs + ['onload', 'onunload']),
     EmptyElement('br', core_attrs),
+    Element('button', common_attrs + focus_attrs + ['name', 'value', 'type',
+        'disabled']),
     Element('cite', common_attrs),
     Element('code', common_attrs),
     EmptyBlockElement('col', common_attrs + cellhalign_attrs +

@@ -39,7 +39,7 @@ status2name = {
 
 def find_view_by_method(server, context):
     """Associating an uncommon HTTP or WebDAV method to a special view.
-    method "PUT" -> view "http_put" <instance of BaseView>
+    method "PUT" -> view "http_put" <instance of view>
     """
     method_name = context.method
     view_name = "http_%s" % method_name.lower()

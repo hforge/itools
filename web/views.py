@@ -229,8 +229,7 @@ class BaseForm(BaseView):
         """Default function to retrieve the name of the action from a form
         """
         context = self.context
-        form = context.form
-        action = form.get('action')
+        action = context.form.get('action')
         if action is None:
             return 'action'
 

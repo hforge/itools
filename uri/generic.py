@@ -135,6 +135,9 @@ class Path(list):
             startswith_slash, path, endswith_slash = _normalize_path(path)
             self.startswith_slash = startswith_slash
             self.endswith_slash = bool(path) and endswith_slash
+        elif type(path) is Path:
+            self.startswith_slash = path.startswith_slash
+            self.endswith_slash = path.endswith_slash
         else:
             # XXX Here the path is not normalized:
             #

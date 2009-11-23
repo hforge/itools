@@ -493,8 +493,7 @@ def rewrite_uris(stream, rewrite, ns_uri=xhtml_uri):
 
 class STLTemplate(thingy):
 
-    def show(self):
-        return True
+    show = True
 
 
     def get_template(self):
@@ -502,7 +501,7 @@ class STLTemplate(thingy):
 
 
     def render(self):
-        if self.show() is False:
+        if not self.show:
             return None
 
         # Case 1: a ready made list of events

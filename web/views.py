@@ -258,6 +258,7 @@ class view(thingy):
 
 class stl_view(view):
 
+    show = True
     template = None
 
 
@@ -283,6 +284,9 @@ class stl_view(view):
 
 
     def render(self):
+        if not self.show:
+            return None
+
         events = self.get_template()
         return stl(events=events, namespace=self)
 

@@ -25,7 +25,6 @@ from xapian import Document, Query, inmemory_open
 # Import from itools
 from itools.uri import get_reference
 from itools.vfs import cwd
-from base import CatalogAware
 from queries import AllQuery, AndQuery, NotQuery, OrQuery, PhraseQuery
 from queries import RangeQuery, StartQuery
 from results import SearchResults
@@ -126,11 +125,13 @@ class Catalog(object):
     def index_document(self, document):
         """Add a new document.
         """
-        # Check the input
-        if (not issubclass(document, CatalogAware)
-            and not isinstance(document, CatalogAware)):
+        # Duck typing
+        try:
+            values = document.get_catalog_values
+        except AttributeError:
             raise TypeError, 'the document must be a CatalogAware object'
-        values = document.get_catalog_values()
+        else:
+            values = values()
 
         # Load local variables
         db = self._db

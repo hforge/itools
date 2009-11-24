@@ -88,10 +88,10 @@ def get_metadata(reference='HEAD', cwd=None):
 
 
 
-def get_branch_name():
+def get_branch_name(cwd=None):
     """Returns the name of the current branch.
     """
-    data = get_pipe(['git', 'branch'])
+    data = get_pipe(['git', 'branch'], cwd=cwd)
     for line in data.splitlines():
         if line.startswith('*'):
             return line[2:]

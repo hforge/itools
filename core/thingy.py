@@ -53,14 +53,58 @@ class thingy_type(type):
                ...
         """
         # We don't have instance methods
-        for key, value in dict.iteritems():
-            if type(value) is not FunctionType or key == '__new__':
-                continue
-            dict[key] = classmethod(value)
+        for name, value in dict.items():
+            # There are not instance methods
+            if type(value) is FunctionType and name != '__new__':
+                value = classmethod(value)
+                dict[name] = value
+
+            # Ideally Python should support something like this:
+            #
+            # class A(object):
+            #     x = B(...)
+            #     def x.f(self):
+            #         ...
+            #
+            #     # Or better
+            #     x.f = func (self):
+            #         ...
+            #
+            # But unfortunately it does not; so thingies work-around this
+            # limit using a naming convention (and metaclasses):
+            #
+            # class A(thingy):
+            #     x = thingy()
+            #     def x__f(self):
+            #         ...
+            #
+            if '__' in name and name[0] != '_' and name[-1] != '_':
+                source_name = name
+                name, rest = name.split('__', 1)
+                sub = dict.get(name)
+                if issubclass(type(sub), thingy_type):
+                    # Closure
+                    name = rest
+                    while '__' in name:
+                        subname, rest = name.split('__', 1)
+                        aux = getattr(sub, subname, None)
+                        if not issubclass(type(aux), thingy_type):
+                            break
+                        sub, name = aux, rest
+
+                    setattr(sub, name, value)
+                    del dict[source_name]
+                    # Fix the name
+                    if type(value) is classmethod:
+                        value.__get__(None, dict).im_func.__name__ = name
+                    elif type(value) is thingy_property:
+                        value.__name__ = name
+                    elif type(value) is thingy_lazy_property:
+                        value.__name__ = name
+
 
         # Make and return the class
-        cls = type.__new__(mcs, name, bases, dict)
-        return cls
+        return type.__new__(mcs, name, bases, dict)
 
 
 

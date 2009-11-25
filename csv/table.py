@@ -810,8 +810,7 @@ class Table(File):
 
 
     def get_records(self):
-        for id in self.get_record_ids():
-            yield self.get_record(id)
+        return ( x for x in self.records if x )
 
 
     def get_record_value(self, record, name, language=None):

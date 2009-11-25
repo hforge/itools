@@ -160,7 +160,10 @@ class view(thingy):
             view = getattr(self, name)
             if view is not None:
                 view = view(resource=self.resource, view=self)
-                view.cook(method)
+                try:
+                    view.cook(method)
+                except FormError:
+                    error = True
                 setattr(self, name, view)
 
         if error:

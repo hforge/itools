@@ -45,7 +45,7 @@ There are two ways to create a thingy:
 
 class thingy_type(type):
 
-    def __new__(mcs, name, bases, dict):
+    def __new__(mcs, class_name, bases, dict):
         """
         This method is called when a thingy is created "statically":
 
@@ -104,7 +104,7 @@ class thingy_type(type):
 
 
         # Make and return the class
-        return type.__new__(mcs, name, bases, dict)
+        return type.__new__(mcs, class_name, bases, dict)
 
 
 

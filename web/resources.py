@@ -71,7 +71,8 @@ class Resource(thingy):
 
 
     def del_resource(self, path, soft=False):
-        raise NotImplementedError
+        path = self.path.resolve2(path)
+        return self.context.del_resource(path, soft=soft)
 
 
     def copy_resource(self, source, target):

@@ -111,6 +111,10 @@ class WebContext(HTTPContext):
         raise NotImplementedError
 
 
+    def del_resource(self, path, soft=False):
+        raise NotImplementedError
+
+
     @lazy
     def resource(self):
         resource = self.get_resource(self.resource_path, soft=True)

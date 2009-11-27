@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.core import thingy, thingy_property
+from itools.core import thingy, thingy_property, thingy_lazy_property
 from access import AccessControl
 from views import view_type
 
@@ -35,14 +35,11 @@ class Resource(thingy):
         raise NotImplementedError
 
 
-    def _get_resource(self, name):
-        return None
-
-
     #######################################################################
     # API / Tree
     #######################################################################
-    def get_physical_path(self):
+    @thingy_lazy_property
+    def physical_path(self):
         return self.context.get_physical_path(self.path)
 
 
@@ -64,10 +61,6 @@ class Resource(thingy):
         here = self.get_resource(path)
         for name in here._get_names():
             yield here.get_resource(name)
-
-
-    def set_resource(self, path, resource):
-        raise NotImplementedError
 
 
     def del_resource(self, path, soft=False):

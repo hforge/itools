@@ -88,10 +88,10 @@ def get_metadata(reference='HEAD', cwd=None):
 
 
 
-def get_branch_name():
+def get_branch_name(cwd=None):
     """Returns the name of the current branch.
     """
-    data = get_pipe(['git', 'branch'])
+    data = get_pipe(['git', 'branch'], cwd=cwd)
     for line in data.splitlines():
         if line.startswith('*'):
             return line[2:]
@@ -100,7 +100,7 @@ def get_branch_name():
 
 
 
-def describe(match=None):
+def describe(match=None, cwd=None):
     # The command
     command = ['git', 'describe', '--tags', '--long']
     if match:
@@ -108,7 +108,7 @@ def describe(match=None):
 
     # Call
     try:
-        data = get_pipe(command)
+        data = get_pipe(command, cwd=cwd)
     except EnvironmentError:
         return None
     tag, n, commit = data.rsplit('-', 2)

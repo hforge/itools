@@ -31,18 +31,18 @@ from handlers import SetupConf
 
 
 
-def make_version():
+def make_version(cwd=None):
     """This function finds out the version number from the source, this will
     be written to the 'version.txt' file, which will be read once the software
     is installed to get the version number.
     """
     # The name of the active branch
-    branch = git.get_branch_name()
+    branch = git.get_branch_name(cwd=cwd)
     if branch is None:
         return None
 
     # The tag
-    description = git.describe()
+    description = git.describe(cwd=cwd)
 
     # The version name
     if description:
@@ -58,7 +58,7 @@ def make_version():
         version = branch
 
     # Get the timestamp
-    head = git.get_metadata()
+    head = git.get_metadata(cwd=cwd)
     timestamp = head['committer'][1]
     timestamp = timestamp.strftime('%Y%m%d%H%M')
     return '%s-%s' % (version, timestamp)

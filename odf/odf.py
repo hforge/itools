@@ -201,6 +201,7 @@ class ODFFile(OOFile):
         modified_files = {}
         for filename in self.get_contents():
             extension = splitext(filename)[1]
+            startswith = filename.startswith
             # Files to keep as they are
             # TODO the manifest.xml file should be properly updated
             keep = ['mimetype', 'settings.xml', 'META-INF/manifest.xml']
@@ -214,7 +215,7 @@ class ODFFile(OOFile):
                 modified_files[filename] = stream_to_str(translation)
 
             # Thumbnails
-            elif filename.startswith('Thumbnails'):
+            elif startswith('Thumbnails'):
                 if extension == '.pdf':
                     modified_files[filename] = folder.open('thumb.pdf').read()
                 elif extension == '.png':
@@ -229,7 +230,7 @@ class ODFFile(OOFile):
                 modified_files[filename] = folder.open('square.svm').read()
 
             # Pictures
-            elif filename.startswith('Pictures'):
+            elif startswith('Pictures') or startswith('media'):
                 # Try with PIL
                 file = self.get_file(filename)
                 file = StringIO(file)

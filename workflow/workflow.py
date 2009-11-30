@@ -16,6 +16,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from itools
+from itools.core import thingy
+
 """
 The workflow module simplifies the task of writing workflow systems.
 
@@ -155,7 +158,7 @@ class Transition(object):
 
 
 
-class WorkflowAware(object):
+class WorkflowAware(thingy):
     """Mixin class to be used for workflow aware objects.
 
     The instances of a class that inherits from WorkflowAware can be
@@ -189,6 +192,14 @@ class WorkflowAware(object):
     the object has been in.
     """
 
+    def get_workflow_state(self):
+        return self.workflow_state
+
+
+    def set_workflow_state(self, state):
+        self.workflow_state = state
+
+
     def enter_workflow(self, workflow=None, initstate=None, *args, **kw):
         """[Re-]Bind this object to a specific workflow.
 
@@ -217,7 +228,7 @@ class WorkflowAware(object):
         if not initstate in self.workflow.states:
             raise WorkflowError, "invalid initial state: '%s'" % initstate
 
-        self.workflow_state = initstate
+        self.set_workflow_state(initstate)
 
         # Call app-specific enter-state handler for initial state, if any
         name = 'onenter_%s' % initstate
@@ -236,21 +247,22 @@ class WorkflowAware(object):
         workflow = self.workflow
 
         # Get the current state
-        state = workflow.states[self.workflow_state]
+        workflow_state = self.get_workflow_state()
+        state = workflow.states[workflow_state]
         if transname not in state.transitions:
             error = "transition '%s' is invalid from state '%s'"
-            raise WorkflowError, error % (transname, self.workflow_state)
+            raise WorkflowError, error % (transname, workflow_state)
 
         # Get the new state name
         state = state.transitions[transname].state_to
 
         # call app-specific leave- state  handler if any
-        name = 'onleave_%s' % self.workflow_state
+        name = 'onleave_%s' % workflow_state
         if hasattr(self, name):
             getattr(self, name)(*args, **kw)
 
         # Set the new state
-        self.workflow_state = state
+        self.set_workflow_state(state)
 
         # call app-specific transition handler if any
         name = 'ontrans_%s' % transname
@@ -263,16 +275,10 @@ class WorkflowAware(object):
             getattr(self, name)(*args, **kw)
 
 
-    def get_statename(self):
-        """Return the name of the current state.
-        """
-        return self.workflow_state
-
-
     def get_state(self):
         """Returns the current state instance.
         """
-        statename = self.get_statename()
+        statename = self.get_workflow_state()
         return self.workflow.states.get(statename)
 
 

@@ -122,6 +122,29 @@ class Context(object):
         else:
             self.accept_language = AcceptLanguageType.decode('')
 
+        # Media files (CSS, javascript)
+        # Set the list of needed resources. The method we are going to
+        # call may need external resources to be rendered properly, for
+        # example it could need an style sheet or a javascript file to
+        # be included in the html head (which it can not control). This
+        # attribute lets the interface to add those resources.
+        self.styles = []
+        self.scripts = []
+
+
+    def add_style(self, *args):
+        styles = self.styles
+        for style in args:
+            if style not in styles:
+                styles.append(style)
+
+
+    def add_script(self, *args):
+        scripts = self.scripts
+        for script in args:
+            if script not in scripts:
+                scripts.append(script)
+
 
     def get_link(self, resource):
         """Return a link to the given resource, from the given context.

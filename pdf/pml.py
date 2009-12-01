@@ -587,7 +587,8 @@ def body_stream(stream, _tag_name, _attributes, context):
         if event == START_ELEMENT:
             tag_uri, tag_name, attributes = value
             context.path_on_start_event(tag_name, attributes)
-            if tag_name in ('p', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
+            if tag_name in ('h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'pre',
+                            'xpre'):
                 story.extend(paragraph_stream(stream, tag_name, attributes,
                                               context))
             elif tag_name == 'hr':
@@ -660,7 +661,7 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context,
     cpt = 0
     has_content = False
     is_not_paragraph = (elt_tag_name != 'p')
-    is_not_pre = (elt_tag_name != 'pre')
+    is_not_pre = (elt_tag_name not in ('pre', 'xpre'))
     is_footer = (elt_tag_name == 'footer')
 
     story = []
@@ -686,8 +687,8 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context,
                 skip = True
                 place = len(story)
                 # TODO ? Merge with body_stream?
-                if tag_name in ('p', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5',
-                                'h6'):
+                if tag_name in ('h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'pre',
+                                'xpre'):
                     story.extend(paragraph_stream(stream, tag_name,
                                                   attributes, context))
                 elif tag_name == 'hr':
@@ -1102,7 +1103,7 @@ def create_paragraph(context, element, content, style_css = {}):
             start_tags += '<%s>' % tag
         while context.style_tag_stack:
             end_tags += get_end_tag(None, context.style_tag_stack.pop())
-    if element[0] == 'pre':
+    if element[0] in ('pre', 'xpre'):
         content = join_content(content)
         content = start_tags + content + end_tags
         widget = XPreformatted(content, style)

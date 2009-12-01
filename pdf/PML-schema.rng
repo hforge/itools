@@ -98,6 +98,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <zeroOrMore><ref name="tt" /></zeroOrMore>
     <zeroOrMore><ref name="u" /></zeroOrMore>
     <zeroOrMore><ref name="ul" /></zeroOrMore>
+    <zeroOrMore><ref name="xpre" /></zeroOrMore>
   </element>
 </define>
 
@@ -247,6 +248,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   </element>
 </define>
 
+<define name="xpre">
+  <element name="pml:xpre">
+    <text />
+    <zeroOrMore><ref name="b" /></zeroOrMore>
+    <zeroOrMore><ref name="i" /></zeroOrMore>
+    <zeroOrMore><ref name="u" /></zeroOrMore>
+    <zeroOrMore><ref name="font" /></zeroOrMore>
+    <zeroOrMore><ref name="sup" /></zeroOrMore>
+    <zeroOrMore><ref name="sub" /></zeroOrMore>
+    <zeroOrMore><ref name="tt" /></zeroOrMore>
+    <zeroOrMore><ref name="link" /></zeroOrMore>
+    <zeroOrMore><ref name="a" /></zeroOrMore>
+    <zeroOrMore><ref name="pagenumber" /></zeroOrMore>
+    <zeroOrMore><ref name="pagetotal" /></zeroOrMore>
+  </element>
+</define>
+
 <define name="dl">
   <element name="pml:dl">
     <zeroOrMore><ref name="dt" /></zeroOrMore>
@@ -258,6 +276,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   <element name="pml:dt">
     <zeroOrMore><ref name="p" /></zeroOrMore>
     <zeroOrMore><ref name="pre" /></zeroOrMore>
+    <zeroOrMore><ref name="xpre" /></zeroOrMore>
   </element>
 </define>
 
@@ -267,6 +286,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <zeroOrMore><ref name="pre" /></zeroOrMore>
     <zeroOrMore><ref name="ol" /></zeroOrMore>
     <zeroOrMore><ref name="ul" /></zeroOrMore>
+    <zeroOrMore><ref name="xpre" /></zeroOrMore>
   </element>
 </define>
 
@@ -293,32 +313,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <define name="th">
   <element name="pml:th">
     <text />
-    <zeroOrMore><ref name="ol" /></zeroOrMore>
-    <zeroOrMore><ref name="ul" /></zeroOrMore>
-    <zeroOrMore><ref name="pre" /></zeroOrMore>
     <zeroOrMore><ref name="dl" /></zeroOrMore>
-    <zeroOrMore><ref name="table" /></zeroOrMore>
-    <zeroOrMore><ref name="img" /></zeroOrMore>
     <zeroOrMore><ref name="hX" /></zeroOrMore>
+    <zeroOrMore><ref name="img" /></zeroOrMore>
+    <zeroOrMore><ref name="ol" /></zeroOrMore>
     <zeroOrMore><ref name="p" /></zeroOrMore>
     <zeroOrMore><ref name="pagenumber" /></zeroOrMore>
     <zeroOrMore><ref name="pagetotal" /></zeroOrMore>
+    <zeroOrMore><ref name="pre" /></zeroOrMore>
+    <zeroOrMore><ref name="table" /></zeroOrMore>
+    <zeroOrMore><ref name="ul" /></zeroOrMore>
+    <zeroOrMore><ref name="xpre" /></zeroOrMore>
   </element>
 </define>
 
 <define name="td">
   <element name="pml:td">
     <text />
-    <zeroOrMore><ref name="ol" /></zeroOrMore>
-    <zeroOrMore><ref name="ul" /></zeroOrMore>
-    <zeroOrMore><ref name="pre" /></zeroOrMore>
     <zeroOrMore><ref name="dl" /></zeroOrMore>
-    <zeroOrMore><ref name="table" /></zeroOrMore>
-    <zeroOrMore><ref name="img" /></zeroOrMore>
     <zeroOrMore><ref name="hX" /></zeroOrMore>
+    <zeroOrMore><ref name="img" /></zeroOrMore>
+    <zeroOrMore><ref name="ol" /></zeroOrMore>
     <zeroOrMore><ref name="p" /></zeroOrMore>
     <zeroOrMore><ref name="pagenumber" /></zeroOrMore>
     <zeroOrMore><ref name="pagetotal" /></zeroOrMore>
+    <zeroOrMore><ref name="pre" /></zeroOrMore>
+    <zeroOrMore><ref name="table" /></zeroOrMore>
+    <zeroOrMore><ref name="ul" /></zeroOrMore>
+    <zeroOrMore><ref name="xpre" /></zeroOrMore>
   </element>
 </define>
 
@@ -466,6 +488,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <zeroOrMore><ref name="tt" /></zeroOrMore>
     <zeroOrMore><ref name="u" /></zeroOrMore>
     <zeroOrMore><ref name="ul" /></zeroOrMore>
+    <zeroOrMore><ref name="xpre" /></zeroOrMore>
   </element>
 </define>
 

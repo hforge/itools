@@ -350,7 +350,7 @@ class WebContext(HTTPContext):
             self.del_attribute('uri')
 
         if self.view_name:
-            self.path = self.resource_path.resolve2(self.view_name)
+            self.path = self.resource_path.resolve2(';%s' % self.view_name)
         else:
             self.path = self.resource_path
 

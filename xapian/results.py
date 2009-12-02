@@ -33,14 +33,19 @@ class Doc(object):
 
 
     def __getattr__(self, name):
-        info = self._metadata[name]
+        try:
+            info = self._metadata[name]
+        except KeyError:
+            msg = 'the "%s" field is not indexed nor stored'
+            raise AttributeError, msg % name
+
         field_cls = _get_field_cls(name, self._fields, info)
 
         # Get the data
         try:
             value = info['value']
         except KeyError:
-            raise ValueError, 'the field "%s" is not a stored field' % name
+            raise AttributeError, 'the "%s" field is not stored' % name
         data = self._xdoc.get_value(value)
 
         # Multilingual field: language negotiation

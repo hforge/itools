@@ -106,35 +106,42 @@ class Response(Message):
         self.cookies = {}
 
 
-    def to_str(self):
+    def header_to_str(self):
         from itools import __version__
-        data = []
-        # The status line
-        http_version = self.http_version
-        status_code = self.status
-        status_message = status_messages[status_code]
-        data.append('HTTP/%s %d %s\r\n' % (http_version, status_code,
-                                           status_message))
-        # Headers
-        # Date:
+
+        # Status line
+        status = self.status
+        status = 'HTTP/%s %d %s\r\n' % (
+            self.http_version, status, status_messages[status])
+        lines = [status]
+
+        # Headers / Date
         date = datetime.now()
-        data.append('Date: %s\r\n' % HTTPDate.encode(date))
-        # Server:
-        data.append('Server: itools/%s\r\n' % __version__)
-        # User defined headers
+        lines.append('Date: %s\r\n' % HTTPDate.encode(date))
+        # Headers / Server
+        lines.append('Server: itools/%s\r\n' % __version__)
+        # Headers / other
         for name in self.headers:
             if name not in ['date', 'server']:
                 datatype = get_type(name)
                 value = self.headers[name]
                 value = datatype.encode(value)
-                data.append('%s: %s\r\n' % (name.title(), value))
-        # Content-Length:
+                lines.append('%s: %s\r\n' % (name.title(), value))
+
+        # Headers / Content-Length
         if not self.has_header('content-length'):
-            data.append('Content-Length: %d\r\n' % self.get_content_length())
+            lines.append('Content-Length: %d\r\n' % self.get_content_length())
         # The Cookies (one SetCookie header per cookie)
         for name in self.cookies:
             value = SetCookieDataType.encode({name: self.cookies[name]})
-            data.append('Set-Cookie: %s\r\n' % value)
+            lines.append('Set-Cookie: %s\r\n' % value)
+
+        # Ok
+        return ''.join(lines)
+
+
+    def to_str(self):
+        data = [self.header_to_str()]
         # A blank line separates the header from the body
         data.append('\r\n')
         # The body

@@ -807,8 +807,12 @@ class GET(RequestMethod):
             return
 
         # Set the last-modified header
+        response = context.response
         mtime = mtime.replace(microsecond=0)
-        context.response.set_header('last-modified', mtime)
+        response.set_header('last-modified', mtime)
+        # Cache-Control: max-age=1
+        # (because Apache does not cache pages with a query by default)
+        response.set_header('cache-control', 'max-age=1')
 
         # Check for the request header If-Modified-Since
         if_modified_since = context.request.get_header('if-modified-since')

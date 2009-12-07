@@ -85,6 +85,7 @@ class Context(object):
         # Read the origin host
         if request.has_header('X-Forwarded-Host'):
             host = request.get_header('X-Forwarded-Host')
+            host = host.split(',', 1)[0].strip()
         elif request.has_header('Host'):
             host = request.get_header('Host')
         else:

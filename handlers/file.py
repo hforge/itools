@@ -237,7 +237,7 @@ class File(Handler):
 
     def abort_changes(self):
         # Not attached to a URI or not changed
-        if self.uri is None or self.dity is None:
+        if self.uri is None or self.dirty is None:
             return
         # Abort
         self._clean_state()

@@ -93,14 +93,16 @@ class File(Handler):
 
 
     def load_state(self):
-        self.reset()
-        # TODO Use "with" once we move to Python 2.5 and "urllib.urlopen"
-        # supports it
         file = vfs.open(self.uri)
+        self.reset()
         try:
             self._load_state_from_file(file)
+        except Exception:
+            self._clean_state()
+            raise
         finally:
             file.close()
+
         self.timestamp = vfs.get_mtime(self.uri)
         self.dirty = None
 
@@ -116,7 +118,11 @@ class File(Handler):
     def load_state_from_file(self, file):
         self.set_changed()
         self.reset()
-        self._load_state_from_file(file)
+        try:
+            self._load_state_from_file(file)
+        except Exception:
+            self._clean_state()
+            raise
 
 
     def load_state_from_string(self, string):
@@ -222,17 +228,18 @@ class File(Handler):
             database.changed.add(self.uri)
 
 
-    def abort_changes(self):
-        # Not attached to a URI
-        if self.uri is None:
-            return
-        # Not changed
-        if self.dirty is None:
-            return
-        # Abort
+    def _clean_state(self):
         names = [ x for x in self.__dict__ if x not in ('database', 'uri') ]
         for name in names:
             delattr(self, name)
+
+
+    def abort_changes(self):
+        # Not attached to a URI or not changed
+        if self.uri is None or self.dirty is None:
+            return
+        # Abort
+        self._clean_state()
 
 
     #########################################################################

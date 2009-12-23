@@ -33,7 +33,7 @@ from subprocess import call
 from sys import stdout
 from tempfile import mkdtemp
 from time import time
-from tokenize import generate_tokens, DEDENT, INDENT
+from tokenize import generate_tokens, TokenError, DEDENT, INDENT
 
 # Import from Matplotlib
 create_graph_is_available = True
@@ -229,7 +229,7 @@ def analyse_file_by_lines(filename):
     return stats
 
 
-def analyse_file_by_tokens(filename):
+def analyse_file_by_tokens(filename, ignore_errors):
     """This function analyses a file and produces a dict with these members:
      - 'tokens': number of tokens;
      - 'bad_indentation': list of lines with a bad indentation;
@@ -241,13 +241,19 @@ def analyse_file_by_tokens(filename):
         stats[plugin.key] = []
 
     tokens = generate_tokens(file(filename).readline)
-    for token, value, (srow, scol), _, _ in tokens:
-        # Tokens number
-        stats['tokens'] += 1
+    try:
+        for token, value, (srow, scol), _, _ in tokens:
+            # Tokens number
+            stats['tokens'] += 1
 
-        for plugin in plugins:
-            if plugin.analyse_token(token, value, srow, scol):
-                stats[plugin.key].append(srow)
+            for plugin in plugins:
+                if plugin.analyse_token(token, value, srow, scol):
+                    stats[plugin.key].append(srow)
+    except TokenError, e:
+        if ignore_errors is False:
+            raise e
+        print e
+        return {'tokens': 0}
 
     return stats
 
@@ -271,37 +277,43 @@ class Visitor(NodeVisitor):
 
 
 
-def analyse_file_by_ast(filename):
+def analyse_file_by_ast(filename, ignore_errors):
     """This function analyses a file and produces a dict with these members:
      - 'except_all': list of line where all exceptions are catched;
      - 'string_exception': list of lines with string exceptions;
      - 'bad_import': ;
     """
-    ast = parse(open(filename).read())
+    try:
+        ast = parse(open(filename).read())
+    except (SyntaxError, IndentationError), e:
+        if ignore_errors is False:
+            raise e
+        print e
+        return None
     visitor = Visitor()
     visitor.generic_visit(ast)
     return visitor.stats
 
 
-
-def analyse_file(filename):
+def analyse_file(filename, ignore_errors):
     """This function merges the two dictionaries for a file
     """
     # Pass 1
     stats = analyse_file_by_lines(filename)
     # Pass 2
-    stats2 = analyse_file_by_tokens(filename)
+    stats2 = analyse_file_by_tokens(filename, ignore_errors)
     stats.update(stats2)
     # Pass 3
-    stats3 = analyse_file_by_ast(filename)
-    stats.update(stats3)
+    stats3 = analyse_file_by_ast(filename, ignore_errors)
+    if stats3 is not None:
+        stats.update(stats3)
 
     # Ok
     return stats
 
 
 
-def analyse(filenames):
+def analyse(filenames, ignore_errors=False):
     """Analyse a list of files
     """
     stats = {
@@ -317,7 +329,7 @@ def analyse(filenames):
 
     files_db = []
     for filename in filenames:
-        f_stats = analyse_file(filename)
+        f_stats = analyse_file(filename, ignore_errors)
         if f_stats['lines'] != 0:
             for key, value in f_stats.iteritems():
                 if type(value) is list:
@@ -461,7 +473,7 @@ def create_graph():
         filenames = git.get_filenames()
         filenames = [ x for x in filenames if x.endswith('.py') ]
         # We get code quality for this files
-        stats, files_db = analyse(filenames)
+        stats, files_db = analyse(filenames, ignore_errors=True)
         metadata = git.get_metadata()
         date_time = metadata['committer'][1]
         commit_date = date(date_time.year, date_time.month, date_time.day)

@@ -18,11 +18,11 @@
 # Import from itools
 from itools.core import add_type, get_abspath
 from itools.xml import register_dtd, DocType
+from filters import sanitize_stream, sanitize_str
 from html import HTMLFile
 from parser import HTMLParser
 from xhtml import XHTMLFile, xhtml_uri
 from xhtml import stream_to_str_as_html, stream_to_str_as_xhtml
-from xhtml import sanitize_stream, sanitize_str
 import schema
 
 
@@ -33,11 +33,12 @@ __all__ = [
     'HTMLFile',
     # Parsers
     'HTMLParser',
-    # Functions
-    'stream_to_str_as_html',
-    'stream_to_str_as_xhtml',
+    # Filters
     'sanitize_stream',
     'sanitize_str',
+    # Other functions
+    'stream_to_str_as_html',
+    'stream_to_str_as_xhtml',
     # Constants
     'xhtml_uri',
     'xhtml_doctype',

@@ -27,14 +27,15 @@ from parser import COMMENT, CDATA
 
 
 # Serialize
-def get_qname(ns_uri, name):
-    """Returns the fully qualified name"""
-    if ns_uri is None:
-        return name
-    prefix = get_namespace(ns_uri).prefix
+def get_qname(tag_uri, tag_name):
+    """Returns the fully qualified name.
+    """
+    if tag_uri is None:
+        return tag_name
+    prefix = get_namespace(tag_uri).prefix
     if prefix is None:
-        return name
-    return '%s:%s' % (prefix, name)
+        return tag_name
+    return '%s:%s' % (prefix, tag_name)
 
 
 def get_attribute_qname(namespace, local_name):
@@ -70,10 +71,10 @@ def get_start_tag(tag_uri, tag_name, attributes):
         return s + '>'
 
 
-def get_end_tag(ns_uri, name):
-    if is_empty(ns_uri, name):
+def get_end_tag(tag_uri, tag_name):
+    if is_empty(tag_uri, tag_name):
         return ''
-    return '</%s>' % get_qname(ns_uri, name)
+    return '</%s>' % get_qname(tag_uri, tag_name)
 
 
 def get_doctype(name, doctype):
@@ -87,11 +88,11 @@ def stream_to_str(stream, encoding='UTF-8'):
             value = XMLContent.encode(value)
             data.append(value)
         elif event == START_ELEMENT:
-            ns_uri, name, attributes = value
-            data.append(get_start_tag(ns_uri, name, attributes))
+            tag_uri, tag_name, attributes = value
+            data.append(get_start_tag(tag_uri, tag_name, attributes))
         elif event == END_ELEMENT:
-            ns_uri, name = value
-            data.append(get_end_tag(ns_uri, name))
+            tag_uri, tag_name = value
+            data.append(get_end_tag(tag_uri, tag_name))
         elif event == COMMENT:
             data.append('<!--%s-->' % value)
         elif event == XML_DECL:

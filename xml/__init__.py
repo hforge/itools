@@ -27,8 +27,7 @@ from parser import DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, TEXT, COMMENT
 from parser import PI, CDATA
 from utils import xml_to_text
 from xml import Element, stream_to_str, get_element, find_end
-from xml import get_qname, get_attribute_qname, get_start_tag, get_end_tag
-from xml import get_doctype
+from xml import get_qname, get_attribute_qname, get_end_tag, get_doctype
 
 
 
@@ -36,7 +35,6 @@ __all__ = [
     # New API (in progress)
     'get_qname',
     'get_attribute_qname',
-    'get_start_tag',
     'get_end_tag',
     'get_doctype',
     'stream_to_str',

@@ -56,7 +56,8 @@ def get_attribute_qname(namespace, local_name):
     return '%s:%s' % (prefix, local_name)
 
 
-def get_start_tag(tag_uri, tag_name, attributes):
+def get_start_tag(value):
+    tag_uri, tag_name, attributes = value
     s = '<%s' % get_qname(tag_uri, tag_name)
     # Output the attributes
     for attr_uri, attr_name in attributes:
@@ -81,37 +82,27 @@ def get_doctype(name, doctype):
     return '<!DOCTYPE %s %s>' % (name, doctype.to_str())
 
 
-def stream_to_str(stream, encoding='UTF-8'):
-    data = []
-    for event, value, line in stream:
-        if event == TEXT:
-            value = XMLContent.encode(value)
-            data.append(value)
-        elif event == START_ELEMENT:
-            tag_uri, tag_name, attributes = value
-            data.append(get_start_tag(tag_uri, tag_name, attributes))
-        elif event == END_ELEMENT:
-            tag_uri, tag_name = value
-            data.append(get_end_tag(tag_uri, tag_name))
-        elif event == COMMENT:
-            data.append('<!--%s-->' % value)
-        elif event == XML_DECL:
-            version, encoding, standalone = value
-            if standalone is None:
-                data.append('<?xml version="%s" encoding="%s"?>'
-                    % (version, encoding))
-            else:
-                data.append(
-                    '<?xml version="%s" encoding="%s" standalone="%s"?>'
-                    % (version, encoding, standalone))
-        elif event == DOCUMENT_TYPE:
-            name, doctype = value
-            data.append(get_doctype(name, doctype))
-        elif event == CDATA:
-            data.append('<![CDATA[%s]]>' % value)
-        else:
-            raise NotImplementedError, 'unknown event "%s"' % event
-    return ''.join(data)
+def stream_to_str_xmldecl(value):
+    version, encoding, standalone = value
+    if standalone is None:
+        return '<?xml version="%s" encoding="%s"?>' % (version, encoding)
+    else:
+        return '<?xml version="%s" encoding="%s" standalone="%s"?>' % value
+
+
+stream_to_str_map = (
+    stream_to_str_xmldecl,             # XML_DECL
+    lambda x: get_doctype(x[0], x[1]), # DOCUMENT_TYPE
+    get_start_tag,                     # START_ELEMENT
+    lambda x: get_end_tag(x[0], x[1]), # END_ELEMENT
+    XMLContent.encode,                 # TEXT
+    lambda x: '<!--%s-->' % x,         # COMMENT
+    lambda x: '',                      # PI
+    lambda x: '<![CDATA[%s]]>' % x)    # CDATA
+
+
+def stream_to_str(stream, encoding='UTF-8', map=stream_to_str_map):
+    return ''.join( map[x](y) for x, y, z in stream )
 
 
 

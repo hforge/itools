@@ -30,36 +30,33 @@ xhtml_uri = 'http://www.w3.org/1999/xhtml'
 
 
 
-def stream_to_html(stream, encoding='UTF-8'):
-    data = []
-    for event, value, line in stream:
-        if event == TEXT:
-            value = XMLContent.encode(value)
-            data.append(value)
-        elif event == START_ELEMENT:
-            tag_uri, tag_name, attributes = value
-            qname = get_qname(tag_uri, tag_name)
-            s = '<%s' % qname
-            # Output the attributes
-            for attr_uri, attr_name in attributes:
-                value = attributes[(attr_uri, attr_name)]
-                qname = get_attribute_qname(attr_uri, attr_name)
-                value = XMLAttribute.encode(value)
-                s += ' %s="%s"' % (qname, value)
-            data.append(s + '>')
-        elif event == END_ELEMENT:
-            tag_uri, tag_name = value
-            data.append(get_end_tag(tag_uri, tag_name))
-        elif event == COMMENT:
-            data.append('<!--%s-->' % value)
-        elif event == XML_DECL:
-            pass
-        elif event == DOCUMENT_TYPE:
-            name, doctype = value
-            data.append(get_doctype(name, doctype))
-        elif event == CDATA:
-            data.append(value)
-    return ''.join(data)
+
+def get_start_tag(value):
+    tag_uri, tag_name, attributes = value
+    qname = get_qname(tag_uri, tag_name)
+    s = '<%s' % qname
+    # Output the attributes
+    for attr_uri, attr_name in attributes:
+        value = attributes[(attr_uri, attr_name)]
+        qname = get_attribute_qname(attr_uri, attr_name)
+        value = XMLAttribute.encode(value)
+        s += ' %s="%s"' % (qname, value)
+    return s + '>'
+
+
+stream_to_html_map = (
+    lambda x: '',                      # XML_DECL
+    lambda x: get_doctype(x[0], x[1]), # DOCUMENT_TYPE
+    get_start_tag,                     # START_ELEMENT
+    lambda x: get_end_tag(x[0], x[1]), # END_ELEMENT
+    XMLContent.encode,                 # TEXT
+    lambda x: '<!--%s-->' % x,         # COMMENT
+    lambda x: '',                      # PI
+    lambda x: x)                       # CDATA
+
+
+def stream_to_html(stream, encoding='UTF-8', map=stream_to_html_map):
+    return stream_to_str(stream, encoding=encoding, map=map)
 
 
 def set_content_type(stream, content_type):

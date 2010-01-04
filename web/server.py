@@ -23,7 +23,7 @@ from copy import copy
 from logging import getLogger, WARNING, FileHandler, StreamHandler, Formatter
 from os import fstat, getpid, remove as remove_file
 from types import FunctionType, MethodType
-from signal import signal, SIGINT
+from signal import signal, SIGINT, SIGTERM
 from socket import socket as Socket, error as SocketError
 from socket import AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR
 from time import strftime
@@ -377,6 +377,11 @@ class Server(object):
             self.stop()
 
 
+    def zap(self, signum, frame):
+        print 'Shutting down the server...'
+        self.stop()
+
+
     def start(self):
         # Language negotiation
         init_language_selector(select_language)
@@ -401,6 +406,7 @@ class Server(object):
 
         # Set up the graceful stop
         signal(SIGINT, self.stop_gracefully)
+        signal(SIGTERM, self.zap)
 
         # Main loop !!
         self.main_loop.run()

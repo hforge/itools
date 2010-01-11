@@ -135,7 +135,8 @@ class hidden_field(thingy):
     # The user interface
     #######################################################################
     template = make_stl_template("""
-    <input type="hidden" name="${name}" value="${encoded_value}" />""")
+    <input type="hidden" id="${name}" name="${name}" value="${encoded_value}"
+    />""")
 
 
     def encoded_value(self):
@@ -155,8 +156,8 @@ class hidden_field(thingy):
 class readonly_field(hidden_field):
 
     template = make_stl_template("""
-    <input type="hidden" name="${name}" value="${encoded_value}" />
-    ${title}: ${displayed}""")
+    <input type="hidden" id="${name}" name="${name}" value="${encoded_value}"
+    /> ${title}: ${displayed}""")
 
     title = None
     displayed = None

@@ -131,11 +131,15 @@ class MailSpool(object):
 
     def _smtp_send(self):
         smtp_host = self.smtp_host
+        spool = vfs.open(self.spool)
 
         # Find out emails to send
         locks = set()
         names = set()
-        for name in vfs.get_names(self.spool):
+        for name in spool.get_names():
+            if name == 'failed':
+                # Skip "failed" special directory
+                continue
             if name[-5:] == '.lock':
                 locks.add(name[:-5])
             else:
@@ -145,31 +149,33 @@ class MailSpool(object):
         if len(names) == 0:
             return 0
 
-        # Open connection
-        try:
-            smtp = SMTP(smtp_host)
-            if self.smtp_login and self.smtp_password:
-                smtp.login(self.smtp_login, self.smtp_password)
-        except gaierror, excp:
-            log_warning('Failed to connect to SMTP host (%s)' % smtp_host,
-                        domain='itools.mail')
-            return 1
-        except Exception:
-            log_error('Failed to connect to SMTP host (%s)' % smtp_host,
-                      domain='itools.mail')
-            return 1
-
         # Send emails
         error = 0
         for name in names:
+            # 1. Open connection
             try:
-                # Send message
+                smtp = SMTP(smtp_host)
+            except gaierror, excp:
+                log_warning('Failed to connect to SMTP host (%s)' % smtp_host,
+                            domain='itools.mail')
+                break
+            except Exception:
+                log_error('Failed to connect to SMTP host (%s)' % smtp_host,
+                          domain='itools.mail')
+                break
+            log_info('CONNECTED to %s' % smtp_host, domain='itools.mail')
+
+            # 2. Login
+            if self.smtp_login and self.smtp_password:
+                smtp.login(self.smtp_login, self.smtp_password)
+
+            # 3. Send message
+            try:
                 message = spool.open(name).read()
                 headers = HeaderParser().parsestr(message)
                 subject = headers['subject']
                 from_addr = headers['from']
                 to_addr = headers['to']
-                # Send message
                 smtp.sendmail(from_addr, to_addr, message)
                 # Remove
                 spool.remove(name)
@@ -177,20 +183,24 @@ class MailSpool(object):
                 log_msg = 'Email "%s" sent from "%s" to "%s"'
                 log_info(log_msg % (subject, from_addr, to_addr),
                          domain='itools.mail')
-            except (SMTPRecipientsRefused, SMTPResponseException):
-                # The SMTP server returns an error code or the recipient
-                # addresses has been refused
+            except SMTPRecipientsRefused:
+                # The recipient addresses has been refused
                 log_error('Failed to send email', domain='itools.mail')
-                # Remove
-                spool.remove(name)
+                spool.move(name, 'failed/%s' % name)
+                error = 1
+            except SMTPResponseException, excp:
+                # The SMTP server returns an error code
+                log_error('Failed to send email', domain='itools.mail')
+                error_name = '%s_%s' % (excp.smtp_code, name)
+                spool.move(name, 'failed/%s' % error_name)
                 error = 1
             except Exception:
                 # Other error ...
                 log_error('Failed to send email', domain='itools.mail')
                 error = 1
 
-        # Close connection
-        smtp.quit()
+            # 4. Close connection
+            smtp.quit()
 
         return error
 

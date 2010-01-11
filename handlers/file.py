@@ -221,9 +221,16 @@ class File(Handler):
             raise RuntimeError, 'database inconsistency!'
 
         # Update database state
-        if self.timestamp is None and self.dirty is not None:
+        if self.timestamp:
+            # Case 1: loaded
+            self.dirty = datetime.now()
+            database.changed.add(self.uri)
+        elif self.dirty:
+            # Case 2: new
             database.added.add(self.uri)
         else:
+            # Case 3: not loaded (yet)
+            self.load_state()
             self.dirty = datetime.now()
             database.changed.add(self.uri)
 

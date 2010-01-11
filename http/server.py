@@ -17,7 +17,7 @@
 # Import from the Standard Library
 from cProfile import runctx
 from os import fstat, getpid, remove as remove_file
-from signal import signal, SIGINT
+from signal import signal, SIGINT, SIGTERM
 from sys import stdout
 
 # Import from pygobject
@@ -88,6 +88,7 @@ class HTTPServer(SoupServer):
 
         # Graceful stop
         signal(SIGINT, self.stop_gracefully)
+        signal(SIGTERM, self.zap)
         if self.pid_file:
             pid = getpid()
             open(self.pid_file, 'w').write(str(pid))
@@ -111,6 +112,11 @@ class HTTPServer(SoupServer):
         print 'Shutting down the server (gracefully)...'
         if True:
             self.stop()
+
+
+    def zap(self, signum, frame):
+        print 'Shutting down the server...'
+        self.stop()
 
 
     def stop(self):

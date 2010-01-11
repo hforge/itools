@@ -27,14 +27,15 @@ from parser import COMMENT, CDATA
 
 
 # Serialize
-def get_qname(ns_uri, name):
-    """Returns the fully qualified name"""
-    if ns_uri is None:
-        return name
-    prefix = get_namespace(ns_uri).prefix
+def get_qname(tag_uri, tag_name):
+    """Returns the fully qualified name.
+    """
+    if tag_uri is None:
+        return tag_name
+    prefix = get_namespace(tag_uri).prefix
     if prefix is None:
-        return name
-    return '%s:%s' % (prefix, name)
+        return tag_name
+    return '%s:%s' % (prefix, tag_name)
 
 
 def get_attribute_qname(namespace, local_name):
@@ -55,7 +56,8 @@ def get_attribute_qname(namespace, local_name):
     return '%s:%s' % (prefix, local_name)
 
 
-def get_start_tag(tag_uri, tag_name, attributes):
+def get_start_tag(value):
+    tag_uri, tag_name, attributes = value
     s = '<%s' % get_qname(tag_uri, tag_name)
     # Output the attributes
     for attr_uri, attr_name in attributes:
@@ -70,47 +72,37 @@ def get_start_tag(tag_uri, tag_name, attributes):
         return s + '>'
 
 
-def get_end_tag(ns_uri, name):
-    if is_empty(ns_uri, name):
+def get_end_tag(tag_uri, tag_name):
+    if is_empty(tag_uri, tag_name):
         return ''
-    return '</%s>' % get_qname(ns_uri, name)
+    return '</%s>' % get_qname(tag_uri, tag_name)
 
 
 def get_doctype(name, doctype):
     return '<!DOCTYPE %s %s>' % (name, doctype.to_str())
 
 
-def stream_to_str(stream, encoding='UTF-8'):
-    data = []
-    for event, value, line in stream:
-        if event == TEXT:
-            value = XMLContent.encode(value)
-            data.append(value)
-        elif event == START_ELEMENT:
-            ns_uri, name, attributes = value
-            data.append(get_start_tag(ns_uri, name, attributes))
-        elif event == END_ELEMENT:
-            ns_uri, name = value
-            data.append(get_end_tag(ns_uri, name))
-        elif event == COMMENT:
-            data.append('<!--%s-->' % value)
-        elif event == XML_DECL:
-            version, encoding, standalone = value
-            if standalone is None:
-                data.append('<?xml version="%s" encoding="%s"?>'
-                    % (version, encoding))
-            else:
-                data.append(
-                    '<?xml version="%s" encoding="%s" standalone="%s"?>'
-                    % (version, encoding, standalone))
-        elif event == DOCUMENT_TYPE:
-            name, doctype = value
-            data.append(get_doctype(name, doctype))
-        elif event == CDATA:
-            data.append('<![CDATA[%s]]>' % value)
-        else:
-            raise NotImplementedError, 'unknown event "%s"' % event
-    return ''.join(data)
+def stream_to_str_xmldecl(value):
+    version, encoding, standalone = value
+    if standalone is None:
+        return '<?xml version="%s" encoding="%s"?>' % (version, encoding)
+    else:
+        return '<?xml version="%s" encoding="%s" standalone="%s"?>' % value
+
+
+stream_to_str_map = (
+    stream_to_str_xmldecl,             # XML_DECL
+    lambda x: get_doctype(x[0], x[1]), # DOCUMENT_TYPE
+    get_start_tag,                     # START_ELEMENT
+    lambda x: get_end_tag(x[0], x[1]), # END_ELEMENT
+    XMLContent.encode,                 # TEXT
+    lambda x: '<!--%s-->' % x,         # COMMENT
+    lambda x: '',                      # PI
+    lambda x: '<![CDATA[%s]]>' % x)    # CDATA
+
+
+def stream_to_str(stream, encoding='UTF-8', map=stream_to_str_map):
+    return ''.join( map[x](y) for x, y, z in stream )
 
 
 

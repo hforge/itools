@@ -232,7 +232,7 @@ class CSVFile(TextFile):
                 row[column] = kw[name]
         # Index
         if self.catalog is not None:
-            self.catalog.index_document(row.number)
+            self.catalog.index_document(row)
 
 
     def del_row(self, number):

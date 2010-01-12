@@ -264,6 +264,7 @@ def translate(events, catalog, srx_handler=None):
                 if issubclass(datatype, Unicode):
                     value = value.strip()
                     if value:
+                        value = datatype.decode(value, encoding)
                         unit = ((srx_TEXT, value),)
                         context = _get_attr_context(datatype,tag_name,
                                                     attr_name)

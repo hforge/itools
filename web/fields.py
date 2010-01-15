@@ -45,6 +45,7 @@ def make_stl_template(data):
 class hidden_field(thingy):
 
     name = None
+    id = None
 
     datatype = String
     readonly = True
@@ -66,6 +67,8 @@ class hidden_field(thingy):
     def __init__(self, name=None, **kw):
         if name and not self.name:
             self.name = name
+        if self.name:
+            self.id = self.name.replace('_', '-')
 
 
     #######################################################################
@@ -135,8 +138,8 @@ class hidden_field(thingy):
     # The user interface
     #######################################################################
     template = make_stl_template("""
-    <input type="hidden" id="${name}" name="${name}" value="${encoded_value}"
-    />""")
+    <input type="hidden" id="${id}" name="${name}" value="${encoded_value}" />
+    """)
 
 
     def encoded_value(self):
@@ -156,8 +159,8 @@ class hidden_field(thingy):
 class readonly_field(hidden_field):
 
     template = make_stl_template("""
-    <input type="hidden" id="${name}" name="${name}" value="${encoded_value}"
-    /> ${title}: ${displayed}""")
+    <input type="hidden" id="${id}" name="${name}" value="${encoded_value}" />
+    ${title}: ${displayed}""")
 
     title = None
     displayed = None
@@ -176,7 +179,7 @@ class input_field(readonly_field):
     # First block: the field header
     template = make_stl_template("""
     <stl:block stl:if="title">
-      <label for="${name}">${title}</label>
+      <label for="${id}">${title}</label>
       <span stl:if="required" class="field-is-required"
         title="This field is required">*</span>
       <span stl:if="description" title="${description}">(?)</span>
@@ -188,7 +191,7 @@ class input_field(readonly_field):
 
     # Second block: the input widget (by default an input element)
     input_template = make_stl_template("""
-    <input type="${type}" name="${name}" id="${name}" value="${encoded_value}"
+    <input type="${type}" name="${name}" id="${id}" value="${encoded_value}"
       size="${size}" />""")
 
     readonly = False
@@ -219,7 +222,7 @@ class email_field(input_field):
 
 class file_field(input_field):
     input_template = make_stl_template("""
-    <input type="file" name="${name}" id="${name}" size="${size}" />
+    <input type="file" name="${name}" id="${id}" size="${size}" />
     <stl:block stl:if="preview"><br/><img src="${preview}" /></stl:block>
     """)
 
@@ -274,7 +277,7 @@ class textarea_field(input_field):
     datatype = Unicode
 
     input_template = make_stl_template("""
-    <textarea name="${name}" id="${name}" rows="${rows}" cols="${cols}"
+    <textarea name="${name}" id="${id}" rows="${rows}" cols="${cols}"
     >${value}</textarea>
     """)
 
@@ -288,8 +291,8 @@ class boolean_field(input_field):
     datatype = Boolean
 
     input_template = make_stl_template("""
-    <input type="radio" name="${name}" id="${name}" value="1" checked="${yes}"
-      /> ${yes_label}
+    <input type="radio" name="${name}" id="${id}" value="1" checked="${yes}" />
+    ${yes_label}
     <input type="radio" name="${name}" value="0" checked="${no}"/> ${no_label}
     """)
 
@@ -309,16 +312,16 @@ class boolean_field(input_field):
 class choice_field(input_field):
 
     select_template = make_stl_template("""
-    <select name="${name}" id="${name}" size="${size}" class="${css}">
+    <select name="${name}" id="${id}" size="${size}" class="${css}">
       <option stl:repeat="option options" value="${option/value}"
         selected="${option/selected}">${option/title}</option>
     </select>""")
 
     radio_template = make_stl_template("""
     <stl:block stl:repeat="option options">
-      <input type="radio" id="${name}-${option/value}" name="${name}"
+      <input type="radio" id="${id}-${option/value}" name="${name}"
         value="${option/value}" checked="${option/selected}" />
-      <label for="${name}-${option/value}">${option/title}</label>
+      <label for="${id}-${option/value}">${option/title}</label>
       <br stl:if="not oneline" />
     </stl:block>""")
 
@@ -354,7 +357,7 @@ class choice_field(input_field):
 class multiple_choice_field(choice_field):
 
     select_template = make_stl_template("""
-    <select name="${name}" id="${name}" multiple="multiple" size="${size}"
+    <select name="${name}" id="${id}" multiple="multiple" size="${size}"
       class="${css}">
       <option stl:repeat="option options" value="${option/value}"
         selected="${option/selected}">${option/title}</option>
@@ -363,9 +366,9 @@ class multiple_choice_field(choice_field):
 
     checkbox_template = make_stl_template("""
     <stl:block stl:repeat="option options">
-      <input type="checkbox" id="${name}-${option/value}" name="${name}"
+      <input type="checkbox" id="${id}-${option/value}" name="${name}"
         value="${option/value}" checked="${option/selected}" />
-      <label for="${name}-${option/value}">${option/title}</label>
+      <label for="${id}-${option/value}">${option/title}</label>
       <br stl:if="not oneline" />
     </stl:block>""")
 

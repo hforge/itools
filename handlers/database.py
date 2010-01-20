@@ -230,6 +230,11 @@ class RODatabase(BaseDatabase):
         self.cache[uri] = handler
 
 
+    def push_phantom(self, uri, handler):
+        handler.database = self
+        handler.uri = uri
+
+
     def make_room(self):
         """Remove handlers from the cache until it fits the defined size.
 
@@ -252,7 +257,7 @@ class RODatabase(BaseDatabase):
             if refcount > 3:
                 continue
             # Skip modified (not new) handlers
-            if handler.dirty is not None and not self.is_phantom(handler):
+            if handler.dirty is not None:
                 continue
             # Discard this handler
             self._discard_handler(uri)
@@ -403,8 +408,8 @@ class RWDatabase(RODatabase):
         # Phantom handlers are "new"
         if handler.timestamp or not handler.dirty:
             return False
-        # But they are not in the 'added' list
-        return handler.uri not in self.added
+        # They are attached to this database, but they are not in the cache
+        return handler.database is self and handler.uri not in self.cache
 
 
     def has_handler(self, reference):
@@ -491,12 +496,6 @@ class RWDatabase(RODatabase):
         if uri in self.removed:
             raise LookupError, 'resource already removed'
 
-        # Check for phantom handlers
-        handler = self.cache.get(uri)
-        if handler and self.is_phantom(handler):
-            self._discard_handler(uri)
-            return
-
         # Syncrhonize
         handler = self._sync_filesystem(uri)
         if not vfs.exists(uri):
@@ -553,11 +552,6 @@ class RWDatabase(RODatabase):
                                   resolve_uri2(target, name))
             self.removed.add(source)
         else:
-            # Phantom
-            if self.is_phantom(handler):
-                self._discard_handler(source)
-                return
-
             # Load if needed
             if handler.timestamp is None and handler.dirty is None:
                 handler.load_state()

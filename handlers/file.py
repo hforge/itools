@@ -216,8 +216,14 @@ class File(Handler):
             self.dirty = datetime.now()
             return
 
-        # Check nothing weird happened
+        # Phantoms
         database = self.database
+        if database.is_phantom(self):
+            database.cache[self.uri] = self
+            database.added.add(self.uri)
+            return
+
+        # Check nothing weird happened
         if self.uri is None or database.cache.get(self.uri) is not self:
             raise RuntimeError, 'database inconsistency!'
 

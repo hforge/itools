@@ -222,7 +222,11 @@ class pml_HtmlTestCase(TestCase):
 
     def test_paragraph4(self):
         handler = vfs.open('pml/paragraph.xml')
-        story, stylesheet = pmltopdf_test(handler)
+        # FIXME vfs should use the io module
+        # vfs.open returns a StringIO which does not have the name attribute
+        # so we have to add explicitly the template path required to rewrite
+        # the links
+        story, stylesheet = pmltopdf_test(handler, path='pml/paragraph.xml')
         self.assertEqual(len(story), 10)
 
 

@@ -654,6 +654,22 @@ class ROGitDatabase(RODatabase):
             'diff': '\n'.join(lines[2:])}
 
 
+    def get_diff_from(self, revision, path):
+        """Get the diff of the given path from the given commit revision to
+        HEAD.
+        """
+        cmd = ['git', 'diff', revision, path]
+        return send_subprocess(cmd)
+
+
+    def get_blob(self, revision, path):
+        """Get the file contents located at the given path after the given
+        commit revision has been commited.
+        """
+        cmd = ['git', 'show', '%s:%s' % (revision, path)]
+        return send_subprocess(cmd)
+
+
 
 class GitDatabase(RWDatabase, ROGitDatabase):
 

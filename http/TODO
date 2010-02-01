@@ -1,18 +1,65 @@
 
-- OPTIONS
-  http://bugzilla.gnome.org/show_bug.cgi?id=590751
+Last time we worked with libsoup it was with the 2.26 stable release, and
+with the 2.27 development branch.  Now the 2.28 stable version is already
+available, and 2.29 is the new development branch.
 
-- TRACE
-  http://bugzilla.gnome.org/show_bug.cgi?id=590871
+itools 0.75 should require and support libsoup 2.28, though some issues
+below may only be fixed with 2.30, or may stay open.
 
-- http://mail.gnome.org/archives/libsoup-list/2009-August/msg00000.html
 
-- Graceful stop
+Priority 1
+==========
 
-- Select address to listen
+* Check the libsoup server is really asynchronous, it reads/writes from/to
+  the sockets in parallel, while it blocks when control is passed to the
+  backend (callbacks).
 
-- Support "503 Service Unavailable"
+  Provide a test case that illustrates the behaviour.
 
-- Support "301 Moved Permanently"
+* Implement graceful stop: the server stops listening for new connections
+  but finishes to handle the connections already started (see the method
+  'stop_gracefully')
 
-- Request methods are case sensitive
+* Verify wa can make the server to listen just one address as we did before
+  libsoup (this means tha in ikaaro the listen-address config variable must
+  work).
+
+* Verify again the OPTIONS method works with the latest stable release of
+  libsoup (2.28)
+
+  - http://bugzilla.gnome.org/show_bug.cgi?id=590751
+
+
+Priority 2
+==========
+
+* Finish the access log, so we correctly log every request, whatever the
+  result is (successful connection, connection broken by client, etc.)
+
+  See discussion here:
+
+  - http://mail.gnome.org/archives/libsoup-list/2009-August/msg00000.html
+
+* Finish the event log.  Before libsoup we printed the request headers when
+  there was an error.  With libsoup it looks like it is not obvious how to
+  get this information.
+
+
+Priority 3
+==========
+
+* Implement the TRACE method (in libsoup) see bug below for details.
+
+  - http://bugzilla.gnome.org/show_bug.cgi?id=590871
+
+* Support "503 Service Unavailable".  When the server is too busy, it
+  should automatically send the 503 response.
+
+
+Priority 4
+==========
+
+* Support "301 Moved Permanently" XXX
+
+* Request methods are case sensitive XXX
+

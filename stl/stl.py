@@ -493,22 +493,27 @@ def rewrite_uris(stream, rewrite, ns_uri=xhtml_uri):
 
 class STLTemplate(thingy):
 
+    template = None
     show = True
 
 
     def get_template(self):
-        raise NotImplementedError
+        if type(self.template) is list:
+            return self.template
+
+        error = 'template variable of unexpected type "%s"'
+        raise TypeError, error % type(self.template).__name__
 
 
-    def render(self):
+    def render(self, mode='events'):
         if not self.show:
             return None
 
         # Case 1: a ready made list of events
         template = self.get_template()
         if type(template) is list:
-            return stl(events=template, namespace=self)
+            return stl(events=template, namespace=self, mode=mode)
 
         # Case 2: we assume it is a handler
-        return stl(template, self)
+        return stl(template, self, mode=mode)
 

@@ -388,7 +388,7 @@ s_server_callback (SoupMessage * s_msg, const char * path, gpointer server,
   /* Call the Python callback */
   if (!PyObject_CallMethod (server, p_server_callback, "Os", p_message, path))
     {
-      /* The Python callback should never fail, it is its responsability to
+      /* The Python callback should never fail, it is its responsibility to
        * catch and handle exceptions */
       printf("ERROR! Python's callback failed, this should never happen\n");
       abort ();
@@ -421,8 +421,9 @@ PyServerType_init (PyServer * self, PyObject * args, PyObject * kwdict)
 {
   /* Defines the parameters */
   static char *kwlist[] = { "address", "port", NULL };
-  char *address = "";
+  char *address = "localhost";
   guint port = 8080;
+
   /* libsoup variables */
   guint signal_id;
   SoupAddress *s_address;
@@ -433,31 +434,36 @@ PyServerType_init (PyServer * self, PyObject * args, PyObject * kwdict)
                                     &port))
     return -1;
 
+  /* Initialization of the Glib interface */
   /* http://bugzilla.gnome.org/show_bug.cgi?id=532778 */
   if (!g_thread_supported ())
     g_thread_init (NULL);
+  g_type_init();
 
-  /* TODO This does not work, soup_server_new fails with SOUP_SERVER_INTERFACE
-   * Loosely related, http://bugzilla.gnome.org/show_bug.cgi?id=561547
-   */
+  /* Interface specification */
   s_address = soup_address_new (address, port);
   if (!s_address)
   {
-    PyErr_Format (PyExc_RuntimeError, "could not make the SoupAddress");
+    PyErr_Format (PyExc_RuntimeError, "Bad address/port arguments");
     return -1;
   }
+  soup_address_resolve_sync(s_address, NULL);
 
+  /* Make the server */
   s_server = soup_server_new (SOUP_SERVER_SERVER_HEADER, "itools.http",
-                              /* SOUP_SERVER_INTERFACE, s_address, */
-                              SOUP_SERVER_PORT, port, NULL);
+                              SOUP_SERVER_INTERFACE, s_address,
+                              NULL);
   if (!s_server)
   {
+    /* XXX How to do that ? */
+    //g_free(s_address);
+
     PyErr_Format (PyExc_RuntimeError, "could not make the SoupServer");
     return -1;
   }
   self->s_server = s_server;
 
-  /* Handler */
+  /* Handlers */
   soup_server_add_handler (s_server, "/", s_server_path_callback, self, NULL);
   soup_server_add_handler (s_server, "*", s_server_star_callback, self, NULL);
 

@@ -20,21 +20,7 @@ from itools.core import thingy, thingy_property, thingy_lazy_property
 from itools.core import OrderedDict
 from itools.datatypes import Boolean, Email, Integer, String, Unicode
 from itools.gettext import MSG
-from itools.stl import stl
-from itools.xml import XMLParser
-
-
-###########################################################################
-# Utilities
-###########################################################################
-
-stl_namespaces = {
-    None: 'http://www.w3.org/1999/xhtml',
-    'stl': 'http://www.hforge.org/xml-namespaces/stl'}
-
-def make_stl_template(data):
-    return list(XMLParser(data, stl_namespaces))
-
+from itools.stl import stl, make_stl_template
 
 
 ###########################################################################

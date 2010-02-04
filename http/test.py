@@ -15,10 +15,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from server import HTTPServer
+from itools.http import HTTPServer, HTTPMount
 
 
-class Ping(object):
+class Ping(HTTPMount):
 
     def handle_request(self, context):
         if context.method not in ['GET', 'HEAD']:

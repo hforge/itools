@@ -18,6 +18,7 @@
 from itools.http import HTTPServer, HTTPMount
 
 
+
 class Ping(HTTPMount):
 
     def handle_request(self, context):

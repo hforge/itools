@@ -17,6 +17,7 @@
 
 #include <Python.h>
 #include <soup.h>
+#include <string.h>
 
 /* Variable names are prefixed by one letter:
  *   p_xxx - is a Python object
@@ -421,12 +422,12 @@ PyServerType_init (PyServer * self, PyObject * args, PyObject * kwdict)
 {
   /* Defines the parameters */
   static char *kwlist[] = { "address", "port", NULL };
-  char *address = "localhost";
+  char *address = "";
   guint port = 8080;
 
   /* libsoup variables */
   guint signal_id;
-  SoupAddress *s_address;
+  SoupAddress *s_address = NULL;
   SoupServer *s_server;
 
   /* Arguments */
@@ -440,18 +441,22 @@ PyServerType_init (PyServer * self, PyObject * args, PyObject * kwdict)
     g_thread_init (NULL);
   g_type_init();
 
-  /* Interface specification */
-  s_address = soup_address_new (address, port);
-  if (!s_address)
+  /* An interface is specified ? */
+  if (strcmp(address, "") != 0)
   {
-    PyErr_Format (PyExc_RuntimeError, "Bad address/port arguments");
-    return -1;
+    s_address = soup_address_new (address, port);
+    if (!s_address)
+    {
+      PyErr_Format (PyExc_RuntimeError, "Bad address/port arguments");
+      return -1;
+    }
+    soup_address_resolve_sync(s_address, NULL);
   }
-  soup_address_resolve_sync(s_address, NULL);
 
   /* Make the server */
   s_server = soup_server_new (SOUP_SERVER_SERVER_HEADER, "itools.http",
                               SOUP_SERVER_INTERFACE, s_address,
+                              SOUP_SERVER_PORT, port,
                               NULL);
   if (!s_server)
   {

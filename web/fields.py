@@ -16,11 +16,12 @@
 
 # Import from itools
 from itools.core import freeze, guess_type
-from itools.core import thingy, thingy_property, thingy_lazy_property
+from itools.core import thingy_property, thingy_lazy_property
 from itools.core import OrderedDict
 from itools.datatypes import Boolean, Email, Integer, String, Unicode
 from itools.gettext import MSG
 from itools.stl import stl, make_stl_template
+from itools.stl import STLTemplate
 
 
 ###########################################################################
@@ -28,7 +29,7 @@ from itools.stl import stl, make_stl_template
 # the most simple)
 ###########################################################################
 
-class hidden_field(thingy):
+class hidden_field(STLTemplate):
 
     name = None
     id = None
@@ -132,10 +133,6 @@ class hidden_field(thingy):
         if self.raw_value is None:
             return self.datatype.encode(self.value)
         return self.raw_value
-
-
-    def render(self):
-        return stl(events=self.template, namespace=self)
 
 
 ###########################################################################

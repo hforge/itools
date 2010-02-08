@@ -654,11 +654,16 @@ class ROGitDatabase(RODatabase):
             'diff': '\n'.join(lines[2:])}
 
 
-    def get_diff_from(self, revision, path):
+    def get_diff_between(self, from_, to='HEAD', paths=[], stat=False):
         """Get the diff of the given path from the given commit revision to
         HEAD.
+
+        If "stat" is True, get a diff stat only.
         """
-        cmd = ['git', 'diff', revision, path]
+        cmd = ['git', 'diff']
+        if stat:
+            cmd.append('--stat')
+        cmd += [from_, to] + paths
         return send_subprocess(cmd)
 
 

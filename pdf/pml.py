@@ -265,22 +265,16 @@ class Context(object):
 
     def init_base_style_sheet(self):
         self.stylesheet = getSampleStyleSheet()
-        # Add heading level 4, 5 and 6 like in html
-        self.stylesheet.add(ParagraphStyle(name='Heading4',
-                                           parent=self.stylesheet['h3'],
-                                           fontSize=11),
-                            alias='h4')
-        self.stylesheet.add(ParagraphStyle(name='Heading5',
-                                           parent=self.stylesheet['h4'],
-                                           fontSize=10),
-                            alias='h5')
-        self.stylesheet.add(ParagraphStyle(name='Heading6',
-                                           parent=self.stylesheet['h5'],
-                                           fontSize=9),
-                            alias='h6')
-        self.stylesheet.add(ParagraphStyle(name='toctitle',
-                                           parent=self.stylesheet['Normal'],
-                                           fontSize=40))
+        if float(reportlab.Version) < 2.4:
+            # Add heading level 4, 5 and 6 like in html
+            self.stylesheet.add(ParagraphStyle(name='Heading4',
+                parent=self.stylesheet['h3'], fontSize=11), alias='h4')
+            self.stylesheet.add(ParagraphStyle(name='Heading5',
+                parent=self.stylesheet['h4'], fontSize=10), alias='h5')
+            self.stylesheet.add(ParagraphStyle(name='Heading6',
+                parent=self.stylesheet['h5'], fontSize=9), alias='h6')
+            self.stylesheet.add(ParagraphStyle(name='toctitle',
+                parent=self.stylesheet['Normal'], fontSize=40))
 
 
     def get_base_style_sheet(self):

@@ -54,15 +54,15 @@ class WorkflowTestCase(TestCase):
 
     def test(self):
         doc = Document()
-        self.assertEqual(doc.get_statename(), 'private')
+        self.assertEqual(doc.get_workflow_state(), 'private')
         doc.do_trans('request', 'First Request')
-        self.assertEqual(doc.get_statename(), 'pending')
+        self.assertEqual(doc.get_workflow_state(), 'pending')
         doc.do_trans('reject', 'First Reject')
-        self.assertEqual(doc.get_statename(), 'private')
+        self.assertEqual(doc.get_workflow_state(), 'private')
         doc.do_trans('request', 'Second Request')
-        self.assertEqual(doc.get_statename(), 'pending')
+        self.assertEqual(doc.get_workflow_state(), 'pending')
         doc.do_trans('accept', 'Final Accept')
-        self.assertEqual(doc.get_statename(), 'public')
+        self.assertEqual(doc.get_workflow_state(), 'public')
 
 
 

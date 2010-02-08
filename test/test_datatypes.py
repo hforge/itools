@@ -104,33 +104,12 @@ class BasicTypeTest(TestCase):
 class EnumerateTestCase(TestCase):
 
     class AnEnumerate(Enumerate):
-        options = [{'name':'name1', 'value':'value1'},
-                   {'name':'name2', 'value':'value2'},
-                   {'name':'name3', 'value':'value3'}]
-
-
-    def test_get_options(self):
-        self.assertEqual(self.AnEnumerate.get_options(),
-                         self.AnEnumerate.options)
+        values = set(['name1', 'name2', 'name3'])
 
 
     def test_is_valid(self):
         self.assertEqual(self.AnEnumerate.is_valid('name2'), True)
         self.assertEqual(self.AnEnumerate.is_valid('name4'), False)
-
-
-    def test_get_namespace(self):
-        result = self.AnEnumerate.get_namespace(['name1', 'name2', 'name4'])
-        self.assertEqual([d['selected'] for d in result],
-                         [ True, True, False])
-
-
-    def test_get_value(self):
-        for i in range(1,4):
-            self.assertEqual(self.AnEnumerate.get_value(
-                                'name%d' % i),
-                                'value%d' % i)
-            self.assertEqual(self.AnEnumerate.get_value('name4'), None)
 
 
 

@@ -481,12 +481,10 @@ class icalTestCase(TestCase):
         date = datetime(2005, 5, 29)
         events = cal.search_events_in_date(date)
         self.assertEqual(len(events), 0)
-        self.assertEqual(cal.has_event_in_date(date), False)
 
         date = datetime(2005, 5, 30)
         events = cal.search_events_in_date(date)
         self.assertEqual(len(events), 1)
-        self.assertEqual(cal.has_event_in_date(date), True)
 
         events = cal.search_events_in_date(date, STATUS='TENTATIVE')
         self.assertEqual(len(events), 1)
@@ -506,7 +504,6 @@ class icalTestCase(TestCase):
         date = datetime(2005, 7, 30)
         events = cal.search_events_in_date(date)
         self.assertEqual(len(events), 0)
-        self.assertEqual(cal.has_event_in_date(date), False)
 
 
     def test_search_events_in_range(self):
@@ -917,12 +914,10 @@ class icalTableTestCase(TestCase):
         date = datetime(2005, 5, 29)
         events = cal.search_events_in_date(date)
         self.assertEqual(len(events), 0)
-        self.assertEqual(cal.has_event_in_date(date), False)
 
         date = datetime(2005, 5, 30)
         events = cal.search_events_in_date(date)
         self.assertEqual(len(events), 1)
-        self.assertEqual(cal.has_event_in_date(date), True)
 
         events = cal.search_events_in_date(date, STATUS='TENTATIVE')
         self.assertEqual(len(events), 1)
@@ -942,7 +937,6 @@ class icalTableTestCase(TestCase):
         date = datetime(2005, 7, 30)
         events = cal.search_events_in_date(date)
         self.assertEqual(len(events), 0)
-        self.assertEqual(cal.has_event_in_date(date), False)
 
 
     def test_search_events_in_range(self):

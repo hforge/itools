@@ -311,7 +311,7 @@ static PyMethodDef PyMessage_methods[] = {
   {"set_header", (PyCFunction) PyMessage_set_header, METH_VARARGS,
    "Set the given response header"},
   {"set_response", (PyCFunction) PyMessage_set_response, METH_VARARGS,
-   "Set the repsonse body"},
+   "Set the response body"},
   {"set_status", (PyCFunction) PyMessage_set_status, METH_VARARGS,
    "Set the response status code"},
   {NULL} /* Sentinel */

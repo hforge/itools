@@ -110,8 +110,7 @@ class HTTPServer(SoupServer):
 
         # Quit
         print 'Shutting down the server (gracefully)...'
-        if True:
-            self.stop()
+        self.stop()
 
 
     def zap(self, signum, frame):
@@ -120,6 +119,7 @@ class HTTPServer(SoupServer):
 
 
     def stop(self):
+        SoupServer.stop(self)
         self.main_loop.quit()
         if self.pid_file:
             remove_file(self.pid_file)

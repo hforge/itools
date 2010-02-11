@@ -24,7 +24,7 @@ from subprocess import call, PIPE, CalledProcessError
 from sys import getrefcount
 
 # Import from itools
-from itools.core import LRUCache, send_subprocess, read_subprocess
+from itools.core import LRUCache, send_subprocess, freeze
 from itools.uri import get_reference, get_uri_name, get_uri_path, resolve_uri2
 from itools import vfs
 from itools.vfs import cwd, READ, WRITE, READ_WRITE, APPEND
@@ -674,6 +674,21 @@ class ROGitDatabase(RODatabase):
             'diff': '\n'.join(lines[2:])}
 
 
+    def get_files_affected(self, revisions):
+        """Get the unordered set of files affected by a  list of revisions.
+        """
+        cmd = ['git', 'show', '--numstat', '--pretty=format:'] + revisions
+        data = send_subprocess(cmd)
+        lines = data.splitlines()
+        files = set()
+        for line in lines:
+            if not line:
+                continue
+            before, after, filename = line.split('\t')
+            files.add(filename)
+        return freeze(files)
+
+
     def get_diff_between(self, from_, to='HEAD', paths=[], stat=False):
         """Get the diff of the given path from the given commit revision to
         HEAD.
@@ -683,7 +698,10 @@ class ROGitDatabase(RODatabase):
         cmd = ['git', 'diff']
         if stat:
             cmd.append('--stat')
-        cmd += [from_, to] + paths
+        cmd += [from_, to]
+        if paths:
+            cmd.append('--')
+            cmd.extend(paths)
         return send_subprocess(cmd)
 
 

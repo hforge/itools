@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools import vfs
+from itools.vfs import vfs
 
 
 handler_classes = {}

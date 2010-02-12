@@ -30,7 +30,7 @@ from itools.handlers import register_handler_class, ZIPFile
 from itools.xml import XMLParser, XML_DECL, START_ELEMENT, TEXT
 from itools.xml import stream_to_str, xml_to_text
 from itools.xmlfile import get_units, translate
-from itools import vfs
+from itools.vfs import vfs
 
 # Import from the Python Image Library
 try:

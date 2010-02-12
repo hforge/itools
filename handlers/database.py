@@ -26,8 +26,7 @@ from sys import getrefcount
 # Import from itools
 from itools.core import LRUCache, send_subprocess, read_subprocess
 from itools.uri import get_reference, get_uri_name, get_uri_path, resolve_uri2
-from itools import vfs
-from itools.vfs import cwd, READ, WRITE, READ_WRITE, APPEND
+from itools.vfs import vfs, READ, WRITE, READ_WRITE, APPEND
 from folder import Folder
 import messages
 from registry import get_handler_class
@@ -138,7 +137,7 @@ class RODatabase(BaseDatabase):
     def _resolve_reference(self, reference):
         """Resolves and returns the given reference.
         """
-        return cwd.get_uri(reference)
+        return vfs.get_uri(reference)
 
 
     def _resolve_reference_for_writing(self, reference):
@@ -401,7 +400,7 @@ class RWDatabase(RODatabase):
     def _resolve_reference_for_writing(self, reference):
         """Resolves and returns the given reference.
         """
-        return cwd.get_uri(reference)
+        return vfs.get_uri(reference)
 
 
     def is_phantom(self, handler):
@@ -652,7 +651,7 @@ class ROGitDatabase(RODatabase):
 
     def __init__(self, path, size_min=4800, size_max=5200):
         RODatabase.__init__(self, size_min, size_max)
-        uri = cwd.get_uri(path)
+        uri = vfs.get_uri(path)
         uri = get_reference(uri)
         if uri.scheme != 'file':
             raise ValueError, 'unexpected "%s" path' % path
@@ -708,7 +707,7 @@ class GitDatabase(RWDatabase, ROGitDatabase):
         is, return the resolved reference as an string.
         """
         # Resolve the reference
-        uri = cwd.get_uri(reference)
+        uri = vfs.get_uri(reference)
         uri_ = get_reference(uri)
         # Security check
         if uri_.scheme != 'file':

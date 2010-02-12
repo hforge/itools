@@ -17,9 +17,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools import vfs
 from itools.uri import resolve_uri2
-from itools.vfs import cwd
+from itools.vfs import vfs
 from base import Handler
 from messages import *
 from registry import register_handler_class
@@ -46,7 +45,7 @@ class Folder(Handler):
 
     def __init__(self, ref=None, **kw):
         if ref is not None:
-            self.uri = cwd.get_uri(ref)
+            self.uri = vfs.get_uri(ref)
 
 
     def get_mtime(self):

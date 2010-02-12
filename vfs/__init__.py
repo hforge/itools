@@ -17,14 +17,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from folder import READ, WRITE, READ_WRITE, APPEND
+from base import READ, WRITE, READ_WRITE, APPEND
 from filename import FileName
-from vfs import cwd
-from vfs import get_ctime, get_mtime, get_atime, get_mimetype, get_size
-from vfs import exists, is_file, is_folder, can_read, can_write
-from vfs import make_file, make_folder
-from vfs import open, remove, copy, move
-from vfs import get_names, traverse, mount_archive
+from vfs import vfs
 
 # Import from gio
 from gio import Error
@@ -32,7 +27,7 @@ from gio import Error
 
 
 __all__ = [
-    'cwd',
+    'vfs',
     # Datatypes
     'FileName',
     # File modes
@@ -40,25 +35,5 @@ __all__ = [
     'WRITE',
     'READ_WRITE',
     'APPEND',
-    # Functions
-    'exists',
-    'is_file',
-    'is_folder',
-    'can_read',
-    'can_write',
-    'get_ctime',
-    'get_mtime',
-    'get_atime',
-    'get_mimetype',
-    'get_size',
-    'make_file',
-    'make_folder',
-    'open',
-    'remove',
-    'copy',
-    'move',
-    'get_names',
-    'traverse',
-    'mount_archive',
     'Error']
 

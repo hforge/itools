@@ -27,7 +27,7 @@ from itools.core import add_type
 from itools.uri import get_uri_name
 from file import File
 from registry import register_handler_class
-from itools import vfs
+from itools.vfs import vfs
 
 
 class ZIPFile(File):

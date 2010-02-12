@@ -34,7 +34,7 @@ from itools.html import XHTMLFile
 import itools.pdf
 from itools.pkg import SetupConf, get_files, get_manifest, make_version
 import itools.stl
-from itools import vfs
+from itools.vfs import vfs
 
 
 

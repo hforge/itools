@@ -21,8 +21,7 @@ from cStringIO import StringIO
 from datetime import datetime
 
 # Import from itools
-from itools import vfs
-from itools.vfs import cwd
+from itools.vfs import vfs
 from registry import register_handler_class
 from base import Handler
 
@@ -61,7 +60,7 @@ class File(Handler):
                 # A handler from some input data
                 self.new(**kw)
         else:
-            self.uri = cwd.get_uri(ref)
+            self.uri = vfs.get_uri(ref)
 
 
     def reset(self):

@@ -24,7 +24,7 @@ from xapian import Document, Query, inmemory_open
 
 # Import from itools
 from itools.uri import get_reference
-from itools.vfs import cwd
+from itools.vfs import vfs
 from queries import AllQuery, AndQuery, NotQuery, OrQuery, PhraseQuery
 from queries import RangeQuery, StartQuery
 from results import SearchResults
@@ -66,7 +66,7 @@ class Catalog(object):
         if isinstance(ref, Database) or isinstance(ref, WritableDatabase):
             self._db = ref
         else:
-            uri = cwd.get_uri(ref)
+            uri = vfs.get_uri(ref)
             uri = get_reference(uri)
             if uri.scheme != 'file':
                 raise IOError, ('The file system supported with catalog is '
@@ -431,7 +431,7 @@ def make_catalog(uri, fields):
         return Catalog(db, fields, asynchronous_mode=False)
 
     # In the local filesystem
-    uri = cwd.get_uri(uri)
+    uri = vfs.get_uri(uri)
     uri = get_reference(uri)
     if uri.scheme != 'file':
         raise IOError, 'The file system supported with catalog is only "file"'

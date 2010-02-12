@@ -32,8 +32,7 @@ from itools.core import freeze, get_abspath
 from itools.datatypes import XMLContent
 from itools.stl import set_prefix, stl
 from itools.uri import get_reference, get_uri_path
-from itools import vfs
-from itools.vfs import cwd
+from itools.vfs import vfs
 from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, TEXT
 from itools.xml import get_end_tag
 from itools.xmlfile import XMLFile
@@ -123,7 +122,7 @@ def pmltopdf(document, path=None):
     events = XMLParser(data, {None: pml_uri})
 
     if path:
-        uri = cwd.get_uri(path)
+        uri = vfs.get_uri(path)
         prefix = get_reference(uri).path
         stream = set_prefix(events, prefix, ns_uri=pml_uri)
 
@@ -148,7 +147,7 @@ def stl_pmltopdf(document, namespace=freeze({}), path=None, mode='pdf'):
         events = stl(events=events, namespace=namespace)
 
     if path:
-        uri = cwd.get_uri(path)
+        uri = vfs.get_uri(path)
         prefix = get_reference(uri).path
         events = set_prefix(events, prefix, ns_uri=pml_uri)
 
@@ -183,7 +182,7 @@ def pmltopdf_test(document, path=None):
     events = XMLParser(data, {None: pml_uri})
 
     if path:
-        uri = cwd.get_uri(path)
+        uri = vfs.get_uri(path)
         prefix = get_reference(uri).path
         events = set_prefix(events, prefix, ns_uri=pml_uri)
 
@@ -208,7 +207,7 @@ def stl_pmltopdf_test(document, namespace=freeze({}), path=None):
         events = stl(events=events, namespace=namespace)
 
     if path:
-        uri = cwd.get_uri(path)
+        uri = vfs.get_uri(path)
         prefix = get_reference(uri).path
         events = set_prefix(events, prefix, ns_uri=pml_uri)
 

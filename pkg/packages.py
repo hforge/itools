@@ -19,26 +19,25 @@
 from operator import itemgetter
 from os import sep
 from os.path import join, split
-from sys import path
+from sys import path as python_path
 
 # Import from itools
-from itools.vfs import get_ctime
-from itools.vfs import get_names, exists, is_file, is_folder
+from itools.vfs import vfs
 from metadata import get_package_version, parse_setupconf, PKGINFOFile
 from packages_db import PACKAGES_DB
 
 
 def get_setupconf(package):
     setupconf = join(package, "setup.conf")
-    if is_file(setupconf):
+    if vfs.is_file(setupconf):
         return parse_setupconf(package)
     return None
 
 
 def get_egginfo(egginfo):
-    if is_folder(egginfo) and egginfo.endswith('.egg-info'):
+    if vfs.is_folder(egginfo) and egginfo.endswith('.egg-info'):
         egginfo = join(egginfo, 'PKG-INFO')
-    elif not (is_file(egginfo) and egginfo.endswith('.egg-info')):
+    elif not (vfs.is_file(egginfo) and egginfo.endswith('.egg-info')):
         return None
 
     handler = PKGINFOFile(egginfo)
@@ -49,7 +48,8 @@ def get_egginfo(egginfo):
 
 def get_minpackage(dir):
     package = split(dir)[1]
-    if exists(join(dir, '__init__.py')) and is_file(join(dir, '__init__.py')):
+    path = join(dir, '__init__.py')
+    if vfs.exists(path) and vfs.is_file(path):
         return {'name': package, 'version': get_package_version(package)}
     return None
 
@@ -62,10 +62,10 @@ def get_installed_info(dir, package_name):
         return info
 
     entries = [
-        join(dir, f) for f in get_names(dir)
+        join(dir, f) for f in vfs.get_names(dir)
         if f.endswith('.egg-info') and package_name.upper() in f.upper() ]
 
-    entries.sort(lambda a, b: cmp(get_ctime(a), get_ctime(b)))
+    entries.sort(lambda a, b: cmp(vfs.get_ctime(a), vfs.get_ctime(b)))
 
     if len(entries) > 0:
         info = get_egginfo(join(dir, entries.pop()))
@@ -80,7 +80,7 @@ def get_installed_info(dir, package_name):
 def packages_infos(module_name=None):
     # find the site-packages absolute path
     sites = set([])
-    for dir in path:
+    for dir in python_path:
         if 'site-packages' in dir:
             dir = dir.split(sep)
             sites.add(sep.join(dir[:dir.index('site-packages')+1]))
@@ -100,7 +100,7 @@ def packages_infos(module_name=None):
     for site in sites:
         for db_name, db_version, db_module in PACKAGES_DB:
             db_version = db_version.replace('*', '')
-            for egg_info in get_names(site):
+            for egg_info in vfs.get_names(site):
                 egg_split = egg_info[:-len('.egg-info')].split('-')
                 egg_name = egg_split[0]
                 if egg_name != db_name:
@@ -126,7 +126,7 @@ def packages_infos(module_name=None):
     #egg_packages = []
 
     for site in sites:
-        for package in get_names(site):
+        for package in vfs.get_names(site):
             if package in module_mask:
                 continue
 

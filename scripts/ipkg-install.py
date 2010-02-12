@@ -43,8 +43,7 @@ import socket
 from itools import __version__
 from itools.pkg import parse_package_name, download, get_installed_info
 from itools.pkg import EXTENSIONS, Bundle
-from itools.vfs import exists, make_folder
-from itools import vfs
+from itools.vfs import vfs
 
 
 # See --cache-dir option description
@@ -143,8 +142,8 @@ def prepare(package_spec):
                    repo_str)
 
     # Cache listing
-    if not exists(CACHE_DIR):
-        make_folder(CACHE_DIR)
+    if not vfs.exists(CACHE_DIR):
+        vfs.make_folder(CACHE_DIR)
 
     cache_candidates = []
     cache_dir = vfs.open(CACHE_DIR)

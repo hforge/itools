@@ -104,3 +104,32 @@ itools.xapian
   # Now
   n = len(results)
 
+
+itools.vfs
+==========
+
+The "vfs" module is now imported from the "itools.vfs" namespace:
+
+  # Before
+  from itools import vfs
+
+  # After
+  from itools.vfs import vfs
+
+The "cwd" object is now named "vfs":
+
+  # Before
+  from itools.vfs import cwd
+
+  # After
+  from itools.vfs import vfs
+
+All "vfs" functions are now "vfs" methods:
+
+  # Before
+  from itools.vfs import exists
+  exists(uri)
+
+  # After
+  from itools.vfs import vfs
+  vfs.exists(uri)

@@ -21,7 +21,7 @@ from datetime import datetime
 from unittest import TestCase, main
 
 # Import from itools
-from itools import vfs
+from itools.vfs import vfs
 from itools.vfs import APPEND, WRITE, FileName
 
 

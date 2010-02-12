@@ -22,7 +22,7 @@ from rfc822 import Message
 # Import from itools
 from itools.datatypes import String, LanguageTag, Tokens
 from itools.handlers import ConfigFile, TextFile, register_handler_class
-from itools.vfs import exists, is_folder
+from itools.vfs import vfs
 
 
 class SetupFile(ConfigFile):
@@ -155,14 +155,14 @@ def parse_setupconf(package_dir):
     plus the version of the package
     """
     attributes = {}
-    if not is_folder(package_dir):
+    if not vfs.is_folder(package_dir):
         return attributes
-    if not exists(join(package_dir, "setup.conf")):
+    if not vfs.exists(join(package_dir, "setup.conf")):
         return attributes
     config = SetupFile(join(package_dir, "setup.conf"))
     for attribute in config.schema:
         attributes[attribute] = config.get_value(attribute)
-    if exists(join(package_dir, "version.txt")):
+    if vfs.exists(join(package_dir, "version.txt")):
         attributes['version'] = open(join(package_dir, "version.txt")).read()
     else:
         attributes['version'] = get_package_version(attributes['name'])

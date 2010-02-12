@@ -34,7 +34,7 @@ import itools.stl
 import itools.pdf
 import itools.srx
 from itools.uri import Path
-from itools import vfs
+from itools.vfs import vfs
 from itools.vfs import WRITE
 
 

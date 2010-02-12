@@ -25,7 +25,7 @@ from math import floor
 # Import from itools
 from itools.datatypes import Unicode, Integer
 from itools.handlers import Image as ItoolsImage
-from itools import vfs
+from itools.vfs import vfs
 
 # Import from reportlab
 from reportlab.lib import colors

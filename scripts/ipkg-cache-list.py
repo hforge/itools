@@ -31,7 +31,7 @@ from tempfile import gettempdir
 from itools import __version__
 from itools.pkg import parse_package_name, Bundle
 from itools.pkg import ArchiveNotSupported, EXTENSIONS
-from itools.vfs import exists, open, make_folder
+from itools.vfs import vfs
 
 
 TMP_DIR = '%s/Packages' % gettempdir()
@@ -49,10 +49,10 @@ if __name__ == '__main__':
     options, args = parser.parse_args()
 
     CACHE_DIR = options.cache_dir
-    if not exists(CACHE_DIR):
-        make_folder(CACHE_DIR)
+    if not vfs.exists(CACHE_DIR):
+        vfs.make_folder(CACHE_DIR)
 
-    cache_dir = open(CACHE_DIR)
+    cache_dir = vfs.open(CACHE_DIR)
 
     print "Packages in cache %s" % CACHE_DIR
     for filename in cache_dir.get_names('.'):

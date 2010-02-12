@@ -27,8 +27,7 @@ from os.path import abspath, relpath, normpath
 from shutil import rmtree, copytree, copy as shutil_copy, move as shutil_move
 
 # Import from itools
-from base import get_mimetype
-from vfs import WRITE, READ_WRITE, APPEND, READ
+from common import WRITE, READ_WRITE, APPEND, READ, get_mimetype
 
 
 MODES = {WRITE: 'wb', READ_WRITE: 'r+b', APPEND: 'ab', READ: 'rb'}

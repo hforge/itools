@@ -16,22 +16,64 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 # Import from itools
-from itools.core import guess_type
-from filename import FileName
+from itools.core import guess_type, has_encoding, has_extension
+from itools.datatypes import DataType
+from itools.i18n import has_language
 
 
-######################################################################
-# Constants
-######################################################################
 READ = 'r'
 WRITE = 'w'
 READ_WRITE = 'rw'
 APPEND = 'a'
 
 
-######################################################################
-# Public API
-######################################################################
+
+class FileName(DataType):
+    """A filename is tuple consisting of a name, a type and a language.
+    """
+    # TODO Consider the compression encoding (gzip, ...)
+    # TODO Consider the character encoding (utf-8, ...)
+
+    @staticmethod
+    def decode(data):
+        parts = data.rsplit('.', 1)
+        # Case 1: name
+        if len(parts) == 1:
+            return data, None, None
+
+        name, ext = parts
+        # Case 2: name.encoding
+        if has_encoding(ext):
+            return name, ext, None
+
+        if '.' in name:
+            a, b = name.rsplit('.', 1)
+            if has_extension(b) and has_language(ext):
+                # Case 3: name.type.language
+                return a, b, ext
+        if has_extension(ext):
+            # Case 4: name.type
+            return name, ext, None
+        elif has_language(ext):
+            # Case 5: name.language
+            return name, None, ext
+
+        # Case 1: name
+        return data, None, None
+
+
+    @staticmethod
+    def encode(value):
+        name, type, language = value
+        if type is not None:
+            name = name + '.' + type
+        if language is not None:
+            name = name + '.' + language
+        return name
+
+
+
+
 def get_mimetype(name):
     """Try to guess the mimetype given the name. To guess from the name we
     need to extract the type extension, we use an heuristic for this task,

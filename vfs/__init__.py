@@ -19,6 +19,7 @@
 # Import from itools
 from base import READ, WRITE, READ_WRITE, APPEND
 from filename import FileName
+from lfs import lfs
 from vfs import vfs
 
 # Import from gio
@@ -27,6 +28,7 @@ from gio import Error
 
 
 __all__ = [
+    'lfs',
     'vfs',
     # Datatypes
     'FileName',
@@ -35,5 +37,5 @@ __all__ = [
     'WRITE',
     'READ_WRITE',
     'APPEND',
+    # Exceptions
     'Error']
-

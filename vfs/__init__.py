@@ -17,8 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from base import READ, WRITE, READ_WRITE, APPEND
-from filename import FileName
+from common import READ, WRITE, READ_WRITE, APPEND, FileName
 from lfs import lfs
 from vfs import vfs
 

@@ -32,7 +32,7 @@ from itools.core import freeze, get_abspath
 from itools.datatypes import XMLContent
 from itools.stl import set_prefix, stl
 from itools.uri import get_reference, get_uri_path
-from itools.vfs import vfs
+from itools.fs import vfs
 from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, TEXT
 from itools.xml import get_end_tag
 from itools.xmlfile import XMLFile

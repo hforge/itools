@@ -22,7 +22,7 @@ from itools.xml import register_namespace, has_namespace
 from itools.datatypes import Boolean, Date, DateTime, Decimal, Integer
 from itools.datatypes import QName, String, Time, Unicode, URI
 from itools.uri import get_reference
-from itools.vfs import vfs
+from itools.fs import vfs
 
 
 # Namespace of Relax NG

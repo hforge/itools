@@ -24,7 +24,7 @@ from optparse import OptionParser
 # Import from itools
 import itools
 from itools.core import get_pipe
-from itools.vfs import vfs
+from itools.fs import vfs
 
 
 def parse_copyright(line):

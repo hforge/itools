@@ -234,7 +234,7 @@ class Folder(object):
         """Try to guess the mimetype for a resource, given the resource
         itself and its name.
 
-        See `itools.vfs.base.get_mimetype` for complete description.
+        See `itools.fs.base.get_mimetype` for complete description.
         """
         g_file = self._get_g_file(uri)
         # TODO Use magic numbers too (like file -i).

@@ -26,7 +26,7 @@ from sys import getrefcount
 # Import from itools
 from itools.core import LRUCache, send_subprocess, read_subprocess
 from itools.uri import get_reference, get_uri_name, get_uri_path, resolve_uri2
-from itools.vfs import vfs, READ, WRITE, READ_WRITE, APPEND
+from itools.fs import vfs, READ, WRITE, READ_WRITE, APPEND
 from folder import Folder
 import messages
 from registry import get_handler_class

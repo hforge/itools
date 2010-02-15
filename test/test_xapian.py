@@ -24,7 +24,7 @@ from unittest import TestCase, main
 # Import from itools
 from itools.datatypes import String, Unicode, Boolean, Integer
 from itools.uri import get_reference
-from itools.vfs import vfs
+from itools.fs import vfs
 from itools.xapian import make_catalog, Catalog, CatalogAware, StartQuery
 from itools.xapian import AndQuery, RangeQuery, PhraseQuery, NotQuery
 from itools.xapian.catalog import _index

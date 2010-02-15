@@ -23,7 +23,7 @@ from unittest import TestCase, main
 from itools.datatypes import Boolean, Date, Integer, Unicode, URI, String
 from itools.csv import CSVFile, Table, UniqueError
 from itools.csv.table import parse_table, unfold_lines
-from itools.vfs import vfs
+from itools.fs import vfs
 from itools.xapian import AndQuery, OrQuery, PhraseQuery
 
 

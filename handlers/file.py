@@ -22,7 +22,7 @@ from datetime import datetime
 
 # Import from itools
 from itools.uri import get_reference
-from itools.vfs import vfs
+from itools.fs import vfs
 from registry import register_handler_class
 from base import Handler
 

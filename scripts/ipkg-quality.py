@@ -48,7 +48,8 @@ except ImportError:
 # Import from itools
 import itools
 from itools.core import merge_dicts
-from itools import git, vfs
+from itools.fs import vfs
+from itools.git import git
 
 
 # Define list of problems

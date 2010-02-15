@@ -23,7 +23,7 @@ from os.path import join, split
 from sys import path as python_path
 
 # Import from itools
-from itools.vfs import vfs
+from itools.fs import vfs
 from metadata import get_package_version, parse_setupconf, PKGINFOFile
 from packages_db import PACKAGES_DB
 

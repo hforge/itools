@@ -200,8 +200,8 @@ class LocalFolder(object):
         # '/a/b/' + 'c' => '/a/b/c'
         if endswith_slash:
             return join(base, reference)
-        return join(dirname(base), reference)
         # '/a/b' + 'c' => '/a/c'
+        return join(dirname(base), reference)
 
 
     @staticmethod

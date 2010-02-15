@@ -24,7 +24,7 @@ from xapian import Document, Query, inmemory_open
 
 # Import from itools
 from itools.uri import get_reference
-from itools.vfs import vfs
+from itools.fs import vfs
 from queries import AllQuery, AndQuery, NotQuery, OrQuery, PhraseQuery
 from queries import RangeQuery, StartQuery
 from results import SearchResults

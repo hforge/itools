@@ -26,7 +26,7 @@ from itools.handlers import get_handler, get_handler_class
 from itools.handlers import RWDatabase, make_git_database
 from itools.handlers import TextFile, ConfigFile, TGZFile
 from itools.uri import get_reference
-from itools.vfs import vfs
+from itools.fs import vfs
 
 
 

@@ -33,7 +33,7 @@ from gobject import idle_add, timeout_add_seconds
 
 # Import from itools
 from itools.log import log_info, log_warning, log_error
-from itools.vfs import vfs
+from itools.fs import vfs
 
 
 # Force email to send UTF-8 mails in plain text

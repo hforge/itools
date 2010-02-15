@@ -22,7 +22,7 @@ from rfc822 import Message
 # Import from itools
 from itools.datatypes import String, LanguageTag, Tokens
 from itools.handlers import ConfigFile, TextFile, register_handler_class
-from itools.vfs import vfs
+from itools.fs import vfs
 
 
 class SetupFile(ConfigFile):

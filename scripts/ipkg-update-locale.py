@@ -34,8 +34,8 @@ import itools.stl
 import itools.pdf
 import itools.srx
 from itools.uri import Path
-from itools.vfs import vfs
-from itools.vfs import WRITE
+from itools.fs import vfs
+from itools.fs import WRITE
 
 
 def write(text):

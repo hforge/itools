@@ -31,7 +31,7 @@ from tempfile import gettempdir
 from itools import __version__
 from itools.pkg import parse_package_name, Bundle
 from itools.pkg import ArchiveNotSupported, EXTENSIONS
-from itools.vfs import vfs
+from itools.fs import vfs
 
 
 TMP_DIR = '%s/Packages' % gettempdir()

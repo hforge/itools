@@ -17,8 +17,8 @@
 
 # Import from itools
 from itools.uri import get_uri_name, resolve_name
-from itools.vfs import vfs
-from itools.vfs import WRITE
+from itools.fs import vfs
+from itools.fs import WRITE
 
 
 # List of supported extensions

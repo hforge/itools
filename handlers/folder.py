@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.vfs import vfs
+from itools.fs import vfs
 from base import Handler
 from registry import register_handler_class
 

@@ -26,7 +26,7 @@ from sys import getrefcount
 # Import from itools
 from itools.core import LRUCache, send_subprocess, read_subprocess
 from itools.uri import get_reference, get_uri_name, get_uri_path, resolve_uri2
-from itools.fs import vfs, READ, WRITE, READ_WRITE, APPEND
+from itools.fs import vfs, lfs, READ, WRITE, READ_WRITE, APPEND
 from folder import Folder
 import messages
 from registry import get_handler_class
@@ -762,7 +762,7 @@ def make_git_database(path, size_min, size_max):
     initialized and the content of the folder will be added to it in a first
     commit.
     """
-    if not vfs.exists(path):
+    if not lfs.exists(path):
         mkdir(path)
     # Init
     command = ['git', 'init', '-q']

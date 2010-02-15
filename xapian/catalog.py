@@ -23,8 +23,7 @@ from xapian import Database, WritableDatabase, DB_CREATE, DB_OPEN
 from xapian import Document, Query, inmemory_open
 
 # Import from itools
-from itools.uri import get_reference
-from itools.fs import vfs
+from itools.fs import lfs
 from base import CatalogAware
 from queries import AllQuery, AndQuery, NotQuery, OrQuery, PhraseQuery
 from queries import RangeQuery, StartQuery
@@ -64,13 +63,7 @@ class Catalog(object):
         if isinstance(ref, Database) or isinstance(ref, WritableDatabase):
             self._db = ref
         else:
-            uri = vfs.get_uri(ref)
-            uri = get_reference(uri)
-            if uri.scheme != 'file':
-                raise IOError, ('The file system supported with catalog is '
-                                'only "file"')
-            path = str(uri.path)
-
+            path = lfs.get_absolute_path(ref)
             if read_only:
                 self._db = Database(path)
             else:
@@ -426,12 +419,6 @@ def make_catalog(uri, fields):
         return Catalog(db, fields, asynchronous_mode=False)
 
     # In the local filesystem
-    uri = vfs.get_uri(uri)
-    uri = get_reference(uri)
-    if uri.scheme != 'file':
-        raise IOError, 'The file system supported with catalog is only "file"'
-
-    path = str(uri.path)
+    path = lfs.get_absolute_path(uri)
     db = WritableDatabase(path, DB_CREATE)
     return Catalog(db, fields)
-

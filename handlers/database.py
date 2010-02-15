@@ -129,15 +129,16 @@ class RODatabase(BaseDatabase):
     """The read-only database works as a cache for file handlers.
     """
 
-    def __init__(self, size_min=4800, size_max=5200):
+    def __init__(self, size_min=4800, size_max=5200, fs=None):
         # A mapping from URI to handler
         self.cache = LRUCache(size_min, size_max, automatic=False)
+        self.fs = fs or vfs
 
 
     def _resolve_reference(self, reference):
         """Resolves and returns the given reference.
         """
-        return vfs.get_uri(reference)
+        return self.fs.get_uri(reference)
 
 
     def _resolve_reference_for_writing(self, reference):
@@ -160,7 +161,7 @@ class RODatabase(BaseDatabase):
         # (1) Not yet loaded
         if handler.timestamp is None and handler.dirty is None:
             # Removed from the filesystem
-            if not vfs.exists(uri):
+            if not self.fs.exists(uri):
                 self._discard_handler(uri)
                 return None
             # Everything looks fine
@@ -171,7 +172,7 @@ class RODatabase(BaseDatabase):
         # (2) New handler
         if handler.timestamp is None and handler.dirty is not None:
             # Everything looks fine
-            if not vfs.exists(uri):
+            if not self.fs.exists(uri):
                 return handler
             # Conflict
             error = 'new file in the filesystem and new handler in the cache'
@@ -180,11 +181,11 @@ class RODatabase(BaseDatabase):
         # (3) Loaded but not changed
         if handler.timestamp is not None and handler.dirty is None:
             # Removed from the filesystem
-            if not vfs.exists(uri):
+            if not self.fs.exists(uri):
                 self._discard_handler(uri)
                 return None
             # Modified in the filesystem
-            mtime = vfs.get_mtime(uri)
+            mtime = self.fs.get_mtime(uri)
             if mtime > handler.timestamp:
                 self._discard_handler(uri)
                 return None
@@ -194,11 +195,11 @@ class RODatabase(BaseDatabase):
         # (4) Loaded and changed
         if handler.timestamp is not None and handler.dirty is not None:
             # Removed from the filesystem
-            if not vfs.exists(uri):
+            if not self.fs.exists(uri):
                 error = 'a modified handler was removed from the filesystem'
                 raise RuntimeError, error
             # Modified in the filesystem
-            mtime = vfs.get_mtime(uri)
+            mtime = self.fs.get_mtime(uri)
             if mtime > handler.timestamp:
                 error = 'modified in the cache and in the filesystem'
                 raise RuntimeError, error
@@ -285,14 +286,14 @@ class RODatabase(BaseDatabase):
             return True
 
         # Ask vfs
-        return vfs.exists(uri)
+        return self.fs.exists(uri)
 
 
     def get_handler_names(self, reference):
         uri = self._resolve_reference(reference)
 
-        if vfs.exists(uri):
-            names = vfs.get_names(uri)
+        if self.fs.exists(uri):
+            names = self.fs.get_names(uri)
             return list(names)
 
         return []
@@ -313,15 +314,14 @@ class RODatabase(BaseDatabase):
             return handler
 
         # Check the resource exists
-        if not vfs.exists(uri):
+        if not self.fs.exists(uri):
             raise LookupError, 'the resource "%s" does not exist' % uri
 
         # Folders are not cached
-        if vfs.is_folder(uri):
+        if self.fs.is_folder(uri):
             if cls is None:
                 cls = Folder
-            folder = cls(uri)
-            folder.database = self
+            folder = cls(uri, database=self)
             return folder
 
         # Cache miss
@@ -336,8 +336,9 @@ class RODatabase(BaseDatabase):
 
     def get_handlers(self, reference):
         base = self._resolve_reference(reference)
-        for name in vfs.get_names(base):
-            ref = resolve_uri2(base, name)
+        fs = self.fs
+        for name in fs.get_names(base):
+            ref = fs.resolve2(base, name)
             yield self.get_handler(ref)
 
 
@@ -371,7 +372,7 @@ class RODatabase(BaseDatabase):
         if mode in (WRITE, READ_WRITE, APPEND):
             raise ReadOnlyError, 'cannot open file for writing'
 
-        return vfs.open(reference, READ)
+        return self.fs.open(reference, READ)
 
 
     def _cleanup(self):
@@ -389,8 +390,8 @@ class RODatabase(BaseDatabase):
 ###########################################################################
 class RWDatabase(RODatabase):
 
-    def __init__(self, size_min, size_max):
-        RODatabase.__init__(self, size_min, size_max)
+    def __init__(self, size_min, size_max, fs=None):
+        RODatabase.__init__(self, size_min, size_max, fs=fs)
         # The state, for transactions
         self.changed = set()
         self.added = set()
@@ -400,7 +401,7 @@ class RWDatabase(RODatabase):
     def _resolve_reference_for_writing(self, reference):
         """Resolves and returns the given reference.
         """
-        return vfs.get_uri(reference)
+        return self.fs.get_uri(reference)
 
 
     def is_phantom(self, handler):
@@ -497,7 +498,7 @@ class RWDatabase(RODatabase):
 
         # Syncrhonize
         handler = self._sync_filesystem(uri)
-        if not vfs.exists(uri):
+        if not self.fs.exists(uri):
             raise LookupError, 'resource does not exist'
 
         # Clean the cache
@@ -521,9 +522,10 @@ class RWDatabase(RODatabase):
         handler = self.get_handler(source)
         if isinstance(handler, Folder):
             # Folder
+            fs = self.fs
             for name in handler.get_handler_names():
-                self.copy_handler(resolve_uri2(source, name),
-                                  resolve_uri2(target, name))
+                self.copy_handler(fs.resolve2(source, name),
+                                  fs.resolve2(target, name))
         else:
             # File
             handler = handler.clone()
@@ -546,9 +548,10 @@ class RWDatabase(RODatabase):
         handler = self.get_handler(source)
         if isinstance(handler, Folder):
             # Folder
+            fs = self.fs
             for name in handler.get_handler_names():
-                self.move_handler(resolve_uri2(source, name),
-                                  resolve_uri2(target, name))
+                self.move_handler(fs.resolve2(source, name),
+                                  fs.resolve2(target, name))
             self.removed.add(source)
         else:
             # Load if needed
@@ -576,24 +579,25 @@ class RWDatabase(RODatabase):
         uri = self._resolve_reference_for_writing(reference)
 
         # Remove empty folder first
-        if vfs.is_folder(uri):
-            for x in vfs.traverse(uri):
-                if vfs.is_file(x):
+        fs = self.fs
+        if fs.is_folder(uri):
+            for x in fs.traverse(uri):
+                if fs.is_file(x):
                     break
             else:
-                vfs.remove(uri)
+                fs.remove(uri)
 
-        return vfs.make_file(uri)
+        return fs.make_file(uri)
 
 
     def safe_remove(self, reference):
         uri = self._resolve_reference_for_writing(reference)
-        return vfs.remove(uri)
+        return self.fs.remove(uri)
 
 
     def safe_open(self, reference, mode=None):
         uri = self._resolve_reference_for_writing(reference)
-        return vfs.open(uri, mode)
+        return self.fs.open(uri, mode)
 
 
     #######################################################################
@@ -624,7 +628,7 @@ class RWDatabase(RODatabase):
             handler = cache[uri]
             handler.save_state()
             # Update timestamp
-            handler.timestamp = vfs.get_mtime(uri)
+            handler.timestamp = self.fs.get_mtime(uri)
             handler.dirty = None
         # Remove handlers
         removed = sorted(self.removed, reverse=True)
@@ -635,7 +639,7 @@ class RWDatabase(RODatabase):
             handler = cache[uri]
             handler.save_state_to(uri)
             # Update timestamp
-            handler.timestamp = vfs.get_mtime(uri)
+            handler.timestamp = self.fs.get_mtime(uri)
             handler.dirty = None
 
         # Reset the state
@@ -650,14 +654,18 @@ class RWDatabase(RODatabase):
 class ROGitDatabase(RODatabase):
 
     def __init__(self, path, size_min=4800, size_max=5200):
-        RODatabase.__init__(self, size_min, size_max)
-        uri = vfs.get_uri(path)
-        uri = get_reference(uri)
-        if uri.scheme != 'file':
+        # Restrict to local fs
+        RODatabase.__init__(self, size_min, size_max, fs=lfs)
+        path = self.fs.get_absolute_path(path)
+        if not self.fs.exists(path):
             raise ValueError, 'unexpected "%s" path' % path
-        self.path = str(uri.path)
-        if self.path[-1] != '/':
-            self.path += '/'
+        if path[-1] != '/':
+            path += '/'
+        self.path = path
+
+
+    def _resolve_reference(self, path):
+        return self.fs.get_absolute_path(path)
 
 
     def get_diff(self, revision):
@@ -702,23 +710,19 @@ class GitDatabase(RWDatabase, ROGitDatabase):
         ROGitDatabase.__init__(self, path, size_min, size_max)
 
 
-    def _resolve_reference_for_writing(self, reference):
-        """Check whether the given reference is within the git path.  If it
-        is, return the resolved reference as an string.
+    def _resolve_reference_for_writing(self, path):
+        """Check whether the given path is within the git path.  If it
+        is, return the absolute path.
         """
-        # Resolve the reference
-        uri = vfs.get_uri(reference)
-        uri_ = get_reference(uri)
+        # Resolve the path
+        path = self.fs.get_absolute_path(path)
         # Security check
-        if uri_.scheme != 'file':
-            raise ValueError, 'unexpected "%s" reference' % reference
-        path = str(uri_.path)
         if not path.startswith(self.path):
-            raise ValueError, 'unexpected "%s" reference' % reference
+            raise ValueError, 'unexpected "%s" path' % path
         if path.startswith('%s.git' % self.path):
-            raise ValueError, 'unexpected "%s" reference' % reference
+            raise ValueError, 'unexpected "%s" path' % path
         # Ok
-        return uri
+        return path
 
 
     def _rollback(self):
@@ -734,7 +738,8 @@ class GitDatabase(RWDatabase, ROGitDatabase):
         RWDatabase._save_changes(self, data)
 
         # Add
-        git_files = [ x for x in git_files if vfs.exists(x) ]
+        fs = self.fs
+        git_files = [ x for x in git_files if fs.exists(x) ]
         if git_files:
             send_subprocess(['git', 'add'] + git_files)
 

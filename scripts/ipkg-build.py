@@ -34,7 +34,7 @@ from itools.html import XHTMLFile
 import itools.pdf
 from itools.pkg import SetupConf, get_files, get_manifest, make_version
 import itools.stl
-from itools.fs import vfs
+from itools.fs import lfs
 
 
 
@@ -73,7 +73,7 @@ if __name__ == '__main__':
 
     # (2) Internationalization
     bad_templates = []
-    if vfs.exists('locale'):
+    if lfs.exists('locale'):
         # Build MO files
         print '* Compile message catalogs:',
         stdout.flush()
@@ -90,7 +90,7 @@ if __name__ == '__main__':
         message_catalogs = {}
         for lang in target_languages:
             path = 'locale/%s.po' % lang
-            message_catalogs[lang] = (get_handler(path), vfs.get_mtime(path))
+            message_catalogs[lang] = (get_handler(path), lfs.get_mtime(path))
 
         # Build the templates in the target languages
         good_files = compile('.*\\.x.*ml.%s$' % source_language)
@@ -101,7 +101,7 @@ if __name__ == '__main__':
             stdout.flush()
             for path in lines:
                 # Load the handler
-                src_mtime = vfs.get_mtime(path)
+                src_mtime = lfs.get_mtime(path)
                 src = XHTMLFile(path)
                 done = False
                 # Build the translation
@@ -113,8 +113,8 @@ if __name__ == '__main__':
                     # Add to the manifest
                     manifest.append(dst)
                     # Skip the file if it is already up-to-date
-                    if vfs.exists(dst):
-                        dst_mtime = vfs.get_mtime(dst)
+                    if lfs.exists(dst):
+                        dst_mtime = lfs.get_mtime(dst)
                         if dst_mtime > src_mtime and dst_mtime > po_mtime:
                             continue
                     try:

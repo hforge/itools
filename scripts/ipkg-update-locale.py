@@ -35,7 +35,7 @@ import itools.pdf
 from itools.pkg import get_config
 import itools.srx
 from itools.uri import Path
-from itools.fs import vfs, WRITE
+from itools.fs import lfs, WRITE
 
 
 def write(text):
@@ -107,12 +107,12 @@ if __name__ == '__main__':
     print
 
     # Update locale.pot
-    if not vfs.exists('locale/locale.pot'):
-        vfs.make_file('locale/locale.pot')
+    if not lfs.exists('locale/locale.pot'):
+        lfs.make_file('locale/locale.pot')
 
     write('* Update PO template ')
     data = po.to_str()
-    file = vfs.open('locale/locale.pot', WRITE)
+    file = lfs.open('locale/locale.pot', WRITE)
     try:
         file.write(data)
     finally:
@@ -120,7 +120,7 @@ if __name__ == '__main__':
     print
 
     # Update PO files
-    folder = vfs.open('locale')
+    folder = lfs.open('locale')
     filenames = set([ x for x in folder.get_names() if x[-3:] == '.po' ])
     filenames.add('%s.po' % src_language)
     for language in config.get_value('target_languages'):

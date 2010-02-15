@@ -37,6 +37,7 @@ from gio import FILE_ATTRIBUTE_ACCESS_CAN_WRITE
 
 # Import from itools
 from common import READ, WRITE, READ_WRITE, APPEND, get_mimetype
+from itools.uri import resolve_uri, resolve_uri2
 
 
 ######################################################################
@@ -330,6 +331,16 @@ class Folder(object):
         if self._folder is None:
             return g_file.get_path()
         return self._folder.get_relative_path(g_file)
+
+
+    @staticmethod
+    def resolve(base, reference):
+        return resolve_uri(base, reference)
+
+
+    @staticmethod
+    def resolve2(base, reference):
+        return resolve_uri2(base, reference)
 
 
 

@@ -36,7 +36,7 @@ MODES = {WRITE: 'wb', READ_WRITE: 'r+b', APPEND: 'ab', READ: 'rb'}
 ######################################################################
 # Public API
 ######################################################################
-class Folder(object):
+class LocalFolder(object):
 
     def __init__(self, path='.'):
         if not exists(path):
@@ -184,11 +184,33 @@ class Folder(object):
         path = self._resolve_path(path)
         return abspath(path)
 
+    # Alias to match vfs API (URI makes no sense for paths)
+    get_uri = get_absolute_path
+
 
     def get_relative_path(self, path):
         path = self._resolve_path(path)
         return relpath(path)
 
 
+    @staticmethod
+    def resolve(base, reference):
+        endswith_slash = base[-1] == '/'
+        base = abspath(base)
+        # '/a/b/' + 'c' => '/a/b/c'
+        if endswith_slash:
+            return join(base, reference)
+        return join(dirname(base), reference)
+        # '/a/b' + 'c' => '/a/c'
+
+
+    @staticmethod
+    def resolve2(base, reference):
+        base = abspath(base)
+        # '/a/b' + 'c' => '/a/b/c'
+        # '/a/b/' + 'c' => '/a/b/c'
+        return join(base, reference)
+
+
 # The entrypoint is the current working directory
-lfs = Folder()
+lfs = LocalFolder()

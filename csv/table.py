@@ -692,7 +692,8 @@ class Table(File):
             file.close()
 
         # Update the timestamp
-        self.timestamp = vfs.get_mtime(self.uri)
+        fs = self.get_fs()
+        self.timestamp = fs.get_mtime(self.uri)
         self.dirty = None
 
 

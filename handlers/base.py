@@ -20,7 +20,6 @@ handler class hierarchy.
 """
 
 # Import from itools
-from itools.uri import resolve_uri2
 from itools.fs import vfs
 from messages import MSG_NOT_ATTACHED
 
@@ -41,8 +40,14 @@ class Handler(object):
 
 
     ########################################################################
-    # API / Safe VFS operations
+    # API / Safe FS operations
     ########################################################################
+    def get_fs(self):
+        if self.database is None:
+            return vfs
+        return self.database.fs
+
+
     def safe_make_file(self, reference):
         if self.database is None:
             return vfs.make_file(reference)
@@ -68,71 +73,80 @@ class Handler(object):
     # API
     ########################################################################
     def has_handler(self, reference):
-        if self.database is None:
+        database = self.database
+        if database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
-        uri = resolve_uri2(self.uri, reference)
-        return self.database.has_handler(uri)
+        uri = database.fs.resolve2(self.uri, reference)
+        return database.has_handler(uri)
 
 
     def get_handler_names(self, reference='.'):
-        if self.database is None:
+        database = self.database
+        if database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
-        uri = resolve_uri2(self.uri, reference)
-        return self.database.get_handler_names(uri)
+        uri = database.fs.resolve2(self.uri, reference)
+        return database.get_handler_names(uri)
 
 
     def get_handler(self, reference, cls=None):
-        if self.database is None:
+        database = self.database
+        if database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
-        uri = resolve_uri2(self.uri, reference)
-        return self.database.get_handler(uri, cls=cls)
+        uri = database.fs.resolve2(self.uri, reference)
+        return database.get_handler(uri, cls=cls)
 
 
     def get_handlers(self, reference='.'):
-        if self.database is None:
+        database = self.database
+        if database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
-        uri = resolve_uri2(self.uri, reference)
-        return self.database.get_handlers(uri)
+        uri = database.fs.resolve2(self.uri, reference)
+        return database.get_handlers(uri)
 
 
     def set_handler(self, reference, handler):
-        if self.database is None:
+        database = self.database
+        if database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
-        uri = resolve_uri2(self.uri, reference)
-        self.database.set_handler(uri, handler)
+        uri = database.fs.resolve2(self.uri, reference)
+        database.set_handler(uri, handler)
 
 
     def del_handler(self, reference):
-        if self.database is None:
+        database = self.database
+        if database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
-        uri = resolve_uri2(self.uri, reference)
-        self.database.del_handler(uri)
+        uri = database.fs.resolve2(self.uri, reference)
+        database.del_handler(uri)
 
 
     def copy_handler(self, source, target):
-        if self.database is None:
+        database = self.database
+        if database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
-        source = resolve_uri2(self.uri, source)
-        target = resolve_uri2(self.uri, target)
-        self.database.copy_handler(source, target)
+        source = database.fs.resolve2(self.uri, source)
+        target = database.fs.resolve2(self.uri, target)
+        database.copy_handler(source, target)
 
 
     def move_handler(self, source, target):
-        if self.database is None:
+        database = self.database
+        if database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
-        source = resolve_uri2(self.uri, source)
-        target = resolve_uri2(self.uri, target)
-        self.database.move_handler(source, target)
+        source = database.fs.resolve2(self.uri, source)
+        target = database.fs.resolve2(self.uri, target)
+        database.move_handler(source, target)
 
 
     def get_mimetype(self):
-        return vfs.get_mimetype(self.uri)
+        fs = self.get_fs()
+        return fs.get_mimetype(self.uri)
 

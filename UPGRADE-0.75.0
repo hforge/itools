@@ -124,7 +124,7 @@ The "cwd" object is now named "vfs":
   # After
   from itools.vfs import vfs
 
-All "vfs" functions are now "vfs" methods:
+(3) All "vfs" functions are now "vfs" methods:
 
   # Before
   from itools.vfs import exists
@@ -133,3 +133,25 @@ All "vfs" functions are now "vfs" methods:
   # After
   from itools.vfs import vfs
   vfs.exists(uri)
+
+itools.handlers
+===============
+
+(1) Inside handlers, try not to call vfs directly but rather ask the handler
+for its FS:
+
+  # Before
+  vfs.get_mtime(self.uri)
+
+  # After
+  fs = self.get_fs()
+  fs.get_mtime(self.uri)
+
+(2) The database may use the new lfs module and provide faster operations when
+you know you only need to access the filesystem. It is the default for
+(RO)GitDatabase.
+
+To use lfs on the RO- or RWDatabase, just pass it as the "fs" keyword to the
+constructor:
+
+  database = RODatabase(fs=lfs)

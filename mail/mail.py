@@ -32,7 +32,7 @@ from tempfile import mkstemp
 from gobject import idle_add, timeout_add_seconds
 
 # Import from itools
-from itools.fs import vfs
+from itools.fs import lfs
 from itools.log import log_info, log_warning, log_error
 
 
@@ -131,7 +131,7 @@ class MailSpool(object):
 
     def _smtp_send(self):
         smtp_host = self.smtp_host
-        spool = vfs.open(self.spool)
+        spool = lfs.open(self.spool)
 
         # Find out emails to send
         locks = set()

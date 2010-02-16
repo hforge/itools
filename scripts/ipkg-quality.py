@@ -29,6 +29,7 @@ from datetime import date
 from glob import glob
 from optparse import OptionParser
 from os import getcwd, chdir
+from os.path import basename, relpath
 from subprocess import call
 from sys import stdout
 from tempfile import mkdtemp
@@ -48,7 +49,7 @@ except ImportError:
 # Import from itools
 import itools
 from itools.core import merge_dicts
-from itools.fs import vfs
+from itools.fs import lfs
 from itools.git import git
 
 
@@ -606,10 +607,9 @@ if __name__ == '__main__':
         filenames = [ x for x in filenames if x.endswith('.py') ]
     else:
         filenames = []
-        here = vfs.open('.')
-        for uri in vfs.traverse('.'):
-            if vfs.is_file(uri) and uri.path.get_name().endswith('.py'):
-                filenames.append(str(here.uri.path.get_pathto(uri.path)))
+        for path in lfs.traverse():
+            if lfs.is_file(path) and basename(path).endswith('.py'):
+                filenames.append(relpath(path))
 
     # Check options
     if len(filenames) == 0:

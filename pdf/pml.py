@@ -32,7 +32,7 @@ from itools.core import freeze, get_abspath
 from itools.datatypes import XMLContent
 from itools.stl import set_prefix, stl
 from itools.uri import get_reference, get_uri_path
-from itools.fs import vfs
+from itools.fs import vfs, lfs
 from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, TEXT
 from itools.xml import get_end_tag
 from itools.xmlfile import XMLFile
@@ -296,7 +296,7 @@ class Context(object):
         fd, filename = mkstemp(dir=self.tmp_dir)
         # close fd
         close_fd(fd)
-        return vfs.open(filename, 'w')
+        return lfs.open(filename, 'w')
 
 
     def get_toc_anchor(self, tag_name, content):
@@ -398,8 +398,8 @@ class Context(object):
 
 
     def del_tmp_dir(self):
-        if vfs.exists(self.tmp_dir):
-            vfs.remove(self.tmp_dir)
+        if lfs.exists(self.tmp_dir):
+            lfs.remove(self.tmp_dir)
 
 
 

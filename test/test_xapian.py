@@ -16,7 +16,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from datetime import date
 from random import sample
 import re
 from unittest import TestCase, main
@@ -24,7 +23,7 @@ from unittest import TestCase, main
 # Import from itools
 from itools.datatypes import String, Unicode, Boolean, Integer
 from itools.uri import get_reference
-from itools.fs import vfs
+from itools.fs import lfs
 from itools.xapian import make_catalog, Catalog, CatalogAware, StartQuery
 from itools.xapian import AndQuery, RangeQuery, PhraseQuery, NotQuery
 from itools.xapian.catalog import _index
@@ -273,7 +272,7 @@ class CatalogTestCase(TestCase):
         # Make the catalog
         catalog = make_catalog('tests/catalog', Document.fields)
         # Index
-        fables = vfs.open('fables')
+        fables = lfs.open('fables')
         for name in fables.get_names():
             uri = fables.get_uri()
             uri = get_reference(uri).resolve_name(name)
@@ -284,7 +283,7 @@ class CatalogTestCase(TestCase):
 
 
     def tearDown(self):
-        vfs.remove('tests/catalog')
+        lfs.remove('tests/catalog')
 
 
     def test_everything(self):
@@ -409,7 +408,7 @@ class Document(CatalogAware):
 
     def get_catalog_values(self):
         uri = str(self.uri)
-        data = vfs.open(uri).read()
+        data = lfs.open(uri).read()
 
         return {
             'name': self.uri.path[-1],

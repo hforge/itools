@@ -513,6 +513,9 @@ PyServerType_init (PyServer * self, PyObject * args, PyObject * kwdict)
   self->s_address = s_address;
   self->port = port;
 
+  signal_id = g_signal_lookup ("request-aborted", SOUP_TYPE_SERVER);
+  g_signal_add_emission_hook (signal_id, 0, log_access, self, NULL);
+
   /* Ok */
   return 0;
 }

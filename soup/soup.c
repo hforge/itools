@@ -83,7 +83,7 @@ get_access_log_line (SoupMessage * s_msg, SoupClientContext * s_client)
 
   /* The log line */
   request_line = get_request_line (s_msg);
-  log_line = g_strdup_printf ("%s - - [%s] \"%s\" %d %d\n",
+  log_line = g_strdup_printf ("%s - - [%s] \"%s\" %03d %d\n",
                               soup_client_context_get_host (s_client),
                               ts, request_line, s_msg->status_code,
                               (int) s_msg->response_body->length);

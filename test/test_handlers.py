@@ -25,8 +25,7 @@ from itools.datatypes import Unicode
 from itools.handlers import get_handler, get_handler_class
 from itools.handlers import RWDatabase, make_git_database
 from itools.handlers import TextFile, ConfigFile, TGZFile
-from itools.uri import get_reference
-from itools.fs import vfs
+from itools.fs import lfs
 
 
 
@@ -56,7 +55,7 @@ class FolderTestCase(TestCase):
         database = RWDatabase(100, 100)
         self.database = database
         self.root = database.get_handler('.')
-        file = vfs.make_file('tests/toto.txt')
+        file = lfs.make_file('tests/toto.txt')
         try:
             file.write('I am Toto\n')
         finally:
@@ -64,7 +63,7 @@ class FolderTestCase(TestCase):
 
 
     def tearDown(self):
-        folder = vfs.open('tests')
+        folder = lfs.open('tests')
         for name in 'toto.txt', 'fofo.txt', 'fofo2.txt', 'empty':
             if folder.exists(name):
                 folder.remove(name)
@@ -73,11 +72,11 @@ class FolderTestCase(TestCase):
     def test_remove(self):
         folder = self.root.get_handler('tests')
         folder.del_handler('toto.txt')
-        self.assertEqual(vfs.exists('tests/toto.txt'), True)
+        self.assertEqual(lfs.exists('tests/toto.txt'), True)
         self.assertEqual(folder.has_handler('toto.txt'), False)
         # Save
         self.database.save_changes()
-        self.assertEqual(vfs.exists('tests/toto.txt'), False)
+        self.assertEqual(lfs.exists('tests/toto.txt'), False)
         self.assertEqual(folder.has_handler('toto.txt'), False)
 
 
@@ -85,11 +84,11 @@ class FolderTestCase(TestCase):
         folder = self.root.get_handler('tests')
         folder.del_handler('toto.txt')
         folder.set_handler('toto.txt', TextFile())
-        self.assertEqual(vfs.exists('tests/toto.txt'), True)
+        self.assertEqual(lfs.exists('tests/toto.txt'), True)
         self.assertEqual(folder.has_handler('toto.txt'), True)
         # Save
         self.database.save_changes()
-        self.assertEqual(vfs.exists('tests/toto.txt'), True)
+        self.assertEqual(lfs.exists('tests/toto.txt'), True)
         self.assertEqual(folder.has_handler('toto.txt'), True)
 
 
@@ -98,11 +97,11 @@ class FolderTestCase(TestCase):
         folder.del_handler('toto.txt')
         folder.set_handler('toto.txt', TextFile())
         folder.del_handler('toto.txt')
-        self.assertEqual(vfs.exists('tests/toto.txt'), True)
+        self.assertEqual(lfs.exists('tests/toto.txt'), True)
         self.assertEqual(folder.has_handler('toto.txt'), False)
         # Save
         self.database.save_changes()
-        self.assertEqual(vfs.exists('tests/toto.txt'), False)
+        self.assertEqual(lfs.exists('tests/toto.txt'), False)
         self.assertEqual(folder.has_handler('toto.txt'), False)
 
 
@@ -130,7 +129,7 @@ class FolderTestCase(TestCase):
         self.assertEqual(folder.has_handler('toto.txt'), True)
         # Save
         database.save_changes()
-        self.assertEqual(vfs.exists('tests/toto.txt'), True)
+        self.assertEqual(lfs.exists('tests/toto.txt'), True)
 
 
     def test_add_abort(self):
@@ -143,7 +142,7 @@ class FolderTestCase(TestCase):
         self.assertEqual(folder.has_handler('fofo.txt'), False)
         # Save
         database.save_changes()
-        self.assertEqual(vfs.exists('tests/fofo.txt'), False)
+        self.assertEqual(lfs.exists('tests/fofo.txt'), False)
 
 
     def test_add_copy(self):
@@ -153,7 +152,7 @@ class FolderTestCase(TestCase):
         folder.copy_handler('fofo.txt', 'fofo2.txt')
         # Save
         database.save_changes()
-        self.assertEqual(vfs.exists('tests/fofo2.txt'), True)
+        self.assertEqual(lfs.exists('tests/fofo2.txt'), True)
 
 
     def test_del_change(self):
@@ -175,7 +174,7 @@ class FolderTestCase(TestCase):
         database.save_changes()
         root.del_handler('tests/empty/sub/toto.txt')
         database.save_changes()
-        self.assertEqual(vfs.exists('tests/empty'), True)
+        self.assertEqual(lfs.exists('tests/empty'), True)
         # Test
         self.assertRaises(RuntimeError, root.set_handler, 'tests/empty',
                           TextFile())
@@ -208,19 +207,19 @@ class ConfigFileTestCase(TestCase):
 
     def setUp(self):
         self.config_path = "tests/setup.conf.test"
-        if vfs.exists(self.config_path):
-            vfs.remove(self.config_path)
+        if lfs.exists(self.config_path):
+            lfs.remove(self.config_path)
 
 
     def tearDown(self):
-        if vfs.exists(self.config_path):
-            vfs.remove(self.config_path)
+        if lfs.exists(self.config_path):
+            lfs.remove(self.config_path)
 
 
     def _init_test(self, value):
         # Init data
-        if not vfs.exists(self.config_path):
-            vfs.make_file(self.config_path)
+        if not lfs.exists(self.config_path):
+            lfs.make_file(self.config_path)
 
         # Write data
         config = ConfigFile(ref=self.config_path)
@@ -236,7 +235,7 @@ class ConfigFileTestCase(TestCase):
         # Read data
         config2 = ConfigFile(ref=self.config_path)
         config2_value = config2.get_value("test")
-        vfs.remove(self.config_path)
+        lfs.remove(self.config_path)
 
         # Test data
         self.assertEqual(config2_value, value)
@@ -254,7 +253,7 @@ class ConfigFileTestCase(TestCase):
         except SyntaxError, e:
             self.fail(e)
         finally:
-            vfs.remove(self.config_path)
+            lfs.remove(self.config_path)
 
         # Test data
         self.assertEqual(config2_value, value)
@@ -273,7 +272,7 @@ class ConfigFileTestCase(TestCase):
         # Read data
         config2 = ConfigFile(ref=self.config_path)
         config2_value = config2.get_value("test")
-        vfs.remove(self.config_path)
+        lfs.remove(self.config_path)
 
         # Test data
         self.assertEqual(config2_value, value)
@@ -299,7 +298,7 @@ class ConfigFileTestCase(TestCase):
         except SyntaxError, e:
             self.fail(e)
         finally:
-            vfs.remove(self.config_path)
+            lfs.remove(self.config_path)
 
         # Test data
         self.assertEqual(config2_value, value)
@@ -326,7 +325,7 @@ class ConfigFileTestCase(TestCase):
         except SyntaxError, e:
             self.fail(e)
         finally:
-            vfs.remove(self.config_path)
+            lfs.remove(self.config_path)
 
         # Test data
         self.assertEqual(config2_value, value)
@@ -361,15 +360,14 @@ class GitDatabaseTestCase(TestCase):
     def setUp(self):
         database = make_git_database('fables', 20, 20)
         self.database = database
-        root = get_handler('fables')
-        root.database = database
+        root = database.get_handler('fables')
         self.root = root
 
 
     def tearDown(self):
         for name in ['fables/31.txt', 'fables/agenda', 'fables/.git']:
-            if vfs.exists(name):
-                vfs.remove(name)
+            if lfs.exists(name):
+                lfs.remove(name)
 
 
     def test_abort(self):
@@ -381,7 +379,7 @@ class GitDatabaseTestCase(TestCase):
         # Abort
         self.database.abort_changes()
         # Test
-        self.assertEqual(vfs.exists('fables/31.txt'), False)
+        self.assertEqual(lfs.exists('fables/31.txt'), False)
 
 
     def test_commit(self):
@@ -393,7 +391,7 @@ class GitDatabaseTestCase(TestCase):
         # Commit
         self.database.save_changes()
         # Test
-        self.assertEqual(vfs.exists('fables/31.txt'), True)
+        self.assertEqual(lfs.exists('fables/31.txt'), True)
 
 
     def test_broken_commit(self):
@@ -408,8 +406,8 @@ class GitDatabaseTestCase(TestCase):
         # Commit
         self.assertRaises(NameError, self.database.save_changes)
         # Test
-        self.assertEqual(vfs.exists('fables/31.txt'), False)
-        self.assertEqual(vfs.exists('fables/broken.txt'), False)
+        self.assertEqual(lfs.exists('fables/31.txt'), False)
+        self.assertEqual(lfs.exists('fables/broken.txt'), False)
 
 
     def test_append(self):
@@ -447,11 +445,11 @@ class GitDatabaseTestCase(TestCase):
 
         fables.del_handler('31.txt')
         fables.set_handler('31.txt', TextFile())
-        self.assertEqual(vfs.exists('fables/31.txt'), True)
+        self.assertEqual(lfs.exists('fables/31.txt'), True)
         self.assertEqual(fables.has_handler('31.txt'), True)
         # Save
         self.database.save_changes()
-        self.assertEqual(vfs.exists('fables/31.txt'), True)
+        self.assertEqual(lfs.exists('fables/31.txt'), True)
         self.assertEqual(fables.has_handler('31.txt'), True)
 
 

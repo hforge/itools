@@ -169,7 +169,7 @@ class LocalFolder(object):
         return listdir(path)
 
 
-    def traverse(self, path):
+    def traverse(self, path='.'):
         path = self._resolve_path(path)
         yield path
         if isdir(path):

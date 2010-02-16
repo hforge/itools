@@ -33,7 +33,7 @@ from gobject import idle_add, timeout_add_seconds
 
 # Import from itools
 from itools.log import log_info, log_warning, log_error
-from itools.fs import vfs
+from itools.fs import lfs
 
 
 # Force email to send UTF-8 mails in plain text
@@ -131,7 +131,7 @@ class MailSpool(object):
 
     def _smtp_send(self):
         smtp_host = self.smtp_host
-        spool = vfs.open(self.spool)
+        spool = lfs.open(self.spool)
 
         # Find out emails to send
         locks = set()

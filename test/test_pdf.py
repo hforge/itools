@@ -22,7 +22,7 @@ from unittest import TestCase, main
 from itools.pdf.pml import Context, normalize, paragraph_stream
 from itools.pdf.pml import pmltopdf_test, stl_pmltopdf_test
 from itools.pdf.utils import get_color
-from itools.fs import vfs
+from itools.fs import lfs
 from itools.xml import XMLParser
 from itools.xmlfile import XMLFile
 
@@ -221,23 +221,19 @@ class pml_HtmlTestCase(TestCase):
 
 
     def test_paragraph4(self):
-        handler = vfs.open('pml/paragraph.xml')
-        # FIXME vfs should use the io module
-        # vfs.open returns a StringIO which does not have the name attribute
-        # so we have to add explicitly the template path required to rewrite
-        # the links
-        story, stylesheet = pmltopdf_test(handler, path='pml/paragraph.xml')
+        handler = lfs.open('pml/paragraph.xml')
+        story, stylesheet = pmltopdf_test(handler)
         self.assertEqual(len(story), 10)
 
 
     def test_paragraph_cjk(self):
-        handler = vfs.open('pml/paragraph_cjk.xml')
+        handler = lfs.open('pml/paragraph_cjk.xml')
         story, stylesheet = pmltopdf_test(handler)
         self.assertEqual(len(story), 12)
 
 
     def test_span(self):
-        handler = vfs.open('pml/span.xml')
+        handler = lfs.open('pml/span.xml')
         story, stylesheet = pmltopdf_test(handler)
         self.assertEqual(len(story), 9)
 

@@ -24,7 +24,6 @@ from datetime import datetime
 from itools.core import merge_dicts
 from itools.datatypes import DateTime, String, Integer, Unicode
 from itools.handlers import File
-from itools.fs import vfs
 from itools.xapian import make_catalog, PhraseQuery, CatalogAware
 from csv_ import CSVFile
 from parser import parse

@@ -8,17 +8,14 @@ bug in bugs.hforge.org
 Priority 1
 ==========
 
-* Finish the access log, so we correctly log every request, whatever the
-  result is (successful connection, connection broken by client, etc.)
+* Access log:
 
-  See discussion here:
-
-  - http://mail.gnome.org/archives/libsoup-list/2009-August/msg00000.html
+  - make the test-log.py into a unit test, or just include in somehow
+    in itools/test
 
 * Finish the event log.  Before libsoup we printed the request headers when
   there was an error.  With libsoup it looks like it is not obvious how to
   get this information.
-
 
 Priority 2
 ==========
@@ -29,6 +26,8 @@ Priority 2
 
 * Support "503 Service Unavailable".  When the server is too busy, it
   should automatically send the 503 response.
+
+* Test & fix ikaaro behind two proxies: Apache -> Apache -> ikaaro
 
 
 Priority 3

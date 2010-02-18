@@ -16,7 +16,7 @@
  */
 
 #include <Python.h>
-#include <goo/gtypes.h>
+#include <poppler/goo/gtypes.h>
 #include <poppler/GlobalParams.h>
 #include <poppler/Object.h>
 #include <poppler/Stream.h>

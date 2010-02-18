@@ -17,11 +17,11 @@
 
 #include <Python.h>
 #include <goo/gtypes.h>
-#include <poppler/GlobalParams.h>
-#include <poppler/Object.h>
-#include <poppler/Stream.h>
-#include <poppler/PDFDoc.h>
-#include <poppler/TextOutputDev.h>
+#include <GlobalParams.h>
+#include <Object.h>
+#include <Stream.h>
+#include <PDFDoc.h>
+#include <TextOutputDev.h>
 #include <string>
 
 #define DECODE_ERROR_HANDLER "ignore"

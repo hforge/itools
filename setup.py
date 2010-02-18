@@ -49,7 +49,7 @@ if __name__ == '__main__':
 
     # PDF indexation
     try:
-        flags = get_compile_flags('pkg-config --cflags --libs poppler')
+        flags = get_compile_flags('pkg-config --cflags --libs poppler fontconfig')
     except EnvironmentError:
         print >> stderr, 'Warning: poppler headers are not found.'
         print >> stderr, 'PDF indexation will not be available'

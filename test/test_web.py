@@ -19,7 +19,7 @@ from unittest import TestCase, main
 
 # Import from itools
 from itools import vfs
-from itools.web import BaseView, RootResource, Server
+from itools.web import BaseView, RootResource, WebServer
 
 
 class MyRootView(BaseView):
@@ -37,7 +37,7 @@ class ServerTestCase(TestCase):
 
     def test00_simple(self):
         root = MyRoot()
-        server = Server(root)
+        server = WebServer(root)
 ##        server.start()
 
 

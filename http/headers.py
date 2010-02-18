@@ -22,8 +22,9 @@ from base64 import decodestring, encodestring
 from itools.datatypes import DataType, Integer, String, URI, HTTPDate
 from itools.i18n import AcceptLanguageType
 from cookies import CookieDataType, SetCookieDataType
-from parsing import (read_media_type, read_parameters, read_token,
-    read_white_space)
+from parsing import read_media_type, read_parameters, read_token
+from parsing import read_white_space, UNEXPECTED_CHAR
+
 
 """
 Implementation of standard HTTP headers.
@@ -211,4 +212,5 @@ headers = {
 
 
 def get_type(name):
+    name = name.lower()
     return headers.get(name, String)

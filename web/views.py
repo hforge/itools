@@ -183,7 +183,7 @@ class BaseForm(BaseView):
         # Figure out whether the form has been submit or not (FIXME This
         # heuristic is not reliable)
         schema = self.get_schema(resource, context)
-        submit = (context.request.method == 'POST')
+        submit = (context.method == 'POST')
 
         # Build the namespace
         namespace = {}

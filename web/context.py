@@ -19,17 +19,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from datetime import datetime
 from thread import get_ident, allocate_lock
-from time import strptime
 
 # Import from itools
 from itools.core import freeze
 from itools.datatypes import String
 from itools.gettext import MSG
-from itools.http import Response
+from itools.http import get_type, Entity
+from itools.http import Cookie, SetCookieDataType
 from itools.i18n import AcceptLanguageType
-from itools.uri import get_reference
+from itools.log import Logger
+from itools.uri import decode_query, get_reference, Path
 from messages import ERROR
 
 
@@ -78,33 +78,31 @@ class Context(object):
     resource = None
 
 
-    def __init__(self, request):
-        self.request = request
-        self.response = Response()
+    def __init__(self, soup_message, path):
+        self.soup_message = soup_message
 
-        # Read the origin host
-        if request.has_header('X-Forwarded-Host'):
-            host = request.get_header('X-Forwarded-Host')
-            host = host.split(',', 1)[0].strip()
-        elif request.has_header('Host'):
-            host = request.get_header('Host')
+        # The request method
+        self.method = soup_message.get_method()
+        # The query
+        query = soup_message.get_query()
+        self.query = decode_query(query)
+
+        # The URI as it was typed by the client
+        xfp = soup_message.get_header('X_FORWARDED_PROTO')
+        src_scheme = xfp or 'http'
+        xff = soup_message.get_header('X-Forwarded-Host')
+        if xff:
+            xff = xff.split(',', 1)[0].strip()
+        hostname = soup_message.get_host()
+        src_host = xff or soup_message.get_header('Host') or hostname
+        if query:
+            uri = '%s://%s%s?%s' % (src_scheme, src_host, path, query)
         else:
-            # XXX We should return a 400 response with HTTP 1.1
-            # XXX What to do with 1.0?
-            host = None
-
-        if request.has_header('X_FORWARDED_PROTO'):
-            scheme = request.get_header('X_FORWARDED_PROTO')
-        else:
-            # By default http
-            scheme = 'http'
-
-        # The requested uri
-        reference = '%s://%s%s' % (scheme, host, request.request_uri)
-        self.uri = get_reference(reference)
+            uri = '%s://%s%s' % (src_scheme, src_host, path)
+        self.uri = get_reference(uri)
 
         # Split the path into path and method ("a/b/c/;view")
-        path = request.request_uri.path
+        path = path if type(path) is Path else Path(path)
         name = path.get_name()
         if name and name[0] == ';':
             self.path = path[:-1]
@@ -114,14 +112,13 @@ class Context(object):
             self.view_name = None
 
         # Language negotiation
-        headers = request.headers
-        if 'accept-language' in headers:
-            # FIXME Done this way the programmer may modify the request object
-            # TODO The 'Accept-Language' header should be deserialized here,
-            # not in the 'Request' object.
-            self.accept_language = headers['accept-language']
-        else:
-            self.accept_language = AcceptLanguageType.decode('')
+        accept_language = soup_message.get_header('accept_language')
+        if accept_language is None:
+            accept_language = ''
+        self.accept_language = AcceptLanguageType.decode(accept_language)
+
+        # Form
+        self.body = self.load_body()
 
         # Media files (CSS, javascript)
         # Set the list of needed resources. The method we are going to
@@ -131,6 +128,62 @@ class Context(object):
         # attribute lets the interface to add those resources.
         self.styles = []
         self.scripts = []
+
+
+    def load_body(self):
+        # Case 1: nothing
+        body = self.soup_message.get_body()
+        if not body:
+            return {}
+
+        # Case 2: urlencoded
+        type, type_parameters = self.get_header('content-type')
+        if type == 'application/x-www-form-urlencoded':
+            return decode_query(body)
+
+        # Case 3: multipart
+        if type.startswith('multipart/'):
+            boundary = type_parameters.get('boundary')
+            boundary = '--%s' % boundary
+            form = {}
+            for part in body.split(boundary)[1:-1]:
+                if part.startswith('\r\n'):
+                    part = part[2:]
+                elif part.startswith('\n'):
+                    part = part[1:]
+                # Parse the entity
+                entity = Entity()
+                entity.load_state_from_string(part)
+                # Find out the parameter name
+                header = entity.get_header('Content-Disposition')
+                value, header_parameters = header
+                name = header_parameters['name']
+                # Load the value
+                body = entity.get_body()
+                if 'filename' in header_parameters:
+                    filename = header_parameters['filename']
+                    if filename:
+                        # Strip the path (for IE).
+                        filename = filename.split('\\')[-1]
+                        # Default content-type, see
+                        # http://tools.ietf.org/html/rfc2045#section-5.2
+                        if entity.has_header('content-type'):
+                            mimetype = entity.get_header('content-type')[0]
+                        else:
+                            mimetype = 'text/plain'
+                        form[name] = filename, mimetype, body
+                else:
+                    if name not in form:
+                        form[name] = body
+                    else:
+                        if isinstance(form[name], list):
+                            form[name].append(body)
+                        else:
+                            form[name] = [form[name], body]
+            return form
+
+        # Case 4: ?
+        return {'body': body}
 
 
     def add_style(self, *args):
@@ -157,6 +210,53 @@ class Context(object):
 
 
     #######################################################################
+    # Request
+    #######################################################################
+    def get_header(self, name):
+        name = name.lower()
+        datatype = get_type(name)
+        value = self.soup_message.get_header(name)
+        if value is None:
+            return datatype.get_default()
+        return datatype.decode(value)
+
+
+    def set_header(self, name, value):
+        datatype = get_type(name)
+        value = datatype.encode(value)
+        self.soup_message.set_header(name, value)
+
+
+    def get_referrer(self):
+        return self.soup_message.get_header('referer')
+
+
+    def get_form(self):
+        if self.method in ('GET', 'HEAD'):
+            return self.query
+        # XXX What parameters with the fields defined in the query?
+        return self.body
+
+
+    def set_content_type(self, content_type):
+        self.content_type = content_type
+
+
+    def set_content_disposition(self, disposition, filename=None):
+        if filename:
+            disposition = '%s; filename="%s"' % (disposition, filename)
+
+        self.soup_message.set_header('Content-Disposition', disposition)
+
+
+    #######################################################################
+    # API / Status
+    #######################################################################
+    def http_not_modified(self):
+        self.soup_message.set_status(304)
+
+
+    #######################################################################
     # API / Redirect
     #######################################################################
     def come_back(self, message, goto=None, keep=freeze([]), **kw):
@@ -165,7 +265,7 @@ class Context(object):
         """
         # By default we come back to the referrer
         if goto is None:
-            goto = self.request.referrer
+            goto = self.soup_message.get_header('referer')
             # Replace goto if no referrer
             if goto is None:
                 uri = str(self.uri)
@@ -177,7 +277,7 @@ class Context(object):
 
         # Preserve some form values
         form = {}
-        for key, value in self.request.get_form().items():
+        for key, value in self.get_form().items():
             # Be robust
             if not key:
                 continue
@@ -214,81 +314,48 @@ class Context(object):
 
 
     def get_form_value(self, name, type=String, default=None):
-        form = self.request.get_form()
+        form = self.get_form()
         return get_form_value(form, name, type, default)
 
 
     def get_form_keys(self):
-        return self.request.get_form().keys()
-
-
-    # FIXME Obsolete since 0.20.4, to be removed by the next major release
-    def get_form_values(self, name, default=freeze([]), type=None):
-        request = self.request
-        if request.has_parameter(name):
-            value = request.get_parameter(name)
-            if not isinstance(value, list):
-                value = [value]
-
-            if type is None:
-                return value
-            return [ type.decode(x) for x in value ]
-
-        return default
-
-
-    def has_form_value(self, name):
-        return self.request.has_parameter(name)
+        return self.get_form().keys()
 
 
     #######################################################################
-    # API / Cookies
+    # Cookies
     #######################################################################
-    def get_cookie(self, name, type=None):
-        request, response = self.request, self.response
-        # Get the value
-        cookie = response.get_cookie(name)
-        if cookie is None:
-            cookie = request.get_cookie(name)
-            if cookie is None:
-                value = None
-            else:
+    def get_cookie(self, name, datatype=None):
+        value = None
+
+        # Read the cookie from the request
+        cookies = self.get_header('cookie')
+        if cookies:
+            cookie = cookies.get(name)
+            if cookie:
                 value = cookie.value
-        else:
-            # Check expiration time
-            value = cookie.value
-            expires = cookie.expires
-            if expires is not None:
-                expires = expires[5:-4]
-                expires = strptime(expires, '%d-%b-%y %H:%M:%S')
-                year, month, day, hour, min, sec, kk, kk, kk = expires
-                expires = datetime(year, month, day, hour, min, sec)
-                if expires < datetime.now():
-                    value = None
 
-        if type is None:
+        if datatype is None:
             return value
 
         # Deserialize
         if value is None:
-            return type.get_default()
-        value = type.decode(value)
-        if not type.is_valid(value):
+            return datatype.get_default()
+        value = datatype.decode(value)
+        if not datatype.is_valid(value):
             raise ValueError, "Invalid cookie value"
         return value
 
 
-
-    def has_cookie(self, name):
-        return self.get_cookie(name) is not None
-
-
     def set_cookie(self, name, value, **kw):
-        self.response.set_cookie(name, value, **kw)
+        cookie = Cookie(value, **kw)
+        cookie = SetCookieDataType.encode({name: cookie})
+        self.soup_message.append_header('Set-Cookie', cookie)
 
 
     def del_cookie(self, name):
-        self.response.del_cookie(name)
+        expires = 'Wed, 31-Dec-97 23:59:59 GMT'
+        self.set_cookie(name, 'deleted', expires=expires, max_age='0')
 
 
     #######################################################################
@@ -301,7 +368,7 @@ class Context(object):
             'LinkChecker', 'msnbot', 'Python-urllib', 'Yahoo', 'Wget',
             'Zope External Editor']
 
-        user_agent = self.request.get_header('User-Agent')
+        user_agent = self.get_header('User-Agent')
         for footprint in footprints:
             if footprint in user_agent:
                 return True
@@ -409,3 +476,33 @@ def get_form_value(form, name, type=String, default=None):
     elif not type.is_valid(value):
         raise FormError(invalid=[name])
     return value
+
+
+
+class WebLogger(Logger):
+
+    def get_body(self):
+        context = get_context()
+        if context is None:
+            return Logger.get_body(self)
+
+        # The URI and user
+        if context.user:
+            username = context.user.name
+            lines = ['%s (user: %s)\n' % (context.uri, username)]
+        else:
+            lines = ['%s\n' % context.uri]
+
+        # TODO
+        # Request headers
+#       request = context.request
+#       details = (
+#           request.request_line_to_str()
+#           + request.headers_to_str()
+#           + '\n')
+
+        # Ok
+        body = Logger.get_body(self)
+        lines.extend(body)
+        return lines
+

@@ -4,16 +4,17 @@ meta-package for easier development and deployment.
 
 The packages included are:
 
-  itools.abnf             itools.ical             itools.stl
-  itools.core             itools.odf              itools.tmx
-  itools.csv              itools.office           itools.uri
-  itools.datatypes        itools.pdf              itools.vfs
-  itools.gettext          itools.pkg              itools.web
-  itools.git              itools.python           itools.workflow
-  itools.handlers         itools.relaxng          itools.xapian
-  itools.html             itools.rest             itools.xliff
-  itools.http             itools.rss              itools.xml
+  itools.abnf             itools.odf              itools.stl
+  itools.core             itools.office           itools.tmx
+  itools.csv              itools.pdf              itools.uri
+  itools.datatypes        itools.pkg              itools.vfs
+  itools.gettext          itools.python           itools.web
+  itools.git              itools.relaxng          itools.workflow
+  itools.handlers         itools.rest             itools.xapian
+  itools.html             itools.rss              itools.xliff
+  itools.http             itools.soup             itools.xml
   itools.i18n             itools.srx              itools.xmlfile
+  itools.ical
 
 The scripts included are:
 
@@ -32,6 +33,7 @@ Python        2.6.4  itools           http://www.python.org/
 pkg-config     0.23  itools           http://pkg-config.freedesktop.org/
 glib           2.16  itools.vfs       http://www.gtk.org/
 pygobject    2.16.1  itools.vfs       http://www.pygtk.org/
+libsoup        2.28  itools.soup      http://live.gnome.org/LibSoup
 reportlab       2.3  itools.pdf       http://www.reportlab.org/
 xapian        1.0.8  itools.xapian    http://www.xapian.org/
 pywin32         212  (Windows)        http://sf.net/projects/pywin32/

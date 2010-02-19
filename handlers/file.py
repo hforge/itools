@@ -49,7 +49,8 @@ class File(Handler):
 
 
     def __init__(self, ref=None, string=None, database=None, **kw):
-        self.database = database
+        if database is not None:
+            self.database = database
         if ref is None:
             self.reset()
             self.dirty = datetime.now()

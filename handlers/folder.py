@@ -42,7 +42,8 @@ class Folder(Handler):
 
 
     def __init__(self, ref=None, database=None, **kw):
-        self.database = database
+        if database is not None:
+            self.database = database
         if ref is not None:
             fs = self.get_fs()
             self.uri = fs.get_uri(ref)

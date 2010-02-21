@@ -8,9 +8,8 @@ find.
 New Dependencies
 ================
 
-TODO
-
-libsoup...
+Now libsoup 2.28 or later is required for anything related to the web
+(itools.http, itools.web).
 
 
 Imports

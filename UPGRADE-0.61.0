@@ -19,13 +19,32 @@ See the table below for the imports to update.
 
   Before (alphabetical order)    Now
   ----------------------------   ---------------------------
-  itools.vfs                     itools.fs (but see below)
+  itools.vfs                     itools.fs.vfs (*)
+  itools.vfs.cwd                 itools.fs.vfs (*)
+
+(*) The package itools.vfs has been renamed to itools.fs, and imports have
+changed a little:
+
+  Before                         Now
+  ----------------------------   --------------------------
+  from itools import vfs         from itools.fs import vfs
+  from itools.vfs import cwd     from itools.fs import vfs
+
+All "vfs" functions are now "vfs" methods:
+
+  # Before
+  from itools.vfs import exists
+  exists(uri)
+
+  # Now
+  from itools.fs import vfs
+  vfs.exists(uri)
 
 
 itools.csv
 ==========
 
-(1) The class variables 'record_schema' and 'parameters_schema' have been
+The class variables 'record_schema' and 'parameters_schema' have been
 renamed, respectively, to 'record_properties' and 'record_parameters'.
 
   # Before
@@ -42,7 +61,7 @@ renamed, respectively, to 'record_properties' and 'record_parameters'.
 itools.datatypes
 ================
 
-(1) The obsolete functions 'is_datatype' and 'copy_datatype' have been
+The obsolete functions 'is_datatype' and 'copy_datatype' have been
 removed:
 
   # Before
@@ -88,7 +107,7 @@ constructor:
 itools.ical
 ===========
 
-(1) The class variable 'schema' has been removed. To override the schema
+The class variable 'schema' has been removed. To override the schema
 of an iCalendar file, redefine the 'record_properties' class variable.
 
   # Before
@@ -102,40 +121,10 @@ of an iCalendar file, redefine the 'record_properties' class variable.
           MYPROPERTY=String)
 
 
-itools.vfs
-==========
-
-(1) The "vfs" object is now imported from the "itools.fs" namespace:
-
-  # Before
-  from itools import vfs
-
-  # After
-  from itools.fs import vfs
-
-(2) The "cwd" object is now "vfs" itself:
-
-  # Before
-  from itools.vfs import cwd
-
-  # After
-  from itools.fs import vfs
-
-(3) All "vfs" functions are now "vfs" methods:
-
-  # Before
-  from itools.vfs import exists
-  exists(uri)
-
-  # After
-  from itools.fs import vfs
-  vfs.exists(uri)
-
-
 itools.xapian
 =============
 
-(1) Remove obsolete method 'SearchResults.get_n_documents':
+Remove obsolete method 'SearchResults.get_n_documents':
 
   # Before
   n = results.get_n_documents()

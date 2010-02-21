@@ -45,6 +45,29 @@ And:
   new_datatype = datatype(a=5, b=3, ...)
 
 
+itools.handlers
+===============
+
+(1) Inside handlers, try not to call vfs directly but rather ask the handler
+for its FS:
+
+  # Before
+  vfs.get_mtime(self.uri)
+
+  # After
+  fs = self.get_fs()
+  fs.get_mtime(self.uri)
+
+(2) The database may use the new lfs module and provide faster operations when
+you know you only need to access the filesystem. It is the default for
+(RO)GitDatabase.
+
+To use lfs on the RO- or RWDatabase, just pass it as the "fs" keyword to the
+constructor:
+
+  database = RODatabase(fs=lfs)
+
+
 itools.vfs
 ==========
 
@@ -73,26 +96,3 @@ itools.vfs
   # After
   from itools.fs import vfs
   vfs.exists(uri)
-
-
-itools.handlers
-===============
-
-(1) Inside handlers, try not to call vfs directly but rather ask the handler
-for its FS:
-
-  # Before
-  vfs.get_mtime(self.uri)
-
-  # After
-  fs = self.get_fs()
-  fs.get_mtime(self.uri)
-
-(2) The database may use the new lfs module and provide faster operations when
-you know you only need to access the filesystem. It is the default for
-(RO)GitDatabase.
-
-To use lfs on the RO- or RWDatabase, just pass it as the "fs" keyword to the
-constructor:
-
-  database = RODatabase(fs=lfs)

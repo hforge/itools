@@ -17,9 +17,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools import vfs
-from itools.uri import resolve_uri2
-from itools.vfs import cwd
 from base import Handler
 from messages import *
 from registry import register_handler_class
@@ -44,16 +41,20 @@ class Folder(Handler):
     class_mimetypes = ['application/x-not-regular-file']
 
 
-    def __init__(self, ref=None, **kw):
+    def __init__(self, ref=None, database=None, **kw):
+        if database is not None:
+            self.database = database
         if ref is not None:
-            self.uri = cwd.get_uri(ref)
+            fs = self.get_fs()
+            self.uri = fs.get_uri(ref)
 
 
     def get_mtime(self):
         """Returns the last modification time.
         """
-        if vfs.exists(self.uri):
-            return vfs.get_mtime(self.uri)
+        fs = self.get_fs()
+        if fs.exists(self.uri):
+            return fs.get_mtime(self.uri)
         return None
 
 

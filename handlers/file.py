@@ -21,9 +21,6 @@ from cStringIO import StringIO
 from datetime import datetime
 
 # Import from itools
-from itools.uri import get_reference
-from itools import vfs
-from itools.vfs import cwd
 from registry import register_handler_class
 from base import Handler
 
@@ -51,7 +48,9 @@ class File(Handler):
     dirty = None
 
 
-    def __init__(self, ref=None, string=None, **kw):
+    def __init__(self, ref=None, string=None, database=None, **kw):
+        if database is not None:
+            self.database = database
         if ref is None:
             self.reset()
             self.dirty = datetime.now()
@@ -62,7 +61,8 @@ class File(Handler):
                 # A handler from some input data
                 self.new(**kw)
         else:
-            self.uri = cwd.get_uri(ref)
+            fs = self.get_fs()
+            self.uri = fs.get_uri(ref)
 
 
     def reset(self):
@@ -94,7 +94,8 @@ class File(Handler):
 
 
     def load_state(self):
-        file = vfs.open(self.uri)
+        fs = self.get_fs()
+        file = fs.open(self.uri)
         self.reset()
         try:
             self._load_state_from_file(file)
@@ -104,12 +105,13 @@ class File(Handler):
         finally:
             file.close()
 
-        self.timestamp = vfs.get_mtime(self.uri)
+        self.timestamp = fs.get_mtime(self.uri)
         self.dirty = None
 
 
     def load_state_from(self, uri):
-        file = vfs.open(uri)
+        fs = self.get_fs()
+        file = fs.open(uri)
         try:
             self.load_state_from_file(file)
         finally:
@@ -138,14 +140,16 @@ class File(Handler):
         finally:
             file.close()
         # Update the timestamp
-        self.timestamp = vfs.get_mtime(self.uri)
+        fs = self.get_fs()
+        self.timestamp = fs.get_mtime(self.uri)
         self.dirty = None
 
 
     def save_state_to(self, uri):
         # If there is an empty folder in the given URI, remove it
-        if vfs.is_folder(uri) and not vfs.get_names(uri):
-            vfs.remove(uri)
+        fs = self.get_fs()
+        if fs.is_folder(uri) and not fs.get_names(uri):
+            fs.remove(uri)
         # Save the file
         file = self.safe_make_file(uri)
         try:
@@ -198,7 +202,8 @@ class File(Handler):
         if timestamp is None:
             return False
 
-        mtime = vfs.get_mtime(self.uri)
+        fs = self.get_fs()
+        mtime = fs.get_mtime(self.uri)
         # If the resource layer does not support mtime... we are...
         if mtime is None:
             return True
@@ -270,8 +275,9 @@ class File(Handler):
         if self.timestamp is not None:
             return self.timestamp
 
-        # Not yet loaded, check the VFS
-        return vfs.get_mtime(self.uri)
+        # Not yet loaded, check the FS
+        fs = self.get_fs()
+        return fs.get_mtime(self.uri)
 
 
     def to_str(self):

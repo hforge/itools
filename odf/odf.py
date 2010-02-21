@@ -30,7 +30,6 @@ from itools.handlers import register_handler_class, ZIPFile
 from itools.xml import XMLParser, XML_DECL, START_ELEMENT, TEXT
 from itools.xml import stream_to_str, xml_to_text
 from itools.xmlfile import get_units, translate
-from itools import vfs
 
 # Import from the Python Image Library
 try:
@@ -195,7 +194,8 @@ class ODFFile(OOFile):
             err = 'The greeking feature requires the Python Imaging Library'
             raise ImportError, err
 
-        folder = vfs.open(get_abspath('.'))
+        fs = self.get_fs()
+        folder = fs.open(get_abspath('.'))
         err = 'Unexpected "%s" file will be omitted from the greeked document'
 
         modified_files = {}

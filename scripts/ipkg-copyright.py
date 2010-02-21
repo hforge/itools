@@ -24,7 +24,7 @@ from optparse import OptionParser
 # Import from itools
 import itools
 from itools.core import get_pipe
-from itools import vfs
+from itools.fs import lfs
 
 
 def parse_copyright(line):
@@ -78,8 +78,8 @@ if __name__ == '__main__':
     credits_names = {}  # Mapping from canonical email to real full name
     credits_mails = {}  # Mapping from secondary email to canonical email
     emails = []
-    if vfs.exists('CREDITS'):
-        for line in vfs.open('CREDITS').readlines():
+    if lfs.exists('CREDITS'):
+        for line in lfs.open('CREDITS').readlines():
             line = line.strip()
             if line.startswith('#'):
                 continue

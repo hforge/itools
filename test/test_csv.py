@@ -23,7 +23,7 @@ from unittest import TestCase, main
 from itools.datatypes import Boolean, Date, Integer, Unicode, URI, String
 from itools.csv import CSVFile, Table, UniqueError
 from itools.csv.table import parse_table, unfold_lines
-from itools import vfs
+from itools.fs import lfs
 from itools.xapian import AndQuery, OrQuery, PhraseQuery
 
 
@@ -410,8 +410,8 @@ class TableTestCase(TestCase):
     def tearDown(self):
         for name in ['agenda', 'books']:
             name = 'tests/%s' % name
-            if vfs.exists(name):
-                vfs.remove(name)
+            if lfs.exists(name):
+                lfs.remove(name)
 
 
     def test_de_serialize(self):
@@ -457,7 +457,7 @@ class TableTestCase(TestCase):
         ids = [ x.id for x in agenda.search(firstname=u'Albert') ]
         self.assertEqual(len(ids), 1)
         # Clean
-        vfs.remove('tests/agenda')
+        lfs.remove('tests/agenda')
 
 
     def test_unique(self):

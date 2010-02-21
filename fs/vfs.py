@@ -13,22 +13,19 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
 from datetime import datetime
 from cStringIO import StringIO
 from os import listdir
 from os.path import basename
-from urllib import unquote
+from urllib import quote, unquote
 from urlparse import urlsplit
 
-# Import from itools
-from itools.core import guess_type
-from filename import FileName
-
 # Import from gio
-from gio import File, Error
+from glib import MainLoop
+from gio import File, Error, MountOperation
 from gio import FILE_ATTRIBUTE_TIME_CHANGED, FILE_ATTRIBUTE_TIME_MODIFIED
 from gio import FILE_ATTRIBUTE_TIME_ACCESS
 from gio import FILE_ATTRIBUTE_STANDARD_SIZE, FILE_ATTRIBUTE_STANDARD_NAME
@@ -38,16 +35,9 @@ from gio import FILE_TYPE_SYMBOLIC_LINK
 from gio import FILE_ATTRIBUTE_ACCESS_CAN_READ
 from gio import FILE_ATTRIBUTE_ACCESS_CAN_WRITE
 
-
-
-######################################################################
-# Constants
-######################################################################
-READ = 'r'
-WRITE = 'w'
-READ_WRITE = 'rw'
-APPEND = 'a'
-
+# Import from itools
+from common import READ, WRITE, READ_WRITE, APPEND, get_mimetype
+from itools.uri import resolve_uri, resolve_uri2
 
 
 ######################################################################
@@ -242,20 +232,10 @@ class Folder(object):
 
 
     def get_mimetype(self, uri):
-        """Try to guess the mimetype for a resource, given the resource itself
-        and its name. To guess from the name we need to extract the type
-        extension, we use an heuristic for this task, but it needs to be
-        improved because there are many patterns:
+        """Try to guess the mimetype for a resource, given the resource
+        itself and its name.
 
-        <name>                                 README
-        <name>.<type>                          index.html
-        <name>.<type>.<language>               index.html.en
-        <name>.<type>.<language>.<encoding>    index.html.en.UTF-8
-        <name>.<type>.<compression>            itools.tar.gz
-        etc...
-
-        And even more complex, the name could contain dots, or the filename
-        could start by a dot (a hidden file in Unix systems).
+        See `itools.fs.base.get_mimetype` for complete description.
         """
         g_file = self._get_g_file(uri)
         # TODO Use magic numbers too (like file -i).
@@ -269,23 +249,7 @@ class Folder(object):
         path = unquote(path)
         name = basename(path)
 
-        name, extension, language = FileName.decode(name)
-        # Figure out the mimetype from the filename extension
-        if extension is not None:
-            mimetype, encoding = guess_type('%s.%s' % (name, extension))
-            # FIXME Compression schemes are not mimetypes, see /etc/mime.types
-            if encoding == 'gzip':
-                if mimetype == 'application/x-tar':
-                    return 'application/x-tgz'
-                return 'application/x-gzip'
-            elif encoding == 'bzip2':
-                if mimetype == 'application/x-tar':
-                    return 'application/x-tbz2'
-                return 'application/x-bzip2'
-            elif mimetype is not None:
-                return mimetype
-
-        return 'application/octet-stream'
+        return get_mimetype(name)
 
 
     def get_size(self, uri):
@@ -354,7 +318,6 @@ class Folder(object):
 
     def mount_archive(self, uri):
         g_file = self._get_g_file(uri)
-        from archive import Archive
         return Archive(g_file)
 
 
@@ -370,3 +333,73 @@ class Folder(object):
         return self._folder.get_relative_path(g_file)
 
 
+    @staticmethod
+    def resolve(base, reference):
+        return resolve_uri(base, reference)
+
+
+    @staticmethod
+    def resolve2(base, reference):
+        return resolve_uri2(base, reference)
+
+
+
+class Archive(Folder):
+
+    def __init__(self, g_file):
+        self._folder = None
+        self._loop = MainLoop()
+
+        # Make the archive uri
+        uri = g_file.get_uri()
+        uri = 'archive://' + quote(uri, '')
+
+        # Mount the archive if needed
+        g_file = File(uri)
+        # Already mounted ?
+        if g_file.query_exists():
+            self._folder = g_file
+        else:
+            mount_operation = MountOperation()
+            mount_operation.set_anonymous(True)
+            g_file.mount_enclosing_volume(mount_operation, self._mount_end)
+
+            # Wait
+            self._loop.run()
+
+
+#    def __del__(self):
+#        # Umount the archive
+#        self.unmount()
+
+
+    ############################
+    # Private API
+    ############################
+    def _mount_end(self, g_file, result):
+        if g_file.mount_enclosing_volume_finish(result):
+            self._folder = g_file
+        self._loop.quit()
+
+
+    def _unmount_end(self, g_mount, result):
+        g_mount.unmount_finish(result)
+        self._folder = None
+        self._loop.quit()
+
+
+    ############################
+    # Public API
+    ############################
+    def unmount(self):
+        # Unmount the archive
+        if self._folder is not None:
+            g_mount = self._folder.find_enclosing_mount()
+            g_mount.unmount(self._unmount_end)
+
+        # Wait
+        self._loop.run()
+
+
+# The entrypoint is the current working directory
+vfs = Folder()

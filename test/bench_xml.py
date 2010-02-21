@@ -29,8 +29,7 @@ from tarfile import open as open_tar
 # Import from itools
 import itools
 from itools.core import vmsize, get_time_spent
-from itools import vfs
-from itools.xml import XMLParser, XMLError, START_ELEMENT, END_ELEMENT
+from itools.fs import vfs, lfs
 
 
 #####################################################################
@@ -111,34 +110,34 @@ def get_test_filenames(test_path, force_download):
     compressed_dir_path = join(test_path, 'compressed_files')
 
     if force_download is True:
-        if vfs.exists(compressed_dir_path):
+        if lfs.exists(compressed_dir_path):
             print 'Remove compressed directory ', compressed_dir_path
-            vfs.remove(compressed_dir_path)
+            lfs.remove(compressed_dir_path)
             for names in uris.itervalues():
                 for (name, ext) in names:
                     path = join(test_path, name)
-                    if vfs.exists(path):
+                    if lfs.exists(path):
                         print 'Remove %s file' % path
-                        vfs.remove(path)
+                        lfs.remove(path)
 
     # test directory
-    if vfs.exists(test_path) is False:
-        vfs.make_folder(test_path)
+    if lfs.exists(test_path) is False:
+        lfs.make_folder(test_path)
 
     # compressed directory
-    if vfs.exists(compressed_dir_path) is False:
-        compressed_dir = vfs.make_folder(compressed_dir_path)
+    if lfs.exists(compressed_dir_path) is False:
+        lfs.make_folder(compressed_dir_path)
     else:
-        compressed_dir = vfs.open(compressed_dir_path)
+        lfs.open(compressed_dir_path)
 
-    test_dir_filenames = vfs.get_names(test_path)
+    test_dir_filenames = lfs.get_names(test_path)
     for base_uri, names in uris.iteritems():
         for (name, ext) in names:
             if test_dir_filenames.count(name):
                 continue
             compressed_dest = join(compressed_dir_path, '%s%s' % (name, ext))
             # check if tarball already exists
-            if vfs.exists(compressed_dest) is False:
+            if lfs.exists(compressed_dest) is False:
                 src = join(base_uri, '%s%s' % (name, ext))
                 print 'GET %s file' % src
                 dest = join(test_path, name)
@@ -147,26 +146,26 @@ def get_test_filenames(test_path, force_download):
                     continue
                 src_file = vfs.open(src)
                 # save Gzip file
-                compressed_dest_file = vfs.make_file(compressed_dest)
+                compressed_dest_file = lfs.make_file(compressed_dest)
                 compressed_dest_file.write(src_file.read())
                 compressed_dest_file.close()
                 src_file.close()
             print 'Extract file %s' % compressed_dest
             # Uncompressed File Path
             if name == 'xmlts20080205':
-                # uncompress onky xmlconf.xml file
+                # uncompress only xmlconf.xml file
                 tar = open_tar(compressed_dest)
                 xmlconf_file = tar.extractfile('xmlconf/xmlconf.xml')
                 ucf_path = join(test_path, name)
-                ucf_file = vfs.make_file(ucf_path)
+                ucf_file = lfs.make_file(ucf_path)
                 ucf_file.write(xmlconf_file.read())
                 ucf_file.close()
             else:
                 # untar Gzip file
-                compressed_dest_file = vfs.open(compressed_dest)
+                compressed_dest_file = lfs.open(compressed_dest)
                 gzip_file = GzipFile(compressed_dest)
                 ucf_path = join(test_path, name)
-                ucf_file = vfs.make_file(ucf_path)
+                ucf_file = lfs.make_file(ucf_path)
                 ucf_file.write(gzip_file.read())
                 compressed_dest_file.close()
                 gzip_file.close()
@@ -174,11 +173,11 @@ def get_test_filenames(test_path, force_download):
 
     tests = []
     # update test dir name
-    test_dir_filenames = vfs.get_names(test_path)
+    test_dir_filenames = lfs.get_names(test_path)
     for filename in test_dir_filenames:
         real_path = join(test_path, filename)
-        if vfs.is_file(real_path):
-            bytes = vfs.get_size(real_path)
+        if lfs.is_file(real_path):
+            bytes = lfs.get_size(real_path)
             tests.append((real_path, filename, bytes,
                           get_string_size(bytes)))
     tests.sort(key=lambda x: x[2])

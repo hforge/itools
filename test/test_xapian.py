@@ -16,13 +16,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from os.path import basename
 from random import sample
 import re
 from unittest import TestCase, main
 
 # Import from itools
 from itools.datatypes import String, Unicode, Boolean, Integer
-from itools.uri import get_reference
 from itools.fs import lfs
 from itools.xapian import make_catalog, Catalog, CatalogAware, StartQuery
 from itools.xapian import AndQuery, RangeQuery, PhraseQuery, NotQuery
@@ -274,9 +274,8 @@ class CatalogTestCase(TestCase):
         # Index
         fables = lfs.open('fables')
         for name in fables.get_names():
-            uri = fables.get_uri()
-            uri = get_reference(uri).resolve_name(name)
-            document = Document(uri)
+            abspath = fables.get_absolute_path(name)
+            document = Document(abspath)
             catalog.index_document(document)
         # Save
         catalog.save_changes()
@@ -402,16 +401,15 @@ class Document(CatalogAware):
               'is_long': Boolean(is_indexed=False, is_stored=True)}
 
 
-    def __init__(self, uri):
-        self.uri = uri
+    def __init__(self, abspath):
+        self.abspath = abspath
 
 
     def get_catalog_values(self):
-        uri = str(self.uri)
-        data = lfs.open(uri).read()
+        data = lfs.open(self.abspath).read()
 
         return {
-            'name': self.uri.path[-1],
+            'name': basename(self.abspath),
             'title': data.splitlines()[0],
             'data': data,
             'size': len(data),

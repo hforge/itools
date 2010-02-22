@@ -444,7 +444,7 @@ class RelaxNGFile(TextFile):
                    'prefix' : {}}
 
         # Parse the file
-        read_file(context, self.uri, file)
+        read_file(context, self.key, file)
 
         # And make the namespaces
         self.namespaces = make_namespaces(context)

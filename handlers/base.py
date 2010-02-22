@@ -27,8 +27,11 @@ from messages import MSG_NOT_ATTACHED
 
 class Handler(object):
     """This class represents a resource handler; where a resource can be a
-    file or a directory, and is identified by a URI. It is used as a base
-    class for any other handler class.
+    file or a directory, and is identified by a unique key. Handlers attached
+    to a vfs database use the URI. Handlers attached to a lfs database use the
+    absolute path.
+
+    It is used as a base class for any other handler class.
     """
 
     class_mimetypes = []
@@ -36,7 +39,7 @@ class Handler(object):
 
     # By default handlers are not attached to a database, nor a URI
     database = None
-    uri = None
+    key = None
 
 
     ########################################################################
@@ -77,8 +80,8 @@ class Handler(object):
         if database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
-        uri = database.fs.resolve2(self.uri, reference)
-        return database.has_handler(uri)
+        key = database.fs.resolve2(self.key, reference)
+        return database.has_handler(key)
 
 
     def get_handler_names(self, reference='.'):
@@ -86,8 +89,8 @@ class Handler(object):
         if database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
-        uri = database.fs.resolve2(self.uri, reference)
-        return database.get_handler_names(uri)
+        key = database.fs.resolve2(self.key, reference)
+        return database.get_handler_names(key)
 
 
     def get_handler(self, reference, cls=None):
@@ -95,8 +98,8 @@ class Handler(object):
         if database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
-        uri = database.fs.resolve2(self.uri, reference)
-        return database.get_handler(uri, cls=cls)
+        key = database.fs.resolve2(self.key, reference)
+        return database.get_handler(key, cls=cls)
 
 
     def get_handlers(self, reference='.'):
@@ -104,8 +107,8 @@ class Handler(object):
         if database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
-        uri = database.fs.resolve2(self.uri, reference)
-        return database.get_handlers(uri)
+        key = database.fs.resolve2(self.key, reference)
+        return database.get_handlers(key)
 
 
     def set_handler(self, reference, handler):
@@ -113,8 +116,8 @@ class Handler(object):
         if database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
-        uri = database.fs.resolve2(self.uri, reference)
-        database.set_handler(uri, handler)
+        key = database.fs.resolve2(self.key, reference)
+        database.set_handler(key, handler)
 
 
     def del_handler(self, reference):
@@ -122,8 +125,8 @@ class Handler(object):
         if database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
-        uri = database.fs.resolve2(self.uri, reference)
-        database.del_handler(uri)
+        key = database.fs.resolve2(self.key, reference)
+        database.del_handler(key)
 
 
     def copy_handler(self, source, target):
@@ -131,8 +134,8 @@ class Handler(object):
         if database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
-        source = database.fs.resolve2(self.uri, source)
-        target = database.fs.resolve2(self.uri, target)
+        source = database.fs.resolve2(self.key, source)
+        target = database.fs.resolve2(self.key, target)
         database.copy_handler(source, target)
 
 
@@ -141,12 +144,10 @@ class Handler(object):
         if database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
-        source = database.fs.resolve2(self.uri, source)
-        target = database.fs.resolve2(self.uri, target)
+        source = database.fs.resolve2(self.key, source)
+        target = database.fs.resolve2(self.key, target)
         database.move_handler(source, target)
 
 
     def get_mimetype(self):
-        fs = self.get_fs()
-        return fs.get_mimetype(self.uri)
-
+        return self.get_fs().get_mimetype(self.key)

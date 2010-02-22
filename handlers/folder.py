@@ -45,15 +45,15 @@ class Folder(Handler):
             self.database = database
         if ref is not None:
             fs = self.get_fs()
-            self.uri = fs.get_uri(ref)
+            self.key = fs.resolve_key(ref)
 
 
     def get_mtime(self):
         """Returns the last modification time.
         """
         fs = self.get_fs()
-        if fs.exists(self.uri):
-            return fs.get_mtime(self.uri)
+        if fs.exists(self.key):
+            return fs.get_mtime(self.key)
         return None
 
 

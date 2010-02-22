@@ -31,7 +31,7 @@ from tempfile import mkdtemp, mkstemp
 from itools.core import freeze, get_abspath
 from itools.datatypes import XMLContent
 from itools.stl import set_prefix, stl
-from itools.uri import get_reference, get_uri_path
+from itools.uri import get_reference
 from itools.fs import vfs, lfs
 from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, TEXT
 from itools.xml import get_end_tag
@@ -138,8 +138,9 @@ def stl_pmltopdf(document, namespace=freeze({}), path=None, mode='pdf'):
     if isinstance(document, XMLFile):
         events = document.events
         # Try to get the path from the file
-        if path is None and document.uri:
-            path = get_uri_path(document.uri)
+        if path is None and document.key:
+            fs = document.get_fs()
+            path = fs.get_path(document.key)
     else:
         events = document
 
@@ -199,7 +200,8 @@ def stl_pmltopdf_test(document, namespace=freeze({}), path=None):
         events = document.events
         # Try to get the path from the file
         if path is None:
-            path = get_uri_path(document.uri)
+            fs = document.get_fs()
+            path = fs.get_path(document.key)
     else:
         events = document
 

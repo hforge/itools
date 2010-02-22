@@ -668,7 +668,7 @@ class Table(File):
             return
 
         # Incremental Save
-        file = self.safe_open(self.uri, 'a')
+        file = self.safe_open(self.key, 'a')
         try:
             # Added properties records
             for seq in self.added_properties:
@@ -693,15 +693,15 @@ class Table(File):
 
         # Update the timestamp
         fs = self.get_fs()
-        self.timestamp = fs.get_mtime(self.uri)
+        self.timestamp = fs.get_mtime(self.key)
         self.dirty = None
 
 
-    def save_state_to(self, uri):
+    def save_state_to(self, key):
         # TODO: this is a hack, for 0.50 this case should be covered by the
         # handler's protocol
-        File.save_state_to(self, uri)
-        if uri == self.uri:
+        File.save_state_to(self, key)
+        if key == self.key:
             self.added_records = []
             self.removed_records = []
 

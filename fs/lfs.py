@@ -184,9 +184,6 @@ class LocalFolder(object):
         path = self._resolve_path(path)
         return abspath(path)
 
-    # Alias to match vfs API (URI makes no sense for paths)
-    get_uri = get_absolute_path
-
 
     def get_relative_path(self, path):
         path = self._resolve_path(path)
@@ -194,22 +191,37 @@ class LocalFolder(object):
 
 
     @staticmethod
-    def resolve(base, reference):
+    def get_basename(path):
+        return basename(path)
+
+
+    # To match vfs API
+    @staticmethod
+    def get_path(path):
+        return path
+
+
+    @staticmethod
+    def resolve(base, path):
         endswith_slash = base[-1] == '/'
         base = abspath(base)
         # '/a/b/' + 'c' => '/a/b/c'
         if endswith_slash:
-            return join(base, reference)
+            return join(base, path)
         # '/a/b' + 'c' => '/a/c'
-        return join(dirname(base), reference)
+        return join(dirname(base), path)
 
 
     @staticmethod
-    def resolve2(base, reference):
+    def resolve2(base, path):
         base = abspath(base)
         # '/a/b' + 'c' => '/a/b/c'
         # '/a/b/' + 'c' => '/a/b/c'
-        return join(base, reference)
+        return join(base, path)
+
+
+    # Resolution method for handler database keys
+    resolve_key = get_absolute_path
 
 
 # The entrypoint is the current working directory

@@ -37,7 +37,7 @@ from gio import FILE_ATTRIBUTE_ACCESS_CAN_WRITE
 
 # Import from itools
 from common import READ, WRITE, READ_WRITE, APPEND, get_mimetype
-from itools.uri import resolve_uri, resolve_uri2
+from itools.uri import resolve_uri, resolve_uri2, get_uri_name, get_uri_path
 
 
 ######################################################################
@@ -334,6 +334,16 @@ class Folder(object):
 
 
     @staticmethod
+    def get_basename(reference):
+        return get_uri_name(reference)
+
+
+    @staticmethod
+    def get_path(reference):
+        return get_uri_path(reference)
+
+
+    @staticmethod
     def resolve(base, reference):
         return resolve_uri(base, reference)
 
@@ -341,6 +351,10 @@ class Folder(object):
     @staticmethod
     def resolve2(base, reference):
         return resolve_uri2(base, reference)
+
+
+    # Resolution method for handler database keys
+    resolve_key = get_uri
 
 
 

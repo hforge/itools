@@ -62,7 +62,7 @@ class File(Handler):
                 self.new(**kw)
         else:
             fs = self.get_fs()
-            self.uri = fs.get_uri(ref)
+            self.key = fs.resolve_key(ref)
 
 
     def reset(self):
@@ -74,9 +74,9 @@ class File(Handler):
 
 
     def __getattr__(self, name):
-        # Not attached to a URI or already loaded (should be correctly
+        # Not attached to a key or already loaded (should be correctly
         # initialized)
-        if self.uri is None or self.timestamp is not None:
+        if self.key is None or self.timestamp is not None:
             message = "'%s' object has no attribute '%s'"
             raise AttributeError, message % (self.__class__.__name__, name)
 
@@ -95,7 +95,7 @@ class File(Handler):
 
     def load_state(self):
         fs = self.get_fs()
-        file = fs.open(self.uri)
+        file = fs.open(self.key)
         self.reset()
         try:
             self._load_state_from_file(file)
@@ -105,12 +105,12 @@ class File(Handler):
         finally:
             file.close()
 
-        self.timestamp = fs.get_mtime(self.uri)
+        self.timestamp = fs.get_mtime(self.key)
         self.dirty = None
 
 
-    def load_state_from(self, uri):
-        file = self.get_fs().open(uri)
+    def load_state_from(self, key):
+        file = self.get_fs().open(key)
         try:
             self.load_state_from_file(file)
         finally:
@@ -133,23 +133,23 @@ class File(Handler):
 
 
     def save_state(self):
-        file = self.safe_open(self.uri, 'w')
+        file = self.safe_open(self.key, 'w')
         try:
             self.save_state_to_file(file)
         finally:
             file.close()
         # Update the timestamp
-        self.timestamp = self.get_fs().get_mtime(self.uri)
+        self.timestamp = self.get_fs().get_mtime(self.key)
         self.dirty = None
 
 
-    def save_state_to(self, uri):
-        # If there is an empty folder in the given URI, remove it
+    def save_state_to(self, key):
+        # If there is an empty folder in the given key, remove it
         fs = self.get_fs()
-        if fs.is_folder(uri) and not fs.get_names(uri):
-            fs.remove(uri)
+        if fs.is_folder(key) and not fs.get_names(key):
+            fs.remove(key)
         # Save the file
-        file = self.safe_make_file(uri)
+        file = self.safe_make_file(key)
         try:
             self.save_state_to_file(file)
         finally:
@@ -165,7 +165,7 @@ class File(Handler):
         file.truncate(file.tell())
 
 
-    clone_exclude = frozenset(['database', 'uri', 'timestamp', 'dirty'])
+    clone_exclude = frozenset(['database', 'key', 'timestamp', 'dirty'])
     def clone(self, cls=None):
         # Define the class to build
         if cls is None:
@@ -176,7 +176,7 @@ class File(Handler):
 
         # Load first, if needed
         if self.dirty is None:
-            if self.uri is not None and self.timestamp is None:
+            if self.key is not None and self.timestamp is None:
                 self.load_state()
 
         # Copy the state
@@ -192,7 +192,7 @@ class File(Handler):
 
 
     def is_outdated(self):
-        if self.uri is None:
+        if self.key is None:
             return False
 
         timestamp = self.timestamp
@@ -200,7 +200,7 @@ class File(Handler):
         if timestamp is None:
             return False
 
-        mtime = self.get_fs().get_mtime(self.uri)
+        mtime = self.get_fs().get_mtime(self.key)
         # If the resource layer does not support mtime... we are...
         if mtime is None:
             return True
@@ -210,7 +210,7 @@ class File(Handler):
 
     def set_changed(self):
         # Invalid handler
-        if self.uri is None and self.dirty is None:
+        if self.key is None and self.dirty is None:
             raise RuntimeError, 'cannot change an orphaned file handler'
 
         # Free handler (not attached to a database)
@@ -221,38 +221,38 @@ class File(Handler):
         # Phantoms
         database = self.database
         if database.is_phantom(self):
-            database.cache[self.uri] = self
-            database.added.add(self.uri)
+            database.cache[self.key] = self
+            database.added.add(self.key)
             return
 
         # Check nothing weird happened
-        if self.uri is None or database.cache.get(self.uri) is not self:
+        if self.key is None or database.cache.get(self.key) is not self:
             raise RuntimeError, 'database inconsistency!'
 
         # Update database state
         if self.timestamp:
             # Case 1: loaded
             self.dirty = datetime.now()
-            database.changed.add(self.uri)
+            database.changed.add(self.key)
         elif self.dirty:
             # Case 2: new
-            database.added.add(self.uri)
+            database.added.add(self.key)
         else:
             # Case 3: not loaded (yet)
             self.load_state()
             self.dirty = datetime.now()
-            database.changed.add(self.uri)
+            database.changed.add(self.key)
 
 
     def _clean_state(self):
-        names = [ x for x in self.__dict__ if x not in ('database', 'uri') ]
+        names = [ x for x in self.__dict__ if x not in ('database', 'key') ]
         for name in names:
             delattr(self, name)
 
 
     def abort_changes(self):
-        # Not attached to a URI or not changed
-        if self.uri is None or self.dirty is None:
+        # Not attached to a key or not changed
+        if self.key is None or self.dirty is None:
             return
         # Abort
         self._clean_state()
@@ -273,7 +273,7 @@ class File(Handler):
             return self.timestamp
 
         # Not yet loaded, check the FS
-        return self.get_fs().get_mtime(self.uri)
+        return self.get_fs().get_mtime(self.key)
 
 
     def to_str(self):

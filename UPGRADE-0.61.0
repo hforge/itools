@@ -146,6 +146,16 @@ itools.web
   def get_namespace(self, resource, context):
       namespace = STLForm.get_namespace(self, resource, context)
 
+(3) Use <button> to submit forms:
+
+  # Before
+  <input type="submit" name=";login' value="Log in" />
+
+  # Now
+  <button type="submit" name="action' value="login">Log in</button>
+
+In the example above 'login' is a placeholder.
+
 
 itools.xapian
 =============

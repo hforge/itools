@@ -124,7 +124,7 @@ of an iCalendar file, redefine the 'record_properties' class variable.
 itools.web
 ==========
 
-Obsolete method 'context.has_form_value' has been removed, use instead
+(1) Obsolete method 'context.has_form_value' has been removed, use instead
 'context.get_form_value':
 
   # Before
@@ -135,6 +135,16 @@ Obsolete method 'context.has_form_value' has been removed, use instead
   value = context.get_form_value(name)
   if value is not None:
       ...
+
+(2) The method 'BaseForm.build_namespace' has become 'STLForm.get_namespace':
+
+  # Before
+  def get_namespace(self, resource, context):
+      namespace = self.build_namespace(resource, context)
+
+  # Now
+  def get_namespace(self, resource, context):
+      namespace = STLForm.get_namespace(self, resource, context)
 
 
 itools.xapian

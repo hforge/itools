@@ -167,7 +167,7 @@ class BaseForm(BaseView):
 
 
     def _get_action(self, resource, context):
-        """ default function to retrieve the name of the action from a form
+        """Default function to retrieve the name of the action from a form
         """
         for name in context.get_form_keys():
             if name.startswith(';'):

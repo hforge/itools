@@ -18,7 +18,6 @@
 
 # Import from itools
 from base import Handler
-from messages import *
 from registry import register_handler_class
 
 

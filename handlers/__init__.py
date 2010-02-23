@@ -38,11 +38,15 @@ from file import File
 from folder import Folder
 from image import Image
 from registry import register_handler_class, get_handler_class_by_mimetype
-from registry import get_handler_class, get_handler
 from text import TextFile, guess_encoding
-from database import BaseDatabase, RODatabase, RWDatabase
+from database import BaseDatabase, RODatabase, RWDatabase, default_database
 from database import ROGitDatabase, GitDatabase, make_git_database
 from utils import checkid
+
+
+# Backward compatibility aliases
+get_handler_class = default_database.get_handler_class
+get_handler = default_database.get_handler
 
 
 __all__ = [
@@ -62,6 +66,7 @@ __all__ = [
     'TGZFile',
     'TBZ2File',
     # The database
+    'default_database',
     'BaseDatabase',
     'RODatabase',
     'RWDatabase',

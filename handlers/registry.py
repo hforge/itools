@@ -14,9 +14,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from itools
-from itools.fs import vfs
-
 
 handler_classes = {}
 
@@ -36,30 +33,3 @@ def get_handler_class_by_mimetype(mimetype):
             return handler_classes[main_type]
 
     raise ValueError
-
-
-def get_handler_class(uri):
-    mimetype = vfs.get_mimetype(uri)
-
-    try:
-        return get_handler_class_by_mimetype(mimetype)
-    except ValueError:
-        if vfs.is_file(uri):
-            from file import File
-            return File
-        elif vfs.is_folder(uri):
-            from folder import Folder
-            return Folder
-
-    raise ValueError
-
-
-def get_handler(uri):
-    """Returns a resource handler from a uri reference.
-    """
-    if vfs.exists(uri):
-        handler_class = get_handler_class(uri)
-        new_handler = handler_class(uri)
-        return new_handler
-
-    raise LookupError, 'the resource "%s" does not exist' % uri

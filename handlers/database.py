@@ -25,11 +25,11 @@ from sys import getrefcount
 
 # Import from itools
 from itools.core import LRUCache, send_subprocess, freeze
-from itools.uri import get_reference, get_uri_name, get_uri_path, resolve_uri2
+from itools.uri import get_reference, get_uri_name, get_uri_path
 from itools.fs import vfs, lfs, READ, WRITE, READ_WRITE, APPEND
 from folder import Folder
 import messages
-from registry import get_handler_class
+from registry import get_handler_class_by_mimetype
 
 
 ###########################################################################
@@ -280,7 +280,7 @@ class RODatabase(BaseDatabase):
     def has_handler(self, reference):
         uri = self._resolve_reference(reference)
 
-        # Syncrhonize
+        # Synchronize
         handler = self._sync_filesystem(uri)
         if handler is not None:
             return True
@@ -299,10 +299,27 @@ class RODatabase(BaseDatabase):
         return []
 
 
+    def get_handler_class(self, uri):
+        fs = self.fs
+        mimetype = fs.get_mimetype(uri)
+
+        try:
+            return get_handler_class_by_mimetype(mimetype)
+        except ValueError:
+            if fs.is_file(uri):
+                from file import File
+                return File
+            elif fs.is_folder(uri):
+                from folder import Folder
+                return Folder
+
+        raise ValueError
+
+
     def get_handler(self, reference, cls=None):
         uri = self._resolve_reference(reference)
 
-        # Syncrhonize
+        # Synchronize
         handler = self._sync_filesystem(uri)
         if handler is not None:
             # Check the class matches
@@ -326,7 +343,7 @@ class RODatabase(BaseDatabase):
 
         # Cache miss
         if cls is None:
-            cls = get_handler_class(uri)
+            cls = self.get_handler_class(uri)
         # Build the handler and update the cache
         handler = object.__new__(cls)
         self.push_handler(uri, handler)
@@ -390,8 +407,9 @@ class RODatabase(BaseDatabase):
 ###########################################################################
 class RWDatabase(RODatabase):
 
-    def __init__(self, size_min, size_max, fs=None):
-        RODatabase.__init__(self, size_min, size_max, fs=fs)
+    def __init__(self, size_min=4800, size_max=5200, fs=None):
+        RODatabase.__init__(self, size_min=size_min, size_max=size_max,
+                fs=fs)
         # The state, for transactions
         self.changed = set()
         self.added = set()
@@ -496,7 +514,7 @@ class RWDatabase(RODatabase):
         if uri in self.removed:
             raise LookupError, 'resource already removed'
 
-        # Syncrhonize
+        # Synchronize
         handler = self._sync_filesystem(uri)
         if not self.fs.exists(uri):
             raise LookupError, 'resource does not exist'
@@ -800,3 +818,7 @@ def make_git_database(path, size_min, size_max):
 
     # Ok
     return GitDatabase(path, size_min, size_max)
+
+
+# A built-in database for handler operations
+default_database = RWDatabase()

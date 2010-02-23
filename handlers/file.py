@@ -21,8 +21,8 @@ from cStringIO import StringIO
 from datetime import datetime
 
 # Import from itools
-from registry import register_handler_class
 from base import Handler
+from registry import register_handler_class
 
 
 
@@ -110,8 +110,7 @@ class File(Handler):
 
 
     def load_state_from(self, uri):
-        fs = self.get_fs()
-        file = fs.open(uri)
+        file = self.get_fs().open(uri)
         try:
             self.load_state_from_file(file)
         finally:
@@ -140,8 +139,7 @@ class File(Handler):
         finally:
             file.close()
         # Update the timestamp
-        fs = self.get_fs()
-        self.timestamp = fs.get_mtime(self.uri)
+        self.timestamp = self.get_fs().get_mtime(self.uri)
         self.dirty = None
 
 
@@ -202,8 +200,7 @@ class File(Handler):
         if timestamp is None:
             return False
 
-        fs = self.get_fs()
-        mtime = fs.get_mtime(self.uri)
+        mtime = self.get_fs().get_mtime(self.uri)
         # If the resource layer does not support mtime... we are...
         if mtime is None:
             return True
@@ -276,8 +273,7 @@ class File(Handler):
             return self.timestamp
 
         # Not yet loaded, check the FS
-        fs = self.get_fs()
-        return fs.get_mtime(self.uri)
+        return self.get_fs().get_mtime(self.uri)
 
 
     def to_str(self):

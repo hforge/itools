@@ -84,17 +84,27 @@ And:
 itools.handlers
 ===============
 
-(1) Inside handlers, try not to call vfs directly but rather ask the handler
-for its FS:
+(1) Handlers may be attached to different filesystems (see itools.fs) so
+don't call vfs directly:
 
   # Before
   vfs.get_mtime(self.uri)
 
   # After
   fs = self.get_fs()
-  fs.get_mtime(self.uri)
+  fs.get_mtime(self.key)
 
-(2) The database may use the new lfs module and provide faster operations when
+(2) Do not assume that handlers use URIs, it could be absolute paths or
+anything else that makes sense to a handler database:
+
+  # Before
+  resolve_uri2(self.key, name)
+
+  # After
+  fs = self.get_fs()
+  fs.resolve2(self.key, name)
+
+(3) A database may use the new lfs module and provide faster operations when
 you know you only need to access the filesystem. It is the default for
 (RO)GitDatabase.
 

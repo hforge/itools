@@ -21,7 +21,7 @@ handler class hierarchy.
 
 # Import from itools
 from itools.fs import vfs
-from messages import *
+from messages import MSG_NOT_ATTACHED
 
 
 

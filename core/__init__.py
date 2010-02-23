@@ -20,6 +20,7 @@ from sys import platform, version_info
 # Import from itools
 from cache import LRUCache
 from freeze import freeze, frozendict, frozenlist
+from lazy import lazy
 from mimetypes_ import add_type, guess_all_extensions, guess_extension
 from mimetypes_ import guess_type, has_encoding, has_extension
 from utils import get_abspath, merge_dicts, get_pipe, get_version
@@ -47,6 +48,8 @@ __all__ = [
     'freeze',
     'frozendict',
     'frozenlist',
+    # Lazy load
+    'lazy',
     # Caching
     'LRUCache',
     # Mimetypes

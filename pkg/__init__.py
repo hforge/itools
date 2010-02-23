@@ -17,28 +17,20 @@
 
 # Import from itools
 from itools.core import add_type
-from distribution import ArchiveNotSupported, Bundle
 from handlers import SetupConf
 from metadata import PKGINFOFile
-from packages import get_installed_info, packages_infos
-from repository import parse_package_name, download, EXTENSIONS
+from packages import packages_infos
 from utils import get_compile_flags, get_files, get_manifest, make_version
 from utils import setup, get_config, OptionalExtension
 
 
 __all__ = [
-    'ArchiveNotSupported',
-    'Bundle',
-    'download',
-    'EXTENSIONS',
     'get_compile_flags',
     'get_config',
     'get_files',
-    'get_installed_info',
     'get_manifest',
     'make_version',
     'packages_infos',
-    'parse_package_name',
     'OptionalExtension',
     'PKGINFOFile',
     'setup',

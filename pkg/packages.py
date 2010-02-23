@@ -16,7 +16,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from distutils.versionpredicate import split_provision
 from operator import itemgetter
 from os import sep
 from os.path import join, split
@@ -53,29 +52,6 @@ def get_minpackage(dir):
     if vfs.exists(path) and vfs.is_file(path):
         return {'name': package, 'version': get_package_version(package)}
     return None
-
-
-def get_installed_info(dir, package_name):
-    package = {}
-
-    info = get_setupconf(join(dir, package_name))
-    if info:
-        return info
-
-    entries = [
-        join(dir, f) for f in vfs.get_names(dir)
-        if f.endswith('.egg-info') and package_name.upper() in f.upper() ]
-
-    entries.sort(lambda a, b: cmp(vfs.get_ctime(a), vfs.get_ctime(b)))
-
-    if len(entries) > 0:
-        info = get_egginfo(join(dir, entries.pop()))
-
-    if info:
-        return info
-
-    info = get_minpackage(join(dir, package_name))
-    return info
 
 
 def packages_infos(module_name=None):

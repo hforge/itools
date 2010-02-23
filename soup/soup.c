@@ -369,6 +369,8 @@ typedef struct
 {
   PyObject_HEAD
   SoupServer * s_server;
+  SoupAddress * s_address;
+  guint port;
 } PyServer;
 
 
@@ -426,9 +428,7 @@ PyServerType_init (PyServer * self, PyObject * args, PyObject * kwdict)
   guint port = 8080;
 
   /* libsoup variables */
-  guint signal_id;
   SoupAddress *s_address = NULL;
-  SoupServer *s_server;
 
   /* Arguments */
   if (!PyArg_ParseTupleAndKeywords (args, kwdict, "|sI", kwlist, &address,
@@ -453,31 +453,9 @@ PyServerType_init (PyServer * self, PyObject * args, PyObject * kwdict)
     soup_address_resolve_sync(s_address, NULL);
   }
 
-  /* Make the server */
-  s_server = soup_server_new (SOUP_SERVER_SERVER_HEADER, "itools.http",
-                              SOUP_SERVER_INTERFACE, s_address,
-                              SOUP_SERVER_PORT, port,
-                              NULL);
-  if (!s_server)
-  {
-    /* XXX How to do that ? */
-    //g_free(s_address);
-
-    PyErr_Format (PyExc_RuntimeError, "could not make the SoupServer");
-    return -1;
-  }
-  self->s_server = s_server;
-
-  /* Handlers */
-  soup_server_add_handler (s_server, "/", s_server_path_callback, self, NULL);
-  soup_server_add_handler (s_server, "*", s_server_star_callback, self, NULL);
-
-  /* Signals */
-  signal_id = g_signal_lookup ("request-finished", SOUP_TYPE_SERVER);
-  g_signal_add_emission_hook (signal_id, 0, log_access, self, NULL);
-
-  signal_id = g_signal_lookup ("request-aborted", SOUP_TYPE_SERVER);
-  g_signal_add_emission_hook (signal_id, 0, log_access, self, NULL);
+  /* Keep address & port */
+  self->s_address = s_address;
+  self->port = port;
 
   /* Ok */
   return 0;
@@ -496,6 +474,34 @@ PyServerType_stop (PyServer * self, PyObject * args, PyObject * kwdict)
 static PyObject *
 PyServerType_start (PyServer * self, PyObject * args, PyObject * kwdict)
 {
+  /* libsoup variables */
+  guint signal_id;
+  SoupServer *s_server;
+
+  /* Make the server */
+  s_server = soup_server_new (SOUP_SERVER_SERVER_HEADER, "itools.http",
+                              SOUP_SERVER_INTERFACE, self->s_address,
+                              SOUP_SERVER_PORT, self->port,
+                              NULL);
+  if (!s_server)
+  {
+    PyErr_Format (PyExc_RuntimeError, "could not make the SoupServer");
+    return NULL;
+  }
+  self->s_server = s_server;
+
+  /* Handlers */
+  soup_server_add_handler (s_server, "/", s_server_path_callback, self, NULL);
+  soup_server_add_handler (s_server, "*", s_server_star_callback, self, NULL);
+
+  /* Signals */
+  signal_id = g_signal_lookup ("request-finished", SOUP_TYPE_SERVER);
+  g_signal_add_emission_hook (signal_id, 0, log_access, self, NULL);
+
+  signal_id = g_signal_lookup ("request-aborted", SOUP_TYPE_SERVER);
+  g_signal_add_emission_hook (signal_id, 0, log_access, self, NULL);
+
+  /* Go */
   soup_server_run_async (self->s_server);
 
   Py_RETURN_NONE;

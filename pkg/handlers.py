@@ -37,7 +37,7 @@ class SetupConf(ConfigFile):
         'provides': Tokens,
         'scripts': Tokens,
         'source_language': String,
-        'target_language': String,
+        'target_languages': Tokens,
         'repository': URI,
         'username': String}
 

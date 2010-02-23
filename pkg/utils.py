@@ -27,6 +27,7 @@ from sys import _getframe, argv
 # Import from itools
 from itools.core import freeze, get_pipe, get_version
 from itools import git
+from itools.handlers import get_handler
 from handlers import SetupConf
 
 
@@ -146,13 +147,18 @@ def get_compile_flags(command):
 
 
 
+def get_config():
+    return get_handler('setup.conf', cls=SetupConf)
+
+
+
 def get_manifest():
     if git.is_available():
         return git.get_filenames()
 
     # No git: find out source files
-    config = SetupConf('setup.conf')
-    target_languages = config.get_value('target_languages', default='').split()
+    config = get_config()
+    target_languages = config.get_value('target_languages')
 
     exclude = frozenset(['.git', 'build', 'dist'])
     bad_files = compile('.*(~|pyc|%s)$' % '|'.join(target_languages))
@@ -164,7 +170,7 @@ def setup(ext_modules=freeze([])):
     mname = _getframe(1).f_globals.get('__name__')
     version = get_version(mname)
 
-    config = SetupConf('setup.conf')
+    config = get_config()
 
     # Initialize variables
     package_name = config.get_value('name')

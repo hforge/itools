@@ -23,8 +23,7 @@ from metadata import PKGINFOFile
 from packages import get_installed_info, packages_infos
 from repository import parse_package_name, download, EXTENSIONS
 from utils import get_compile_flags, get_files, get_manifest, make_version
-from utils import setup
-from utils import OptionalExtension
+from utils import setup, get_config, OptionalExtension
 
 
 __all__ = [
@@ -33,6 +32,7 @@ __all__ = [
     'download',
     'EXTENSIONS',
     'get_compile_flags',
+    'get_config',
     'get_files',
     'get_installed_info',
     'get_manifest',

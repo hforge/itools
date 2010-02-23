@@ -32,7 +32,7 @@ from itools import git
 from itools.handlers import get_handler
 from itools.html import XHTMLFile
 import itools.pdf
-from itools.pkg import SetupConf, get_files, get_manifest, make_version
+from itools.pkg import get_config, get_files, get_manifest, make_version
 import itools.stl
 from itools.fs import lfs
 
@@ -54,9 +54,9 @@ if __name__ == '__main__':
         print "Warning: not using git."
 
     # Read configuration for languages
-    config = SetupConf('setup.conf')
+    config = get_config()
     source_language = config.get_value('source_language', default='en')
-    target_languages = config.get_value('target_languages', default='').split()
+    target_languages = config.get_value('target_languages')
 
     # (1) Initialize the manifest file
     manifest = [ x for x in get_manifest() if not islink(x) ]
@@ -74,7 +74,7 @@ if __name__ == '__main__':
         # Build MO files
         print '* Compile message catalogs:',
         stdout.flush()
-        for lang in [source_language] + target_languages:
+        for lang in (source_language,) + target_languages:
             print lang,
             stdout.flush()
             call([

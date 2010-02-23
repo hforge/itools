@@ -21,18 +21,18 @@
 # Import from the Standard Library
 from optparse import OptionParser
 from os import sep
-from os.path import basename
 from subprocess import call
 import sys
 
 # Import from itools
 import itools
 from itools.gettext import POFile
-from itools.handlers import ConfigFile, get_handler
+from itools.handlers import get_handler
 import itools.html
 import itools.python
 import itools.stl
 import itools.pdf
+from itools.pkg import get_config
 import itools.srx
 from itools.uri import Path
 from itools.fs import vfs, WRITE
@@ -60,7 +60,7 @@ if __name__ == '__main__':
         parser.error('incorrect number of arguments')
 
     # Read configuration for languages
-    config = ConfigFile('setup.conf')
+    config = get_config()
     src_language = config.get_value('source_language', default='en')
 
     # The SRX file
@@ -123,7 +123,7 @@ if __name__ == '__main__':
     folder = vfs.open('locale')
     filenames = set([ x for x in folder.get_names() if x[-3:] == '.po' ])
     filenames.add('%s.po' % src_language)
-    for language in config.get_value('target_languages', default='').split():
+    for language in config.get_value('target_languages'):
         filenames.add('%s.po' % language)
     filenames = list(filenames)
     filenames.sort()

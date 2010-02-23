@@ -233,7 +233,7 @@ class Context(object):
 
     def get_form(self):
         if self.method in ('GET', 'HEAD'):
-            return self.query
+            return self.uri.query
         # XXX What parameters with the fields defined in the query?
         return self.body
 

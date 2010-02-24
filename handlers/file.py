@@ -48,10 +48,10 @@ class File(Handler):
     dirty = None
 
 
-    def __init__(self, ref=None, string=None, database=None, **kw):
+    def __init__(self, key=None, string=None, database=None, **kw):
         if database is not None:
             self.database = database
-        if ref is None:
+        if key is None:
             self.reset()
             self.dirty = datetime.now()
             if string is not None:
@@ -62,7 +62,7 @@ class File(Handler):
                 self.new(**kw)
         else:
             fs = self.get_fs()
-            self.key = fs.resolve_key(ref)
+            self.key = fs.resolve_key(key)
 
 
     def reset(self):

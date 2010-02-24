@@ -40,12 +40,12 @@ class Folder(Handler):
     class_mimetypes = ['application/x-not-regular-file']
 
 
-    def __init__(self, ref=None, database=None, **kw):
+    def __init__(self, key=None, database=None, **kw):
         if database is not None:
             self.database = database
-        if ref is not None:
+        if key is not None:
             fs = self.get_fs()
-            self.key = fs.resolve_key(ref)
+            self.key = fs.resolve_key(key)
 
 
     def get_mtime(self):

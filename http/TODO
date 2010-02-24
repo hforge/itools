@@ -1,0 +1,39 @@
+
+itools 0.75 requires libsoup 2.28
+
+For every issue below that cannot be solved with 2.28 we will open a
+bug in bugs.hforge.org
+
+
+Priority 1
+==========
+
+* Access log:
+
+  - make the test-log.py into a unit test, or just include in somehow
+    in itools/test
+
+* Finish the event log.  Before libsoup we printed the request headers when
+  there was an error.  With libsoup it looks like it is not obvious how to
+  get this information.
+
+Priority 2
+==========
+
+* Implement the TRACE method (in libsoup) see bug below for details.
+
+  - http://bugzilla.gnome.org/show_bug.cgi?id=590871
+
+* Support "503 Service Unavailable".  When the server is too busy, it
+  should automatically send the 503 response.
+
+* Test & fix ikaaro behind two proxies: Apache -> Apache -> ikaaro
+
+
+Priority 3
+==========
+
+* Support "301 Moved Permanently" XXX
+
+* Request methods are case sensitive XXX
+

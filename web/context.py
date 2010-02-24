@@ -212,6 +212,10 @@ class Context(object):
     #######################################################################
     # Request
     #######################################################################
+    def get_headers(self):
+        return  self.soup_message.get_headers()
+
+
     def get_header(self, name):
         name = name.lower()
         datatype = get_type(name)

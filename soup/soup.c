@@ -191,6 +191,42 @@ PyMessage_get_body (PyMessage * self, PyObject * args, PyObject * kwdict)
 
 
 static PyObject *
+PyMessage_get_headers (PyMessage * self, PyObject * args, PyObject * kwdict)
+{
+  SoupMessageHeadersIter iter;
+  const char *name, *value;
+  PyObject *pair, *result;
+
+  /* Initialize the result */
+  result = PyList_New(0);
+  if (result == NULL)
+    return NULL;
+
+  /* Read each header */
+  soup_message_headers_iter_init (&iter, self->s_msg->request_headers);
+  while (soup_message_headers_iter_next (&iter, &name, &value) == TRUE)
+  {
+    pair = Py_BuildValue ("(ss)", name, value);
+    if (pair == NULL)
+    {
+      Py_DECREF (result);
+      return NULL;
+    }
+    if (PyList_Append (result, pair) == -1)
+    {
+      Py_DECREF (result);
+      Py_DECREF (pair);
+      return NULL;
+    }
+    /* Append increment the counter */
+    Py_DECREF (pair);
+  }
+
+  return result;
+}
+
+
+static PyObject *
 PyMessage_get_header (PyMessage * self, PyObject * args, PyObject *kwdict)
 {
   char * name;
@@ -300,6 +336,8 @@ static PyMethodDef PyMessage_methods[] = {
    "Append the given response header"},
   {"get_body", (PyCFunction) PyMessage_get_body, METH_NOARGS,
    "Returns the body of the request"},
+  {"get_headers", (PyCFunction) PyMessage_get_headers, METH_NOARGS,
+   "Returns all the headers of the request"},
   {"get_header", (PyCFunction) PyMessage_get_header, METH_VARARGS,
    "Returns the value of the given request header"},
   {"get_host", (PyCFunction) PyMessage_get_host, METH_NOARGS,

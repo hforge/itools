@@ -25,14 +25,13 @@ from gobject import MainLoop
 
 # Import from itools
 from itools.i18n import init_language_selector
-from itools.log import Logger, register_logger
 from itools.soup import SoupServer
 
 
 class HTTPServer(SoupServer):
 
-    def __init__(self, address='', port=8080, access_log=None, event_log=None,
-                 pid_file=None, profile=None):
+    def __init__(self, address='', port=8080, access_log=None, pid_file=None,
+                 profile=None):
         SoupServer.__init__(self, address=address, port=port)
 
         # Keep arguments
@@ -48,8 +47,6 @@ class HTTPServer(SoupServer):
         # Open log files
         if access_log is not None:
             self.access_log_file = open(access_log, 'a+')
-        if event_log is not None:
-            register_logger(Logger(log_file=event_log), 'itools.http')
 
 
     #######################################################################

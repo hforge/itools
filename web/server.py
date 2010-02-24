@@ -30,9 +30,9 @@ from itools.http import HTTPServer
 from itools.http import ClientError, NotModified, Forbidden, NotFound
 from itools.http import NotImplemented, MethodNotAllowed, Unauthorized
 from itools.http import set_response
-from itools.log import log_error, log_warning
+from itools.log import log_error, log_warning, register_logger
 from itools.uri import Reference
-from context import Context, set_context, select_language
+from context import Context, set_context, select_language, WebLogger
 from context import FormError
 from views import BaseView
 
@@ -51,9 +51,10 @@ class WebServer(HTTPServer):
             address = ''
         if port is None:
             port = 8080
+        register_logger(WebLogger(log_file=event_log), 'itools.web')
 
-        super(WebServer, self).__init__(address, port, access_log, event_log,
-                                        pid_file, profile)
+        super(WebServer, self).__init__(address, port, access_log, pid_file,
+                                        profile)
 
         # The application's root
         self.root = root

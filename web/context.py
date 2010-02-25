@@ -496,17 +496,15 @@ class WebLogger(Logger):
         # The URI and user
         if context.user:
             username = context.user.name
-            lines = ['%s (user: %s)\n' % (context.uri, username)]
+            lines = ['%s (user: %s)\n\n' % (context.uri, username)]
         else:
-            lines = ['%s\n' % context.uri]
+            lines = ['%s\n\n' % context.uri]
 
-        # TODO
         # Request headers
-#       request = context.request
-#       details = (
-#           request.request_line_to_str()
-#           + request.headers_to_str()
-#           + '\n')
+        headers = context.get_headers()
+        for key, value in headers:
+            lines.append("%s: %s\n" % (key, value))
+        lines.append("\n")
 
         # Ok
         body = Logger.get_body(self)

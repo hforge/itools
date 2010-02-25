@@ -48,6 +48,17 @@ All "vfs" functions are now "vfs" methods:
   from itools.fs import vfs
   vfs.exists(uri)
 
+It is recommended to use 'lfs' instead of 'vfs' when you are sure only
+local files are to be used:
+
+  # Before
+  from itools import vfs
+  f = vfs.open(path)
+
+  # Now
+  from itools.fs import lfs
+  f = lfs.open(path)
+
 
 itools.csv
 ==========
@@ -93,7 +104,14 @@ itools.handlers
 ===============
 
 (1) The "uri" attribute has been renamed to "key" as it could be anything
-unique enough for a given handler database.
+unique enough for a given handler database:
+
+  Before        Now
+  -----------   -----------
+  handler.uri   handler.key
+
+Check whether your handler classes do not already use the 'key' variable,
+and if so rename this variable.
 
 (2) Handlers may be attached to different filesystems (see itools.fs) so
 don't call vfs directly:
@@ -125,6 +143,13 @@ constructor:
   database = RODatabase(fs=lfs)
 
 
+itools.http
+===========
+
+The HTTP server has been rewritten on top of the libsoup library, so now the
+API is quite different.  Check the documentation to see how it works now.
+
+
 itools.ical
 ===========
 
@@ -140,6 +165,25 @@ of an iCalendar file, redefine the 'record_properties' class variable.
   class MyCalendar(iCalendar):
       record_properties = merge_dicts(iCalendar.record_properties,
           MYPROPERTY=String)
+
+
+itools.pkg
+==========
+
+These public functions, classes, etc. have been removed:
+
+- ArchiveNotSupported
+- Bundle
+- download
+- EXTENSIONS
+- get_installed_info
+- parse_package_name
+
+
+itools.stl
+==========
+
+STL does not support 'gettattr' to traverse namespaces anymore.
 
 
 itools.web
@@ -176,6 +220,9 @@ itools.web
   <button type="submit" name="action' value="login">Log in</button>
 
 In the example above 'login' is a placeholder.
+
+(4) To properly log any event (errors, warnings, etc.) use the new
+itools.log package instead of the Python's standard logging package.
 
 
 itools.xapian

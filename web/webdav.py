@@ -88,13 +88,12 @@ class UNLOCK(RequestMethod):
         if not resource.is_locked():
             raise Conflict
         # Check wether we have the right key
-        request = context.request
-        key = request.get_header('Lock-Token')
+        key = context.get_header('Lock-Token')
         if key is None:
             raise BadRequest
         key = key[len('opaquelocktoken:'):]
         lock = resource.get_lock()
-        if lock.key != key:
+        if lock.lock_key != key:
             # FIXME find the good response
             raise BadRequest
 

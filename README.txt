@@ -4,17 +4,17 @@ meta-package for easier development and deployment.
 
 The packages included are:
 
-  itools.abnf             itools.log              itools.stl
-  itools.core             itools.odf              itools.tmx
-  itools.csv              itools.office           itools.uri
-  itools.datatypes        itools.pdf              itools.vfs
-  itools.gettext          itools.pkg              itools.web
-  itools.git              itools.python           itools.workflow
-  itools.handlers         itools.relaxng          itools.xapian
-  itools.html             itools.rest             itools.xliff
-  itools.http             itools.rss              itools.xml
-  itools.i18n             itools.soup             itools.xmlfile
-  itools.ical             itools.srx
+  itools.abnf             itools.ical             itools.srx
+  itools.core             itools.log              itools.stl
+  itools.csv              itools.odf              itools.tmx
+  itools.datatypes        itools.office           itools.uri
+  itools.fs               itools.pdf              itools.web
+  itools.gettext          itools.pkg              itools.workflow
+  itools.git              itools.python           itools.xapian
+  itools.handlers         itools.relaxng          itools.xliff
+  itools.html             itools.rest             itools.xml
+  itools.http             itools.rss              itools.xmlfile
+  itools.i18n             itools.soup
 
 The scripts included are:
 
@@ -31,8 +31,8 @@ Software    Version  Used by          Home
 ----------  -------  ---------------  ----------------------------------------
 Python        2.6.4  itools           http://www.python.org/
 pkg-config     0.23  itools           http://pkg-config.freedesktop.org/
-glib           2.20  itools.vfs       http://www.gtk.org/
-pygobject      2.18  itools.vfs       http://www.pygtk.org/
+glib           2.20  itools.fs        http://www.gtk.org/
+pygobject      2.18  itools.fs        http://www.pygtk.org/
 libsoup        2.28  itools.soup      http://live.gnome.org/LibSoup
 reportlab       2.3  itools.pdf       http://www.reportlab.org/
 xapian        1.0.8  itools.xapian    http://www.xapian.org/
@@ -109,10 +109,10 @@ http://bugs.hforge.org
 Copyright
 =============
 
-Copyright (C) 2002-2009 Juan David Ibáñez Palomar <jdavid@itaapy.com>
-Copyright (C) 2005-2009 Luis Arturo Belmar-Letelier <luis@itaapy.com>
-Copyright (C) 2005-2009 Hervé Cauwelier <herve@itaapy.com>
-Copyright (C) 2005-2009 Nicolas Deram <nicolas@itaapy.com>
+Copyright (C) 2002-2010 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+Copyright (C) 2005-2010 Luis Arturo Belmar-Letelier <luis@itaapy.com>
+Copyright (C) 2005-2010 Hervé Cauwelier <herve@itaapy.com>
+Copyright (C) 2005-2010 Nicolas Deram <nicolas@itaapy.com>
 
 And others. Check the CREDITS file for complete list.
 

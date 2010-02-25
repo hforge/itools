@@ -31,8 +31,8 @@ Software    Version  Used by          Home
 ----------  -------  ---------------  ----------------------------------------
 Python        2.6.4  itools           http://www.python.org/
 pkg-config     0.23  itools           http://pkg-config.freedesktop.org/
-glib           2.16  itools.vfs       http://www.gtk.org/
-pygobject    2.16.1  itools.vfs       http://www.pygtk.org/
+glib           2.20  itools.vfs       http://www.gtk.org/
+pygobject      2.18  itools.vfs       http://www.pygtk.org/
 libsoup        2.28  itools.soup      http://live.gnome.org/LibSoup
 reportlab       2.3  itools.pdf       http://www.reportlab.org/
 xapian        1.0.8  itools.xapian    http://www.xapian.org/

@@ -11,6 +11,14 @@ New Dependencies
 Now libsoup 2.28 or later is required for anything related to the web
 (itools.http, itools.web).
 
+This table summurizes the new and updated dependencies:
+
+            0.60   0.61   Used by      Home
+            ----   ----   ----------   ------------------------------
+glib        2.16   2.20   itools.vfs   http://www.gtk.org/
+pygobject   2.16   2.18   itools.vfs   http://www.pygtk.org/
+libsoup            2.28   itools.soup  http://live.gnome.org/LibSoup
+
 
 Imports
 =======

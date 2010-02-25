@@ -1,0 +1,77 @@
+
+itools 0.61.0 (2010/0X/XX)
+==========================
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.abnf             itools.ical             itools.srx
+  itools.core             itools.log              itools.stl
+  itools.csv              itools.odf              itools.tmx
+  itools.datatypes        itools.office           itools.uri
+  itools.fs               itools.pdf              itools.web
+  itools.gettext          itools.pkg              itools.workflow
+  itools.git              itools.python           itools.xapian
+  itools.handlers         itools.relaxng          itools.xliff
+  itools.html             itools.rest             itools.xml
+  itools.http             itools.rss              itools.xmlfile
+  itools.i18n             itools.soup
+
+The new package itools.soup is a minimal wrapper around the libsoup [1]
+library.  Now the itools web server is based on this library, and so the
+API has considerably changed (check the documentation and the upgrade
+notes to learn more).  This change improves the itools support of the
+HTTP protocol.
+
+The itools.vfs package has been renamed to itools.fs, and now includes
+a local-file-system (lfs) layer proving the same API as our virtual file
+system.  This change is to sensibly improve performance, particularly to
+the itools.handlers database system.
+
+The new itools.log package offers a simple logging facility.  It is
+inspired by the logging mechanism available in the Glib [2] library, and
+will eventually become just a wrapper.
+
+The ipkg-install.py and ipkg-cache-list.py scripts have been removed;
+now we are using "usine" [3] to automatize software deployment.  The
+ipkg-build.py script should now work on Windows.
+
+The itools.core package has seen some additions:
+
+- the 'OrderedDict' class, for forward compatibility with Python 2.7
+
+- the 'lazy' decorator, to make lazy properties (based on an article
+  by Rick Copeland [4])
+
+- the 'thingy_type' metaclass: an ongoing experiment to fusion classes
+  & class-instances
+
+Other minor improvements include slightly better support for the ical
+file format.
+
+Now the libsoup library is required for the itools.http and itools.web
+packages.  The minimum supported versions of glib and pygobject are
+now 2.20 and 2.18 respectively.  Check the upgrade notes to learn more.
+
+[1] http://live.gnome.org/LibSoup
+[2] http://library.gnome.org/devel/glib/2.20/glib-Message-Logging.html
+[3] http://git.hforge.org/?p=usine.git;a=summary
+[4] http://blog.pythonisito.com/2008/08/lazy-descriptors.html
+
+
+Resources
+---------
+
+Download
+http://download.hforge.org/itools/0.61/itools-0.61.0.tar.gz
+
+Home
+http://www.hforge.org/itools/
+
+Mailing list
+http://www.hforge.org/community/
+http://archives.hforge.org/index.cgi?list=itools
+
+Bug Tracker
+http://bugs.hforge.org/
+

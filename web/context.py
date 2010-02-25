@@ -493,18 +493,21 @@ class WebLogger(Logger):
         if context is None:
             return Logger.get_body(self)
 
+        # The request line
+        lines = [ context.get_request_line() + '\n' ]
+
         # The URI and user
         if context.user:
             username = context.user.name
-            lines = ['%s (user: %s)\n\n' % (context.uri, username)]
+            lines.append('%s (user: %s)\n\n' % (context.uri, username))
         else:
-            lines = ['%s\n\n' % context.uri]
+            lines.append('%s\n\n' % context.uri)
 
         # Request headers
         headers = context.get_headers()
         for key, value in headers:
-            lines.append("%s: %s\n" % (key, value))
-        lines.append("\n")
+            lines.append('%s: %s\n' % (key, value))
+        lines.append('\n')
 
         # Ok
         body = Logger.get_body(self)

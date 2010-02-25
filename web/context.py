@@ -212,6 +212,9 @@ class Context(object):
     #######################################################################
     # Request
     #######################################################################
+    def get_request_line(self):
+        return self.soup_message.get_request_line()
+
     def get_headers(self):
         return  self.soup_message.get_headers()
 

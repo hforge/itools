@@ -178,6 +178,22 @@ PyMessage_init (PyMessage * self, PyObject * args, PyObject * kwdict)
 
 
 static PyObject *
+PyMessage_get_request_line (PyMessage * self, PyObject * args,
+                            PyObject * kwdict)
+{
+  PyObject * result;
+  gchar * c_result;
+
+  c_result = get_request_line(self->s_msg);
+  result = PyString_FromString (c_result);
+  free(c_result);
+
+  /* result can be NULL */
+  return result;
+}
+
+
+static PyObject *
 PyMessage_get_body (PyMessage * self, PyObject * args, PyObject * kwdict)
 {
   goffset length;
@@ -334,6 +350,8 @@ PyMessage_set_status (PyMessage * self, PyObject * args, PyObject * kwdict)
 static PyMethodDef PyMessage_methods[] = {
   {"append_header", (PyCFunction) PyMessage_append_header, METH_VARARGS,
    "Append the given response header"},
+  {"get_request_line", (PyCFunction) PyMessage_get_request_line, METH_NOARGS,
+   "Returns the request line"},
   {"get_body", (PyCFunction) PyMessage_get_body, METH_NOARGS,
    "Returns the body of the request"},
   {"get_headers", (PyCFunction) PyMessage_get_headers, METH_NOARGS,

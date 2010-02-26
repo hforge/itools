@@ -337,19 +337,14 @@ XMLParser_translate_STag (XMLParser * self)
           return NULL;
         }
       /* The tuple (uri, value) */
-      qname = Py_BuildValue ("(OO)", uri, name);
+      qname = Py_BuildValue ("(NN)", uri, name);
       if (qname == NULL)
         {
           Py_DECREF (attributes);
           Py_DECREF (uri);
-          Py_DECREF (uri);
-          Py_DECREF (name);
           Py_DECREF (name);
           return NULL;
         }
-      /* Py_Buildvalue increments the counters */
-      Py_DECREF (uri);
-      Py_DECREF (name);
       /* The value */
       value = PyString_FromString ((char *) (attribute->value->str));
       if (value == NULL)
@@ -362,12 +357,11 @@ XMLParser_translate_STag (XMLParser * self)
       if (PyDict_SetItem (attributes, qname, value) != 0)
         {
           Py_DECREF (attributes);
-          /* XXX two times ??? */
           Py_DECREF (qname);
           Py_DECREF (value);
           return NULL;
         }
-      /* PyDict_SetItem increments the counters ?? */
+      /* PyDict_SetItem increments the counters */
       Py_DECREF (qname);
       Py_DECREF (value);
     }

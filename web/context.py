@@ -120,6 +120,9 @@ class Context(object):
         # Form
         self.body = self.load_body()
 
+        # Cookies
+        self.cookies = {}
+
         # Media files (CSS, javascript)
         # Set the list of needed resources. The method we are going to
         # call may need external resources to be rendered properly, for
@@ -334,13 +337,16 @@ class Context(object):
     #######################################################################
     def get_cookie(self, name, datatype=None):
         value = None
-
-        # Read the cookie from the request
-        cookies = self.get_header('cookie')
-        if cookies:
-            cookie = cookies.get(name)
-            if cookie:
-                value = cookie.value
+        if name in self.cookies:
+            # Case 1: the cookie was set in this request
+            value = self.cookies[name]
+        else:
+            # Case 2: read the cookie from the request
+            cookies = self.get_header('cookie')
+            if cookies:
+                cookie = cookies.get(name)
+                if cookie:
+                    value = cookie.value
 
         if datatype is None:
             return value
@@ -355,14 +361,20 @@ class Context(object):
 
 
     def set_cookie(self, name, value, **kw):
+        self.cookies[name] = value
+        # libsoup
         cookie = Cookie(value, **kw)
         cookie = SetCookieDataType.encode({name: cookie})
         self.soup_message.append_header('Set-Cookie', cookie)
 
 
     def del_cookie(self, name):
+        self.cookies[name] = None
+        # libsoup
         expires = 'Wed, 31-Dec-97 23:59:59 GMT'
-        self.set_cookie(name, 'deleted', expires=expires, max_age='0')
+        cookie = Cookie('deleted', expires=expires, max_age='0')
+        cookie = SetCookieDataType.encode({name: cookie})
+        self.soup_message.append_header('Set-Cookie', cookie)
 
 
     #######################################################################

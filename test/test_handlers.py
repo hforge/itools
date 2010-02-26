@@ -222,7 +222,7 @@ class ConfigFileTestCase(TestCase):
             lfs.make_file(self.config_path)
 
         # Write data
-        config = ConfigFile(ref=self.config_path)
+        config = ConfigFile(key=self.config_path)
         config.set_value("test", value)
         config.save_state()
 
@@ -233,7 +233,7 @@ class ConfigFileTestCase(TestCase):
         self._init_test(value)
 
         # Read data
-        config2 = ConfigFile(ref=self.config_path)
+        config2 = ConfigFile(key=self.config_path)
         config2_value = config2.get_value("test")
         lfs.remove(self.config_path)
 
@@ -247,7 +247,7 @@ class ConfigFileTestCase(TestCase):
         self._init_test(value)
 
         # Read data
-        config2 = ConfigFile(ref=self.config_path)
+        config2 = ConfigFile(key=self.config_path)
         try:
             config2_value = config2.get_value("test")
         except SyntaxError, e:
@@ -265,12 +265,12 @@ class ConfigFileTestCase(TestCase):
         self._init_test(value)
 
         # Write data
-        config = ConfigFile(ref=self.config_path)
+        config = ConfigFile(key=self.config_path)
         config.set_value("test", value)
         config.save_state()
 
         # Read data
-        config2 = ConfigFile(ref=self.config_path)
+        config2 = ConfigFile(key=self.config_path)
         config2_value = config2.get_value("test")
         lfs.remove(self.config_path)
 
@@ -284,7 +284,7 @@ class ConfigFileTestCase(TestCase):
         self._init_test(value)
 
         # Write data
-        config = ConfigFile(ref=self.config_path)
+        config = ConfigFile(key=self.config_path)
         try:
             config.set_value("test", value)
         except SyntaxError, e:
@@ -292,7 +292,7 @@ class ConfigFileTestCase(TestCase):
         config.save_state()
 
         # Read data
-        config2 = ConfigFile(ref=self.config_path)
+        config2 = ConfigFile(key=self.config_path)
         try:
             config2_value = config2.get_value("test")
         except SyntaxError, e:
@@ -311,7 +311,7 @@ class ConfigFileTestCase(TestCase):
         self._init_test(value)
 
         # Write data
-        config = ConfigFile(ref=self.config_path)
+        config = ConfigFile(key=self.config_path)
         try:
             config.set_value("test", value)
         except SyntaxError, e:
@@ -319,7 +319,7 @@ class ConfigFileTestCase(TestCase):
         config.save_state()
 
         # Read data
-        config2 = ConfigFile(ref=self.config_path)
+        config2 = ConfigFile(key=self.config_path)
         try:
             config2_value = config2.get_value("test")
         except SyntaxError, e:

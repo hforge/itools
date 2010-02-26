@@ -215,7 +215,7 @@ class pml_HtmlTestCase(TestCase):
 
 
     def test_paragraph3(self):
-        handler = XMLFile(ref='pml/paragraph.xml')
+        handler = XMLFile(key='pml/paragraph.xml')
         story, stylesheet = stl_pmltopdf_test(handler)
         self.assertEqual(len(story), 10)
 
@@ -239,7 +239,7 @@ class pml_HtmlTestCase(TestCase):
 
 
     def test_list(self):
-        handler = XMLFile(ref='pml/list.xml')
+        handler = XMLFile(key='pml/list.xml')
         story, stylesheet = stl_pmltopdf_test(handler)
         self.assertEqual(len(story), 163)
 
@@ -260,7 +260,7 @@ class pml_HtmlTestCase(TestCase):
 
 
     def test_table(self):
-        handler = XMLFile(ref='pml/table.xml')
+        handler = XMLFile(key='pml/table.xml')
         story, stylesheet = stl_pmltopdf_test(handler, path='pml/table.xml')
         self.assertEqual(len(story), 1)
 

@@ -25,7 +25,7 @@ from urlparse import urlsplit
 
 # Import from gio
 from glib import MainLoop
-from gio import File, Error, MountOperation
+from gio import File, Error, MountOperation, Cancellable
 from gio import FILE_ATTRIBUTE_TIME_CHANGED, FILE_ATTRIBUTE_TIME_MODIFIED
 from gio import FILE_ATTRIBUTE_TIME_ACCESS
 from gio import FILE_ATTRIBUTE_STANDARD_SIZE, FILE_ATTRIBUTE_STANDARD_NAME
@@ -74,16 +74,9 @@ def _get_names(g_file):
 
 
 def _make_directory_with_parents(g_file):
-    # Make the todo list
-    todo = []
-    while not g_file.query_exists():
-        todo.append(g_file.get_basename())
-        g_file = g_file.get_parent()
-
-    # Make the directories
-    while todo:
-        g_file = g_file.resolve_relative_path(todo.pop())
-        g_file.make_directory()
+    if g_file.query_exists():
+        return
+    g_file.make_directory_with_parents(Cancellable())
 
 
 def _remove(g_file):
@@ -215,7 +208,6 @@ class Folder(object):
 
     def make_folder(self, uri):
         g_file = self._get_g_file(uri)
-        # XXX g_file_make_directory_with_parents is not yet implemented!!
         _make_directory_with_parents(g_file)
 
 

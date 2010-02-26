@@ -29,6 +29,12 @@ See the table below for the imports to update.
   ----------------------------   ---------------------------
   itools.vfs                     itools.fs.vfs (*)
   itools.vfs.cwd                 itools.fs.vfs (*)
+  itools.vfs.Error               itools.fs.Error
+  itools.vfs.FileName            itools.fs.FileName
+  itools.vfs.APPEND              itools.fs.APPEND
+  itools.vfs.READ                itools.fs.READ
+  itools.vfs.READ_WRITE          itools.fs.READ_WRITE
+  itools.vfs.WRITE               itools.fs.WRITE
 
 (*) The package itools.vfs has been renamed to itools.fs, and imports have
 changed a little:

@@ -145,7 +145,7 @@ class File(Handler):
 
     def save_state_to(self, key):
         # If there is an empty folder in the given key, remove it
-        fs = self.get_fs()
+        fs = self.database.fs if self.database is not None else vfs
         if fs.is_folder(key) and not fs.get_names(key):
             fs.remove(key)
         # Save the file

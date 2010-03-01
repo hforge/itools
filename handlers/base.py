@@ -45,12 +45,6 @@ class Handler(object):
     ########################################################################
     # API / Safe FS operations
     ########################################################################
-    def get_fs(self):
-        if self.database is None:
-            return vfs
-        return self.database.fs
-
-
     def safe_make_file(self, reference):
         if self.database is None:
             return vfs.make_file(reference)

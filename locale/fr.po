@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-08 16:09+CET\n"
+"POT-Creation-Date: 2010-03-01 19:03+CET\n"
 "PO-Revision-Date: 2009-04-16 10:18+0200\n"
 "Last-Translator: David Versmisse <david.versmisse@itaapy.com>\n"
 "Language-Team: Français <fr@li.org>\n"
@@ -45,15 +45,15 @@ msgstr ""
 msgid "%s%s"
 msgstr ""
 
-#: ../pdf/pml.py:339
+#: ../pdf/pml.py:332
 msgid "(WW) CSS filename \"%s\" does not exist"
 msgstr "(WW) Fichier \"%s\" CSS inexistant"
 
-#: ../pdf/pml.py:1161
+#: ../pdf/pml.py:1155
 msgid "(WW) Cannot add an image inside a td without predefined size"
 msgstr "(WW) Ne peut insérer une image au sein d'un td sans taille prédéfinie"
 
-#: ../pdf/pml.py:1157
+#: ../pdf/pml.py:1151
 msgid "(WW) Filename is None"
 msgstr "(WW) Le nom du fichier est None"
 
@@ -71,7 +71,7 @@ msgstr ""
 msgid "-"
 msgstr ""
 
-#: ../ical/table.py:374 ../ical/icalendar.py:344
+#: ../ical/table.py:364 ../ical/icalendar.py:336
 msgid "-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN"
 msgstr ""
 
@@ -87,7 +87,7 @@ msgstr ""
 msgid "/>"
 msgstr ""
 
-#: ../ical/table.py:373 ../ical/icalendar.py:343
+#: ../ical/table.py:363 ../ical/icalendar.py:335
 msgid "2.0"
 msgstr ""
 
@@ -196,7 +196,7 @@ msgstr ""
 msgid "Azerbaijani"
 msgstr ""
 
-#: ../ical/icalendar.py:513 ../ical/icalendar.py:529
+#: ../ical/icalendar.py:506 ../ical/icalendar.py:522
 msgid "BEGIN:%s\n"
 msgstr ""
 
@@ -280,7 +280,7 @@ msgstr ""
 msgid "Chuvash"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:56
+#: ../scripts/ipkg-quality.py:58
 msgid "Code length"
 msgstr "Longueur du code"
 
@@ -324,7 +324,7 @@ msgstr ""
 msgid "Dzongkha"
 msgstr ""
 
-#: ../ical/icalendar.py:537 ../ical/icalendar.py:540
+#: ../ical/icalendar.py:530 ../ical/icalendar.py:533
 msgid "END:%s\n"
 msgstr ""
 
@@ -340,7 +340,7 @@ msgstr ""
 msgid "English/United States"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:615
+#: ../scripts/ipkg-quality.py:628
 msgid "Error, your project must be versioned with GIT."
 msgstr "Erreur, votre projet doit être versionné avec GIT"
 
@@ -360,7 +360,7 @@ msgstr "Tout paraît correct (étrange)."
 msgid "Ewe"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:69
+#: ../scripts/ipkg-quality.py:71
 msgid "Exception handling"
 msgstr "Gestion des exceptions"
 
@@ -489,7 +489,7 @@ msgstr ""
 msgid "Igbo"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:76
+#: ../scripts/ipkg-quality.py:78
 msgid "Import problems"
 msgstr "Problèmes d'import"
 
@@ -695,11 +695,11 @@ msgstr ""
 msgid "Norwegian Nyrnosk"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:57
+#: ../scripts/ipkg-quality.py:59
 msgid "Number of lines"
 msgstr "Nombre de lignes"
 
-#: ../scripts/ipkg-quality.py:57
+#: ../scripts/ipkg-quality.py:59
 msgid "Number of tokens"
 msgstr "Nombre de tokens"
 
@@ -715,7 +715,7 @@ msgstr ""
 msgid "Ojibwa"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:606
+#: ../scripts/ipkg-quality.py:619
 msgid "Options --worse and --show-lines are mutually exclusive."
 msgstr "Les options --worse et --show-lines sont incompatibles."
 
@@ -743,11 +743,11 @@ msgstr ""
 msgid "Persian"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:603
+#: ../scripts/ipkg-quality.py:616
 msgid "Please give at least one file to analyse."
 msgstr "Svp, donnez au moins un fichier à analyser"
 
-#: ../scripts/ipkg-quality.py:618
+#: ../scripts/ipkg-quality.py:631
 msgid "Please install matplotlib."
 msgstr "Svp, installez matplotlib."
 
@@ -871,7 +871,7 @@ msgstr ""
 msgid "Spanish/Spain"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:61
+#: ../scripts/ipkg-quality.py:63
 msgid "Style"
 msgstr ""
 
@@ -919,7 +919,7 @@ msgstr ""
 msgid "Thai"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:609
+#: ../scripts/ipkg-quality.py:622
 msgid "The option --show-lines takes one file in parameter."
 msgstr "L'option --show-lines prend un seul fichier en paramètre"
 
@@ -935,7 +935,7 @@ msgstr "Il manque {miss} champ(s) et {inv} sont invalide(s)"
 msgid "There are {miss} field(s) missing."
 msgstr "Il y a {miss} champ(s) invalide(s)."
 
-#: ../scripts/ipkg-quality.py:393
+#: ../scripts/ipkg-quality.py:407
 msgid "This file is perfect !"
 msgstr "Ce fichier est parfait !"
 
@@ -1057,7 +1057,7 @@ msgstr ""
 msgid "al"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:72
+#: ../scripts/ipkg-quality.py:74
 msgid "all exceptions are catched"
 msgstr "Toutes les exceptions sont capturées"
 
@@ -1081,7 +1081,7 @@ msgstr ""
 msgid "aux"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:63
+#: ../scripts/ipkg-quality.py:65
 msgid "bad indented"
 msgstr "mauvaise indentation"
 
@@ -1205,7 +1205,7 @@ msgstr ""
 msgid "lo"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:64
+#: ../scripts/ipkg-quality.py:66
 msgid "longer than 79 characters"
 msgstr "plus long que 79 caractères"
 
@@ -1285,7 +1285,7 @@ msgstr ""
 msgid "ss"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:71
+#: ../scripts/ipkg-quality.py:73
 msgid "string exceptions are used"
 msgstr "exception de type 'string' utilisée"
 
@@ -1305,7 +1305,7 @@ msgstr ""
 msgid "the"
 msgstr ""
 
-#: ../csv/table.py:293
+#: ../csv/table.py:308
 msgid ""
 "the \"{field}\" field must be unique, the \"{value}\" value is  already used."
 msgstr ""
@@ -1352,11 +1352,11 @@ msgstr ""
 msgid "where"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:62
+#: ../scripts/ipkg-quality.py:64
 msgid "with tabulators"
 msgstr "avec des tabulateurs"
 
-#: ../scripts/ipkg-quality.py:65
+#: ../scripts/ipkg-quality.py:67
 msgid "with trailing whitespaces"
 msgstr "se terminant par des espaces"
 

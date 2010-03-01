@@ -25,8 +25,9 @@ from zipfile import ZipFile
 
 # Import from itools
 from itools.core import add_type, get_abspath
-from itools.stl import stl
+from itools.fs import lfs
 from itools.handlers import register_handler_class, ZIPFile
+from itools.stl import stl
 from itools.xml import XMLParser, XML_DECL, START_ELEMENT, TEXT
 from itools.xml import stream_to_str, xml_to_text
 from itools.xmlfile import get_units, translate
@@ -194,7 +195,7 @@ class ODFFile(OOFile):
             err = 'The greeking feature requires the Python Imaging Library'
             raise ImportError, err
 
-        folder = self.get_fs().open(get_abspath('.'))
+        folder = lfs.open(get_abspath('.'))
         err = 'Unexpected "%s" file will be omitted from the greeked document'
 
         modified_files = {}

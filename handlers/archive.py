@@ -24,6 +24,7 @@ from cStringIO import StringIO
 
 # Import from itools
 from itools.core import add_type
+from itools.fs import lfs
 from file import File
 from registry import register_handler_class
 
@@ -57,11 +58,10 @@ class ZIPFile(File):
 
     def extract_to_folder(self, dst):
         zip = self._open_zipfile()
-        fs = self.get_fs()
         try:
             for filename in zip.namelist():
                 path = join(dst, filename)
-                file = fs.make_file(path)
+                file = lfs.make_file(path)
                 try:
                     file.write(zip.read(filename))
                 finally:

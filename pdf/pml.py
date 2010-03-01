@@ -139,7 +139,7 @@ def stl_pmltopdf(document, namespace=freeze({}), path=None, mode='pdf'):
         events = document.events
         # Try to get the path from the file
         if path is None and document.key:
-            path = document.get_fs().get_path(document.key)
+            path = document.database.fs.get_path(document.key)
     else:
         events = document
 
@@ -198,8 +198,8 @@ def stl_pmltopdf_test(document, namespace=freeze({}), path=None):
     if isinstance(document, XMLFile):
         events = document.events
         # Try to get the path from the file
-        if path is None:
-            path = document.get_fs().get_path(document.key)
+        if path is None and document.key:
+            path = document.database.fs.get_path(document.key)
     else:
         events = document
 

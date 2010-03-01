@@ -119,7 +119,16 @@ constructor does not work anymore:
   from itools.handlers import get_handler
   h = get_handler('/tmp/toto.txt', MyHandlerClass)
 
-(2) The "uri" attribute has been renamed to "key" as it could be anything
+(2) The 'File.load_state_from' method has been renamed to the more explicit
+'File.load_state_from_uri':
+
+  # Before
+  self.load_state_from(xxx)
+
+  # Now
+  self.load_state_from_uri(xxx)
+
+(3) The "uri" attribute has been renamed to "key" as it could be anything
 unique enough for a given handler database:
 
   Before        Now
@@ -129,7 +138,7 @@ unique enough for a given handler database:
 Check whether your handler classes do not already use the 'key' variable,
 and if so rename this variable.
 
-(3) Handlers may be attached to different filesystems (see itools.fs) so
+(4) Handlers may be attached to different filesystems (see itools.fs) so
 don't call vfs directly:
 
   # Before
@@ -138,7 +147,7 @@ don't call vfs directly:
   # After
   self.database.fs.get_mtime(self.key)
 
-(4) Do not assume that handlers use URIs, it could be absolute paths or
+(5) Do not assume that handlers use URIs, it could be absolute paths or
 anything else that makes sense to a handler database:
 
   # Before
@@ -147,7 +156,7 @@ anything else that makes sense to a handler database:
   # After
   self.database.fs.resolve2(self.key, name)
 
-(5) A database may use the new lfs module and provide faster operations when
+(6) A database may use the new lfs module and provide faster operations when
 you know you only need to access the filesystem. It is the default for
 (RO)GitDatabase.
 

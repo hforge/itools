@@ -109,7 +109,7 @@ class File(Handler):
         self.dirty = None
 
 
-    def load_state_from(self, uri):
+    def load_state_from_uri(self, uri):
         file = vfs.open(uri)
         try:
             self.load_state_from_file(file)

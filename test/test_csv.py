@@ -260,7 +260,7 @@ class CSVTestCase(TestCase):
 
     def test_advanced_search(self):
         handler = Countries()
-        handler.load_state_from('tests/test_adv.csv')
+        handler.load_state_from_uri('tests/test_adv.csv')
         result1 = handler.search(name='dde', country='sweden')
         self.assertEqual(result1, [5, 6])
 

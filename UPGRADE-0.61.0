@@ -207,7 +207,16 @@ itools.web
   if value is not None:
       ...
 
-(2) The method 'BaseForm.build_namespace' has become 'STLForm.get_namespace':
+(2) Obsolete method 'context.get_form_values' has been removed, use instead
+'context.get_form_value':
+
+  # Before
+  values = context.get_form_values(name)
+
+  # Now
+  values = context.get_form_value(name, String(multiple=True))
+
+(3) The method 'BaseForm.build_namespace' has become 'STLForm.get_namespace':
 
   # Before
   def get_namespace(self, resource, context):
@@ -217,7 +226,7 @@ itools.web
   def get_namespace(self, resource, context):
       namespace = STLForm.get_namespace(self, resource, context)
 
-(3) Use <button> to submit forms:
+(4) Use <button> to submit forms:
 
   # Before
   <input type="submit" name=";login' value="Log in" />
@@ -227,7 +236,7 @@ itools.web
 
 In the example above 'login' is a placeholder.
 
-(4) To properly log any event (errors, warnings, etc.) use the new
+(5) To properly log any event (errors, warnings, etc.) use the new
 itools.log package instead of the Python's standard logging package.
 
 

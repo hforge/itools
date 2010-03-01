@@ -109,7 +109,17 @@ And:
 itools.handlers
 ===============
 
-(1) The "uri" attribute has been renamed to "key" as it could be anything
+(1) All not-new handlers are now attached to a database, so the old short
+constructor does not work anymore:
+
+  # Before
+  h = MyHandlerClass('/tmp/toto.txt')
+
+  # Now
+  from itools.handlers import get_handler
+  h = get_handler('/tmp/toto.txt', MyHandlerClass)
+
+(2) The "uri" attribute has been renamed to "key" as it could be anything
 unique enough for a given handler database:
 
   Before        Now
@@ -119,27 +129,25 @@ unique enough for a given handler database:
 Check whether your handler classes do not already use the 'key' variable,
 and if so rename this variable.
 
-(2) Handlers may be attached to different filesystems (see itools.fs) so
+(3) Handlers may be attached to different filesystems (see itools.fs) so
 don't call vfs directly:
 
   # Before
   vfs.get_mtime(self.uri)
 
   # After
-  fs = self.get_fs()
-  fs.get_mtime(self.key)
+  self.database.fs.get_mtime(self.key)
 
-(3) Do not assume that handlers use URIs, it could be absolute paths or
+(4) Do not assume that handlers use URIs, it could be absolute paths or
 anything else that makes sense to a handler database:
 
   # Before
   resolve_uri2(self.key, name)
 
   # After
-  fs = self.get_fs()
-  fs.resolve2(self.key, name)
+  self.database.fs.resolve2(self.key, name)
 
-(4) A database may use the new lfs module and provide faster operations when
+(5) A database may use the new lfs module and provide faster operations when
 you know you only need to access the filesystem. It is the default for
 (RO)GitDatabase.
 

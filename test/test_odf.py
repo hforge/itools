@@ -23,6 +23,7 @@ from unittest import TestCase, main
 
 # Import from itools
 from itools.gettext import POFile, POUnit
+from itools.handlers import get_handler
 from itools.odf import ODTFile, ODPFile, ODSFile
 from itools.srx import TEXT, START_FORMAT, END_FORMAT
 from itools.xml import XMLParser
@@ -32,7 +33,7 @@ from itools.xmlfile import get_units, translate
 class Test_ODT_File(TestCase):
 
     def setUp(self):
-        self.doc = ODTFile('odf/Document.odt')
+        self.doc = get_handler('odf/Document.odt', ODTFile)
 
 
     def test_get_msg(self):
@@ -94,7 +95,7 @@ class Test_ODT_File(TestCase):
 class Test_ODP_File(TestCase):
 
     def setUp(self):
-        self.doc = ODPFile('odf/Document.odp')
+        self.doc = get_handler('odf/Document.odp', ODPFile)
 
 
     def test_get_msg(self):
@@ -111,7 +112,7 @@ class Test_ODP_File(TestCase):
 class Test_ODS_File(TestCase):
 
     def setUp(self):
-        self.doc = ODSFile('odf/Document.ods')
+        self.doc = get_handler('odf/Document.ods', ODSFile)
 
     def test_get_msg(self):
         messages = [unit[0] for unit in self.doc.get_units()]

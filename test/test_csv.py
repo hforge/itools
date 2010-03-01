@@ -20,10 +20,11 @@
 from unittest import TestCase, main
 
 # Import from itools
-from itools.datatypes import Boolean, Date, Integer, Unicode, URI, String
 from itools.csv import CSVFile, Table, UniqueError
 from itools.csv.table import parse_table, unfold_lines
+from itools.datatypes import Boolean, Date, Integer, Unicode, URI, String
 from itools.fs import lfs
+from itools.handlers import get_handler
 from itools.xapian import AndQuery, OrQuery, PhraseQuery
 
 
@@ -192,16 +193,16 @@ class CSVTestCase(TestCase):
 
 
     def test_set_state_in_file_resource(self):
-        handler = CSVFile('tests/test.csv')
+        handler = get_handler('tests/test.csv', CSVFile)
         handler.add_row(['d1', 'e1', 'f1'])
         handler.save_state()
 
-        handler2 = CSVFile('tests/test.csv')
+        handler2 = get_handler('tests/test.csv', CSVFile)
         self.assertEqual(handler2.get_row(3), ['d1', 'e1', 'f1'])
         handler2.del_row(3)
         handler2.save_state()
 
-        handler = CSVFile('tests/test.csv')
+        handler = get_handler('tests/test.csv', CSVFile)
         self.assertEqual(handler.get_nrows(), 3)
 
 
@@ -445,13 +446,13 @@ class TableTestCase(TestCase):
         agenda = Agenda(string=agenda_file)
         agenda.save_state_to('tests/agenda')
         # Change
-        agenda = Agenda('tests/agenda')
+        agenda = get_handler('tests/agenda', Agenda)
         fake = agenda.add_record({'firstname': u'Toto', 'lastname': u'Fofo'})
         agenda.add_record({'firstname': u'Albert', 'lastname': u'Einstein'})
         agenda.del_record(fake.id)
         agenda.save_state()
         # Test
-        agenda = Agenda('tests/agenda')
+        agenda = get_handler('tests/agenda', Agenda)
         ids = [ x.id for x in agenda.search(firstname=u'Toto') ]
         self.assertEqual(len(ids), 0)
         ids = [ x.id for x in agenda.search(firstname=u'Albert') ]
@@ -485,7 +486,7 @@ class TableTestCase(TestCase):
         table = Books(string=books_file)
         table.save_state_to('tests/books')
         # Load
-        table = Books('tests/books')
+        table = get_handler('tests/books', Books)
         table.load_state()
         # Test
         record_0 = table.get_record(0)

@@ -194,8 +194,7 @@ class ODFFile(OOFile):
             err = 'The greeking feature requires the Python Imaging Library'
             raise ImportError, err
 
-        fs = self.get_fs()
-        folder = fs.open(get_abspath('.'))
+        folder = self.get_fs().open(get_abspath('.'))
         err = 'Unexpected "%s" file will be omitted from the greeked document'
 
         modified_files = {}

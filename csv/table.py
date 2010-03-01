@@ -692,8 +692,7 @@ class Table(File):
             file.close()
 
         # Update the timestamp
-        fs = self.get_fs()
-        self.timestamp = fs.get_mtime(self.key)
+        self.timestamp = self.database.fs.get_mtime(self.key)
         self.dirty = None
 
 

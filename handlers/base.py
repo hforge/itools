@@ -150,4 +150,4 @@ class Handler(object):
 
 
     def get_mimetype(self):
-        return self.get_fs().get_mimetype(self.key)
+        return self.database.fs.get_mimetype(self.key)

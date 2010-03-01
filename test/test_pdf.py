@@ -19,10 +19,11 @@
 from unittest import TestCase, main
 
 # Import from itools
+from itools.fs import lfs
+from itools.handlers import get_handler
 from itools.pdf.pml import Context, normalize, paragraph_stream
 from itools.pdf.pml import pmltopdf_test, stl_pmltopdf_test
 from itools.pdf.utils import get_color
-from itools.fs import lfs
 from itools.xml import XMLParser
 from itools.xmlfile import XMLFile
 
@@ -215,7 +216,7 @@ class pml_HtmlTestCase(TestCase):
 
 
     def test_paragraph3(self):
-        handler = XMLFile(key='pml/paragraph.xml')
+        handler = get_handler('pml/paragraph.xml', XMLFile)
         story, stylesheet = stl_pmltopdf_test(handler)
         self.assertEqual(len(story), 10)
 
@@ -239,7 +240,7 @@ class pml_HtmlTestCase(TestCase):
 
 
     def test_list(self):
-        handler = XMLFile(key='pml/list.xml')
+        handler = get_handler('pml/list.xml', XMLFile)
         story, stylesheet = stl_pmltopdf_test(handler)
         self.assertEqual(len(story), 163)
 
@@ -260,7 +261,7 @@ class pml_HtmlTestCase(TestCase):
 
 
     def test_table(self):
-        handler = XMLFile(key='pml/table.xml')
+        handler = get_handler('pml/table.xml', XMLFile)
         story, stylesheet = stl_pmltopdf_test(handler, path='pml/table.xml')
         self.assertEqual(len(story), 1)
 

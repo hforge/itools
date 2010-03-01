@@ -79,7 +79,7 @@ class TARFile(File):
 
 
     def _open_tarfile(self):
-        name = self.get_fs().get_basename(self.key)
+        name = self.database.fs.get_basename(self.key)
         archive = StringIO(self.to_str())
         return open_tarfile(name, self.class_mode, fileobj=archive)
 

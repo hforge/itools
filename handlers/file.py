@@ -61,8 +61,7 @@ class File(Handler):
                 # A handler from some input data
                 self.new(**kw)
         else:
-            fs = self.get_fs()
-            self.key = fs.resolve_key(key)
+            self.key = self.database.fs.resolve_key(key)
 
 
     def reset(self):
@@ -94,7 +93,7 @@ class File(Handler):
 
 
     def load_state(self):
-        fs = self.get_fs()
+        fs = self.database.fs
         file = fs.open(self.key)
         self.reset()
         try:
@@ -139,7 +138,7 @@ class File(Handler):
         finally:
             file.close()
         # Update the timestamp
-        self.timestamp = self.get_fs().get_mtime(self.key)
+        self.timestamp = self.database.fs.get_mtime(self.key)
         self.dirty = None
 
 
@@ -200,7 +199,7 @@ class File(Handler):
         if timestamp is None:
             return False
 
-        mtime = self.get_fs().get_mtime(self.key)
+        mtime = self.database.fs.get_mtime(self.key)
         # If the resource layer does not support mtime... we are...
         if mtime is None:
             return True
@@ -273,7 +272,7 @@ class File(Handler):
             return self.timestamp
 
         # Not yet loaded, check the FS
-        return self.get_fs().get_mtime(self.key)
+        return self.database.fs.get_mtime(self.key)
 
 
     def to_str(self):

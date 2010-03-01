@@ -25,7 +25,7 @@ from math import floor
 # Import from itools
 from itools.core import freeze
 from itools.datatypes import Unicode, Integer
-from itools.handlers import Image as ItoolsImage
+from itools.handlers import get_handler, Image
 from itools.fs import vfs
 
 # Import from reportlab
@@ -244,15 +244,15 @@ def check_image(filename, context):
         filename = my_file.name
         my_file.write(data)
         my_file.close()
-        im = ItoolsImage(string=data)
+        im = Image(string=data)
     if im is None:
-        im = ItoolsImage(filename)
+        im = get_handler(filename, Image)
 
     x, y = im.get_size()
     if not (x or y):
         print u'image not valid : %s' % filename
         filename = context.image_not_found_path
-        im = ItoolsImage(filename)
+        im = get_handler(filename, Image)
         x, y = im.get_size()
 
     return filename, (x, y)

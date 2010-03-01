@@ -19,6 +19,7 @@
 from unittest import TestCase, main
 
 # Import from itools
+from itools.handlers import get_handler
 from itools.xliff import XLFFile
 
 
@@ -28,7 +29,7 @@ class XLIFFTestCase(TestCase):
     def test_input(self):
         """Test input.
         """
-        xliff = XLFFile('tests/gettext_en_es.xlf')
+        xliff = get_handler('tests/gettext_en_es.xlf', XLFFile)
         xliff.to_str()
 
 

@@ -44,14 +44,13 @@ class Folder(Handler):
         if database is not None:
             self.database = database
         if key is not None:
-            fs = self.get_fs()
-            self.key = fs.resolve_key(key)
+            self.key = self.database.fs.resolve_key(key)
 
 
     def get_mtime(self):
         """Returns the last modification time.
         """
-        fs = self.get_fs()
+        fs = self.database.fs
         if fs.exists(self.key):
             return fs.get_mtime(self.key)
         return None

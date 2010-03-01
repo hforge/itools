@@ -139,8 +139,7 @@ def stl_pmltopdf(document, namespace=freeze({}), path=None, mode='pdf'):
         events = document.events
         # Try to get the path from the file
         if path is None and document.key:
-            fs = document.get_fs()
-            path = fs.get_path(document.key)
+            path = document.get_fs().get_path(document.key)
     else:
         events = document
 
@@ -200,8 +199,7 @@ def stl_pmltopdf_test(document, namespace=freeze({}), path=None):
         events = document.events
         # Try to get the path from the file
         if path is None:
-            fs = document.get_fs()
-            path = fs.get_path(document.key)
+            path = document.get_fs().get_path(document.key)
     else:
         events = document
 

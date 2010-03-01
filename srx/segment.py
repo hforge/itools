@@ -17,6 +17,7 @@
 
 # Import from itools
 from itools.core import get_abspath
+from itools.handlers import get_handler
 from srx import SRXFile
 
 # Constants
@@ -175,6 +176,8 @@ def _clean_message(message, keep_spaces):
     return left, center, right
 
 
+default_srx_handler = get_abspath('srx/default.srx', 'itools')
+default_srx_handler = get_handler(default_srx_handler, SRXFile)
 def _split_message(message, srx_handler=None):
     # Concatenation!
     concat_text = []
@@ -185,7 +188,7 @@ def _split_message(message, srx_handler=None):
 
     # Get the rules
     if srx_handler is None:
-        srx_handler = SRXFile(get_abspath('srx/default.srx', 'itools'))
+        srx_handler = default_srx_handler
     # XXX we must handle the language here!
     rules = srx_handler.get_compiled_rules('en')
 

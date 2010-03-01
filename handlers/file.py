@@ -21,6 +21,7 @@ from cStringIO import StringIO
 from datetime import datetime
 
 # Import from itools
+from itools.fs import vfs
 from base import Handler
 from registry import register_handler_class
 
@@ -108,8 +109,8 @@ class File(Handler):
         self.dirty = None
 
 
-    def load_state_from(self, key):
-        file = self.get_fs().open(key)
+    def load_state_from(self, uri):
+        file = vfs.open(uri)
         try:
             self.load_state_from_file(file)
         finally:

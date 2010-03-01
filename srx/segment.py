@@ -17,7 +17,7 @@
 
 # Import from itools
 from itools.core import get_abspath
-from itools.handlers import get_handler
+from itools.handlers import ro_database
 from srx import SRXFile
 
 # Constants
@@ -177,7 +177,7 @@ def _clean_message(message, keep_spaces):
 
 
 default_srx_handler = get_abspath('srx/default.srx', 'itools')
-default_srx_handler = get_handler(default_srx_handler, SRXFile)
+default_srx_handler = ro_database.get_handler(default_srx_handler, SRXFile)
 def _split_message(message, srx_handler=None):
     # Concatenation!
     concat_text = []

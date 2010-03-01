@@ -822,4 +822,5 @@ def make_git_database(path, size_min, size_max):
 
 
 # A built-in database for handler operations
-default_database = RWDatabase()
+ro_database = RODatabase()
+

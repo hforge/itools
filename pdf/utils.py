@@ -25,7 +25,7 @@ from math import floor
 # Import from itools
 from itools.core import freeze
 from itools.datatypes import Unicode, Integer
-from itools.handlers import get_handler, Image
+from itools.handlers import ro_database, Image
 from itools.fs import vfs
 
 # Import from reportlab
@@ -246,13 +246,13 @@ def check_image(filename, context):
         my_file.close()
         im = Image(string=data)
     if im is None:
-        im = get_handler(filename, Image)
+        im = ro_database.get_handler(filename, Image)
 
     x, y = im.get_size()
     if not (x or y):
         print u'image not valid : %s' % filename
         filename = context.image_not_found_path
-        im = get_handler(filename, Image)
+        im = ro_database.get_handler(filename, Image)
         x, y = im.get_size()
 
     return filename, (x, y)

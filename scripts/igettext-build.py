@@ -23,7 +23,7 @@ from zipfile import is_zipfile
 
 # Import from itools
 import itools
-from itools.handlers import get_handler
+from itools.handlers import ro_database
 import itools.html
 import itools.stl
 import itools.odf
@@ -41,7 +41,7 @@ def build(parser):
 
     # The SRX file
     if options.srx is not None:
-        srx_handler = get_handler(options.srx)
+        srx_handler = ro_database.get_handler(options.srx)
     else:
         srx_handler = None
 
@@ -50,14 +50,14 @@ def build(parser):
         parser.error('The option -o is needed\n')
 
     # Load the source handler (check the API)
-    handler = get_handler(source)
+    handler = ro_database.get_handler(source)
     try:
         translate = handler.translate
     except AttributeError:
         print 'Error: Unable to translate "%s", unsupported format.' % source
         return
     # Load the Catalog handler (check the API)
-    catalog = get_handler(catalog_name)
+    catalog = ro_database.get_handler(catalog_name)
     try:
         catalog.gettext
     except AttributeError:

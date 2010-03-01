@@ -21,7 +21,7 @@ from sys import stdout
 
 # Import from itools
 import itools
-from itools.handlers import get_handler
+from itools.handlers import ro_database
 from itools.odf import ODFFile
 
 
@@ -44,7 +44,7 @@ if __name__ == '__main__':
 
     # Load the ODF handler
     filename = args[0]
-    handler = get_handler(filename)
+    handler = ro_database.get_handler(filename)
     if not isinstance(handler, ODFFile):
         parser.error('the given file is not an ODF file')
 

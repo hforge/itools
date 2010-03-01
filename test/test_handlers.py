@@ -22,11 +22,13 @@ from unittest import TestCase, main
 from itools.core import start_subprocess
 from itools.csv import Table
 from itools.datatypes import Unicode
-from itools.handlers import get_handler, get_handler_class
+from itools.handlers import ro_database
 from itools.handlers import RWDatabase, make_git_database
 from itools.handlers import TextFile, ConfigFile, TGZFile
 from itools.fs import lfs
 
+
+rw_database = RWDatabase(fs=lfs)
 
 
 class Agenda(Table):
@@ -40,7 +42,7 @@ class Agenda(Table):
 class StateTestCase(TestCase):
 
     def test_abort(self):
-        handler = get_handler('tests/hello.txt')
+        handler = rw_database.get_handler('tests/hello.txt')
         self.assertEqual(handler.data, u'hello world\n')
         handler.set_data(u'bye world\n')
         self.assertEqual(handler.data, u'bye world\n')
@@ -197,7 +199,7 @@ class FolderTestCase(TestCase):
 class TextTestCase(TestCase):
 
     def test_load_file(self):
-        handler = get_handler('tests/hello.txt')
+        handler = ro_database.get_handler('tests/hello.txt')
         self.assertEqual(handler.data, u'hello world\n')
 
 
@@ -222,7 +224,7 @@ class ConfigFileTestCase(TestCase):
             lfs.make_file(self.config_path)
 
         # Write data
-        config = get_handler(self.config_path, ConfigFile)
+        config = rw_database.get_handler(self.config_path, ConfigFile)
         config.set_value("test", value)
         config.save_state()
 
@@ -233,7 +235,7 @@ class ConfigFileTestCase(TestCase):
         self._init_test(value)
 
         # Read data
-        config2 = get_handler(self.config_path, ConfigFile)
+        config2 = rw_database.get_handler(self.config_path, ConfigFile)
         config2_value = config2.get_value("test")
         lfs.remove(self.config_path)
 
@@ -247,7 +249,7 @@ class ConfigFileTestCase(TestCase):
         self._init_test(value)
 
         # Read data
-        config2 = get_handler(self.config_path, ConfigFile)
+        config2 = rw_database.get_handler(self.config_path, ConfigFile)
         try:
             config2_value = config2.get_value("test")
         except SyntaxError, e:
@@ -265,12 +267,12 @@ class ConfigFileTestCase(TestCase):
         self._init_test(value)
 
         # Write data
-        config = get_handler(self.config_path, ConfigFile)
+        config = rw_database.get_handler(self.config_path, ConfigFile)
         config.set_value("test", value)
         config.save_state()
 
         # Read data
-        config2 = get_handler(self.config_path, ConfigFile)
+        config2 = rw_database.get_handler(self.config_path, ConfigFile)
         config2_value = config2.get_value("test")
         lfs.remove(self.config_path)
 
@@ -284,7 +286,7 @@ class ConfigFileTestCase(TestCase):
         self._init_test(value)
 
         # Write data
-        config = get_handler(self.config_path, ConfigFile)
+        config = rw_database.get_handler(self.config_path, ConfigFile)
         try:
             config.set_value("test", value)
         except SyntaxError, e:
@@ -292,7 +294,7 @@ class ConfigFileTestCase(TestCase):
         config.save_state()
 
         # Read data
-        config2 = get_handler(self.config_path, ConfigFile)
+        config2 = rw_database.get_handler(self.config_path, ConfigFile)
         try:
             config2_value = config2.get_value("test")
         except SyntaxError, e:
@@ -311,7 +313,7 @@ class ConfigFileTestCase(TestCase):
         self._init_test(value)
 
         # Write data
-        config = get_handler(self.config_path, ConfigFile)
+        config = rw_database.get_handler(self.config_path, ConfigFile)
         try:
             config.set_value("test", value)
         except SyntaxError, e:
@@ -319,7 +321,7 @@ class ConfigFileTestCase(TestCase):
         config.save_state()
 
         # Read data
-        config2 = get_handler(self.config_path, ConfigFile)
+        config2 = ro_database.get_handler(self.config_path, ConfigFile)
         try:
             config2_value = config2.get_value("test")
         except SyntaxError, e:
@@ -337,10 +339,10 @@ class ConfigFileTestCase(TestCase):
 class ArchiveTestCase(TestCase):
 
     def test_get_handler(self):
-        cls = get_handler_class('handlers/test.tar.gz')
+        cls = ro_database.get_handler_class('handlers/test.tar.gz')
         self.assertEqual(cls, TGZFile)
 
-        file = get_handler('handlers/test.tar.gz')
+        file = ro_database.get_handler('handlers/test.tar.gz')
         self.assertEqual(file.__class__, TGZFile)
 
 

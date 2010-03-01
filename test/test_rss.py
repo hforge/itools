@@ -20,7 +20,7 @@
 from unittest import TestCase, main
 
 # Import from itools
-from itools.handlers import get_handler
+from itools.handlers import ro_database
 from itools.rss import RSSFile
 from itools.xml import XMLParser, XML_DECL
 
@@ -32,7 +32,7 @@ class RSSTestCase(TestCase):
     """
 
     def setUp(self):
-        self.rss = get_handler('tests/sample-rss-2.xml', RSSFile)
+        self.rss = ro_database.get_handler('tests/sample-rss-2.xml', RSSFile)
 
 
     def test_channel(self):

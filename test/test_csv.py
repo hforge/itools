@@ -24,7 +24,7 @@ from itools.csv import CSVFile, Table, UniqueError
 from itools.csv.table import parse_table, unfold_lines
 from itools.datatypes import Boolean, Date, Integer, Unicode, URI, String
 from itools.fs import lfs
-from itools.handlers import get_handler
+from itools.handlers import RWDatabase, ro_database
 from itools.xapian import AndQuery, OrQuery, PhraseQuery
 
 
@@ -35,6 +35,8 @@ TEST_DATA_2 = 'one,two,three\nfour,five,six\nseven,eight,nine'
 
 TEST_SYNTAX_ERROR = '"one",,\n,"two",,\n,,"three"'
 
+
+rw_database = RWDatabase(fs=lfs)
 
 
 class Languages(CSVFile):
@@ -193,16 +195,16 @@ class CSVTestCase(TestCase):
 
 
     def test_set_state_in_file_resource(self):
-        handler = get_handler('tests/test.csv', CSVFile)
+        handler = rw_database.get_handler('tests/test.csv', CSVFile)
         handler.add_row(['d1', 'e1', 'f1'])
         handler.save_state()
 
-        handler2 = get_handler('tests/test.csv', CSVFile)
+        handler2 = rw_database.get_handler('tests/test.csv', CSVFile)
         self.assertEqual(handler2.get_row(3), ['d1', 'e1', 'f1'])
         handler2.del_row(3)
         handler2.save_state()
 
-        handler = get_handler('tests/test.csv', CSVFile)
+        handler = ro_database.get_handler('tests/test.csv', CSVFile)
         self.assertEqual(handler.get_nrows(), 3)
 
 
@@ -218,8 +220,7 @@ class CSVTestCase(TestCase):
         handler = Things(string=data)
         handler.load_state_from_string(data)
         self.assertEqual(handler.search(date=Date.decode('2005-01-01')), [])
-        self.assertEqual(handler.search(date=Date.decode('2005-10-10')),
-                         [0,2])
+        self.assertEqual(handler.search(date=Date.decode('2005-10-10')), [0,2])
 
 
     def test_index_new_row(self):
@@ -446,13 +447,13 @@ class TableTestCase(TestCase):
         agenda = Agenda(string=agenda_file)
         agenda.save_state_to('tests/agenda')
         # Change
-        agenda = get_handler('tests/agenda', Agenda)
+        agenda = rw_database.get_handler('tests/agenda', Agenda)
         fake = agenda.add_record({'firstname': u'Toto', 'lastname': u'Fofo'})
         agenda.add_record({'firstname': u'Albert', 'lastname': u'Einstein'})
         agenda.del_record(fake.id)
         agenda.save_state()
         # Test
-        agenda = get_handler('tests/agenda', Agenda)
+        agenda = ro_database.get_handler('tests/agenda', Agenda)
         ids = [ x.id for x in agenda.search(firstname=u'Toto') ]
         self.assertEqual(len(ids), 0)
         ids = [ x.id for x in agenda.search(firstname=u'Albert') ]
@@ -486,7 +487,7 @@ class TableTestCase(TestCase):
         table = Books(string=books_file)
         table.save_state_to('tests/books')
         # Load
-        table = get_handler('tests/books', Books)
+        table = ro_database.get_handler('tests/books', Books)
         table.load_state()
         # Test
         record_0 = table.get_record(0)

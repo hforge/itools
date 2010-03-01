@@ -27,7 +27,7 @@ from sys import _getframe, argv
 # Import from itools
 from itools.core import freeze, get_pipe, get_version
 from itools import git
-from itools.handlers import get_handler
+from itools.handlers import ro_database
 from handlers import SetupConf
 
 
@@ -148,7 +148,7 @@ def get_compile_flags(command):
 
 
 def get_config():
-    return get_handler('setup.conf', cls=SetupConf)
+    return ro_database.get_handler('setup.conf', SetupConf)
 
 
 

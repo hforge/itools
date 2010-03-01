@@ -23,8 +23,8 @@ import sys
 
 # Import from itools
 import itools
-from itools.handlers import get_handler
 from itools.gettext import POFile
+from itools.handlers import ro_database
 import itools.html
 import itools.stl
 import itools.odf
@@ -70,12 +70,12 @@ if __name__ == '__main__':
     if options.srx is None:
         srx_handler = None
     else:
-        srx_handler = get_handler(options.srx)
+        srx_handler = ro_database.get_handler(options.srx)
 
     # Make the output handler
     out_handler = cls()
     for filename in args:
-        handler = get_handler(filename)
+        handler = ro_database.get_handler(filename)
         try:
             get_units = handler.get_units
         except AttributeError:

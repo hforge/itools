@@ -29,7 +29,7 @@ from traceback import print_exception
 import itools
 import itools.gettext
 from itools import git
-from itools.handlers import get_handler
+from itools.handlers import ro_database
 from itools.html import XHTMLFile
 import itools.pdf
 from itools.pkg import get_config, get_files, get_manifest, make_version
@@ -87,7 +87,8 @@ if __name__ == '__main__':
         message_catalogs = {}
         for lang in target_languages:
             path = 'locale/%s.po' % lang
-            message_catalogs[lang] = (get_handler(path), lfs.get_mtime(path))
+            handler = ro_database.get_handler(path)
+            message_catalogs[lang] = (handler, lfs.get_mtime(path))
 
         # Build the templates in the target languages
         good_files = compile('.*\\.x.*ml.%s$' % source_language)

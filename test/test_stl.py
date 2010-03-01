@@ -18,7 +18,6 @@
 from unittest import TestCase, main
 
 # Import from itools
-from itools.handlers import get_handler
 import itools.html
 from itools.stl import stl
 from itools.stl.stl import NamespaceStack, substitute, evaluate

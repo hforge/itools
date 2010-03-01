@@ -109,15 +109,26 @@ And:
 itools.handlers
 ===============
 
-(1) All not-new handlers are now attached to a database, so the old short
-constructor does not work anymore:
+(1) Now loading a handler can only be done through a database. For this
+purpose, the built-in 'ro_database' database can be used:
 
   # Before
   h = MyHandlerClass('/tmp/toto.txt')
 
   # Now
+  from itools.handlers import ro_database
+  h = ro_database.get_handler('/tmp/toto.txt', MyHandlerClass)
+
+This also means the 'get_handler' and 'get_handler_class' functions have
+been removed:
+
+  # Before
   from itools.handlers import get_handler
   h = get_handler('/tmp/toto.txt', MyHandlerClass)
+
+  # Now
+  from itools.handlers import ro_database
+  h = ro_database.get_handler('/tmp/toto.txt', MyHandlerClass)
 
 (2) The 'File.load_state_from' method has been renamed to the more explicit
 'File.load_state_from_uri':

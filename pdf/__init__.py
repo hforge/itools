@@ -16,7 +16,7 @@
 
 # Import from itools
 from itools.core import get_abspath
-from itools.handlers import get_handler
+from itools.handlers import ro_database
 from itools.relaxng import RelaxNGFile
 from itools.xml import register_dtd
 from pdf import PDFFile
@@ -42,6 +42,6 @@ __all__ = [
 
 # Read the Relax NG schema of PML and register its namespace
 rng_file = get_abspath('PML-schema.rng')
-rng_file = get_handler(rng_file, RelaxNGFile)
+rng_file = ro_database.get_handler(rng_file, RelaxNGFile)
 rng_file.auto_register()
 

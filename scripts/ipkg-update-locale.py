@@ -27,7 +27,7 @@ import sys
 # Import from itools
 import itools
 from itools.gettext import POFile
-from itools.handlers import get_handler
+from itools.handlers import ro_database
 import itools.html
 import itools.python
 import itools.stl
@@ -65,7 +65,7 @@ if __name__ == '__main__':
 
     # The SRX file
     if options.srx is not None:
-        srx_handler = get_handler(options.srx)
+        srx_handler = ro_database.get_handler(options.srx)
     else:
         srx_handler = None
 
@@ -90,7 +90,7 @@ if __name__ == '__main__':
             continue
         # Get the units
         write('.')
-        handler = get_handler(path)
+        handler = ro_database.get_handler(path)
         try:
             units = handler.get_units(srx_handler=srx_handler)
             units = list(units)

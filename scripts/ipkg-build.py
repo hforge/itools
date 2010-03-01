@@ -101,7 +101,7 @@ if __name__ == '__main__':
             for path in lines:
                 # Load the handler
                 src_mtime = lfs.get_mtime(path)
-                src = XHTMLFile(path)
+                src = ro_database.get_handler(path, XHTMLFile)
                 done = False
                 # Build the translation
                 n = path.rfind('.')

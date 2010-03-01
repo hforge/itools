@@ -229,6 +229,15 @@ itools.web
 (4) Use <button> to submit forms:
 
   # Before
+  <input type="submit" value="Log in" />
+
+  # Now
+  <button type="submit">Log in</button>
+
+And, for forms with multiple buttons (when there is an specific action
+defined):
+
+  # Before
   <input type="submit" name=";login' value="Log in" />
 
   # Now

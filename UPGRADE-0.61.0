@@ -244,7 +244,29 @@ itools.web
   # Now
   values = context.get_form_value(name, String(multiple=True))
 
-(3) The method 'BaseForm.build_namespace' has become 'STLForm.get_namespace':
+(3) Since the request and response objects have been removed, use instead
+the API exposed by the context, for instance:
+
+  # Before
+  context.response.set_header(name, value)
+
+  # Now
+  context.set_header(name, value)
+
+In particular, to set the content-type and content-disposition headers of
+the response, use the new higher level API made for this purpose:
+
+  # Before
+  response = context.response
+  response.set_header('Content-Type', content_type)
+  response.set_header('Content-Disposition',
+                      'inline; filename="%s"' % filename)
+
+  # Now
+  context.set_content_type(content_type)
+  context.set_content_disposition('inline', filename)
+
+(4) The method 'BaseForm.build_namespace' has become 'STLForm.get_namespace':
 
   # Before
   def get_namespace(self, resource, context):
@@ -254,7 +276,7 @@ itools.web
   def get_namespace(self, resource, context):
       namespace = STLForm.get_namespace(self, resource, context)
 
-(4) Use <button> to submit forms:
+(5) Use <button> to submit forms:
 
   # Before
   <input type="submit" value="Log in" />
@@ -273,7 +295,7 @@ defined):
 
 In the example above 'login' is a placeholder.
 
-(5) To properly log any event (errors, warnings, etc.) use the new
+(6) To properly log any event (errors, warnings, etc.) use the new
 itools.log package instead of the Python's standard logging package.
 
 

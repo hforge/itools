@@ -321,13 +321,13 @@ static PyObject *
 PyMessage_set_response (PyMessage * self, PyObject * args, PyObject *kwdict)
 {
   char *content_type, *body;
-  gsize content_length;
+  int content_length;
 
   if (!PyArg_ParseTuple (args, "ss#", &content_type, &body, &content_length))
     return NULL;
 
   soup_message_set_response (self->s_msg, content_type, SOUP_MEMORY_COPY, body,
-                             content_length);
+                             (gsize)content_length);
 
   Py_RETURN_NONE;
 }

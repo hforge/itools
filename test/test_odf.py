@@ -22,7 +22,7 @@
 from unittest import TestCase, main
 
 # Import from itools
-from itools.gettext import POFile, POUnit
+from itools.gettext import POFile
 from itools.handlers import ro_database
 from itools.odf import ODTFile, ODPFile, ODSFile
 from itools.srx import TEXT, START_FORMAT, END_FORMAT

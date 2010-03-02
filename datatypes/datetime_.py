@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from time import mktime, timezone
+from time import mktime
 from datetime import date, datetime, time
 from email.utils import parsedate_tz, mktime_tz, formatdate
 

@@ -19,8 +19,7 @@
 # Import from itools
 from itools.datatypes import XMLContent, XMLAttribute
 from itools.handlers import register_handler_class
-from itools.xml import XML_DECL, DOCUMENT_TYPE, START_ELEMENT
-from itools.xml import END_ELEMENT, TEXT, COMMENT, CDATA
+from itools.xml import START_ELEMENT, END_ELEMENT, TEXT
 from itools.xml import stream_to_str, get_qname, get_attribute_qname
 from itools.xml import get_end_tag, get_doctype, get_element
 from itools.xmlfile import XMLFile

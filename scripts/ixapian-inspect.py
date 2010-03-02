@@ -19,7 +19,7 @@
 from marshal import loads
 from optparse import OptionParser
 from re import compile
-from sys import argv, exit
+from sys import exit
 
 # Import from xapian
 from xapian import Database, DatabaseOpeningError, Enquire, Query

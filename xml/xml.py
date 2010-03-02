@@ -22,8 +22,7 @@
 # Import from itools
 from itools.datatypes import XMLAttribute, XMLContent
 from namespaces import get_namespace, is_empty
-from parser import XML_DECL, DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, TEXT
-from parser import COMMENT, CDATA
+from parser import START_ELEMENT, END_ELEMENT
 
 
 # Serialize

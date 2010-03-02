@@ -22,7 +22,7 @@
 from itools.core import merge_dicts
 from itools.datatypes import String, Integer
 from itools.handlers import TextFile, guess_encoding, register_handler_class
-from itools.xapian import make_catalog, AndQuery, PhraseQuery, CatalogAware
+from itools.xapian import make_catalog, CatalogAware
 from parser import parse
 
 

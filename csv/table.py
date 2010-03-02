@@ -25,7 +25,7 @@ from itools.core import merge_dicts
 from itools.datatypes import DateTime, String, Integer, Unicode
 from itools.handlers import File
 from itools.xapian import make_catalog
-from itools.xapian import AndQuery, PhraseQuery, CatalogAware
+from itools.xapian import PhraseQuery, CatalogAware
 from csv_ import CSVFile
 from parser import parse
 

@@ -23,18 +23,17 @@ language I could imagine.
 """
 
 # Import from the Standard Library
-from copy import copy
 from functools import partial
 from re import compile
 from types import GeneratorType
 
 # Import from itools
-from itools.core import freeze, thingy
+from itools.core import freeze
 from itools.datatypes import Boolean
 from itools.gettext import MSG
 from itools.uri import Path, Reference, get_reference
-from itools.xml import XMLError, XMLParser, find_end, stream_to_str
-from itools.xml import DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, TEXT, COMMENT
+from itools.xml import XMLParser, find_end, stream_to_str
+from itools.xml import DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, TEXT
 from itools.xml import xmlns_uri
 from itools.xml import get_attr_datatype
 from itools.html import xhtml_uri

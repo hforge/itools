@@ -23,19 +23,18 @@ from os import listdir, makedirs, remove as os_remove, walk
 from os import access, R_OK, W_OK
 from os.path import exists, getatime, getctime, getmtime ,getsize
 from os.path import isfile, isdir, join, basename, dirname
-from os.path import abspath, relpath, normpath
+from os.path import abspath, relpath
 from shutil import rmtree, copytree, copy as shutil_copy, move as shutil_move
 
 # Import from itools
+from itools.uri import Path
 from common import WRITE, READ_WRITE, APPEND, READ, get_mimetype
 
 
 MODES = {WRITE: 'wb', READ_WRITE: 'r+b', APPEND: 'ab', READ: 'rb'}
 
 
-######################################################################
-# Public API
-######################################################################
+
 class LocalFolder(object):
 
     def __init__(self, path='.'):
@@ -43,17 +42,17 @@ class LocalFolder(object):
             raise IOError, "No such directory: '%s'" % path
         if isfile(path):
             raise IOError, "Is a directory: '%s'" % path
-        self.path = abspath(normpath(path))
+        self.path = Path(abspath(path))
 
 
     def _resolve_path(self, path):
-        path = join(self.path, path)
-        return normpath(path)
+        path = self.path.resolve2(path)
+        return str(path)
 
 
-    ############################
+    #######################################################################
     # Public API
-    ############################
+    #######################################################################
     def exists(self, path):
         path = self._resolve_path(path)
         return exists(path)
@@ -190,34 +189,37 @@ class LocalFolder(object):
         return relpath(path)
 
 
+    #######################################################################
+    # Used by itools.handlers
+    #######################################################################
     @staticmethod
     def get_basename(path):
-        return basename(path)
+        if type(path) is not Path:
+            path = Path(path)
+        return path.get_name()
 
 
-    # To match vfs API
     @staticmethod
     def get_path(path):
-        return path
+        if type(path) is not Path:
+            path = Path(path)
+        return str(path)
 
 
     @staticmethod
     def resolve(base, path):
-        endswith_slash = base[-1] == '/'
-        base = abspath(base)
-        # '/a/b/' + 'c' => '/a/b/c'
-        if endswith_slash:
-            return join(base, path)
-        # '/a/b' + 'c' => '/a/c'
-        return join(dirname(base), path)
+        if type(base) is not Path:
+            base = Path(base)
+        path = base.resolve(path)
+        return str(path)
 
 
     @staticmethod
     def resolve2(base, path):
-        base = abspath(base)
-        # '/a/b' + 'c' => '/a/b/c'
-        # '/a/b/' + 'c' => '/a/b/c'
-        return join(base, path)
+        if type(base) is not Path:
+            base = Path(base)
+        path = base.resolve2(path)
+        return str(path)
 
 
     # Resolution method for handler database keys

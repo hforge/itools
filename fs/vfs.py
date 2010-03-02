@@ -36,8 +36,8 @@ from gio import FILE_ATTRIBUTE_ACCESS_CAN_READ
 from gio import FILE_ATTRIBUTE_ACCESS_CAN_WRITE
 
 # Import from itools
-from common import READ, WRITE, READ_WRITE, APPEND, get_mimetype
 from itools.uri import resolve_uri, resolve_uri2, get_uri_name, get_uri_path
+from common import READ, WRITE, READ_WRITE, APPEND, get_mimetype
 
 
 ######################################################################
@@ -171,9 +171,9 @@ class Folder(object):
         return info.get_attribute_boolean(attribut)
 
 
-    ############################
+    #######################################################################
     # Public API
-    ############################
+    #######################################################################
     def exists(self, uri):
         g_file = self._get_g_file(uri)
         return g_file.query_exists()
@@ -325,6 +325,9 @@ class Folder(object):
         return self._folder.get_relative_path(g_file)
 
 
+    #######################################################################
+    # Used by itools.handlers
+    #######################################################################
     @staticmethod
     def get_basename(reference):
         return get_uri_name(reference)

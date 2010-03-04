@@ -394,6 +394,11 @@ class Context(object):
         return False
 
 
+    def get_remote_ip(self):
+        remote_ip = self.get_header('X-Forwarded-For')
+        return remote_ip.split(',', 1)[0].strip() if remote_ip else None
+
+
 ###########################################################################
 # One context per thread
 ###########################################################################

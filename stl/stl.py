@@ -49,7 +49,9 @@ class STLError(StandardError):
     pass
 
 
-ERR_EXPR_VALUE = "unexpected value for the '${%s}' expression"
+ERR_EXPR_NAME = 'name "%s" not found in "${%s}" expression'
+ERR_EXPR_VALUE = 'unexpected value of type "%s" in "${%s}" expression'
+ERR_EXPR_XML = 'expected XML stream not "%s" in "${%s}" expression'
 
 
 
@@ -84,7 +86,7 @@ def evaluate(expression, stack, repeat_stack):
         try:
             value = value[name]
         except KeyError:
-            raise STLError, 'name "%s" not found in the namespace' % name
+            raise STLError, ERR_EXPR_NAME % (name, expression)
 
 
     # Call
@@ -233,7 +235,7 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
             elif isinstance(value, (list, GeneratorType, XMLParser)):
                 for x in value:
                     if type(x) is not tuple:
-                        raise STLError, ERR_EXPR_VALUE % segment
+                        raise STLError, ERR_EXPR_XML % (type(x), segment)
                     yield x
             elif type(value) is unicode:
                 yield TEXT, value.encode(encoding), 0

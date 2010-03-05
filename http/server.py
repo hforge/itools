@@ -72,6 +72,7 @@ class HTTPServer(SoupServer):
     #######################################################################
     def start(self):
         # Language negotiation
+        from itools.web import select_language
         init_language_selector(select_language)
 
         # Graceful stop

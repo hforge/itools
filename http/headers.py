@@ -20,7 +20,6 @@ from datetime import datetime
 
 # Import from itools
 from itools.datatypes import DataType, Integer, String, URI, HTTPDate
-from itools.i18n import AcceptLanguageType
 
 """
 Implementation of standard HTTP headers.
@@ -495,7 +494,7 @@ headers = {
     'accept': String,
     'accept-charset': String,
     'accept-encoding': String,
-    'accept-language': AcceptLanguageType,
+    'accept-language': String,
     'expect': String,
     'host': String,
     'if-match': String,

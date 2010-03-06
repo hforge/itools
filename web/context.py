@@ -22,7 +22,7 @@
 from thread import get_ident, allocate_lock
 
 # Import from itools
-from itools.core import freeze
+from itools.core import freeze, lazy
 from itools.datatypes import String
 from itools.gettext import MSG
 from itools.http import get_type, Entity
@@ -111,12 +111,6 @@ class Context(object):
             self.path = path
             self.view_name = None
 
-        # Language negotiation
-        accept_language = soup_message.get_header('accept_language')
-        if accept_language is None:
-            accept_language = ''
-        self.accept_language = AcceptLanguageType.decode(accept_language)
-
         # Form
         self.body = self.load_body()
 
@@ -131,6 +125,14 @@ class Context(object):
         # attribute lets the interface to add those resources.
         self.styles = []
         self.scripts = []
+
+
+    @lazy
+    def accept_language(self):
+        accept_language = self.soup_message.get_header('accept-language')
+        if accept_language is None:
+            accept_language = ''
+        return AcceptLanguageType.decode(accept_language)
 
 
     def load_body(self):
@@ -219,7 +221,7 @@ class Context(object):
         return self.soup_message.get_request_line()
 
     def get_headers(self):
-        return  self.soup_message.get_headers()
+        return self.soup_message.get_headers()
 
 
     def get_header(self, name):

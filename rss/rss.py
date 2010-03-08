@@ -23,9 +23,9 @@ from datetime import datetime
 from itools.handlers import TextFile, register_handler_class
 from itools.xml import XMLParser, XML_DECL, START_ELEMENT, END_ELEMENT
 from itools.xml import TEXT, CDATA
+from itools.xml.xml import get_start_tag, get_end_tag
 from itools.datatypes import Unicode, URI, Integer, String, HTTPDate
 from itools.datatypes import XMLContent
-
 
 
 # RSS channel elements definition
@@ -43,6 +43,10 @@ rss_item_elements = {
     'required': [],
     'optional': ['title', 'link', 'description', 'author', 'category',
         'comments', 'enclosure', 'guid', 'pubDate', 'source']}
+all_elements = set(['rss', 'channel', 'image', 'item']
+        + rss_channel_elements['required'] + rss_channel_elements['optional']
+        + rss_image_elements['required'] + rss_image_elements['optional']
+        + rss_item_elements['required'] + rss_item_elements['optional'])
 
 
 # RSS tags types for encode and decode
@@ -119,12 +123,17 @@ class RSSFile(TextFile):
                 namespace_uri, local_name, attributes = value
                 if local_name in ('channel', 'image', 'item'):
                     stack.append({})
+                elif local_name not in all_elements:
+                    # Ignore misplaced HTML
+                    data += get_start_tag(value)
                 else:
                     data = ''
             elif event == END_ELEMENT:
                 namespace_uri, local_name = value
                 if local_name == 'rss':
                     pass
+                elif local_name not in all_elements:
+                    data += get_end_tag(namespace_uri, local_name)
                 elif local_name == 'channel':
                     self.channel = stack.pop()
                 elif local_name == 'image':
@@ -134,7 +143,7 @@ class RSSFile(TextFile):
                 else:
                     value = decode_element(local_name, data, encoding)
                     stack[-1][local_name] = value
-                    data = None
+                    data = ''
             elif event == TEXT or event == CDATA:
                 if data is not None:
                     data += value

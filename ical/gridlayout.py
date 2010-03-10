@@ -326,7 +326,7 @@ def render_namespace(items, times, with_new_url):
     # render_namespace
     ######################################################################
 
-    url = ';edit_event?method=weekly_view&'
+    url = ';add_event?method=weekly_view&'
     ns_rows = []
     for cells in table:
         ns_cells = []

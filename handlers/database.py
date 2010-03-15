@@ -20,6 +20,7 @@
 # Import from the Standard Library
 from datetime import datetime
 from os import mkdir
+from os.path import basename, join
 from subprocess import call, PIPE, CalledProcessError
 from sys import getrefcount
 
@@ -449,13 +450,11 @@ class RWDatabase(RODatabase):
         base = self._resolve_key(key)
         # Removed
         for key in self.handlers_old2new:
-            # FIXME assumes the key is a URI or path
             name = fs.get_basename(key)
             if fs.resolve2(base, name) == key:
                 names.discard(name)
         # Added
         for key in self.handlers_new2old:
-            # FIXME assumes the key is a URI or path
             name = fs.get_basename(key)
             if fs.resolve2(base, name) == key:
                 names.add(name)
@@ -805,6 +804,30 @@ class GitDatabase(RWDatabase, ROGitDatabase):
             # FIXME Not reliable, we may catch other cases
             if excp.returncode != 1:
                 raise
+
+
+    def get_handler_names(self, key):
+        # TODO Use this method not only for GitDatabase, but for any database
+        # that uses lfs.
+        names = RODatabase.get_handler_names(self, key)
+        names = set(names)
+
+        # The State
+        base = self._resolve_key(key)
+        # Removed
+        for key in self.handlers_old2new:
+            name = basename(key)
+            if join(base, name) == key:
+                names.discard(name)
+        # Added
+        for key in self.handlers_new2old:
+            name = basename(key)
+            if join(base, name) == key:
+                names.add(name)
+
+        # Ok
+        return list(names)
+
 
 
 def make_git_database(path, size_min, size_max):

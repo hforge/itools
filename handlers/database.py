@@ -623,8 +623,13 @@ class RWDatabase(RODatabase):
 
     def _abort_changes(self):
         cache = self.cache
-        for key in self.handlers_new2old:
-            self._discard_handler(key)
+        for target, source in self.handlers_new2old.iteritems():
+            # Case 1: changed
+            if source == target:
+                cache[target].abort_changes()
+            # Case 2: added or moved
+            else:
+                self._discard_handler(target)
 
         # Reset state
         self.handlers_old2new.clear()

@@ -410,9 +410,8 @@ class RWDatabase(RODatabase):
         RODatabase.__init__(self, size_min=size_min, size_max=size_max,
                 fs=fs)
         # The state, for transactions
-        self.changed = set()
-        self.added = set()
-        self.removed = set()
+        self.handlers_old2new = {}
+        self.handlers_new2old = {}
 
 
     def _resolve_key_for_writing(self, key):
@@ -433,9 +432,9 @@ class RWDatabase(RODatabase):
         key = self._resolve_key(key)
 
         # Check the state
-        if key in self.added:
+        if key in self.handlers_new2old:
             return True
-        if key in self.removed:
+        if key in self.handlers_old2new:
             return False
 
         return RODatabase.has_handler(self, key)
@@ -449,14 +448,14 @@ class RWDatabase(RODatabase):
         base = self._resolve_key(key)
         # Removed
         removed = set()
-        for key in self.removed:
+        for key in self.handlers_old2new:
             # FIXME assumes the key is a URI or path
             name = fs.get_basename(key)
             if fs.resolve2(base, name) == key:
                 removed.add(name)
         # Added
         added = set()
-        for key in self.added:
+        for key in self.handlers_new2old:
             # FIXME assumes the key is a URI or path
             name = fs.get_basename(key)
             if fs.resolve2(base, name) == key:
@@ -471,7 +470,7 @@ class RWDatabase(RODatabase):
         key = self._resolve_key(key)
 
         # Check state
-        if key in self.added:
+        if key in self.handlers_new2old:
             handler = self.cache[key]
             # cls is good?
             if cls is not None and not isinstance(handler, cls):
@@ -479,7 +478,7 @@ class RWDatabase(RODatabase):
                                      handler.__class__)
             return handler
 
-        if key in self.removed:
+        if key in self.handlers_old2new:
             raise LookupError, 'the resource "%s" does not exist' % key
 
         # Ok
@@ -499,20 +498,22 @@ class RWDatabase(RODatabase):
 
         key = self._resolve_key_for_writing(key)
         self.push_handler(key, handler)
-        self.added.add(key)
+        self.handlers_new2old[key] = None
 
 
     def del_handler(self, key):
         key = self._resolve_key_for_writing(key)
 
         # Check the handler has been added
-        if key in self.added:
+        if key in self.handlers_new2old:
             self._discard_handler(key)
-            self.added.remove(key)
+            key = self.handlers_new2old.pop(key)
+            if key:
+                self.handlers_old2new[key] = None
             return
 
         # Check the handler has been removed
-        if key in self.removed:
+        if key in self.handlers_old2new:
             raise LookupError, 'resource already removed'
 
         # Synchronize
@@ -525,7 +526,7 @@ class RWDatabase(RODatabase):
             self._discard_handler(key)
 
         # Mark for removal
-        self.removed.add(key)
+        self.handlers_old2new[key] = None
 
 
     def copy_handler(self, source, target):
@@ -550,7 +551,7 @@ class RWDatabase(RODatabase):
             handler = handler.clone()
             # Update the state
             self.push_handler(target, handler)
-            self.added.add(target)
+            self.handlers_new2old[target] = None
 
 
     def move_handler(self, source, target):
@@ -571,7 +572,8 @@ class RWDatabase(RODatabase):
             for name in handler.get_handler_names():
                 self.move_handler(fs.resolve2(source, name),
                                   fs.resolve2(target, name))
-            self.removed.add(source)
+            # Update double dict
+            self.handlers_old2new[source] = None
         else:
             # Load if needed
             if handler.timestamp is None and handler.dirty is None:
@@ -581,15 +583,11 @@ class RWDatabase(RODatabase):
             self.push_handler(target, handler)
             handler.timestamp = None
             handler.dirty = datetime.now()
-            # Add to target
-            self.added.add(target)
-            if source in self.added:
-                self.added.remove(source)
-            elif source in self.changed:
-                self.changed.remove(source)
-                self.removed.add(source)
-            else:
-                self.removed.add(source)
+            # Update double dict
+            source = self.handlers_new2old.pop(source, source)
+            if source:
+                self.handlers_old2new[source] = target
+            self.handlers_new2old[target] = source
 
 
     #######################################################################
@@ -622,49 +620,59 @@ class RWDatabase(RODatabase):
     #######################################################################
     # API / Transactions
     def _has_changed(self):
-        return bool(self.added) or bool(self.changed) or bool(self.removed)
+        return bool(self.handlers_old2new) or bool(self.handlers_new2old)
 
 
     def _abort_changes(self):
         cache = self.cache
-        # Added handlers
-        for key in self.added:
+        for key in self.handlers_new2old:
             self._discard_handler(key)
-        # Changed handlers
-        for key in self.changed:
-            cache[key].abort_changes()
+
         # Reset state
-        self.changed.clear()
-        self.added.clear()
-        self.removed.clear()
+        self.handlers_old2new.clear()
+        self.handlers_new2old.clear()
 
 
     def _save_changes(self, data):
         cache = self.cache
-        # Save changed handlers
-        for key in self.changed:
-            # Save the handler's state
-            handler = cache[key]
-            handler.save_state()
-            # Update timestamp
-            handler.timestamp = self.fs.get_mtime(key)
-            handler.dirty = None
-        # Remove handlers
-        removed = sorted(self.removed, reverse=True)
-        for key in removed:
-            self.safe_remove(key)
-        # Add new handlers
-        for key in self.added:
-            handler = cache[key]
-            handler.save_state_to(key)
-            # Update timestamp
-            handler.timestamp = self.fs.get_mtime(key)
-            handler.dirty = None
+
+        sources = self.handlers_old2new.keys()
+        sources = sorted(sources, reverse=True)
+        for source in sources:
+            target = self.handlers_old2new[source]
+            # Case 1: removed
+            if target is None:
+                self.safe_remove(source)
+            # Case 2: changed
+            elif source == target:
+                # Save the handler's state
+                handler = cache[source]
+                handler.save_state()
+                # Update timestamp
+                handler.timestamp = self.fs.get_mtime(source)
+                handler.dirty = None
+            # Case 3: moved (TODO Optimize)
+            else:
+                self.safe_remove(source)
+                # Add
+                handler = cache[target]
+                handler.save_state_to(target)
+                # Update timestamp
+                handler.timestamp = self.fs.get_mtime(target)
+                handler.dirty = None
+
+        # Case 4: added
+        for target, source in self.handlers_new2old.iteritems():
+            if source is None:
+                handler = cache[target]
+                handler.save_state_to(target)
+                # Update timestamp
+                handler.timestamp = self.fs.get_mtime(target)
+                handler.dirty = None
 
         # Reset the state
-        self.changed.clear()
-        self.added.clear()
-        self.removed.clear()
+        self.handlers_old2new.clear()
+        self.handlers_new2old.clear()
 
 
 ###########################################################################
@@ -769,7 +777,7 @@ class GitDatabase(RWDatabase, ROGitDatabase):
 
     def _save_changes(self, data):
         # Figure out the files to add
-        git_files = [ x for x in self.added ]
+        git_files = [ x for x in self.handlers_new2old ]
 
         # Save
         RWDatabase._save_changes(self, data)

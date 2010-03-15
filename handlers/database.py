@@ -442,25 +442,23 @@ class RWDatabase(RODatabase):
 
     def get_handler_names(self, key):
         names = RODatabase.get_handler_names(self, key)
+        names = set(names)
         fs = self.fs
 
         # The State
         base = self._resolve_key(key)
         # Removed
-        removed = set()
         for key in self.handlers_old2new:
             # FIXME assumes the key is a URI or path
             name = fs.get_basename(key)
             if fs.resolve2(base, name) == key:
-                removed.add(name)
+                names.discard(name)
         # Added
-        added = set()
         for key in self.handlers_new2old:
             # FIXME assumes the key is a URI or path
             name = fs.get_basename(key)
             if fs.resolve2(base, name) == key:
-                added.add(name)
-        names = set(names) - removed | added
+                names.add(name)
 
         # Ok
         return list(names)

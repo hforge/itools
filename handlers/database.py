@@ -725,16 +725,25 @@ class ROGitDatabase(RODatabase):
         return freeze(files)
 
 
-    def get_diff_between(self, from_, to='HEAD', paths=[], stat=False):
+    def get_stats(self, from_, to=None, paths=[]):
+        if to is None:
+            cmd = ['git', 'show', '--pretty=format:', '--stat', from_]
+        else:
+            cmd = ['git', 'diff', '--stat', from_, to]
+
+        if paths:
+            cmd.append('--')
+            cmd.extend(paths)
+        return send_subprocess(cmd)
+
+
+    def get_diff_between(self, from_, to='HEAD', paths=[]):
         """Get the diff of the given path from the given commit revision to
         HEAD.
 
         If "stat" is True, get a diff stat only.
         """
-        cmd = ['git', 'diff']
-        if stat:
-            cmd.append('--stat')
-        cmd += [from_, to]
+        cmd = ['git', 'diff', from_, to]
         if paths:
             cmd.append('--')
             cmd.extend(paths)

@@ -222,7 +222,7 @@ class File(Handler):
         database = self.database
         if database.is_phantom(self):
             database.cache[self.key] = self
-            database.added.add(self.key)
+            database.handlers_new2old[self.key] = None
             return
 
         # Check nothing weird happened
@@ -233,15 +233,17 @@ class File(Handler):
         if self.timestamp:
             # Case 1: loaded
             self.dirty = datetime.now()
-            database.changed.add(self.key)
+            database.handlers_new2old[self.key] = self.key
+            database.handlers_old2new[self.key] = self.key
         elif self.dirty:
             # Case 2: new
-            database.added.add(self.key)
+            database.handlers_new2old[self.key] = None
         else:
             # Case 3: not loaded (yet)
             self.load_state()
             self.dirty = datetime.now()
-            database.changed.add(self.key)
+            database.handlers_new2old[self.key] = self.key
+            database.handlers_old2new[self.key] = self.key
 
 
     def _clean_state(self):

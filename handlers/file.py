@@ -236,8 +236,8 @@ class File(Handler):
             database.handlers_new2old[self.key] = self.key
             database.handlers_old2new[self.key] = self.key
         elif self.dirty:
-            # Case 2: new
-            database.handlers_new2old[self.key] = None
+            # Case 2: new or move
+            pass
         else:
             # Case 3: not loaded (yet)
             self.load_state()

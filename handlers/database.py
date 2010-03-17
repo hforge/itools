@@ -20,7 +20,6 @@
 # Import from the Standard Library
 from datetime import datetime
 from os import mkdir
-from os.path import basename, join
 from subprocess import call, PIPE, CalledProcessError
 from sys import getrefcount
 
@@ -848,17 +847,20 @@ class GitDatabase(RWDatabase, ROGitDatabase):
         names = set(names)
 
         # The State
-        base = self._resolve_key(key)
+        base = self._resolve_key(key) + '/'
+        n = len(base)
         # Removed
         for key in self.handlers_old2new:
-            name = basename(key)
-            if join(base, name) == key:
-                names.discard(name)
+            if key[:n] == base:
+                name = key[n:]
+                if '/' not in name:
+                    names.discard(name)
         # Added
         for key in self.handlers_new2old:
-            name = basename(key)
-            if join(base, name) == key:
-                names.add(name)
+            if key[:n] == base:
+                name = key[n:]
+                if '/' not in name:
+                    names.add(name)
 
         # Ok
         return list(names)

@@ -639,29 +639,55 @@ class RWDatabase(RODatabase):
         cache = self.cache
 
         sources = self.handlers_old2new.keys()
-        sources = sorted(sources, reverse=True)
-        for source in sources:
-            target = self.handlers_old2new[source]
-            # Case 1: removed
-            if target is None:
-                self.safe_remove(source)
-            # Case 2: changed
-            elif source == target:
-                # Save the handler's state
-                handler = cache[source]
-                handler.save_state()
-                # Update timestamp
-                handler.timestamp = self.fs.get_mtime(source)
-                handler.dirty = None
-            # Case 3: moved (TODO Optimize)
-            else:
-                self.safe_remove(source)
-                # Add
-                handler = cache[target]
-                handler.save_state_to(target)
-                # Update timestamp
-                handler.timestamp = self.fs.get_mtime(target)
-                handler.dirty = None
+        sources.sort(reverse=True)
+        while True:
+            something = False
+            retry = []
+            for source in sources:
+                target = self.handlers_old2new[source]
+                # Case 1: removed
+                if target is None:
+                    self.safe_remove(source)
+                    something = True
+                # Case 2: changed
+                elif source == target:
+                    # Save the handler's state
+                    handler = cache[source]
+                    handler.save_state()
+                    # Update timestamp
+                    handler.timestamp = self.fs.get_mtime(source)
+                    handler.dirty = None
+                    something = True
+                # Case 3: moved (TODO Optimize)
+                else:
+                    handler = cache[target]
+                    try:
+                        # Only save_state_to can raise an OSError
+                        # So we try to save the handler before remove it.
+                        # Add
+                        handler.save_state_to(target)
+                    except OSError:
+                        retry.append(source)
+                    else:
+                        # Remove
+                        self.safe_remove(source)
+                        # Update timestamp
+                        handler.timestamp = self.fs.get_mtime(target)
+                        handler.dirty = None
+                        something = True
+
+            # Case 1: done
+            if not retry:
+                break
+
+            # Case 2: Try again
+            if something:
+                sources = retry
+                continue
+
+            # Error
+            error = 'unable to complete _save_changes'
+            raise RuntimeError, error
 
         # Case 4: added
         for target, source in self.handlers_new2old.iteritems():

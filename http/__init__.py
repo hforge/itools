@@ -16,27 +16,17 @@
 
 # Import from itools
 from context import HTTPContext, get_context, set_context
-from cookies import Cookie, SetCookieDataType
-from entities import Entity
 from exceptions import HTTPError
 from exceptions import Successful, Redirection, ClientError, ServerError
-from headers import get_type
 from server import HTTPServer
 from mounts import HTTPMount, StaticMount
-from utils import set_response
 
 
 __all__ = [
     'HTTPServer',
     'HTTPContext',
-    'Entity',
-    'get_type',
-    'set_response',
     'get_context',
     'set_context',
-    # Cookies
-    'Cookie',
-    'SetCookieDataType',
     # Mounts
     'HTTPMount',
     'StaticMount',

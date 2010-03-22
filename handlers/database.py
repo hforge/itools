@@ -26,6 +26,7 @@ from sys import getrefcount
 # Import from itools
 from itools.core import LRUCache, send_subprocess, freeze
 from itools.fs import vfs, lfs, READ, WRITE, READ_WRITE, APPEND
+from itools.uri import normalize_path
 from folder import Folder
 import messages
 from registry import get_handler_class_by_mimetype
@@ -708,18 +709,18 @@ class RWDatabase(RODatabase):
 class ROGitDatabase(RODatabase):
 
     def __init__(self, path, size_min=4800, size_max=5200):
-        # Restrict to local fs
-        RODatabase.__init__(self, size_min, size_max, fs=lfs)
-        path = self.fs.get_absolute_path(path)
-        if not self.fs.exists(path):
-            raise ValueError, 'unexpected "%s" path' % path
-        if path[-1] != '/':
-            path += '/'
-        self.path = path
+        # Restrict to git repository
+        fs = lfs.open(path)
+        RODatabase.__init__(self, size_min, size_max, fs=fs)
 
 
     def resolve_key(self, path):
-        return self.fs.get_absolute_path(path)
+        # Performance is critical so assume the path is already relative to
+        # the repository.
+        path = normalize_path(path)
+        if path and path.startswith(('/', '..', '.git')):
+            raise ValueError, 'unexpected "%s" path' % path
+        return str(path)
 
 
     def get_diff(self, revision):
@@ -792,18 +793,10 @@ class GitDatabase(RWDatabase, ROGitDatabase):
 
 
     def resolve_key_for_writing(self, path):
-        """Check whether the given path is within the git path. If it is,
-        return the absolute path.
+        """Check whether the given path is within the git repository. If it
+        is, return the path relative to the top folder.
         """
-        # Resolve the path
-        path = self.fs.get_absolute_path(path)
-        # Security check
-        if not path.startswith(self.path):
-            raise ValueError, 'unexpected "%s" path' % path
-        if path.startswith('%s.git' % self.path):
-            raise ValueError, 'unexpected "%s" path' % path
-        # Ok
-        return path
+        return self.resolve_key(path)
 
 
     def _rollback(self):

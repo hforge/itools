@@ -73,7 +73,7 @@ class BaseDatabase(object):
 
     def _cleanup(self):
         """For maintenance operations, this method is automatically called
-        after a transaction is commited or aborted.
+        after a transaction is committed or aborted.
         """
 
 
@@ -146,7 +146,7 @@ class RODatabase(BaseDatabase):
 
     def _sync_filesystem(self, key):
         """This method checks the state of the key in the cache against the
-        filesystem.  Synchronizes the state if needed by discarding the
+        filesystem. Synchronizes the state if needed by discarding the
         handler, or raises an error if there is a conflict.
 
         Returns the handler for the given key if it is still in the cache
@@ -237,9 +237,9 @@ class RODatabase(BaseDatabase):
     def make_room(self):
         """Remove handlers from the cache until it fits the defined size.
 
-        Use with caution.  If the handlers we are about to discard are still
-        used outside the database, and one of them (or more) are modified,
-        then there will be an error.
+        Use with caution. If the handlers we are about to discard are still
+        used outside the database, and one of them (or more) are modified, then
+        there will be an error.
         """
         # Find out how many handlers should be removed
         size = len(self.cache)
@@ -736,7 +736,7 @@ class ROGitDatabase(RODatabase):
 
 
     def get_files_affected(self, revisions):
-        """Get the unordered set of files affected by a  list of revisions.
+        """Get the unordered set of files affected by a list of revisions.
         """
         cmd = ['git', 'show', '--numstat', '--pretty=format:'] + revisions
         data = send_subprocess(cmd)
@@ -777,7 +777,7 @@ class ROGitDatabase(RODatabase):
 
     def get_blob(self, revision, path):
         """Get the file contents located at the given path after the given
-        commit revision has been commited.
+        commit revision has been committed.
         """
         cmd = ['git', 'show', '%s:%s' % (revision, path)]
         return send_subprocess(cmd)
@@ -792,8 +792,8 @@ class GitDatabase(RWDatabase, ROGitDatabase):
 
 
     def resolve_key_for_writing(self, path):
-        """Check whether the given path is within the git path.  If it
-        is, return the absolute path.
+        """Check whether the given path is within the git path. If it is,
+        return the absolute path.
         """
         # Resolve the path
         path = self.fs.get_absolute_path(path)

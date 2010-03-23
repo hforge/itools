@@ -62,7 +62,7 @@ class File(Handler):
                 # A handler from some input data
                 self.new(**kw)
         else:
-            self.key = self.database.fs.resolve_key(key)
+            self.key = self.database.resolve_key(key)
 
 
     def reset(self):

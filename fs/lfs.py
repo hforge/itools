@@ -186,7 +186,7 @@ class LocalFolder(object):
 
     def get_relative_path(self, path):
         path = self._resolve_path(path)
-        return relpath(path)
+        return relpath(path, start=str(self.path))
 
 
     #######################################################################

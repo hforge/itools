@@ -20,7 +20,6 @@
 # Import from the Standard Library
 from datetime import datetime
 from os import mkdir
-from os.path import basename, join
 from subprocess import call, PIPE, CalledProcessError
 from sys import getrefcount
 
@@ -135,13 +134,13 @@ class RODatabase(BaseDatabase):
         self.fs = fs or vfs
 
 
-    def _resolve_key(self, key):
+    def resolve_key(self, key):
         """Resolves and returns the given key to be unique.
         """
         return self.fs.resolve_key(key)
 
 
-    def _resolve_key_for_writing(self, key):
+    def resolve_key_for_writing(self, key):
         raise NotImplementedError
 
 
@@ -278,7 +277,7 @@ class RODatabase(BaseDatabase):
 
 
     def has_handler(self, key):
-        key = self._resolve_key(key)
+        key = self.resolve_key(key)
 
         # Synchronize
         handler = self._sync_filesystem(key)
@@ -290,7 +289,7 @@ class RODatabase(BaseDatabase):
 
 
     def get_handler_names(self, key):
-        key = self._resolve_key(key)
+        key = self.resolve_key(key)
 
         if self.fs.exists(key):
             names = self.fs.get_names(key)
@@ -317,7 +316,7 @@ class RODatabase(BaseDatabase):
 
 
     def get_handler(self, key, cls=None):
-        key = self._resolve_key(key)
+        key = self.resolve_key(key)
 
         # Synchronize
         handler = self._sync_filesystem(key)
@@ -352,7 +351,7 @@ class RODatabase(BaseDatabase):
 
 
     def get_handlers(self, key):
-        base = self._resolve_key(key)
+        base = self.resolve_key(key)
         fs = self.fs
         for name in fs.get_names(base):
             key = fs.resolve2(base, name)
@@ -415,7 +414,7 @@ class RWDatabase(RODatabase):
         self.handlers_new2old = {}
 
 
-    def _resolve_key_for_writing(self, key):
+    def resolve_key_for_writing(self, key):
         """Resolves and returns the given key.
         """
         return self.fs.resolve_key(key)
@@ -430,7 +429,7 @@ class RWDatabase(RODatabase):
 
 
     def has_handler(self, key):
-        key = self._resolve_key(key)
+        key = self.resolve_key(key)
 
         # Check the state
         if key in self.handlers_new2old:
@@ -447,7 +446,7 @@ class RWDatabase(RODatabase):
         fs = self.fs
 
         # The State
-        base = self._resolve_key(key)
+        base = self.resolve_key(key)
         # Removed
         for key in self.handlers_old2new:
             name = fs.get_basename(key)
@@ -464,7 +463,7 @@ class RWDatabase(RODatabase):
 
 
     def get_handler(self, key, cls=None):
-        key = self._resolve_key(key)
+        key = self.resolve_key(key)
 
         # Check state
         if key in self.handlers_new2old:
@@ -493,13 +492,13 @@ class RWDatabase(RODatabase):
         if self.has_handler(key):
             raise RuntimeError, messages.MSG_URI_IS_BUSY % key
 
-        key = self._resolve_key_for_writing(key)
+        key = self.resolve_key_for_writing(key)
         self.push_handler(key, handler)
         self.handlers_new2old[key] = None
 
 
     def del_handler(self, key):
-        key = self._resolve_key_for_writing(key)
+        key = self.resolve_key_for_writing(key)
 
         # Check the handler has been added
         if key in self.handlers_new2old:
@@ -527,8 +526,8 @@ class RWDatabase(RODatabase):
 
 
     def copy_handler(self, source, target):
-        source = self._resolve_key(source)
-        target = self._resolve_key_for_writing(target)
+        source = self.resolve_key(source)
+        target = self.resolve_key_for_writing(target)
         if source == target:
             return
 
@@ -553,8 +552,8 @@ class RWDatabase(RODatabase):
 
     def move_handler(self, source, target):
         # TODO This method can be optimized further
-        source = self._resolve_key_for_writing(source)
-        target = self._resolve_key_for_writing(target)
+        source = self.resolve_key_for_writing(source)
+        target = self.resolve_key_for_writing(target)
         if source == target:
             return
 
@@ -590,7 +589,7 @@ class RWDatabase(RODatabase):
     #######################################################################
     # API / Safe VFS operations (not really safe)
     def safe_make_file(self, key):
-        key = self._resolve_key_for_writing(key)
+        key = self.resolve_key_for_writing(key)
 
         # Remove empty folder first
         fs = self.fs
@@ -605,12 +604,12 @@ class RWDatabase(RODatabase):
 
 
     def safe_remove(self, key):
-        key = self._resolve_key_for_writing(key)
+        key = self.resolve_key_for_writing(key)
         return self.fs.remove(key)
 
 
     def safe_open(self, key, mode=None):
-        key = self._resolve_key_for_writing(key)
+        key = self.resolve_key_for_writing(key)
         return self.fs.open(key, mode)
 
 
@@ -639,29 +638,55 @@ class RWDatabase(RODatabase):
         cache = self.cache
 
         sources = self.handlers_old2new.keys()
-        sources = sorted(sources, reverse=True)
-        for source in sources:
-            target = self.handlers_old2new[source]
-            # Case 1: removed
-            if target is None:
-                self.safe_remove(source)
-            # Case 2: changed
-            elif source == target:
-                # Save the handler's state
-                handler = cache[source]
-                handler.save_state()
-                # Update timestamp
-                handler.timestamp = self.fs.get_mtime(source)
-                handler.dirty = None
-            # Case 3: moved (TODO Optimize)
-            else:
-                self.safe_remove(source)
-                # Add
-                handler = cache[target]
-                handler.save_state_to(target)
-                # Update timestamp
-                handler.timestamp = self.fs.get_mtime(target)
-                handler.dirty = None
+        sources.sort(reverse=True)
+        while True:
+            something = False
+            retry = []
+            for source in sources:
+                target = self.handlers_old2new[source]
+                # Case 1: removed
+                if target is None:
+                    self.safe_remove(source)
+                    something = True
+                # Case 2: changed
+                elif source == target:
+                    # Save the handler's state
+                    handler = cache[source]
+                    handler.save_state()
+                    # Update timestamp
+                    handler.timestamp = self.fs.get_mtime(source)
+                    handler.dirty = None
+                    something = True
+                # Case 3: moved (TODO Optimize)
+                else:
+                    handler = cache[target]
+                    try:
+                        # Only save_state_to can raise an OSError
+                        # So we try to save the handler before remove it.
+                        # Add
+                        handler.save_state_to(target)
+                    except OSError:
+                        retry.append(source)
+                    else:
+                        # Remove
+                        self.safe_remove(source)
+                        # Update timestamp
+                        handler.timestamp = self.fs.get_mtime(target)
+                        handler.dirty = None
+                        something = True
+
+            # Case 1: done
+            if not retry:
+                break
+
+            # Case 2: Try again
+            if something:
+                sources = retry
+                continue
+
+            # Error
+            error = 'unable to complete _save_changes'
+            raise RuntimeError, error
 
         # Case 4: added
         for target, source in self.handlers_new2old.iteritems():
@@ -693,7 +718,7 @@ class ROGitDatabase(RODatabase):
         self.path = path
 
 
-    def _resolve_key(self, path):
+    def resolve_key(self, path):
         return self.fs.get_absolute_path(path)
 
 
@@ -766,7 +791,7 @@ class GitDatabase(RWDatabase, ROGitDatabase):
         ROGitDatabase.__init__(self, path, size_min, size_max)
 
 
-    def _resolve_key_for_writing(self, path):
+    def resolve_key_for_writing(self, path):
         """Check whether the given path is within the git path.  If it
         is, return the absolute path.
         """
@@ -822,17 +847,20 @@ class GitDatabase(RWDatabase, ROGitDatabase):
         names = set(names)
 
         # The State
-        base = self._resolve_key(key)
+        base = self.resolve_key(key) + '/'
+        n = len(base)
         # Removed
         for key in self.handlers_old2new:
-            name = basename(key)
-            if join(base, name) == key:
-                names.discard(name)
+            if key[:n] == base:
+                name = key[n:]
+                if '/' not in name:
+                    names.discard(name)
         # Added
         for key in self.handlers_new2old:
-            name = basename(key)
-            if join(base, name) == key:
-                names.add(name)
+            if key[:n] == base:
+                name = key[n:]
+                if '/' not in name:
+                    names.add(name)
 
         # Ok
         return list(names)

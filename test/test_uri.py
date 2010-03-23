@@ -20,9 +20,9 @@
 from unittest import TestCase, main
 
 # Import from itools
-from itools.uri import get_reference, Path, Reference
+from itools.uri import get_reference, normalize_path, Path, Reference
 from itools.uri.parsing import uri_parser, parse_uri
-from itools.uri.generic import normalize_path, GenericDataType
+from itools.uri.generic import GenericDataType
 from itools.uri.mailto import Mailto, MailtoDataType
 
 

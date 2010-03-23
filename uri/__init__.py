@@ -21,6 +21,7 @@ Identifiers) as specified by RFC2396.
 # Import from itools
 import mailto
 from generic import Path, Reference, decode_query, encode_query
+from generic import normalize_path
 from uri import get_reference, get_uri_name, get_uri_path
 from uri import resolve_uri, resolve_uri2, resolve_name
 from uri import get_host_from_authority
@@ -35,6 +36,7 @@ __all__ = [
     'encode_query',
     'register_scheme',
     'get_scheme',
+    'normalize_path',
     # New functional API
     'get_reference',
     'resolve_uri',

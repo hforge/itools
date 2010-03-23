@@ -362,7 +362,7 @@ class GitDatabaseTestCase(TestCase):
     def setUp(self):
         database = make_git_database('fables', 20, 20)
         self.database = database
-        root = database.get_handler('fables')
+        root = database.get_handler('.')
         self.root = root
 
 

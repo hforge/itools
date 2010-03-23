@@ -209,41 +209,20 @@ class File(Handler):
 
 
     def set_changed(self):
+        key = self.key
+
         # Invalid handler
-        if self.key is None and self.dirty is None:
+        if key is None and self.dirty is None:
             raise RuntimeError, 'cannot change an orphaned file handler'
 
         # Free handler (not attached to a database)
-        if self.database is None:
-            self.dirty = datetime.now()
-            return
-
-        # Phantoms
         database = self.database
-        if database.is_phantom(self):
-            database.cache[self.key] = self
-            database.handlers_new2old[self.key] = None
+        if database is None:
+            self.dirty = datetime.now()
             return
 
-        # Check nothing weird happened
-        if self.key is None or database.cache.get(self.key) is not self:
-            raise RuntimeError, 'database inconsistency!'
-
-        # Update database state
-        if self.timestamp:
-            # Case 1: loaded
-            self.dirty = datetime.now()
-            database.handlers_new2old[self.key] = self.key
-            database.handlers_old2new[self.key] = self.key
-        elif self.dirty:
-            # Case 2: new or move
-            pass
-        else:
-            # Case 3: not loaded (yet)
-            self.load_state()
-            self.dirty = datetime.now()
-            database.handlers_new2old[self.key] = self.key
-            database.handlers_old2new[self.key] = self.key
+        # Attached
+        database.touch_handler(key, self)
 
 
     def _clean_state(self):

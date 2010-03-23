@@ -26,6 +26,7 @@ from sys import getrefcount
 # Import from itools
 from itools.core import LRUCache, send_subprocess, freeze
 from itools.fs import vfs, lfs, READ, WRITE, READ_WRITE, APPEND
+from itools.uri import normalize_path, Path
 from folder import Folder
 import messages
 from registry import get_handler_class_by_mimetype
@@ -73,7 +74,7 @@ class BaseDatabase(object):
 
     def _cleanup(self):
         """For maintenance operations, this method is automatically called
-        after a transaction is commited or aborted.
+        after a transaction is committed or aborted.
         """
 
 
@@ -87,6 +88,23 @@ class BaseDatabase(object):
 
     #######################################################################
     # Public API
+
+    ################
+    # Handlers'API
+
+    # XXX Move here the functions move_handler, ...
+    #     with a NotImplementedError
+
+    def touch_handler(self, key, handler=None):
+        """Report a modification of the key/handler to the database.
+           We must pass the handler because of phantoms.
+        """
+        raise NotImplementedError
+
+
+    ################
+    # Commit / Abort
+
     def save_changes(self):
         if self._has_changed() is False:
             return
@@ -146,7 +164,7 @@ class RODatabase(BaseDatabase):
 
     def _sync_filesystem(self, key):
         """This method checks the state of the key in the cache against the
-        filesystem.  Synchronizes the state if needed by discarding the
+        filesystem. Synchronizes the state if needed by discarding the
         handler, or raises an error if there is a conflict.
 
         Returns the handler for the given key if it is still in the cache
@@ -237,9 +255,9 @@ class RODatabase(BaseDatabase):
     def make_room(self):
         """Remove handlers from the cache until it fits the defined size.
 
-        Use with caution.  If the handlers we are about to discard are still
-        used outside the database, and one of them (or more) are modified,
-        then there will be an error.
+        Use with caution. If the handlers we are about to discard are still
+        used outside the database, and one of them (or more) are modified, then
+        there will be an error.
         """
         # Find out how many handlers should be removed
         size = len(self.cache)
@@ -525,6 +543,38 @@ class RWDatabase(RODatabase):
         self.handlers_old2new[key] = None
 
 
+    def touch_handler(self, key, handler=None):
+        key = self.resolve_key(key)
+        if handler is None:
+            handler = self.get_handler(key)
+
+        # Phantoms
+        if self.is_phantom(handler):
+            self.cache[key] = handler
+            self.handlers_new2old[key] = None
+            return
+
+        # Check nothing weird happened
+        if self.cache.get(key) is not handler:
+            raise RuntimeError, 'database inconsistency!'
+
+        # Update database state
+        if handler.timestamp:
+            # Case 1: loaded
+            handler.dirty = datetime.now()
+            self.handlers_new2old[key] = key
+            self.handlers_old2new[key] = key
+        elif handler.dirty:
+            # Case 2: new
+            self.handlers_new2old[key] = None
+        else:
+            # Case 3: not loaded (yet)
+            handler.load_state()
+            handler.dirty = datetime.now()
+            self.handlers_new2old[key] = key
+            self.handlers_old2new[key] = key
+
+
     def copy_handler(self, source, target):
         source = self.resolve_key(source)
         target = self.resolve_key_for_writing(target)
@@ -708,18 +758,30 @@ class RWDatabase(RODatabase):
 class ROGitDatabase(RODatabase):
 
     def __init__(self, path, size_min=4800, size_max=5200):
-        # Restrict to local fs
-        RODatabase.__init__(self, size_min, size_max, fs=lfs)
-        path = self.fs.get_absolute_path(path)
-        if not self.fs.exists(path):
-            raise ValueError, 'unexpected "%s" path' % path
-        if path[-1] != '/':
-            path += '/'
-        self.path = path
+        # Restrict to git repository
+        fs = lfs.open(path)
+        RODatabase.__init__(self, size_min, size_max, fs=fs)
 
 
     def resolve_key(self, path):
-        return self.fs.get_absolute_path(path)
+        # Performance is critical so assume the path is already relative to
+        # the repository.
+
+        # Case 1: Path
+        if type(path) is Path:
+            if path.startswith_slash or path and path[0] in ('..', '.git'):
+                raise ValueError, 'unexpected "%s" path' % path
+            if path.endswith_slash:
+                return str(path)[:-1]
+            return str(path)
+
+        # Case 2: str
+        path = normalize_path(path)
+        if path in ('..', '.git') or path.startswith(('/', '../', '.git/')):
+            raise ValueError, 'unexpected "%s" path' % path
+        if path and path[-1] == '/':
+            return path[:-1]
+        return path
 
 
     def get_diff(self, revision):
@@ -736,7 +798,7 @@ class ROGitDatabase(RODatabase):
 
 
     def get_files_affected(self, revisions):
-        """Get the unordered set of files affected by a  list of revisions.
+        """Get the unordered set of files affected by a list of revisions.
         """
         cmd = ['git', 'show', '--numstat', '--pretty=format:'] + revisions
         data = send_subprocess(cmd)
@@ -777,7 +839,7 @@ class ROGitDatabase(RODatabase):
 
     def get_blob(self, revision, path):
         """Get the file contents located at the given path after the given
-        commit revision has been commited.
+        commit revision has been committed.
         """
         cmd = ['git', 'show', '%s:%s' % (revision, path)]
         return send_subprocess(cmd)
@@ -791,19 +853,7 @@ class GitDatabase(RWDatabase, ROGitDatabase):
         ROGitDatabase.__init__(self, path, size_min, size_max)
 
 
-    def resolve_key_for_writing(self, path):
-        """Check whether the given path is within the git path.  If it
-        is, return the absolute path.
-        """
-        # Resolve the path
-        path = self.fs.get_absolute_path(path)
-        # Security check
-        if not path.startswith(self.path):
-            raise ValueError, 'unexpected "%s" path' % path
-        if path.startswith('%s.git' % self.path):
-            raise ValueError, 'unexpected "%s" path' % path
-        # Ok
-        return path
+    resolve_key_for_writing = ROGitDatabase.resolve_key
 
 
     def _rollback(self):

@@ -29,7 +29,7 @@ class LRUCache(OrderedDict):
     The LRUCache is a mapping from key to value, it is implemented as a dict
     with some differences:
 
-    - The elemens within the cache are ordered by the access time, starting
+    - The elements within the cache are ordered by the access time, starting
       from the least-recently used value.  All iteration methods ('items',
       'iteritems', 'keys', etc.) return the objects sorted by this criteria,
       and so does 'popitem' too.
@@ -45,8 +45,8 @@ class LRUCache(OrderedDict):
       the least-recently used values from the cache will be removed, until its
       size reaches the defined minimum.
 
-      This happens unless the 'automatic' parameter is set to 'False'.  Then
-      it will be the responsability of external code to explicitly remove the
+      This happens unless the 'automatic' parameter is set to 'False'. Then
+      it will be the responsibility of external code to explicitly remove the
       least-recently used values.
 
     Some of the dict methods have been de-activated on purpose: 'copy',

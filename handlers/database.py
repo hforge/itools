@@ -88,6 +88,23 @@ class BaseDatabase(object):
 
     #######################################################################
     # Public API
+
+    ################
+    # Handlers'API
+
+    # XXX Move here the functions move_handler, ...
+    #     with a NotImplementedError
+
+    def touch_handler(self, key, handler=None):
+        """Report a modification of the key/handler to the database.
+           We must pass the handler because of phantoms.
+        """
+        raise NotImplementedError
+
+
+    ################
+    # Commit / Abort
+
     def save_changes(self):
         if self._has_changed() is False:
             return
@@ -524,6 +541,38 @@ class RWDatabase(RODatabase):
 
         # Mark for removal
         self.handlers_old2new[key] = None
+
+
+    def touch_handler(self, key, handler=None):
+        key = self.resolve_key(key)
+        if handler is None:
+            handler = self.get_handler(key)
+
+        # Phantoms
+        if self.is_phantom(handler):
+            self.cache[key] = handler
+            self.handlers_new2old[key] = None
+            return
+
+        # Check nothing weird happened
+        if self.cache.get(key) is not handler:
+            raise RuntimeError, 'database inconsistency!'
+
+        # Update database state
+        if handler.timestamp:
+            # Case 1: loaded
+            handler.dirty = datetime.now()
+            self.handlers_new2old[key] = key
+            self.handlers_old2new[key] = key
+        elif handler.dirty:
+            # Case 2: new
+            self.handlers_new2old[key] = None
+        else:
+            # Case 3: not loaded (yet)
+            handler.load_state()
+            handler.dirty = datetime.now()
+            self.handlers_new2old[key] = key
+            self.handlers_old2new[key] = key
 
 
     def copy_handler(self, source, target):

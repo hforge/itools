@@ -839,7 +839,7 @@ class GitDatabase(RWDatabase, ROGitDatabase):
 
 
     def _rollback(self):
-        send_subprocess(['git', 'checkout', '-f'])
+        send_subprocess(['git', 'reset', '--hard', '-q'])
         send_subprocess(['git', 'clean', '-fxdq'])
 
 

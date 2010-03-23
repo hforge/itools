@@ -781,7 +781,7 @@ class ROGitDatabase(RODatabase):
 
     def get_diff(self, revision):
         cmd = ['git', 'show', revision, '--pretty=format:%an%n%at%n%s']
-        data = send_subprocess(cmd)
+        data = send_subprocess(cmd, path=self.path)
         lines = data.splitlines()
 
         ts = int(lines[1])
@@ -796,7 +796,7 @@ class ROGitDatabase(RODatabase):
         """Get the unordered set of files affected by a list of revisions.
         """
         cmd = ['git', 'show', '--numstat', '--pretty=format:'] + revisions
-        data = send_subprocess(cmd)
+        data = send_subprocess(cmd, path=self.path)
         lines = data.splitlines()
         files = set()
         for line in lines:
@@ -816,7 +816,7 @@ class ROGitDatabase(RODatabase):
         if paths:
             cmd.append('--')
             cmd.extend(paths)
-        return send_subprocess(cmd)
+        return send_subprocess(cmd, path=self.path)
 
 
     def get_diff_between(self, from_, to='HEAD', paths=[]):
@@ -829,7 +829,7 @@ class ROGitDatabase(RODatabase):
         if paths:
             cmd.append('--')
             cmd.extend(paths)
-        return send_subprocess(cmd)
+        return send_subprocess(cmd, path=self.path)
 
 
     def get_blob(self, revision, path):
@@ -837,7 +837,7 @@ class ROGitDatabase(RODatabase):
         commit revision has been committed.
         """
         cmd = ['git', 'show', '%s:%s' % (revision, path)]
-        return send_subprocess(cmd)
+        return send_subprocess(cmd, path=self.path)
 
 
 
@@ -1098,13 +1098,15 @@ class GitDatabase(ROGitDatabase):
 
 
     def _rollback(self):
-        send_subprocess(['git', 'reset', '--hard', '-q'])
-        send_subprocess(['git', 'clean', '-fxdq'])
+        path = self.path
+        send_subprocess(['git', 'reset', '--hard', '-q'], path=path)
+        send_subprocess(['git', 'clean', '-fxdq'], path=path)
 
 
     def _save_changes(self, data):
         cache = self.cache
         fs = self.fs
+        path = self.path
 
         # Figure out the files to add
         git_files = [ x for x in self.handlers_new2old ]
@@ -1151,7 +1153,7 @@ class GitDatabase(ROGitDatabase):
         # Add
         git_files = [ x for x in git_files if fs.exists(x) ]
         if git_files:
-            send_subprocess(['git', 'add'] + git_files)
+            send_subprocess(['git', 'add'] + git_files, path=path)
 
         # Commit
         command = ['git', 'commit', '-aq']
@@ -1161,7 +1163,7 @@ class GitDatabase(ROGitDatabase):
             git_author, git_message = data
             command.extend(['--author=%s' % git_author, '-m', git_message])
         try:
-            send_subprocess(command)
+            send_subprocess(command, path=path)
         except CalledProcessError, excp:
             # Avoid an exception for the 'nothing to commit' case
             # FIXME Not reliable, we may catch other cases
@@ -1204,18 +1206,22 @@ def make_git_database(path, size_min, size_max):
     initialized and the content of the folder will be added to it in a first
     commit.
     """
+    path = lfs.get_absolute_path(path)
     if not lfs.exists(path):
-        mkdir(path)
+        lfs.make_folder(path)
+
     # Init
-    command = ['git', 'init', '-q']
-    call(command, cwd=path, stdout=PIPE)
+    send_subprocess(['git', 'init', '-q'], path=path)
+
     # Add
-    command = ['git', 'add', '.']
-    error = call(command, cwd=path, stdout=PIPE, stderr=PIPE)
-    # Commit
-    if error == 0:
-        command = ['git', 'commit', '-q', '-m', 'Initial commit']
-        call(command, cwd=path, stdout=PIPE)
+    send_subprocess(['git', 'add', '.'], path=path)
+
+    # Commit or not ?
+    try:
+        send_subprocess(['git', 'commit', '-q', '-m', 'Initial commit'],
+                        path=path)
+    except CalledProcessError:
+        pass
 
     # Ok
     return GitDatabase(path, size_min, size_max)

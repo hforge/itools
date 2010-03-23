@@ -831,11 +831,260 @@ class ROGitDatabase(RODatabase):
 
 
 
-class GitDatabase(RWDatabase, ROGitDatabase):
+class GitDatabase(ROGitDatabase):
 
     def __init__(self, path, size_min, size_max):
-        RWDatabase.__init__(self, size_min, size_max)
         ROGitDatabase.__init__(self, path, size_min, size_max)
+
+        # The state, for transactions
+        self.handlers_old2new = {}
+        self.handlers_new2old = {}
+
+
+    def is_phantom(self, handler):
+        # Phantom handlers are "new"
+        if handler.timestamp or not handler.dirty:
+            return False
+        # They are attached to this database, but they are not in the cache
+        return handler.database is self and handler.key not in self.cache
+
+
+    def has_handler(self, key):
+        key = self.resolve_key(key)
+
+        # Check the state
+        if key in self.handlers_new2old:
+            return True
+        if key in self.handlers_old2new:
+            return False
+
+        return RODatabase.has_handler(self, key)
+
+
+    def get_handler_names(self, key):
+        names = RODatabase.get_handler_names(self, key)
+        names = set(names)
+        fs = self.fs
+
+        # The State
+        base = self.resolve_key(key)
+        # Removed
+        for key in self.handlers_old2new:
+            name = fs.get_basename(key)
+            if fs.resolve2(base, name) == key:
+                names.discard(name)
+        # Added
+        for key in self.handlers_new2old:
+            name = fs.get_basename(key)
+            if fs.resolve2(base, name) == key:
+                names.add(name)
+
+        # Ok
+        return list(names)
+
+
+    def get_handler(self, key, cls=None):
+        key = self.resolve_key(key)
+
+        # Check state
+        if key in self.handlers_new2old:
+            handler = self.cache[key]
+            # cls is good?
+            if cls is not None and not isinstance(handler, cls):
+                raise LookupError, ('conflict with a handler of type "%s"' %
+                                     handler.__class__)
+            return handler
+
+        if key in self.handlers_old2new:
+            raise LookupError, 'the resource "%s" does not exist' % key
+
+        # Ok
+        return RODatabase.get_handler(self, key, cls=cls)
+
+
+    def set_handler(self, key, handler):
+        if isinstance(handler, Folder):
+            raise ValueError, 'unexpected folder (only files can be "set")'
+
+        if handler.key is not None:
+            raise ValueError, ('only new files can be added, '
+                               'try to clone first')
+
+        if self.has_handler(key):
+            raise RuntimeError, messages.MSG_URI_IS_BUSY % key
+
+        key = self.resolve_key_for_writing(key)
+        self.push_handler(key, handler)
+        self.handlers_new2old[key] = None
+
+
+    def del_handler(self, key):
+        key = self.resolve_key_for_writing(key)
+
+        # Check the handler has been added
+        if key in self.handlers_new2old:
+            self._discard_handler(key)
+            key = self.handlers_new2old.pop(key)
+            if key:
+                self.handlers_old2new[key] = None
+            return
+
+        # Check the handler has been removed
+        if key in self.handlers_old2new:
+            raise LookupError, 'resource already removed'
+
+        # Synchronize
+        handler = self._sync_filesystem(key)
+        if not self.fs.exists(key):
+            raise LookupError, 'resource does not exist'
+
+        # Clean the cache
+        if key in self.cache:
+            self._discard_handler(key)
+
+        # Mark for removal
+        self.handlers_old2new[key] = None
+
+
+    def touch_handler(self, key, handler=None):
+        key = self.resolve_key(key)
+        if handler is None:
+            handler = self.get_handler(key)
+
+        # Phantoms
+        if self.is_phantom(handler):
+            self.cache[key] = handler
+            self.handlers_new2old[key] = None
+            return
+
+        # Check nothing weird happened
+        if self.cache.get(key) is not handler:
+            raise RuntimeError, 'database inconsistency!'
+
+        # Update database state
+        if handler.timestamp:
+            # Case 1: loaded
+            handler.dirty = datetime.now()
+            self.handlers_new2old[key] = key
+            self.handlers_old2new[key] = key
+        elif handler.dirty:
+            # Case 2: new
+            self.handlers_new2old[key] = None
+        else:
+            # Case 3: not loaded (yet)
+            handler.load_state()
+            handler.dirty = datetime.now()
+            self.handlers_new2old[key] = key
+            self.handlers_old2new[key] = key
+
+
+    def copy_handler(self, source, target):
+        source = self.resolve_key(source)
+        target = self.resolve_key_for_writing(target)
+        if source == target:
+            return
+
+        # Check the target is free
+        if self.has_handler(target):
+            raise RuntimeError, messages.MSG_URI_IS_BUSY % target
+
+        handler = self.get_handler(source)
+        if isinstance(handler, Folder):
+            # Folder
+            fs = self.fs
+            for name in handler.get_handler_names():
+                self.copy_handler(fs.resolve2(source, name),
+                                  fs.resolve2(target, name))
+        else:
+            # File
+            handler = handler.clone()
+            # Update the state
+            self.push_handler(target, handler)
+            self.handlers_new2old[target] = None
+
+
+    def move_handler(self, source, target):
+        # TODO This method can be optimized further
+        source = self.resolve_key_for_writing(source)
+        target = self.resolve_key_for_writing(target)
+        if source == target:
+            return
+
+        # Check the target is free
+        if self.has_handler(target):
+            raise RuntimeError, messages.MSG_URI_IS_BUSY % target
+
+        handler = self.get_handler(source)
+        if isinstance(handler, Folder):
+            # Folder
+            fs = self.fs
+            for name in handler.get_handler_names():
+                self.move_handler(fs.resolve2(source, name),
+                                  fs.resolve2(target, name))
+            # Update double dict
+            self.handlers_old2new[source] = None
+        else:
+            # Load if needed
+            if handler.timestamp is None and handler.dirty is None:
+                handler.load_state()
+            # File
+            handler = self.cache.pop(source)
+            self.push_handler(target, handler)
+            handler.timestamp = None
+            handler.dirty = datetime.now()
+            # Update double dict
+            source = self.handlers_new2old.pop(source, source)
+            if source:
+                self.handlers_old2new[source] = target
+            self.handlers_new2old[target] = source
+
+
+    #######################################################################
+    # API / Safe VFS operations (not really safe)
+    def safe_make_file(self, key):
+        key = self.resolve_key_for_writing(key)
+
+        # Remove empty folder first
+        fs = self.fs
+        if fs.is_folder(key):
+            for x in fs.traverse(key):
+                if fs.is_file(x):
+                    break
+            else:
+                fs.remove(key)
+
+        return fs.make_file(key)
+
+
+    def safe_remove(self, key):
+        key = self.resolve_key_for_writing(key)
+        return self.fs.remove(key)
+
+
+    def safe_open(self, key, mode=None):
+        key = self.resolve_key_for_writing(key)
+        return self.fs.open(key, mode)
+
+
+    #######################################################################
+    # API / Transactions
+    def _has_changed(self):
+        return bool(self.handlers_old2new) or bool(self.handlers_new2old)
+
+
+    def _abort_changes(self):
+        cache = self.cache
+        for target, source in self.handlers_new2old.iteritems():
+            # Case 1: changed
+            if source == target:
+                cache[target].abort_changes()
+            # Case 2: added or moved
+            else:
+                self._discard_handler(target)
+
+        # Reset state
+        self.handlers_old2new.clear()
+        self.handlers_new2old.clear()
 
 
     def _rollback(self):
@@ -844,14 +1093,52 @@ class GitDatabase(RWDatabase, ROGitDatabase):
 
 
     def _save_changes(self, data):
+        cache = self.cache
+        fs = self.fs
+
         # Figure out the files to add
         git_files = [ x for x in self.handlers_new2old ]
 
-        # Save
-        RWDatabase._save_changes(self, data)
+        # Update handlers_old2new and / handlers_new2old
+        sources = self.handlers_old2new.keys()
+        sources = sorted(sources, reverse=True)
+        for source in sources:
+            target = self.handlers_old2new[source]
+            # Case 1: removed
+            if target is None:
+                self.safe_remove(source)
+            # Case 2: changed
+            elif source == target:
+                # Save the handler's state
+                handler = cache[source]
+                handler.save_state()
+                # Update timestamp
+                handler.timestamp = fs.get_mtime(source)
+                handler.dirty = None
+            # Case 3: moved (TODO Optimize)
+            else:
+                self.safe_remove(source)
+                # Add
+                handler = cache[target]
+                handler.save_state_to(target)
+                # Update timestamp
+                handler.timestamp = fs.get_mtime(target)
+                handler.dirty = None
+
+        # Case 4: added
+        for target, source in self.handlers_new2old.iteritems():
+            if source is None:
+                handler = cache[target]
+                handler.save_state_to(target)
+                # Update timestamp
+                handler.timestamp = fs.get_mtime(target)
+                handler.dirty = None
+
+        # And reset their states
+        self.handlers_old2new.clear()
+        self.handlers_new2old.clear()
 
         # Add
-        fs = self.fs
         git_files = [ x for x in git_files if fs.exists(x) ]
         if git_files:
             send_subprocess(['git', 'add'] + git_files)

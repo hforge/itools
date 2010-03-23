@@ -753,9 +753,19 @@ class RWDatabase(RODatabase):
 class ROGitDatabase(RODatabase):
 
     def __init__(self, path, size_min=4800, size_max=5200):
-        # Restrict to git repository
+        # Initialize a local fs relative to "path"
+        path = lfs.get_absolute_path(path)
+        if not lfs.exists(path) or not lfs.is_folder(path):
+            raise ValueError, 'unexpected "%s" path' % path
         fs = lfs.open(path)
+
+        # Call the mother's __init__
         RODatabase.__init__(self, size_min, size_max, fs=fs)
+
+        # Save the path
+        if path[-1] != '/':
+            path += '/'
+        self.path = path
 
 
     def resolve_key(self, path, __root=Path('/')):

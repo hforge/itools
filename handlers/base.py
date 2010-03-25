@@ -74,7 +74,7 @@ class Handler(object):
         if database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
-        key = database.fs.resolve2(self.key, reference)
+        key = database.resolve2(self.key, reference)
         return database.has_handler(key)
 
 
@@ -83,7 +83,7 @@ class Handler(object):
         if database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
-        key = database.fs.resolve2(self.key, reference)
+        key = database.resolve2(self.key, reference)
         return database.get_handler_names(key)
 
 
@@ -92,7 +92,7 @@ class Handler(object):
         if database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
-        key = database.fs.resolve2(self.key, reference)
+        key = database.resolve2(self.key, reference)
         return database.get_handler(key, cls=cls)
 
 
@@ -101,7 +101,7 @@ class Handler(object):
         if database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
-        key = database.fs.resolve2(self.key, reference)
+        key = database.resolve2(self.key, reference)
         return database.get_handlers(key)
 
 
@@ -110,7 +110,7 @@ class Handler(object):
         if database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
-        key = database.fs.resolve2(self.key, reference)
+        key = database.resolve2(self.key, reference)
         database.set_handler(key, handler)
 
 
@@ -119,7 +119,7 @@ class Handler(object):
         if database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
-        key = database.fs.resolve2(self.key, reference)
+        key = database.resolve2(self.key, reference)
         database.del_handler(key)
 
 
@@ -128,8 +128,8 @@ class Handler(object):
         if database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
-        source = database.fs.resolve2(self.key, source)
-        target = database.fs.resolve2(self.key, target)
+        source = database.resolve2(self.key, source)
+        target = database.resolve2(self.key, target)
         database.copy_handler(source, target)
 
 
@@ -138,8 +138,8 @@ class Handler(object):
         if database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
-        source = database.fs.resolve2(self.key, source)
-        target = database.fs.resolve2(self.key, target)
+        source = database.resolve2(self.key, source)
+        target = database.resolve2(self.key, target)
         database.move_handler(source, target)
 
 

@@ -162,6 +162,10 @@ class RODatabase(BaseDatabase):
         raise NotImplementedError
 
 
+    def resolve2(self, base, path):
+        return self.fs.resolve2(base, path)
+
+
     def _sync_filesystem(self, key):
         """This method checks the state of the key in the cache against the
         filesystem. Synchronizes the state if needed by discarding the
@@ -782,6 +786,17 @@ class ROGitDatabase(RODatabase):
         if path and path[-1] == '/':
             return path[:-1]
         return path
+
+
+    def resolve2(self, base, path):
+        # Absolute path are resolved as a path relative to the repository
+        if type(path) is Path:
+            path = str(path)
+
+        if path and path[0] == '/':
+            return path[1:]
+
+        return self.fs.resolve2(base, path)
 
 
     def get_diff(self, revision):

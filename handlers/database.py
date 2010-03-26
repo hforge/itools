@@ -26,7 +26,7 @@ from sys import getrefcount
 # Import from itools
 from itools.core import LRUCache, send_subprocess, freeze
 from itools.fs import vfs, lfs, READ, WRITE, READ_WRITE, APPEND
-from itools.uri import normalize_path, Path
+from itools.uri import Path
 from folder import Folder
 import messages
 from registry import get_handler_class_by_mimetype
@@ -770,22 +770,12 @@ class ROGitDatabase(RODatabase):
     def resolve_key(self, path):
         # Performance is critical so assume the path is already relative to
         # the repository.
+        key = Path('/').resolve(path)
+        if key and key[0] == '.git':
+            err = "bad '%s' path, access to the '.git' folder is denied"
+            raise ValueError, err % path
 
-        # Case 1: Path
-        if type(path) is Path:
-            if path.startswith_slash or path and path[0] in ('..', '.git'):
-                raise ValueError, 'unexpected "%s" path' % path
-            if path.endswith_slash:
-                return str(path)[:-1]
-            return str(path)
-
-        # Case 2: str
-        path = normalize_path(path)
-        if path in ('..', '.git') or path.startswith(('/', '../', '.git/')):
-            raise ValueError, 'unexpected "%s" path' % path
-        if path and path[-1] == '/':
-            return path[:-1]
-        return path
+        return '/'.join(key)
 
 
     def resolve2(self, base, path):

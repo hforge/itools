@@ -69,6 +69,8 @@ class FolderTestCase(TestCase):
         for name in 'toto.txt', 'fofo.txt', 'fofo2.txt', 'empty':
             if folder.exists(name):
                 folder.remove(name)
+        if lfs.exists("test_dir"):
+            lfs.remove("test_dir")
 
 
     def test_remove(self):
@@ -132,6 +134,21 @@ class FolderTestCase(TestCase):
         # Save
         database.save_changes()
         self.assertEqual(lfs.exists('tests/toto.txt'), True)
+
+
+    def test_remove_folder(self):
+        database = self.database
+
+        # Add a new file
+        new_file = TextFile(data=u'Hello world\n')
+        database.set_handler('test_dir/hello.txt', new_file)
+
+        # Suppress the directory
+        database.del_handler('test_dir')
+
+        # Try to get the file
+        self.assertRaises(LookupError, database.get_handler,
+                          'test_dir/hello.txt')
 
 
     def test_add_abort(self):

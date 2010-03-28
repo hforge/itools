@@ -560,8 +560,8 @@ class RWDatabase(RODatabase):
             self.handlers_new2old[key] = key
             self.handlers_old2new[key] = key
         elif handler.dirty:
-            # Case 2: new
-            self.handlers_new2old[key] = None
+            # Case 2: new or moved
+            pass
         else:
             # Case 3: not loaded (yet)
             handler.load_state()

@@ -158,10 +158,6 @@ class RODatabase(BaseDatabase):
         return self.fs.resolve_key(key)
 
 
-    def resolve_key_for_writing(self, key):
-        raise NotImplementedError
-
-
     def _sync_filesystem(self, key):
         """This method checks the state of the key in the cache against the
         filesystem. Synchronizes the state if needed by discarding the
@@ -432,12 +428,6 @@ class RWDatabase(RODatabase):
         self.handlers_new2old = {}
 
 
-    def resolve_key_for_writing(self, key):
-        """Resolves and returns the given key.
-        """
-        return self.fs.resolve_key(key)
-
-
     def is_phantom(self, handler):
         # Phantom handlers are "new"
         if handler.timestamp or not handler.dirty:
@@ -510,13 +500,13 @@ class RWDatabase(RODatabase):
         if self.has_handler(key):
             raise RuntimeError, messages.MSG_URI_IS_BUSY % key
 
-        key = self.resolve_key_for_writing(key)
+        key = self.resolve_key(key)
         self.push_handler(key, handler)
         self.handlers_new2old[key] = None
 
 
     def del_handler(self, key):
-        key = self.resolve_key_for_writing(key)
+        key = self.resolve_key(key)
 
         # Check the handler has been added
         if key in self.handlers_new2old:
@@ -577,7 +567,7 @@ class RWDatabase(RODatabase):
 
     def copy_handler(self, source, target):
         source = self.resolve_key(source)
-        target = self.resolve_key_for_writing(target)
+        target = self.resolve_key(target)
         if source == target:
             return
 
@@ -602,8 +592,8 @@ class RWDatabase(RODatabase):
 
     def move_handler(self, source, target):
         # TODO This method can be optimized further
-        source = self.resolve_key_for_writing(source)
-        target = self.resolve_key_for_writing(target)
+        source = self.resolve_key(source)
+        target = self.resolve_key(target)
         if source == target:
             return
 
@@ -639,7 +629,7 @@ class RWDatabase(RODatabase):
     #######################################################################
     # API / Safe VFS operations (not really safe)
     def safe_make_file(self, key):
-        key = self.resolve_key_for_writing(key)
+        key = self.resolve_key(key)
 
         # Remove empty folder first
         fs = self.fs
@@ -654,12 +644,12 @@ class RWDatabase(RODatabase):
 
 
     def safe_remove(self, key):
-        key = self.resolve_key_for_writing(key)
+        key = self.resolve_key(key)
         return self.fs.remove(key)
 
 
     def safe_open(self, key, mode=None):
-        key = self.resolve_key_for_writing(key)
+        key = self.resolve_key(key)
         return self.fs.open(key, mode)
 
 
@@ -841,9 +831,6 @@ class GitDatabase(RWDatabase, ROGitDatabase):
     def __init__(self, path, size_min, size_max):
         RWDatabase.__init__(self, size_min, size_max)
         ROGitDatabase.__init__(self, path, size_min, size_max)
-
-
-    resolve_key_for_writing = ROGitDatabase.resolve_key
 
 
     def _rollback(self):

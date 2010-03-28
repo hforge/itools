@@ -509,11 +509,16 @@ class RWDatabase(RODatabase):
         key = self.resolve_key(key)
 
         # Check the handler has been added
-        if key in self.handlers_new2old:
-            self._discard_handler(key)
-            key = self.handlers_new2old.pop(key)
-            if key:
-                self.handlers_old2new[key] = None
+        hit = False
+        n = len(key)
+        for k in self.handlers_new2old.keys():
+            if k.startswith(key) and (len(k) == n or k[n] == '/'):
+                hit = True
+                self._discard_handler(k)
+                k = self.handlers_new2old.pop(k)
+                if k:
+                    self.handlers_old2new[k] = None
+        if hit:
             return
 
         # Check the handler has been removed

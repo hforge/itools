@@ -156,7 +156,7 @@ class GenericDataType2(object):
 
     @staticmethod
     def decode(data):
-        if isinstance(data, Path):
+        if type(data) is Path:
             return Reference('', '', data, {}, None)
 
         if not isinstance(data, (str, unicode)):

@@ -758,10 +758,10 @@ class ROGitDatabase(RODatabase):
         RODatabase.__init__(self, size_min, size_max, fs=fs)
 
 
-    def resolve_key(self, path):
+    def resolve_key(self, path, __root=Path('/')):
         # Performance is critical so assume the path is already relative to
         # the repository.
-        key = Path('/').resolve(path)
+        key = __root.resolve(path)
         if key and key[0] == '.git':
             err = "bad '%s' path, access to the '.git' folder is denied"
             raise ValueError, err % path
@@ -839,7 +839,7 @@ class GitDatabase(RWDatabase, ROGitDatabase):
 
 
     def _rollback(self):
-        send_subprocess(['git', 'checkout', '-f'])
+        send_subprocess(['git', 'reset', '--hard', '-q'])
         send_subprocess(['git', 'clean', '-fxdq'])
 
 

@@ -96,6 +96,17 @@ class FolderTestCase(TestCase):
         self.assertEqual(folder.has_handler('toto.txt'), True)
 
 
+    def test_add_remove(self):
+        database = self.database
+
+        # Add a new file
+        new_file = TextFile(data=u'New file\n')
+        database.set_handler('test_dir/new_file.txt', new_file)
+
+        # And suppress it
+        database.del_handler('test_dir/new_file.txt')
+
+
     def test_remove_add_remove(self):
         folder = self.root.get_handler('tests')
         folder.del_handler('toto.txt')

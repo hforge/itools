@@ -216,19 +216,20 @@ class Path(list):
           Path('/a/b').resolve('c') => Path('/a/c')
           Path('/a/b/').resolve('c') => Path('/a/b/c')
         """
-        if not isinstance(path, Path):
+        if type(path) is not Path:
             path = Path(path)
 
         if path.startswith_slash:
             return path
 
+        self_str = str(self)
         if self.endswith_slash:
-            return Path('%s/%s' % (self, path))
+            return Path('%s%s' % (self_str, path))
 
-        if str(self) == '.':
+        if self_str == '.':
             return path
 
-        return Path('%s/../%s' % (self, path))
+        return Path('%s/../%s' % (self_str, path))
 
 
     def resolve2(self, path):
@@ -285,7 +286,7 @@ class Path(list):
 
         XXX When there are parameters (e.g. a/b;lang=es/c) it is undefined.
         """
-        if not isinstance(path, Path):
+        if type(path) is not Path:
             path = Path(path)
 
         i = 0
@@ -299,7 +300,7 @@ class Path(list):
         the complement of 'resolve2'. So, if 'x = a.get_pathto(b)', then
         'b = a.resolve2(x)'.
         """
-        if not isinstance(path, Path):
+        if type(path) is not Path:
             path = Path(path)
 
         prefix = self.get_prefix(path)

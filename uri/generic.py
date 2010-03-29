@@ -222,13 +222,14 @@ class Path(list):
         if path.startswith_slash:
             return path
 
+        self_str = str(self)
         if self.endswith_slash:
-            return Path('%s/%s' % (self, path))
+            return Path('%s%s' % (self_str, path))
 
-        if str(self) == '.':
+        if self_str == '.':
             return path
 
-        return Path('%s/../%s' % (self, path))
+        return Path('%s/../%s' % (self_str, path))
 
 
     def resolve2(self, path):

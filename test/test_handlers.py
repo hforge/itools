@@ -223,6 +223,18 @@ class FolderTestCase(TestCase):
                           TextFile())
 
 
+    def test_add_get_handlers(self):
+        database = self.database
+
+        # Add a new file
+        new_file = TextFile(data=u'Test get_handlers\n')
+        database.set_handler('test_dir/test_get_handlers.txt', new_file)
+
+        # get_handlers
+        handlers = list(database.get_handlers("test_dir"))
+        self.assertEqual(new_file in handlers, True)
+
+
 
 class TextTestCase(TestCase):
 

@@ -25,7 +25,6 @@ from urllib import unquote
 from warnings import warn
 
 # Import from itools
-from itools.handlers import BaseDatabase
 from itools.http import HTTPServer
 from itools.http import ClientError, NotModified, Forbidden, NotFound
 from itools.http import NotImplemented, MethodNotAllowed, Unauthorized
@@ -41,7 +40,7 @@ class WebServer(HTTPServer):
     access_log = None
     event_log = None
 
-    database = BaseDatabase()
+    database = None
 
 
     def __init__(self, root, address=None, port=None, access_log=None,

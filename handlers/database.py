@@ -32,118 +32,15 @@ import messages
 from registry import get_handler_class_by_mimetype
 
 
-###########################################################################
 # Exceptions
-###########################################################################
 class ReadOnlyError(RuntimeError):
     pass
 
 
-###########################################################################
-# Abstract database (defines the API)
-###########################################################################
 
-class BaseDatabase(object):
-
-    def _before_commit(self):
-        """This method is called before 'save_changes', and gives a chance
-        to the database to check for preconditions, if an error occurs here
-        the transaction will be aborted.
-
-        The value returned by this method will be passed to '_save_changes',
-        so it can be used to pre-calculate whatever data is needed.
-        """
-        return None
-
-
-    def _save_changes(self, data):
-        raise NotImplementedError
-
-
-    def _rollback(self):
-        """To be called when something goes wrong while saving the changes.
-        """
-        raise NotImplementedError
-
-
-    def _abort_changes(self):
-        """To be called to abandon the transaction.
-        """
-        raise NotImplementedError
-
-
-    def _cleanup(self):
-        """For maintenance operations, this method is automatically called
-        after a transaction is committed or aborted.
-        """
-
-
-    def _has_changed(self):
-        """Returns whether there is something that has changed or not.
-        This is to avoid superfluos actions by the 'save' and 'abort'
-        methods.
-        """
-        raise NotImplementedError
-
-
-    #######################################################################
-    # Public API
-
-    ################
-    # Handlers'API
-
-    # XXX Move here the functions move_handler, ...
-    #     with a NotImplementedError
-
-    def touch_handler(self, key, handler=None):
-        """Report a modification of the key/handler to the database.
-           We must pass the handler because of phantoms.
-        """
-        raise NotImplementedError
-
-
-    ################
-    # Commit / Abort
-
-    def save_changes(self):
-        if self._has_changed() is False:
-            return
-
-        # Prepare for commit, do here the most you can, if something fails
-        # the transaction will be aborted
-        try:
-            data = self._before_commit()
-        except:
-            self._abort_changes()
-            self._cleanup()
-            raise
-
-        # Commit
-        try:
-            self._save_changes(data)
-        except Exception:
-            self._rollback()
-            self._abort_changes()
-            raise
-        finally:
-            self._cleanup()
-
-
-    def abort_changes(self):
-        if self._has_changed() is False:
-            return
-
-        self._abort_changes()
-        self._cleanup()
-
-
-
-###########################################################################
-# Read Only Database
-###########################################################################
-
-class RODatabase(BaseDatabase):
-    """The read-only database works as a cache for file handlers.
+class RODatabase(object):
+    """The read-only database works as a cache for file handlers.  This is
+    the base class for any other handler database.
     """
 
     def __init__(self, size_min=4800, size_max=5200, fs=None):
@@ -152,12 +49,9 @@ class RODatabase(BaseDatabase):
         self.fs = fs or vfs
 
 
-    def resolve_key(self, key):
-        """Resolves and returns the given key to be unique.
-        """
-        return self.fs.resolve_key(key)
-
-
+    #######################################################################
+    # Private API
+    #######################################################################
     def _sync_filesystem(self, key):
         """This method checks the state of the key in the cache against the
         filesystem. Synchronizes the state if needed by discarding the
@@ -220,8 +114,6 @@ class RODatabase(BaseDatabase):
             return handler
 
 
-    #######################################################################
-    # Cache API
     def _discard_handler(self, key):
         """Unconditionally remove the handler identified by the given key from
         the cache, and invalidate it (and free memory at the same time).
@@ -229,6 +121,78 @@ class RODatabase(BaseDatabase):
         handler = self.cache.pop(key)
         # Invalidate the handler
         handler.__dict__.clear()
+
+
+    def _before_commit(self):
+        """This method is called before 'save_changes', and gives a chance
+        to the database to check for preconditions, if an error occurs here
+        the transaction will be aborted.
+
+        The value returned by this method will be passed to '_save_changes',
+        so it can be used to pre-calculate whatever data is needed.
+        """
+        return None
+
+
+    def _save_changes(self, data):
+        raise NotImplementedError
+
+
+    def _rollback(self):
+        """To be called when something goes wrong while saving the changes.
+        """
+        raise NotImplementedError
+
+
+    def _abort_changes(self):
+        """To be called to abandon the transaction.
+        """
+        raise NotImplementedError
+
+
+    def _cleanup(self):
+        """For maintenance operations, this method is automatically called
+        after a transaction is committed or aborted.
+        """
+#       import gc
+#       from itools.core import vmsize
+#       print 'RODatabase._cleanup (0): % 4d %s' % (len(self.cache), vmsize())
+#       print gc.get_count()
+        self.make_room()
+#       print 'RODatabase._cleanup (1): % 4d %s' % (len(self.cache), vmsize())
+#       print gc.get_count()
+
+
+    def _has_changed(self):
+        """Returns whether there is something that has changed or not.
+        This is to avoid superfluos actions by the 'save' and 'abort'
+        methods.
+        """
+        return False
+
+
+    #######################################################################
+    # Public API
+    #######################################################################
+    def resolve_key(self, key):
+        """Resolves and returns the given key to be unique.
+        """
+        return self.fs.resolve_key(key)
+
+
+    def safe_make_file(self, key):
+        raise ReadOnlyError, 'cannot make file'
+
+
+    def safe_remove(self, key):
+        raise ReadOnlyError, 'cannot remove'
+
+
+    def safe_open(self, key, mode=None):
+        if mode in (WRITE, READ_WRITE, APPEND):
+            raise ReadOnlyError, 'cannot open file for writing'
+
+        return self.fs.open(key, READ)
 
 
     def push_handler(self, key, handler):
@@ -241,11 +205,6 @@ class RODatabase(BaseDatabase):
             return
         # Store in the cache
         self.cache[key] = handler
-
-
-    def push_phantom(self, key, handler):
-        handler.database = self
-        handler.key = key
 
 
     def make_room(self):
@@ -280,12 +239,11 @@ class RODatabase(BaseDatabase):
                 return
 
 
-    def _has_changed(self):
-        return False
+    def push_phantom(self, key, handler):
+        handler.database = self
+        handler.key = key
 
 
-    #######################################################################
-    # Database API
     def is_phantom(self, handler):
         return handler.timestamp is None and handler.dirty is not None
 
@@ -371,8 +329,13 @@ class RODatabase(BaseDatabase):
             yield self.get_handler(key)
 
 
-    #######################################################################
-    # Write API
+    def touch_handler(self, key, handler=None):
+        """Report a modification of the key/handler to the database.  We must
+        pass the handler because of phantoms.
+        """
+        raise ReadOnlyError, 'cannot set handler'
+
+
     def set_handler(self, key, handler):
         raise ReadOnlyError, 'cannot set handler'
 
@@ -389,35 +352,42 @@ class RODatabase(BaseDatabase):
         raise ReadOnlyError, 'cannot move handler'
 
 
-    def safe_make_file(self, key):
-        raise ReadOnlyError, 'cannot make file'
+    def save_changes(self):
+        if self._has_changed() is False:
+            return
+
+        # Prepare for commit, do here the most you can, if something fails
+        # the transaction will be aborted
+        try:
+            data = self._before_commit()
+        except:
+            self._abort_changes()
+            self._cleanup()
+            raise
+
+        # Commit
+        try:
+            self._save_changes(data)
+        except Exception:
+            self._rollback()
+            self._abort_changes()
+            raise
+        finally:
+            self._cleanup()
 
 
-    def safe_remove(self, key):
-        raise ReadOnlyError, 'cannot remove'
+    def abort_changes(self):
+        if self._has_changed() is False:
+            return
+
+        self._abort_changes()
+        self._cleanup()
 
 
-    def safe_open(self, key, mode=None):
-        if mode in (WRITE, READ_WRITE, APPEND):
-            raise ReadOnlyError, 'cannot open file for writing'
 
-        return self.fs.open(key, READ)
-
-
-    def _cleanup(self):
-#       import gc
-#       from itools.core import vmsize
-#       print 'RODatabase._cleanup (0): % 4d %s' % (len(self.cache), vmsize())
-#       print gc.get_count()
-        self.make_room()
-#       print 'RODatabase._cleanup (1): % 4d %s' % (len(self.cache), vmsize())
-#       print gc.get_count()
-
-
-###########################################################################
-# Read/Write Database (in memory transactions)
-###########################################################################
 class RWDatabase(RODatabase):
+    """Add write operations and in-memory transactions.
+    """
 
     def __init__(self, size_min=4800, size_max=5200, fs=None):
         RODatabase.__init__(self, size_min=size_min, size_max=size_max,

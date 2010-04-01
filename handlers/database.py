@@ -446,13 +446,12 @@ class RWDatabase(RODatabase):
             raise ValueError, 'unexpected folder (only files can be "set")'
 
         if handler.key is not None:
-            raise ValueError, ('only new files can be added, '
-                               'try to clone first')
+            raise ValueError, 'only new files can be added, try to clone first'
 
+        key = self.resolve_key(key)
         if self.has_handler(key):
             raise RuntimeError, messages.MSG_URI_IS_BUSY % key
 
-        key = self.resolve_key(key)
         self.push_handler(key, handler)
         self.handlers_new2old[key] = None
 
@@ -835,15 +834,13 @@ class GitDatabase(ROGitDatabase):
 
 
     def set_handler(self, key, handler):
-        key = self.resolve_key(key)
-
         if isinstance(handler, Folder):
             raise ValueError, 'unexpected folder (only files can be "set")'
 
         if handler.key is not None:
-            raise ValueError, ('only new files can be added, '
-                               'try to clone first')
+            raise ValueError, 'only new files can be added, try to clone first'
 
+        key = self.resolve_key(key)
         if self.has_handler(key):
             raise RuntimeError, messages.MSG_URI_IS_BUSY % key
 

@@ -366,9 +366,8 @@ class RODatabase(BaseDatabase):
 
     def get_handlers(self, key):
         base = self.resolve_key(key)
-        fs = self.fs
-        for name in fs.get_names(base):
-            key = fs.resolve2(base, name)
+        for name in self.get_handler_names(base):
+            key = self.fs.resolve2(base, name)
             yield self.get_handler(key)
 
 

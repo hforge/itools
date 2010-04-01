@@ -407,7 +407,8 @@ class GitDatabaseTestCase(TestCase):
 
 
     def tearDown(self):
-        for name in ['fables/31.txt', 'fables/agenda', 'fables/.git']:
+        for name in ['fables/31.txt', 'fables/agenda', 'fables/.git',
+                     'fables/broken.txt']:
             if lfs.exists(name):
                 lfs.remove(name)
 
@@ -455,7 +456,7 @@ class GitDatabaseTestCase(TestCase):
     def test_append(self):
         database = self.database
         root = self.root
-        # Initalize
+        # Initialize
         agenda = Agenda()
         agenda.add_record({'firstname': u'Karl', 'lastname': u'Marx'})
         agenda.add_record({'firstname': u'Jean-Jacques',
@@ -487,7 +488,6 @@ class GitDatabaseTestCase(TestCase):
 
         fables.del_handler('31.txt')
         fables.set_handler('31.txt', TextFile())
-        self.assertEqual(lfs.exists('fables/31.txt'), True)
         self.assertEqual(fables.has_handler('31.txt'), True)
         # Save
         self.database.save_changes()

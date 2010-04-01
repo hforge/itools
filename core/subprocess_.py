@@ -52,12 +52,12 @@ def start_subprocess(path):
 def stop_subprocess():
     global pipe_to_subprocess
     if pipe_to_subprocess:
-        pipe_to_subprocess.send((CMD_STOP, None))
+        pipe_to_subprocess.send((CMD_STOP, None, None))
         pipe_to_subprocess = None
 
 
-def send_subprocess(command, wait=True):
-    pipe_to_subprocess.send((CMD_READ, command))
+def send_subprocess(command, wait=True, path=None):
+    pipe_to_subprocess.send((CMD_READ, path, command))
     if wait is True:
         return read_subprocess(command)
 
@@ -75,14 +75,14 @@ def subprocess(cwd, conn):
     chdir(cwd)
     signal(SIGINT, SIG_IGN)
     while conn.poll(None):
-        command, data = conn.recv()
+        command, path, data = conn.recv()
         # Stop
         if command == CMD_STOP:
             break
 
         # Spawn subprocess
         try:
-            popen = Popen(data, stdout=PIPE, stderr=PIPE)
+            popen = Popen(data, stdout=PIPE, stderr=PIPE, cwd=path)
         except TypeError:
             err = format_exc()
             conn.send((ENOEXEC, err))

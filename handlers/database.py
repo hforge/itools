@@ -752,9 +752,19 @@ class RWDatabase(RODatabase):
 class ROGitDatabase(RODatabase):
 
     def __init__(self, path, size_min=4800, size_max=5200):
-        # Restrict to git repository
+        # Initialize a local fs relative to "path"
+        path = lfs.get_absolute_path(path)
+        if not lfs.exists(path) or not lfs.is_folder(path):
+            raise ValueError, 'unexpected "%s" path' % path
         fs = lfs.open(path)
+
+        # Call the mother's __init__
         RODatabase.__init__(self, size_min, size_max, fs=fs)
+
+        # Save the path
+        if path[-1] != '/':
+            path += '/'
+        self.path = path
 
 
     def resolve_key(self, path, __root=Path('/')):
@@ -770,7 +780,7 @@ class ROGitDatabase(RODatabase):
 
     def get_diff(self, revision):
         cmd = ['git', 'show', revision, '--pretty=format:%an%n%at%n%s']
-        data = send_subprocess(cmd)
+        data = send_subprocess(cmd, path=self.path)
         lines = data.splitlines()
 
         ts = int(lines[1])
@@ -785,7 +795,7 @@ class ROGitDatabase(RODatabase):
         """Get the unordered set of files affected by a list of revisions.
         """
         cmd = ['git', 'show', '--numstat', '--pretty=format:'] + revisions
-        data = send_subprocess(cmd)
+        data = send_subprocess(cmd, path=self.path)
         lines = data.splitlines()
         files = set()
         for line in lines:
@@ -805,7 +815,7 @@ class ROGitDatabase(RODatabase):
         if paths:
             cmd.append('--')
             cmd.extend(paths)
-        return send_subprocess(cmd)
+        return send_subprocess(cmd, path=self.path)
 
 
     def get_diff_between(self, from_, to='HEAD', paths=[]):
@@ -818,7 +828,7 @@ class ROGitDatabase(RODatabase):
         if paths:
             cmd.append('--')
             cmd.extend(paths)
-        return send_subprocess(cmd)
+        return send_subprocess(cmd, path=self.path)
 
 
     def get_blob(self, revision, path):
@@ -826,34 +836,278 @@ class ROGitDatabase(RODatabase):
         commit revision has been committed.
         """
         cmd = ['git', 'show', '%s:%s' % (revision, path)]
-        return send_subprocess(cmd)
+        return send_subprocess(cmd, path=self.path)
 
 
 
-class GitDatabase(RWDatabase, ROGitDatabase):
+class GitDatabase(ROGitDatabase):
 
     def __init__(self, path, size_min, size_max):
-        RWDatabase.__init__(self, size_min, size_max)
         ROGitDatabase.__init__(self, path, size_min, size_max)
+
+        # The "git add" arguments
+        self.__to_add = set()
+
+
+    def is_phantom(self, handler):
+        # Phantom handlers are "new"
+        if handler.timestamp or not handler.dirty:
+            return False
+        # They are attached to this database, but they are not in the cache
+        return handler.database is self and handler.key not in self.cache
+
+
+    def has_handler(self, key):
+        key = self.resolve_key(key)
+
+        # A new file/directory is only in to_add
+        deep_path = len(Path(key))
+        for file_key in self.__to_add:
+            # Match ?
+            if file_key.startswith(key) and len(Path(file_key)) >= deep_path:
+                return True
+
+        # Normal case
+        return self.fs.exists(key)
+
+
+    def get_handler(self, key, cls=None):
+        key = self.resolve_key(key)
+
+        # A hook to handle the new directories
+        deep_path = len(Path(key))
+        for file_key in self.__to_add:
+            # Match ?
+            if file_key.startswith(key) and len(Path(file_key)) > deep_path:
+                if cls is None:
+                    cls = Folder
+                folder = cls(key, database=self)
+                return folder
+
+        # The other files
+        return RODatabase.get_handler(self, key, cls)
+
+
+    def set_handler(self, key, handler):
+        key = self.resolve_key(key)
+
+        if isinstance(handler, Folder):
+            raise ValueError, 'unexpected folder (only files can be "set")'
+
+        if handler.key is not None:
+            raise ValueError, ('only new files can be added, '
+                               'try to clone first')
+
+        if self.has_handler(key):
+            raise RuntimeError, messages.MSG_URI_IS_BUSY % key
+
+        self.push_handler(key, handler)
+        self.__to_add.add(key)
+
+
+    def del_handler(self, key):
+        key = self.resolve_key(key)
+        handler = self.get_handler(key)
+        to_add = self.__to_add
+        fs = self.fs
+
+        # Folder
+        if isinstance(handler, Folder):
+            # Search all the files to delete
+            git_path = fs.get_absolute_path('.git')
+            to_del = [ fs.get_relative_path(path)
+                       for path in fs.traverse(key)
+                       if not fs.is_folder(path) and
+                          not path.startswith(git_path) ]
+
+            # Update to_add and complete to_del
+            for file_key in set(to_add):
+                if file_key.startswith(key):
+                    to_add.remove(file_key)
+                    if file_key not in to_del:
+                        to_del.apppend(file_key)
+
+            # Synchronize and suppress from the cache the files from to_del
+            for file_key in to_del:
+                # XXX We cannot call twice this function
+                #self._sync_filesystem(file_key)
+                self._discard_handler(file_key)
+
+            # Suppress the folder
+            if key != "":
+                fs.remove(key)
+            else:
+                for path in fs.get_names():
+                    if not path.startswith('.git'):
+                        fs.remove(path)
+        # File
+        else:
+            # Synchronize and suppress from the cache
+            # XXX
+            #self._sync_filesystem(key)
+            self._discard_handler(key)
+
+            # Suppress eventually from to_add
+            if key in to_add:
+                to_add.remove(key)
+
+            # And delete eventually the file from the filesystem
+            if fs.exists(key):
+                fs.remove(key)
+
+
+    def touch_handler(self, key, handler=None):
+        key = self.resolve_key(key)
+
+        # Useful for the phantoms
+        if handler is None:
+            handler = self.get_handler(key)
+
+        # The phantoms become real files
+        if self.is_phantom(handler):
+            self.cache[key] = handler
+
+        # Update database state
+        if handler.timestamp is None and handler.dirty is None:
+            handler.load_state()
+        if handler.dirty is None:
+            handler.dirty = datetime.now()
+
+        # XXX Should we do this?
+        self.__to_add.add(key)
+
+
+    def get_handler_names(self, key):
+        key = self.resolve_key(key)
+        fs = self.fs
+
+        # On the filesystem
+        if fs.exists(key):
+            result = fs.get_names(key)
+        else:
+            result = []
+
+        # In to_add
+        deep_key = len(Path(key))
+        for file_key in self.__to_add:
+            if file_key.startswith(key):
+                path = Path(file_key)
+                name = str(path[deep_key])
+                if name not in result:
+                    result.append(name)
+
+        # Remove .git
+        if key == "":
+            result.remove('.git')
+
+        return result
+
+
+    def get_handlers(self, key):
+        key = self.resolve_key(key)
+        base = key + '/'
+        for name in self.get_handler_names(key):
+            yield self.get_handler(base + name)
+
+
+    def copy_handler(self, source, target):
+        source = self.resolve_key(source)
+        target = self.resolve_key(target)
+
+        # The trivial case
+        if source == target:
+            return
+
+        # Check the target is free
+        if self.has_handler(target):
+            raise RuntimeError, messages.MSG_URI_IS_BUSY % target
+
+        handler = self.get_handler(source)
+
+        # Folder
+        if isinstance(handler, Folder):
+            fs = self.fs
+            for name in handler.get_handler_names():
+                self.copy_handler(fs.resolve2(source, name),
+                                  fs.resolve2(target, name))
+        # File
+        else:
+            handler = handler.clone()
+            self.push_handler(key, handler)
+            self.__to_add.add(key)
+
+
+    def move_handler(self, source, target):
+        self.copy_handler(source, target)
+        self.del_handler(source)
+
+
+    #######################################################################
+    # API / Safe VFS operations (not really safe)
+    def safe_make_file(self, key):
+        key = self.resolve_key(key)
+        return self.fs.make_file(key)
+
+
+    def safe_remove(self, key):
+        key = self.resolve_key(key)
+        return self.fs.remove(key)
+
+
+    def safe_open(self, key, mode=None):
+        key = self.resolve_key(key)
+        return self.fs.open(key, mode)
+
+
+    #######################################################################
+    # API / Transactions
+    def _has_changed(self):
+        # XXX We must use a boolean ?
+        return True
+
+
+    def _abort_changes(self):
+        path = self.path
+        to_add = self.__to_add
+
+        for key in to_add:
+            # XXX we cannot distinguish between new files and modified files
+            #     => we erase all
+            self._discard_handler(key)
+
+        to_add.clear()
+
+        # And now, clean the filesystem
+        send_subprocess(['git', 'reset', '--hard', '-q'], path=path)
+        send_subprocess(['git', 'clean', '-fxdq'], path=path)
 
 
     def _rollback(self):
-        send_subprocess(['git', 'reset', '--hard', '-q'])
-        send_subprocess(['git', 'clean', '-fxdq'])
+        pass
 
 
     def _save_changes(self, data):
-        # Figure out the files to add
-        git_files = [ x for x in self.handlers_new2old ]
-
-        # Save
-        RWDatabase._save_changes(self, data)
-
-        # Add
+        path = self.path
         fs = self.fs
-        git_files = [ x for x in git_files if fs.exists(x) ]
-        if git_files:
-            send_subprocess(['git', 'add'] + git_files)
+        to_add = self.__to_add
+
+        # Synchronize eventually the handlers and the filesystem
+        for key in to_add:
+            handler = self.get_handler(key)
+            # XXX Can we do this better ?
+            # Save the file:
+            if fs.exists(key):
+                handler.save_state()
+            else:
+                # We use save_state_to to handle new and/or moved files
+                # but we must update the timestamp, ...
+                handler.save_state_to(key)
+                handler.timestamp = fs.get_mtime(key)
+                handler.dirty = None
+
+        # Call a "git add" eventually for new and/or moved files
+        if to_add:
+            send_subprocess(['git', 'add'] + list(to_add), path=path)
 
         # Commit
         command = ['git', 'commit', '-aq']
@@ -863,38 +1117,12 @@ class GitDatabase(RWDatabase, ROGitDatabase):
             git_author, git_message = data
             command.extend(['--author=%s' % git_author, '-m', git_message])
         try:
-            send_subprocess(command)
+            send_subprocess(command, path=path)
         except CalledProcessError, excp:
             # Avoid an exception for the 'nothing to commit' case
             # FIXME Not reliable, we may catch other cases
             if excp.returncode != 1:
                 raise
-
-
-    def get_handler_names(self, key):
-        # TODO Use this method not only for GitDatabase, but for any database
-        # that uses lfs.
-        names = RODatabase.get_handler_names(self, key)
-        names = set(names)
-
-        # The State
-        base = self.resolve_key(key) + '/'
-        n = len(base)
-        # Removed
-        for key in self.handlers_old2new:
-            if key[:n] == base:
-                name = key[n:]
-                if '/' not in name:
-                    names.discard(name)
-        # Added
-        for key in self.handlers_new2old:
-            if key[:n] == base:
-                name = key[n:]
-                if '/' not in name:
-                    names.add(name)
-
-        # Ok
-        return list(names)
 
 
 
@@ -906,18 +1134,22 @@ def make_git_database(path, size_min, size_max):
     initialized and the content of the folder will be added to it in a first
     commit.
     """
+    path = lfs.get_absolute_path(path)
     if not lfs.exists(path):
-        mkdir(path)
+        lfs.make_folder(path)
+
     # Init
-    command = ['git', 'init', '-q']
-    call(command, cwd=path, stdout=PIPE)
+    send_subprocess(['git', 'init', '-q'], path=path)
+
     # Add
-    command = ['git', 'add', '.']
-    error = call(command, cwd=path, stdout=PIPE, stderr=PIPE)
-    # Commit
-    if error == 0:
-        command = ['git', 'commit', '-q', '-m', 'Initial commit']
-        call(command, cwd=path, stdout=PIPE)
+    send_subprocess(['git', 'add', '.'], path=path)
+
+    # Commit or not ?
+    try:
+        send_subprocess(['git', 'commit', '-q', '-m', 'Initial commit'],
+                        path=path)
+    except CalledProcessError:
+        pass
 
     # Ok
     return GitDatabase(path, size_min, size_max)

@@ -239,15 +239,6 @@ class RODatabase(object):
                 return
 
 
-    def push_phantom(self, key, handler):
-        handler.database = self
-        handler.key = key
-
-
-    def is_phantom(self, handler):
-        return handler.timestamp is None and handler.dirty is not None
-
-
     def has_handler(self, key):
         key = self.resolve_key(key)
 
@@ -397,14 +388,6 @@ class RWDatabase(RODatabase):
         self.handlers_new2old = {}
 
 
-    def is_phantom(self, handler):
-        # Phantom handlers are "new"
-        if handler.timestamp or not handler.dirty:
-            return False
-        # They are attached to this database, but they are not in the cache
-        return handler.database is self and handler.key not in self.cache
-
-
     def has_handler(self, key):
         key = self.resolve_key(key)
 
@@ -509,14 +492,7 @@ class RWDatabase(RODatabase):
 
     def touch_handler(self, key, handler=None):
         key = self.resolve_key(key)
-        if handler is None:
-            handler = self.get_handler(key)
-
-        # Phantoms
-        if self.is_phantom(handler):
-            self.cache[key] = handler
-            self.handlers_new2old[key] = None
-            return
+        handler = self.get_handler(key)
 
         # Check nothing weird happened
         if self.cache.get(key) is not handler:
@@ -716,6 +692,7 @@ class RWDatabase(RODatabase):
         self.handlers_new2old.clear()
 
 
+
 ###########################################################################
 # The Git Database
 ###########################################################################
@@ -746,6 +723,15 @@ class ROGitDatabase(RODatabase):
             raise ValueError, err % path
 
         return '/'.join(key)
+
+
+    def push_phantom(self, key, handler):
+        handler.database = self
+        handler.key = key
+
+
+    def is_phantom(self, handler):
+        return handler.timestamp is None and handler.dirty is not None
 
 
     def get_diff(self, revision):

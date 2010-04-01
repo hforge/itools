@@ -1003,13 +1003,6 @@ class GitDatabase(ROGitDatabase):
         return result
 
 
-    def get_handlers(self, key):
-        key = self.resolve_key(key)
-        base = key + '/'
-        for name in self.get_handler_names(key):
-            yield self.get_handler(base + name)
-
-
     def copy_handler(self, source, target):
         source = self.resolve_key(source)
         target = self.resolve_key(target)

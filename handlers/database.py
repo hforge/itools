@@ -494,23 +494,13 @@ class RWDatabase(RODatabase):
         key = self.resolve_key(key)
         handler = self.get_handler(key)
 
-        # Check nothing weird happened
-        if self.cache.get(key) is not handler:
-            raise RuntimeError, 'database inconsistency!'
-
-        # Update database state
-        if handler.timestamp:
-            # Case 1: loaded
+        if handler.dirty is None:
+            # Load the handler if needed
+            if handler.timestamp is None:
+                handler.load_state()
+            # Mark the handler as dirty
             handler.dirty = datetime.now()
-            self.handlers_new2old[key] = key
-            self.handlers_old2new[key] = key
-        elif handler.dirty:
-            # Case 2: new or moved
-            pass
-        else:
-            # Case 3: not loaded (yet)
-            handler.load_state()
-            handler.dirty = datetime.now()
+            # Update database state
             self.handlers_new2old[key] = key
             self.handlers_old2new[key] = key
 
@@ -923,14 +913,14 @@ class GitDatabase(ROGitDatabase):
         if self.is_phantom(handler):
             self.cache[key] = handler
 
-        # Update database state
-        if handler.timestamp is None and handler.dirty is None:
-            handler.load_state()
         if handler.dirty is None:
+            # Load the handler if needed
+            if handler.timestamp is None:
+                handler.load_state()
+            # Mark the handler as dirty
             handler.dirty = datetime.now()
-
-        # XXX Should we do this?
-        self.__to_add.add(key)
+            # Update database state (XXX Should we do this?)
+            self.__to_add.add(key)
 
 
     def get_handler_names(self, key):

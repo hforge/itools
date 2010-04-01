@@ -359,14 +359,14 @@ class RequestMethod(object):
         if isinstance(context.entity, (FunctionType, MethodType)):
             try:
                 context.entity = context.entity(context.resource, context)
-            except:
+            except Exception:
                 cls.internal_server_error(server, context)
             server.database.abort_changes()
 
         # (6) After Traverse hook
         try:
             context.site_root.after_traverse(context)
-        except:
+        except Exception:
             cls.internal_server_error(server, context)
 
         # (7) Build and return the response
@@ -493,7 +493,7 @@ class OPTIONS(RequestMethod):
         # (5) After Traverse hook
         try:
             context.site_root.after_traverse(context)
-        except:
+        except Exception:
             cls.internal_server_error(server, context)
 
         # (6) Build and return the response

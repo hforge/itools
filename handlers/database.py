@@ -846,9 +846,8 @@ class GitDatabase(ROGitDatabase):
     def __init__(self, path, size_min, size_max):
         ROGitDatabase.__init__(self, path, size_min, size_max)
 
-        # The state, for transactions
-        self.handlers_old2new = {}
-        self.handlers_new2old = {}
+        # The "git add" arguments
+        self.__to_add = set()
 
 
     def is_phantom(self, handler):
@@ -862,57 +861,37 @@ class GitDatabase(ROGitDatabase):
     def has_handler(self, key):
         key = self.resolve_key(key)
 
-        # Check the state
-        if key in self.handlers_new2old:
-            return True
-        if key in self.handlers_old2new:
-            return False
+        # A new file/directory is only in to_add
+        deep_path = len(Path(key))
+        for file_key in self.__to_add:
+            # Match ?
+            if file_key.startswith(key) and len(Path(file_key)) >= deep_path:
+                return True
 
-        return RODatabase.has_handler(self, key)
-
-
-    def get_handler_names(self, key):
-        names = RODatabase.get_handler_names(self, key)
-        names = set(names)
-        fs = self.fs
-
-        # The State
-        base = self.resolve_key(key)
-        # Removed
-        for key in self.handlers_old2new:
-            name = fs.get_basename(key)
-            if fs.resolve2(base, name) == key:
-                names.discard(name)
-        # Added
-        for key in self.handlers_new2old:
-            name = fs.get_basename(key)
-            if fs.resolve2(base, name) == key:
-                names.add(name)
-
-        # Ok
-        return list(names)
+        # Normal case
+        return self.fs.exists(key)
 
 
     def get_handler(self, key, cls=None):
         key = self.resolve_key(key)
 
-        # Check state
-        if key in self.handlers_new2old:
-            handler = self.cache[key]
-            # cls is good?
-            if cls is not None and not isinstance(handler, cls):
-                raise LookupError, ('conflict with a handler of type "%s"' %
-                                     handler.__class__)
-            return handler
+        # A hook to handle the new directories
+        deep_path = len(Path(key))
+        for file_key in self.__to_add:
+            # Match ?
+            if file_key.startswith(key) and len(Path(file_key)) > deep_path:
+                if cls is None:
+                    cls = Folder
+                folder = cls(key, database=self)
+                return folder
 
-        if key in self.handlers_old2new:
-            raise LookupError, 'the resource "%s" does not exist' % key
-
-        # Ok
-        return RODatabase.get_handler(self, key, cls=cls)
+        # The other files
+        return RODatabase.get_handler(self, key, cls)
 
 
     def set_handler(self, key, handler):
+        key = self.resolve_key(key)
+
         if isinstance(handler, Folder):
             raise ValueError, 'unexpected folder (only files can be "set")'
 
@@ -923,74 +902,120 @@ class GitDatabase(ROGitDatabase):
         if self.has_handler(key):
             raise RuntimeError, messages.MSG_URI_IS_BUSY % key
 
-        key = self.resolve_key_for_writing(key)
         self.push_handler(key, handler)
-        self.handlers_new2old[key] = None
+        self.__to_add.add(key)
 
 
     def del_handler(self, key):
-        key = self.resolve_key_for_writing(key)
+        key = self.resolve_key(key)
+        handler = self.get_handler(key)
+        to_add = self.__to_add
+        fs = self.fs
 
-        # Check the handler has been added
-        if key in self.handlers_new2old:
+        # Folder
+        if isinstance(handler, Folder):
+            # Search all the files to delete
+            git_path = fs.get_absolute_path('.git')
+            to_del = [ fs.get_relative_path(path)
+                       for path in fs.traverse(key)
+                       if not fs.is_folder(path) and
+                          not path.startswith(git_path) ]
+
+            # Update to_add and complete to_del
+            for file_key in set(to_add):
+                if file_key.startswith(key):
+                    to_add.remove(file_key)
+                    if file_key not in to_del:
+                        to_del.apppend(file_key)
+
+            # Synchronize and suppress from the cache the files from to_del
+            for file_key in to_del:
+                # XXX We cannot call twice this function
+                #self._sync_filesystem(file_key)
+                self._discard_handler(file_key)
+
+            # Suppress the folder
+            if key != "":
+                fs.remove(key)
+            else:
+                for path in fs.get_names():
+                    if not path.startswith('.git'):
+                        fs.remove(path)
+        # File
+        else:
+            # Synchronize and suppress from the cache
+            # XXX
+            #self._sync_filesystem(key)
             self._discard_handler(key)
-            key = self.handlers_new2old.pop(key)
-            if key:
-                self.handlers_old2new[key] = None
-            return
 
-        # Check the handler has been removed
-        if key in self.handlers_old2new:
-            raise LookupError, 'resource already removed'
+            # Suppress eventually from to_add
+            if key in to_add:
+                to_add.remove(key)
 
-        # Synchronize
-        handler = self._sync_filesystem(key)
-        if not self.fs.exists(key):
-            raise LookupError, 'resource does not exist'
-
-        # Clean the cache
-        if key in self.cache:
-            self._discard_handler(key)
-
-        # Mark for removal
-        self.handlers_old2new[key] = None
+            # And delete eventually the file from the filesystem
+            if fs.exists(key):
+                fs.remove(key)
 
 
     def touch_handler(self, key, handler=None):
         key = self.resolve_key(key)
+
+        # Useful for the phantoms
         if handler is None:
             handler = self.get_handler(key)
 
-        # Phantoms
+        # The phantoms become real files
         if self.is_phantom(handler):
             self.cache[key] = handler
-            self.handlers_new2old[key] = None
-            return
-
-        # Check nothing weird happened
-        if self.cache.get(key) is not handler:
-            raise RuntimeError, 'database inconsistency!'
 
         # Update database state
-        if handler.timestamp:
-            # Case 1: loaded
-            handler.dirty = datetime.now()
-            self.handlers_new2old[key] = key
-            self.handlers_old2new[key] = key
-        elif handler.dirty:
-            # Case 2: new
-            self.handlers_new2old[key] = None
-        else:
-            # Case 3: not loaded (yet)
+        if handler.timestamp is None and handler.dirty is None:
             handler.load_state()
+        if handler.dirty is None:
             handler.dirty = datetime.now()
-            self.handlers_new2old[key] = key
-            self.handlers_old2new[key] = key
+
+        # XXX Should we do this?
+        self.__to_add.add(key)
+
+
+    def get_handler_names(self, key):
+        key = self.resolve_key(key)
+        fs = self.fs
+
+        # On the filesystem
+        if fs.exists(key):
+            result = fs.get_names(key)
+        else:
+            result = []
+
+        # In to_add
+        deep_key = len(Path(key))
+        for file_key in self.__to_add:
+            if file_key.startswith(key):
+                path = Path(file_key)
+                name = str(path[deep_key])
+                if name not in result:
+                    result.append(name)
+
+        # Remove .git
+        if key == "":
+            result.remove('.git')
+
+        return result
+
+
+    def get_handlers(self, key):
+        key = self.resolve_key(key)
+        base = key + '/'
+        for name in self.get_handler_names(key):
+            yield self.get_handler(base + name)
 
 
     def copy_handler(self, source, target):
         source = self.resolve_key(source)
-        target = self.resolve_key_for_writing(target)
+        target = self.resolve_key(target)
+
+        # The trivial case
         if source == target:
             return
 
@@ -999,161 +1024,91 @@ class GitDatabase(ROGitDatabase):
             raise RuntimeError, messages.MSG_URI_IS_BUSY % target
 
         handler = self.get_handler(source)
+
+        # Folder
         if isinstance(handler, Folder):
-            # Folder
             fs = self.fs
             for name in handler.get_handler_names():
                 self.copy_handler(fs.resolve2(source, name),
                                   fs.resolve2(target, name))
+        # File
         else:
-            # File
             handler = handler.clone()
-            # Update the state
-            self.push_handler(target, handler)
-            self.handlers_new2old[target] = None
+            self.push_handler(key, handler)
+            self.__to_add.add(key)
 
 
     def move_handler(self, source, target):
-        # TODO This method can be optimized further
-        source = self.resolve_key_for_writing(source)
-        target = self.resolve_key_for_writing(target)
-        if source == target:
-            return
-
-        # Check the target is free
-        if self.has_handler(target):
-            raise RuntimeError, messages.MSG_URI_IS_BUSY % target
-
-        handler = self.get_handler(source)
-        if isinstance(handler, Folder):
-            # Folder
-            fs = self.fs
-            for name in handler.get_handler_names():
-                self.move_handler(fs.resolve2(source, name),
-                                  fs.resolve2(target, name))
-            # Update double dict
-            self.handlers_old2new[source] = None
-        else:
-            # Load if needed
-            if handler.timestamp is None and handler.dirty is None:
-                handler.load_state()
-            # File
-            handler = self.cache.pop(source)
-            self.push_handler(target, handler)
-            handler.timestamp = None
-            handler.dirty = datetime.now()
-            # Update double dict
-            source = self.handlers_new2old.pop(source, source)
-            if source:
-                self.handlers_old2new[source] = target
-            self.handlers_new2old[target] = source
+        self.copy_handler(source, target)
+        self.del_handler(source)
 
 
     #######################################################################
     # API / Safe VFS operations (not really safe)
     def safe_make_file(self, key):
-        key = self.resolve_key_for_writing(key)
-
-        # Remove empty folder first
-        fs = self.fs
-        if fs.is_folder(key):
-            for x in fs.traverse(key):
-                if fs.is_file(x):
-                    break
-            else:
-                fs.remove(key)
-
-        return fs.make_file(key)
+        key = self.resolve_key(key)
+        return self.fs.make_file(key)
 
 
     def safe_remove(self, key):
-        key = self.resolve_key_for_writing(key)
+        key = self.resolve_key(key)
         return self.fs.remove(key)
 
 
     def safe_open(self, key, mode=None):
-        key = self.resolve_key_for_writing(key)
+        key = self.resolve_key(key)
         return self.fs.open(key, mode)
 
 
     #######################################################################
     # API / Transactions
     def _has_changed(self):
-        return bool(self.handlers_old2new) or bool(self.handlers_new2old)
+        # XXX We must use a boolean ?
+        return True
 
 
     def _abort_changes(self):
-        cache = self.cache
-        for target, source in self.handlers_new2old.iteritems():
-            # Case 1: changed
-            if source == target:
-                cache[target].abort_changes()
-            # Case 2: added or moved
-            else:
-                self._discard_handler(target)
-
-        # Reset state
-        self.handlers_old2new.clear()
-        self.handlers_new2old.clear()
-
-
-    def _rollback(self):
         path = self.path
+        to_add = self.__to_add
+
+        for key in to_add:
+            # XXX we cannot distinguish between new files and modified files
+            #     => we erase all
+            self._discard_handler(key)
+
+        to_add.clear()
+
+        # And now, clean the filesystem
         send_subprocess(['git', 'reset', '--hard', '-q'], path=path)
         send_subprocess(['git', 'clean', '-fxdq'], path=path)
 
 
+    def _rollback(self):
+        pass
+
+
     def _save_changes(self, data):
-        cache = self.cache
-        fs = self.fs
         path = self.path
+        fs = self.fs
+        to_add = self.__to_add
 
-        # Figure out the files to add
-        git_files = [ x for x in self.handlers_new2old ]
-
-        # Update handlers_old2new and / handlers_new2old
-        sources = self.handlers_old2new.keys()
-        sources = sorted(sources, reverse=True)
-        for source in sources:
-            target = self.handlers_old2new[source]
-            # Case 1: removed
-            if target is None:
-                self.safe_remove(source)
-            # Case 2: changed
-            elif source == target:
-                # Save the handler's state
-                handler = cache[source]
+        # Synchronize eventually the handlers and the filesystem
+        for key in to_add:
+            handler = self.get_handler(key)
+            # XXX Can we do this better ?
+            # Save the file:
+            if fs.exists(key):
                 handler.save_state()
-                # Update timestamp
-                handler.timestamp = fs.get_mtime(source)
-                handler.dirty = None
-            # Case 3: moved (TODO Optimize)
             else:
-                self.safe_remove(source)
-                # Add
-                handler = cache[target]
-                handler.save_state_to(target)
-                # Update timestamp
-                handler.timestamp = fs.get_mtime(target)
+                # We use save_state_to to handle new and/or moved files
+                # but we must update the timestamp, ...
+                handler.save_state_to(key)
+                handler.timestamp = fs.get_mtime(key)
                 handler.dirty = None
 
-        # Case 4: added
-        for target, source in self.handlers_new2old.iteritems():
-            if source is None:
-                handler = cache[target]
-                handler.save_state_to(target)
-                # Update timestamp
-                handler.timestamp = fs.get_mtime(target)
-                handler.dirty = None
-
-        # And reset their states
-        self.handlers_old2new.clear()
-        self.handlers_new2old.clear()
-
-        # Add
-        git_files = [ x for x in git_files if fs.exists(x) ]
-        if git_files:
-            send_subprocess(['git', 'add'] + git_files, path=path)
+        # Call a "git add" eventually for new and/or moved files
+        if to_add:
+            send_subprocess(['git', 'add'] + list(to_add), path=path)
 
         # Commit
         command = ['git', 'commit', '-aq']
@@ -1169,32 +1124,6 @@ class GitDatabase(ROGitDatabase):
             # FIXME Not reliable, we may catch other cases
             if excp.returncode != 1:
                 raise
-
-
-    def get_handler_names(self, key):
-        # TODO Use this method not only for GitDatabase, but for any database
-        # that uses lfs.
-        names = RODatabase.get_handler_names(self, key)
-        names = set(names)
-
-        # The State
-        base = self.resolve_key(key) + '/'
-        n = len(base)
-        # Removed
-        for key in self.handlers_old2new:
-            if key[:n] == base:
-                name = key[n:]
-                if '/' not in name:
-                    names.discard(name)
-        # Added
-        for key in self.handlers_new2old:
-            if key[:n] == base:
-                name = key[n:]
-                if '/' not in name:
-                    names.add(name)
-
-        # Ok
-        return list(names)
 
 
 

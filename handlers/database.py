@@ -791,7 +791,7 @@ class GitDatabase(ROGitDatabase):
         ROGitDatabase.__init__(self, path, size_min, size_max)
 
         # The "git add" arguments
-        self.__to_add = set()
+        self._to_add = set()
 
 
     def is_phantom(self, handler):
@@ -807,7 +807,7 @@ class GitDatabase(ROGitDatabase):
 
         # A new file/directory is only in to_add
         deep_path = len(Path(key))
-        for file_key in self.__to_add:
+        for file_key in self._to_add:
             # Match ?
             if file_key.startswith(key) and len(Path(file_key)) >= deep_path:
                 return True
@@ -821,7 +821,7 @@ class GitDatabase(ROGitDatabase):
 
         # A hook to handle the new directories
         deep_path = len(Path(key))
-        for file_key in self.__to_add:
+        for file_key in self._to_add:
             # Match ?
             if file_key.startswith(key) and len(Path(file_key)) > deep_path:
                 if cls is None:
@@ -845,13 +845,13 @@ class GitDatabase(ROGitDatabase):
             raise RuntimeError, messages.MSG_URI_IS_BUSY % key
 
         self.push_handler(key, handler)
-        self.__to_add.add(key)
+        self._to_add.add(key)
 
 
     def del_handler(self, key):
         key = self.resolve_key(key)
         handler = self.get_handler(key)
-        to_add = self.__to_add
+        to_add = self._to_add
         fs = self.fs
 
         # Folder
@@ -917,7 +917,7 @@ class GitDatabase(ROGitDatabase):
             # Mark the handler as dirty
             handler.dirty = datetime.now()
             # Update database state (XXX Should we do this?)
-            self.__to_add.add(key)
+            self._to_add.add(key)
 
 
     def get_handler_names(self, key):
@@ -932,7 +932,7 @@ class GitDatabase(ROGitDatabase):
 
         # In to_add
         deep_key = len(Path(key))
-        for file_key in self.__to_add:
+        for file_key in self._to_add:
             if file_key.startswith(key):
                 path = Path(file_key)
                 name = str(path[deep_key])
@@ -970,7 +970,7 @@ class GitDatabase(ROGitDatabase):
         else:
             handler = handler.clone()
             self.push_handler(key, handler)
-            self.__to_add.add(key)
+            self._to_add.add(key)
 
 
     def move_handler(self, source, target):
@@ -1004,7 +1004,7 @@ class GitDatabase(ROGitDatabase):
 
     def _abort_changes(self):
         path = self.path
-        to_add = self.__to_add
+        to_add = self._to_add
 
         for key in to_add:
             # XXX we cannot distinguish between new files and modified files
@@ -1025,7 +1025,7 @@ class GitDatabase(ROGitDatabase):
     def _save_changes(self, data):
         path = self.path
         fs = self.fs
-        to_add = self.__to_add
+        to_add = self._to_add
 
         # Synchronize eventually the handlers and the filesystem
         for key in to_add:

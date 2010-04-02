@@ -1029,7 +1029,7 @@ class GitDatabase(ROGitDatabase):
 
         # Synchronize eventually the handlers and the filesystem
         for key in to_add:
-            handler = self.get_handler(key)
+            handler = self.cache[key]
             # XXX Can we do this better ?
             # Save the file:
             if fs.exists(key):
@@ -1044,6 +1044,7 @@ class GitDatabase(ROGitDatabase):
         # Call a "git add" eventually for new and/or moved files
         if to_add:
             send_subprocess(['git', 'add'] + list(to_add), path=path)
+        to_add.clear()
 
         # Commit
         command = ['git', 'commit', '-aq']

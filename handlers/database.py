@@ -918,9 +918,9 @@ class GitDatabase(ROGitDatabase):
 
     def get_handler_names(self, key):
         key = self.resolve_key(key)
-        fs = self.fs
 
         # On the filesystem
+        fs = self.fs
         if fs.exists(key):
             result = fs.get_names(key)
         else:
@@ -994,8 +994,7 @@ class GitDatabase(ROGitDatabase):
     #######################################################################
     # API / Transactions
     def _has_changed(self):
-        # XXX We must use a boolean ?
-        return True
+        return bool(self._to_add)
 
 
     def _abort_changes(self):

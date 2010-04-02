@@ -688,19 +688,15 @@ class RWDatabase(RODatabase):
 class ROGitDatabase(RODatabase):
 
     def __init__(self, path, size_min=4800, size_max=5200):
-        # Initialize a local fs relative to "path"
-        path = lfs.get_absolute_path(path)
-        if not lfs.exists(path) or not lfs.is_folder(path):
-            raise ValueError, 'unexpected "%s" path' % path
-        fs = lfs.open(path)
+        if not lfs.is_folder(path):
+            raise ValueError, '"%s" should be a folder, but it is not' % path
 
-        # Call the mother's __init__
+        # Initialize the database, but chrooted
+        fs = lfs.open(path)
         RODatabase.__init__(self, size_min, size_max, fs=fs)
 
-        # Save the path
-        if path[-1] != '/':
-            path += '/'
-        self.path = path
+        # Keep the path close, to be used by 'send_subprocess'
+        self.path = '%s/' % fs.path
 
 
     def resolve_key(self, path, __root=Path('/')):

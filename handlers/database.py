@@ -923,26 +923,22 @@ class GitDatabase(ROGitDatabase):
         key = self.normalize_key(key)
 
         # On the filesystem
-        fs = self.fs
-        if fs.exists(key):
-            result = fs.get_names(key)
-        else:
-            result = []
+        names = super(GitDatabase, self).get_handler_names(key)
+        names = set(names)
 
         # In to_add
-        deep_key = len(Path(key))
-        for file_key in self._to_add:
-            if file_key.startswith(key):
-                path = Path(file_key)
-                name = str(path[deep_key])
-                if name not in result:
-                    result.append(name)
+        base = key + '/'
+        n = len(base)
+        for f_key in self._to_add:
+            if f_key[:n] == base:
+                name = f_key[n:].split('/', 1)[0]
+                names.add(name)
 
         # Remove .git
         if key == "":
-            result.remove('.git')
+            names.discard('.git')
 
-        return result
+        return list(names)
 
 
     def copy_handler(self, source, target):

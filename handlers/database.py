@@ -800,10 +800,9 @@ class GitDatabase(ROGitDatabase):
         key = self.normalize_key(key)
 
         # A new file/directory is only in to_add
-        deep_path = len(Path(key))
-        for file_key in self._to_add:
-            # Match ?
-            if file_key.startswith(key) and len(Path(file_key)) >= deep_path:
+        n = len(key)
+        for f_key in self._to_add:
+            if f_key[:n] == key and (len(f_key) == n or f_key[n] == '/'):
                 return True
 
         # Normal case

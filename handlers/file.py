@@ -38,7 +38,7 @@ class File(Handler):
        timestamp/dirty => means...
        -------------------------------------
        None/None => not loaded (yet)
-       None/<dt> => new
+       None/<dt> => new, or moved
        <dt>/None => loaded, but not changed
        <dt>/<dt> => loaded, and changed
 
@@ -62,7 +62,7 @@ class File(Handler):
                 # A handler from some input data
                 self.new(**kw)
         else:
-            self.key = self.database.resolve_key(key)
+            self.key = self.database.normalize_key(key)
 
 
     def reset(self):

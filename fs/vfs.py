@@ -349,7 +349,7 @@ class Folder(object):
 
 
     # Resolution method for handler database keys
-    resolve_key = get_uri
+    normalize_key = get_uri
 
 
 

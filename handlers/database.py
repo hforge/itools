@@ -171,10 +171,10 @@ class RODatabase(object):
     #######################################################################
     # Public API
     #######################################################################
-    def resolve_key(self, key):
+    def normalize_key(self, key):
         """Resolves and returns the given key to be unique.
         """
-        return self.fs.resolve_key(key)
+        return self.fs.normalize_key(key)
 
 
     def safe_make_file(self, key):
@@ -237,7 +237,7 @@ class RODatabase(object):
 
 
     def has_handler(self, key):
-        key = self.resolve_key(key)
+        key = self.normalize_key(key)
 
         # Synchronize
         handler = self._sync_filesystem(key)
@@ -249,7 +249,7 @@ class RODatabase(object):
 
 
     def get_handler_names(self, key):
-        key = self.resolve_key(key)
+        key = self.normalize_key(key)
 
         if self.fs.exists(key):
             names = self.fs.get_names(key)
@@ -276,7 +276,7 @@ class RODatabase(object):
 
 
     def get_handler(self, key, cls=None):
-        key = self.resolve_key(key)
+        key = self.normalize_key(key)
 
         # Synchronize
         handler = self._sync_filesystem(key)
@@ -311,7 +311,7 @@ class RODatabase(object):
 
 
     def get_handlers(self, key):
-        base = self.resolve_key(key)
+        base = self.normalize_key(key)
         for name in self.get_handler_names(base):
             key = self.fs.resolve2(base, name)
             yield self.get_handler(key)
@@ -385,7 +385,7 @@ class RWDatabase(RODatabase):
 
 
     def has_handler(self, key):
-        key = self.resolve_key(key)
+        key = self.normalize_key(key)
 
         # Check the state
         if key in self.handlers_new2old:
@@ -402,7 +402,7 @@ class RWDatabase(RODatabase):
         fs = self.fs
 
         # The State
-        base = self.resolve_key(key)
+        base = self.normalize_key(key)
         # Removed
         for key in self.handlers_old2new:
             name = fs.get_basename(key)
@@ -419,7 +419,7 @@ class RWDatabase(RODatabase):
 
 
     def get_handler(self, key, cls=None):
-        key = self.resolve_key(key)
+        key = self.normalize_key(key)
 
         # Check state
         if key in self.handlers_new2old:
@@ -444,7 +444,7 @@ class RWDatabase(RODatabase):
         if handler.key is not None:
             raise ValueError, 'only new files can be added, try to clone first'
 
-        key = self.resolve_key(key)
+        key = self.normalize_key(key)
         if self.has_handler(key):
             raise RuntimeError, messages.MSG_URI_IS_BUSY % key
 
@@ -453,7 +453,7 @@ class RWDatabase(RODatabase):
 
 
     def del_handler(self, key):
-        key = self.resolve_key(key)
+        key = self.normalize_key(key)
 
         # Check the handler has been added
         hit = False
@@ -486,7 +486,7 @@ class RWDatabase(RODatabase):
 
 
     def touch_handler(self, key, handler=None):
-        key = self.resolve_key(key)
+        key = self.normalize_key(key)
         handler = self.get_handler(key)
 
         if handler.dirty is None:
@@ -501,8 +501,8 @@ class RWDatabase(RODatabase):
 
 
     def copy_handler(self, source, target):
-        source = self.resolve_key(source)
-        target = self.resolve_key(target)
+        source = self.normalize_key(source)
+        target = self.normalize_key(target)
         if source == target:
             return
 
@@ -527,8 +527,8 @@ class RWDatabase(RODatabase):
 
     def move_handler(self, source, target):
         # TODO This method can be optimized further
-        source = self.resolve_key(source)
-        target = self.resolve_key(target)
+        source = self.normalize_key(source)
+        target = self.normalize_key(target)
         if source == target:
             return
 
@@ -564,7 +564,7 @@ class RWDatabase(RODatabase):
     #######################################################################
     # API / Safe VFS operations (not really safe)
     def safe_make_file(self, key):
-        key = self.resolve_key(key)
+        key = self.normalize_key(key)
 
         # Remove empty folder first
         fs = self.fs
@@ -579,12 +579,12 @@ class RWDatabase(RODatabase):
 
 
     def safe_remove(self, key):
-        key = self.resolve_key(key)
+        key = self.normalize_key(key)
         return self.fs.remove(key)
 
 
     def safe_open(self, key, mode=None):
-        key = self.resolve_key(key)
+        key = self.normalize_key(key)
         return self.fs.open(key, mode)
 
 
@@ -696,7 +696,7 @@ class ROGitDatabase(RODatabase):
         self.path = '%s/' % fs.path
 
 
-    def resolve_key(self, path, __root=Path('/')):
+    def normalize_key(self, path, __root=Path('/')):
         # Performance is critical so assume the path is already relative to
         # the repository.
         key = __root.resolve(path)
@@ -797,7 +797,7 @@ class GitDatabase(ROGitDatabase):
 
 
     def has_handler(self, key):
-        key = self.resolve_key(key)
+        key = self.normalize_key(key)
 
         # A new file/directory is only in to_add
         deep_path = len(Path(key))
@@ -811,7 +811,7 @@ class GitDatabase(ROGitDatabase):
 
 
     def get_handler(self, key, cls=None):
-        key = self.resolve_key(key)
+        key = self.normalize_key(key)
 
         # A hook to handle the new directories
         deep_path = len(Path(key))
@@ -834,7 +834,7 @@ class GitDatabase(ROGitDatabase):
         if handler.key is not None:
             raise ValueError, 'only new files can be added, try to clone first'
 
-        key = self.resolve_key(key)
+        key = self.normalize_key(key)
         if self.has_handler(key):
             raise RuntimeError, messages.MSG_URI_IS_BUSY % key
 
@@ -845,7 +845,7 @@ class GitDatabase(ROGitDatabase):
 
 
     def del_handler(self, key):
-        key = self.resolve_key(key)
+        key = self.normalize_key(key)
         handler = self.get_handler(key)
         to_add = self._to_add
         fs = self.fs
@@ -898,7 +898,7 @@ class GitDatabase(ROGitDatabase):
 
 
     def touch_handler(self, key, handler=None):
-        key = self.resolve_key(key)
+        key = self.normalize_key(key)
 
         # Useful for the phantoms
         if handler is None:
@@ -922,7 +922,7 @@ class GitDatabase(ROGitDatabase):
 
 
     def get_handler_names(self, key):
-        key = self.resolve_key(key)
+        key = self.normalize_key(key)
 
         # On the filesystem
         fs = self.fs
@@ -948,8 +948,8 @@ class GitDatabase(ROGitDatabase):
 
 
     def copy_handler(self, source, target):
-        source = self.resolve_key(source)
-        target = self.resolve_key(target)
+        source = self.normalize_key(source)
+        target = self.normalize_key(target)
 
         # The trivial case
         if source == target:
@@ -987,17 +987,17 @@ class GitDatabase(ROGitDatabase):
     #######################################################################
     # API / Safe VFS operations (not really safe)
     def safe_make_file(self, key):
-        key = self.resolve_key(key)
+        key = self.normalize_key(key)
         return self.fs.make_file(key)
 
 
     def safe_remove(self, key):
-        key = self.resolve_key(key)
+        key = self.normalize_key(key)
         return self.fs.remove(key)
 
 
     def safe_open(self, key, mode=None):
-        key = self.resolve_key(key)
+        key = self.normalize_key(key)
         return self.fs.open(key, mode)
 
 

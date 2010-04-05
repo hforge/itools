@@ -378,8 +378,7 @@ class RWDatabase(RODatabase):
     """
 
     def __init__(self, size_min=4800, size_max=5200, fs=None):
-        RODatabase.__init__(self, size_min=size_min, size_max=size_max,
-                fs=fs)
+        super(RWDatabase, self).__init__(size_min, size_max, fs=fs)
         # The state, for transactions
         self.handlers_old2new = {}
         self.handlers_new2old = {}
@@ -394,11 +393,11 @@ class RWDatabase(RODatabase):
         if key in self.handlers_old2new:
             return False
 
-        return RODatabase.has_handler(self, key)
+        return super(RWDatabase, self).has_handler(key)
 
 
     def get_handler_names(self, key):
-        names = RODatabase.get_handler_names(self, key)
+        names = super(RWDatabase, self).get_handler_names(key)
         names = set(names)
         fs = self.fs
 
@@ -435,7 +434,7 @@ class RWDatabase(RODatabase):
             raise LookupError, 'the resource "%s" does not exist' % key
 
         # Ok
-        return RODatabase.get_handler(self, key, cls=cls)
+        return super(RWDatabase, self).get_handler(key, cls=cls)
 
 
     def set_handler(self, key, handler):
@@ -691,7 +690,7 @@ class ROGitDatabase(RODatabase):
 
         # Initialize the database, but chrooted
         fs = lfs.open(path)
-        RODatabase.__init__(self, size_min, size_max, fs=fs)
+        super(ROGitDatabase, self).__init__(size_min, size_max, fs=fs)
 
         # Keep the path close, to be used by 'send_subprocess'
         self.path = '%s/' % fs.path
@@ -782,7 +781,7 @@ class ROGitDatabase(RODatabase):
 class GitDatabase(ROGitDatabase):
 
     def __init__(self, path, size_min, size_max):
-        ROGitDatabase.__init__(self, path, size_min, size_max)
+        super(GitDatabase, self).__init__(path, size_min, size_max)
 
         # The "git add" arguments
         self._to_add = set()
@@ -825,7 +824,7 @@ class GitDatabase(ROGitDatabase):
                 return folder
 
         # The other files
-        return RODatabase.get_handler(self, key, cls)
+        return super(GitDatabase, self).get_handler(key, cls)
 
 
     def set_handler(self, key, handler):

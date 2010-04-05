@@ -426,7 +426,6 @@ typedef struct
   PyObject_HEAD
   SoupServer * s_server;
   SoupAddress * s_address;
-  guint port;
 } PyServer;
 
 
@@ -499,19 +498,19 @@ PyServerType_init (PyServer * self, PyObject * args, PyObject * kwdict)
 
   /* An interface is specified ? */
   if (strcmp(address, "") != 0)
-  {
     s_address = soup_address_new (address, port);
-    if (!s_address)
-    {
-      PyErr_Format (PyExc_RuntimeError, "Bad address/port arguments");
-      return -1;
-    }
-    soup_address_resolve_sync(s_address, NULL);
+  else
+    s_address = soup_address_new ("127.0.0.1", port);
+
+  if (!s_address)
+  {
+    PyErr_Format (PyExc_RuntimeError, "Bad address/port arguments");
+    return -1;
   }
+  soup_address_resolve_sync(s_address, NULL);
 
   /* Keep address & port */
   self->s_address = s_address;
-  self->port = port;
 
   /* Ok */
   return 0;
@@ -537,7 +536,6 @@ PyServerType_start (PyServer * self, PyObject * args, PyObject * kwdict)
   /* Make the server */
   s_server = soup_server_new (SOUP_SERVER_SERVER_HEADER, "itools.http",
                               SOUP_SERVER_INTERFACE, self->s_address,
-                              SOUP_SERVER_PORT, self->port,
                               NULL);
   if (!s_server)
   {

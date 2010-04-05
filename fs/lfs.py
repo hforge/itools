@@ -223,7 +223,7 @@ class LocalFolder(object):
 
 
     # Resolution method for handler database keys
-    resolve_key = get_absolute_path
+    normalize_key = get_absolute_path
 
 
 # The entrypoint is the current working directory

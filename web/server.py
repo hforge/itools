@@ -25,7 +25,6 @@ from urllib import unquote
 from warnings import warn
 
 # Import from itools
-from itools.handlers import BaseDatabase
 from itools.http import HTTPServer
 from itools.http import ClientError, NotModified, Forbidden, NotFound
 from itools.http import NotImplemented, MethodNotAllowed, Unauthorized
@@ -42,7 +41,7 @@ class WebServer(HTTPServer):
     access_log = None
     event_log = None
 
-    database = BaseDatabase()
+    database = None
 
 
     def __init__(self, root, address=None, port=None, access_log=None,
@@ -361,15 +360,16 @@ class RequestMethod(object):
         if isinstance(context.entity, (FunctionType, MethodType)):
             try:
                 context.entity = context.entity(context.resource, context)
-            except:
+            except Exception:
                 cls.internal_server_error(server, context)
             server.database.abort_changes()
 
         # (6) After Traverse hook
         try:
             context.site_root.after_traverse(context)
-        except:
+        except Exception:
             cls.internal_server_error(server, context)
+            context.content_type = 'text/html; charset=UTF-8'
 
         # (7) Build and return the response
         cls.set_body(context)
@@ -495,7 +495,7 @@ class OPTIONS(RequestMethod):
         # (5) After Traverse hook
         try:
             context.site_root.after_traverse(context)
-        except:
+        except Exception:
             cls.internal_server_error(server, context)
 
         # (6) Build and return the response

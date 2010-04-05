@@ -223,6 +223,18 @@ class FolderTestCase(TestCase):
                           TextFile())
 
 
+    def test_add_get_handlers(self):
+        database = self.database
+
+        # Add a new file
+        new_file = TextFile(data=u'Test get_handlers\n')
+        database.set_handler('test_dir/test_get_handlers.txt', new_file)
+
+        # get_handlers
+        handlers = list(database.get_handlers("test_dir"))
+        self.assertEqual(new_file in handlers, True)
+
+
 
 class TextTestCase(TestCase):
 
@@ -395,7 +407,8 @@ class GitDatabaseTestCase(TestCase):
 
 
     def tearDown(self):
-        for name in ['fables/31.txt', 'fables/agenda', 'fables/.git']:
+        for name in ['fables/31.txt', 'fables/agenda', 'fables/.git',
+                     'fables/broken.txt']:
             if lfs.exists(name):
                 lfs.remove(name)
 
@@ -443,7 +456,7 @@ class GitDatabaseTestCase(TestCase):
     def test_append(self):
         database = self.database
         root = self.root
-        # Initalize
+        # Initialize
         agenda = Agenda()
         agenda.add_record({'firstname': u'Karl', 'lastname': u'Marx'})
         agenda.add_record({'firstname': u'Jean-Jacques',
@@ -475,7 +488,6 @@ class GitDatabaseTestCase(TestCase):
 
         fables.del_handler('31.txt')
         fables.set_handler('31.txt', TextFile())
-        self.assertEqual(lfs.exists('fables/31.txt'), True)
         self.assertEqual(fables.has_handler('31.txt'), True)
         # Save
         self.database.save_changes()

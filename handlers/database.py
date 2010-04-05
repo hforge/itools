@@ -32,119 +32,21 @@ import messages
 from registry import get_handler_class_by_mimetype
 
 
-###########################################################################
 # Exceptions
-###########################################################################
 class ReadOnlyError(RuntimeError):
     pass
 
 
-###########################################################################
-# Abstract database (defines the API)
-###########################################################################
 
-class BaseDatabase(object):
-
-    def _before_commit(self):
-        """This method is called before 'save_changes', and gives a chance
-        to the database to check for preconditions, if an error occurs here
-        the transaction will be aborted.
-
-        The value returned by this method will be passed to '_save_changes',
-        so it can be used to pre-calculate whatever data is needed.
-        """
-        return None
-
-
-    def _save_changes(self, data):
-        raise NotImplementedError
-
-
-    def _rollback(self):
-        """To be called when something goes wrong while saving the changes.
-        """
-        raise NotImplementedError
-
-
-    def _abort_changes(self):
-        """To be called to abandon the transaction.
-        """
-        raise NotImplementedError
-
-
-    def _cleanup(self):
-        """For maintenance operations, this method is automatically called
-        after a transaction is committed or aborted.
-        """
-
-
-    def _has_changed(self):
-        """Returns whether there is something that has changed or not.
-        This is to avoid superfluos actions by the 'save' and 'abort'
-        methods.
-        """
-        raise NotImplementedError
-
-
-    #######################################################################
-    # Public API
-
-    ################
-    # Handlers'API
-
-    # XXX Move here the functions move_handler, ...
-    #     with a NotImplementedError
-
-    def touch_handler(self, key, handler=None):
-        """Report a modification of the key/handler to the database.
-           We must pass the handler because of phantoms.
-        """
-        raise NotImplementedError
-
-
-    ################
-    # Commit / Abort
-
-    def save_changes(self):
-        if self._has_changed() is False:
-            return
-
-        # Prepare for commit, do here the most you can, if something fails
-        # the transaction will be aborted
-        try:
-            data = self._before_commit()
-        except:
-            self._abort_changes()
-            self._cleanup()
-            raise
-
-        # Commit
-        try:
-            self._save_changes(data)
-        except Exception:
-            self._rollback()
-            self._abort_changes()
-            raise
-        finally:
-            self._cleanup()
-
-
-    def abort_changes(self):
-        if self._has_changed() is False:
-            return
-
-        self._abort_changes()
-        self._cleanup()
-
-
-
-###########################################################################
-# Read Only Database
-###########################################################################
-
-class RODatabase(BaseDatabase):
-    """The read-only database works as a cache for file handlers.
+class RODatabase(object):
+    """The read-only database works as a cache for file handlers.  This is
+    the base class for any other handler database.
     """
+
+    # Flag to know whether to commit or not.  This is to avoid superfluos
+    # actions by the 'save' and 'abort' methods.
+    has_changed = False
+
 
     def __init__(self, size_min=4800, size_max=5200, fs=None):
         # A mapping from key to handler
@@ -152,12 +54,9 @@ class RODatabase(BaseDatabase):
         self.fs = fs or vfs
 
 
-    def resolve_key(self, key):
-        """Resolves and returns the given key to be unique.
-        """
-        return self.fs.resolve_key(key)
-
-
+    #######################################################################
+    # Private API
+    #######################################################################
     def _sync_filesystem(self, key):
         """This method checks the state of the key in the cache against the
         filesystem. Synchronizes the state if needed by discarding the
@@ -220,8 +119,6 @@ class RODatabase(BaseDatabase):
             return handler
 
 
-    #######################################################################
-    # Cache API
     def _discard_handler(self, key):
         """Unconditionally remove the handler identified by the given key from
         the cache, and invalidate it (and free memory at the same time).
@@ -229,6 +126,70 @@ class RODatabase(BaseDatabase):
         handler = self.cache.pop(key)
         # Invalidate the handler
         handler.__dict__.clear()
+
+
+    def _before_commit(self):
+        """This method is called before 'save_changes', and gives a chance
+        to the database to check for preconditions, if an error occurs here
+        the transaction will be aborted.
+
+        The value returned by this method will be passed to '_save_changes',
+        so it can be used to pre-calculate whatever data is needed.
+        """
+        return None
+
+
+    def _save_changes(self, data):
+        raise NotImplementedError
+
+
+    def _rollback(self):
+        """To be called when something goes wrong while saving the changes.
+        """
+        raise NotImplementedError
+
+
+    def _abort_changes(self):
+        """To be called to abandon the transaction.
+        """
+        raise NotImplementedError
+
+
+    def _cleanup(self):
+        """For maintenance operations, this method is automatically called
+        after a transaction is committed or aborted.
+        """
+#       import gc
+#       from itools.core import vmsize
+#       print 'RODatabase._cleanup (0): % 4d %s' % (len(self.cache), vmsize())
+#       print gc.get_count()
+        self.make_room()
+#       print 'RODatabase._cleanup (1): % 4d %s' % (len(self.cache), vmsize())
+#       print gc.get_count()
+
+
+    #######################################################################
+    # Public API
+    #######################################################################
+    def normalize_key(self, key):
+        """Resolves and returns the given key to be unique.
+        """
+        return self.fs.normalize_key(key)
+
+
+    def safe_make_file(self, key):
+        raise ReadOnlyError, 'cannot make file'
+
+
+    def safe_remove(self, key):
+        raise ReadOnlyError, 'cannot remove'
+
+
+    def safe_open(self, key, mode=None):
+        if mode in (WRITE, READ_WRITE, APPEND):
+            raise ReadOnlyError, 'cannot open file for writing'
+
+        return self.fs.open(key, READ)
 
 
     def push_handler(self, key, handler):
@@ -241,11 +202,6 @@ class RODatabase(BaseDatabase):
             return
         # Store in the cache
         self.cache[key] = handler
-
-
-    def push_phantom(self, key, handler):
-        handler.database = self
-        handler.key = key
 
 
     def make_room(self):
@@ -280,18 +236,8 @@ class RODatabase(BaseDatabase):
                 return
 
 
-    def _has_changed(self):
-        return False
-
-
-    #######################################################################
-    # Database API
-    def is_phantom(self, handler):
-        return handler.timestamp is None and handler.dirty is not None
-
-
     def has_handler(self, key):
-        key = self.resolve_key(key)
+        key = self.normalize_key(key)
 
         # Synchronize
         handler = self._sync_filesystem(key)
@@ -303,7 +249,7 @@ class RODatabase(BaseDatabase):
 
 
     def get_handler_names(self, key):
-        key = self.resolve_key(key)
+        key = self.normalize_key(key)
 
         if self.fs.exists(key):
             names = self.fs.get_names(key)
@@ -330,7 +276,7 @@ class RODatabase(BaseDatabase):
 
 
     def get_handler(self, key, cls=None):
-        key = self.resolve_key(key)
+        key = self.normalize_key(key)
 
         # Synchronize
         handler = self._sync_filesystem(key)
@@ -365,15 +311,19 @@ class RODatabase(BaseDatabase):
 
 
     def get_handlers(self, key):
-        base = self.resolve_key(key)
-        fs = self.fs
-        for name in fs.get_names(base):
-            key = fs.resolve2(base, name)
+        base = self.normalize_key(key)
+        for name in self.get_handler_names(base):
+            key = self.fs.resolve2(base, name)
             yield self.get_handler(key)
 
 
-    #######################################################################
-    # Write API
+    def touch_handler(self, key, handler=None):
+        """Report a modification of the key/handler to the database.  We must
+        pass the handler because of phantoms.
+        """
+        raise ReadOnlyError, 'cannot set handler'
+
+
     def set_handler(self, key, handler):
         raise ReadOnlyError, 'cannot set handler'
 
@@ -390,54 +340,52 @@ class RODatabase(BaseDatabase):
         raise ReadOnlyError, 'cannot move handler'
 
 
-    def safe_make_file(self, key):
-        raise ReadOnlyError, 'cannot make file'
+    def save_changes(self):
+        if not self.has_changed:
+            return
+
+        # Prepare for commit, do here the most you can, if something fails
+        # the transaction will be aborted
+        try:
+            data = self._before_commit()
+        except:
+            self._abort_changes()
+            self._cleanup()
+            raise
+
+        # Commit
+        try:
+            self._save_changes(data)
+        except Exception:
+            self._rollback()
+            self._abort_changes()
+            raise
+        finally:
+            self._cleanup()
 
 
-    def safe_remove(self, key):
-        raise ReadOnlyError, 'cannot remove'
+    def abort_changes(self):
+        if not self.has_changed:
+            return
+
+        self._abort_changes()
+        self._cleanup()
 
 
-    def safe_open(self, key, mode=None):
-        if mode in (WRITE, READ_WRITE, APPEND):
-            raise ReadOnlyError, 'cannot open file for writing'
 
-        return self.fs.open(key, READ)
-
-
-    def _cleanup(self):
-#       import gc
-#       from itools.core import vmsize
-#       print 'RODatabase._cleanup (0): % 4d %s' % (len(self.cache), vmsize())
-#       print gc.get_count()
-        self.make_room()
-#       print 'RODatabase._cleanup (1): % 4d %s' % (len(self.cache), vmsize())
-#       print gc.get_count()
-
-
-###########################################################################
-# Read/Write Database (in memory transactions)
-###########################################################################
 class RWDatabase(RODatabase):
+    """Add write operations and in-memory transactions.
+    """
 
     def __init__(self, size_min=4800, size_max=5200, fs=None):
-        RODatabase.__init__(self, size_min=size_min, size_max=size_max,
-                fs=fs)
+        super(RWDatabase, self).__init__(size_min, size_max, fs=fs)
         # The state, for transactions
         self.handlers_old2new = {}
         self.handlers_new2old = {}
 
 
-    def is_phantom(self, handler):
-        # Phantom handlers are "new"
-        if handler.timestamp or not handler.dirty:
-            return False
-        # They are attached to this database, but they are not in the cache
-        return handler.database is self and handler.key not in self.cache
-
-
     def has_handler(self, key):
-        key = self.resolve_key(key)
+        key = self.normalize_key(key)
 
         # Check the state
         if key in self.handlers_new2old:
@@ -445,16 +393,16 @@ class RWDatabase(RODatabase):
         if key in self.handlers_old2new:
             return False
 
-        return RODatabase.has_handler(self, key)
+        return super(RWDatabase, self).has_handler(key)
 
 
     def get_handler_names(self, key):
-        names = RODatabase.get_handler_names(self, key)
+        names = super(RWDatabase, self).get_handler_names(key)
         names = set(names)
         fs = self.fs
 
         # The State
-        base = self.resolve_key(key)
+        base = self.normalize_key(key)
         # Removed
         for key in self.handlers_old2new:
             name = fs.get_basename(key)
@@ -471,7 +419,7 @@ class RWDatabase(RODatabase):
 
 
     def get_handler(self, key, cls=None):
-        key = self.resolve_key(key)
+        key = self.normalize_key(key)
 
         # Check state
         if key in self.handlers_new2old:
@@ -486,7 +434,7 @@ class RWDatabase(RODatabase):
             raise LookupError, 'the resource "%s" does not exist' % key
 
         # Ok
-        return RODatabase.get_handler(self, key, cls=cls)
+        return super(RWDatabase, self).get_handler(key, cls=cls)
 
 
     def set_handler(self, key, handler):
@@ -494,19 +442,18 @@ class RWDatabase(RODatabase):
             raise ValueError, 'unexpected folder (only files can be "set")'
 
         if handler.key is not None:
-            raise ValueError, ('only new files can be added, '
-                               'try to clone first')
+            raise ValueError, 'only new files can be added, try to clone first'
 
+        key = self.normalize_key(key)
         if self.has_handler(key):
             raise RuntimeError, messages.MSG_URI_IS_BUSY % key
 
-        key = self.resolve_key(key)
         self.push_handler(key, handler)
         self.handlers_new2old[key] = None
 
 
     def del_handler(self, key):
-        key = self.resolve_key(key)
+        key = self.normalize_key(key)
 
         # Check the handler has been added
         hit = False
@@ -539,40 +486,23 @@ class RWDatabase(RODatabase):
 
 
     def touch_handler(self, key, handler=None):
-        key = self.resolve_key(key)
-        if handler is None:
-            handler = self.get_handler(key)
+        key = self.normalize_key(key)
+        handler = self.get_handler(key)
 
-        # Phantoms
-        if self.is_phantom(handler):
-            self.cache[key] = handler
-            self.handlers_new2old[key] = None
-            return
-
-        # Check nothing weird happened
-        if self.cache.get(key) is not handler:
-            raise RuntimeError, 'database inconsistency!'
-
-        # Update database state
-        if handler.timestamp:
-            # Case 1: loaded
+        if handler.dirty is None:
+            # Load the handler if needed
+            if handler.timestamp is None:
+                handler.load_state()
+            # Mark the handler as dirty
             handler.dirty = datetime.now()
-            self.handlers_new2old[key] = key
-            self.handlers_old2new[key] = key
-        elif handler.dirty:
-            # Case 2: new or moved
-            pass
-        else:
-            # Case 3: not loaded (yet)
-            handler.load_state()
-            handler.dirty = datetime.now()
+            # Update database state
             self.handlers_new2old[key] = key
             self.handlers_old2new[key] = key
 
 
     def copy_handler(self, source, target):
-        source = self.resolve_key(source)
-        target = self.resolve_key(target)
+        source = self.normalize_key(source)
+        target = self.normalize_key(target)
         if source == target:
             return
 
@@ -597,8 +527,8 @@ class RWDatabase(RODatabase):
 
     def move_handler(self, source, target):
         # TODO This method can be optimized further
-        source = self.resolve_key(source)
-        target = self.resolve_key(target)
+        source = self.normalize_key(source)
+        target = self.normalize_key(target)
         if source == target:
             return
 
@@ -634,7 +564,7 @@ class RWDatabase(RODatabase):
     #######################################################################
     # API / Safe VFS operations (not really safe)
     def safe_make_file(self, key):
-        key = self.resolve_key(key)
+        key = self.normalize_key(key)
 
         # Remove empty folder first
         fs = self.fs
@@ -649,18 +579,19 @@ class RWDatabase(RODatabase):
 
 
     def safe_remove(self, key):
-        key = self.resolve_key(key)
+        key = self.normalize_key(key)
         return self.fs.remove(key)
 
 
     def safe_open(self, key, mode=None):
-        key = self.resolve_key(key)
+        key = self.normalize_key(key)
         return self.fs.open(key, mode)
 
 
     #######################################################################
     # API / Transactions
-    def _has_changed(self):
+    @property
+    def has_changed(self):
         return bool(self.handlers_old2new) or bool(self.handlers_new2old)
 
 
@@ -747,18 +678,25 @@ class RWDatabase(RODatabase):
         self.handlers_new2old.clear()
 
 
+
 ###########################################################################
 # The Git Database
 ###########################################################################
 class ROGitDatabase(RODatabase):
 
     def __init__(self, path, size_min=4800, size_max=5200):
-        # Restrict to git repository
+        if not lfs.is_folder(path):
+            raise ValueError, '"%s" should be a folder, but it is not' % path
+
+        # Initialize the database, but chrooted
         fs = lfs.open(path)
-        RODatabase.__init__(self, size_min, size_max, fs=fs)
+        super(ROGitDatabase, self).__init__(size_min, size_max, fs=fs)
+
+        # Keep the path close, to be used by 'send_subprocess'
+        self.path = '%s/' % fs.path
 
 
-    def resolve_key(self, path, __root=Path('/')):
+    def normalize_key(self, path, __root=Path('/')):
         # Performance is critical so assume the path is already relative to
         # the repository.
         key = __root.resolve(path)
@@ -769,9 +707,18 @@ class ROGitDatabase(RODatabase):
         return '/'.join(key)
 
 
+    def push_phantom(self, key, handler):
+        handler.database = self
+        handler.key = key
+
+
+    def is_phantom(self, handler):
+        return handler.timestamp is None and handler.dirty is not None
+
+
     def get_diff(self, revision):
         cmd = ['git', 'show', revision, '--pretty=format:%an%n%at%n%s']
-        data = send_subprocess(cmd)
+        data = send_subprocess(cmd, path=self.path)
         lines = data.splitlines()
 
         ts = int(lines[1])
@@ -786,7 +733,7 @@ class ROGitDatabase(RODatabase):
         """Get the unordered set of files affected by a list of revisions.
         """
         cmd = ['git', 'show', '--numstat', '--pretty=format:'] + revisions
-        data = send_subprocess(cmd)
+        data = send_subprocess(cmd, path=self.path)
         lines = data.splitlines()
         files = set()
         for line in lines:
@@ -806,7 +753,7 @@ class ROGitDatabase(RODatabase):
         if paths:
             cmd.append('--')
             cmd.extend(paths)
-        return send_subprocess(cmd)
+        return send_subprocess(cmd, path=self.path)
 
 
     def get_diff_between(self, from_, to='HEAD', paths=[]):
@@ -819,7 +766,7 @@ class ROGitDatabase(RODatabase):
         if paths:
             cmd.append('--')
             cmd.extend(paths)
-        return send_subprocess(cmd)
+        return send_subprocess(cmd, path=self.path)
 
 
     def get_blob(self, revision, path):
@@ -827,34 +774,277 @@ class ROGitDatabase(RODatabase):
         commit revision has been committed.
         """
         cmd = ['git', 'show', '%s:%s' % (revision, path)]
-        return send_subprocess(cmd)
+        return send_subprocess(cmd, path=self.path)
 
 
 
-class GitDatabase(RWDatabase, ROGitDatabase):
+class GitDatabase(ROGitDatabase):
 
     def __init__(self, path, size_min, size_max):
-        RWDatabase.__init__(self, size_min, size_max)
-        ROGitDatabase.__init__(self, path, size_min, size_max)
+        super(GitDatabase, self).__init__(path, size_min, size_max)
+
+        # The "git add" arguments
+        self._to_add = set()
+        self.has_changed = False
+
+
+    def is_phantom(self, handler):
+        # Phantom handlers are "new"
+        if handler.timestamp or not handler.dirty:
+            return False
+        # They are attached to this database, but they are not in the cache
+        return handler.database is self and handler.key not in self.cache
+
+
+    def has_handler(self, key):
+        key = self.normalize_key(key)
+
+        # A new file/directory is only in to_add
+        n = len(key)
+        for f_key in self._to_add:
+            if f_key[:n] == key and (len(f_key) == n or f_key[n] == '/'):
+                return True
+
+        # Normal case
+        return self.fs.exists(key)
+
+
+    def get_handler(self, key, cls=None):
+        key = self.normalize_key(key)
+
+        # A hook to handle the new directories
+        base = key + '/'
+        n = len(base)
+        for f_key in self._to_add:
+            if f_key[:n] == base:
+                if cls is None:
+                    cls = Folder
+                return cls(key, database=self)
+
+        # The other files
+        return super(GitDatabase, self).get_handler(key, cls)
+
+
+    def set_handler(self, key, handler):
+        if isinstance(handler, Folder):
+            raise ValueError, 'unexpected folder (only files can be "set")'
+
+        if handler.key is not None:
+            raise ValueError, 'only new files can be added, try to clone first'
+
+        key = self.normalize_key(key)
+        if self.has_handler(key):
+            raise RuntimeError, messages.MSG_URI_IS_BUSY % key
+
+        self.push_handler(key, handler)
+        self._to_add.add(key)
+        # Changed
+        self.has_changed = True
+
+
+    def del_handler(self, key):
+        key = self.normalize_key(key)
+        handler = self.get_handler(key)
+        to_add = self._to_add
+        fs = self.fs
+
+        # Folder
+        if isinstance(handler, Folder):
+            # Search all the files to delete
+            git_path = fs.get_absolute_path('.git')
+            to_del = [
+                fs.get_relative_path(path) for path in fs.traverse(key)
+                if not fs.is_folder(path) and not path.startswith(git_path) ]
+
+            # Update to_add and complete to_del
+            for file_key in set(to_add):
+                if file_key.startswith(key):
+                    to_add.remove(file_key)
+                    if file_key not in to_del:
+                        to_del.apppend(file_key)
+
+            # Synchronize and suppress from the cache the files from to_del
+            for file_key in to_del:
+                # XXX We cannot call twice this function
+                #self._sync_filesystem(file_key)
+                self._discard_handler(file_key)
+
+            # Suppress the folder
+            if key != "":
+                fs.remove(key)
+            else:
+                for path in fs.get_names():
+                    if not path.startswith('.git'):
+                        fs.remove(path)
+        # File
+        else:
+            # Synchronize and suppress from the cache
+            # XXX
+            #self._sync_filesystem(key)
+            self._discard_handler(key)
+
+            # Suppress eventually from to_add
+            if key in to_add:
+                to_add.remove(key)
+
+            # And delete eventually the file from the filesystem
+            if fs.exists(key):
+                fs.remove(key)
+
+        # Changed
+        self.has_changed = True
+
+
+    def touch_handler(self, key, handler=None):
+        key = self.normalize_key(key)
+
+        # Useful for the phantoms
+        if handler is None:
+            handler = self.get_handler(key)
+
+        # The phantoms become real files
+        if self.is_phantom(handler):
+            self.cache[key] = handler
+
+        if handler.dirty is None:
+            # Load the handler if needed
+            if handler.timestamp is None:
+                handler.load_state()
+            # Mark the handler as dirty
+            handler.dirty = datetime.now()
+            # Update database state (XXX Should we do this?)
+            self._to_add.add(key)
+
+        # Changed
+        self.has_changed = True
+
+
+    def get_handler_names(self, key):
+        key = self.normalize_key(key)
+
+        # On the filesystem
+        names = super(GitDatabase, self).get_handler_names(key)
+        names = set(names)
+
+        # In to_add
+        base = key + '/'
+        n = len(base)
+        for f_key in self._to_add:
+            if f_key[:n] == base:
+                name = f_key[n:].split('/', 1)[0]
+                names.add(name)
+
+        # Remove .git
+        if key == "":
+            names.discard('.git')
+
+        return list(names)
+
+
+    def copy_handler(self, source, target):
+        source = self.normalize_key(source)
+        target = self.normalize_key(target)
+
+        # The trivial case
+        if source == target:
+            return
+
+        # Check the target is free
+        if self.has_handler(target):
+            raise RuntimeError, messages.MSG_URI_IS_BUSY % target
+
+        handler = self.get_handler(source)
+
+        # Folder
+        if isinstance(handler, Folder):
+            fs = self.fs
+            for name in handler.get_handler_names():
+                self.copy_handler(fs.resolve2(source, name),
+                                  fs.resolve2(target, name))
+        # File
+        else:
+            handler = handler.clone()
+            self.push_handler(target, handler)
+            self._to_add.add(target)
+
+        # Changed
+        self.has_changed = True
+
+
+    def move_handler(self, source, target):
+        self.copy_handler(source, target)
+        self.del_handler(source)
+        # Changed
+        self.has_changed = True
+
+
+    #######################################################################
+    # API / Safe VFS operations (not really safe)
+    def safe_make_file(self, key):
+        key = self.normalize_key(key)
+        return self.fs.make_file(key)
+
+
+    def safe_remove(self, key):
+        key = self.normalize_key(key)
+        return self.fs.remove(key)
+
+
+    def safe_open(self, key, mode=None):
+        key = self.normalize_key(key)
+        return self.fs.open(key, mode)
+
+
+    #######################################################################
+    # API / Transactions
+    def _cleanup(self):
+        super(GitDatabase, self)._cleanup()
+        self.has_changed = False
+
+
+    def _abort_changes(self):
+        path = self.path
+        to_add = self._to_add
+
+        for key in to_add:
+            # XXX we cannot distinguish between new files and modified files
+            #     => we erase all
+            self._discard_handler(key)
+
+        to_add.clear()
+
+        # And now, clean the filesystem
+        send_subprocess(['git', 'reset', '--hard', '-q'], path=path)
+        send_subprocess(['git', 'clean', '-fxdq'], path=path)
 
 
     def _rollback(self):
-        send_subprocess(['git', 'reset', '--hard', '-q'])
-        send_subprocess(['git', 'clean', '-fxdq'])
+        pass
 
 
     def _save_changes(self, data):
-        # Figure out the files to add
-        git_files = [ x for x in self.handlers_new2old ]
-
-        # Save
-        RWDatabase._save_changes(self, data)
-
-        # Add
+        path = self.path
         fs = self.fs
-        git_files = [ x for x in git_files if fs.exists(x) ]
-        if git_files:
-            send_subprocess(['git', 'add'] + git_files)
+        to_add = self._to_add
+
+        # Synchronize eventually the handlers and the filesystem
+        for key in to_add:
+            handler = self.cache[key]
+            # XXX Can we do this better ?
+            # Save the file:
+            if fs.exists(key):
+                handler.save_state()
+            else:
+                # We use save_state_to to handle new and/or moved files
+                # but we must update the timestamp, ...
+                handler.save_state_to(key)
+                handler.timestamp = fs.get_mtime(key)
+                handler.dirty = None
+
+        # Call a "git add" eventually for new and/or moved files
+        if to_add:
+            send_subprocess(['git', 'add'] + list(to_add), path=path)
+        to_add.clear()
 
         # Commit
         command = ['git', 'commit', '-aq']
@@ -864,38 +1054,12 @@ class GitDatabase(RWDatabase, ROGitDatabase):
             git_author, git_message = data
             command.extend(['--author=%s' % git_author, '-m', git_message])
         try:
-            send_subprocess(command)
+            send_subprocess(command, path=path)
         except CalledProcessError, excp:
             # Avoid an exception for the 'nothing to commit' case
             # FIXME Not reliable, we may catch other cases
             if excp.returncode != 1:
                 raise
-
-
-    def get_handler_names(self, key):
-        # TODO Use this method not only for GitDatabase, but for any database
-        # that uses lfs.
-        names = RODatabase.get_handler_names(self, key)
-        names = set(names)
-
-        # The State
-        base = self.resolve_key(key) + '/'
-        n = len(base)
-        # Removed
-        for key in self.handlers_old2new:
-            if key[:n] == base:
-                name = key[n:]
-                if '/' not in name:
-                    names.discard(name)
-        # Added
-        for key in self.handlers_new2old:
-            if key[:n] == base:
-                name = key[n:]
-                if '/' not in name:
-                    names.add(name)
-
-        # Ok
-        return list(names)
 
 
 
@@ -907,18 +1071,22 @@ def make_git_database(path, size_min, size_max):
     initialized and the content of the folder will be added to it in a first
     commit.
     """
+    path = lfs.get_absolute_path(path)
     if not lfs.exists(path):
-        mkdir(path)
+        lfs.make_folder(path)
+
     # Init
-    command = ['git', 'init', '-q']
-    call(command, cwd=path, stdout=PIPE)
+    send_subprocess(['git', 'init', '-q'], path=path)
+
     # Add
-    command = ['git', 'add', '.']
-    error = call(command, cwd=path, stdout=PIPE, stderr=PIPE)
-    # Commit
-    if error == 0:
-        command = ['git', 'commit', '-q', '-m', 'Initial commit']
-        call(command, cwd=path, stdout=PIPE)
+    send_subprocess(['git', 'add', '.'], path=path)
+
+    # Commit or not ?
+    try:
+        send_subprocess(['git', 'commit', '-q', '-m', 'Initial commit'],
+                        path=path)
+    except CalledProcessError:
+        pass
 
     # Ok
     return GitDatabase(path, size_min, size_max)

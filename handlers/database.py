@@ -813,14 +813,13 @@ class GitDatabase(ROGitDatabase):
         key = self.normalize_key(key)
 
         # A hook to handle the new directories
-        deep_path = len(Path(key))
-        for file_key in self._to_add:
-            # Match ?
-            if file_key.startswith(key) and len(Path(file_key)) > deep_path:
+        base = key + '/'
+        n = len(base)
+        for f_key in self._to_add:
+            if f_key[:n] == base:
                 if cls is None:
                     cls = Folder
-                folder = cls(key, database=self)
-                return folder
+                return cls(key, database=self)
 
         # The other files
         return super(GitDatabase, self).get_handler(key, cls)

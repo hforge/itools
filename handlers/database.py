@@ -970,8 +970,8 @@ class GitDatabase(ROGitDatabase):
         # File
         else:
             handler = handler.clone()
-            self.push_handler(key, handler)
-            self._to_add.add(key)
+            self.push_handler(target, handler)
+            self._to_add.add(target)
 
         # Changed
         self.has_changed = True

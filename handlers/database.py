@@ -43,6 +43,11 @@ class RODatabase(object):
     the base class for any other handler database.
     """
 
+    # Flag to know whether to commit or not.  This is to avoid superfluos
+    # actions by the 'save' and 'abort' methods.
+    has_changed = False
+
+
     def __init__(self, size_min=4800, size_max=5200, fs=None):
         # A mapping from key to handler
         self.cache = LRUCache(size_min, size_max, automatic=False)
@@ -161,14 +166,6 @@ class RODatabase(object):
         self.make_room()
 #       print 'RODatabase._cleanup (1): % 4d %s' % (len(self.cache), vmsize())
 #       print gc.get_count()
-
-
-    def _has_changed(self):
-        """Returns whether there is something that has changed or not.
-        This is to avoid superfluos actions by the 'save' and 'abort'
-        methods.
-        """
-        return False
 
 
     #######################################################################
@@ -344,7 +341,7 @@ class RODatabase(object):
 
 
     def save_changes(self):
-        if self._has_changed() is False:
+        if not self.has_changed:
             return
 
         # Prepare for commit, do here the most you can, if something fails
@@ -368,7 +365,7 @@ class RODatabase(object):
 
 
     def abort_changes(self):
-        if self._has_changed() is False:
+        if not self.has_changed:
             return
 
         self._abort_changes()
@@ -594,7 +591,8 @@ class RWDatabase(RODatabase):
 
     #######################################################################
     # API / Transactions
-    def _has_changed(self):
+    @property
+    def has_changed(self):
         return bool(self.handlers_old2new) or bool(self.handlers_new2old)
 
 
@@ -788,6 +786,7 @@ class GitDatabase(ROGitDatabase):
 
         # The "git add" arguments
         self._to_add = set()
+        self.has_changed = False
 
 
     def is_phantom(self, handler):
@@ -842,6 +841,8 @@ class GitDatabase(ROGitDatabase):
 
         self.push_handler(key, handler)
         self._to_add.add(key)
+        # Changed
+        self.has_changed = True
 
 
     def del_handler(self, key):
@@ -854,10 +855,9 @@ class GitDatabase(ROGitDatabase):
         if isinstance(handler, Folder):
             # Search all the files to delete
             git_path = fs.get_absolute_path('.git')
-            to_del = [ fs.get_relative_path(path)
-                       for path in fs.traverse(key)
-                       if not fs.is_folder(path) and
-                          not path.startswith(git_path) ]
+            to_del = [
+                fs.get_relative_path(path) for path in fs.traverse(key)
+                if not fs.is_folder(path) and not path.startswith(git_path) ]
 
             # Update to_add and complete to_del
             for file_key in set(to_add):
@@ -894,6 +894,9 @@ class GitDatabase(ROGitDatabase):
             if fs.exists(key):
                 fs.remove(key)
 
+        # Changed
+        self.has_changed = True
+
 
     def touch_handler(self, key, handler=None):
         key = self.resolve_key(key)
@@ -914,6 +917,9 @@ class GitDatabase(ROGitDatabase):
             handler.dirty = datetime.now()
             # Update database state (XXX Should we do this?)
             self._to_add.add(key)
+
+        # Changed
+        self.has_changed = True
 
 
     def get_handler_names(self, key):
@@ -968,10 +974,15 @@ class GitDatabase(ROGitDatabase):
             self.push_handler(key, handler)
             self._to_add.add(key)
 
+        # Changed
+        self.has_changed = True
+
 
     def move_handler(self, source, target):
         self.copy_handler(source, target)
         self.del_handler(source)
+        # Changed
+        self.has_changed = True
 
 
     #######################################################################
@@ -993,8 +1004,9 @@ class GitDatabase(ROGitDatabase):
 
     #######################################################################
     # API / Transactions
-    def _has_changed(self):
-        return bool(self._to_add)
+    def _cleanup(self):
+        super(GitDatabase, self)._cleanup()
+        self.has_changed = False
 
 
     def _abort_changes(self):

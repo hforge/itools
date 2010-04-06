@@ -837,7 +837,8 @@ class Table(File):
                 return datatype.get_default()
             # Language negotiation ('select_language' is a built-in)
             if language is None:
-                languages = [ x.parameters['language'] for x in property ]
+                languages = [ x.parameters['language'] for x in property
+                              if not datatype.is_empty(x.value) ]
                 language = select_language(languages)
                 if language is None and languages:
                     # Pick up one at random (FIXME)

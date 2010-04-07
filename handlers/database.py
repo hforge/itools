@@ -1014,7 +1014,11 @@ class GitDatabase(ROGitDatabase):
         to_add.clear()
 
         # And now, clean the filesystem
-        send_subprocess(['git', 'reset', '--hard', '-q'], path=path)
+        try:
+            # In a try/except to avoid a problem with new repositories
+            send_subprocess(['git', 'reset', '--hard', '-q'], path=path)
+        except CalledProcessError:
+            pass
         send_subprocess(['git', 'clean', '-fxdq'], path=path)
 
 

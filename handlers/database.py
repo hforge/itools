@@ -1076,13 +1076,15 @@ class GitDatabase(ROGitDatabase):
 
 
     def _abort_changes(self):
+        cache = self.cache
         path = self.path
         to_add = self._to_add
 
         for key in to_add:
             # XXX we cannot distinguish between new files and modified files
             #     => we erase all
-            self._discard_handler(key)
+            if key in cache:
+                self._discard_handler(key)
 
         to_add.clear()
 
@@ -1100,13 +1102,18 @@ class GitDatabase(ROGitDatabase):
 
 
     def _save_changes(self, data):
-        path = self.path
+        cache = self.cache
         fs = self.fs
+        path = self.path
         to_add = self._to_add
 
         # Synchronize eventually the handlers and the filesystem
         for key in to_add:
-            handler = self.cache[key]
+            # The handler is in the cache ?
+            handler = cache.get(key)
+            if handler is None:
+                continue
+
             # XXX Can we do this better ?
             # Save the file:
             if fs.exists(key):

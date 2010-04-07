@@ -851,17 +851,21 @@ class GitDatabase(ROGitDatabase):
         # Folder
         if isinstance(handler, Folder):
             # Search all the files to delete
-            git_path = fs.get_absolute_path('.git')
-            to_del = [
-                fs.get_relative_path(path) for path in fs.traverse(key)
-                if not fs.is_folder(path) and not path.startswith(git_path) ]
+            if fs.exists(key):
+                git_path = fs.get_absolute_path('.git')
+                to_del = [ fs.get_relative_path(path)
+                           for path in fs.traverse(key)
+                           if not fs.is_folder(path) and
+                              not path.startswith(git_path) ]
+            else:
+                to_del = []
 
             # Update to_add and complete to_del
             for file_key in set(to_add):
                 if file_key.startswith(key):
                     to_add.remove(file_key)
                     if file_key not in to_del:
-                        to_del.apppend(file_key)
+                        to_del.append(file_key)
 
             # Synchronize and suppress from the cache the files from to_del
             for file_key in to_del:
@@ -870,7 +874,7 @@ class GitDatabase(ROGitDatabase):
                 self._discard_handler(file_key)
 
             # Suppress the folder
-            if key != "":
+            if key != "" and fs.exists(key):
                 fs.remove(key)
             else:
                 for path in fs.get_names():
@@ -972,8 +976,77 @@ class GitDatabase(ROGitDatabase):
 
 
     def move_handler(self, source, target):
-        self.copy_handler(source, target)
-        self.del_handler(source)
+        source = self.normalize_key(source)
+        target = self.normalize_key(target)
+
+        # The trivial case
+        if source == target:
+            return
+
+        # Check the target is free
+        if self.has_handler(target):
+            raise RuntimeError, messages.MSG_URI_IS_BUSY % target
+
+        # Go
+        handler = self.get_handler(source)
+        fs = self.fs
+        to_add = self._to_add
+        cache = self.cache
+
+        # Folder
+        if isinstance(handler, Folder):
+            # Source exists ?
+            if fs.exists(source):
+                git_path = fs.get_absolute_path('.git')
+                keys = [ fs.get_relative_path(path)
+                         for path in fs.traverse(source)
+                         if not fs.is_folder(path) and
+                            not path.startswith(git_path) ]
+                # Move
+                fs.move(source, target)
+            else:
+                keys = []
+            # Complete with the files in to_add and update it
+            for file_key in set(to_add):
+                if file_key.startswith(source):
+                    to_add.remove(file_key)
+                    if file_key not in keys:
+                        keys.append(file_key)
+
+            # Update the cache/to_add
+            len_source = len(source)
+            for file_key in keys:
+                new_key = target + file_key[len_source:]
+
+                # Update to add
+                to_add.add(new_key)
+
+                # And eventually the cache
+                handler = cache.get(file_key)
+                if handler is not None:
+                    del cache[file_key]
+                    self.push_handler(new_key, handler)
+
+        # File
+        else:
+            # Move eventually on the filesystem
+            if fs.exists(source):
+                # Create eventually the parent
+                parent = Path(target)[:-1]
+                if not fs.exists(parent):
+                    fs.make_folder(parent)
+                # And realize the move
+                fs.move(source, target)
+
+            # Update the cache
+            del cache[source]
+            self.push_handler(target, handler)
+
+            # Update to_add
+            to_add.add(target)
+            if source in to_add:
+                to_add.remove(source)
+
         # Changed
         self.has_changed = True
 

@@ -170,6 +170,8 @@ class LocalFolder(object):
 
     def traverse(self, path='.'):
         path = self._resolve_path(path)
+        if not exists(path):
+            raise IOError, "No such directory: '%s'" % path
         yield path
         if isdir(path):
             for root, folders, files in walk(path, topdown=True):

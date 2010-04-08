@@ -909,6 +909,9 @@ class GitDatabase(ROGitDatabase):
         # The phantoms become real files
         if self.is_phantom(handler):
             self.cache[key] = handler
+            self._to_add.add(key)
+            self.has_changed = True
+            return
 
         if handler.dirty is None:
             # Load the handler if needed
@@ -918,9 +921,8 @@ class GitDatabase(ROGitDatabase):
             handler.dirty = datetime.now()
             # Update database state (XXX Should we do this?)
             self._to_add.add(key)
-
-        # Changed
-        self.has_changed = True
+            # Changed
+            self.has_changed = True
 
 
     def get_handler_names(self, key):

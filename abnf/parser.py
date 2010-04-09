@@ -67,6 +67,7 @@ class Parser(object):
         get_token = tokenizer.get_token(data).next
         token, data_idx = get_token()
 
+        result = []
         while token != EOI:
             # Debug
             if debug:
@@ -145,15 +146,21 @@ class Parser(object):
                         next_state = symbol_table.get((state, name), 0)
                         # Stop Condition
                         if last_node==0 and name == start_symbol and token==0:
-                            return value
-                        active_nodes.append(len(stack))
-                        stack.append(
-                            ([last_node], name, next_state, data_idx, value))
+                            result.append(value)
+                        else:
+                            active_nodes.append(len(stack))
+                            stack.append(
+                                ([last_node], name, next_state, data_idx, value))
             active_nodes = new_active_nodes
             # Debug
             if debug:
                 pprint_stack(stack, active_nodes, data, trace)
                 trace.write('\n')
+
+        if result:
+            if len(result) > 1:
+                print 'Warning, the grammar "%s" is ambiguous' % start_symbol
+            return result[0]
 
         raise ValueError, 'grammar error'
 

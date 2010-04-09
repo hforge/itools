@@ -784,7 +784,8 @@ class GitDatabase(ROGitDatabase):
         super(GitDatabase, self).__init__(path, size_min, size_max)
 
         # The "git add" arguments
-        self._to_add = set()
+        self.added = set()
+        self.changed = set()
         self.has_changed = False
 
 
@@ -799,9 +800,9 @@ class GitDatabase(ROGitDatabase):
     def has_handler(self, key):
         key = self.normalize_key(key)
 
-        # A new file/directory is only in to_add
+        # A new file/directory is only in added
         n = len(key)
-        for f_key in self._to_add:
+        for f_key in self.added:
             if f_key[:n] == key and (len(f_key) == n or f_key[n] == '/'):
                 return True
 
@@ -815,7 +816,7 @@ class GitDatabase(ROGitDatabase):
         # A hook to handle the new directories
         base = key + '/'
         n = len(base)
-        for f_key in self._to_add:
+        for f_key in self.added:
             if f_key[:n] == base:
                 if cls is None:
                     cls = Folder
@@ -837,63 +838,41 @@ class GitDatabase(ROGitDatabase):
             raise RuntimeError, messages.MSG_URI_IS_BUSY % key
 
         self.push_handler(key, handler)
-        self._to_add.add(key)
+        self.added.add(key)
         # Changed
         self.has_changed = True
 
 
     def del_handler(self, key):
         key = self.normalize_key(key)
+
+        # Case 1: file
         handler = self.get_handler(key)
-        to_add = self._to_add
-        fs = self.fs
-
-        # Folder
-        if isinstance(handler, Folder):
-            # Search all the files to delete
-            if fs.exists(key):
-                git_path = fs.get_absolute_path('.git')
-                to_del = [ fs.get_relative_path(path)
-                           for path in fs.traverse(key)
-                           if not fs.is_folder(path) and
-                              not path.startswith(git_path) ]
-            else:
-                to_del = []
-
-            # Update to_add and complete to_del
-            for file_key in set(to_add):
-                if file_key.startswith(key):
-                    to_add.remove(file_key)
-                    if file_key not in to_del:
-                        to_del.append(file_key)
-
-            # Synchronize and suppress from the cache the files from to_del
-            for file_key in to_del:
-                # XXX We cannot call twice this function
-                #self._sync_filesystem(file_key)
-                self._discard_handler(file_key)
-
-            # Suppress the folder
-            if key != "" and fs.exists(key):
-                fs.remove(key)
-            else:
-                for path in fs.get_names():
-                    if not path.startswith('.git'):
-                        fs.remove(path)
-        # File
-        else:
-            # Synchronize and suppress from the cache
-            # XXX
-            #self._sync_filesystem(key)
+        if not isinstance(handler, Folder):
             self._discard_handler(key)
+            if key in self.added:
+                self.added.remove(key)
+            else:
+                self.changed.discard(key)
+                self.fs.remove(key)
+            # Changed
+            self.has_changed = True
+            return
 
-            # Suppress eventually from to_add
-            if key in to_add:
-                to_add.remove(key)
+        # Case 2: folder
+        base = key + '/'
+        for k in self.added.copy():
+            if k.startswith(base):
+                self._discard_handler(k)
+                self.added.discard(k)
 
-            # And delete eventually the file from the filesystem
-            if fs.exists(key):
-                fs.remove(key)
+        for k in self.changed.copy():
+            if k.startswith(base):
+                self._discard_handler(k)
+                self.changed.discard(k)
+
+        if fs.exists(key):
+            fs.remove(key)
 
         # Changed
         self.has_changed = True
@@ -909,7 +888,7 @@ class GitDatabase(ROGitDatabase):
         # The phantoms become real files
         if self.is_phantom(handler):
             self.cache[key] = handler
-            self._to_add.add(key)
+            self.added.add(key)
             self.has_changed = True
             return
 
@@ -920,7 +899,7 @@ class GitDatabase(ROGitDatabase):
             # Mark the handler as dirty
             handler.dirty = datetime.now()
             # Update database state (XXX Should we do this?)
-            self._to_add.add(key)
+            self.changed.add(key)
             # Changed
             self.has_changed = True
 
@@ -932,10 +911,10 @@ class GitDatabase(ROGitDatabase):
         names = super(GitDatabase, self).get_handler_names(key)
         names = set(names)
 
-        # In to_add
+        # In added
         base = key + '/'
         n = len(base)
-        for f_key in self._to_add:
+        for f_key in self.added:
             if f_key[:n] == base:
                 name = f_key[n:].split('/', 1)[0]
                 names.add(name)
@@ -971,7 +950,7 @@ class GitDatabase(ROGitDatabase):
         else:
             handler = handler.clone()
             self.push_handler(target, handler)
-            self._to_add.add(target)
+            self.added.add(target)
 
         # Changed
         self.has_changed = True
@@ -990,64 +969,52 @@ class GitDatabase(ROGitDatabase):
             raise RuntimeError, messages.MSG_URI_IS_BUSY % target
 
         # Go
-        handler = self.get_handler(source)
         fs = self.fs
-        to_add = self._to_add
+        added = self.added
         cache = self.cache
 
-        # Folder
-        if isinstance(handler, Folder):
-            # Source exists ?
-            if fs.exists(source):
-                git_path = fs.get_absolute_path('.git')
-                keys = [ fs.get_relative_path(path)
-                         for path in fs.traverse(source)
-                         if not fs.is_folder(path) and
-                            not path.startswith(git_path) ]
-                # Move
-                fs.move(source, target)
+        # Case 1: file
+        handler = self.get_handler(source)
+        if not isinstance(handler, Folder):
+            if source in self.added:
+                self.added.remove(source)
             else:
-                keys = []
-            # Complete with the files in to_add and update it
-            for file_key in set(to_add):
-                if file_key.startswith(source):
-                    to_add.remove(file_key)
-                    if file_key not in keys:
-                        keys.append(file_key)
-
-            # Update the cache/to_add
-            len_source = len(source)
-            for file_key in keys:
-                new_key = target + file_key[len_source:]
-
-                # Update to add
-                to_add.add(new_key)
-
-                # And eventually the cache
-                handler = cache.get(file_key)
-                if handler is not None:
-                    del cache[file_key]
-                    self.push_handler(new_key, handler)
-
-        # File
-        else:
-            # Move eventually on the filesystem
-            if fs.exists(source):
-                # Create eventually the parent
-                parent = Path(target)[:-1]
-                if not fs.exists(parent):
-                    fs.make_folder(parent)
-                # And realize the move
                 fs.move(source, target)
+                if source in self.changed:
+                    self.changed.remove(source)
 
             # Update the cache
             del cache[source]
             self.push_handler(target, handler)
+            self.added.add(target)
+            # Changed
+            self.has_changed = True
+            return
 
-            # Update to_add
-            to_add.add(target)
-            if source in to_add:
-                to_add.remove(source)
+        # Case 2: Folder
+        n = len(source)
+        base = source + '/'
+        for key in self.added.copy():
+            if key.startswith(base):
+                new_key = '%s%s' % (target, key[n:])
+                handler = cache.pop(key)
+                self.push_handler(new_key, handler)
+                self.added.remove(key)
+                self.added.add(new_key)
+
+        for key in self.changed.copy():
+            if key.startswith(base):
+                new_key = '%s%s' % (target, key[n:])
+                handler = cache.pop(key)
+                self.push_handler(new_key, handler)
+                self.changed.remove(key)
+
+        if fs.exists(source):
+            fs.move(source, target)
+        for path in fs.traverse(target):
+            if not fs.is_folder(path):
+                path = fs.get_relative_path(path)
+                self.added.add(path)
 
         # Changed
         self.has_changed = True
@@ -1079,24 +1046,25 @@ class GitDatabase(ROGitDatabase):
 
     def _abort_changes(self):
         cache = self.cache
-        path = self.path
-        to_add = self._to_add
-
-        for key in to_add:
-            # XXX we cannot distinguish between new files and modified files
-            #     => we erase all
-            if key in cache:
-                self._discard_handler(key)
-
-        to_add.clear()
+        # Added handlers
+        for key in self.added:
+            self._discard_handler(key)
+        # Changed handlers
+        for key in self.changed:
+            cache[key].abort_changes()
 
         # And now, clean the filesystem
         try:
             # In a try/except to avoid a problem with new repositories
-            send_subprocess(['git', 'reset', '--hard', '-q'], path=path)
+            send_subprocess(['git', 'reset', '--hard', '-q'], path=self.path)
         except CalledProcessError:
             pass
-        send_subprocess(['git', 'clean', '-fxdq'], path=path)
+        if self.added:
+            send_subprocess(['git', 'clean', '-fxdq'], path=self.path)
+
+        # Reset state
+        self.added.clear()
+        self.changed.clear()
 
 
     def _rollback(self):
@@ -1104,33 +1072,29 @@ class GitDatabase(ROGitDatabase):
 
 
     def _save_changes(self, data):
-        cache = self.cache
-        fs = self.fs
-        path = self.path
-        to_add = self._to_add
-
         # Synchronize eventually the handlers and the filesystem
-        for key in to_add:
-            # The handler is in the cache ?
-            handler = cache.get(key)
+        for key in self.added:
+            # The handler is in the cache?
+            handler = self.cache.get(key)
             if handler is None:
                 continue
 
-            # XXX Can we do this better ?
-            # Save the file:
-            if fs.exists(key):
-                handler.save_state()
-            else:
-                # We use save_state_to to handle new and/or moved files
-                # but we must update the timestamp, ...
-                handler.save_state_to(key)
-                handler.timestamp = fs.get_mtime(key)
-                handler.dirty = None
+            # Save the file: We use save_state_to to handle new and/or moved
+            # files but we must update the timestamp
+            handler.save_state_to(key)
+            handler.timestamp = self.fs.get_mtime(key)
+            handler.dirty = None
+
+        for key in self.changed:
+            handler = self.cache[key]
+            handler.save_state()
+
+        self.changed.clear()
 
         # Call a "git add" eventually for new and/or moved files
-        if to_add:
-            send_subprocess(['git', 'add'] + list(to_add), path=path)
-        to_add.clear()
+        if self.added:
+            send_subprocess(['git', 'add'] + list(self.added), path=self.path)
+            self.added.clear()
 
         # Commit
         command = ['git', 'commit', '-aq']
@@ -1140,7 +1104,7 @@ class GitDatabase(ROGitDatabase):
             git_author, git_message = data
             command.extend(['--author=%s' % git_author, '-m', git_message])
         try:
-            send_subprocess(command, path=path)
+            send_subprocess(command, path=self.path)
         except CalledProcessError, excp:
             # Avoid an exception for the 'nothing to commit' case
             # FIXME Not reliable, we may catch other cases

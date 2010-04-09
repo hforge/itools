@@ -198,7 +198,7 @@ class RODatabase(object):
         handler.database = self
         handler.key = key
         # Folders are not stored in the cache
-        if isinstance(handler, Folder):
+        if type(handler) is Folder:
             return
         # Store in the cache
         self.cache[key] = handler
@@ -295,10 +295,7 @@ class RODatabase(object):
 
         # Folders are not cached
         if self.fs.is_folder(key):
-            if cls is None:
-                cls = Folder
-            folder = cls(key, database=self)
-            return folder
+            return Folder(key, database=self)
 
         # Cache miss
         if cls is None:
@@ -438,7 +435,7 @@ class RWDatabase(RODatabase):
 
 
     def set_handler(self, key, handler):
-        if isinstance(handler, Folder):
+        if type(handler) is Folder:
             raise ValueError, 'unexpected folder (only files can be "set")'
 
         if handler.key is not None:
@@ -511,18 +508,19 @@ class RWDatabase(RODatabase):
             raise RuntimeError, messages.MSG_URI_IS_BUSY % target
 
         handler = self.get_handler(source)
-        if isinstance(handler, Folder):
-            # Folder
+        # Case 1: folder
+        if type(handler) is Folder:
             fs = self.fs
             for name in handler.get_handler_names():
                 self.copy_handler(fs.resolve2(source, name),
                                   fs.resolve2(target, name))
-        else:
-            # File
-            handler = handler.clone()
-            # Update the state
-            self.push_handler(target, handler)
-            self.handlers_new2old[target] = None
+            return
+
+        # Case 2: file
+        handler = handler.clone()
+        # Update the state
+        self.push_handler(target, handler)
+        self.handlers_new2old[target] = None
 
 
     def move_handler(self, source, target):
@@ -537,7 +535,7 @@ class RWDatabase(RODatabase):
             raise RuntimeError, messages.MSG_URI_IS_BUSY % target
 
         handler = self.get_handler(source)
-        if isinstance(handler, Folder):
+        if type(handler) is Folder:
             # Folder
             fs = self.fs
             for name in handler.get_handler_names():
@@ -818,16 +816,14 @@ class GitDatabase(ROGitDatabase):
         n = len(base)
         for f_key in self.added:
             if f_key[:n] == base:
-                if cls is None:
-                    cls = Folder
-                return cls(key, database=self)
+                return Folder(key, database=self)
 
         # The other files
         return super(GitDatabase, self).get_handler(key, cls)
 
 
     def set_handler(self, key, handler):
-        if isinstance(handler, Folder):
+        if type(handler) is Folder:
             raise ValueError, 'unexpected folder (only files can be "set")'
 
         if handler.key is not None:
@@ -848,7 +844,7 @@ class GitDatabase(ROGitDatabase):
 
         # Case 1: file
         handler = self.get_handler(key)
-        if not isinstance(handler, Folder):
+        if type(handler) is not Folder:
             self._discard_handler(key)
             if key in self.added:
                 self.added.remove(key)
@@ -940,18 +936,18 @@ class GitDatabase(ROGitDatabase):
 
         handler = self.get_handler(source)
 
-        # Folder
-        if isinstance(handler, Folder):
+        # Case 1: folder
+        if type(handler) is Folder:
             fs = self.fs
             for name in handler.get_handler_names():
                 self.copy_handler(fs.resolve2(source, name),
                                   fs.resolve2(target, name))
-        # File
-        else:
-            handler = handler.clone()
-            self.push_handler(target, handler)
-            self.added.add(target)
+            return
 
+        # Case 2: file
+        handler = handler.clone()
+        self.push_handler(target, handler)
+        self.added.add(target)
         # Changed
         self.has_changed = True
 
@@ -975,7 +971,7 @@ class GitDatabase(ROGitDatabase):
 
         # Case 1: file
         handler = self.get_handler(source)
-        if not isinstance(handler, Folder):
+        if type(handler) is not Folder:
             if source in self.added:
                 self.added.remove(source)
             else:

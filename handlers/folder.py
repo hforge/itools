@@ -60,7 +60,7 @@ class Folder(Handler):
         yield self
         for name in self.get_handler_names():
             handler = self.get_handler(name)
-            if isinstance(handler, Folder):
+            if type(handler) is Folder:
                 for x in handler.traverse():
                     yield x
             else:
@@ -77,7 +77,7 @@ class Folder(Handler):
         else:
             for name in self.get_handler_names():
                 handler = self.get_handler(name)
-                if isinstance(handler, Folder):
+                if type(handler) is Folder:
                     for x, context in handler.traverse2(context):
                         yield x, context
                 else:

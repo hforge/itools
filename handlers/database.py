@@ -19,13 +19,13 @@
 
 # Import from the Standard Library
 from datetime import datetime
-from os import mkdir
-from subprocess import call, PIPE, CalledProcessError
+from os.path import dirname
+from subprocess import CalledProcessError
 from sys import getrefcount
 
 # Import from itools
 from itools.core import LRUCache, send_subprocess, freeze
-from itools.fs import vfs, lfs, READ, WRITE, READ_WRITE, APPEND
+from itools.fs import vfs, lfs
 from itools.uri import Path
 from folder import Folder
 import messages
@@ -453,7 +453,7 @@ class RWDatabase(RODatabase):
             raise LookupError, 'resource already removed'
 
         # Synchronize
-        handler = self._sync_filesystem(key)
+        self._sync_filesystem(key)
         if not self.fs.exists(key):
             raise LookupError, 'resource does not exist'
 
@@ -923,7 +923,6 @@ class GitDatabase(ROGitDatabase):
 
         # Go
         fs = self.fs
-        added = self.added
         cache = self.cache
 
         # Case 1: file
@@ -1012,9 +1011,10 @@ class GitDatabase(ROGitDatabase):
         for key in self.added:
             handler = self.cache.get(key)
             if handler is not None:
-                handler.save_state_to(key)
-                handler.timestamp = self.fs.get_mtime(key)
-                handler.dirty = None
+                parent_path = dirname(key)
+                if not self.fs.exists(parent_path):
+                    self.fs.make_folder(parent_path)
+                handler.save_state()
 
         for key in self.changed:
             handler = self.cache[key]

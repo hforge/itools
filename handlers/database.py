@@ -824,8 +824,8 @@ class GitDatabase(ROGitDatabase):
                 self._discard_handler(k)
                 self.changed.discard(k)
 
-        if fs.exists(key):
-            fs.remove(key)
+        if self.fs.exists(key):
+            self.fs.remove(key)
 
         # Changed
         self.has_changed = True

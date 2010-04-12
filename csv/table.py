@@ -668,7 +668,7 @@ class Table(File):
             return
 
         # Incremental Save
-        file = self.safe_open(self.key, 'a')
+        file = self.database.fs.open(self.key, 'a')
         try:
             # Added properties records
             for seq in self.added_properties:

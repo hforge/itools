@@ -20,7 +20,6 @@ handler class hierarchy.
 """
 
 # Import from itools
-from itools.fs import vfs
 from messages import MSG_NOT_ATTACHED
 
 
@@ -42,33 +41,6 @@ class Handler(object):
     key = None
 
 
-    ########################################################################
-    # API / Safe FS operations
-    ########################################################################
-    def safe_make_file(self, reference):
-        if self.database is None:
-            return vfs.make_file(reference)
-
-        return self.database.safe_make_file(reference)
-
-
-    def safe_remove(self, reference):
-        if self.database is None:
-            return vfs.remove(reference)
-
-        return self.database.safe_remove(reference)
-
-
-    def safe_open(self, reference, mode=None):
-        if self.database is None:
-            return vfs.open(reference, mode=mode)
-
-        return self.database.safe_open(reference, mode=mode)
-
-
-    ########################################################################
-    # API
-    ########################################################################
     def has_handler(self, reference):
         database = self.database
         if database is None:

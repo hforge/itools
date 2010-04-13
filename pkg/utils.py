@@ -231,7 +231,7 @@ def setup(ext_modules=freeze([])):
                long_description = config.get_value('description'),
                classifiers = classifiers,
                # Packages
-               package_dir = {package_name: ''},
+               package_dir = {package_name: '.'},
                packages = packages,
                package_data = package_data,
                # Requires / Provides

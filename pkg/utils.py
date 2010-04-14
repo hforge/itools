@@ -154,7 +154,8 @@ def get_config():
 
 def get_manifest():
     if git.is_available():
-        return git.get_filenames()
+        exclude = frozenset(['.gitignore'])
+        return [ x for x in git.get_filenames() if x not in exclude ]
 
     # No git: find out source files
     config = get_config()

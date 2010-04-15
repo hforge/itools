@@ -132,18 +132,19 @@ class File(Handler):
         self.load_state_from_file(file)
 
 
-    def save_state(self):
-        database = self.database
-
-        file = database.fs.open(self.key, 'w')
+    def _save_state(self):
+        file = self.database.fs.open(self.key, 'w')
         try:
             self.save_state_to_file(file)
         finally:
             file.close()
 
-        # Update the timestamp
-        self.timestamp = database.fs.get_mtime(self.key)
-        self.dirty = None
+
+    def save_state(self):
+        if self.dirty:
+            self._save_state()
+            self.timestamp = self.database.fs.get_mtime(self.key)
+            self.dirty = None
 
 
     def save_state_to(self, key):

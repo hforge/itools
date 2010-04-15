@@ -661,9 +661,9 @@ class Table(File):
     #######################################################################
     # Save (use append for scalability)
     #######################################################################
-    def save_state(self):
+    def _save_state(self):
         if self.incremental_save is False:
-            File.save_state(self)
+            File._save_state(self)
             self.incremental_save = True
             return
 
@@ -690,10 +690,6 @@ class Table(File):
             self.removed_records = []
         finally:
             file.close()
-
-        # Update the timestamp
-        self.timestamp = self.database.fs.get_mtime(self.key)
-        self.dirty = None
 
 
     def save_state_to(self, key):

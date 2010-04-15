@@ -1010,7 +1010,7 @@ class GitDatabase(ROGitDatabase):
         # Synchronize eventually the handlers and the filesystem
         for key in self.added:
             handler = self.cache.get(key)
-            if handler is not None:
+            if handler and handler.dirty:
                 parent_path = dirname(key)
                 if not self.fs.exists(parent_path):
                     self.fs.make_folder(parent_path)

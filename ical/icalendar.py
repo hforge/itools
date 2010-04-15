@@ -210,7 +210,7 @@ class Component(CatalogAware):
         # appear into more than one cell
         start = get_property('DTSTART')
         end = get_property('DTEND')
-        start_value_type = start.parameters.get('VALUE', 'DATE-TIME')
+        start_value_type = start.get_parameter('VALUE', 'DATE-TIME')
 
         ns['start'] = Time.encode(start.value.time())
         ns['end'] = Time.encode(end.value.time())
@@ -368,7 +368,7 @@ class iCalendar(BaseCalendar, TextFile):
         # Read first line
         first = lines[0]
         if (first[0] != 'BEGIN' or first[1].value != 'VCALENDAR'
-            or len(first[1].parameters) != 0):
+            or first[1].parameters):
             raise ValueError, 'icalendar must begin with BEGIN:VCALENDAR'
 
         lines = lines[1:]

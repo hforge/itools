@@ -928,17 +928,17 @@ class GitDatabase(ROGitDatabase):
         # Case 1: file
         handler = self.get_handler(source)
         if not isinstance(handler, Folder):
-            if source in self.added:
-                self.added.remove(source)
-            else:
+            if fs.exists(source):
                 fs.move(source, target)
-                if source in self.changed:
-                    self.changed.remove(source)
 
-            # Update the cache
+            # Remove source
+            self.added.discard(source)
+            self.changed.discard(source)
             del cache[source]
+            # Add target
             self.push_handler(target, handler)
             self.added.add(target)
+
             # Changed
             self.has_changed = True
             return

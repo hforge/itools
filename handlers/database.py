@@ -19,22 +19,17 @@
 
 # Import from the Standard Library
 from datetime import datetime
-from os import mkdir
-from subprocess import call, PIPE, CalledProcessError
+from os.path import dirname
+from subprocess import CalledProcessError
 from sys import getrefcount
 
 # Import from itools
 from itools.core import LRUCache, send_subprocess, freeze
-from itools.fs import vfs, lfs, READ, WRITE, READ_WRITE, APPEND
+from itools.fs import vfs, lfs
 from itools.uri import Path
 from folder import Folder
 import messages
 from registry import get_handler_class_by_mimetype
-
-
-# Exceptions
-class ReadOnlyError(RuntimeError):
-    pass
 
 
 
@@ -177,21 +172,6 @@ class RODatabase(object):
         return self.fs.normalize_key(key)
 
 
-    def safe_make_file(self, key):
-        raise ReadOnlyError, 'cannot make file'
-
-
-    def safe_remove(self, key):
-        raise ReadOnlyError, 'cannot remove'
-
-
-    def safe_open(self, key, mode=None):
-        if mode in (WRITE, READ_WRITE, APPEND):
-            raise ReadOnlyError, 'cannot open file for writing'
-
-        return self.fs.open(key, READ)
-
-
     def push_handler(self, key, handler):
         """Adds the given resource to the cache.
         """
@@ -321,23 +301,23 @@ class RODatabase(object):
         """Report a modification of the key/handler to the database.  We must
         pass the handler because of phantoms.
         """
-        raise ReadOnlyError, 'cannot set handler'
+        raise NotImplementedError, 'cannot set handler'
 
 
     def set_handler(self, key, handler):
-        raise ReadOnlyError, 'cannot set handler'
+        raise NotImplementedError, 'cannot set handler'
 
 
     def del_handler(self, key):
-        raise ReadOnlyError, 'cannot del handler'
+        raise NotImplementedError, 'cannot del handler'
 
 
     def copy_handler(self, source, target):
-        raise ReadOnlyError, 'cannot copy handler'
+        raise NotImplementedError, 'cannot copy handler'
 
 
     def move_handler(self, source, target):
-        raise ReadOnlyError, 'cannot move handler'
+        raise NotImplementedError, 'cannot move handler'
 
 
     def save_changes(self):
@@ -473,7 +453,7 @@ class RWDatabase(RODatabase):
             raise LookupError, 'resource already removed'
 
         # Synchronize
-        handler = self._sync_filesystem(key)
+        self._sync_filesystem(key)
         if not self.fs.exists(key):
             raise LookupError, 'resource does not exist'
 
@@ -562,33 +542,6 @@ class RWDatabase(RODatabase):
 
 
     #######################################################################
-    # API / Safe VFS operations (not really safe)
-    def safe_make_file(self, key):
-        key = self.normalize_key(key)
-
-        # Remove empty folder first
-        fs = self.fs
-        if fs.is_folder(key):
-            for x in fs.traverse(key):
-                if fs.is_file(x):
-                    break
-            else:
-                fs.remove(key)
-
-        return fs.make_file(key)
-
-
-    def safe_remove(self, key):
-        key = self.normalize_key(key)
-        return self.fs.remove(key)
-
-
-    def safe_open(self, key, mode=None):
-        key = self.normalize_key(key)
-        return self.fs.open(key, mode)
-
-
-    #######################################################################
     # API / Transactions
     @property
     def has_changed(self):
@@ -622,7 +575,7 @@ class RWDatabase(RODatabase):
                 target = self.handlers_old2new[source]
                 # Case 1: removed
                 if target is None:
-                    self.safe_remove(source)
+                    self.fs.remove(source)
                     something = True
                 # Case 2: changed
                 elif source == target:
@@ -645,7 +598,7 @@ class RWDatabase(RODatabase):
                         retry.append(source)
                     else:
                         # Remove
-                        self.safe_remove(source)
+                        self.fs.remove(source)
                         # Update timestamp
                         handler.timestamp = self.fs.get_mtime(target)
                         handler.dirty = None
@@ -871,8 +824,8 @@ class GitDatabase(ROGitDatabase):
                 self._discard_handler(k)
                 self.changed.discard(k)
 
-        if fs.exists(key):
-            fs.remove(key)
+        if self.fs.exists(key):
+            self.fs.remove(key)
 
         # Changed
         self.has_changed = True
@@ -970,23 +923,22 @@ class GitDatabase(ROGitDatabase):
 
         # Go
         fs = self.fs
-        added = self.added
         cache = self.cache
 
         # Case 1: file
         handler = self.get_handler(source)
         if not isinstance(handler, Folder):
-            if source in self.added:
-                self.added.remove(source)
-            else:
+            if fs.exists(source):
                 fs.move(source, target)
-                if source in self.changed:
-                    self.changed.remove(source)
 
-            # Update the cache
+            # Remove source
+            self.added.discard(source)
+            self.changed.discard(source)
             del cache[source]
+            # Add target
             self.push_handler(target, handler)
             self.added.add(target)
+
             # Changed
             self.has_changed = True
             return
@@ -1018,23 +970,6 @@ class GitDatabase(ROGitDatabase):
 
         # Changed
         self.has_changed = True
-
-
-    #######################################################################
-    # API / Safe VFS operations (not really safe)
-    def safe_make_file(self, key):
-        key = self.normalize_key(key)
-        return self.fs.make_file(key)
-
-
-    def safe_remove(self, key):
-        key = self.normalize_key(key)
-        return self.fs.remove(key)
-
-
-    def safe_open(self, key, mode=None):
-        key = self.normalize_key(key)
-        return self.fs.open(key, mode)
 
 
     #######################################################################
@@ -1074,16 +1009,12 @@ class GitDatabase(ROGitDatabase):
     def _save_changes(self, data):
         # Synchronize eventually the handlers and the filesystem
         for key in self.added:
-            # The handler is in the cache?
             handler = self.cache.get(key)
-            if handler is None:
-                continue
-
-            # Save the file: We use save_state_to to handle new and/or moved
-            # files but we must update the timestamp
-            handler.save_state_to(key)
-            handler.timestamp = self.fs.get_mtime(key)
-            handler.dirty = None
+            if handler and handler.dirty:
+                parent_path = dirname(key)
+                if not self.fs.exists(parent_path):
+                    self.fs.make_folder(parent_path)
+                handler.save_state()
 
         for key in self.changed:
             handler = self.cache[key]

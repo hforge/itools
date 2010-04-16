@@ -154,7 +154,8 @@ def get_config():
 
 def get_manifest():
     if git.is_available():
-        return git.get_filenames()
+        exclude = frozenset(['.gitignore'])
+        return [ x for x in git.get_filenames() if x not in exclude ]
 
     # No git: find out source files
     config = get_config()
@@ -231,7 +232,7 @@ def setup(ext_modules=freeze([])):
                long_description = config.get_value('description'),
                classifiers = classifiers,
                # Packages
-               package_dir = {package_name: ''},
+               package_dir = {package_name: '.'},
                packages = packages,
                package_data = package_data,
                # Requires / Provides

@@ -19,12 +19,12 @@
 
 # Import from the Standard Library
 from datetime import datetime
-from os import listdir, makedirs, remove as os_remove, walk
+from os import listdir, makedirs, remove as os_remove, renames, walk
 from os import access, R_OK, W_OK
 from os.path import exists, getatime, getctime, getmtime ,getsize
 from os.path import isfile, isdir, join, basename, dirname
 from os.path import abspath, relpath
-from shutil import rmtree, copytree, copy as shutil_copy, move as shutil_move
+from shutil import rmtree, copytree, copy as shutil_copy
 
 # Import from itools
 from itools.uri import Path
@@ -159,8 +159,7 @@ class LocalFolder(object):
     def move(self, source, target):
         source = self._resolve_path(source)
         target = self._resolve_path(target)
-        # If target is a folder, move inside it
-        return shutil_move(source, target)
+        return renames(source, target)
 
 
     def get_names(self, path='.'):

@@ -1,5 +1,5 @@
 
-itools 0.61.2 (2010/0X/XX)
+itools 0.61.2 (2010/04/14)
 ==========================
 
 itools is a Python library, it groups a number of packages into a single
@@ -17,10 +17,18 @@ meta-package for easier development and deployment:
   itools.http             itools.rss              itools.xmlfile
   itools.i18n             itools.soup
 
-Several bugs concerning the handlers database have been fixed.  There
-have been many optimizations too, most notably now the 'GitDatabase'
-is chrooted (bug #841), this makes for shorter keys and overall faster
-code.
+The performance of the Git based database has been much improved.  The
+transaction logic has been simplified, in particular this change has
+improved a lot the performance of move operations.  And now the Git
+database is chrooted (bug #841), this makes for shorter keys and overall
+faster code.
+
+Now the HTTP server (itools.soup) listens by default only to the local
+interface (bug #843).  This change has been done for security reasons,
+as it is better to deploy the server behind Apache (or nginx, ..).  The
+default can of course be changed.
+
+Many minor bugs have been fixed.
 
 
 Resources

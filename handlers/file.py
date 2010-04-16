@@ -132,24 +132,35 @@ class File(Handler):
         self.load_state_from_file(file)
 
 
-    def save_state(self):
-        file = self.safe_open(self.key, 'w')
+    def _save_state(self):
+        file = self.database.fs.open(self.key, 'w')
         try:
             self.save_state_to_file(file)
         finally:
             file.close()
-        # Update the timestamp
-        self.timestamp = self.database.fs.get_mtime(self.key)
-        self.dirty = None
+
+
+    def save_state(self):
+        if self.dirty:
+            self._save_state()
+            self.timestamp = self.database.fs.get_mtime(self.key)
+            self.dirty = None
 
 
     def save_state_to(self, key):
+        database = self.database
+
         # If there is an empty folder in the given key, remove it
-        fs = self.database.fs if self.database is not None else vfs
+        fs = database.fs if database is not None else vfs
         if fs.is_folder(key) and not fs.get_names(key):
             fs.remove(key)
+
         # Save the file
-        file = self.safe_make_file(key)
+        if database:
+            key = database.normalize_key(key)
+            file = database.fs.make_file(key)
+        else:
+            file = vfs.make_file(key)
         try:
             self.save_state_to_file(file)
         finally:

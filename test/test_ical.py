@@ -89,13 +89,16 @@ END:VCALENDAR
 def property_to_string(prop_name, prop):
     """Method only used by test_load and test_load2.
     """
-    value, params = prop.value, ''
+    if not prop.parameters:
+        return u'%s:%s' % (prop_name, prop.value)
+
+    params = ''
     for p_name in prop.parameters:
         p_value = prop.parameters[p_name]
         p_value = [ encode_param_value(p_name, x, String) for x in p_value ]
         param = ';%s=%s' % (p_name, ','.join(p_value))
         params = params + param
-    return u'%s%s:%s' % (prop_name, params, value)
+    return u'%s%s:%s' % (prop_name, params, prop.value)
 
 
 
@@ -118,8 +121,8 @@ class icalTestCase(TestCase):
 
         # Test properties
         expected_properties = [
-            u'VERSION;{}:2.0',
-            u'PRODID;{}:-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN']
+            u'VERSION;None:2.0',
+            u'PRODID;None:-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN']
         self.assertEqual(properties, expected_properties)
 
         # Test components
@@ -216,9 +219,9 @@ class icalTestCase(TestCase):
             properties.append(property)
 
         expected_properties = [
-            u'VERSION;{}:2.0',
-            u'METHOD;{}:PUBLISH',
-            u'PRODID;{}:-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN' ]
+            u'VERSION;None:2.0',
+            u'METHOD;None:PUBLISH',
+            u'PRODID;None:-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN' ]
         self.assertEqual(properties, expected_properties)
 
         # Test component properties
@@ -282,9 +285,9 @@ class icalTestCase(TestCase):
 
         # Test properties
         expected_properties = [
-            u'VERSION;{}:2.0',
-            u'METHOD;{}:PUBLISH',
-            u'PRODID;{}:-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN' ]
+            u'VERSION;None:2.0',
+            u'METHOD;None:PUBLISH',
+            u'PRODID;None:-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN' ]
         self.assertEqual(properties, expected_properties)
 
         events = []

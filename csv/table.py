@@ -324,7 +324,20 @@ class Property(object):
 
     def __init__(self, value, **kw):
         self.value = value
-        self.parameters = kw
+        self.parameters = kw or None
+
+
+    def get_parameter(self, name, default=None):
+        if self.parameters is None:
+            return default
+        return self.parameters.get(name, default)
+
+
+    def set_parameter(self, name, value):
+        if self.parameters is None:
+            self.parameters = {}
+        self.parameters[name] = value
+
 
 
 def encode_param_value(p_name, p_value, p_datatype):
@@ -347,9 +360,13 @@ def property_to_str(name, property, datatype, p_schema, encoding='utf-8'):
     'p_schema' describes the parameters.
     """
     # Parameters
+    if property.parameters:
+        p_names = property.parameters.keys()
+        p_names.sort()
+    else:
+        p_names = []
+
     parameters = []
-    p_names = property.parameters.keys()
-    p_names.sort()
     for p_name in p_names:
         p_value = property.parameters[p_name]
         # Find out the datatype for the parameter
@@ -661,14 +678,14 @@ class Table(File):
     #######################################################################
     # Save (use append for scalability)
     #######################################################################
-    def save_state(self):
+    def _save_state(self):
         if self.incremental_save is False:
-            File.save_state(self)
+            File._save_state(self)
             self.incremental_save = True
             return
 
         # Incremental Save
-        file = self.safe_open(self.key, 'a')
+        file = self.database.fs.open(self.key, 'a')
         try:
             # Added properties records
             for seq in self.added_properties:
@@ -690,10 +707,6 @@ class Table(File):
             self.removed_records = []
         finally:
             file.close()
-
-        # Update the timestamp
-        self.timestamp = self.database.fs.get_mtime(self.key)
-        self.dirty = None
 
 
     def save_state_to(self, key):

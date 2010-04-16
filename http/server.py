@@ -82,8 +82,12 @@ class HTTPServer(SoupServer):
             pid = getpid()
             open(self.pid_file, 'w').write(str(pid))
 
-        # Run
+        # Add handlers
         SoupServer.start(self)
+        self.add_handler('/', self.path_callback)
+        self.add_handler('*', self.star_callback)
+
+        # Run
         print 'Listen %s:%d' % (self.address, self.port)
         if self.profile:
             runctx("self.main_loop.run()", globals(), locals(), self.profile)

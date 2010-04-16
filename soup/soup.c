@@ -430,47 +430,36 @@ typedef struct
 
 
 void
-s_server_callback (SoupMessage * s_msg, const char * path, gpointer server,
-                   char * p_server_callback)
+s_server_callback (SoupServer * s_server, SoupMessage * s_msg,
+                   const char * path, GHashTable * g_query,
+                   SoupClientContext * s_client, gpointer user_data)
 {
   PyMessage * p_message;
+  PyObject * p_callback;
+  PyObject * p_args;
+  PyObject * p_result;
 
   /* Create the Python Message object */
   p_message = PyObject_New (PyMessage, &PyMessageType);
   if (!p_message)
-    /* ERROR */
     return;
 
   p_message->s_msg = s_msg;
 
   /* Call the Python callback */
-  if (!PyObject_CallMethod (server, p_server_callback, "Os", p_message, path))
+  p_args = Py_BuildValue("(Ns)", p_message, path);
+  if (!p_args)
+    return;
+
+  p_callback = (PyObject*) user_data;
+  p_result = PyObject_CallObject (p_callback, p_args);
+  if (!p_result)
     {
-      /* The Python callback should never fail, it is its responsibility to
-       * catch and handle exceptions */
       printf("ERROR! Python's callback failed, this should never happen\n");
       abort ();
     }
 
   return;
-}
-
-
-void
-s_server_path_callback (SoupServer * s_server, SoupMessage * s_msg,
-                        const char * path, GHashTable * g_query,
-                        SoupClientContext * s_client, gpointer server)
-{
-  s_server_callback (s_msg, path, server, "path_callback");
-}
-
-
-void
-s_server_star_callback (SoupServer * s_server, SoupMessage * s_msg,
-                        const char * path, GHashTable * g_query,
-                        SoupClientContext * s_client, gpointer server)
-{
-  s_server_callback (s_msg, path, server, "star_callback");
 }
 
 
@@ -544,10 +533,6 @@ PyServerType_start (PyServer * self, PyObject * args, PyObject * kwdict)
   }
   self->s_server = s_server;
 
-  /* Handlers */
-  soup_server_add_handler (s_server, "/", s_server_path_callback, self, NULL);
-  soup_server_add_handler (s_server, "*", s_server_star_callback, self, NULL);
-
   /* Signals */
   signal_id = g_signal_lookup ("request-finished", SOUP_TYPE_SERVER);
   g_signal_add_emission_hook (signal_id, 0, log_access, self, NULL);
@@ -562,9 +547,28 @@ PyServerType_start (PyServer * self, PyObject * args, PyObject * kwdict)
 }
 
 
+static PyObject *
+PyServerType_add_handler (PyServer * self, PyObject * args, PyObject * kwdict)
+{
+  char * path;
+  PyObject * p_user_data;
+
+  if (!PyArg_ParseTuple (args, "sO", &path, &p_user_data))
+    return NULL;
+
+  Py_INCREF (p_user_data);
+  soup_server_add_handler (self->s_server, path, s_server_callback,
+                           (gpointer) p_user_data, NULL);
+
+  Py_RETURN_NONE;
+}
+
+
 static PyMethodDef PyServer_methods[] = {
   {"stop", (PyCFunction) PyServerType_stop, METH_NOARGS, "Stop the server"},
   {"start", (PyCFunction) PyServerType_start, METH_NOARGS, "Start the server"},
+  {"add_handler", (PyCFunction) PyServerType_add_handler, METH_VARARGS,
+   "Adds a handler for requests under path"},
   {NULL} /* Sentinel */
 };
 

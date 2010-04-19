@@ -760,7 +760,7 @@ class GitDatabase(ROGitDatabase):
                 return True
 
         # Normal case
-        return self.fs.exists(key)
+        return super(GitDatabase, self).has_handler(key)
 
 
     def get_handler(self, key, cls=None):

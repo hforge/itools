@@ -45,15 +45,14 @@ class WebServer(HTTPServer):
 
 
     def __init__(self, root, address=None, port=None, access_log=None,
-                 event_log=None, pid_file=None, profile=None):
+                 event_log=None):
         if address is None:
             address = ''
         if port is None:
             port = 8080
         register_logger(WebLogger(log_file=event_log), 'itools.web')
 
-        super(WebServer, self).__init__(address, port, access_log, pid_file,
-                                        profile)
+        super(WebServer, self).__init__(address, port, access_log)
 
         # The application's root
         self.root = root

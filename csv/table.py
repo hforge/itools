@@ -684,7 +684,15 @@ class Table(File):
             self.incremental_save = True
             return
 
-        # Incremental Save
+        # Case 1: new file
+        if self.timestamp is None:
+            File._save_state(self)
+            self.added_properties = []
+            self.added_records = []
+            self.removed_records = []
+            return
+
+        # Case 2: changed file (incremental save)
         file = self.database.fs.open(self.key, 'a')
         try:
             # Added properties records

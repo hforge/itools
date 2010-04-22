@@ -30,7 +30,7 @@ from itools.soup import SoupServer
 
 class HTTPServer(SoupServer):
 
-    def __init__(self, address='', port=8080, access_log=None, pid_file=None,
+    def __init__(self, address=None, port=8080, access_log=None, pid_file=None,
                  profile=None):
         SoupServer.__init__(self, address=address, port=port)
 
@@ -84,7 +84,8 @@ class HTTPServer(SoupServer):
 
         # Run
         SoupServer.start(self)
-        print 'Listen %s:%d' % (self.address, self.port)
+        address = self.address if self.address is not None else '*'
+        print 'Listen %s:%d' % (address, self.port)
         if self.profile:
             runctx("self.main_loop.run()", globals(), locals(), self.profile)
         else:

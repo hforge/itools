@@ -479,14 +479,14 @@ PyServerType_init (PyServer * self, PyObject * args, PyObject * kwdict)
 {
   /* Defines the parameters */
   static char *kwlist[] = { "address", "port", NULL };
-  char *address = "";
+  char *address = NULL;
   guint port = 8080;
 
   /* libsoup variables */
   SoupAddress *s_address = NULL;
 
   /* Arguments */
-  if (!PyArg_ParseTupleAndKeywords (args, kwdict, "|sI", kwlist, &address,
+  if (!PyArg_ParseTupleAndKeywords (args, kwdict, "|zI", kwlist, &address,
                                     &port))
     return -1;
 
@@ -497,10 +497,10 @@ PyServerType_init (PyServer * self, PyObject * args, PyObject * kwdict)
   g_type_init();
 
   /* An interface is specified ? */
-  if (strcmp(address, "") != 0)
+  if ( (address != NULL) && (strcmp(address, "") != 0) )
     s_address = soup_address_new (address, port);
   else
-    s_address = soup_address_new ("127.0.0.1", port);
+    s_address = soup_address_new_any (SOUP_ADDRESS_FAMILY_IPV4, port);
 
   if (!s_address)
   {

@@ -25,7 +25,7 @@ from itools.soup import SoupServer
 
 class HTTPServer(SoupServer):
 
-    def __init__(self, address='', port=8080, access_log=None):
+    def __init__(self, address=None, port=8080, access_log=None):
         SoupServer.__init__(self, address=address, port=port)
 
         # Keep arguments
@@ -64,7 +64,8 @@ class HTTPServer(SoupServer):
         self.add_handler('*', self.star_callback)
 
         # Run
-        print 'Listen %s:%d' % (self.address, self.port)
+        address = self.address if self.address is not None else '*'
+        print 'Listen %s:%d' % (address, self.port)
 
 
     def stop(self):

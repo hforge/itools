@@ -369,6 +369,8 @@ def property_to_str(name, property, datatype, p_schema, encoding='utf-8'):
     parameters = []
     for p_name in p_names:
         p_value = property.parameters[p_name]
+        if p_value is None:
+            continue
         # Find out the datatype for the parameter
         p_datatype = p_schema.get(p_name)
         if not p_datatype:

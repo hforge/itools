@@ -123,21 +123,6 @@ class RODatabase(object):
         handler.__dict__.clear()
 
 
-    def _before_commit(self):
-        """This method is called before 'save_changes', and gives a chance
-        to the database to check for preconditions, if an error occurs here
-        the transaction will be aborted.
-
-        The value returned by this method will be passed to '_save_changes',
-        so it can be used to pre-calculate whatever data is needed.
-        """
-        return None
-
-
-    def _save_changes(self, data):
-        raise NotImplementedError
-
-
     def _rollback(self):
         """To be called when something goes wrong while saving the changes.
         """
@@ -321,27 +306,7 @@ class RODatabase(object):
 
 
     def save_changes(self):
-        if not self.has_changed:
-            return
-
-        # Prepare for commit, do here the most you can, if something fails
-        # the transaction will be aborted
-        try:
-            data = self._before_commit()
-        except:
-            self._abort_changes()
-            self._cleanup()
-            raise
-
-        # Commit
-        try:
-            self._save_changes(data)
-        except Exception:
-            self._rollback()
-            self._abort_changes()
-            raise
-        finally:
-            self._cleanup()
+        raise NotImplementedError
 
 
     def abort_changes(self):
@@ -563,7 +528,7 @@ class RWDatabase(RODatabase):
         self.handlers_new2old.clear()
 
 
-    def _save_changes(self, data):
+    def _save_changes(self):
         cache = self.cache
 
         sources = self.handlers_old2new.keys()
@@ -629,6 +594,21 @@ class RWDatabase(RODatabase):
         # Reset the state
         self.handlers_old2new.clear()
         self.handlers_new2old.clear()
+
+
+    def save_changes(self):
+        if not self.has_changed:
+            return
+
+        # Commit
+        try:
+            self._save_changes()
+        except Exception:
+            self._rollback()
+            self._abort_changes()
+            raise
+        finally:
+            self._cleanup()
 
 
 
@@ -1006,6 +986,17 @@ class GitDatabase(ROGitDatabase):
         pass
 
 
+    def _before_commit(self):
+        """This method is called before 'save_changes', and gives a chance
+        to the database to check for preconditions, if an error occurs here
+        the transaction will be aborted.
+
+        The value returned by this method will be passed to '_save_changes',
+        so it can be used to pre-calculate whatever data is needed.
+        """
+        return None, None
+
+
     def _save_changes(self, data):
         # Synchronize eventually the handlers and the filesystem
         for key in self.added:
@@ -1028,12 +1019,10 @@ class GitDatabase(ROGitDatabase):
             self.added.clear()
 
         # Commit
-        command = ['git', 'commit', '-aq']
-        if data is None:
-            command.extend(['-m', 'no comment'])
-        else:
-            git_author, git_message = data
-            command.extend(['--author=%s' % git_author, '-m', git_message])
+        git_author, git_message = data
+        command = ['git', 'commit', '-aq', '-m', git_message or 'no comment']
+        if git_author:
+            command.append('--author=%s' % git_author)
         try:
             send_subprocess(command, path=self.path)
         except CalledProcessError, excp:
@@ -1041,6 +1030,31 @@ class GitDatabase(ROGitDatabase):
             # FIXME Not reliable, we may catch other cases
             if excp.returncode != 1:
                 raise
+
+
+    def save_changes(self):
+        if not self.has_changed:
+            return
+
+        # Prepare for commit, do here the most you can, if something fails
+        # the transaction will be aborted
+        try:
+            data = self._before_commit()
+        except:
+            self._abort_changes()
+            self._cleanup()
+            raise
+
+        # Commit
+        try:
+            self._save_changes(data)
+        except Exception:
+            self._rollback()
+            self._abort_changes()
+            raise
+        finally:
+            self._cleanup()
+
 
 
 

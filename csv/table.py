@@ -405,6 +405,7 @@ class Record(list, CatalogAware):
     def __init__(self, id, record_properties):
         self.id = id
         self.record_properties  = record_properties
+        self.append(None)
 
 
     def __getattr__(self, name):
@@ -548,7 +549,7 @@ class Table(File):
     def new(self):
         # Add the properties record
         properties = self.record_class(-1, self.record_properties)
-        properties.append({'ts': Property(datetime.now())})
+        properties[0] = {'ts': Property(datetime.now())}
         self.properties = properties
 
 
@@ -591,11 +592,7 @@ class Table(File):
                         records[uid] = None
                         record = None
                 else:
-                    seq = int(seq)
-                    if seq > len(record):
-                        msg = 'unexpected sequence "%s" for record "%s"'
-                        raise ValueError, msg % (seq, uid)
-                    record.append(version)
+                    record[0] = version
                 # Table or record schema
                 if uid == -1:
                     get_datatype = self.get_datatype
@@ -656,19 +653,15 @@ class Table(File):
         id = 0
         # Properties record
         if self.properties is not None:
-            seq = 0
-            for version in self.properties:
-                version = self._version_to_str(-1, seq, version)
-                lines.append(version)
-                seq += 1
+            version = self.properties[0]
+            version = self._version_to_str(-1, 0, version)
+            lines.append(version)
         # Common record
         for record in self.records:
             if record is not None:
-                seq = 0
-                for version in record:
-                    version = self._version_to_str(id, seq, version)
-                    lines.append(version)
-                    seq += 1
+                version = record[0]
+                version = self._version_to_str(id, 0, version)
+                lines.append(version)
             # Next
             id += 1
 
@@ -748,7 +741,7 @@ class Table(File):
         record = self.record_class(id, self.record_properties)
         version = self.properties_to_dict(kw)
         version['ts'] = Property(datetime.now())
-        record.append(version)
+        record[0] = version
         # Change
         self.set_changed()
         self.added_records.append((id, 0))
@@ -778,7 +771,7 @@ class Table(File):
         self.set_changed()
         self.catalog.unindex_document(record.id)
         self.added_records.append((id, len(record)))
-        record.append(version)
+        record[0] = version
         # Index
         self.catalog.index_document(record)
 
@@ -799,7 +792,7 @@ class Table(File):
         # Change
         self.set_changed()
         self.added_properties.append(len(record))
-        record.append(version)
+        record[0] = version
 
 
     def del_record(self, id):

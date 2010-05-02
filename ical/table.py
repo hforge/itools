@@ -50,22 +50,6 @@ class Record(TableRecord):
     """A Record with some icalendar specific methods in addition.
     """
 
-    # Get a property of current component
-    def get_property(self, name=None):
-        """Return the value of given name property as a Property or as a list
-        of Property objects if it can occur more than once.
-
-        Return all property values as a dict {name: value, ...} where
-        value is a Property or a list of Property objects if it can
-        occur more than once.
-
-        Note that it return values for the last version of this component.
-        """
-        if name:
-            return TableRecord.get_property(self, name)
-        return self[-1]
-
-
     def get_end(self):
         return self.get_property('DTEND').value
 
@@ -245,7 +229,7 @@ class icalendarTable(BaseCalendar, Table):
             if prop_name == 'BEGIN':
                 if c_type is None:
                     c_type = prop_value.value
-                    c_properties = {}
+                    record = self.get_record(id) or Record(id, record_properties)
                     c_inner_components = []
                 else:
                     # Inner component like DAYLIGHT or STANDARD
@@ -259,25 +243,23 @@ class icalendarTable(BaseCalendar, Table):
                     if uid is None:
                         raise ValueError, 'UID is not present'
 
-                    record = self.get_record(id) or Record(id, record_properties)
-                    c_properties['type'] = Property(c_type)
-                    c_properties['UID'] = Property(uid)
-                    sequence = c_properties.get('SEQUENCE', None)
-                    c_properties['SEQUENCE'] = sequence or Property(0)
-                    c_properties['ts'] = Property(datetime.now())
+                    record['type'] = Property(c_type)
+                    record['UID'] = Property(uid)
+                    sequence = record.get('SEQUENCE', None)
+                    record['SEQUENCE'] = sequence or Property(0)
+                    record['ts'] = Property(datetime.now())
                     # Add ids of inner components
                     if c_inner_components:
                         c_inner_components = [Property(x)
                                               for x in c_inner_components]
-                        c_properties['inner'] = c_inner_components
-                    record[0] = c_properties
+                        record['inner'] = c_inner_components
                     if uid in uids:
                         n = uids[uid] + 1
                         uids[uid] = n
                     else:
                         n = 0
                         uids[uid] = 0
-                    self.added_records.append((id, n))
+                    self.added_records.append(id)
                     records.append(record)
 
                     # Next
@@ -295,7 +277,7 @@ class icalendarTable(BaseCalendar, Table):
                     c_inner_properties['ts'] = Property(datetime.now())
                     record[0] = c_inner_properties
                     c_inner_components.append(id)
-                    self.added_records.append((id, 0))
+                    self.added_records.append(id)
                     records.append(record)
                     # Next
                     c_inner_type = None
@@ -310,15 +292,15 @@ class icalendarTable(BaseCalendar, Table):
                         uid = prop_value.value
                     else:
                         if getattr(datatype, 'multiple', False) is True:
-                            value = c_properties.setdefault(prop_name, [])
+                            value = record.setdefault(prop_name, [])
                             value.append(prop_value)
                         else:
                             # Check the property has not yet being found
-                            if prop_name in c_properties:
+                            if prop_name in record:
                                 raise ValueError, \
                                     "property '%s' can occur only once" % name
                             # Set the property
-                            c_properties[prop_name] = prop_value
+                            record[prop_name] = prop_value
                 else:
                     # Inner component properties
                     if getattr(datatype, 'multiple', False) is True:
@@ -364,20 +346,19 @@ class icalendarTable(BaseCalendar, Table):
                 # keeping only VEVENT, VTIMEZONE, V.., and x-name ones
                 if not c_type.startswith('V') and not c_type.startswith('X'):
                     continue
-                version = record[0]
                 line = 'BEGIN:%s\n' % c_type
                 lines.append(Unicode.encode(line))
                 line = ''
                 # Properties
-                names = version.keys()
+                names = record.keys()
                 names.sort()
                 for name in names:
                     if name in ('id', 'ts', 'type'):
                         continue
                     elif name == 'DTSTAMP':
-                        value = version['ts']
+                        value = record['ts']
                     else:
-                        value = version[name]
+                        value = record[name]
                     if name == 'SEQUENCE':
                         pass
                     # Insert inner components
@@ -403,12 +384,11 @@ class icalendarTable(BaseCalendar, Table):
 
         id = len(self.records)
         record = Record(id, self.record_properties)
-        version = record[0]
-        self.properties_to_dict(kw, version)
-        version['ts'] = Property(datetime.now())
+        self.properties_to_dict(kw, record)
+        record['ts'] = Property(datetime.now())
         # Change
         self.set_changed()
-        self.added_records.append((id, 0))
+        self.added_records.append(id)
         self.records.append(record)
         self.catalog.index_document(record)
         # Back
@@ -461,16 +441,16 @@ class icalendarTable(BaseCalendar, Table):
         for event in events:
             if event in res_events:
                 continue
-            version = self.get_record(id=event.id)[-1]
+            record = self.get_record(id=event.id)
 
             # For each filter
             for filter in filters:
                 # If filter not in component, go to next one
-                if filter not in version:
+                if filter not in record:
                     break
                 # Test filter
                 expected = kw.get(filter)
-                value = version[filter]
+                value = record[filter]
                 datatype = self.get_record_datatype(filter)
 
                 if getattr(datatype, 'multiple', False) is True:
@@ -538,12 +518,10 @@ class icalendarTable(BaseCalendar, Table):
         # Get results as a dict to sort them
         res_events = []
         for event in results:
-            version = event[-1]
             value = {
-                'dtstart': version['DTSTART'].value,
-                'dtend': version['DTEND'].value,
-                'event': event
-              }
+                'dtstart': event['DTSTART'].value,
+                'dtend': event['DTEND'].value,
+                'event': event}
             res_events.append(value)
         # Sort by dtstart
         res_events = sorted(res_events, key=itemgetter('dtstart'))
@@ -593,16 +571,14 @@ class icalendarTable(BaseCalendar, Table):
         conflicts = []
         # We take each event as a reference
         for i, event_ref in enumerate(events):
-            version = event_ref[-1]
-            dtstart_ref = version['DTSTART'].value
-            dtend_ref = version['DTEND'].value
+            dtstart_ref = event_ref['DTSTART'].value
+            dtend_ref = event_ref['DTEND'].value
             # For each other event, we test if there is a conflict
             for j, event in enumerate(events):
                 if j <= i:
                     continue
-                version = event[-1]
-                dtstart = version['DTSTART'].value
-                dtend = version['DTEND'].value
+                dtstart = event['DTSTART'].value
+                dtend = event['DTEND'].value
 
                 if dtstart >=  dtend_ref or dtend <= dtstart_ref:
                     continue

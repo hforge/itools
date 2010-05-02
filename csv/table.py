@@ -399,7 +399,7 @@ def property_to_str(name, property, datatype, p_schema, encoding='utf-8'):
 
 
 
-class Record(list, CatalogAware):
+class Record(dict, CatalogAware):
 
     __slots__ = ['id', 'record_properties']
 
@@ -407,38 +407,31 @@ class Record(list, CatalogAware):
     def __init__(self, id, record_properties):
         self.id = id
         self.record_properties  = record_properties
-        self.append({})
 
 
     def __getattr__(self, name):
         if name == '__number__':
             return self.id
-        version = self[-1]
-        if name not in version:
+        if name not in self:
             raise AttributeError, "'%s' object has no attribute '%s'" % (
                 self.__class__.__name__, name)
 
-        property = version[name]
+        property = self[name]
         if type(property) is list:
             return [ x.value for x in property ]
         return property.value
 
 
     def get_property(self, name):
-        version = self[-1]
-        if name in version:
-            return version[name]
-
-        return None
+        return self.get(name)
 
 
     # For indexing purposes
     def get_value(self, name):
-        version = self[-1]
-        if name not in version:
+        property = self.get(name)
+        if property is None:
             return None
 
-        property = version[name]
         if type(property) is list:
             return [ x.value for x in property ]
         return property.value
@@ -491,9 +484,9 @@ class Table(File):
         return String(multiple=True)
 
 
-    def properties_to_dict(self, properties, version, first=False):
+    def properties_to_dict(self, properties, record, first=False):
         """Add the given "properties" as Property objects or Property objects
-        list to the given dictionnary "version".
+        list to the given dictionnary "record".
         """
         # The variable 'first' defines whether we are talking about the
         # table properties (True) or a about records (False).
@@ -511,18 +504,18 @@ class Table(File):
             # Transform values to properties
             if is_multilingual(datatype):
                 language = value.parameters['language']
-                version.setdefault(name, [])
-                version[name] = [
-                    x for x in version[name]
+                record.setdefault(name, [])
+                record[name] = [
+                    x for x in record[name]
                     if x.parameters['language'] != language ]
-                version[name].append(value)
+                record[name].append(value)
             elif datatype.multiple:
                 if type(value) is list:
-                    version[name] = [ to_property(x) for x in value ]
+                    record[name] = [ to_property(x) for x in value ]
                 else:
-                    version[name] = [to_property(value)]
+                    record[name] = [to_property(value)]
             else:
-                version[name] = to_property(value)
+                record[name] = to_property(value)
 
 
     #######################################################################
@@ -547,7 +540,7 @@ class Table(File):
     def new(self):
         # Add the properties record
         properties = self.record_class(-1, self.record_properties)
-        properties[0] = {'ts': Property(datetime.now())}
+        properties['ts'] = Property(datetime.now())
         self.properties = properties
 
 
@@ -558,20 +551,14 @@ class Table(File):
         record_properties = self.record_properties
 
         n = 0
-        version = None
         for name, value, parameters in parse_table(file.read()):
             if name == 'id':
-                version = {}
-                # Identifier and Sequence (id)
                 uid, seq = value.split('/')
-                # Record
                 uid = int(uid)
                 if uid == -1:
                     # Tale properties
-                    if properties is None:
-                        properties = self.record_class(uid, record_properties)
-                        self.properties = properties
-                    record = properties
+                    self.properties = self.record_class(uid, record_properties)
+                    record = self.properties
                 elif uid >= n:
                     # New record
                     records.extend([None] * (uid - n))
@@ -579,8 +566,10 @@ class Table(File):
                     records.append(record)
                     n = uid + 1
                 else:
-                    # Get the record
-                    record = records[uid]
+                    # Updated record
+                    record = self.record_class(uid, record_properties)
+                    records[uid] = record
+
                 # Version
                 if seq == 'DELETED':
                     # Deleted
@@ -589,8 +578,6 @@ class Table(File):
                     else:
                         records[uid] = None
                         record = None
-                else:
-                    record[0] = version
                 # Table or record schema
                 if uid == -1:
                     get_datatype = self.get_datatype
@@ -606,20 +593,22 @@ class Table(File):
             value = datatype.decode(value)
             property = Property(value, **parameters)
             if getattr(datatype, 'multiple', False) is True:
-                version.setdefault(name, []).append(property)
-            elif name in version:
-                raise ValueError, "property '%s' can occur only once" % name
+                record.setdefault(name, []).append(property)
+            elif name in record:
+                msg = "record %s: property '%s' can occur only once"
+                raise ValueError, msg % (uid, name)
             else:
-                version[name] = property
+                record[name] = property
+
         # Index the records
         for record in records:
             if record is not None:
                 self.catalog.index_document(record)
 
 
-    def _version_to_str(self, id, version):
+    def _record_to_str(self, id, record):
         lines = ['id:%d/0\n' % id]
-        names = version.keys()
+        names = record.keys()
         names.sort()
         # Table or record schema
         if id == -1:
@@ -632,9 +621,9 @@ class Table(File):
         for name in names:
             datatype = get_datatype(name)
             if getattr(datatype, 'multiple', False) is True:
-                properties = version[name]
+                properties = record[name]
             else:
-                properties = [version[name]]
+                properties = [record[name]]
             for property in properties:
                 if property.value is None:
                     continue
@@ -648,18 +637,16 @@ class Table(File):
 
     def to_str(self):
         lines = []
-        id = 0
         # Properties record
         if self.properties is not None:
-            version = self.properties[0]
-            version = self._version_to_str(-1, version)
-            lines.append(version)
+            record = self._record_to_str(-1, self.properties)
+            lines.append(record)
         # Common record
+        id = 0
         for record in self.records:
             if record is not None:
-                version = record[0]
-                version = self._version_to_str(id, version)
-                lines.append(version)
+                record = self._record_to_str(id, record)
+                lines.append(record)
             # Next
             id += 1
 
@@ -688,15 +675,14 @@ class Table(File):
         try:
             # Added properties records
             if self.changed_properties:
-                version = self.properties[0]
-                version = self._version_to_str(-1, version)
-                file.write(version)
+                record = self._record_to_str(-1, self.properties)
+                file.write(record)
             self.changed_properties = False
             # Added records
             for id in self.added_records:
-                version = self.records[id][0]
-                version = self._version_to_str(id, version)
-                file.write(version)
+                record = self.records[id]
+                record = self._record_to_str(id, record)
+                file.write(record)
             self.added_records = []
             # Removed records
             for id, ts in self.removed_records:
@@ -734,12 +720,11 @@ class Table(File):
             if getattr(datatype, 'unique', False) is True:
                 if len(self.search(PhraseQuery(name, kw[name]))) > 0:
                     raise UniqueError(name, kw[name])
-        # Add version to record
+        # Make new record
         id = len(self.records)
         record = self.record_class(id, self.record_properties)
-        version = record[0]
-        self.properties_to_dict(kw, version)
-        version['ts'] = Property(datetime.now())
+        self.properties_to_dict(kw, record)
+        record['ts'] = Property(datetime.now())
         # Change
         self.set_changed()
         self.added_records.append(id)
@@ -761,10 +746,9 @@ class Table(File):
                 search = self.search(PhraseQuery(name, kw[name]))
                 if search and (search[0] != self.records[id]):
                     raise UniqueError(name, kw[name])
-        # Version of record
-        version = record[0]
-        self.properties_to_dict(kw, version)
-        version['ts'] = Property(datetime.now())
+        # Update record
+        self.properties_to_dict(kw, record)
+        record['ts'] = Property(datetime.now())
         # Change
         self.set_changed()
         self.catalog.unindex_document(record.id)
@@ -781,9 +765,8 @@ class Table(File):
             record = self.record_class(-1, self.record_properties)
             self.properties = record
 
-        version = record[0]
-        self.properties_to_dict(kw, version, first=True)
-        version['ts'] = Property(datetime.now())
+        self.properties_to_dict(kw, record, first=True)
+        record['ts'] = Property(datetime.now())
         # Change
         self.set_changed()
         self.changed_properties = True

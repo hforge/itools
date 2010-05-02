@@ -640,7 +640,7 @@ class icalTableTestCase(TestCase):
 
         # Component property
         events = cal.get_components('VEVENT')
-        properties = events[0][-1]
+        properties = events[0]
 
         expected = u'Résumé'
         property = events[0].get_property('SUMMARY')
@@ -662,11 +662,10 @@ class icalTableTestCase(TestCase):
         uid = cal.add_record(properties).UID
 
         event = cal.get_component_by_uid(uid)[0]
-        properties = event.get_property()
-        self.assertEqual('MYADD' in properties, True)
-        self.assertEqual('DESCRIPTION' in properties, True)
-        self.assertEqual('ATTENDEE' in properties, True)
-        self.assertEqual('VERSION' in properties, False)
+        self.assertEqual('MYADD' in event, True)
+        self.assertEqual('DESCRIPTION' in event, True)
+        self.assertEqual('ATTENDEE' in event, True)
+        self.assertEqual('VERSION' in event, False)
 
 
     def test_add_to_calendar(self):
@@ -685,17 +684,16 @@ class icalTableTestCase(TestCase):
         # Test component properties
         properties = []
         event = cal.get_components('VEVENT')[0]
-        version = event[-1]
-        for prop_name in version:
+        for prop_name in event:
             if prop_name in ('ts', 'id', 'type', 'UID', 'SEQUENCE'):
                 continue
             datatype = cal.get_record_datatype(prop_name)
             if getattr(datatype, 'multiple', False) is False:
-                prop = version[prop_name]
+                prop = event[prop_name]
                 property = property_to_string(prop_name, prop)
                 properties.append(property)
             else:
-                for prop in version[prop_name]:
+                for prop in event[prop_name]:
                     property = property_to_string(prop_name, prop)
                     properties.append(property)
 
@@ -738,21 +736,19 @@ class icalTableTestCase(TestCase):
 
         events = []
         for event in cal.get_components('VEVENT'):
-            version = event[-1]
-
             properties = []
-            for prop_name in version:
+            for prop_name in event:
                 if prop_name in ('ts', 'id', 'type', 'UID', 'SEQUENCE'):
                     continue
                 if prop_name == 'DTSTAMP':
                     continue
                 datatype = cal.get_record_datatype(prop_name)
                 if getattr(datatype, 'multiple', False) is False:
-                    prop = version[prop_name]
+                    prop = event[prop_name]
                     property = property_to_string(prop_name, prop)
                     properties.append(property)
                 else:
-                    for prop in version[prop_name]:
+                    for prop in event[prop_name]:
                         property = property_to_string(prop_name, prop)
                         properties.append(property)
 

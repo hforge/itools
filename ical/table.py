@@ -412,9 +412,9 @@ class icalendarTable(BaseCalendar, Table):
 
         id = len(self.records)
         record = Record(id, self.record_properties)
-        version = self.properties_to_dict(kw)
+        version = record[0]
+        self.properties_to_dict(kw, version)
         version['ts'] = Property(datetime.now())
-        record.append(version)
         # Change
         self.set_changed()
         self.added_records.append((id, 0))

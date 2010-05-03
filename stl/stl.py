@@ -487,6 +487,7 @@ def rewrite_uris(stream, rewrite, ns_uri=xhtml_uri):
 
 class STLFile(XMLFile):
 
+    # FIXME To be changed once we have our own extension and mimetype (#864)
     class_mimetypes = ['text/xml', 'application/xml', 'application/xhtml+xml']
 
     def get_units(self, srx_handler=None):

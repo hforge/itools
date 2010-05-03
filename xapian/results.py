@@ -161,7 +161,7 @@ class SearchResults(object):
             size = self._max
 
         # Construction of the results
-        results = [ Doc(x.get_document(), fields, metadata)
+        results = [ Doc(x.document, fields, metadata)
                     for x in enquire.get_mset(start, size) ]
 
         # sort_by=None/reverse=True

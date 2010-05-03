@@ -50,15 +50,6 @@ class Record(TableRecord):
     """A Record with some icalendar specific methods in addition.
     """
 
-    def get_version(self):
-        """Return the last version of current component or the sequence's one.
-        """
-        version = self[0]
-        if self.get_property('SEQUENCE') == version:
-            return version
-        return None
-
-
     # Get a property of current component
     def get_property(self, name=None):
         """Return the value of given name property as a Property or as a list

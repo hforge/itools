@@ -118,6 +118,11 @@ class WebServer(HTTPServer):
                         domain='itools.web')
             return set_response(soup_message, 501)
 
+        # If path is null => 400 Bad Request
+        if path is None:
+            log_warning('Unexpected HTTP path (null)', domain='itools.web')
+            return set_response(soup_message, 400)
+
         # (2) Initialize the context
         context = Context(soup_message, path)
         self.init_context(context)

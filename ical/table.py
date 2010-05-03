@@ -50,17 +50,6 @@ class Record(TableRecord):
     """A Record with some icalendar specific methods in addition.
     """
 
-    def get_version(self, sequence=None):
-        """Return the last version of current component or the sequence's one.
-        """
-        if sequence is None:
-            sequence = self[-1]
-        for version in self:
-            if self.get_property('SEQUENCE') == sequence:
-                return version
-        return None
-
-
     # Get a property of current component
     def get_property(self, name=None):
         """Return the value of given name property as a Property or as a list
@@ -281,7 +270,7 @@ class icalendarTable(BaseCalendar, Table):
                         c_inner_components = [Property(x)
                                               for x in c_inner_components]
                         c_properties['inner'] = c_inner_components
-                    record.append(c_properties)
+                    record[0] = c_properties
                     if uid in uids:
                         n = uids[uid] + 1
                         uids[uid] = n
@@ -304,7 +293,7 @@ class icalendarTable(BaseCalendar, Table):
                     sequence = c_inner_properties.get('SEQUENCE', None)
                     c_inner_properties['SEQUENCE'] = sequence or Property(0)
                     c_inner_properties['ts'] = Property(datetime.now())
-                    record.append(c_inner_properties)
+                    record[0] = c_inner_properties
                     c_inner_components.append(id)
                     self.added_records.append((id, 0))
                     records.append(record)
@@ -370,38 +359,36 @@ class icalendarTable(BaseCalendar, Table):
         # Calendar components
         for record in self.records:
             if record is not None:
-                seq = 0
                 c_type = record.type
                 # Ignore some components (like DAYLIGHT, STANDARD, ...)
                 # keeping only VEVENT, VTIMEZONE, V.., and x-name ones
                 if not c_type.startswith('V') and not c_type.startswith('X'):
                     continue
-                for version in record:
-                    line = 'BEGIN:%s\n' % c_type
-                    lines.append(Unicode.encode(line))
-                    line = ''
-                    # Properties
-                    names = version.keys()
-                    names.sort()
-                    for name in names:
-                        if name in ('id', 'ts', 'type'):
-                            continue
-                        elif name == 'DTSTAMP':
-                            value = version['ts']
-                        else:
-                            value = version[name]
-                        if name == 'SEQUENCE':
-                            value.value += seq
-                        # Insert inner components
-                        elif name == 'inner':
-                            line = self.encode_inner_components(name, value)
-                        else:
-                            name = name.upper()
-                            line = self.encode_property(name, value)
-                        lines.extend(line)
-                    line = 'END:%s\n' % c_type
-                    lines.append(Unicode.encode(line))
-                    seq += 1
+                version = record[0]
+                line = 'BEGIN:%s\n' % c_type
+                lines.append(Unicode.encode(line))
+                line = ''
+                # Properties
+                names = version.keys()
+                names.sort()
+                for name in names:
+                    if name in ('id', 'ts', 'type'):
+                        continue
+                    elif name == 'DTSTAMP':
+                        value = version['ts']
+                    else:
+                        value = version[name]
+                    if name == 'SEQUENCE':
+                        pass
+                    # Insert inner components
+                    elif name == 'inner':
+                        line = self.encode_inner_components(name, value)
+                    else:
+                        name = name.upper()
+                        line = self.encode_property(name, value)
+                    lines.extend(line)
+                line = 'END:%s\n' % c_type
+                lines.append(Unicode.encode(line))
 
         line = 'END:VCALENDAR\n'
         lines.append(Unicode.encode(line))
@@ -416,9 +403,9 @@ class icalendarTable(BaseCalendar, Table):
 
         id = len(self.records)
         record = Record(id, self.record_properties)
-        version = self.properties_to_dict(kw)
+        version = record[0]
+        self.properties_to_dict(kw, version)
         version['ts'] = Property(datetime.now())
-        record.append(version)
         # Change
         self.set_changed()
         self.added_records.append((id, 0))

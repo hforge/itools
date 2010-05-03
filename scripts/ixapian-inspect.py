@@ -49,7 +49,7 @@ def get_docs(db):
     enquire = Enquire(db)
     enquire.set_query(Query(''))
     docs_max = enquire.get_mset(0,0).get_matches_upper_bound()
-    return [doc.get_document() for doc in  enquire.get_mset(0, docs_max)]
+    return [doc.document for doc in enquire.get_mset(0, docs_max)]
 
 
 def get_regexp(regexp):

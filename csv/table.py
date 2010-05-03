@@ -407,6 +407,7 @@ class Record(list, CatalogAware):
     def __init__(self, id, record_properties):
         self.id = id
         self.record_properties  = record_properties
+        self.append({})
 
 
     def __getattr__(self, name):
@@ -490,13 +491,10 @@ class Table(File):
         return String(multiple=True)
 
 
-    def properties_to_dict(self, properties, version=None, first=False):
+    def properties_to_dict(self, properties, version, first=False):
         """Add the given "properties" as Property objects or Property objects
         list to the given dictionnary "version".
         """
-        if version is None:
-            version = {}
-
         # The variable 'first' defines whether we are talking about the
         # table properties (True) or a about records (False).
         if first is True:
@@ -525,7 +523,6 @@ class Table(File):
                     version[name] = [to_property(value)]
             else:
                 version[name] = to_property(value)
-        return version
 
 
     #######################################################################
@@ -537,7 +534,7 @@ class Table(File):
     def reset(self):
         self.properties = None
         self.records = []
-        self.added_properties = []
+        self.changed_properties = False
         self.added_records = []
         self.removed_records = []
         # The catalog (for index and search)
@@ -550,7 +547,7 @@ class Table(File):
     def new(self):
         # Add the properties record
         properties = self.record_class(-1, self.record_properties)
-        properties.append({'ts': Property(datetime.now())})
+        properties[0] = {'ts': Property(datetime.now())}
         self.properties = properties
 
 
@@ -593,11 +590,7 @@ class Table(File):
                         records[uid] = None
                         record = None
                 else:
-                    seq = int(seq)
-                    if seq > len(record):
-                        msg = 'unexpected sequence "%s" for record "%s"'
-                        raise ValueError, msg % (seq, uid)
-                    record.append(version)
+                    record[0] = version
                 # Table or record schema
                 if uid == -1:
                     get_datatype = self.get_datatype
@@ -624,8 +617,8 @@ class Table(File):
                 self.catalog.index_document(record)
 
 
-    def _version_to_str(self, id, seq, version):
-        lines = ['id:%d/%d\n' % (id, seq)]
+    def _version_to_str(self, id, version):
+        lines = ['id:%d/0\n' % id]
         names = version.keys()
         names.sort()
         # Table or record schema
@@ -658,19 +651,15 @@ class Table(File):
         id = 0
         # Properties record
         if self.properties is not None:
-            seq = 0
-            for version in self.properties:
-                version = self._version_to_str(-1, seq, version)
-                lines.append(version)
-                seq += 1
+            version = self.properties[0]
+            version = self._version_to_str(-1, version)
+            lines.append(version)
         # Common record
         for record in self.records:
             if record is not None:
-                seq = 0
-                for version in record:
-                    version = self._version_to_str(id, seq, version)
-                    lines.append(version)
-                    seq += 1
+                version = record[0]
+                version = self._version_to_str(id, version)
+                lines.append(version)
             # Next
             id += 1
 
@@ -689,7 +678,7 @@ class Table(File):
         # Case 1: new file
         if self.timestamp is None:
             File._save_state(self)
-            self.added_properties = []
+            self.changed_properties = False
             self.added_records = []
             self.removed_records = []
             return
@@ -698,15 +687,15 @@ class Table(File):
         file = self.database.fs.open(self.key, 'a')
         try:
             # Added properties records
-            for seq in self.added_properties:
-                version = self.properties[seq]
-                version = self._version_to_str(-1, seq, version)
+            if self.changed_properties:
+                version = self.properties[0]
+                version = self._version_to_str(-1, version)
                 file.write(version)
-            self.added_properties = []
+            self.changed_properties = False
             # Added records
-            for id, seq in self.added_records:
-                version = self.records[id][seq]
-                version = self._version_to_str(id, seq, version)
+            for id in self.added_records:
+                version = self.records[id][0]
+                version = self._version_to_str(id, version)
                 file.write(version)
             self.added_records = []
             # Removed records
@@ -748,12 +737,12 @@ class Table(File):
         # Add version to record
         id = len(self.records)
         record = self.record_class(id, self.record_properties)
-        version = self.properties_to_dict(kw)
+        version = record[0]
+        self.properties_to_dict(kw, version)
         version['ts'] = Property(datetime.now())
-        record.append(version)
         # Change
         self.set_changed()
-        self.added_records.append((id, 0))
+        self.added_records.append(id)
         self.records.append(record)
         self.catalog.index_document(record)
         # Back
@@ -773,14 +762,13 @@ class Table(File):
                 if search and (search[0] != self.records[id]):
                     raise UniqueError(name, kw[name])
         # Version of record
-        version = record[-1].copy()
-        version = self.properties_to_dict(kw, version)
+        version = record[0]
+        self.properties_to_dict(kw, version)
         version['ts'] = Property(datetime.now())
         # Change
         self.set_changed()
         self.catalog.unindex_document(record.id)
-        self.added_records.append((id, len(record)))
-        record.append(version)
+        self.added_records.append(id)
         # Index
         self.catalog.index_document(record)
 
@@ -791,17 +779,14 @@ class Table(File):
             # if the record doesn't exist
             # we create it, it's useful during an update
             record = self.record_class(-1, self.record_properties)
-            version = None
             self.properties = record
-        else:
-            # Version of record
-            version = record[-1].copy()
-        version = self.properties_to_dict(kw, version, first=True)
+
+        version = record[0]
+        self.properties_to_dict(kw, version, first=True)
         version['ts'] = Property(datetime.now())
         # Change
         self.set_changed()
-        self.added_properties.append(len(record))
-        record.append(version)
+        self.changed_properties = True
 
 
     def del_record(self, id):
@@ -811,10 +796,9 @@ class Table(File):
             raise LookupError, msg % id
         # Change
         self.set_changed()
-        if (id, 0) not in self.added_records:
+        if id not in self.added_records:
             self.removed_records.append((id, datetime.now()))
-        self.added_records = [
-            (x, y) for x, y in self.added_records if x != id ]
+        self.added_records = [ x for x in self.added_records if x != id ]
         self.catalog.unindex_document(record.id)
         self.records[id] = None
 

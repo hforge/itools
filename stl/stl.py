@@ -487,6 +487,8 @@ def rewrite_uris(stream, rewrite, ns_uri=xhtml_uri):
 
 class STLFile(XMLFile):
 
+    class_mimetypes = ['text/xml', 'application/xml', 'application/xhtml+xml']
+
     def get_units(self, srx_handler=None):
         for source, context, line in get_units(self.events, srx_handler):
             if len(source) > 1 or subs_expr_solo.match(source[0][1]) is None:

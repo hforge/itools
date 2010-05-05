@@ -25,6 +25,7 @@ from sys import getrefcount
 
 # Import from itools
 from itools.core import LRUCache, send_subprocess, freeze
+from itools.datatypes import ISODateTime
 from itools.fs import vfs, lfs
 from itools.uri import Path
 from folder import Folder
@@ -994,7 +995,7 @@ class GitDatabase(ROGitDatabase):
         The value returned by this method will be passed to '_save_changes',
         so it can be used to pre-calculate whatever data is needed.
         """
-        return None, None
+        return None, None, None
 
 
     def _save_changes(self, data):
@@ -1019,10 +1020,13 @@ class GitDatabase(ROGitDatabase):
             self.added.clear()
 
         # Commit
-        git_author, git_message = data
+        git_author, git_date, git_message = data
         command = ['git', 'commit', '-aq', '-m', git_message or 'no comment']
         if git_author:
             command.append('--author=%s' % git_author)
+        if git_date:
+            git_date = ISODateTime.encode(git_date)
+            command.append('--date=%s' % git_date)
         try:
             send_subprocess(command, path=self.path)
         except CalledProcessError, excp:

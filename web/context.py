@@ -19,6 +19,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from datetime import datetime
 from thread import get_ident, allocate_lock
 
 # Import from itools
@@ -88,6 +89,11 @@ class Context(object):
         # attribute lets the interface to add those resources.
         self.styles = []
         self.scripts = []
+
+
+    @lazy
+    def timestamp(self):
+        return datetime.now()
 
 
     @lazy

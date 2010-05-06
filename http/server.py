@@ -20,7 +20,7 @@ from sys import stdout
 
 # Import from itools
 from itools.i18n import init_language_selector
-from itools.soup import SoupServer
+from soup import SoupServer
 
 
 class HTTPServer(SoupServer):

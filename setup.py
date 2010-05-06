@@ -81,8 +81,8 @@ if __name__ == '__main__':
             if include.endswith('/libsoup-2.4'):
                 flags['include_dirs'].append('%s/libsoup' % include)
                 break
-        sources = ['soup/soup.c']
-        extension = Extension('itools.soup.soup', sources, **flags)
+        sources = ['http/soup.c']
+        extension = Extension('itools.http.soup', sources, **flags)
         ext_modules.append(extension)
 
     # Ok

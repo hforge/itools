@@ -24,10 +24,12 @@ from exceptions import ServiceUnavailable, MethodNotAllowed, Conflict
 from headers import get_type
 from headers import Cookie, SetCookieDataType
 from server import HTTPServer
+from soup import SoupMessage
 from utils import set_response
 
 
 __all__ = [
+    'SoupMessage',
     'HTTPServer',
     'Entity',
     'get_type',

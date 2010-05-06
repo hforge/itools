@@ -555,34 +555,28 @@ class Table(File):
             if name == 'id':
                 uid, seq = value.split('/')
                 uid = int(uid)
-                if uid == -1:
-                    # Tale properties
-                    self.properties = self.record_class(uid, record_properties)
-                    record = self.properties
-                elif uid >= n:
-                    # New record
-                    records.extend([None] * (uid - n))
+                # Build the new record
+                if seq == 'DELETED':
+                    record = None
+                else:
                     record = self.record_class(uid, record_properties)
+                # Table properties, or new record, or updated record
+                if uid == -1:
+                    get_datatype = self.get_datatype
+                    self.properties = record
+                elif uid >= n:
+                    get_datatype = self.get_record_datatype
+                    records.extend([None] * (uid - n))
                     records.append(record)
                     n = uid + 1
                 else:
-                    # Updated record
-                    record = self.record_class(uid, record_properties)
-                    records[uid] = record
-
-                # Version
-                if seq == 'DELETED':
-                    # Deleted
-                    if uid == -1:
-                        properties = None
-                    else:
-                        records[uid] = None
-                        record = None
-                # Table or record schema
-                if uid == -1:
-                    get_datatype = self.get_datatype
-                else:
                     get_datatype = self.get_record_datatype
+                    records[uid] = record
+                # Continue
+                continue
+
+            # Skip deleted records
+            if record is None:
                 continue
 
             # Deserialize the parameters

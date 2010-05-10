@@ -27,15 +27,21 @@ import sys
 # Import from itools
 import itools
 from itools.gettext import POFile
-from itools.handlers import ro_database
+from itools.handlers import register_handler_class, ro_database
 import itools.html
 import itools.python
 import itools.stl
 import itools.pdf
 from itools.pkg import get_config
 import itools.srx
+from itools.stl import STLFile
 from itools.uri import Path
 from itools.fs import lfs, WRITE
+
+
+# FIXME We register STLFile to override get_units of XHTMLFile handler
+# (See bug #864)
+register_handler_class(STLFile)
 
 
 def write(text):

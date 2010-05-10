@@ -36,6 +36,7 @@ from itools.uri import Path, Reference, get_reference
 from itools.xml import XMLParser, find_end, get_attr_datatype, stream_to_str
 from itools.xml import DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, TEXT
 from itools.xml import xmlns_uri
+from itools.xmlfile import XMLFile, get_units
 from itools.html import xhtml_uri
 from itools.html import stream_to_str_as_html, stream_to_str_as_xhtml
 from schema import stl_uri
@@ -485,6 +486,20 @@ def rewrite_uris(stream, rewrite, ns_uri=xhtml_uri):
             yield START_ELEMENT, (tag_uri, tag_name, aux), line
         else:
             yield event
+
+###########################################################################
+# STLFile
+###########################################################################
+
+class STLFile(XMLFile):
+
+    # FIXME To be changed once we have our own extension and mimetype (#864)
+    class_mimetypes = ['text/xml', 'application/xml', 'application/xhtml+xml']
+
+    def get_units(self, srx_handler=None):
+        for source, context, line in get_units(self.events, srx_handler):
+            if len(source) > 1 or subs_expr_solo.match(source[0][1]) is None:
+                yield source, context, line
 
 
 ###########################################################################

@@ -206,6 +206,7 @@ def get_units(events, srx_handler=None):
                 if not issubclass(datatype, Unicode):
                     continue
                 value = attributes[(attr_uri, attr_name)]
+                value = datatype.decode(value)
                 if not value.strip():
                     continue
                 unit = ((srx_TEXT, value),)

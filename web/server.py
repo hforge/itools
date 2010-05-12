@@ -31,7 +31,7 @@ from itools.http import NotImplemented, MethodNotAllowed, Unauthorized
 from itools.http import set_response
 from itools.log import log_error, log_warning, register_logger
 from itools.uri import Reference
-from context import Context, set_context, WebLogger
+from context import Context, set_context, del_context, WebLogger
 from exceptions import FormError
 from views import BaseView
 
@@ -133,6 +133,8 @@ class WebServer(HTTPServer):
         except Exception:
             log_error('Failed to handle request', domain='itools.web')
             set_response(soup_message, 500)
+        finally:
+            del_context()
 
 
 

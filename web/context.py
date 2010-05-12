@@ -387,10 +387,6 @@ def set_context(context):
         contexts_lock.release()
 
 
-def has_context():
-    return get_ident() in contexts
-
-
 def get_context():
     return contexts.get(get_ident())
 

@@ -29,9 +29,11 @@ from itools.http import HTTPServer
 from itools.http import ClientError, NotModified, Forbidden, NotFound
 from itools.http import NotImplemented, MethodNotAllowed, Unauthorized
 from itools.http import set_response
+from itools.i18n import init_language_selector
 from itools.log import log_error, log_warning, register_logger
 from itools.uri import Reference
-from context import Context, set_context, del_context, WebLogger
+from context import Context, set_context, del_context, select_language
+from context import WebLogger
 from exceptions import FormError
 from views import BaseView
 
@@ -108,6 +110,16 @@ class WebServer(HTTPServer):
     ########################################################################
     # Request handling: main functions
     ########################################################################
+    def listen(self):
+        # Language negotiation
+        init_language_selector(select_language)
+
+        # Add handlers
+        HTTPServer.listen(self)
+        self.add_handler('/', self.path_callback)
+        self.add_handler('*', self.star_callback)
+
+
     def path_callback(self, soup_message, path):
         # (1) Get the class that will handle the request
         method_name = soup_message.get_method()
@@ -135,6 +147,27 @@ class WebServer(HTTPServer):
             set_response(soup_message, 500)
         finally:
             del_context()
+
+
+    def star_callback(self, soup_message, path):
+        """This method is called for the special "*" request URI, which means
+        the request concerns the server itself, and not any particular
+        resource.
+
+        Currently this feature is only supported for the OPTIONS request
+        method:
+
+          OPTIONS * HTTP/1.1
+        """
+        method = soup_message.get_method()
+        if method != 'OPTIONS':
+            soup_message.set_status(405)
+            soup_message.set_header('Allow', 'OPTIONS')
+            return
+
+        known_methods = methods.keys()
+        soup_message.set_status(200)
+        soup_message.set_header('Allow', ','.join(known_methods))
 
 
 

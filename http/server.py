@@ -19,7 +19,6 @@ from os import fstat
 from sys import stdout
 
 # Import from itools
-from itools.i18n import init_language_selector
 from soup import SoupServer
 
 
@@ -54,16 +53,7 @@ class HTTPServer(SoupServer):
 
 
     def listen(self):
-        # Language negotiation
-        from itools.web import select_language
-        init_language_selector(select_language)
-
-        # Add handlers
         SoupServer.start(self)
-        self.add_handler('/', self.path_callback)
-        self.add_handler('*', self.star_callback)
-
-        # Run
         address = self.address if self.address is not None else '*'
         print 'Listen %s:%d' % (address, self.port)
 
@@ -72,35 +62,3 @@ class HTTPServer(SoupServer):
         SoupServer.stop(self)
         if self.access_log:
             self.access_log_file.close()
-
-
-    #######################################################################
-    # Callbacks
-    #######################################################################
-    known_methods = [
-        'OPTIONS', 'GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'LOCK', 'UNLOCK']
-
-
-    def star_callback(self, soup_message, path):
-        """This method is called for the special "*" request URI, which means
-        the request concerns the server itself, and not any particular
-        resource.
-
-        Currently this feature is only supported for the OPTIONS request
-        method:
-
-          OPTIONS * HTTP/1.1
-        """
-        method = soup_message.get_method()
-        if method != 'OPTIONS':
-            soup_message.set_status(405)
-            soup_message.set_header('Allow', 'OPTIONS')
-            return
-
-        methods = self.known_methods
-        soup_message.set_status(200)
-        soup_message.set_header('Allow', ','.join(methods))
-
-
-    def path_callback(self, soup_message, path):
-        raise NotImplementedError

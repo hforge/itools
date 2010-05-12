@@ -24,15 +24,10 @@ from soup import SoupServer
 
 class HTTPServer(SoupServer):
 
-    def __init__(self, address=None, port=8080, access_log=None):
-        SoupServer.__init__(self, address=address, port=port)
-
-        # Keep arguments
-        self.address = address
-        self.port = port
+    def __init__(self, access_log=None):
+        SoupServer.__init__(self)
+        # Access log
         self.access_log = access_log
-
-        # Open log files
         if access_log is not None:
             self.access_log_file = open(access_log, 'a+')
 
@@ -52,10 +47,10 @@ class HTTPServer(SoupServer):
         log.flush()
 
 
-    def listen(self):
-        SoupServer.start(self)
-        address = self.address if self.address is not None else '*'
-        print 'Listen %s:%d' % (address, self.port)
+    def listen(self, address, port):
+        SoupServer.listen(self, address, port)
+        address = address if address is not None else '*'
+        print 'Listen %s:%d' % (address, port)
 
 
     def stop(self):

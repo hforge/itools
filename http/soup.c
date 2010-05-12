@@ -425,7 +425,6 @@ typedef struct
 {
   PyObject_HEAD
   SoupServer * s_server;
-  SoupAddress * s_address;
 } PyServer;
 
 
@@ -466,26 +465,32 @@ s_server_callback (SoupServer * s_server, SoupMessage * s_msg,
 static int
 PyServerType_init (PyServer * self, PyObject * args, PyObject * kwdict)
 {
-  /* Defines the parameters */
-  static char *kwlist[] = { "address", "port", NULL };
-  char *address = NULL;
-  guint port = 8080;
-
-  /* libsoup variables */
-  SoupAddress *s_address = NULL;
-
-  /* Arguments */
-  if (!PyArg_ParseTupleAndKeywords (args, kwdict, "|zI", kwlist, &address,
-                                    &port))
-    return -1;
-
   /* Initialization of the Glib interface */
   /* http://bugzilla.gnome.org/show_bug.cgi?id=532778 */
   if (!g_thread_supported ())
     g_thread_init (NULL);
   g_type_init();
 
-  /* An interface is specified ? */
+  /* Ok */
+  return 0;
+}
+
+
+static PyObject *
+PyServerType_listen (PyServer * self, PyObject * args, PyObject * kwdict)
+{
+  /* libsoup variables */
+  guint signal_id;
+  char *address = NULL;
+  guint port = 8080;
+  SoupServer *s_server;
+  SoupAddress *s_address = NULL;
+
+  /* Arguments */
+  if (!PyArg_ParseTuple (args, "zI", &address, &port))
+    return -1;
+
+  /* s_address */
   if ( (address != NULL) && (strcmp(address, "") != 0) )
     s_address = soup_address_new (address, port);
   else
@@ -498,34 +503,9 @@ PyServerType_init (PyServer * self, PyObject * args, PyObject * kwdict)
   }
   soup_address_resolve_sync(s_address, NULL);
 
-  /* Keep address & port */
-  self->s_address = s_address;
-
-  /* Ok */
-  return 0;
-}
-
-
-static PyObject *
-PyServerType_stop (PyServer * self, PyObject * args, PyObject * kwdict)
-{
-  soup_server_quit (self->s_server);
-
-  Py_RETURN_NONE;
-}
-
-
-static PyObject *
-PyServerType_start (PyServer * self, PyObject * args, PyObject * kwdict)
-{
-  /* libsoup variables */
-  guint signal_id;
-  SoupServer *s_server;
-
-  /* Make the server */
+  /* s_server */
   s_server = soup_server_new (SOUP_SERVER_SERVER_HEADER, "itools.http",
-                              SOUP_SERVER_INTERFACE, self->s_address,
-                              NULL);
+                              SOUP_SERVER_INTERFACE, s_address, NULL);
   if (!s_server)
   {
     PyErr_Format (PyExc_RuntimeError, "could not make the SoupServer");
@@ -542,6 +522,15 @@ PyServerType_start (PyServer * self, PyObject * args, PyObject * kwdict)
 
   /* Go */
   soup_server_run_async (self->s_server);
+
+  Py_RETURN_NONE;
+}
+
+
+static PyObject *
+PyServerType_stop (PyServer * self, PyObject * args, PyObject * kwdict)
+{
+  soup_server_quit (self->s_server);
 
   Py_RETURN_NONE;
 }
@@ -565,8 +554,9 @@ PyServerType_add_handler (PyServer * self, PyObject * args, PyObject * kwdict)
 
 
 static PyMethodDef PyServer_methods[] = {
+  {"listen", (PyCFunction) PyServerType_listen, METH_VARARGS,
+   "Listen to the given interface and port"},
   {"stop", (PyCFunction) PyServerType_stop, METH_NOARGS, "Stop the server"},
-  {"start", (PyCFunction) PyServerType_start, METH_NOARGS, "Start the server"},
   {"add_handler", (PyCFunction) PyServerType_add_handler, METH_VARARGS,
    "Adds a handler for requests under path"},
   {NULL} /* Sentinel */

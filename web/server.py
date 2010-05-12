@@ -46,15 +46,12 @@ class WebServer(HTTPServer):
     database = None
 
 
-    def __init__(self, root, address=None, port=8080, access_log=None,
-                 event_log=None):
-
-        register_logger(WebLogger(log_file=event_log), 'itools.web')
-
-        super(WebServer, self).__init__(address, port, access_log)
-
+    def __init__(self, root, access_log=None, event_log=None):
+        super(WebServer, self).__init__(access_log)
         # The application's root
         self.root = root
+        # Logging
+        register_logger(WebLogger(log_file=event_log), 'itools.web')
 
 
     #######################################################################
@@ -110,12 +107,12 @@ class WebServer(HTTPServer):
     ########################################################################
     # Request handling: main functions
     ########################################################################
-    def listen(self):
+    def listen(self, address, port):
         # Language negotiation
         init_language_selector(select_language)
 
         # Add handlers
-        HTTPServer.listen(self)
+        HTTPServer.listen(self, address, port)
         self.add_handler('/', self.path_callback)
         self.add_handler('*', self.star_callback)
 

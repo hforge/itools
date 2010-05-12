@@ -219,7 +219,7 @@ class Context(object):
         return self.soup_message.get_request_line()
 
     def get_headers(self):
-        return  self.soup_message.get_headers()
+        return self.soup_message.get_headers()
 
 
     def get_header(self, name):
@@ -414,10 +414,6 @@ def set_context(context):
         contexts[ident] = context
     finally:
         contexts_lock.release()
-
-
-def has_context():
-    return get_ident() in contexts
 
 
 def get_context():

@@ -78,6 +78,9 @@ def get_end_tag(tag_uri, tag_name):
 
 
 def get_doctype(name, doctype):
+    # HTML 5
+    if doctype is None:
+        return '<!doctype %s>' % name
     return '<!DOCTYPE %s %s>' % (name, doctype.to_str())
 
 

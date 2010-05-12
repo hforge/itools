@@ -230,7 +230,12 @@ class Parser(BaseParser, object):
 
 
     def handle_decl(self, value):
-        # The document type declaration of HTML documents is like defined
+        # The document type declaration of HTML5 documents is always (case
+        # insensitive):
+        #
+        #   <!doctype html>
+        #
+        # The document type declaration of HTML4 documents is like defined
         # by SGML, what is a little more flexible than XML. Right now we
         # support:
         #
@@ -243,6 +248,14 @@ class Parser(BaseParser, object):
         # TODO Check online resources to find out other cases that should
         # be supported (the SGML spec is not available online).
 
+        line = self.getpos()[0]
+
+        # Case 1: HTML5
+        if value.lower() == 'doctype html':
+            self.events.append((DOCUMENT_TYPE, ('html', None), line))
+            return
+
+        # Case 2: HTML4
         # DOCTYPE
         if not value.startswith('DOCTYPE'):
             raise XMLError
@@ -273,7 +286,7 @@ class Parser(BaseParser, object):
 
         value = name, DocType_ersatz(PubidLiteral=public_id,
                                      SystemLiteral=system_id)
-        self.events.append((DOCUMENT_TYPE, value, self.getpos()[0]))
+        self.events.append((DOCUMENT_TYPE, value, line))
 
 
     def handle_starttag(self, name, attrs):

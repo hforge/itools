@@ -381,6 +381,10 @@ html_elements = [
         'frameborder', 'marginwidth', 'marginheight', 'scrolling', 'align',
         'height', 'width']),
     BlockElement('noframes', common_attrs),
+    # HTML 5
+    # TODO Complete and check against an official description or schema (there
+    # is not a DTD in HTML5)
+    EmptyBlockElement('canvas', common_attrs + ['width', 'height']),
     # Vendor specific, not approved by W3C
     # for a talk about <embed> see:
     #   http://alistapart.com/articles/byebyeembed

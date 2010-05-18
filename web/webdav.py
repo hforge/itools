@@ -106,7 +106,8 @@ class UNLOCK(RequestMethod):
 
 class PUT(RequestMethod):
     """This is the PUT method as defined in WebDAV.
-    Resource must be locked before PUTting.
+    Resource must be locked before PUTting or the client must send a correct
+    "If-Unmodified-Since" header.
     """
 
     method_name = 'PUT'
@@ -119,16 +120,44 @@ class PUT(RequestMethod):
 
     @classmethod
     def check_conditions(cls, server, context):
+        """2 cases:
+            1- the resource is locked
+            2- the resource is not locked, but there is a correct
+               "If-Unmodified-Since" header.
+        """
         resource = context.resource
-        # In WebDAV the resource must be locked
-        if not resource.is_locked():
-            raise Conflict
+
+        # Case 1: in WebDAV the resource must be locked
+        if resource.is_locked():
+            return
         # TODO check the lock matches the "If:" header
+
+        # Case 2
+        if_unmodified_since = context.get_header('If-Unmodified-Since')
+        if if_unmodified_since is None:
+            raise Conflict
+        mtime = resource.get_mtime().replace(microsecond=0)
+        if mtime > if_unmodified_since:
+            raise Conflict
 
 
     @classmethod
     def check_transaction(cls, server, context):
         return getattr(context, 'commit', True) and context.status < 400
+
+
+    @classmethod
+    def set_body(cls, context):
+        super(PUT, cls).set_body(context)
+
+        # Get the resource's modification time
+        mtime = context.resource.get_mtime()
+        if mtime is None:
+            return
+
+        # Set the Last-Modified header
+        mtime = mtime.replace(microsecond=0)
+        context.set_header('Last-Modified', mtime)
 
 
 

@@ -59,6 +59,10 @@ def stream_to_html(stream, encoding='UTF-8', map=stream_to_html_map):
 
 
 def set_content_type(stream, content_type):
+    new_stream = []
+    replaced = False
+    head_tag = None
+
     key1 = (None, 'http-equiv')
     key2 = (None, 'content')
     for event in stream:
@@ -66,32 +70,27 @@ def set_content_type(stream, content_type):
         if type == START_ELEMENT:
             ns_uri, name, attributes = value
             if ns_uri == xhtml_uri:
-                # Skip <meta http-equiv="Content-Type">
-                if name == 'meta':
-                    if key1 in attributes:
-                        if attributes[key1] == 'Content-Type':
-                            continue
-                elif name == 'head':
-                    yield event
-                    # Add <meta http-equiv="Content-Type">
-                    attributes = {}
-                    attributes[key1] = 'Content-Type'
-                    attributes[key2] = content_type
-                    yield START_ELEMENT, (xhtml_uri, 'meta', attributes), line
-                    yield END_ELEMENT, (xhtml_uri, 'meta'), line
-                    continue
-        elif type == END_ELEMENT:
-            ns_uri, name = value
-            if ns_uri == xhtml_uri:
-                # Skip <meta http-equiv="Content-Type">
-                if name == 'meta':
-                    # XXX This will fail if there is another element
-                    # within the "<meta>" element (something that should
-                    # not happen).
-                    if key1 in attributes:
-                        if attributes[key1] == 'Content-Type':
-                            continue
-        yield event
+                if name == 'head':
+                    head_tag = len(new_stream), line
+                elif name == 'meta' and attributes.get(key1) == 'Content-Type':
+                    replaced = True
+                    # Replace <meta http-equiv="Content-Type">
+                    attributes = {key1: 'Content-Type', key2: content_type}
+                    value = (xhtml_uri, 'meta', attributes)
+                    event = (START_ELEMENT, value, line)
+        new_stream.append(event)
+
+    # Insert <meta http-equiv="Content-Type">
+    if replaced is False and head_tag:
+        index, line = head_tag
+        attributes = {key1: 'Content-Type', key2: content_type}
+        event = (START_ELEMENT, (xhtml_uri, 'meta', attributes), line)
+        new_stream.insert(index + 1, event)
+        event = (END_ELEMENT, (xhtml_uri, 'meta'), line)
+        new_stream.insert(index + 2, event)
+
+    # Ok
+    return new_stream
 
 
 def stream_to_str_as_xhtml(stream, encoding='UTF-8'):

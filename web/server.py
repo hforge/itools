@@ -26,7 +26,7 @@ from warnings import warn
 
 # Import from itools
 from itools.http import HTTPServer
-from itools.http import ClientError, NotModified, Forbidden, NotFound
+from itools.http import ClientError, NotModified, Forbidden, NotFound, Conflict
 from itools.http import NotImplemented, MethodNotAllowed, Unauthorized
 from itools.http import set_response
 from itools.i18n import init_language_selector
@@ -537,6 +537,50 @@ class OPTIONS(RequestMethod):
 
 
 
+class PUT(RequestMethod):
+    """The client must send a correct "If-Unmodified-Since" header to be
+       authorized to PUT.
+    """
+
+    method_name = 'PUT'
+
+
+    @classmethod
+    def find_view(cls, server, context):
+        find_view_by_method(server, context)
+
+
+    @classmethod
+    def check_conditions(cls, server, context):
+        """The resource is not locked, the request must have a correct
+           "If-Unmodified-Since" header.
+        """
+        if_unmodified_since = context.get_header('If-Unmodified-Since')
+        if if_unmodified_since is None:
+            raise Conflict
+        mtime = context.resource.get_mtime().replace(microsecond=0)
+        if mtime > if_unmodified_since:
+            raise Conflict
+
+
+    @classmethod
+    def check_transaction(cls, server, context):
+        return getattr(context, 'commit', True) and context.status < 400
+
+
+    @classmethod
+    def set_body(cls, context):
+        super(PUT, cls).set_body(context)
+
+        # Set the Last-Modified header (if possible)
+        mtime = context.resource.get_mtime()
+        if mtime is None:
+            return
+        mtime = mtime.replace(microsecond=0)
+        context.set_header('Last-Modified', mtime)
+
+
+
 class DELETE(RequestMethod):
 
     method_name = 'DELETE'
@@ -578,4 +622,5 @@ register_method('GET', GET)
 register_method('HEAD', HEAD)
 register_method('POST', POST)
 register_method('OPTIONS', OPTIONS)
+register_method('PUT', PUT)
 register_method('DELETE', DELETE)

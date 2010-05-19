@@ -28,7 +28,7 @@ from itools.html import XHTMLFile
 default_template_fd = XHTMLFile(string=
     """
     <td class="color${event/cal}" xmlns="http://www.w3.org/1999/xhtml">
-      <a href="${event/url}" class="${event/STATUS}">${event/title}</a>
+      <a href="${event/url}" class="${event/status}">${event/title}</a>
       <p>${cell/content/description}</p>
     </td>""")
 
@@ -42,7 +42,7 @@ default_template = XHTMLFile(string=
       <a stl:if="cell/newurl" class="add_event" href="${cell/newurl}">
         <img width="16" height="16" src="${add_icon}" />
       </a><br/>
-      <a href="${cell/content/url}" class="${cell/content/STATUS}">
+      <a href="${cell/content/url}" class="${cell/content/status}">
         <span class="title">${cell/content/title}</span>
       </a>
       <p>${cell/content/description}</p>

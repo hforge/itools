@@ -300,11 +300,23 @@ class STLForm(STLView, BaseForm):
                     else:
                         value = datatype.encode(value)
             else:
-                value = self.get_value(resource, context, name, datatype)
-                if issubclass(datatype, Enumerate):
-                    value = datatype.get_namespace(value)
+                try:
+                    value = self.get_value(resource, context, name, datatype)
+                except FormError, err:
+                    if err.missing:
+                        error = MSG(u'This field is required.')
+                    else:
+                        error = MSG(u'Invalid value.')
+
+                    if issubclass(datatype, Enumerate):
+                        value = datatype.get_namespace(None)
+                    else:
+                        value = None
                 else:
-                    value = datatype.encode(value)
+                    if issubclass(datatype, Enumerate):
+                        value = datatype.get_namespace(value)
+                    else:
+                        value = datatype.encode(value)
             namespace[name] = {'name': name, 'value': value, 'error': error}
         return namespace
 

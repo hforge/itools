@@ -390,6 +390,30 @@ class MultilingualTestCase(TestCase):
 
 
 
+class MultipleTestCase(TestCase):
+
+    def test_everything(self):
+
+        # In memory catalog
+        cat = make_catalog(None, Document_3.fields)
+
+        # Some data
+        cat.index_document(Document_3(1, [1, 2, 3]))
+        cat.index_document(Document_3(2, []))
+        cat.index_document(Document_3(3, 42))
+
+        result = cat.search()
+        docs = cat.search().get_documents(sort_by='id')
+
+        # Test the values
+        self.assertEqual(len(docs), 3)
+        doc1, doc2, doc3 = docs
+        self.assertEqual(doc1.data, [1, 2, 3])
+        self.assertEqual(doc2.data, [])
+        self.assertEqual(doc3.data, 42)
+
+
+
 class Document(CatalogAware):
 
     fields = {'name': String(key_field=True, stored=True, indexed=True),
@@ -422,6 +446,23 @@ class Document_2(CatalogAware):
 
     fields = {'id': Integer(key_field=True, stored=True, indexed=True),
               'data': Unicode(stored=True, indexed=True)}
+
+
+    def __init__(self, id, data):
+        self.id = id
+        self.data = data
+
+
+    def get_catalog_values(self):
+        return {'id': self.id, 'data': self.data}
+
+
+
+class Document_3(CatalogAware):
+
+    fields = {'id': Integer(is_key_field=True, is_stored=True,
+                            is_indexed=True),
+              'data': Integer(is_stored=True, multiple=True)}
 
 
     def __init__(self, id, data):

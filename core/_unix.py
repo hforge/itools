@@ -15,20 +15,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from os import devnull, dup2, fork, getpid, open as os_open, O_RDWR, setsid
-from resource import getrusage, RUSAGE_SELF, getpagesize
+from os import devnull, dup2, fork, open as os_open, O_RDWR, setsid
+from resource import getrusage, RUSAGE_SELF
 from sys import exit, stdin, stdout, stderr
 
 
-pagesize = getpagesize()
-
 
 def vmsize():
-    statm = '/proc/%d/statm' % getpid()
-    statm = open(statm).read()
-    size, resident, share, text, lib, data, dt = statm.split()
-    # FIXME May be more interesting to return the resident size
-    return int(size) * pagesize
+    """Returns the resident size in bytes.
+    """
+    rss = getrusage(RUSAGE_SELF).ru_maxrss
+    return rss * 1024
 
 
 def get_time_spent(mode='both', since=0.0):
@@ -41,12 +38,12 @@ def get_time_spent(mode='both', since=0.0):
     data = getrusage(RUSAGE_SELF)
 
     if mode == 'system':
-        return data[1] - since
+        return data.ru_stime - since
     elif mode == 'user':
-        return data[0] - since
+        return data.ru_utime - since
 
     # Both
-    return data[0] + data[1] - since
+    return data.ru_stime + data.ru_utime - since
 
 
 def become_daemon():

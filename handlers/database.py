@@ -629,6 +629,9 @@ class ROGitDatabase(RODatabase):
         # Keep the path close, to be used by 'send_subprocess'
         self.path = '%s/' % fs.path
 
+        # The git cache
+        self.git_cache = LRUCache(900, 1100)
+
 
     def normalize_key(self, path, __root=Path('/')):
         # Performance is critical so assume the path is already relative to
@@ -703,12 +706,23 @@ class ROGitDatabase(RODatabase):
         return send_subprocess(cmd, path=self.path)
 
 
-    def get_blob(self, revision, path):
+    def get_blob(self, hash):
+        if hash in self.git_cache:
+            return self.git_cache[hash]
+
+        cmd = ['git', 'show', hash]
+        blob = send_subprocess(cmd, path=self.path)
+        self.git_cache[hash] = blob
+        return blob
+
+
+    def get_blob_by_revision_and_path(self, revision, path):
         """Get the file contents located at the given path after the given
         commit revision has been committed.
         """
-        cmd = ['git', 'show', '%s:%s' % (revision, path)]
-        return send_subprocess(cmd, path=self.path)
+        # TODO
+        # hash = ...
+        return self.get_blob(hash)
 
 
 

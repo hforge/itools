@@ -720,8 +720,9 @@ class ROGitDatabase(RODatabase):
         """Get the file contents located at the given path after the given
         commit revision has been committed.
         """
-        # TODO
-        # hash = ...
+        arg = '%s:%s' % (revision, path)
+        cmd = ['git', 'rev-parse', arg]
+        hash = send_subprocess(cmd, path=self.path)
         return self.get_blob(hash)
 
 

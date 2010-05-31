@@ -707,6 +707,12 @@ class ROGitDatabase(RODatabase):
 
 
     def get_blob(self, hash):
+        if type(hash) is not str:
+            raise TypeError, 'get_blob expects a string, %s found' % type(hash)
+
+        if len(hash) != 40:
+            raise ValueError, 'a git hash is 40 chars long, not %d' % len(hash)
+
         if hash in self.git_cache:
             return self.git_cache[hash]
 

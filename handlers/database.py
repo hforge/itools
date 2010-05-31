@@ -722,6 +722,14 @@ class ROGitDatabase(RODatabase):
         return blob
 
 
+    def get_commit_hashs(self, file):
+        """Give the hashs for all commit concerning file
+        """
+        cmd = ['git', 'log', '--reverse', '--pretty=format:%H', file]
+        log = send_subprocess(cmd, path=self.path)
+        return log.splitlines()
+
+
     def get_blob_by_revision_and_path(self, revision, path):
         """Get the file contents located at the given path after the given
         commit revision has been committed.
@@ -729,6 +737,7 @@ class ROGitDatabase(RODatabase):
         arg = '%s:%s' % (revision, path)
         cmd = ['git', 'rev-parse', arg]
         hash = send_subprocess(cmd, path=self.path)
+        hash = hash.rstrip('\n')
         return self.get_blob(hash)
 
 

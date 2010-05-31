@@ -706,7 +706,7 @@ class ROGitDatabase(RODatabase):
         return send_subprocess(cmd, path=self.path)
 
 
-    def get_blob(self, hash):
+    def get_blob(self, hash, cls):
         if type(hash) is not str:
             raise TypeError, 'get_blob expects a string, %s found' % type(hash)
 
@@ -718,6 +718,7 @@ class ROGitDatabase(RODatabase):
 
         cmd = ['git', 'show', hash]
         blob = send_subprocess(cmd, path=self.path)
+        blob = cls(string=blob)
         self.git_cache[hash] = blob
         return blob
 
@@ -730,7 +731,7 @@ class ROGitDatabase(RODatabase):
         return log.splitlines()
 
 
-    def get_blob_by_revision_and_path(self, revision, path):
+    def get_blob_by_revision_and_path(self, revision, path, cls):
         """Get the file contents located at the given path after the given
         commit revision has been committed.
         """
@@ -738,7 +739,7 @@ class ROGitDatabase(RODatabase):
         cmd = ['git', 'rev-parse', arg]
         hash = send_subprocess(cmd, path=self.path)
         hash = hash.rstrip('\n')
-        return self.get_blob(hash)
+        return self.get_blob(hash, cls)
 
 
 

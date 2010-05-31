@@ -320,6 +320,7 @@ html_elements = [
         'data', 'type', 'codetype', 'archive', 'standby', 'height', 'width',
         'usemap', 'name', 'tabindex', 'align', 'border', 'hspace', 'vspace']),
     BlockElement('ol', common_attrs + ['type', 'compact', 'start']),
+    BlockElement('optgroup', common_attrs + ['disabled', 'label']),
     BlockElement('option', common_attrs + ['selected', 'disabled', 'label',
         'value']),
     BlockElement('p', common_attrs, context='paragraph'),

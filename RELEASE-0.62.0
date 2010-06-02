@@ -1,0 +1,58 @@
+
+itools 0.62.0 (2010/06/XX)
+==========================
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.abnf             itools.ical             itools.srx
+  itools.core             itools.log              itools.stl
+  itools.csv              itools.loop             itools.tmx
+  itools.datatypes        itools.odf              itools.uri
+  itools.fs               itools.office           itools.web
+  itools.gettext          itools.pdf              itools.workflow
+  itools.git              itools.pkg              itools.xapian
+  itools.handlers         itools.python           itools.xliff
+  itools.html             itools.relaxng          itools.xml
+  itools.http             itools.rest             itools.xmlfile
+  itools.i18n             itools.rss
+
+This is the companion release of ikaaro [1] 0.62 (the CMS).  In this
+development cycle most work has gone to ikaaro, so the itools 0.62
+release has relatively few changes, mostly about code organization.
+
+The new itools.loop package is a thin wrapper around the glib main
+loop [2].  It adds a few small features: running it in profile mode
+or not, handling a pid file, ...  More stuff is planned for future
+releases.
+
+The package itools.soup has been merged into itools.http; some high
+level features from itools.http have been moved to itools.web.  This
+makes itools.http to be just a "Web Server", and itools.web to be a
+"Web Framework".
+
+The Git based database system (from itools.handlers), includes now
+a cache for git blobs.  This is an small step towards the future
+architecture of the itools "Versioned Key/Value" database system.
+
+
+[1] http://www.hforge.org/ikaaro
+[2] XXX
+
+
+Resources
+---------
+
+Download
+http://download.hforge.org/itools/0.62/itools-0.62.0.tar.gz
+
+Home
+http://www.hforge.org/itools/
+
+Mailing list
+http://www.hforge.org/community/
+http://archives.hforge.org/index.cgi?list=itools
+
+Bug Tracker
+http://bugs.hforge.org/
+

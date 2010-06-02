@@ -1,0 +1,79 @@
+*************************************************************************
+itools 0.62.0
+*************************************************************************
+
+These upgrade notes may not be complete. Thanks to report any problem you
+find.
+
+New Dependencies
+================
+
+This table summurizes the new and updated dependencies:
+
+            0.61   0.62   Used by           Home
+            ----   ----   ---------------   ----------------------------
+Git          1.6    1.7   itools.handlers   http://git-scm.com/
+
+
+Imports
+=======
+
+See the table below for the imports to update.
+
+  Before (alphabetical order)    Now
+  ----------------------------   ---------------------------
+  itools.ical.get_grid_data      ** MOVED TO IKAARO **
+  itools.soup.SoupMessage        itools.http.SoupMessage
+  itools.soup.SoupServer         ** NOT EXPORTED **
+
+
+itools.csv
+==========
+
+The table handler. Now records are not a list of one dict, but just a dict.
+XXX
+
+
+itools.http
+===========
+
+(1) Use the 'add_handler' method instead of just defining 'path_callback':
+
+  # Before
+  class MyServer(HTTPServer):
+      ....
+      def path_callback(self, soup_message, path):
+          ...
+
+  # Now
+  class MyServer(HTTPServer):
+      ....
+      def listen(self, address, port):
+          super(MyServer, self).listen(address, port)
+          self.add_handler('/', self.path_callback)
+
+      def path_callback(self, soup_message, path):
+          ...
+
+(2) The init/listen protocol has changed:
+
+  # Before
+  s = HTTPServer(address, port)
+  s.listen()
+
+  # Now
+  s = HTTPServer()
+  s.listen(address, port)
+
+
+itools.xapian
+=============
+
+The 'is_' prefix has ben drop from the fields definition:
+
+  Before        Now
+  ------------  ------------
+  is_key_field  key_field
+  is_indexed    indexed
+  is_stored     stored
+

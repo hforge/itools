@@ -31,9 +31,11 @@ class INFO(MSG):
         return self.__class__(message, domain=self.domain)
 
 
-    def gettext(self, language=None):
+    def gettext(self, language=None, **kw):
         # Gettext calling was defered
-        return MSG.gettext(self, language=language, **self.kw)
+        kw_ = self.kw.copy()
+        kw_.update(kw)
+        return MSG.gettext(self, language=language, **kw_)
 
 
 

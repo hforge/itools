@@ -448,7 +448,6 @@ class Record(dict, CatalogAware):
 class Table(File):
 
     record_class = Record
-    incremental_save = True
 
     #######################################################################
     # Hash with field names and its types
@@ -528,8 +527,6 @@ class Table(File):
         self.properties = None
         self.records = []
         self.changed_properties = False
-        self.added_records = []
-        self.removed_records = []
         # The catalog (for index and search)
         fields = merge_dicts(
             self.record_properties,
@@ -648,56 +645,6 @@ class Table(File):
 
 
     #######################################################################
-    # Save (use append for scalability)
-    #######################################################################
-    def _save_state(self):
-        if self.incremental_save is False:
-            File._save_state(self)
-            self.incremental_save = True
-            return
-
-        # Case 1: new file
-        if self.timestamp is None:
-            File._save_state(self)
-            self.changed_properties = False
-            self.added_records = []
-            self.removed_records = []
-            return
-
-        # Case 2: changed file (incremental save)
-        file = self.database.fs.open(self.key, 'a')
-        try:
-            # Added properties records
-            if self.changed_properties:
-                record = self._record_to_str(-1, self.properties)
-                file.write(record)
-            self.changed_properties = False
-            # Added records
-            for id in self.added_records:
-                record = self.records[id]
-                record = self._record_to_str(id, record)
-                file.write(record)
-            self.added_records = []
-            # Removed records
-            for id, ts in self.removed_records:
-                file.write('id:%s/DELETED\n' % id)
-                file.write('ts:%s\n' % DateTime.encode(ts))
-                file.write('\n')
-            self.removed_records = []
-        finally:
-            file.close()
-
-
-    def save_state_to(self, key):
-        # TODO: this is a hack, for 0.50 this case should be covered by the
-        # handler's protocol
-        File.save_state_to(self, key)
-        if key == self.key:
-            self.added_records = []
-            self.removed_records = []
-
-
-    #######################################################################
     # API / Public
     #######################################################################
     def get_record(self, id):
@@ -721,7 +668,6 @@ class Table(File):
         record['ts'] = Property(datetime.now())
         # Change
         self.set_changed()
-        self.added_records.append(id)
         self.records.append(record)
         self.catalog.index_document(record)
         # Back
@@ -746,7 +692,6 @@ class Table(File):
         # Change
         self.set_changed()
         self.catalog.unindex_document(record.id)
-        self.added_records.append(id)
         # Index
         self.catalog.index_document(record)
 
@@ -773,9 +718,6 @@ class Table(File):
             raise LookupError, msg % id
         # Change
         self.set_changed()
-        if id not in self.added_records:
-            self.removed_records.append((id, datetime.now()))
-        self.added_records = [ x for x in self.added_records if x != id ]
         self.catalog.unindex_document(record.id)
         self.records[id] = None
 

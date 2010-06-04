@@ -460,9 +460,8 @@ class Document_2(CatalogAware):
 
 class Document_3(CatalogAware):
 
-    fields = {'id': Integer(is_key_field=True, is_stored=True,
-                            is_indexed=True),
-              'data': Integer(is_stored=True, multiple=True)}
+    fields = {'id': Integer(key_field=True, stored=True, indexed=True),
+              'data': Integer(stored=True, multiple=True)}
 
 
     def __init__(self, id, data):

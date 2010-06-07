@@ -277,7 +277,7 @@ class icalendarTable(BaseCalendar, Table):
                     else:
                         n = 0
                         uids[uid] = 0
-                    self.added_records.append((id, n))
+                    self.added_records.append(id)
                     records.append(record)
 
                     # Next
@@ -295,7 +295,7 @@ class icalendarTable(BaseCalendar, Table):
                     c_inner_properties['ts'] = Property(datetime.now())
                     record[0] = c_inner_properties
                     c_inner_components.append(id)
-                    self.added_records.append((id, 0))
+                    self.added_records.append(id)
                     records.append(record)
                     # Next
                     c_inner_type = None
@@ -408,7 +408,7 @@ class icalendarTable(BaseCalendar, Table):
         version['ts'] = Property(datetime.now())
         # Change
         self.set_changed()
-        self.added_records.append((id, 0))
+        self.added_records.append(id)
         self.records.append(record)
         self.catalog.index_document(record)
         # Back

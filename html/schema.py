@@ -314,6 +314,8 @@ html_elements = [
     BlockElement('li', common_attrs + ['type', 'value']),
     EmptyElement('link', common_attrs + ['charset', 'href', 'hreflang',
         'type', 'rel', 'rev', 'media']),
+    BlockElement('map', i18n_attrs + event_attrs + ['id', 'class', 'style',
+        'title', 'name']),
     EmptyElement('meta', i18n_attrs + ['http-equiv', 'name', 'content',
         'scheme']),
     BlockElement('object', common_attrs + ['declare', 'classid', 'codebase',

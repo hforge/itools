@@ -25,11 +25,11 @@ from operator import itemgetter
 # Import from itools
 from itools.core import freeze
 from itools.csv import Property, parse_table, deserialize_parameters
+from itools.csv import property_to_str
 from itools.datatypes import String, Unicode, DateTime
 from itools.handlers import guess_encoding, TextFile
 from itools.xapian import make_catalog, CatalogAware
 from itools.xapian import PhraseQuery, RangeQuery, OrQuery, AndQuery
-from base import BaseCalendar
 from types import record_properties, record_parameters, Time
 
 
@@ -279,7 +279,7 @@ class InnerComponent(Component):
 
 
 
-class iCalendar(BaseCalendar, TextFile):
+class iCalendar(TextFile):
     """icalendar structure :
 
         BEGIN:VCALENDAR
@@ -309,6 +309,22 @@ class iCalendar(BaseCalendar, TextFile):
             return cls.record_properties[name]
         # Default
         return String(multiple=True)
+
+
+    def generate_uid(self, c_type='UNKNOWN'):
+        """Generate a uid based on c_type and current datetime.
+        """
+        return ' '.join([c_type, datetime.now().isoformat()])
+
+
+    def encode_property(self, name, property_values, encoding='utf-8'):
+        if type(property_values) is not list:
+            property_values = [property_values]
+
+        datatype = self.get_record_datatype(name)
+        return [
+            property_to_str(name, x, datatype, {}, encoding)
+            for x in property_values ]
 
 
     #########################################################################

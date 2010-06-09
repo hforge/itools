@@ -19,35 +19,18 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from Python Standard Library
-from datetime import datetime, timedelta
-from operator import itemgetter
+from datetime import datetime
 
 # Import from itools
 from itools.core import freeze
 from itools.csv import Property, parse_table, deserialize_parameters
 from itools.csv import property_to_str
-from itools.datatypes import String, Unicode, DateTime
+from itools.datatypes import String, Unicode
 from itools.handlers import guess_encoding, TextFile
-from itools.xapian import make_catalog, CatalogAware
-from itools.xapian import PhraseQuery, RangeQuery, OrQuery, AndQuery
 from types import record_properties, record_parameters, Time
 
 
-# The smallest possible difference between non-equal timedelta objects.
-#
-# XXX To be used to work-around the fact that range searches don't include
-# the righ limit. So if we want to search a date between 'dtstart' and
-# 'dtend', we must write:
-#
-#    RangeQuery('date', dtstart, dtend + resolution)
-#
-# To be used systematically. Till the day we replace range searches by the
-# more complete set: GreaterThan, GreaterThanOrEqual, LesserThan and
-# LesserThanOrEqual.
-resolution = timedelta.resolution
-
-
-class Component(CatalogAware):
+class Component(object):
     """Parses and evaluates a component block.
 
         input :   string values for c_type and uid
@@ -78,35 +61,6 @@ class Component(CatalogAware):
     #######################################################################
     # API / Private
     #######################################################################
-    def get_value(self, name):
-        """Returns the value of a property if it exists. Otherwise returns
-        None.
-        """
-        # Case insensitive
-        name = name.upper()
-
-        # The type
-        if name == 'TYPE':
-            return self.c_type
-
-        # Get the last version
-        version = self.get_version()
-
-        # Properties
-        if name not in version:
-            return None
-
-        # According to the RFC, when DTEND is of format DATE, it is
-        # interpreted as the event happens the whole day.
-        if name == 'DTEND' and 'DTEND' not in version:
-            value = version['DTSTART'].value + timedelta(days=1) - resolution
-        else:
-            property = version[name]
-            value = property.value
-
-        return value
-
-
     def get_sequences(self):
         sequences = self.versions.keys()
         sequences.sort()
@@ -130,15 +84,6 @@ class Component(CatalogAware):
             properties['DTSTAMP'] = Property(datetime.today())
 
         self.versions[sequence] = properties
-
-
-    #######################################################################
-    # CatalogAware part
-    def get_catalog_values(self):
-        values = {'__uid__': self.uid}
-        for name in ['type', 'dtstart', 'dtend']:
-            values[name] = self.get_value(name)
-        return values
 
 
     #######################################################################
@@ -337,13 +282,6 @@ class iCalendar(TextFile):
         self.properties = {}
         self.components = {}
 
-        # A Catalog "in memory"
-        fields = {'__uid__': String(key_field=True, stored=True, indexed=True),
-                  'type': String(indexed=True),
-                  'dtstart': DateTime(stored=True, indexed=True),
-                  'dtend': DateTime(stored=True, indexed=True)}
-        self.catalog = make_catalog(None, fields)
-
 
     def new(self):
         properties = (
@@ -492,12 +430,6 @@ class iCalendar(TextFile):
                     # Set the property
                     c_inner_properties[prop_name] = value
 
-        ###################################################################
-        # Index components
-        for uid in self.components:
-            component = self.components[uid]
-            self.catalog.index_document(component)
-
 
     #########################################################################
     # Save State
@@ -603,9 +535,6 @@ class iCalendar(TextFile):
             del kw['SEQUENCE']
         component.add_version(kw)
 
-        # Index the component
-        self.catalog.index_document(component)
-
         return uid
 
 
@@ -634,9 +563,7 @@ class iCalendar(TextFile):
 
         self.set_changed()
         # Unindex the component, add new version, index again
-        self.catalog.unindex_document(uid)
         component.add_version(version)
-        self.catalog.index_document(component)
 
 
     def remove(self, uid):
@@ -644,11 +571,7 @@ class iCalendar(TextFile):
         its versions.
         """
         self.set_changed()
-        # Remove
-        component = self.components[uid]
         del self.components[uid]
-        # Unindex
-        self.catalog.unindex_document(uid)
 
 
     def get_property_values(self, name=None):
@@ -684,79 +607,9 @@ class iCalendar(TextFile):
         self.properties[name] = values
 
 
-    def get_components(self, type=None):
-        """Return a dict {component_type: Component[], ...}
-        or
-        Return Component[] of given type.
-        """
-        if type is None:
-            return self.components
-
-        return [ self.components[x] for x in self.search(type=type) ]
-
-
-    # Get some events corresponding to arguments
-    def search_events(self, subset=None, **kw):
-        """Return a list of Component objects of type 'VEVENT' corresponding
-        to the given filters.
-
-        It should be used like this, for example:
-
-            events = cal.search_events(
-                STATUS='TENTATIVE',
-                PRIORITY=1,
-                ATTENDEE=['mailto:jdoe@itaapy.com',
-                          'mailto:jsmith@itaapy.com'])
-
-        ** With a list of values, events match if at least one value matches
-
-        It searches into all components or in the provided subset list of
-        components.
-        """
-        res_events = []
-
-        # Get the list of differents property names used to filter
-        filters = kw.keys()
-
-        # For each event
-        events = subset or [ self.components[x]
-                             for x in self.search(type='VEVENT') ]
-        for event in events:
-            version = event.get_version()
-
-            # For each filter
-            for filter in filters:
-                # If filter not in component, go to next one
-                if filter not in version:
-                    break
-                # Test filter
-                expected = kw.get(filter)
-                property_value = version[filter]
-                datatype = self.get_record_datatype(filter)
-                if datatype.multiple is False:
-                    if property_value.value != expected:
-                        break
-                else:
-                    for item in property_value:
-                        if isinstance(expected, list):
-                            if item.value in expected:
-                                break
-                        elif item.value == expected:
-                            break
-                    else:
-                        break
-            else:
-                res_events.append(event)
-        return res_events
-
-
     # Used to factorize code of cms ical between Calendar & CalendarTable
     def get_record(self, uid):
         return self.components.get(uid)
-
-
-    def get_record_value(self, record, name):
-        return record.get_value(name)
 
 
     def get_component_by_uid(self, uid):
@@ -765,130 +618,13 @@ class iCalendar(TextFile):
         return self.components.get(uid)
 
 
-    def search_events_in_date(self, date, sortby=None, **kw):
-        """Return a list of Component objects of type 'VEVENT' matching the
-        given date and sorted if requested.
+    def get_components(self, type=None):
+        """Return the list of components of the given type, or all components
+        if no type is given.
         """
-        dtstart = datetime(date.year, date.month, date.day)
-        dtend = dtstart + timedelta(days=1) - resolution
-        return self.search_events_in_range(dtstart, dtend, sortby=sortby, **kw)
+        if type is None:
+            return self.components.items()
 
-
-    def search_events_in_range(self, dtstart, dtend, sortby=None, **kw):
-        """Return a list of Component objects of type 'VEVENT' matching the
-        given dates range and sorted  if requested.  If kw is filled, it calls
-        search_events on the found subset to return only components matching
-        filters.
-
-        RangeSearch is [left, right[
-        """
-        # Check type of dates, we need datetime for method in_range
-        if not isinstance(dtstart, datetime):
-            dtstart = datetime(dtstart.year, dtstart.month, dtstart.day)
-        if not isinstance(dtend, datetime):
-            dtend = datetime(dtend.year, dtend.month, dtend.day)
-            # dtend is include into range
-            dtend = dtend + timedelta(days=1) - resolution
-
-        # Get only the events which matches
-        dtstart_limit = dtstart + resolution
-        dtend_limit = dtend + resolution
-        query = AndQuery(
-            PhraseQuery('type', 'VEVENT'),
-            OrQuery(RangeQuery('dtstart', dtstart, dtend),
-                    RangeQuery('dtend', dtstart_limit, dtend_limit),
-                    AndQuery(RangeQuery('dtstart', None, dtstart),
-                             RangeQuery('dtend', dtend, None))))
-        results = [self.components[uid] for uid in self.search(query)]
-
-        if results == []:
-            return []
-
-        # Check filters
-        if kw:
-            results = self.search_events(subset=results, **kw)
-
-        # Nothing to sort or inactive
-        if sortby is None or len(results) <= 1:
-            return results
-
-        # Get results as a dict to sort them
-        res_events = []
-        for event in results:
-            version = event.get_version()
-            value = {
-                'dtstart': version['DTSTART'].value,
-                'dtend': version['DTEND'].value,
-                'event': event
-              }
-            res_events.append(value)
-        # Sort by dtstart
-        res_events = sorted(res_events, key=itemgetter('dtstart'))
-        # Sort by dtend
-        res = []
-        current = [res_events[0]]
-        for e in res_events[1:]:
-            if e['dtstart'] == current[0]['dtstart']:
-                current.append(e)
-            else:
-                res.extend(x['event']
-                           for x in sorted(current, key=itemgetter('dtend')))
-                current = [e]
-        res.extend(x['event'] for x in sorted(current,
-                                              key=itemgetter('dtend')))
-        return res
-
-
-    # Test if any event corresponds to a given date
-    def has_event_in_date(self, date):
-        """Return True if there is at least one event matching the given date.
-        """
-        return self.search_events_in_date(date) != []
-
-
-    def get_conflicts(self, start_date, end_date=None):
-        """Returns a list of uid couples which happen at the same time.
-        We check only last occurrence of events.
-        """
-        if end_date is not None:
-            events = self.search_events_in_range(start_date, end_date)
-        else:
-            events = self.search_events_in_date(start_date)
-        if len(events) <= 1:
-            return None
-
-        conflicts = []
-        # We take each event as a reference
-        for i, event_ref in enumerate(events):
-            version = event_ref.get_version()
-            dtstart_ref = version['DTSTART'].value
-            dtend_ref = version['DTEND'].value
-            # For each other event, we test if there is a conflict
-            for j, event in enumerate(events):
-                if j <= i:
-                    continue
-                version = event.get_version()
-                dtstart = version['DTSTART'].value
-                dtend = version['DTEND'].value
-
-                if dtstart >=  dtend_ref or dtend <= dtstart_ref:
-                    continue
-                conflicts.append((i, j))
-
-        # Replace index of components by their UID
-        if conflicts != []:
-            for index, (i, j) in enumerate(conflicts):
-                conflicts[index] = (events[i].uid, events[j].uid)
-
-        return conflicts
-
-
-    #######################################################################
-    # API / Search
-    def search(self, query=None, **kw):
-        """Return list of component internal ids returned by executing the
-        query.
-        """
-        result = self.catalog.search(query, **kw)
-        return [ x.__uid__ for x in result.get_documents(sort_by='__uid__') ]
+        return [ component for uid, component in self.components.iteritems()
+                 if component.c_type == type ]
 

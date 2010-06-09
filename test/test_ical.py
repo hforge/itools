@@ -311,26 +311,25 @@ class icalTestCase(TestCase):
             events.append(properties)
 
         # Test events
-        expected_events = [[
-            u'STATUS:TENTATIVE',
-            u'DESCRIPTION:all all all',
-            u'ATTENDEE;MEMBER="mailto:DEV-GROUP@host2.com"'
-                     ';RSVP=TRUE:mailto:jdoe@itaapy.com',
-            u'SUMMARY:Refound',
-            u'PRIORITY:1',
-            u'LOCATION:France',
-            u'X-MOZILLA-RECUR-DEFAULT-INTERVAL:0',
-            u'DTEND;VALUE=DATE:2005-05-31 23:59:59.999999',
-            u'DTSTART;VALUE=DATE:2005-05-30 00:00:00',
-            u'CLASS:PRIVATE'],
-            [
-            u'ATTENDEE;MEMBER="mailto:DEV-GROUP@host2.com";RSVP=TRUE'\
-             ':mailto:jdoe@itaapy.com',
-            u'SUMMARY:222222222',
-            u'PRIORITY:2',
-            u'DTEND;VALUE=DATE:2005-07-01 00:00:00',
-            u'DTSTART;VALUE=DATE:2005-07-01 00:00:00'
-            ]]
+        expected_events = [
+            [u'ATTENDEE;MEMBER="mailto:DEV-GROUP@host2.com";RSVP=TRUE'
+                             u':mailto:jdoe@itaapy.com',
+             u'SUMMARY:222222222',
+             u'PRIORITY:2',
+             u'DTEND;VALUE=DATE:2005-07-01 00:00:00',
+             u'DTSTART;VALUE=DATE:2005-07-01 00:00:00'],
+            [u'STATUS:TENTATIVE',
+             u'DESCRIPTION:all all all',
+             u'ATTENDEE;MEMBER="mailto:DEV-GROUP@host2.com"'
+                     u';RSVP=TRUE:mailto:jdoe@itaapy.com',
+             u'SUMMARY:Refound',
+             u'PRIORITY:1',
+             u'LOCATION:France',
+             u'X-MOZILLA-RECUR-DEFAULT-INTERVAL:0',
+             u'DTEND;VALUE=DATE:2005-05-31 23:59:59.999999',
+             u'DTSTART;VALUE=DATE:2005-05-30 00:00:00',
+             u'CLASS:PRIVATE'],
+            ]
 
         self.assertEqual(events, expected_events)
         self.assertEqual(len(cal.get_components('VEVENT')), 2)
@@ -420,173 +419,6 @@ class icalTestCase(TestCase):
             Property('mailto:jsmith@itaapy.com')]
         cal.update_component(event.uid, ATTENDEE=value)
         self.assertEqual(event.get_property_values('ATTENDEE'), value)
-
-
-    def test_search_events(self):
-        """Test get events filtered by arguments given.
-        """
-        # Test with 1 event
-        cal = self.cal1
-        attendee_value = 'mailto:jdoe@itaapy.com'
-
-        events = cal.search_events(ATTENDEE=attendee_value)
-        self.assertEqual(len(events), 1)
-
-        events = cal.search_events(STATUS='CONFIRMED')
-        self.assertEqual(events, [])
-
-        events = cal.search_events(STATUS='TENTATIVE')
-        self.assertEqual(len(events), 1)
-
-        events = cal.search_events(ATTENDEE=attendee_value, STATUS='TENTATIVE')
-        self.assertEqual(len(events), 1)
-
-        events = cal.search_events(STATUS='TENTATIVE', PRIORITY=1)
-        self.assertEqual(len(events), 1)
-
-        events = cal.search_events(
-            ATTENDEE=[attendee_value, 'mailto:jsmith@itaapy.com'],
-            STATUS='TENTATIVE',
-            PRIORITY=1)
-        self.assertEqual(len(events), 1)
-
-        # Tests with 2 events
-        cal = self.cal2
-        attendee_value = 'mailto:jdoe@itaapy.com'
-
-        events = cal.search_events(ATTENDEE=attendee_value)
-        self.assertEqual(len(events), 2)
-
-        events = cal.search_events(STATUS='CONFIRMED')
-        self.assertEqual(events, [])
-
-        events = cal.search_events(STATUS='TENTATIVE')
-        self.assertEqual(len(events), 1)
-
-        events = cal.search_events(ATTENDEE=attendee_value, STATUS='TENTATIVE')
-        self.assertEqual(len(events), 1)
-
-        events = cal.search_events(STATUS='TENTATIVE', PRIORITY=1)
-        self.assertEqual(len(events), 1)
-
-        events = cal.search_events(
-            ATTENDEE=[attendee_value, 'mailto:jsmith@itaapy.com'],
-            STATUS='TENTATIVE',
-            PRIORITY=1)
-        self.assertEqual(len(events), 1)
-
-
-    def test_search_events_in_date(self):
-        """Test search events by date.
-        """
-        cal = self.cal1
-
-        date = datetime(2005, 5, 29)
-        events = cal.search_events_in_date(date)
-        self.assertEqual(len(events), 0)
-        self.assertEqual(cal.has_event_in_date(date), False)
-
-        date = datetime(2005, 5, 30)
-        events = cal.search_events_in_date(date)
-        self.assertEqual(len(events), 1)
-        self.assertEqual(cal.has_event_in_date(date), True)
-
-        events = cal.search_events_in_date(date, STATUS='TENTATIVE')
-        self.assertEqual(len(events), 1)
-        events = cal.search_events_in_date(date, STATUS='CONFIRMED')
-        self.assertEqual(len(events), 0)
-
-        attendee_value = 'mailto:jdoe@itaapy.com'
-        events = cal.search_events_in_date(date, ATTENDEE=attendee_value)
-        self.assertEqual(len(events), 1)
-        events = cal.search_events_in_date(date, ATTENDEE=attendee_value,
-                                                 STATUS='TENTATIVE')
-        self.assertEqual(len(events), 1)
-        events = cal.search_events_in_date(date, ATTENDEE=attendee_value,
-                                                 STATUS='CONFIRMED')
-        self.assertEqual(len(events), 0)
-
-        date = datetime(2005, 7, 30)
-        events = cal.search_events_in_date(date)
-        self.assertEqual(len(events), 0)
-        self.assertEqual(cal.has_event_in_date(date), False)
-
-
-    def test_search_events_in_range(self):
-        """Test search events matching given dates range.
-        """
-        cal = self.cal2
-
-        dtstart = datetime(2005, 1, 1)
-        dtend = datetime(2005, 1, 1, 20, 0)
-        events = cal.search_events_in_range(dtstart, dtend)
-        self.assertEqual(len(events), 0)
-
-        dtstart = datetime(2005, 5, 28)
-        dtend = datetime(2005, 5, 30, 0, 50)
-        events = cal.search_events_in_range(dtstart, dtend)
-        self.assertEqual(len(events), 1)
-
-        dtstart = datetime(2005, 5, 29)
-        dtend = datetime(2005, 5, 30, 0, 1)
-        events = cal.search_events_in_range(dtstart, dtend)
-        self.assertEqual(len(events), 1)
-
-        dtstart = datetime(2005, 5, 30, 23, 59, 59)
-        dtend = datetime(2005, 5, 31, 0, 0)
-        events = cal.search_events_in_range(dtstart, dtend)
-        self.assertEqual(len(events), 1)
-
-        dtstart = datetime(2005, 5, 1)
-        dtend = datetime(2005, 8, 1)
-        events = cal.search_events_in_range(dtstart, dtend)
-        self.assertEqual(len(events), 2)
-
-        dtstart = datetime(2005, 5, 30, 23)
-        dtend = datetime(2005, 6, 1)
-        events = cal.search_events_in_range(dtstart, dtend)
-        self.assertEqual(len(events), 1)
-
-        dtstart = datetime(2005, 5, 31, 0, 0, 1)
-        dtend = datetime(2005, 6, 1)
-        events = cal.search_events_in_range(dtstart, dtend)
-        self.assertEqual(len(events), 1)
-
-        events = cal.search_events_in_range(dtstart, dtend, STATUS='TENTATIVE')
-        self.assertEqual(len(events), 1)
-        events = cal.search_events_in_range(dtstart, dtend, STATUS='CONFIRMED')
-        self.assertEqual(len(events), 0)
-
-        attendee_value = 'mailto:jdoe@itaapy.com'
-        events = cal.search_events_in_range(dtstart, dtend,
-                                            ATTENDEE=attendee_value)
-        self.assertEqual(len(events), 1)
-        events = cal.search_events_in_range(dtstart, dtend,
-                                  ATTENDEE=attendee_value, STATUS='TENTATIVE')
-        self.assertEqual(len(events), 1)
-        events = cal.search_events_in_range(dtstart, dtend,
-                                  ATTENDEE=attendee_value, STATUS='CONFIRMED')
-        self.assertEqual(len(events), 0)
-
-
-    def test_get_conflicts(self):
-        """Test get_conflicts method which returns uid couples of events
-        conflicting on a given date.
-        """
-        cal = self.cal2
-        date = datetime(2005, 05, 30)
-
-        conflicts = cal.get_conflicts(date)
-        self.assertEqual(conflicts, None)
-
-        # Set a conflict
-        uid1 = '581361a0-1dd2-11b2-9a42-bd3958eeac9a'
-        uid2 = '581361a0-1dd2-11b2-9a42-bd3958eeac9b'
-        cal.update_component(uid2, DTSTART=Property(datetime(2005, 05, 30)),
-                             DTEND=Property(datetime(2005, 05, 31)))
-
-        conflicts = cal.get_conflicts(date)
-        self.assertEqual(conflicts, [(uid1, uid2)])
 
 
 

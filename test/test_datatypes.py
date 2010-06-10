@@ -28,6 +28,7 @@ from itools.datatypes import ISOTime, ISOCalendarDate, ISODateTime, HTTPDate
 from itools.datatypes import Integer, Decimal, Boolean, Unicode, URI, Email
 from itools.datatypes import QName, Tokens, Enumerate
 from itools.datatypes import XMLContent, XMLAttribute
+from itools.datatypes.datetime_ import UTC, FixedOffset
 
 
 def datetime_utc2local(dt):
@@ -137,32 +138,49 @@ class EnumerateTestCase(TestCase):
 class ISOTimeTestCase(TestCase):
 
     def test_time_decode(self):
-        data = '13:45:30'
-        value = ISOTime.decode(data)
-        expected = time(13, 45, 30)
-        self.assertEqual(value, expected)
+        utc = UTC()
+        gmt2 = FixedOffset('+', 2, 0)
+        test_times = {
+            '13:45:30': (13, 45, 30),
+            '13:45': (13, 45),
+            '13': (13, ),
+            '123456': (12, 34, 56),
+            '1234': (12, 34),
+            '094217Z': (9, 42, 17, 0, utc),
+            '09:42:17Z': (9, 42, 17, 0, utc),
+            '17:23:27+0200': (17, 23, 27, 0, gmt2),
+            '17:23:27+02:00': (17, 23, 27, 0, gmt2),
+            '17:23:27+02': (17, 23, 27, 0, gmt2),
+            '020305+0200': (2, 3, 5, 0, gmt2),
+            '020305+02:00': (2, 3, 5, 0, gmt2),
+            '020305+02': (2, 3, 5, 0, gmt2),
+        }
 
-        data = '13:45'
-        value = ISOTime.decode(data)
-        expected = time(13, 45)
-        self.assertEqual(value, expected)
+        for data, result in test_times.iteritems():
+            value = ISOTime.decode(data)
+            expected = time(*result)
+            self.assertEqual(value, expected)
 
 
     def test_time_encode(self):
-        data = time(13, 45, 30)
-        value = ISOTime.encode(data)
-        expected = '13:45:30'
-        self.assertEqual(value, expected)
+        utc = UTC()
+        gmt2 = FixedOffset('+', 2, 0)
+        test_times = {
+            (13, 45, 30): '13:45:30',
+            (13, 45): '13:45:00',
+            (13, ): '13:00:00',
+            (12, 34, 56): '12:34:56',
+            (12, 34): '12:34:00',
+            (9, 42, 17, 0, utc): '09:42:17Z',
+            (17, 23, 27, 0, gmt2): '17:23:27+02:00',
+            (2, 3, 5, 42, gmt2): '02:03:05+02:00',
+        }
 
-        data = time(13, 45)
-        value = ISOTime.encode(data)
-        expected = '13:45:00'
-        self.assertEqual(value, expected)
+        for data, result in test_times.iteritems():
+            value = ISOTime.encode(time(*data))
+            expected = result
+            self.assertEqual(value, expected)
 
-        data = time(13, 45)
-        value = ISOTime.encode(data)
-        expected = '13:45:00'
-        self.assertEqual(value, expected)
 
 
 class ISOCalendarDateTestCase(TestCase):

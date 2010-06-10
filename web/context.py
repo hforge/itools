@@ -24,7 +24,7 @@ from thread import get_ident, allocate_lock
 
 # Import from itools
 from itools.core import freeze, lazy
-from itools.datatypes import String
+from itools.datatypes import String, UTC
 from itools.gettext import MSG
 from itools.http import get_type, Entity
 from itools.http import Cookie, SetCookieDataType
@@ -93,7 +93,7 @@ class Context(object):
 
     @lazy
     def timestamp(self):
-        return datetime.now()
+        return datetime.utcnow().replace(tzinfo=UTC())
 
 
     @lazy

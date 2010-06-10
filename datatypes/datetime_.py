@@ -18,7 +18,7 @@
 
 # Import from the Standard Library
 from time import mktime
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timedelta, tzinfo
 from email.utils import parsedate_tz, mktime_tz, formatdate
 
 # Import from itools
@@ -127,16 +127,84 @@ class ISOCalendarDate(DataType):
 # TODO ISOOrdinalDate
 
 
+
+class UTC(tzinfo):
+    """UTC"""
+
+    def utcoffset(self, dt):
+        return timedelta(0)
+
+    def tzname(self, dt):
+        return "Z"
+
+    def dst(self, dt):
+        return timedelta(0)
+
+
+
+class FixedOffset(tzinfo):
+    """Fixed offset in minutes east from UTC."""
+
+    def __init__(self, sign, offset_h, offset_m):
+        if sign == '+':
+            fact = 1
+        else:
+            fact = -1
+        minutes = fact * (offset_h * 60 + offset_m)
+        self.__offset = timedelta(minutes=minutes)
+        if offset_m:
+            self.__name = '%c%.2d:%.2d' % (sign, offset_h, offset_m)
+        else:
+            self.__name = '%c%.2d:00' % (sign, offset_h)
+
+
+    def utcoffset(self, dt):
+        return self.__offset
+
+
+    def tzname(self, dt):
+        return self.__name
+
+
+    def dst(self, dt):
+        return timedelta(0)
+
+
+
 class ISOTime(DataType):
     """Extended formats (from max. to min. precission): %H:%M:%S, %H:%M
 
     Basic formats: %H%M%S, %H%M, %H
     """
 
+
     @staticmethod
     def decode(data):
         if not data:
             return None
+
+        # Timezone
+        if data[-1] == 'Z':
+            data = data[:-1]
+            tzinfo = UTC()
+        else:
+            p_pos = data.find('+')
+            m_pos = data.find('-')
+            pos = m_pos * p_pos
+            if pos > 0:
+                tzinfo = None
+            else:
+                pos = -pos
+                sign = data[pos]
+                offset = data[pos+1:]
+                if ':' in offset:
+                    offset = offset.split(':')
+                else:
+                    offset = [offset[0:2], offset[2:]]
+                o_h = int(offset[0])
+                o_m = int(offset[1]) if offset[1] else 0
+                data = data[:pos]
+                tzinfo = FixedOffset(sign, o_h, o_m)
 
         # Extended formats
         if ':' in data:
@@ -147,23 +215,23 @@ class ISOTime(DataType):
             hour = int(parts[0])
             minute = int(parts[1])
             if n == 2:
-                return time(hour, minute)
+                return time(hour, minute, tzinfo=tzinfo)
             second = int(parts[2])
-            return time(hour, minute, second)
+            return time(hour, minute, second, tzinfo=tzinfo)
 
         # Basic formats
         hour = int(data[:2])
         data = data[2:]
         if not data:
-            return time(hour)
+            return time(hour, tzinfo=tzinfo)
         # Minute
         minute = int(data[:2])
         data = data[2:]
         if not data:
-            return time(hour, minute)
+            return time(hour, minute, tzinfo=tzinfo)
         # Second
         second = int(data)
-        return time(hour, minute, second)
+        return time(hour, minute, second, tzinfo=tzinfo)
 
 
     @staticmethod
@@ -171,7 +239,12 @@ class ISOTime(DataType):
         # We choose the extended format as the canonical representation
         if value is None:
             return ''
-        return value.strftime('%H:%M:%S')
+        fmt = '%H:%M:%S'
+        if value.tzinfo is not None:
+            suffixe = '%Z'
+        else:
+            suffixe = ''
+        return value.strftime(fmt + suffixe)
 
 
 

@@ -265,4 +265,7 @@ class ISODateTime(DataType):
     def encode(value):
         if value is None:
             return ''
-        return value.strftime('%Y-%m-%dT%H:%M:%S')
+        fmt = '%Y-%m-%dT%H:%M:%S'
+        if value.tzinfo is not None:
+            fmt += '%Z'
+        return value.strftime(fmt)

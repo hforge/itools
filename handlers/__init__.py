@@ -37,6 +37,7 @@ from config import ConfigFile
 from file import File
 from folder import Folder
 from image import Image
+from js import JSFile
 from registry import register_handler_class, get_handler_class_by_mimetype
 from text import TextFile, guess_encoding
 from database import RODatabase, RWDatabase
@@ -53,6 +54,7 @@ __all__ = [
     'File',
     'Folder',
     'Image',
+    'JSFile',
     'TextFile',
     # Handlers / Archive
     'ZIPFile',

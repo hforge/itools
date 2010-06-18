@@ -41,7 +41,6 @@ from js import JSFile
 from registry import register_handler_class, get_handler_class_by_mimetype
 from text import TextFile, guess_encoding
 from database import RODatabase, RWDatabase
-from database import ROGitDatabase, GitDatabase, make_git_database
 from database import ro_database
 from utils import checkid
 
@@ -66,9 +65,6 @@ __all__ = [
     # The database
     'RODatabase',
     'RWDatabase',
-    'ROGitDatabase',
-    'GitDatabase',
-    'make_git_database',
     'ro_database',
     # Registry
     'get_handler_class_by_mimetype',

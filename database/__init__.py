@@ -16,8 +16,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from database import ROGitDatabase, GitDatabase, make_git_database
 from registry import get_register_fields, register_field
+from ro import ROGitDatabase
+from rw import GitDatabase, make_git_database
 
 
 __all__ = [

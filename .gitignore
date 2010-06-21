@@ -6,5 +6,4 @@ dist
 MANIFEST
 version.txt
 locale/*.mo
-test/fables/catalog
 test/pdf/*.pdf

@@ -272,7 +272,7 @@ class CatalogTestCase(TestCase):
         # Make the catalog
         catalog = make_catalog('tests/catalog', Document.fields)
         # Index
-        fables = lfs.open('fables')
+        fables = lfs.open('fables/database')
         for name in fables.get_names():
             abspath = fables.get_absolute_path(name)
             document = Document(abspath)

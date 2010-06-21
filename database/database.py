@@ -22,12 +22,17 @@ from datetime import datetime
 from os.path import dirname
 from subprocess import CalledProcessError
 
+# Import from xapian
+from xapian import DatabaseOpeningError
+
 # Import from itools
-from itools.core import LRUCache, send_subprocess, freeze
+from itools.core import LRUCache, freeze, lazy, send_subprocess
 from itools.datatypes import ISODateTime
 from itools.fs import lfs
 from itools.handlers import Folder, RODatabase
 from itools.uri import Path
+from itools.xapian import Catalog, make_catalog
+from registry import get_register_fields
 
 
 
@@ -37,17 +42,25 @@ MSG_URI_IS_BUSY = 'The "%s" URI is busy.'
 class ROGitDatabase(RODatabase):
 
     def __init__(self, path, size_min=4800, size_max=5200):
+        # 1. Keep the path
         if not lfs.is_folder(path):
-            raise ValueError, '"%s" should be a folder, but it is not' % path
+            error = '"%s" should be a folder, but it is not' % path
+            raise ValueError, error
 
-        # Initialize the database, but chrooted
-        fs = lfs.open(path)
-        super(ROGitDatabase, self).__init__(size_min, size_max, fs=fs)
+        folder = lfs.open(path)
+        self.path = str(folder.path)
 
-        # Keep the path close, to be used by 'send_subprocess'
-        self.path = '%s/' % fs.path
+        # 2. Keep the path to the data
+        self.path_data = '%s/database/' % self.path
+        if not lfs.is_folder(self.path_data):
+            error = '"%s" should be a folder, but it is not' % self.path_data
+            raise ValueError, error
 
-        # The git cache
+        # 3. Initialize the database, but chrooted
+        folder = lfs.open(self.path_data)
+        super(ROGitDatabase, self).__init__(size_min, size_max, fs=folder)
+
+        # 4. The git cache
         self.git_cache = LRUCache(900, 1100)
 
 
@@ -71,9 +84,16 @@ class ROGitDatabase(RODatabase):
         return handler.timestamp is None and handler.dirty is not None
 
 
+    #######################################################################
+    # Git
+    #######################################################################
+    def send_subprocess(self, cmd):
+        return send_subprocess(cmd, path=self.path_data)
+
+
     def get_diff(self, revision):
         cmd = ['git', 'show', revision, '--pretty=format:%an%n%at%n%s']
-        data = send_subprocess(cmd, path=self.path)
+        data = self.send_subprocess(cmd)
         lines = data.splitlines()
 
         ts = int(lines[1])
@@ -88,7 +108,7 @@ class ROGitDatabase(RODatabase):
         """Get the unordered set of files affected by a list of revisions.
         """
         cmd = ['git', 'show', '--numstat', '--pretty=format:'] + revisions
-        data = send_subprocess(cmd, path=self.path)
+        data = self.send_subprocess(cmd)
         lines = data.splitlines()
         files = set()
         for line in lines:
@@ -108,7 +128,7 @@ class ROGitDatabase(RODatabase):
         if paths:
             cmd.append('--')
             cmd.extend(paths)
-        return send_subprocess(cmd, path=self.path)
+        return self.send_subprocess(cmd)
 
 
     def get_diff_between(self, from_, to='HEAD', paths=[]):
@@ -121,7 +141,7 @@ class ROGitDatabase(RODatabase):
         if paths:
             cmd.append('--')
             cmd.extend(paths)
-        return send_subprocess(cmd, path=self.path)
+        return self.send_subprocess(cmd)
 
 
     def get_blob(self, hash, cls):
@@ -135,7 +155,7 @@ class ROGitDatabase(RODatabase):
             return self.git_cache[hash]
 
         cmd = ['git', 'show', hash]
-        blob = send_subprocess(cmd, path=self.path)
+        blob = self.send_subprocess(cmd)
         blob = cls(string=blob)
         self.git_cache[hash] = blob
         return blob
@@ -145,7 +165,7 @@ class ROGitDatabase(RODatabase):
         """Give the hashs for all commit concerning file
         """
         cmd = ['git', 'log', '--reverse', '--pretty=format:%H', file]
-        log = send_subprocess(cmd, path=self.path)
+        log = self.send_subprocess(cmd)
         return log.splitlines()
 
 
@@ -155,9 +175,51 @@ class ROGitDatabase(RODatabase):
         """
         arg = '%s:%s' % (revision, path)
         cmd = ['git', 'rev-parse', arg]
-        hash = send_subprocess(cmd, path=self.path)
+        hash = self.send_subprocess(cmd)
         hash = hash.rstrip('\n')
         return self.get_blob(hash, cls)
+
+
+    def get_revisions(self, files, n=None):
+        cmd = ['git', 'rev-list', '--pretty=format:%an%n%at%n%s']
+        if n is not None:
+            cmd = cmd + ['-n', str(n)]
+        cmd = cmd + ['HEAD', '--'] + files
+        data = self.send_subprocess(cmd)
+
+        # Parse output
+        revisions = []
+        lines = data.splitlines()
+        for idx in range(len(lines) / 4):
+            base = idx * 4
+            ts = int(lines[base+2])
+            revisions.append(
+                {'revision': lines[base].split()[1], # commit
+                 'username': lines[base+1],          # author name
+                 'date': datetime.fromtimestamp(ts), # author date
+                 'message': lines[base+3],           # subject
+                })
+        # Ok
+        return revisions
+
+
+    def get_last_revision(self, files):
+        revisions = self.get_revisions(files, 1)
+        return revisions[0] if revisions else None
+
+
+    #######################################################################
+    # Catalog
+    #######################################################################
+    @lazy
+    def catalog(self):
+        path = '%s/catalog' % self.path
+        fields = get_register_fields()
+        try:
+            return Catalog(path, fields, read_only=True)
+        except DatabaseOpeningError:
+            return None
+
 
 
 
@@ -170,6 +232,12 @@ class GitDatabase(ROGitDatabase):
         self.added = set()
         self.changed = set()
         self.has_changed = False
+
+
+    @lazy
+    def catalog(self):
+        path = '%s/catalog' % self.path
+        return Catalog(path, get_register_fields())
 
 
     def is_phantom(self, handler):
@@ -421,11 +489,11 @@ class GitDatabase(ROGitDatabase):
         # And now, clean the filesystem
         try:
             # In a try/except to avoid a problem with new repositories
-            send_subprocess(['git', 'reset', '--hard', '-q'], path=self.path)
+            self.send_subprocess(['git', 'reset', '--hard', '-q'])
         except CalledProcessError:
             pass
         if self.added:
-            send_subprocess(['git', 'clean', '-fxdq'], path=self.path)
+            self.send_subprocess(['git', 'clean', '-fxdq'])
 
         # Reset state
         self.added.clear()
@@ -465,7 +533,7 @@ class GitDatabase(ROGitDatabase):
 
         # Call a "git add" eventually for new and/or moved files
         if self.added:
-            send_subprocess(['git', 'add'] + list(self.added), path=self.path)
+            self.send_subprocess(['git', 'add'] + list(self.added))
             self.added.clear()
 
         # Commit
@@ -477,7 +545,7 @@ class GitDatabase(ROGitDatabase):
             git_date = ISODateTime.encode(git_date)
             command.append('--date=%s' % git_date)
         try:
-            send_subprocess(command, path=self.path)
+            self.send_subprocess(command)
         except CalledProcessError, excp:
             # Avoid an exception for the 'nothing to commit' case
             # FIXME Not reliable, we may catch other cases
@@ -519,22 +587,23 @@ def make_git_database(path, size_min, size_max):
     initialized and the content of the folder will be added to it in a first
     commit.
     """
+    # 1. Make the data folder
     path = lfs.get_absolute_path(path)
-    if not lfs.exists(path):
-        lfs.make_folder(path)
+    path_data = '%s/database' % path
+    if not lfs.exists(path_data):
+        lfs.make_folder(path_data)
 
-    # Init
-    send_subprocess(['git', 'init', '-q'], path=path)
-
-    # Add
-    send_subprocess(['git', 'add', '.'], path=path)
-
-    # Commit or not ?
+    # 2. Initialize git
+    send_subprocess(['git', 'init', '-q'], path=path_data)
+    send_subprocess(['git', 'add', '.'], path=path_data)
+    cmd = ['git', 'commit', '-q', '-m', 'Initial commit']
     try:
-        send_subprocess(['git', 'commit', '-q', '-m', 'Initial commit'],
-                        path=path)
+        send_subprocess(cmd, path=path_data)
     except CalledProcessError:
         pass
+
+    # 3. The catalog
+    make_catalog('%s/catalog' % path, get_register_fields())
 
     # Ok
     return GitDatabase(path, size_min, size_max)

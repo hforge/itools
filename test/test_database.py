@@ -36,17 +36,17 @@ class BrokenHandler(TextFile):
 class GitDatabaseTestCase(TestCase):
 
     def setUp(self):
-        database = make_git_database('fables', 20, 20)
-        self.database = database
-        root = database.get_handler('.')
-        self.root = root
+        self.database = make_git_database('fables', 20, 20)
+        self.root = self.database.get_handler('.')
 
 
     def tearDown(self):
-        for name in ['fables/31.txt', 'fables/agenda', 'fables/.git',
-                     'fables/broken.txt']:
-            if lfs.exists(name):
-                lfs.remove(name)
+        if lfs.exists('fables/catalog'):
+            lfs.remove('fables/catalog')
+        for name in ['31.txt', 'agenda', '.git', 'broken.txt']:
+            path = 'fables/database/%s' % name
+            if lfs.exists(path):
+                lfs.remove(path)
 
 
     def test_abort(self):
@@ -58,7 +58,7 @@ class GitDatabaseTestCase(TestCase):
         # Abort
         self.database.abort_changes()
         # Test
-        self.assertEqual(lfs.exists('fables/31.txt'), False)
+        self.assertEqual(lfs.exists('fables/database/31.txt'), False)
 
 
     def test_commit(self):
@@ -70,7 +70,7 @@ class GitDatabaseTestCase(TestCase):
         # Commit
         self.database.save_changes()
         # Test
-        self.assertEqual(lfs.exists('fables/31.txt'), True)
+        self.assertEqual(lfs.exists('fables/database/31.txt'), True)
 
 
     def test_broken_commit(self):
@@ -85,8 +85,8 @@ class GitDatabaseTestCase(TestCase):
         # Commit
         self.assertRaises(NameError, self.database.save_changes)
         # Test
-        self.assertEqual(lfs.exists('fables/31.txt'), False)
-        self.assertEqual(lfs.exists('fables/broken.txt'), False)
+        self.assertEqual(lfs.exists('fables/database/31.txt'), False)
+        self.assertEqual(lfs.exists('fables/database/broken.txt'), False)
 
 
     def test_remove_add(self):
@@ -100,7 +100,7 @@ class GitDatabaseTestCase(TestCase):
         self.assertEqual(fables.has_handler('31.txt'), True)
         # Save
         self.database.save_changes()
-        self.assertEqual(lfs.exists('fables/31.txt'), True)
+        self.assertEqual(lfs.exists('fables/database/31.txt'), True)
         self.assertEqual(fables.has_handler('31.txt'), True)
 
 

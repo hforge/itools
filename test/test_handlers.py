@@ -19,7 +19,6 @@
 from unittest import TestCase, main
 
 # Import from itools
-from itools.core import start_subprocess
 from itools.handlers import ro_database
 from itools.handlers import RWDatabase
 from itools.handlers import TextFile, ConfigFile, TGZFile
@@ -377,6 +376,5 @@ class ArchiveTestCase(TestCase):
 
 
 
-start_subprocess('fables')
 if __name__ == '__main__':
     main()

@@ -339,6 +339,18 @@ class Property(object):
         self.parameters[name] = value
 
 
+    def __eq__(self, other):
+        if type(other) is not Property:
+            return False
+        if self.value != other.value:
+            return False
+        return self.parameters == other.parameters
+
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+
 
 def encode_param_value(p_name, p_value, p_datatype):
     p_value = p_datatype.encode(p_value)

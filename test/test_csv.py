@@ -22,10 +22,9 @@ from unittest import TestCase, main
 # Import from itools
 from itools.csv import CSVFile, Table, UniqueError
 from itools.csv.table import parse_table, unfold_lines
-from itools.datatypes import Boolean, Date, Integer, Unicode, URI, String
+from itools.datatypes import Date, Integer, Unicode, URI, String
 from itools.fs import lfs
 from itools.handlers import RWDatabase, ro_database
-from itools.xapian import AndQuery, OrQuery, PhraseQuery
 
 
 TEST_DATA_1 = """python,http://python.org/,52343,2003-10-23
@@ -44,45 +43,14 @@ class Languages(CSVFile):
     columns = ['name', 'url', 'number', 'date']
     schema = {'name': Unicode,
               'url': URI,
-              'number': Integer(indexed=True),
-              'date': Date(indexed=True)}
-
-
-class Things(CSVFile):
-
-    columns = ['name', 'date']
-    schema = {'name': Unicode(indexed=True), 'date': Date(indexed=True)}
+              'number': Integer,
+              'date': Date}
 
 
 class Numbers(CSVFile):
 
     columns = ['one', 'two', 'three']
     schema = {'one': Unicode, 'two': Unicode, 'three': Unicode}
-
-
-class People(CSVFile):
-
-    columns = ['name', 'surname', 'date']
-    schema = {'name': Unicode,
-              'surname': Unicode(indexed=True),
-              'date': Date(indexed=True)}
-
-
-class Countries(CSVFile):
-
-    class_csv_guess = True
-    columns = ['id', 'name', 'country', 'date']
-    schema = {'id': Integer,
-              'name': Unicode(indexed=True),
-              'country': Unicode(indexed=True),
-              'date': Date(indexed=True)}
-
-
-class Politicians(CSVFile):
-
-    columns = ['name', 'is_good']
-    schema = {'name': Unicode, 'is_good': Boolean(indexed=True)}
-
 
 
 
@@ -206,88 +174,6 @@ class CSVTestCase(TestCase):
 
         handler = ro_database.get_handler('tests/test.csv', CSVFile)
         self.assertEqual(handler.get_nrows(), 3)
-
-
-    def test_indexes_hit_in_one_row(self):
-        handler = Languages()
-        handler.load_state_from_string(TEST_DATA_1)
-        self.assertEqual(handler.search(number=52343), [0])
-        self.assertEqual(handler.search(date=Date.decode('2001-03-28')), [1])
-
-
-    def test_indexes_hit_in_many_rows(self):
-        data = 'house,2005-10-10\nwindow,2005-05-10\ncomputer,2005-10-10'
-        handler = Things(string=data)
-        handler.load_state_from_string(data)
-        self.assertEqual(handler.search(date=Date.decode('2005-01-01')), [])
-        self.assertEqual(handler.search(date=Date.decode('2005-10-10')), [0,2])
-
-
-    def test_index_new_row(self):
-        data = 'house,2005-10-10\nwindow,2005-05-10\ncomputer,2005-10-10'
-        handler = Things()
-        handler.load_state_from_string(data)
-        handler.add_row(['flower', Date.decode('2005-05-10')])
-        self.assertEqual(handler.search(date=Date.decode('2005-05-10')),
-                         [1,3])
-
-
-    def test_index_del_row(self):
-        data = 'house,2005-10-10\nwindow,2005-05-10\ncomputer,2005-10-10'
-        handler = Things()
-        handler.load_state_from_string(data)
-
-        self.assertEqual(handler.search(name='window'), [1])
-        handler.del_row(1)
-        self.assertEqual(handler.search(name='window'), [])
-        self.assertEqual(handler.search(name='computer'), [2])
-        handler.del_row(2)
-        self.assertEqual(handler.search(name='computer'), [])
-
-
-    def test_build_csv_data(self):
-        handler = People()
-        handler.load_state_from_string('')
-        handler.add_row(['Piotr', 'Macuk', Date.decode('1975-12-08')])
-        handler.add_row(['Basia', 'Macuk', Date.decode('2002-02-14')])
-        self.assertEqual(handler.search(surname='macuk'), [0, 1])
-        handler.add_row(['Pawe³', 'Macuk', Date.decode('1977-05-13')])
-        self.assertEqual(handler.search(surname='macuk'), [0, 1, 2])
-        handler.del_row(2)
-        self.assertEqual(handler.search(surname='macuk'), [0, 1])
-        handler.del_row(0)
-        self.assertEqual(handler.search(surname='macuk'), [1])
-
-
-    def test_advanced_search(self):
-        handler = Countries()
-        handler.load_state_from_uri('tests/test_adv.csv')
-        result1 = handler.search(name='dde', country='sweden')
-        self.assertEqual(result1, [5, 6])
-
-        q1 = OrQuery(PhraseQuery('name', 'dde'), PhraseQuery('name', 'fse'))
-        q2 = PhraseQuery('country', 'france')
-        q3 = AndQuery(q1, q2)
-        result2 = handler.search(q3)
-        self.assertEqual(result2, [4])
-
-        # previous results as query items
-        q1 = OrQuery(PhraseQuery('name', 'dde'), PhraseQuery('name', 'fse'))
-        q2 = OrQuery(PhraseQuery('country', 'poland'),
-                     PhraseQuery('country', 'france'))
-        q = AndQuery(q1, q2)
-        result5 = handler.search(q)
-        self.assertEqual(result5, [1, 4])
-
-
-    def test_search_boolean(self):
-        handler = Politicians()
-        handler.load_state_from_string(
-            '"Chavez","1"\n'
-            '"Bush","0"\n')
-
-        self.assertEqual(handler.search(is_good=True), [0])
-        self.assertEqual(handler.search(is_good=False), [1])
 
 
     def test_access_by_name(self):

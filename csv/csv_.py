@@ -19,15 +19,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.core import merge_dicts
-from itools.datatypes import String, Integer
+from itools.datatypes import String
 from itools.handlers import TextFile, guess_encoding, register_handler_class
-from itools.xapian import make_catalog, CatalogAware
 from parser import parse
 
 
 
-class Row(list, CatalogAware):
+class Row(list):
 
     def get_value(self, name):
         if self.columns is None:
@@ -42,15 +40,7 @@ class Row(list, CatalogAware):
         clone = self.__class__(self)
         clone.number = self.number
         clone.columns = self.columns
-
         return clone
-
-
-    def get_catalog_values(self):
-        values = {'__number__': self.number}
-        for column, name in enumerate(self.columns):
-            values[name] = self[column]
-        return values
 
 
 
@@ -61,9 +51,6 @@ class CSVFile(TextFile):
 
     # Hash with column names and its types
     # Example: {'firstname': Unicode, 'lastname': Unicode, 'age': Integer}
-    # To index some columns the schema should be declared as:
-    # schema = {'firstname': Unicode, 'lastname': Unicode,
-    #           'age': Integer(indexed=True)}
     schema = None
 
     # List of the schema column names
@@ -82,26 +69,9 @@ class CSVFile(TextFile):
     #########################################################################
     # Load & Save
     #########################################################################
-    clone_exclude = TextFile.clone_exclude | frozenset(['catalog'])
-
-
     def reset(self):
         self.lines = []
         self.n_lines = 0
-        # Initialize the catalog if needed (Index&Search)
-        # (we look if we have at least one indexed field in schema/columns)
-        self.catalog = None
-        schema = self.schema
-        if schema is not None:
-            for name in self.columns:
-                field_cls = schema[name]
-                if getattr(field_cls, 'indexed', False):
-                    fields = merge_dicts(schema,
-                                         __number__=Integer(key_field=True,
-                                                            stored=True,
-                                                            indexed=True))
-                    self.catalog = make_catalog(None, fields)
-                    break
 
 
     def new(self):
@@ -159,9 +129,6 @@ class CSVFile(TextFile):
         # Add
         self.lines.append(row)
         self.n_lines += 1
-        # Index
-        if self.catalog is not None:
-            self.catalog.index_document(row)
 
         return row
 
@@ -217,9 +184,6 @@ class CSVFile(TextFile):
     def update_row(self, index, **kw):
         row = self.get_row(index)
         self.set_changed()
-        # Un-index
-        if self.catalog is not None:
-            self.catalog.unindex_document(row.number)
         # Update
         columns = self.columns
         if columns is None:
@@ -230,9 +194,6 @@ class CSVFile(TextFile):
             for name in kw:
                 column = columns.index(name)
                 row[column] = kw[name]
-        # Index
-        if self.catalog is not None:
-            self.catalog.index_document(row)
 
 
     def del_row(self, number):
@@ -246,10 +207,6 @@ class CSVFile(TextFile):
             raise IndexError, 'list assignment index out of range'
         self.lines[number] = None
 
-        # Unindex
-        if self.catalog is not None:
-            self.catalog.unindex_document(row.number)
-
 
     def del_rows(self, numbers):
         """Delete rows at the given line numbers. Count begins at 0.
@@ -258,17 +215,6 @@ class CSVFile(TextFile):
         # Indexes are changing while deleting process
         for i in numbers:
             self.del_row(i)
-
-
-    def search(self, query=None, **kw):
-        """Return list of row numbers returned by executing the query.
-        """
-        if self.catalog is None:
-            raise IndexError, 'no index is defined in the schema'
-
-        result = self.catalog.search(query, **kw)
-        return [ doc.__number__
-                 for doc in result.get_documents(sort_by='__number__') ]
 
 
     def get_unique_values(self, name):

@@ -275,9 +275,6 @@ class iCalendar(TextFile):
     #########################################################################
     # New
     #########################################################################
-    clone_exclude = TextFile.clone_exclude | frozenset(['catalog'])
-
-
     def reset(self):
         self.properties = {}
         self.components = {}

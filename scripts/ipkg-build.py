@@ -37,17 +37,7 @@ import itools.stl
 from itools.fs import lfs
 
 
-
-if __name__ == '__main__':
-    # The command line parser
-    version = 'itools %s' % itools.__version__
-    description = ('Builds the package.')
-    parser = OptionParser('%prog', version=version, description=description)
-
-    options, args = parser.parse_args()
-    if len(args) != 0:
-        parser.error('incorrect number of arguments')
-
+def build():
     # Try using git facilities
     git_available = git.is_available()
     if not git_available:
@@ -151,3 +141,23 @@ if __name__ == '__main__':
             print path
             print_exception(type, value, traceback)
 
+
+
+
+if __name__ == '__main__':
+    # The command line parser
+    version = 'itools %s' % itools.__version__
+    description = ('Builds the package.')
+    parser = OptionParser('%prog', version=version, description=description)
+    parser.add_option('--profile',
+        help="print profile information to the given file")
+
+    options, args = parser.parse_args()
+    if len(args) != 0:
+        parser.error('incorrect number of arguments')
+
+    if options.profile is not None:
+        from cProfile import runctx
+        runctx("build()", globals(), locals(), options.profile)
+    else:
+        build()

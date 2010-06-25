@@ -21,11 +21,8 @@
 from datetime import datetime
 
 # Import from itools
-from itools.core import merge_dicts
-from itools.datatypes import DateTime, String, Integer, Unicode
+from itools.datatypes import DateTime, String, Unicode
 from itools.handlers import File
-from itools.xapian import make_catalog
-from itools.xapian import PhraseQuery, CatalogAware
 from csv_ import CSVFile
 from parser import parse
 
@@ -411,7 +408,7 @@ def property_to_str(name, property, datatype, p_schema, encoding='utf-8'):
 
 
 
-class Record(dict, CatalogAware):
+class Record(dict):
 
     __slots__ = ['id', 'record_properties']
 
@@ -449,13 +446,6 @@ class Record(dict, CatalogAware):
         return property.value
 
 
-    def get_catalog_values(self):
-        values = {'__id__': self.id}
-        for name in self.record_properties.iterkeys():
-            values[name] = self.get_value(name)
-        return values
-
-
 
 class Table(File):
 
@@ -464,11 +454,6 @@ class Table(File):
     #######################################################################
     # Hash with field names and its types
     # Example: {'firstname': Unicode, 'lastname': Unicode, 'age': Integer}
-    # To index some fields the schema should be declared as:
-    # record_properties = {
-    #     'firstname': Unicode,
-    #     'lastname': Unicode,
-    #     'age': Integer(indexed=True)}
     #######################################################################
     schema = {}
     record_properties = {}
@@ -532,18 +517,10 @@ class Table(File):
     #######################################################################
     # Handlers
     #######################################################################
-    clone_exclude = File.clone_exclude | frozenset(['catalog'])
-
-
     def reset(self):
         self.properties = None
         self.records = []
         self.changed_properties = False
-        # The catalog (for index and search)
-        fields = merge_dicts(
-            self.record_properties,
-            __id__=Integer(key_field=True, stored=True, indexed=True))
-        self.catalog = make_catalog(None, fields)
 
 
     def new(self):
@@ -601,11 +578,6 @@ class Table(File):
                 raise ValueError, msg % (uid, name)
             else:
                 record[name] = property
-
-        # Index the records
-        for record in records:
-            if record is not None:
-                self.catalog.index_document(record)
 
 
     def _record_to_str(self, id, record):
@@ -670,7 +642,7 @@ class Table(File):
         for name in kw:
             datatype = self.get_record_datatype(name)
             if getattr(datatype, 'unique', False) is True:
-                if len(self.search(PhraseQuery(name, kw[name]))) > 0:
+                if self.search(name, kw[name]):
                     raise UniqueError(name, kw[name])
         # Make new record
         id = len(self.records)
@@ -680,7 +652,6 @@ class Table(File):
         # Change
         self.set_changed()
         self.records.append(record)
-        self.catalog.index_document(record)
         # Back
         return record
 
@@ -694,17 +665,13 @@ class Table(File):
         for name in kw:
             datatype = self.get_record_datatype(name)
             if getattr(datatype, 'unique', False) is True:
-                search = self.search(PhraseQuery(name, kw[name]))
+                search = self.search(name, kw[name])
                 if search and (search[0] != self.records[id]):
                     raise UniqueError(name, kw[name])
         # Update record
+        self.set_changed()
         self.properties_to_dict(kw, record)
         record['ts'] = Property(datetime.now())
-        # Change
-        self.set_changed()
-        self.catalog.unindex_document(record.id)
-        # Index
-        self.catalog.index_document(record)
 
 
     def update_properties(self, **kw):
@@ -729,7 +696,6 @@ class Table(File):
             raise LookupError, msg % id
         # Change
         self.set_changed()
-        self.catalog.unindex_document(record.id)
         self.records[id] = None
 
 
@@ -829,12 +795,9 @@ class Table(File):
                     return getattr(datatype, 'default')
 
 
-    def search(self, query=None, **kw):
-        """Return list of row numbers returned by executing the query.
-        """
-        result = self.catalog.search(query, **kw)
-        ids = [ doc.__id__ for doc in result.get_documents(sort_by='__id__') ]
-        return [ self.records[x] for x in ids ]
+    def search(self, key, value):
+        get = self.get_record_value
+        return [ x for x in self.records if x and get(x, key) == value ]
 
 
     def update_from_csv(self, data, columns):

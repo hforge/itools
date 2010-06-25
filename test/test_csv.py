@@ -325,7 +325,7 @@ class TableTestCase(TestCase):
 
     def test_search(self):
         agenda = Agenda(string=agenda_file)
-        ids = [ x.id for x in agenda.search(firstname=u'Jean') ]
+        ids = [ x.id for x in agenda.search('firstname', u'Jean-Jacques') ]
         self.assertEqual(ids, [1])
 
 
@@ -340,9 +340,9 @@ class TableTestCase(TestCase):
         agenda.save_state()
         # Test
         agenda = ro_database.get_handler('tests/agenda', Agenda)
-        ids = [ x.id for x in agenda.search(firstname=u'Toto') ]
+        ids = [ x.id for x in agenda.search('firstname', u'Toto') ]
         self.assertEqual(len(ids), 0)
-        ids = [ x.id for x in agenda.search(firstname=u'Albert') ]
+        ids = [ x.id for x in agenda.search('firstname', u'Albert') ]
         self.assertEqual(len(ids), 1)
         # Clean
         lfs.remove('tests/agenda')

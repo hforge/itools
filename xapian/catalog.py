@@ -20,7 +20,7 @@ from marshal import dumps, loads
 
 # Import from xapian
 from xapian import Database, WritableDatabase, DB_CREATE, DB_OPEN
-from xapian import Document, Query, inmemory_open
+from xapian import Document, Query
 
 # Import from itools
 from itools.fs import lfs
@@ -402,7 +402,6 @@ class Catalog(object):
 def make_catalog(uri, fields):
     """Creates a new and empty catalog in the given uri.
 
-    If uri=None the catalog is made "in memory".
     fields must be a dict. It contains some informations about the
     fields in the database.
 
@@ -410,12 +409,6 @@ def make_catalog(uri, fields):
 
       fields = {'id': Integer(key_field=True, stored=True, indexed=True), ...}
     """
-    # In memory
-    if uri is None:
-        db = inmemory_open()
-        return Catalog(db, fields, asynchronous_mode=False)
-
-    # In the local filesystem
     path = lfs.get_absolute_path(uri)
     db = WritableDatabase(path, DB_CREATE)
     return Catalog(db, fields)

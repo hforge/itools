@@ -254,9 +254,8 @@ class i18nTestCase(TestCase):
                                 ' </pre>')
 
         messages = [unit[0] for unit in doc.get_units()]
-        expected = u'This is raw text, "     \n"'
-        self.assertEqual(messages,  [((TEXT, u'This is raw text, "     \n"'),)
-                                    ])
+        expected = [((TEXT, u'This is raw text, "     \n"'),)]
+        self.assertEqual(messages, expected)
 
 
 ###########################################################################

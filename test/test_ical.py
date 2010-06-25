@@ -16,8 +16,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from cStringIO import StringIO
-from datetime import datetime
 from unittest import TestCase, main
 
 # Import from itools

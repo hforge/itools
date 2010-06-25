@@ -237,7 +237,6 @@ def add_item_to_item_set(item_set, item):
 def get_first_table(grammar):
     symbols = grammar.symbols
     rules = grammar.rules
-    lexical_table = grammar.tokenizer.lexical_table
 
     first = {}
     # Initialize
@@ -356,7 +355,6 @@ def find_handles(grammar, item_set):
 
     handles = set()
     shift = False
-    new_item_set = set()
     for name, i, j, look_ahead in item_set:
         if j == len(rules[name][i]):
             handles.add((name, i, look_ahead))
@@ -551,7 +549,6 @@ def pprint_stack(stack, active_nodes, data, file=None):
         for last_node in last_nodes:
             in_paths.append([last_node] + path)
 
-    lines = []
     for path in paths:
         line = []
         for node_idx in path:

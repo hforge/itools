@@ -124,7 +124,7 @@ def pmltopdf(document, path=None):
     if path:
         uri = vfs.get_uri(path)
         prefix = get_reference(uri).path
-        stream = set_prefix(events, prefix, ns_uri=pml_uri)
+        events = set_prefix(events, prefix, ns_uri=pml_uri)
 
     return make_pdf(events)
 
@@ -655,14 +655,12 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context,
     has_content = False
     is_not_paragraph = (elt_tag_name != 'p')
     is_not_pre = (elt_tag_name not in ('pre', 'xpre'))
-    is_footer = (elt_tag_name == 'footer')
 
     story = []
     start_tag = True
     end_tag = False
     style_p = context.get_css_props()
 
-    style_attr_value = elt_attributes.get((None, 'style'))
     skip = False
     place = 0
     if prefix is not None:
@@ -858,13 +856,8 @@ def list_stream(stream, _tag_name, attributes, context, id=0):
     story = [Indenter(left=INDENT_VALUE)]
     strid = str(id)
     prefix = ["<seqDefault id='%s'/><seqReset id='%s'/>" % (strid, strid)]
-    has_content = False
-    li_state = 0 # 0 -> outside, 1 -> inside
     attrs = {}
     bullet = None
-    cpt = 0
-    start_tag = True
-    end_tag = False
 
     if _tag_name == 'ul':
         bullet = get_bullet(attributes.get((None, 'type'), 'disc'))
@@ -916,7 +909,6 @@ def def_list_stream(stream, _tag_name, attributes, context):
 
     INDENT_VALUE = 1 * cm
     story = []
-    has_content = False
 
     while True:
         event, value, line_number = stream_next(stream)
@@ -1332,7 +1324,6 @@ class Table_Content(object):
         ctmp = get_int_value(colspan) - 1
         col = self.current_x
         row = self.current_y
-        stop = None
         if rtmp > 0:
             row += rtmp
         if ctmp > 0:

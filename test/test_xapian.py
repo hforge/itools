@@ -402,7 +402,6 @@ class MultipleTestCase(TestCase):
         cat.index_document(Document_3(2, []))
         cat.index_document(Document_3(3, 42))
 
-        result = cat.search()
         docs = cat.search().get_documents(sort_by='id')
 
         # Test the values

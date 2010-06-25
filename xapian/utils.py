@@ -118,7 +118,7 @@ def _index_cjk(xdoc, value, prefix, termpos):
     2 -> 0 [stop word]
     """
     state = 0
-    lexeme = previous_cjk = u''
+    previous_cjk = u''
 
     for c in value:
         if is_punctuation(c):
@@ -127,7 +127,6 @@ def _index_cjk(xdoc, value, prefix, termpos):
                 xdoc.add_posting(prefix + previous_cjk, termpos)
                 termpos += 1
             # reset state
-            lexeme = u''
             previous_cjk = u''
             state = 0
         else:

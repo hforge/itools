@@ -96,12 +96,7 @@ def packages_infos(module_name=None):
                 module_mask.add(db_module)
                 break
 
-    setupconf_packages = []
-    egginfo_packages = []
-    default_package = []
-    # XXX todo: understand .egg -maybe by using setuptools-
-    #egg_packages = []
-
+    # TODO understand .egg -maybe by using setuptools-
     for site in sites:
         for package in vfs.get_names(site):
             if package in module_mask:

@@ -208,7 +208,6 @@ def format_size(value, default=None):
     if value.endswith('%'):
         return value
     for key in SIZE.keys():
-        lenth_of_key = len(key)
         if value.endswith(key):
             value = value[:-len(key)]
             coef = SIZE[key]

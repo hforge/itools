@@ -556,7 +556,6 @@ class Table(File):
     def _load_state_from_file(self, file):
         # Load the records
         records = self.records
-        properties = self.properties
         record_properties = self.record_properties
 
         n = 0

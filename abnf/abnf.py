@@ -202,7 +202,6 @@ class Context(BaseContext):
 
 
     def dec_val_2(self, start, end, left, right):
-        value = self.data[start+1:end]
         # Range: %x30-39
         raise NotImplementedError
 
@@ -308,7 +307,7 @@ class Context(BaseContext):
 
     def rule(self, start, end, rulename, defined_as, alternation, *args):
         if rulename in core_rules:
-            raise ValueError, 'the "%s" rule is reserved' % value
+            raise ValueError, 'the "%s" rule is reserved' % rulename
         return rulename, alternation
 
 

@@ -283,8 +283,7 @@ class Ole(object):
                 sbdCurrent = getlong(self.BBD, sbdCurrent * 4)
                 if sbdCurrent < 0 or sbdCurrent >= fileLength / sectorSize:
                     break
-            self.sbdNumber = sbdNumber = ((sbdLen * sectorSize)
-                                          / shortSectorSize)
+            self.sbdNumber = (sbdLen * sectorSize) / shortSectorSize
             self.SBD = ''.join(SBD)
         else:
             self.SBD = None

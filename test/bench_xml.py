@@ -140,7 +140,6 @@ def get_test_filenames(test_path, force_download):
             if lfs.exists(compressed_dest) is False:
                 src = join(base_uri, '%s%s' % (name, ext))
                 print 'GET %s file' % src
-                dest = join(test_path, name)
                 if vfs.exists(src) is False:
                     print "%s uri does not exists" % src
                     continue
@@ -205,7 +204,6 @@ def output_result(results, file):
     file_size = rjust(file_size[:9], 9)
     file_string = u'%s  %s' % (filename, file_size)
 
-    parser_output = u''
     # output 1
     parser_name, result = results[0]
     if result is None:

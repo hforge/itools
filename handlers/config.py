@@ -294,10 +294,6 @@ class ConfigFile(TextFile):
 
 
     def to_str(self):
-        values = self.values
-
-        names = values.keys()
-
         lines = []
         for line in self.lines:
             if line is None:

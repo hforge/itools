@@ -200,7 +200,6 @@ def setup(ext_modules=freeze([])):
     # The data files
     for line in filenames:
         path = line.split('/')
-        n = len(path)
         if path[0] in subpackages:
             subpackage = '%s.%s' % (package_name, path[0])
             files = package_data.setdefault(subpackage, [])

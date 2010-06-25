@@ -34,8 +34,6 @@ class MySimpleDocTemplate(BaseDocTemplate):
     def __init__(self, filename, context, **kw):
         BaseDocTemplate.__init__(self, filename, **kw)
         self.toc_index = 0
-        body_attrs = (self.leftMargin, self.bottomMargin, self.width,
-                      self.height)
         self.main_frame_attr = {'x1': self.leftMargin,
                                 'y1': self.bottomMargin,
                                 'width': self.width,

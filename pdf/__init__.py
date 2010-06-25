@@ -18,7 +18,6 @@
 from itools.core import get_abspath
 from itools.handlers import ro_database
 from itools.relaxng import RelaxNGFile
-from itools.xml import register_dtd
 from pdf import PDFFile
 
 # There are imports from ReportLab in these imports, so, ...

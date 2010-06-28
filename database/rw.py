@@ -23,7 +23,7 @@ from os.path import dirname
 from subprocess import CalledProcessError
 
 # Import from itools
-from itools.core import lazy, send_subprocess
+from itools.core import get_pipe, lazy, send_subprocess
 from itools.datatypes import ISODateTime
 from itools.fs import lfs
 from itools.handlers import Folder
@@ -47,6 +47,44 @@ class GitDatabase(ROGitDatabase):
         self.changed = set()
         self.has_changed = False
 
+        # The resources that been added, removed, changed and moved can be
+        # represented as a set of two element tuples.  But we implement this
+        # with two dictionaries (old2new/new2old), to be able to access any
+        # "tuple" by either value.  With the empty tuple we represent the
+        # absence of change.
+        #
+        #  Tuple        Description                Implementation
+        #  -----------  -------------------------  -------------------
+        #  ()           nothing has been done yet  {}/{}
+        #  (None, 'b')  resource 'b' added         {}/{'b':None}
+        #  ('b', None)  resource 'b' removed       {'b':None}/{}
+        #  ('b', 'b')   resource 'b' changed       {'b':'b'}/{'b':'b'}
+        #  ('b', 'c')   resource 'b' moved to 'c'  {'b':'c'}/{'c':'b'}
+        #
+        # In real life, every value is either None or an absolute path (as a
+        # byte stringi).  For the description that follows, we use the tuples
+        # as a compact representation.
+        #
+        # There are four operations:
+        #
+        #  A(b)   - add "b"
+        #  R(b)   - remove "b"
+        #  C(b)   - change "b"
+        #  M(b,c) - move "b" to "c"
+        #
+        # Then, the algebra is:
+        #
+        # ()        -> A(b) -> (None, 'b')
+        # (b, None) -> A(b) -> (b, b)
+        # (None, b) -> A(b) -> error
+        # (b, b)    -> A(b) -> error
+        # (b, c)    -> A(b) -> (b, b), (None, c) FIXME Is this correct?
+        #
+        # TODO Finish
+        #
+        self.resources_old2new = {}
+        self.resources_new2old = {}
+
 
     @lazy
     def catalog(self):
@@ -54,6 +92,9 @@ class GitDatabase(ROGitDatabase):
         return Catalog(path, get_register_fields())
 
 
+    #######################################################################
+    # Layer 0: handlers
+    #######################################################################
     def is_phantom(self, handler):
         # Phantom handlers are "new"
         if handler.timestamp or not handler.dirty:
@@ -285,24 +326,81 @@ class GitDatabase(ROGitDatabase):
 
 
     #######################################################################
-    # API / Transactions
+    # Layer 1: resources
+    #######################################################################
+    def remove_resource(self, resource):
+        old2new = self.resources_old2new
+        new2old = self.resources_new2old
+
+        for x in resource.traverse_resources():
+            path = str(x.get_canonical_path())
+            old2new[path] = None
+            new2old.pop(path, None)
+
+
+    def add_resource(self, resource):
+        old2new = self.resources_old2new
+        new2old = self.resources_new2old
+
+        # Catalog
+        for x in resource.traverse_resources():
+            path = str(x.get_canonical_path())
+            new2old[path] = None
+
+
+    def change_resource(self, resource):
+        old2new = self.resources_old2new
+        new2old = self.resources_new2old
+
+        path = str(resource.get_canonical_path())
+        if path in old2new and not old2new[path]:
+            raise ValueError, 'cannot change a resource that has been removed'
+
+        if path not in new2old:
+            old2new[path] = path
+            new2old[path] = path
+
+
+    def move_resource(self, source, new_path):
+        old2new = self.resources_old2new
+        new2old = self.resources_new2old
+
+        old_path = source.get_canonical_path()
+        for x in source.traverse_resources():
+            source_path = x.get_canonical_path()
+            target_path = new_path.resolve2(old_path.get_pathto(source_path))
+
+            source_path = str(source_path)
+            target_path = str(target_path)
+            if source_path in old2new and not old2new[source_path]:
+                err = 'cannot move a resource that has been removed'
+                raise ValueError, err
+
+            source_path = new2old.pop(source_path, source_path)
+            if source_path:
+                old2new[source_path] = target_path
+            new2old[target_path] = source_path
+
+
+    #######################################################################
+    # Transactions
+    #######################################################################
     def _cleanup(self):
         super(GitDatabase, self)._cleanup()
         self.has_changed = False
 
 
     def _abort_changes(self):
+        # 1. Handlers
         cache = self.cache
-        # Added handlers
         for key in self.added:
             self._discard_handler(key)
-        # Changed handlers
         for key in self.changed:
             cache[key].abort_changes()
 
-        # And now, clean the filesystem
+        # Clean the filesystem (in a try/except to avoid a problem with new
+        # repositories)
         try:
-            # In a try/except to avoid a problem with new repositories
             self.send_subprocess(['git', 'reset', '--hard', '-q'])
         except CalledProcessError:
             pass
@@ -312,6 +410,13 @@ class GitDatabase(ROGitDatabase):
         # Reset state
         self.added.clear()
         self.changed.clear()
+
+        # 2. Catalog
+        self.catalog.abort_changes()
+
+        # 3. Resources
+        self.resources_old2new.clear()
+        self.resources_new2old.clear()
 
 
     def _rollback(self):
@@ -326,7 +431,7 @@ class GitDatabase(ROGitDatabase):
         The value returned by this method will be passed to '_save_changes',
         so it can be used to pre-calculate whatever data is needed.
         """
-        return None, None, None
+        return None, None, None, [], []
 
 
     def _save_changes(self, data):
@@ -351,8 +456,8 @@ class GitDatabase(ROGitDatabase):
             self.added.clear()
 
         # Commit
-        git_author, git_date, git_message = data
-        command = ['git', 'commit', '-aq', '-m', git_message or 'no comment']
+        git_author, git_date, git_msg, docs_to_index, docs_to_unindex = data
+        command = ['git', 'commit', '-aq', '-m', git_msg or 'no comment']
         if git_author:
             command.append('--author=%s' % git_author)
         if git_date:
@@ -365,6 +470,14 @@ class GitDatabase(ROGitDatabase):
             # FIXME Not reliable, we may catch other cases
             if excp.returncode != 1:
                 raise
+
+        # 2. Catalog
+        catalog = self.catalog
+        for path in docs_to_unindex:
+            catalog.unindex_document(path)
+        for resource, values in docs_to_index:
+            catalog.index_document(values)
+        catalog.save_changes()
 
 
     def save_changes(self):
@@ -389,7 +502,6 @@ class GitDatabase(ROGitDatabase):
             raise
         finally:
             self._cleanup()
-
 
 
 
@@ -421,3 +533,36 @@ def make_git_database(path, size_min, size_max):
 
     # Ok
     return GitDatabase(path, size_min, size_max)
+
+
+
+def check_database(target):
+    """This function checks whether the database is in a consisitent state,
+    this is to say whether a transaction was not brutally aborted and left
+    the working directory with changes not committed.
+
+    This is meant to be used by scripts, like 'icms-start.py'
+    """
+    cwd = '%s/database' % target
+
+    # Check modifications to the working tree not yet in the index.
+    command = ['git', 'ls-files', '-m', '-d', '-o']
+    data1 = get_pipe(command, cwd=cwd)
+
+    # Check changes in the index not yet committed.
+    command = ['git', 'diff-index', '--cached', '--name-only', 'HEAD']
+    data2 = get_pipe(command, cwd=cwd)
+
+    # Everything looks fine
+    if len(data1) == 0 and len(data2) == 0:
+        return True
+
+    # Something went wrong
+    print 'The database is not in a consistent state.  Fix it manually with'
+    print 'the help of Git:'
+    print
+    print '  $ cd %s/database' % target
+    print '  $ git clean -fxd'
+    print '  $ git checkout -f'
+    print
+    return False

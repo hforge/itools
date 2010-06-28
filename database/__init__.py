@@ -18,13 +18,14 @@
 # Import from itools
 from registry import get_register_fields, register_field
 from ro import ROGitDatabase
-from rw import GitDatabase, make_git_database
+from rw import GitDatabase, make_git_database, check_database
 
 
 __all__ = [
     'ROGitDatabase',
     'GitDatabase',
     'make_git_database',
+    'check_database',
     'get_register_fields',
     'register_field',
     ]

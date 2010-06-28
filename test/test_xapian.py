@@ -338,11 +338,16 @@ class CatalogTestCase(TestCase):
 
 class UnicodeTestCase(TestCase):
 
-    def test_everything(self):
+    def setUp(self):
+        make_catalog('tests/catalog', Document_2.fields)
 
-        # In memory catalog
-        cat = make_catalog(None, Document_2.fields)
 
+    def tearDown(self):
+        lfs.remove('tests/catalog')
+
+
+    def test_unicode(self):
+        cat = Catalog('tests/catalog', Document_2.fields)
         # Some data
         cat.index_document(Document_2(1, u'foo à €'))
         cat.index_document(Document_2(2, u'aabà'))
@@ -358,13 +363,8 @@ class UnicodeTestCase(TestCase):
         self.assertEqual(r, [2, 3])
 
 
-
-class MultilingualTestCase(TestCase):
-
-    def test_everything(self):
-
-        # In memory catalog
-        cat = make_catalog(None, Document_2.fields)
+    def test_multilingual(self):
+        cat = Catalog('tests/catalog', Document_2.fields)
 
         # Some data
         cat.index_document(Document_2(1, {'en': u'Hello world',
@@ -392,10 +392,16 @@ class MultilingualTestCase(TestCase):
 
 class MultipleTestCase(TestCase):
 
-    def test_everything(self):
+    def setUp(self):
+        make_catalog('tests/catalog', Document_3.fields)
 
-        # In memory catalog
-        cat = make_catalog(None, Document_3.fields)
+
+    def tearDown(self):
+        lfs.remove('tests/catalog')
+
+
+    def test_everything(self):
+        cat = Catalog('tests/catalog', Document_3.fields)
 
         # Some data
         cat.index_document(Document_3(1, [1, 2, 3]))

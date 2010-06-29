@@ -24,12 +24,8 @@ from subprocess import Popen, PIPE, CalledProcessError
 from traceback import format_exc
 
 
-# Contants.  The commands the sub-process accepts.
-CMD_READ = 0
-CMD_STOP = 1
-
-
 # FIXME Not thread safe
+subp = None
 pipe_to_subprocess = None
 
 
@@ -39,30 +35,33 @@ def start_subprocess(path):
     commands, and using an specific process for this purpose minimizes
     memory usage (because fork duplicates the memory).
     """
+    global subp
     global pipe_to_subprocess
     if pipe_to_subprocess is None:
         # Make the pipe that will connect the parent to the sub-process
         pipe_to_subprocess, child_pipe = Pipe()
         # Make and start the sub-process
-        p = Process(target=subprocess, args=(path, child_pipe))
-        p.start()
+        subp = Process(target=subprocess, args=(path, child_pipe))
+        subp.start()
         register(stop_subprocess)
 
 
 def stop_subprocess():
+    global subp
     global pipe_to_subprocess
-    if pipe_to_subprocess:
-        pipe_to_subprocess.send((CMD_STOP, None, None))
-        pipe_to_subprocess = None
+    if subp:
+        subp.terminate()
+        subp = pipe_to_subprocess = None
 
 
 def send_subprocess(command, wait=True, path=None):
-    pipe_to_subprocess.send((CMD_READ, path, command))
+    pipe_to_subprocess.send((path, command))
     if wait is True:
         return read_subprocess(command)
 
 
 def read_subprocess(command=None):
+    # An IOError exception may be raised if the process is interrupted
     errno, data = pipe_to_subprocess.recv()
     if errno:
         if command is not None:
@@ -75,11 +74,7 @@ def subprocess(cwd, conn):
     chdir(cwd)
     signal(SIGINT, SIG_IGN)
     while conn.poll(None):
-        command, path, data = conn.recv()
-        # Stop
-        if command == CMD_STOP:
-            break
-
+        path, data = conn.recv()
         # Spawn subprocess
         try:
             popen = Popen(data, stdout=PIPE, stderr=PIPE, cwd=path)
@@ -95,4 +90,3 @@ def subprocess(cwd, conn):
             conn.send((errno, stderr))
         else:
             conn.send((errno, stdout))
-

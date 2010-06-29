@@ -33,6 +33,7 @@ Python        2.6.4  itools           http://www.python.org/
 pkg-config     0.23  itools           http://pkg-config.freedesktop.org/
 glib           2.20  itools.fs        http://www.gtk.org/
 pygobject      2.18  itools.fs        http://www.pygtk.org/
+Git             1.6  itools.git       http://git-scm.com/
 libsoup        2.28  itools.soup      http://live.gnome.org/LibSoup
 reportlab       2.3  itools.pdf       http://www.reportlab.org/
 xapian        1.0.8  itools.xapian    http://www.xapian.org/

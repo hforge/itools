@@ -113,8 +113,6 @@ class HTTPServer(SoupServer):
         self.main_loop.quit()
         if self.pid_file:
             remove_file(self.pid_file)
-        if self.access_log:
-            self.access_log_file.close()
 
 
     #######################################################################

@@ -20,13 +20,13 @@ from marshal import dumps, loads
 
 # Import from xapian
 from xapian import Database, WritableDatabase, DB_CREATE, DB_OPEN
-from xapian import Document, Query, inmemory_open
+from xapian import Document, Query, QueryParser, inmemory_open
 
 # Import from itools
 from itools.fs import lfs
 from base import CatalogAware
 from queries import AllQuery, AndQuery, NotQuery, OrQuery, PhraseQuery
-from queries import RangeQuery, StartQuery
+from queries import RangeQuery, StartQuery, TextQuery
 from results import SearchResults
 from utils import _encode, _get_field_cls, _reduce_size, _make_PhraseQuery
 from utils import _index, _get_xquery
@@ -40,6 +40,9 @@ OP_OR = Query.OP_OR
 OP_VALUE_RANGE = Query.OP_VALUE_RANGE
 OP_VALUE_GE = Query.OP_VALUE_GE
 OP_VALUE_LE = Query.OP_VALUE_LE
+TQ_FLAGS = (QueryParser.FLAG_LOVEHATE +
+            QueryParser.FLAG_PHRASE +
+            QueryParser.FLAG_WILDCARD)
 
 
 
@@ -387,6 +390,27 @@ class Catalog(object):
             else:
                 # If value == '', we return everything
                 return Query('')
+
+        # TextQuery, the field must be indexed
+        if query_class is TextQuery:
+            name = query.name
+            value = query.value
+            if type(name) is not str:
+                raise TypeError, "unexpected '%s'" % type(name)
+            # If there is a problem => an empty result
+            if name not in metadata:
+                return Query()
+
+            info = metadata[name]
+            field_cls = _get_field_cls(name, fields, info)
+            try:
+                prefix = info['prefix']
+            except KeyError:
+                raise ValueError, 'the field "%s" must be indexed' % name
+
+            qp = QueryParser()
+            qp.set_database(self._db)
+            return qp.parse_query(_encode(field_cls, value), TQ_FLAGS, prefix)
 
         # And
         i2x = self._query2xquery

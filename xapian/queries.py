@@ -122,3 +122,15 @@ class StartQuery(BaseQuery):
 
     def __repr_parameters__(self):
         return "%r, %r" % (self.name, self.value)
+
+
+
+class TextQuery(BaseQuery):
+
+    def __init__(self, name, value):
+        self.name = name
+        self.value = value
+
+
+    def __repr_parameters__(self):
+        return "%r, %r" % (self.name, self.value)

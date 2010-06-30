@@ -17,7 +17,7 @@
 # Import from itools
 from base import CatalogAware
 from catalog import Catalog, make_catalog
-from queries import AllQuery, NotQuery, StartQuery
+from queries import AllQuery, NotQuery, StartQuery, TextQuery
 from queries import RangeQuery, PhraseQuery, AndQuery, OrQuery
 from utils import split_unicode
 
@@ -34,6 +34,7 @@ __all__ = [
     'OrQuery',
     'AllQuery',
     'NotQuery',
-    'StartQuery']
+    'StartQuery',
+    'TextQuery']
 
 

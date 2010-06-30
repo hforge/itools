@@ -24,7 +24,7 @@ from cStringIO import InputType
 
 # Import from itools
 from itools.handlers import TextFile, register_handler_class
-from itools.xml import XMLParser, TEXT, stream_to_str
+from itools.xml import XMLParser, stream_to_str, xml_to_text
 from i18n import get_units, translate
 
 
@@ -87,9 +87,7 @@ class XMLFile(TextFile):
     def to_text(self):
         """Removes the markup and returns a plain text string.
         """
-        text = [ unicode(value, 'utf-8') for event, value, line in self.events
-                 if event == TEXT ]
-        return u' '.join(text)
+        return xml_to_text(self.events)
 
 
     #######################################################################

@@ -1,0 +1,140 @@
+
+Table of contents:
+
+  1. Software requirements
+  2. Install manually
+  3. Install on Gentoo
+  4. Install on Debian
+  5. Install on Windows
+  6. Run the unit tests
+  7. Checkout from the Git repository
+
+
+1. Software requirements
+========================
+
+Software    Version  Used by          Home
+----------  -------  ---------------  ----------------------------------------
+Python        2.6.4  itools           http://www.python.org/
+pkg-config     0.23  itools           http://pkg-config.freedesktop.org/
+glib           2.20  itools.fs        http://www.gtk.org/
+pygobject      2.18  itools.fs        http://www.pygtk.org/
+Git             1.7  itools.git       http://git-scm.com/
+libsoup        2.28  itools.http      http://live.gnome.org/LibSoup
+reportlab       2.3  itools.pdf       http://www.reportlab.org/
+xapian        1.0.8  itools.xapian    http://www.xapian.org/
+pywin32         212  (Windows)        http://sf.net/projects/pywin32/
+PIL           1.1.6  itools.handlers  http://www.pythonware.com/products/pil/
+matplotlib     0.91  ipkg-quality.py  http://matplotlib.sourceforge.net/
+
+For indexing office documents like PDF, DOC and XLS, you can install libraries
+and Python packages.  They are not mandatory for installing itools.
+
+Software    Version  Format           Home
+----------  -------  ---------------  ----------------------------------------
+xlrd          0.6.1  XLS              http://www.lexicon.net/sjmachin/xlrd.htm
+poppler      0.10.4  PDF              http://poppler.freedesktop.org/
+wv2           0.2.3  DOC              https://sourceforge.net/projects/wvware
+
+
+2. Install manually
+========================
+
+First download the package (replace XX and Y by the desired major and minor
+version numbers):
+
+  $ wget http://download.hforge.org/0.XX/itools-0.XX.Y.tar.gz
+
+Now unpack the source:
+
+  $ tar xzf itools-0.XX.Y.tar.gz
+
+Change the working directory this way:
+
+  $ cd itools-0.XX.Y
+
+And finally install itools with distutils:
+
+  $ python setup.py install
+
+
+3. Install on Gentoo
+========================
+
+If you use Gentoo you are lucky.  Since itools is available in the hforge
+overlay, start by installing this overlay:
+
+  # emerge layman
+
+TODO
+
+Then unmask the itools package:
+
+  # echo "dev-python/itools ~amd64" >> /etc/portage/package.keywords
+
+And finally emerge itools:
+
+  # emerge itools
+
+
+4. Install on Debian
+========================
+
+All the software required by itools is available in squeeze (Debian Testing)
+but not yet in lenny (Debian Stable).  So first you will need to upgrade to
+squeeze, then install the required packages:
+
+  # apt-get install XXX
+
+And finally install the itools package by hand (see Section 2).
+
+
+5. Install on Windows
+========================
+
+Today itools is not available on the Windows platform because of a bug in
+one of the required software, pygobject:
+
+  http://bugzilla.gnome.org/show_bug.cgi?id=562790
+
+Note: you will find packages like pkg-config and glib compiled for Windows
+on http://ftp.gnome.org/pub/gnome/binaries/win32/ (don't forget to check
+the "dependencies" directory).
+
+
+6. Run the unit tests
+========================
+
+To run the unit tests first you must download and unpack the source as
+described in Section 2.
+
+Then change to the test directory and run the tests:
+
+  $ cd itools-0.XX.Y/test
+  $ python test.py
+
+If there are errors, please report either to the issue tracker or to the
+mailing list:
+
+  - http://bugs.hforge.org/
+  - http://www.hforge.org/community
+
+
+7. Checkout from the Git repository
+===================================
+
+If you desire to install the latest and hottest revision of itools, you need
+to clone the Git repository this way:
+
+  $ git clone git://git.hforge.org/itools.git
+  $ cd itools
+
+Then checkout the latest stable branch:
+
+  $ git checkout -b 0.XX origin/0.XX
+
+Then installing itools properly is a three steps process:
+
+  $ python setup.py install   # This makes the ipkg-build.py script available
+  $ ipkg-build.py             # This compiles the MO files, etc.
+  $ python setup.py install   # This re-installs itools with everything in

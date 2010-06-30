@@ -26,6 +26,7 @@ from itools.datatypes import String, Unicode, Boolean, Integer
 from itools.fs import lfs
 from itools.xapian import make_catalog, Catalog, CatalogAware, StartQuery
 from itools.xapian import AndQuery, RangeQuery, PhraseQuery, NotQuery
+from itools.xapian import TextQuery
 from itools.xapian.catalog import _index
 from itools.xapian.utils import _decode
 
@@ -326,6 +327,30 @@ class CatalogTestCase(TestCase):
         query = AndQuery(query1, query2)
         results = catalog.search(query)
         self.assertEqual(len(results), 2)
+
+
+    def test_TextQuery(self):
+        catalog = Catalog('tests/catalog', Document.fields)
+
+        # Test +/-
+        query = TextQuery('title', 'Wolf')
+        self.assertEqual(len(catalog.search(query)), 4)
+        query = TextQuery('title', 'Wolf -Dog')
+        self.assertEqual(len(catalog.search(query)), 3)
+        query = TextQuery('title', 'Wolf -Dog +Lamb')
+        self.assertEqual(len(catalog.search(query)), 1)
+
+        # Test ""
+        query = TextQuery('title', 'Wolf and')
+        self.assertEqual(len(catalog.search(query)), 24)
+        query = TextQuery('title', '"Wolf and"')
+        self.assertEqual(len(catalog.search(query)), 3)
+
+        # Test *
+        query = TextQuery('title', 'Wol*')
+        self.assertEqual(len(catalog.search(query)), 4)
+        query = TextQuery('title', 'Wo*')
+        self.assertEqual(len(catalog.search(query)), 6)
 
 
     def test_unique_values(self):

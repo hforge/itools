@@ -1,5 +1,5 @@
 
-itools 0.62.0 (2010/06/XX)
+itools 0.62.0 (2010/07/XX)
 ==========================
 
 itools is a Python library, it groups a number of packages into a single
@@ -31,13 +31,14 @@ level features from itools.http have been moved to itools.web.  This
 makes itools.http to be just a "Web Server", and itools.web to be a
 "Web Framework".
 
-The Git based database system (from itools.handlers), includes now
-a cache for git blobs.  This is an small step towards the future
-architecture of the itools "Versioned Key/Value" database system.
+The new itools.database package contains code previously found in
+itools.handlers and ikaaro.  It is the beginning of a versioned
+document database system (yet another nosql [3] solution).
 
 
 [1] http://www.hforge.org/ikaaro
 [2] XXX
+[3] XXX
 
 
 Resources

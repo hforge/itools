@@ -20,18 +20,30 @@ Imports
 
 See the table below for the imports to update.
 
-  Before (alphabetical order)    Now
-  ----------------------------   ---------------------------
-  itools.ical.get_grid_data      ** MOVED TO IKAARO **
-  itools.soup.SoupMessage        itools.http.SoupMessage
-  itools.soup.SoupServer         ** NOT EXPORTED **
+  Before (alphabetical order)         Now
+  ---------------------------------   ---------------------------------
+  itools.handlers.GitDatabase         itools.database.GitDatabase
+  itools.handlers.make_git_database   itools.database.make_git_database
+  itools.handlers.ROGitDatabase       itools.database.ROGitDatabase
+  itools.ical.get_grid_data           ** MOVED TO IKAARO **
+  itools.ical.icalendarTable          ** MOVED TO IKAARO **
+  itools.soup.SoupMessage             itools.http.SoupMessage
+  itools.soup.SoupServer              ** NOT EXPORTED **
 
 
 itools.csv
 ==========
 
-The table handler. Now records are not a list of one dict, but just a dict.
-XXX
+(1) The table file handler has been much simplified:
+
+- do not support incremental save
+- do not support indexing (with xapian)
+- now records are not a list of one dict, but just a dict
+
+This basically means that the table file handler is suitable only to store
+little data (e.g. small vocabularies).
+
+(2) The CSV file handler does not support indexing anymore.
 
 
 itools.http
@@ -66,10 +78,19 @@ itools.http
   s.listen(address, port)
 
 
+itools.ical
+===========
+
+The icalendarTable file handler has been removed (moved to ikaaro actually,
+but its usage is discouraged).
+
+The ical file handler does not support indexing (with xapian) anymore.
+
+
 itools.xapian
 =============
 
-The 'is_' prefix has ben drop from the fields definition:
+(1) The 'is_' prefix has ben drop from the fields definition:
 
   Before        Now
   ------------  ------------
@@ -77,3 +98,4 @@ The 'is_' prefix has ben drop from the fields definition:
   is_indexed    indexed
   is_stored     stored
 
+(2) Do not support catalogs in memory.

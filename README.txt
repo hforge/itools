@@ -14,17 +14,17 @@ meta-package for easier development and deployment.
 
 The packages included are:
 
-  itools.abnf             itools.ical             itools.srx
-  itools.core             itools.log              itools.stl
-  itools.csv              itools.loop             itools.tmx
+  itools.abnf             itools.i18n             itools.rss
+  itools.core             itools.ical             itools.srx
+  itools.csv              itools.log              itools.stl
+  itools.database         itools.loop             itools.tmx
   itools.datatypes        itools.odf              itools.uri
   itools.fs               itools.office           itools.web
   itools.gettext          itools.pdf              itools.workflow
-  itools.git              itools.pkg              itools.xapian
-  itools.handlers         itools.python           itools.xliff
-  itools.html             itools.relaxng          itools.xml
-  itools.http             itools.rest             itools.xmlfile
-  itools.i18n             itools.rss
+  itools.git              itools.pkg              itools.xliff
+  itools.handlers         itools.python           itools.xml
+  itools.html             itools.relaxng          itools.xmlfile
+  itools.http             itools.rest
 
 The scripts included are:
 

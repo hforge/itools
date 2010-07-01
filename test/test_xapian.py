@@ -27,8 +27,7 @@ from itools.fs import lfs
 from itools.xapian import make_catalog, Catalog, CatalogAware, StartQuery
 from itools.xapian import AndQuery, RangeQuery, PhraseQuery, NotQuery
 from itools.xapian import TextQuery
-from itools.xapian.catalog import _index
-from itools.xapian.utils import _decode
+from itools.xapian.catalog import _index, _decode
 
 # Import from xapian
 from xapian import Document as XapianDocument

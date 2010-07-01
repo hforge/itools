@@ -17,19 +17,19 @@
 
 # Import from the standard library
 from marshal import dumps, loads
+from hashlib import sha1
 
 # Import from xapian
 from xapian import Database, WritableDatabase, DB_CREATE, DB_OPEN
-from xapian import Document, Query, QueryParser
+from xapian import Document, Query, QueryParser, Enquire, MultiValueSorter
+from xapian import sortable_serialise, sortable_unserialise, TermGenerator
 
 # Import from itools
+from itools.datatypes import Integer, Unicode
 from itools.fs import lfs
-from base import CatalogAware
+from itools.i18n import is_punctuation
 from queries import AllQuery, AndQuery, NotQuery, OrQuery, PhraseQuery
 from queries import RangeQuery, StartQuery, TextQuery
-from results import SearchResults
-from utils import _encode, _get_field_cls, _reduce_size, _make_PhraseQuery
-from utils import _index, _get_xquery
 
 
 
@@ -37,6 +37,7 @@ from utils import _index, _get_xquery
 OP_AND = Query.OP_AND
 OP_AND_NOT = Query.OP_AND_NOT
 OP_OR = Query.OP_OR
+OP_PHRASE = Query.OP_PHRASE
 OP_VALUE_RANGE = Query.OP_VALUE_RANGE
 OP_VALUE_GE = Query.OP_VALUE_GE
 OP_VALUE_LE = Query.OP_VALUE_LE
@@ -46,16 +47,172 @@ TQ_FLAGS = (QueryParser.FLAG_LOVEHATE +
 
 
 
-def _get_prefix(number):
-    """By convention:
-    Q is used for the unique Id of a document
-    X for a long prefix
-    Z for a stemmed word
-    """
-    magic_letters = 'ABCDEFGHIJKLMNOPRSTUVWY'
-    size = len(magic_letters)
-    result = 'X'*(number/size)
-    return result+magic_letters[number%size]
+############
+# Public API
+
+
+def split_unicode(text, language='en'):
+    xdoc = Document()
+    _index_unicode(xdoc, text, '', language, 1)
+    words = []
+    for term_list_item in xdoc:
+        term = unicode(term_list_item.term, 'utf-8')
+        for termpos in term_list_item.positer:
+            words.append((termpos, term))
+    words.sort()
+    return [ word[1] for word in words ]
+
+
+
+class CatalogAware(object):
+
+    def get_catalog_values(self):
+        """Returns a dictionary with the values of the fields to be indexed.
+        """
+        raise NotImplementedError
+
+
+
+class Doc(object):
+
+    def __init__(self, xdoc, fields, metadata):
+        self._xdoc = xdoc
+        self._fields = fields
+        self._metadata = metadata
+
+
+    def __getattr__(self, name):
+        info = self._metadata.get(name)
+        if not info:
+            msg = 'the "%s" field is not indexed nor stored'
+            raise AttributeError, msg % name
+
+        field_cls = _get_field_cls(name, self._fields, info)
+
+        # Get the data
+        try:
+            value = info['value']
+        except KeyError:
+            raise AttributeError, 'the "%s" field is not stored' % name
+        data = self._xdoc.get_value(value)
+
+        # Multilingual field: language negotiation
+        if not data and issubclass(field_cls, Unicode) and 'from' not in info:
+            prefix = '%s_' % name
+            n = len(prefix)
+
+            languages = []
+            values = {}
+            for k in self._metadata:
+                if k[:n] == prefix:
+                    language = k[n:]
+                    value = getattr(self, '%s_%s' % (name, language))
+                    if not field_cls.is_empty(value):
+                        languages.append(language)
+                        values[language] = value
+
+            if languages:
+                language = select_language(languages)
+                if language is None:
+                    language = languages[0]
+                return values[language]
+
+        # Standard (monolingual)
+        return _decode(field_cls, data)
+
+
+
+class SearchResults(object):
+
+    def __init__(self, catalog, xquery):
+        self._catalog = catalog
+        self._xquery = xquery
+
+        # Enquire
+        enquire = Enquire(catalog._db)
+        enquire.set_query(xquery)
+        self._enquire = enquire
+
+        # Max
+        max = enquire.get_mset(0,0).get_matches_upper_bound()
+        self._max = enquire.get_mset(0, max).size()
+
+
+    def __len__(self):
+        """Returns the number of documents found."""
+        return self._max
+
+
+    def search(self, query=None, **kw):
+        catalog = self._catalog
+
+        xquery = _get_xquery(catalog, query, **kw)
+        query = Query(Query.OP_AND, [self._xquery, xquery])
+        return SearchResults(catalog, query)
+
+
+    def get_documents(self, sort_by=None, reverse=False, start=0, size=0):
+        """Returns the documents for the search, sorted by weight.
+
+        Four optional arguments are accepted, which will modify the documents
+        returned.
+
+        First, it is possible to sort by a field, or a list of fields, instead
+        of by the weight. The condition is that the field must be stored:
+
+          - "sort_by", if given it must be the name of an stored field, or
+            a list of names of stored fields. The results will be sorted by
+            this fields, instead of by the weight.
+
+          - "reverse", a boolean value that says whether the results will be
+            ordered from smaller to greater (reverse is False, the default),
+            or from greater to smaller (reverse is True). This parameter only
+            takes effect if the parameter "sort_by" is also given.
+
+        It is also possible to ask for a subset of the documents:
+
+          - "start": returns the documents starting from the given start
+            position.
+
+          - "size": returns at most documents as specified by this parameter.
+
+        By default all the documents are returned.
+        """
+        enquire = self._enquire
+        fields = self._catalog._fields
+        metadata = self._catalog._metadata
+
+        # sort_by != None
+        if sort_by is not None:
+            if isinstance(sort_by, list):
+                sorter = MultiValueSorter()
+                for name in sort_by:
+                    # If there is a problem, ignore this field
+                    if name not in metadata:
+                        continue
+                    sorter.add(metadata[name]['value'])
+                enquire.set_sort_by_key_then_relevance(sorter, reverse)
+            else:
+                # If there is a problem, ignore the sort
+                if sort_by in metadata:
+                    value = metadata[sort_by]['value']
+                    enquire.set_sort_by_value_then_relevance(value, reverse)
+        else:
+            enquire.set_sort_by_relevance()
+
+        # start/size
+        if size == 0:
+            size = self._max
+
+        # Construction of the results
+        results = [ Doc(x.document, fields, metadata)
+                    for x in enquire.get_mset(start, size) ]
+
+        # sort_by=None/reverse=True
+        if sort_by is None and reverse:
+            results.reverse()
+
+        return results
 
 
 
@@ -436,3 +593,231 @@ def make_catalog(uri, fields):
     path = lfs.get_absolute_path(uri)
     db = WritableDatabase(path, DB_CREATE)
     return Catalog(db, fields)
+
+
+
+#############
+# Private API
+
+
+def _get_prefix(number):
+    """By convention:
+    Q is used for the unique Id of a document
+    X for a long prefix
+    Z for a stemmed word
+    """
+    magic_letters = 'ABCDEFGHIJKLMNOPRSTUVWY'
+    size = len(magic_letters)
+    result = 'X'*(number/size)
+    return result+magic_letters[number%size]
+
+
+
+def _decode_simple_value(field_cls, data):
+    """Used to decode values in stored fields.
+    """
+    # Overload the Integer type, cf _encode_simple_value
+    if issubclass(field_cls, Integer):
+        if data == '':
+            return None
+        return int(sortable_unserialise(data))
+    # A common field or a new field
+    return field_cls.decode(data)
+
+
+
+def _decode(field_cls, data):
+    if field_cls.multiple:
+        try:
+            value = loads(data)
+        except (ValueError, MemoryError):
+            return _decode_simple_value(field_cls, data)
+        return [ _decode_simple_value(field_cls, a_value)
+                 for a_value in value ]
+    else:
+        return _decode_simple_value(field_cls, data)
+
+
+
+# We must overload the normal behaviour (range + optimization)
+def _encode_simple_value(field_cls, value):
+    # Overload the Integer type
+    # XXX warning: this doesn't work with the big integers!
+    if issubclass(field_cls, Integer):
+        return sortable_serialise(value)
+    # A common field or a new field
+    return field_cls.encode(value)
+
+
+
+def _encode(field_cls, value):
+    """Used to encode values in stored fields.
+    """
+
+    is_multiple = (
+        field_cls.multiple
+        and isinstance(value, (tuple, list, set, frozenset)))
+
+    if is_multiple:
+        value = [ _encode_simple_value(field_cls, a_value)
+                  for a_value in value ]
+        return dumps(value)
+    else:
+        return _encode_simple_value(field_cls, value)
+
+
+
+def _get_field_cls(name, fields, info):
+    return fields[name] if (name in fields) else fields[info['from']]
+
+
+
+def _reduce_size(data):
+    # If the data are too long, we replace it by its sha1
+    if len(data) > 240:
+        if isinstance(data, unicode):
+            data = data.encode('utf-8')
+        return sha1(data).hexdigest()
+    # All OK, we simply return the data
+    return data
+
+
+
+def _index_cjk(xdoc, value, prefix, termpos):
+    """
+    Returns the next word and its position in the data. The analysis
+    is done with the automaton:
+
+    0 -> 1 [letter or number or cjk]
+    0 -> 0 [stop word]
+    1 -> 0 [stop word]
+    1 -> 2 [letter or number or cjk]
+    2 -> 2 [letter or number or cjk]
+    2 -> 0 [stop word]
+    """
+    state = 0
+    previous_cjk = u''
+
+    for c in value:
+        if is_punctuation(c):
+            # Stop word
+            if previous_cjk and state == 1: # CJK not yielded yet
+                xdoc.add_posting(prefix + previous_cjk, termpos)
+                termpos += 1
+            # reset state
+            previous_cjk = u''
+            state = 0
+        else:
+            c = c.lower()
+            if previous_cjk:
+                xdoc.add_posting(prefix + (u'%s%s' % (previous_cjk, c)),
+                                 termpos)
+                termpos += 1
+                state = 2
+            else:
+                state = 1
+            previous_cjk = c
+
+    # Last word
+    if previous_cjk and state == 1:
+        xdoc.add_posting(prefix + previous_cjk, termpos)
+
+    return termpos + 1
+
+
+
+def _index_unicode(xdoc, value, prefix, language, termpos):
+    # Japanese or Chinese
+    if language in ['ja', 'zh']:
+        return _index_cjk(xdoc, value, prefix, termpos)
+
+    # Any other language
+    tg = TermGenerator()
+    tg.set_document(xdoc)
+    tg.set_termpos(termpos - 1)
+    # XXX The words are saved twice: with prefix and with Zprefix
+    #tg.set_stemmer(stemmer)
+    tg.index_text(value, 1, prefix)
+    return tg.get_termpos() + 1
+
+
+
+def _index(xdoc, field_cls, value, prefix, language):
+    """To index a field it must be split in a sequence of words and
+    positions:
+
+      [(word, 1), (word, 2), (word, 3), ...]
+
+    Where <word> will be a <str> value.
+    """
+    is_multiple = (
+        field_cls.multiple
+        and isinstance(value, (tuple, list, set, frozenset)))
+
+    # Unicode: a complex split
+    if issubclass(field_cls, Unicode):
+        if is_multiple:
+            termpos = 1
+            for x in value:
+                termpos = _index_unicode(xdoc, x, prefix, language, termpos)
+        else:
+            _index_unicode(xdoc, value, prefix, language, 1)
+    # An other type: too easy
+    else:
+        if is_multiple:
+            for position, x in enumerate(value):
+                data = _reduce_size(_encode(field_cls, x))
+                xdoc.add_posting(prefix + data, position + 1)
+        else:
+            data = _reduce_size(_encode(field_cls, value))
+            xdoc.add_posting(prefix + data, 1)
+
+
+
+def _make_PhraseQuery(field_cls, value, prefix):
+    # Get the words
+    # XXX It's too complex (slow), we must use xapian
+    #     Problem => _index_cjk
+    xdoc = Document()
+    # XXX Language = 'en' by default
+    _index(xdoc, field_cls, value, prefix, 'en')
+    words = []
+    for term_list_item in xdoc:
+        term = term_list_item.term
+        for termpos in term_list_item.positer:
+            words.append((termpos, term))
+    words.sort()
+    words = [ word[1] for word in words ]
+
+    # Make the query
+    return Query(OP_PHRASE, words)
+
+
+
+def _get_xquery(catalog, query=None, **kw):
+    # Case 1: a query is given
+    if query is not None:
+        return catalog._query2xquery(query)
+
+    # Case 2: nothing has been specified, return everything
+    if not kw:
+        return Query('')
+
+    # Case 3: build the query from the keyword parameters
+    metadata = catalog._metadata
+    fields = catalog._fields
+    xqueries = []
+    for name, value in kw.iteritems():
+        # If name is a field not yet indexed, return nothing
+        if name not in metadata:
+            return Query()
+
+        # Ok
+        info = metadata[name]
+        prefix = info['prefix']
+        field_cls = _get_field_cls(name, fields, info)
+        query = _make_PhraseQuery(field_cls, value, prefix)
+        xqueries.append(query)
+
+    return Query(OP_AND, xqueries)
+

@@ -15,11 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from base import CatalogAware
-from catalog import Catalog, make_catalog
+from catalog import Catalog, make_catalog, split_unicode, CatalogAware
 from queries import AllQuery, NotQuery, StartQuery, TextQuery
 from queries import RangeQuery, PhraseQuery, AndQuery, OrQuery
-from utils import split_unicode
 
 
 __all__ = [

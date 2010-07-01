@@ -180,8 +180,12 @@ class XHTMLFile(XMLFile):
     def set_body(self, events):
         body = self.get_body()
         events = self.events[:body.start+1] + events + self.events[body.end:]
+        if stream_to_str(events) == stream_to_str(self.events):
+            return False
+
         self.set_changed()
         self.events = events
+        return True
 
 
     def is_empty(self):

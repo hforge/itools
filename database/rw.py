@@ -27,7 +27,7 @@ from itools.core import get_pipe, lazy, send_subprocess
 from itools.datatypes import ISODateTime
 from itools.fs import lfs
 from itools.handlers import Folder
-from itools.xapian import Catalog, make_catalog
+from _xapian import Catalog, make_catalog
 from registry import get_register_fields
 from ro import ROGitDatabase
 

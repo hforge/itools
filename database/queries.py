@@ -20,7 +20,7 @@
 """
 To build a query:
 
-  from itools.xapian import PhraseQuery, AndQuery
+  from itools.database import PhraseQuery, AndQuery
   s1 = PhraseQuery('format', 'Actu')
   s2 = PhraseQuery('archive', True)
   s3 = PhraseQuery('workflow_state', 'public')

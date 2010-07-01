@@ -19,14 +19,30 @@
 from registry import get_register_fields, register_field
 from ro import ROGitDatabase
 from rw import GitDatabase, make_git_database, check_database
+from _xapian import Catalog, make_catalog, split_unicode, CatalogAware
+from queries import AllQuery, NotQuery, StartQuery, TextQuery
+from queries import RangeQuery, PhraseQuery, AndQuery, OrQuery
 
 
 __all__ = [
+    # Database
     'ROGitDatabase',
     'GitDatabase',
     'make_git_database',
     'check_database',
     'get_register_fields',
     'register_field',
-    ]
-
+    # Xapian
+    'make_catalog',
+    'Catalog',
+    'CatalogAware',
+    'split_unicode',
+    # Queries
+    'RangeQuery',
+    'PhraseQuery',
+    'AndQuery',
+    'OrQuery',
+    'AllQuery',
+    'NotQuery',
+    'StartQuery',
+    'TextQuery']

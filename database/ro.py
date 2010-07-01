@@ -28,7 +28,7 @@ from itools.core import LRUCache, freeze, lazy, send_subprocess
 from itools.fs import lfs
 from itools.handlers import RODatabase
 from itools.uri import Path
-from itools.xapian import Catalog
+from _xapian import Catalog
 from registry import get_register_fields
 
 

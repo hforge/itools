@@ -16,12 +16,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
+from catalog import Catalog, make_catalog, split_unicode, CatalogAware
+from queries import AllQuery, NotQuery, StartQuery, TextQuery
+from queries import RangeQuery, PhraseQuery, AndQuery, OrQuery
 from registry import get_register_fields, register_field
 from ro import ROGitDatabase
 from rw import GitDatabase, make_git_database, check_database
-from _xapian import Catalog, make_catalog, split_unicode, CatalogAware
-from queries import AllQuery, NotQuery, StartQuery, TextQuery
-from queries import RangeQuery, PhraseQuery, AndQuery, OrQuery
 
 
 __all__ = [

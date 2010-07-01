@@ -27,7 +27,7 @@ from itools.database import AndQuery, RangeQuery, PhraseQuery, NotQuery
 from itools.database import TextQuery
 from itools.database import make_catalog, Catalog, CatalogAware, StartQuery
 from itools.database import make_git_database
-from itools.database._xapian import _index, _decode
+from itools.database.catalog import _index, _decode
 from itools.datatypes import String, Unicode, Boolean, Integer
 from itools.fs import lfs
 from itools.handlers import TextFile

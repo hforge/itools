@@ -25,7 +25,7 @@ from xapian import Document, Query, QueryParser, Enquire, MultiValueSorter
 from xapian import sortable_serialise, sortable_unserialise, TermGenerator
 
 # Import from itools
-from itools.datatypes import Integer, Unicode
+from itools.datatypes import Integer, Unicode, String
 from itools.fs import lfs
 from itools.i18n import is_punctuation
 from queries import AllQuery, AndQuery, NotQuery, OrQuery, PhraseQuery
@@ -300,6 +300,8 @@ class Catalog(object):
             else:
                 info = metadata[name]
 
+            # XXX This comment is no longer valid, now the key field is
+            #     always abspath with field_cls = String
             # Store the key field with the prefix 'Q'
             # Comment: the key field is indexed twice, but we must do it
             #          one => to index (as the others)
@@ -396,9 +398,11 @@ class Catalog(object):
 
         # The key field ?
         if name == 'abspath':
-            if not (field_cls.stored and field_cls.indexed):
-                raise ValueError, ('the abspath field must be stored and '
-                                   'indexed')
+            if not (issubclass(field_cls, String) and
+                    field_cls.stored and
+                    field_cls.indexed):
+                raise ValueError, ('the abspath field must be declared as '
+                                   'String(stored=True, indexed=True)')
         # Stored ?
         if getattr(field_cls, 'stored', False):
             info['value'] = self._value_nb

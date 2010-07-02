@@ -398,8 +398,7 @@ class Catalog(object):
 
         # The key field ?
         if name == 'abspath':
-            if not (issubclass(field_cls, String) and
-                    field_cls.stored and
+            if not (type(field_cls) is String and field_cls.stored and
                     field_cls.indexed):
                 raise ValueError, ('the abspath field must be declared as '
                                    'String(stored=True, indexed=True)')

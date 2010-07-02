@@ -70,18 +70,14 @@ def dump_summary(db, metadata):
            'database. ') % db.get_doccount()
 
     total = stored = indexed = 0
-    key_field = None
     for name, info in metadata.iteritems():
         total += 1
-        if 'key_field' in info:
-            key_field = name
         if 'value' in info:
             stored += 1
         if 'prefix' in info:
             indexed += 1
     print ' * %d field(s) (%d stored, %d indexed).' % (total, stored, indexed)
-    if key_field is not None:
-        print ' * key field: "%s"' % key_field
+    print ' * key field: "abspath"'
 
 
 def dump_fields(db, metadata, docs, only_field, show_values, show_terms):
@@ -97,7 +93,7 @@ def dump_fields(db, metadata, docs, only_field, show_values, show_terms):
         print '-'*len(name)
 
         # Info
-        if 'key_field' in info:
+        if name == 'abspath':
             print ' * key field'
         if 'value' in info:
             print ' * stored'

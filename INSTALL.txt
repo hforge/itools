@@ -3,8 +3,8 @@ Table of contents:
 
   1. Software requirements
   2. Install manually
-  3. Install on Gentoo
-  4. Install on Debian
+  3. Install on Debian
+  4. Install on Gentoo
   5. Install on Windows
   6. Run the unit tests
   7. Checkout from the Git repository
@@ -58,35 +58,39 @@ And finally install itools with distutils:
   $ python setup.py install
 
 
-3. Install on Gentoo
-========================
-
-If you use Gentoo you are lucky.  Since itools is available in the hforge
-overlay, start by installing this overlay:
-
-  # emerge layman
-
-TODO
-
-Then unmask the itools package:
-
-  # echo "dev-python/itools ~amd64" >> /etc/portage/package.keywords
-
-And finally emerge itools:
-
-  # emerge itools
-
-
-4. Install on Debian
+3. Install on Debian
 ========================
 
 All the software required by itools is available in squeeze (Debian Testing)
 but not yet in lenny (Debian Stable).  So first you will need to upgrade to
 squeeze, then install the required packages:
 
-  # apt-get install XXX
+  # apt-get install libsoup24 python-gobject python-xapian ...
 
 And finally install the itools package by hand (see Section 2).
+
+
+4. Install on Gentoo
+========================
+
+If you use Gentoo you are lucky.  Since itools is available in the hforge
+overlay, start by installing this overlay, to do so:
+
+1. Edit the /etc/layman/layman.cfg file and add the hforge overlay list, so
+   the 'overlays' variable looks this way:
+
+  overlays  : http://www.gentoo.org/proj/en/overlays/repositories.xml
+              http://overlay.hforge.org/list.xml
+
+2. Add the hforge overlay:
+
+  # layman -a hforge-overlay
+
+Then unmask the itools package and emerge:
+
+  # echo "dev-python/itools ~amd64" >> /etc/portage/package.keywords
+  # layman -S
+  # emerge itools
 
 
 5. Install on Windows

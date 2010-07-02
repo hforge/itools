@@ -378,7 +378,8 @@ class CatalogTestCase(TestCase):
         # Simple Search, hit
         results = catalog.search(data=u'lion')
         self.assertEqual(len(results), 4)
-        documents = [ x.name for x in results.get_documents(sort_by='name') ]
+        documents = [ x.abspath
+                      for x in results.get_documents(sort_by='abspath') ]
         self.assertEqual(documents, ['03.txt', '08.txt', '10.txt', '23.txt'])
         # Simple Search, miss
         self.assertEqual(len(catalog.search(data=u'tiger')), 0)
@@ -401,7 +402,7 @@ class CatalogTestCase(TestCase):
         results = catalog.search(data=u'this is a double death')
         self.assertEqual(len(results), 1)
         # Range Query
-        query = RangeQuery('name', '03.txt', '06.txt')
+        query = RangeQuery('abspath', '03.txt', '06.txt')
         results = catalog.search(query)
         self.assertEqual(len(results), 4)
         # Not Query (1/2)
@@ -461,31 +462,31 @@ class UnicodeTestCase(TestCase):
     def test_unicode(self):
         cat = Catalog('tests/catalog', Document_2.fields)
         # Some data
-        cat.index_document(Document_2(1, u'foo à €'))
-        cat.index_document(Document_2(2, u'aabà'))
-        cat.index_document(Document_2(3, u'aabàà'))
-        cat.index_document(Document_2(4, u'aac'))
+        cat.index_document(Document_2('1', u'foo à €'))
+        cat.index_document(Document_2('2', u'aabà'))
+        cat.index_document(Document_2('3', u'aabàà'))
+        cat.index_document(Document_2('4', u'aac'))
 
         # A simple search
-        self.assertEqual(len(cat.search(data=u'à')),1)
+        self.assertEqual(len(cat.search(data=u'à')), 1)
 
         # Start
         q = StartQuery('data', u'aabà')
-        r = [ doc.id for doc in cat.search(q).get_documents() ]
-        self.assertEqual(r, [2, 3])
+        r = [ doc.abspath for doc in cat.search(q).get_documents() ]
+        self.assertEqual(r, ['2', '3'])
 
 
     def test_multilingual(self):
         cat = Catalog('tests/catalog', Document_2.fields)
 
         # Some data
-        cat.index_document(Document_2(1, {'en': u'Hello world',
-                                          'fr': u'Bonjour le monde',
-                                          'de': u'Hallo Welt',
-                                          'es': u'Hola mundo'}))
-        cat.index_document(Document_2(2, {'fr': u'Albert et le monde',
-                                          'en': u'Albert and the world'}))
-        cat.index_document(Document_2(3, u'world'))
+        cat.index_document(Document_2('1', {'en': u'Hello world',
+                                            'fr': u'Bonjour le monde',
+                                            'de': u'Hallo Welt',
+                                            'es': u'Hola mundo'}))
+        cat.index_document(Document_2('2', {'fr': u'Albert et le monde',
+                                            'en': u'Albert and the world'}))
+        cat.index_document(Document_2('3', u'world'))
 
         # A simple search
         self.assertEqual(len(cat.search(data=u'world')), 3)
@@ -516,11 +517,11 @@ class MultipleTestCase(TestCase):
         cat = Catalog('tests/catalog', Document_3.fields)
 
         # Some data
-        cat.index_document(Document_3(1, [1, 2, 3]))
-        cat.index_document(Document_3(2, []))
-        cat.index_document(Document_3(3, 42))
+        cat.index_document(Document_3('1', [1, 2, 3]))
+        cat.index_document(Document_3('2', []))
+        cat.index_document(Document_3('3', 42))
 
-        docs = cat.search().get_documents(sort_by='id')
+        docs = cat.search().get_documents(sort_by='abspath')
 
         # Test the values
         self.assertEqual(len(docs), 3)
@@ -533,7 +534,7 @@ class MultipleTestCase(TestCase):
 
 class Document(CatalogAware):
 
-    fields = {'name': String(key_field=True, stored=True, indexed=True),
+    fields = {'abspath': String(stored=True, indexed=True),
               'title': Unicode(stored=True, indexed=True),
               'data': Unicode(indexed=True),
               'size': Integer(indexed=True),
@@ -549,7 +550,7 @@ class Document(CatalogAware):
         data = lfs.open(self.abspath).read()
 
         return {
-            'name': basename(self.abspath),
+            'abspath': basename(self.abspath),
             'title': data.splitlines()[0],
             'data': data,
             'size': len(data),
@@ -561,33 +562,33 @@ class Document(CatalogAware):
 
 class Document_2(CatalogAware):
 
-    fields = {'id': Integer(key_field=True, stored=True, indexed=True),
+    fields = {'abspath': String(stored=True, indexed=True),
               'data': Unicode(stored=True, indexed=True)}
 
 
-    def __init__(self, id, data):
-        self.id = id
+    def __init__(self, abspath, data):
+        self.abspath = abspath
         self.data = data
 
 
     def get_catalog_values(self):
-        return {'id': self.id, 'data': self.data}
+        return {'abspath': self.abspath, 'data': self.data}
 
 
 
 class Document_3(CatalogAware):
 
-    fields = {'id': Integer(key_field=True, stored=True, indexed=True),
+    fields = {'abspath': String(stored=True, indexed=True),
               'data': Integer(stored=True, multiple=True)}
 
 
-    def __init__(self, id, data):
-        self.id = id
+    def __init__(self, abspath, data):
+        self.abspath = abspath
         self.data = data
 
 
     def get_catalog_values(self):
-        return {'id': self.id, 'data': self.data}
+        return {'abspath': self.abspath, 'data': self.data}
 
 
 

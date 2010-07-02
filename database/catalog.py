@@ -239,7 +239,6 @@ class Catalog(object):
 
         # Load the xfields from the database
         self._metadata = {}
-        self._key_field = None
         self._value_nb = 0
         self._prefix_nb = 0
         self._load_all_internal()
@@ -306,7 +305,7 @@ class Catalog(object):
             #          one => to index (as the others)
             #          two => to index without split
             #          the problem is that "_encode != _index"
-            if getattr(field_cls, 'key_field', False):
+            if name == 'abspath':
                 key_value = _reduce_size(_encode(field_cls, value))
                 xdoc.add_term('Q' + key_value)
 
@@ -357,14 +356,12 @@ class Catalog(object):
             db.set_metadata('metadata', dumps(metadata))
 
 
-    def unindex_document(self, value):
-        """Remove the document that has value stored in its key_field.
+    def unindex_document(self, abspath):
+        """Remove the document that has value stored in its abspath.
            If the document does not exist => no error
         """
-        key_field = self._key_field
-        if key_field is not None:
-            data = _reduce_size(_encode(self._fields[key_field], value))
-            self._db.delete_document('Q' + data)
+        data = _reduce_size(_encode(self._fields['abspath'], abspath))
+        self._db.delete_document('Q' + data)
 
 
     #######################################################################
@@ -398,14 +395,10 @@ class Catalog(object):
         info = {}
 
         # The key field ?
-        if getattr(field_cls, 'key_field', False):
-            if self._key_field is not None:
-                raise ValueError, ('You must have only one key field, '
-                                   'not multiple, not multilingual')
+        if name == 'abspath':
             if not (field_cls.stored and field_cls.indexed):
-                raise ValueError, 'the key field must be stored and indexed'
-            self._key_field = name
-            info['key_field'] = True
+                raise ValueError, ('the abspath field must be stored and '
+                                   'indexed')
         # Stored ?
         if getattr(field_cls, 'stored', False):
             info['value'] = self._value_nb
@@ -421,7 +414,6 @@ class Catalog(object):
     def _load_all_internal(self):
         """Load the metadata from the database
         """
-        self._key_field = None
         self._value_nb = 0
         self._prefix_nb = 0
 
@@ -431,8 +423,6 @@ class Catalog(object):
         else:
             self._metadata = loads(metadata)
             for name, info in self._metadata.iteritems():
-                if 'key_field' in info:
-                    self._key_field = name
                 if 'value' in info:
                     self._value_nb += 1
                 if 'prefix' in info:
@@ -584,11 +574,12 @@ def make_catalog(uri, fields):
     """Creates a new and empty catalog in the given uri.
 
     fields must be a dict. It contains some informations about the
-    fields in the database.
+    fields in the database. It must contain at least the abspath key field.
 
     For example:
 
-      fields = {'id': Integer(key_field=True, stored=True, indexed=True), ...}
+      fields = {'abspath': String(stored=True, indexed=True),
+                'name': Unicode(indexed=True), ...}
     """
     path = lfs.get_absolute_path(uri)
     db = WritableDatabase(path, DB_CREATE)

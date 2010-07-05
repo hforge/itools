@@ -29,6 +29,10 @@ See the table below for the imports to update.
   itools.ical.icalendarTable          ** MOVED TO IKAARO **
   itools.soup.SoupMessage             itools.http.SoupMessage
   itools.soup.SoupServer              ** NOT EXPORTED **
+  itools.xapian                       itools.database (*)
+
+The package itools.xapian has been merged into the new itools.database
+package.
 
 
 itools.csv
@@ -90,12 +94,19 @@ The ical file handler does not support indexing (with xapian) anymore.
 itools.xapian
 =============
 
-(1) The 'is_' prefix has ben drop from the fields definition:
+The itools.xapian package does not exist anymore, it has been merged into
+the new itools.database package.
+
+Besides...
+
+(1) The 'is_key_field' parameter has been removed, now the key field is
+hardcoded to be 'abspath'.
+
+(2) The 'is_' prefix has ben drop from the fields definition:
 
   Before        Now
   ------------  ------------
-  is_key_field  key_field
   is_indexed    indexed
   is_stored     stored
 
-(2) Do not support catalogs in memory.
+(3) Do not support catalogs in memory.

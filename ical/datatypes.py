@@ -20,7 +20,8 @@ from datetime import datetime
 
 # Import from itools
 from itools.core import freeze
-from itools.datatypes import DataType, Integer, ISOTime , URI, Unicode, String
+from itools.datatypes import DataType, Integer, ISOTime, String
+from itools.datatypes import URI, Unicode, UTC
 
 
 class Time(ISOTime):
@@ -39,8 +40,9 @@ class Time(ISOTime):
 
 class DateTime(DataType):
     """iCalendar Date format:
+    A special case of itools.datatypes.DateTime, focused on RFC5545 needs
 
-    DTSTART:19970714T133000.000000 (local time)
+    DTSTART:19970714T133000 (local time)
 
     DTSTART:19970714T173000Z (UTC time)
 
@@ -52,80 +54,36 @@ class DateTime(DataType):
         if value is None:
             return None
 
-        year, month, day, hour, min, sec, micro = 0, 0, 0, 0, 0, 0, 0
         date = value[:8]
         year, month, day = int(date[:4]), int(date[4:6]), int(date[6:8])
+        hour, min, sec = 0, 0, 0
 
+        # Default is a naive datetime
+        tzinfo = None
         # Time can be omitted
         if 'T' in value:
             time = value[9:]
 
-            # ignore final Z for now
             if time[-1] == 'Z':
+                tzinfo = UTC()
                 time = time[:-1]
-            else:
-                pass
-                # a parameter can have be added with utc info
-                # ...
 
-            hour, min = int(time[:2]), int(time[2:4])
-            if '.' in time:
-                sec, micro = time.split('.')
-                sec = int(sec[-2:])
-                micro = int(micro)
-            elif len(time) >= 6:
-                sec = int(time[4:6])
+            hour, min, sec = int(time[:2]), int(time[2:4]), int(time[4:6])
 
-        return datetime(year, month, day, hour, min, sec, micro)
+        return datetime(year, month, day, hour, min, sec, tzinfo=tzinfo)
 
 
     @staticmethod
-    def encode(value):
-    # PROBLEM --> 2 formats, with or without final 'Z'
+    def encode(value, type=None):
         if value is None:
             return ''
-
-        dt = value.isoformat('T')
-        dt = dt.replace(':','')
-        dt = dt.replace('-','')
-
-        return dt
-
-
-    @staticmethod
-    def from_str(value):
-        if not value:
-            return None
-        date, time = value, None
-        if ' ' in value:
-            date, time = value.split()
-        # Date
-        year, month, day = date.split('-')
-        year, month, day = int(year), int(month), int(day)
-        # If no time
-        if not time:
-            return datetime(year, month, day)
-        # Time
-        if time.count(':') == 1:
-            hours, minutes = time.split(':')
-            hours, minutes, seconds, micro = int(hours), int(minutes), 0, 0
+        if type == 'DATE':
+            fmt = '%Y%m%d'
         else:
-            hours, minutes, seconds = time.split(':')
-            if '.' in seconds:
-                seconds, micro = seconds.split('.')
-                micro = int(micro)
-            hours, minutes, seconds = int(hours), int(minutes), int(seconds)
-        return datetime(year, month, day, hours, minutes, seconds, micro)
-
-
-    @staticmethod
-    def to_str(value):
-        if value is None:
-            return ''
-        micro = value.microsecond
-        if micro:
-            return value.strftime('%Y-%m-%d %H:%M:%S.%d' % micro)
-        return value.strftime('%Y-%m-%d %H:%M:%S')
+            fmt = '%Y%m%dT%H%M%S'
+            if value.tzinfo is not None:
+                fmt += '%Z'
+        return value.strftime(fmt)
 
 
 

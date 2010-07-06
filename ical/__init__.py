@@ -23,7 +23,7 @@ resources in standard type iCalendar specified in the RFC 2445
 
 # Import from itools
 from icalendar import iCalendar
-from types import DateTime, Time
+from datatypes import DateTime, Time
 
 __all__ = [
     # DataTypes

@@ -30,7 +30,7 @@ from itools.handlers import guess_encoding, TextFile
 from types import record_properties, record_parameters, Time
 
 
-class Component(object):
+class BaseComponent(object):
     """Parses and evaluates a component block.
 
         input :   string values for c_type and uid
@@ -54,9 +54,39 @@ class Component(object):
         """
         self.c_type = c_type
         self.uid = uid
-        self.versions = {}
-        self.c_inner_components = []
 
+
+
+
+    # Get a property of current component
+    def get_property(self, name=None):
+        """Return the value of given name property as a Property or as a
+        list of Property objects if it can occur more than once.
+
+        Return icalendar property values as a dict {name: value, ...} where
+        value is a Property or a list of Property objects if it can
+        occur more than once.
+
+        Note that it return values for the last version of this component.
+        """
+        version = self.get_version()
+        if name:
+            return version.get(name, None)
+        return version
+
+    get_property_values = get_property
+
+
+    def get_end(self):
+        return self.get_property('DTEND').value
+
+
+
+class Component(BaseComponent):
+
+    def __init__(self, c_type, uid):
+        BaseComponent.__init__(self, c_type, uid)
+        self.versions = {}
 
     #######################################################################
     # API / Private
@@ -85,7 +115,6 @@ class Component(object):
 
         self.versions[sequence] = properties
 
-
     #######################################################################
     # API / Public
     #######################################################################
@@ -97,29 +126,7 @@ class Component(object):
         return self.versions[sequence]
 
 
-    # Get a property of current component
-    def get_property(self, name=None):
-        """Return the value of given name property as a Property or as a
-        list of Property objects if it can occur more than once.
-
-        Return icalendar property values as a dict {name: value, ...} where
-        value is a Property or a list of Property objects if it can
-        occur more than once.
-
-        Note that it return values for the last version of this component.
-        """
-        version = self.get_version()
-        if name:
-            return version.get(name, None)
-        return version
-
-    get_property_values = get_property
-
-
-    def get_end(self):
-        return self.get_property('DTEND').value
-
-
+    # TODO Move this: with Components that are not VEVENT, it will fail
     def get_ns_event(self, day, resource_name=None, conflicts_list=freeze([]),
                      timetable=None, grid=False, starts_on=True, ends_on=True,
                      out_on=True):
@@ -211,8 +218,7 @@ class Component(object):
 
 
 
-
-class InnerComponent(Component):
+class SubComponent(Component):
 
     def __init__(self, c_inner_type):
         """Initialize the component.
@@ -222,6 +228,30 @@ class InnerComponent(Component):
         self.c_inner_type = c_inner_type
         self.versions = {}
 
+
+
+class TimeZone(BaseComponent):
+
+
+    def __init__(self, tzid):
+        BaseComponent.__init__(self, 'VTIMEZONE', tzid)
+        self.content= None
+        self.c_inner_components = []
+
+
+    def add_version(self, c_properties):
+        self.content = c_properties
+
+    def get_version(self, sequence=None):
+        return self.content
+
+
+    def get_end(self):
+        if self.content.has_key('DTEND'):
+            return self.content['DTEND'].value
+        # TODO Compute end (if any) from inner_components
+        else:
+            return None
 
 
 class iCalendar(TextFile):
@@ -379,16 +409,19 @@ class iCalendar(TextFile):
                         component = self.components[uid]
                         component.add_version(c_properties)
                     else:
-                        component = Component(c_type, uid)
+                        if c_type == 'VTIMEZONE':
+                            component = TimeZone(uid)
+                            component.c_inner_components = c_inner_components
+                        else:
+                            component = Component(c_type, uid)
                         component.add_version(c_properties)
-                        component.c_inner_components = c_inner_components
                         self.components[uid] = component
                     # Next
                     c_type = None
                     uid = None
                 # Inner component
                 elif value == c_inner_type:
-                    inner_component = InnerComponent(c_inner_type)
+                    inner_component = SubComponent(c_inner_type)
                     inner_component.add_version(c_inner_properties)
                     c_inner_components.append(inner_component)
                     c_inner_type = None

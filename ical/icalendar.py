@@ -491,21 +491,22 @@ class iCalendar(TextFile):
                     line = self.encode_property(key, value, encoding)
                     lines.extend(line)
                 # Insert inner components
-                for c_inner_component in component.c_inner_components:
-                    c_inner_type = c_inner_component.c_inner_type
-                    # sequence not supported into inner components
-                    version = c_inner_component.versions[0]
-                    # Begin
-                    line = u'BEGIN:%s\n' % c_inner_type
-                    lines.append(Unicode.encode(line))
-                    # Properties
-                    for key in version:
-                        value = version[key]
-                        line = self.encode_property(key, value, encoding)
-                        lines.extend(line)
-                    # End
-                    line = u'END:%s\n' % c_inner_type
-                    lines.append(Unicode.encode(line))
+                if isinstance(component, TimeZone):
+                    for c_inner_component in component.c_inner_components:
+                        c_inner_type = c_inner_component.c_inner_type
+                        # sequence not supported into inner components
+                        version = c_inner_component.versions[0]
+                        # Begin
+                        line = u'BEGIN:%s\n' % c_inner_type
+                        lines.append(Unicode.encode(line))
+                        # Properties
+                        for key in version:
+                            value = version[key]
+                            line = self.encode_property(key, value, encoding)
+                            lines.extend(line)
+                        # End
+                        line = u'END:%s\n' % c_inner_type
+                        lines.append(Unicode.encode(line))
                 # End
                 line = u'END:%s\n' % c_type
                 lines.append(Unicode.encode(line))

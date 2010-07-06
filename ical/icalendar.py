@@ -19,7 +19,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from Python Standard Library
-from datetime import datetime
+from datetime import date, datetime, timedelta, tzinfo
 
 # Import from itools
 from itools.core import freeze
@@ -232,7 +232,6 @@ class SubComponent(Component):
 
 class TimeZone(BaseComponent):
 
-
     def __init__(self, tzid):
         BaseComponent.__init__(self, 'VTIMEZONE', tzid)
         self.content= None
@@ -241,6 +240,7 @@ class TimeZone(BaseComponent):
 
     def add_version(self, c_properties):
         self.content = c_properties
+
 
     def get_version(self, sequence=None):
         return self.content
@@ -252,6 +252,17 @@ class TimeZone(BaseComponent):
         # TODO Compute end (if any) from inner_components
         else:
             return None
+
+    #######################################################################
+    # API / Public
+    #######################################################################
+    def get_tzinfo(self):
+        """Compute a datetime.tzinfo equivalent to self"""
+        props = []
+        for inner in self.c_inner_components:
+            props.append(TZProp(inner.c_inner_type, inner.get_property()))
+        return TZInfo(self.uid, props)
+
 
 
 class iCalendar(TextFile):
@@ -659,3 +670,165 @@ class iCalendar(TextFile):
         return [ component for uid, component in self.components.iteritems()
                  if component.c_type == type ]
 
+
+
+class TZProp(object):
+    """This class basically represent the concept of Timezone Property (standard
+    or daylight), as described by RFC5545."""
+
+    def __init__(self, type, properties):
+        self.type = type
+        self.properties = properties
+        # Compute offset
+        offset_to = self.properties['TZOFFSETTO'].value
+        minutes = int(offset_to[3:5])
+        hours = int(offset_to[1:3])
+        sign = -1 if offset_to[0] is '-' else 1
+        self.offset = timedelta(hours=sign * hours, minutes=sign * minutes)
+        # Compute recurrency
+        self.rec_dic = {}
+        rrules = self.properties['RRULE']
+        # FIXME RRULE can be multiple !
+        rrule = rrules[0]
+        for prop in rrule.value.split(';'):
+            name, value = prop.split('=')
+            self.rec_dic[name] = value
+
+
+    def get_offset(self):
+        return self.offset
+
+
+    def get_date(self, dt):
+        iso_weekdays = {'MO': 1, 'TU': 2, 'WE': 3, 'TH': 4,
+            'FR': 5, 'SA': 6, 'SU': 7}
+        # Default values
+        year = dt.year
+        day = 1
+        month = 1
+        delta = 0
+        # Compute period for this year
+        freq = self.rec_dic['FREQ']
+        if freq == 'YEARLY':
+            if self.rec_dic.has_key('BYMONTH'):
+                month = int(self.rec_dic['BYMONTH'])
+            if self.rec_dic.has_key('BYDAY'):
+                byday = self.rec_dic['BYDAY']
+                if byday[0] == '-':
+                    sign = -1
+                    month += 1
+                else:
+                    sign = 1
+                if byday[0] in ('+', '-'):
+                    byday = byday[1:]
+                num = int(byday[:-2])
+                byday = int(iso_weekdays[byday[-2:]])
+                day = date(year, month, day)
+                weekday = day.isoweekday()
+                weeks_delta = (num - 1) * 7
+                time = self.properties['DTSTART'].value.time()
+                if sign == -1:
+                    delta = (7 + weekday - byday) % 7 + weeks_delta
+                    return datetime.combine(day, time) - timedelta(delta)
+                else:
+                    delta = (7 + byday - weekday) % 7 + weeks_delta
+                    return datetime.combine(day, time) + timedelta(delta)
+        else:
+            raise NotImplementedError('We only implement FREQ in  (YEARLY, )')
+
+
+    def get_begin(self):
+        return self.properties['DTSTART'].value
+
+
+    def get_end(self):
+        """Return the END date or datetime of the TZProp. If TZProp is infinite,
+        return None"""
+        if self.properties.has_key('UNTIL'):
+            return self.properties['UNTIL'].value
+        # XXX If COUNT property exist, the TZProp is not infinite !
+        return None
+
+
+    def get_names(self):
+        for name in self.properties['TZNAME']:
+            yield (name.value, name.parameters)
+
+
+    def __cmp__(self, other):
+        self_b = self.get_begin()
+        other_b = other.get_begin()
+        if self_b > other_b:
+            return 1
+        if self_b < other_b:
+            return -1
+        return 0
+
+
+
+class TZInfo(tzinfo):
+    """This class represent a Timezone with TZProps builded from an ICS file"""
+
+
+    def __init__(self, tzid, tz_props):
+        self.tzid = tzid
+        if len(tz_props) < 1:
+            raise ValueError('A VTIMEZONE MUST contain at least one TZPROP')
+        self.tz_props = tz_props
+        self.tz_props.sort()
+
+
+
+    def get_tz_prop(self, dt):
+        props = self.tz_props
+        naive = dt.replace(tzinfo=None)
+        candidates = []
+        # Keep only tzprop corresponding to dt
+        for prop in props:
+            begin = prop.get_begin()
+            end = prop.get_end()
+            if begin <= naive and ( end is None or end > naive):
+                candidates.append(prop)
+        assert len(candidates) == 2
+        # Compute dston and dstend for dt.year
+        c_dl = 0
+        c_std = 0
+        for tzprop in candidates:
+            if tzprop.type == 'STANDARD':
+                c_std += 1
+                std, dstoff = tzprop, tzprop.get_date(dt)
+            elif tzprop.type == 'DAYLIGHT':
+                c_dl += 1
+                dl, dston = tzprop, tzprop.get_date(dt)
+            else:
+                raise ValueError('TZProps are not consistent')
+        assert c_dl == 1 and c_std == 1
+        # return result
+        if dston <= naive < dstoff:
+            return dl
+        else:
+            return std
+
+
+    def tzname(self, dt):
+        tz_prop = self.get_tz_prop(dt)
+        # FIXME TZNAME property is multiple and can have language property
+        value, parameters = tz_prop.get_names().next()
+        return str(value)
+
+
+    def utcoffset(self, dt):
+        tz_prop = self.get_tz_prop(dt)
+        return tz_prop.offset
+
+
+    def dst(self, dt):
+        if dt is None or dt.tzinfo is None:
+            return timedelta(0)
+        assert dt.tzinfo is self
+
+        tz_prop = self.get_tz_prop(dt)
+        # XXX Here we assume that DST offset is ever one hour
+        if tz_prop.type == 'DAYLIGHT':
+            return timedelta(hours=1)
+        return timedelta(0)

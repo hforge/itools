@@ -16,13 +16,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from datetime import datetime
 from unittest import TestCase, main
 
 # Import from itools
 from itools.csv import Property
 from itools.csv.table import encode_param_value
 from itools.datatypes import String
-from itools.ical import iCalendar
+from itools.ical import DateTime, iCalendar
 
 
 # Example with 1 event
@@ -87,16 +88,27 @@ END:VCALENDAR
 def property_to_string(prop_name, prop):
     """Method only used by test_load and test_load2.
     """
+    # Convert DateTimes
+    prop_value = prop.value
+    if type(prop.value) is datetime:
+        params = prop.parameters
+        if params:# and prop.parameters.has_key('VALUE'):
+            t = params['VALUE'][0] if params.has_key('VALUE') else None
+        else:
+            t = None
+        prop_value = DateTime.encode(prop.value, type=t)
+    # Simple case
     if not prop.parameters:
-        return u'%s:%s' % (prop_name, prop.value)
+        return u'%s:%s' % (prop_name, prop_value)
 
+    # Params
     params = ''
     for p_name in prop.parameters:
         p_value = prop.parameters[p_name]
         p_value = [ encode_param_value(p_name, x, String) for x in p_value ]
         param = ';%s=%s' % (p_name, ','.join(p_value))
         params = params + param
-    return u'%s%s:%s' % (prop_name, params, prop.value)
+    return u'%s%s:%s' % (prop_name, params, prop_value)
 
 
 
@@ -239,7 +251,7 @@ class icalTestCase(TestCase):
 
         expected_event_properties = [
             u'STATUS:TENTATIVE',
-            u'DTSTAMP:2005-06-01 07:46:04',
+            u'DTSTAMP:20050601T074604Z',
             u'DESCRIPTION:all all all',
             u'ATTENDEE;MEMBER="mailto:DEV-GROUP@host2.com"'
                      ';RSVP=TRUE:mailto:jdoe@itaapy.com',
@@ -249,8 +261,8 @@ class icalTestCase(TestCase):
             u'PRIORITY:1',
             u'LOCATION:France',
             u'X-MOZILLA-RECUR-DEFAULT-INTERVAL:0',
-            u'DTEND;VALUE=DATE:2005-05-31 00:00:00',
-            u'DTSTART;VALUE=DATE:2005-05-30 00:00:00',
+            u'DTEND;VALUE=DATE:20050531',
+            u'DTSTART;VALUE=DATE:20050530',
             u'CLASS:PRIVATE']
 
         self.assertEqual(event.uid, '581361a0-1dd2-11b2-9a42-bd3958eeac9a')
@@ -314,8 +326,8 @@ class icalTestCase(TestCase):
                              u':mailto:jdoe@itaapy.com',
              u'SUMMARY:222222222',
              u'PRIORITY:2',
-             u'DTEND;VALUE=DATE:2005-07-01 00:00:00',
-             u'DTSTART;VALUE=DATE:2005-07-01 00:00:00'],
+             u'DTEND;VALUE=DATE:20050701',
+             u'DTSTART;VALUE=DATE:20050701'],
             [u'STATUS:TENTATIVE',
              u'DESCRIPTION:all all all',
              u'ATTENDEE;MEMBER="mailto:DEV-GROUP@host2.com"'
@@ -324,8 +336,8 @@ class icalTestCase(TestCase):
              u'PRIORITY:1',
              u'LOCATION:France',
              u'X-MOZILLA-RECUR-DEFAULT-INTERVAL:0',
-             u'DTEND;VALUE=DATE:2005-05-31 23:59:59.999999',
-             u'DTSTART;VALUE=DATE:2005-05-30 00:00:00',
+             u'DTEND;VALUE=DATE:20050531',
+             u'DTSTART;VALUE=DATE:20050530',
              u'CLASS:PRIVATE'],
             ]
 

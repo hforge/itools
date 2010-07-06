@@ -34,9 +34,6 @@ def parse(data, columns=None, schema=None, guess=False, skip_header=False,
     # Find out the dialect
     if data:
         lines = data.splitlines(True)
-        # The first line is a header
-        if skip_header is True:
-            del lines[0]
         # The dialect
         if guess is True:
             dialect = sniffer.sniff('\n'.join(lines[:10]))
@@ -47,6 +44,9 @@ def parse(data, columns=None, schema=None, guess=False, skip_header=False,
             reader = read_csv(lines, dialect, **kw)
         else:
             reader = read_csv(lines, **kw)
+        # The first line is a header
+        if skip_header is True:
+            reader.next()
 
         # Find out the number of columns, if not specified
         if columns is not None:

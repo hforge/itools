@@ -629,16 +629,26 @@ class TZProp(object):
         offset_to = self.properties['TZOFFSETTO'].value
         minutes = int(offset_to[3:5])
         hours = int(offset_to[1:3])
-        sign = -1 if offset_to[0] is '-' else 1
-        self.offset = timedelta(hours=sign * hours, minutes=sign * minutes)
+        sign = -1 if offset_to[0] == '-' else 1
+        self.offset = sign * timedelta(hours=hours, minutes=minutes)
+        # Compute second offset for DST
+        offset_from = self.properties['TZOFFSETFROM'].value
+        minutes = int(offset_from[3:5])
+        hours = int(offset_from[1:3])
+        sign = -1 if offset_from[0] == '-' else 1
+        # DST if positive or null
+        offset_from = sign * timedelta(hours=hours, minutes=minutes)
+        self.dst = max(timedelta(0),
+                       self.offset - offset_from)
         # Compute recurrency
         self.rec_dic = {}
-        rrules = self.properties['RRULE']
-        # FIXME RRULE can be multiple !
-        rrule = rrules[0]
-        for prop in rrule.value.split(';'):
-            name, value = prop.split('=')
-            self.rec_dic[name] = value
+        if self.properties.has_key('RRULE'):
+            rrules = self.properties['RRULE']
+            # FIXME RRULE can be multiple !
+            rrule = rrules[0]
+            for prop in rrule.value.split(';'):
+                name, value = prop.split('=')
+                self.rec_dic[name] = value
 
 
     def get_offset(self):
@@ -654,7 +664,8 @@ class TZProp(object):
         month = 1
         delta = 0
         # Compute period for this year
-        freq = self.rec_dic['FREQ']
+        rec_dic = self.rec_dic
+        freq = rec_dic['FREQ'] if rec_dic.has_key('FREQ') else None
         if freq == 'YEARLY':
             if self.rec_dic.has_key('BYMONTH'):
                 month = int(self.rec_dic['BYMONTH'])
@@ -735,7 +746,12 @@ class VTimezone(tzinfo):
             end = prop.get_end()
             if begin <= naive and ( end is None or end > naive):
                 candidates.append(prop)
-        assert len(candidates) == 2
+        if len(candidates) == 0:
+            return None
+        elif len(candidates) == 1:
+            return candidates[0]
+        # TZProp with same type mustn't overleap: it should remains one of each
+        assert len(candidates) >= 2
         # Compute dston and dstend for dt.year
         c_dl = 0
         c_std = 0
@@ -774,7 +790,4 @@ class VTimezone(tzinfo):
         assert dt.tzinfo is self
 
         tz_prop = self.get_tz_prop(dt)
-        # XXX Here we assume that DST offset is ever one hour
-        if tz_prop.type == 'DAYLIGHT':
-            return timedelta(hours=1)
-        return timedelta(0)
+        return tz_prop.dst

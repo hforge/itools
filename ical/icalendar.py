@@ -611,8 +611,10 @@ class iCalendar(TextFile):
         if no type is given.
         """
         if type is None:
-            return self.components.items()
+            return self.components.items() + self.timezones.items()
 
+        if type == 'VTIMEZONE':
+            return [component for tzid, component in self.timezones.iteritems()]
         return [ component for uid, component in self.components.iteritems()
                  if component.c_type == type ]
 

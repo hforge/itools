@@ -22,12 +22,15 @@
 from datetime import datetime
 from thread import get_ident, allocate_lock
 
+# Import from pytz
+from pytz import timezone, utc
+
 # Import from itools
 from itools.core import freeze, lazy
 from itools.datatypes import String, UTC
 from itools.http import get_type, Entity
 from itools.http import Cookie, SetCookieDataType
-from itools.i18n import AcceptLanguageType
+from itools.i18n import AcceptLanguageType, format_datetime
 from itools.log import Logger
 from itools.uri import decode_query, get_reference, Path
 from exceptions import FormError
@@ -350,6 +353,24 @@ class Context(object):
     #######################################################################
     # API / Utilities
     #######################################################################
+    def format_datetime(self, datetime, tz=None):
+        # 1. Build the tzinfo object
+        if tz is None and self.user:
+            tz = self.user.get_timezone()
+
+        # TODO default to the local host timezone
+        tzinfo = timezone(tz) if tz else utc
+
+        # 2. Change datetime
+        if datetime.tzinfo:
+            datetime = datetime.astimezone(tzinfo)
+        else:
+            datetime = tzinfo.localize(datetime)
+
+        # Ok
+        return format_datetime(datetime, self.accept_language)
+
+
     def agent_is_a_robot(self):
         footprints = [
             'Ask Jeeves/Teoma', 'Bot/', 'crawler', 'Crawler',

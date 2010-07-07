@@ -30,7 +30,7 @@ from itools.handlers import guess_encoding, TextFile
 from datatypes import record_properties, record_parameters, Time
 
 
-class BaseComponent(object):
+class Component(object):
     """Parses and evaluates a component block.
 
         input :   string values for c_type and uid
@@ -54,39 +54,8 @@ class BaseComponent(object):
         """
         self.c_type = c_type
         self.uid = uid
-
-
-
-
-    # Get a property of current component
-    def get_property(self, name=None):
-        """Return the value of given name property as a Property or as a
-        list of Property objects if it can occur more than once.
-
-        Return icalendar property values as a dict {name: value, ...} where
-        value is a Property or a list of Property objects if it can
-        occur more than once.
-
-        Note that it return values for the last version of this component.
-        """
-        version = self.get_version()
-        if name:
-            return version.get(name, None)
-        return version
-
-    get_property_values = get_property
-
-
-    def get_end(self):
-        return self.get_property('DTEND').value
-
-
-
-class Component(BaseComponent):
-
-    def __init__(self, c_type, uid):
-        BaseComponent.__init__(self, c_type, uid)
         self.versions = {}
+
 
     #######################################################################
     # API / Private
@@ -124,6 +93,28 @@ class Component(BaseComponent):
         if sequence is None:
             sequence = self.get_sequences()[-1]
         return self.versions[sequence]
+
+
+    def get_property(self, name=None):
+        """Return the value of given name property as a Property or as a
+        list of Property objects if it can occur more than once.
+
+        Return icalendar property values as a dict {name: value, ...} where
+        value is a Property or a list of Property objects if it can
+        occur more than once.
+
+        Note that it return values for the last version of this component.
+        """
+        version = self.get_version()
+        if name:
+            return version.get(name, None)
+        return version
+
+    get_property_values = get_property
+
+
+    def get_end(self):
+        return self.get_property('DTEND').value
 
 
     # TODO Move this: with Components that are not VEVENT, it will fail
@@ -218,53 +209,6 @@ class Component(BaseComponent):
 
 
 
-class SubComponent(Component):
-
-    def __init__(self, c_inner_type):
-        """Initialize the component.
-
-        c_inner_type -- type of component as a string (i.e. 'DAYLIGHT')
-        """
-        self.c_inner_type = c_inner_type
-        self.versions = {}
-
-
-
-class TimeZone(BaseComponent):
-
-    def __init__(self, tzid):
-        BaseComponent.__init__(self, 'VTIMEZONE', tzid)
-        self.content= None
-        self.c_inner_components = []
-
-
-    def add_version(self, c_properties):
-        self.content = c_properties
-
-
-    def get_version(self, sequence=None):
-        return self.content
-
-
-    def get_end(self):
-        if self.content.has_key('DTEND'):
-            return self.content['DTEND'].value
-        # TODO Compute end (if any) from inner_components
-        else:
-            return None
-
-    #######################################################################
-    # API / Public
-    #######################################################################
-    def get_tzinfo(self):
-        """Compute a datetime.tzinfo equivalent to self"""
-        props = []
-        for inner in self.c_inner_components:
-            props.append(TZProp(inner.c_inner_type, inner.get_property()))
-        return TZInfo(self.uid, props)
-
-
-
 class iCalendar(TextFile):
     """icalendar structure :
 
@@ -318,6 +262,7 @@ class iCalendar(TextFile):
     #########################################################################
     def reset(self):
         self.properties = {}
+        self.timezones = {}
         self.components = {}
 
 
@@ -408,23 +353,21 @@ class iCalendar(TextFile):
                     # Inner component like DAYLIGHT or STANDARD
                     c_inner_type = prop_value.value
                     c_inner_properties = {}
-                continue
-
-            if prop_name == 'END':
+            elif prop_name == 'END':
                 value = prop_value.value
                 if value == c_type:
                     if uid is None:
                         raise ValueError, 'UID is not present'
 
-                    if uid in self.components:
+                    if c_type == 'VTIMEZONE':
+                        timezone = VTimezone(uid, c_inner_components)
+                        timezone.content = c_properties
+                        self.timezones[uid] = timezone
+                    elif uid in self.components:
                         component = self.components[uid]
                         component.add_version(c_properties)
                     else:
-                        if c_type == 'VTIMEZONE':
-                            component = TimeZone(uid)
-                            component.c_inner_components = c_inner_components
-                        else:
-                            component = Component(c_type, uid)
+                        component = Component(c_type, uid)
                         component.add_version(c_properties)
                         self.components[uid] = component
                     # Next
@@ -432,8 +375,7 @@ class iCalendar(TextFile):
                     uid = None
                 # Inner component
                 elif value == c_inner_type:
-                    inner_component = SubComponent(c_inner_type)
-                    inner_component.add_version(c_inner_properties)
+                    inner_component = TZProp(c_inner_type, c_inner_properties)
                     c_inner_components.append(inner_component)
                     c_inner_type = None
                 else:
@@ -476,54 +418,58 @@ class iCalendar(TextFile):
     # Save State
     #########################################################################
     def to_str(self, encoding='UTF-8'):
-        lines = []
-        lines.append('BEGIN:VCALENDAR\n')
+        lines = ['BEGIN:VCALENDAR\n']
 
-        # Calendar properties
-        for key in self.properties:
-            value = self.properties[key]
+        # 1. Calendar properties
+        for key, value in self.properties.iteritems():
             line = self.encode_property(key, value, encoding)
             lines.extend(line)
-        # Calendar components
+
+        # 2. Timezones
+        for tzid in self.timezones:
+            timezone = self.timezones[tzid]
+            # Begin
+            lines.append('BEGIN:VTIMEZONE\n')
+            # Properties
+            lines.append('TZID:%s\n' % tzid)
+            for key, value in timezone.content.iteritems():
+                line = self.encode_property(key, value, encoding)
+                lines.extend(line)
+            # Insert inner components
+            for c_inner_component in timezone.tz_props:
+                c_inner_type = c_inner_component.type
+                # sequence not supported into inner components
+                version = c_inner_component.properties
+                # Begin
+                lines.append('BEGIN:%s\n' % c_inner_type)
+                # Properties
+                for key, value in version.iteritems():
+                    line = self.encode_property(key, value, encoding)
+                    lines.extend(line)
+                # End
+                lines.append('END:%s\n' % c_inner_type)
+            # End
+            lines.append('END:VTIMEZONE\n')
+
+        # 3. Components
         for uid in self.components:
             component = self.components[uid]
             c_type = component.c_type
             for sequence in component.get_sequences():
                 version = component.versions[sequence]
                 # Begin
-                line = u'BEGIN:%s\n' % c_type
-                lines.append(Unicode.encode(line))
-                # UID, SEQUENCE
+                lines.append('BEGIN:%s\n' % c_type)
+                # Properties
                 lines.append('UID:%s\n' % uid)
                 lines.append('SEQUENCE:%s\n' % sequence)
-                # Properties
-                for key in version:
-                    value = version[key]
+                for key, value in version.iteritems():
                     line = self.encode_property(key, value, encoding)
                     lines.extend(line)
-                # Insert inner components
-                if isinstance(component, TimeZone):
-                    for c_inner_component in component.c_inner_components:
-                        c_inner_type = c_inner_component.c_inner_type
-                        # sequence not supported into inner components
-                        version = c_inner_component.versions[0]
-                        # Begin
-                        line = u'BEGIN:%s\n' % c_inner_type
-                        lines.append(Unicode.encode(line))
-                        # Properties
-                        for key in version:
-                            value = version[key]
-                            line = self.encode_property(key, value, encoding)
-                            lines.extend(line)
-                        # End
-                        line = u'END:%s\n' % c_inner_type
-                        lines.append(Unicode.encode(line))
                 # End
-                line = u'END:%s\n' % c_type
-                lines.append(Unicode.encode(line))
+                lines.append('END:%s\n' % c_type)
 
+        # Ok
         lines.append('END:VCALENDAR\n')
-
         return ''.join(lines)
 
 
@@ -673,8 +619,8 @@ class iCalendar(TextFile):
 
 
 class TZProp(object):
-    """This class basically represent the concept of Timezone Property (standard
-    or daylight), as described by RFC5545."""
+    """This class basically represent the concept of Timezone Property
+    (standard or daylight), as described by RFC5545."""
 
     def __init__(self, type, properties):
         self.type = type
@@ -742,8 +688,8 @@ class TZProp(object):
 
 
     def get_end(self):
-        """Return the END date or datetime of the TZProp. If TZProp is infinite,
-        return None"""
+        """Return the END date or datetime of the TZProp. If TZProp is
+        infinite, return None"""
         if self.properties.has_key('UNTIL'):
             return self.properties['UNTIL'].value
         # XXX If COUNT property exist, the TZProp is not infinite !
@@ -766,9 +712,10 @@ class TZProp(object):
 
 
 
-class TZInfo(tzinfo):
+class VTimezone(tzinfo):
     """This class represent a Timezone with TZProps builded from an ICS file"""
 
+    content = None
 
     def __init__(self, tzid, tz_props):
         self.tzid = tzid
@@ -776,7 +723,6 @@ class TZInfo(tzinfo):
             raise ValueError('A VTIMEZONE MUST contain at least one TZPROP')
         self.tz_props = tz_props
         self.tz_props.sort()
-
 
 
     def get_tz_prop(self, dt):

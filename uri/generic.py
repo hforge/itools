@@ -48,6 +48,9 @@ from copy import copy
 from urlparse import urlsplit, urlunsplit
 from urllib import quote_plus, unquote, unquote_plus
 
+# Import from itools
+from itools.core import freeze
+
 
 #########################################################################
 # Path
@@ -618,7 +621,7 @@ class EmptyReference(Reference):
     scheme = None
     authority = None
     path = Path('')
-    query = None
+    query = freeze({})
     fragment = None
 
 

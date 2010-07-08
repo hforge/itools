@@ -55,9 +55,7 @@ if __name__ == '__main__':
     if options.output is None:
         stdout.write(data)
     else:
-        file_out = open(options.output, 'w')
-        try:
+        with open(options.output, 'w') as file_out:
             file_out.write(data)
-        finally:
-            file_out.close()
+
 

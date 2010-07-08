@@ -60,11 +60,8 @@ class ZIPFile(File):
         try:
             for filename in zip.namelist():
                 path = join(dst, filename)
-                file = lfs.make_file(path)
-                try:
+                with lfs.make_file(path) as file:
                     file.write(zip.read(filename))
-                finally:
-                    file.close()
         finally:
             zip.close()
 

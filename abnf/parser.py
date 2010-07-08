@@ -522,11 +522,8 @@ def build_graph(grammar, map, token_table, symbol_table):
     lines.append('}\n')
 
     # Write the file
-    file = open('/tmp/graph.dot', 'w')
-    try:
+    with open('/tmp/graph.dot', 'w') as file:
         file.write(''.join(lines))
-    finally:
-        file.close()
 
 
 

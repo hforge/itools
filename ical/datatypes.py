@@ -19,9 +19,9 @@
 from datetime import datetime
 
 # Import from itools
-from itools.core import freeze
+from itools.core import freeze, utc
 from itools.datatypes import DataType, Integer, ISOTime, String
-from itools.datatypes import URI, Unicode, UTC
+from itools.datatypes import URI, Unicode
 
 
 class Time(ISOTime):
@@ -65,7 +65,7 @@ class DateTime(DataType):
             time = value[9:]
 
             if time[-1] == 'Z':
-                tzinfo = UTC()
+                tzinfo = utc
                 time = time[:-1]
 
             hour, min, sec = int(time[:2]), int(time[2:4]), int(time[4:6])

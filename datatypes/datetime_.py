@@ -22,6 +22,7 @@ from datetime import date, datetime, time, timedelta, tzinfo
 from email.utils import parsedate_tz, mktime_tz, formatdate
 
 # Import from itools
+from itools.core import utc
 from base import DataType
 
 
@@ -128,20 +129,6 @@ class ISOCalendarDate(DataType):
 
 
 
-class UTC(tzinfo):
-    """UTC"""
-
-    def utcoffset(self, dt):
-        return timedelta(0)
-
-    def tzname(self, dt):
-        return "Z"
-
-    def dst(self, dt):
-        return timedelta(0)
-
-
-
 class FixedOffset(tzinfo):
     """Fixed offset in minutes east from UTC."""
 
@@ -186,7 +173,7 @@ class ISOTime(DataType):
         # Timezone
         if data[-1] == 'Z':
             data = data[:-1]
-            tzinfo = UTC()
+            tzinfo = utc
         else:
             p_pos = data.find('+')
             m_pos = data.find('-')

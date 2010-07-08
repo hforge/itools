@@ -26,7 +26,6 @@ from languages import LanguageTag
 # Define alias Date, Time and DateTime (use ISO standard)
 from datetime_ import ISOCalendarDate as Date, ISOTime as Time
 from datetime_ import ISODateTime as DateTime
-from datetime_ import UTC, FixedOffset
 
 
 __all__ = [
@@ -52,9 +51,6 @@ __all__ = [
     'ISODateTime',
     'HTTPDate',
     'LanguageTag',
-    # Timezones
-    'UTC',
-    'FixedOffset',
     # Aliases
     'Date',
     'Time',

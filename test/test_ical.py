@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from datetime import datetime
+from datetime import datetime, timedelta, tzinfo
 from unittest import TestCase, main
 
 # Import from itools
@@ -24,7 +24,9 @@ from itools.csv import Property
 from itools.csv.table import encode_param_value
 from itools.datatypes import String
 from itools.ical import DateTime, iCalendar
-
+from itools.handlers import ro_database
+from itools.ical.icalendar import iCalendar, VTimezone
+#
 
 # Example with 1 event
 content = """
@@ -83,6 +85,16 @@ SEQUENCE:0
 END:VEVENT
 END:VCALENDAR
 """
+
+tz_file_test = frozenset([
+        # Input datetime         , tzname,      dst,    utcoffset
+        ((1967, 4, 30, 2, 0, 1), ('EDT', (0, 3600), (-1, 72000))),
+        ((1971, 12, 25, 12, 42, 00), ('EST', (0, 0), (-1, 68400))),
+        ((1973, 4, 28, 6, 59, 59), ('EST', (0, 0), (-1, 68400))),
+        ((1974, 4, 29, 6, 59, 59), ('EDT', (0, 3600), (-1, 72000))),
+        ((1986, 2, 12, 12, 42, 0), ('EST', (0, 0), (-1, 68400))),
+        ((1986, 6, 12, 12, 42, 0), ('EDT', (0, 3600), (-1, 72000))),
+        ])
 
 
 def property_to_string(prop_name, prop):
@@ -430,6 +442,19 @@ class icalTestCase(TestCase):
         cal.update_component(event.uid, ATTENDEE=value)
         self.assertEqual(event.get_property_values('ATTENDEE'), value)
 
+
+    def test_vtimezone(self):
+        handler = ro_database.get_handler('tests/test_vtimezone.ics', iCalendar)
+        tz = handler.get_components('VTIMEZONE')
+        self.assertEqual(len(tz), 1)
+        tz = tz[0]
+        self.assertEqual(tz.__class__, VTimezone)
+        self.assertTrue(isinstance(tz, tzinfo))
+        for dt, (tzname, dst, utcoffset) in tz_file_test:
+            dt = datetime(*dt, tzinfo=tz)
+            self.assertEqual(tz.tzname(dt), tzname)
+            self.assertEqual(tz.dst(dt), timedelta(*dst))
+            self.assertEqual(tz.utcoffset(dt), timedelta(*utcoffset))
 
 
 if __name__ == '__main__':

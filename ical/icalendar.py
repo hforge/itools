@@ -27,7 +27,7 @@ from itools.csv import Property, parse_table, deserialize_parameters
 from itools.csv import property_to_str
 from itools.datatypes import String, Unicode
 from itools.handlers import guess_encoding, TextFile
-from datatypes import record_properties, record_parameters, Time
+from datatypes import DateTime, record_properties, record_parameters, Time
 
 
 class Component(object):
@@ -113,10 +113,6 @@ class Component(object):
     get_property_values = get_property
 
 
-    def get_end(self):
-        return self.get_property('DTEND').value
-
-
     # TODO Move this: with Components that are not VEVENT, it will fail
     def get_ns_event(self, day, resource_name=None, conflicts_list=freeze([]),
                      timetable=None, grid=False, starts_on=True, ends_on=True,
@@ -141,7 +137,7 @@ class Component(object):
           STATUS: 'status' (class: cal_conflict, if id in conflicts_list)
           ORGANIZER: 'organizer of the event'
 
-##          XXX url: url to access edit_event_form on current event
+          XXX url: url to access edit_event_form on current event
         """
         get_property = self.get_property
         ns = {}
@@ -692,21 +688,22 @@ class TZProp(object):
                 else:
                     delta = (7 + byday - weekday) % 7 + weeks_delta
                     return datetime.combine(day, time) + timedelta(delta)
+        elif self.properties.has_key('RDATE'):
+            dates = [self.properties['DTSTART'].value]
+            for rdate in self.properties['RDATE']:
+                dates.append(DateTime.decode(rdate.value))
+            dict = {}
+            null_delta = timedelta(0)
+            for d in dates:
+                if d.year == dt.year:
+                    return d
+            return None
         else:
             raise NotImplementedError('We only implement FREQ in  (YEARLY, )')
 
 
     def get_begin(self):
         return self.properties['DTSTART'].value
-
-
-    def get_end(self):
-        """Return the END date or datetime of the TZProp. If TZProp is
-        infinite, return None"""
-        if self.properties.has_key('UNTIL'):
-            return self.properties['UNTIL'].value
-        # XXX If COUNT property exist, the TZProp is not infinite !
-        return None
 
 
     def get_names(self):
@@ -743,11 +740,18 @@ class VTimezone(tzinfo):
         naive = dt.replace(tzinfo=None)
         candidates = []
         # Keep only tzprop corresponding to dt
-        for prop in props:
+        for i, prop in enumerate(props):
             begin = prop.get_begin()
-            end = prop.get_end()
-            if begin <= naive and ( end is None or end > naive):
+            if begin > naive:
+                continue
+            for next in props[i:]:
+                if next.type != prop.type:
+                    next_prop = next
+                    continue
+            end = next_prop.get_begin() if next_prop else None
+            if begin <= naive and ( end is None or naive < end):
                 candidates.append(prop)
+
         if len(candidates) == 0:
             return None
         elif len(candidates) == 1:
@@ -766,12 +770,10 @@ class VTimezone(tzinfo):
                 dl, dston = tzprop, tzprop.get_date(dt)
             else:
                 raise ValueError('TZProps are not consistent')
-        assert c_dl == 1 and c_std == 1
-        # return result
-        if dston <= naive < dstoff:
+        if dston <= naive and naive < dstoff:
             return dl
         else:
-            return std
+           return std
 
 
     def tzname(self, dt):

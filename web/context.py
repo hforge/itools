@@ -23,10 +23,10 @@ from datetime import datetime
 from thread import get_ident, allocate_lock
 
 # Import from pytz
-from pytz import timezone, utc as pytz_utc
+from pytz import timezone
 
 # Import from itools
-from itools.core import freeze, lazy, utc
+from itools.core import freeze, lazy, local_tz, utc
 from itools.datatypes import String
 from itools.http import get_type, Entity
 from itools.http import Cookie, SetCookieDataType
@@ -359,7 +359,7 @@ class Context(object):
             tz = self.user.get_timezone()
 
         # TODO default to the local host timezone
-        tzinfo = timezone(tz) if tz else pytz_utc
+        tzinfo = timezone(tz) if tz else local_tz
 
         # 2. Change datetime
         if datetime.tzinfo:

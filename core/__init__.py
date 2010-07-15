@@ -26,8 +26,8 @@ from mimetypes_ import guess_type, has_encoding, has_extension
 from odict import OrderedDict
 from subprocess_ import start_subprocess, stop_subprocess
 from subprocess_ import read_subprocess, send_subprocess
+from timezones import utc, local_tz
 from thingy import thingy_type, thingy, thingy_property, thingy_lazy_property
-from utc import utc
 from utils import get_abspath, merge_dicts, get_sizeof, get_pipe, get_version
 
 
@@ -67,6 +67,7 @@ __all__ = [
     'stop_subprocess',
     # Time
     'utc',
+    'local_tz',
     # Utility functions
     'get_abspath',
     'get_version',

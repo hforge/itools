@@ -16,6 +16,7 @@
 
 # Import from the Standard Library
 from datetime import timedelta, tzinfo
+from time import altzone, daylight, localtime, mktime, timezone, tzname
 
 
 class UTC(tzinfo):
@@ -29,5 +30,41 @@ class UTC(tzinfo):
     def dst(self, dt):
         return timedelta(0)
 
+# A class capturing the platform's idea of local time.
+# Paste from Python datetime doc
+
+STDOFFSET = timedelta(seconds = -timezone)
+if daylight:
+    DSTOFFSET = timedelta(seconds = -altzone)
+else:
+    DSTOFFSET = STDOFFSET
+
+DSTDIFF = DSTOFFSET - STDOFFSET
+
+class LocalTimezone(tzinfo):
+
+    def utcoffset(self, dt):
+        if self._isdst(dt):
+            return DSTOFFSET
+        else:
+            return STDOFFSET
+
+    def dst(self, dt):
+        if self._isdst(dt):
+            return DSTDIFF
+        else:
+            return ZERO
+
+    def tzname(self, dt):
+        return tzname[self._isdst(dt)]
+
+    def _isdst(self, dt):
+        tt = (dt.year, dt.month, dt.day,
+              dt.hour, dt.minute, dt.second,
+              dt.weekday(), 0, -1)
+        stamp = mktime(tt)
+        tt = localtime(stamp)
+        return tt.tm_isdst > 0
 
 utc = UTC()
+local_tz = LocalTimezone()

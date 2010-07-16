@@ -29,9 +29,9 @@ See the table below for the imports to update.
   itools.ical.icalendarTable          ** MOVED TO IKAARO **
   itools.soup.SoupMessage             itools.http.SoupMessage
   itools.soup.SoupServer              ** NOT EXPORTED **
-  itools.xapian                       itools.database (*)
+  itools.xapian                       itools.database [1]
 
-The package itools.xapian has been merged into the new itools.database
+[1] The package itools.xapian has been merged into the new itools.database
 package.
 
 
@@ -89,6 +89,8 @@ The icalendarTable file handler has been removed (moved to ikaaro actually,
 but its usage is discouraged).
 
 The ical file handler does not support indexing (with xapian) anymore.
+Its internal data structure has been much changed, to improve support
+for timezones.
 
 
 itools.xapian

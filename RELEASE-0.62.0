@@ -21,8 +21,14 @@ This is the companion release of ikaaro [1] 0.62 (the CMS).  In this
 development cycle most work has gone to ikaaro, so the itools 0.62
 release has relatively few changes, mostly about code organization.
 
+The new itools.database package contains code previously found in
+itools.handlers, itools.xapian and ikaaro (actually, the itools.xapian
+package has been completely merged into itools.database).  This is the
+beginning of a versioned document database system (yet another nosql [2]
+solution).
+
 The new itools.loop package is a thin wrapper around the glib main
-loop [2].  It adds a few small features: running it in profile mode
+loop [3].  It adds a few small features: running it in profile mode
 or not, handling a pid file, ...  More stuff is planned for future
 releases.
 
@@ -31,9 +37,8 @@ level features from itools.http have been moved to itools.web.  This
 makes itools.http to be just a "Web Server", and itools.web to be a
 "Web Framework".
 
-The new itools.database package contains code previously found in
-itools.handlers and ikaaro.  It is the beginning of a versioned
-document database system (yet another nosql [3] solution).
+Support for timezones in the iCalendar file format (itools.ical) has
+been improved.
 
 
 [1] http://www.hforge.org/ikaaro

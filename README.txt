@@ -28,10 +28,10 @@ The packages included are:
 
 The scripts included are:
 
+  idb-inspect.py          iodf-greek.py           ipkg-quality.py
   igettext-build.py       ipkg-build.py           ipkg-update-locale.py
-  igettext-extract.py     ipkg-copyright.py       ixapian-inspect.py
+  igettext-extract.py     ipkg-copyright.py
   igettext-merge.py       ipkg-info.py
-  iodf-greek.py           ipkg-quality.py
 
 To learn how to install itools check the INSTALL.txt file.
 

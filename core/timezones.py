@@ -19,6 +19,9 @@ from datetime import timedelta, tzinfo
 from time import altzone, daylight, localtime, mktime, timezone, tzname
 
 
+###########################################################################
+# UTC
+###########################################################################
 class UTC(tzinfo):
 
     def utcoffset(self, dt):
@@ -30,41 +33,35 @@ class UTC(tzinfo):
     def dst(self, dt):
         return timedelta(0)
 
-# A class capturing the platform's idea of local time.
-# Paste from Python datetime doc
+utc = UTC()
 
+
+###########################################################################
+# Local Time (copied from from Python datetime doc)
+###########################################################################
+ZERO = timedelta(0)
 STDOFFSET = timedelta(seconds = -timezone)
-if daylight:
-    DSTOFFSET = timedelta(seconds = -altzone)
-else:
-    DSTOFFSET = STDOFFSET
-
+DSTOFFSET = timedelta(seconds = -altzone) if daylight else STDOFFSET
 DSTDIFF = DSTOFFSET - STDOFFSET
 
 class LocalTimezone(tzinfo):
 
     def utcoffset(self, dt):
-        if self._isdst(dt):
-            return DSTOFFSET
-        else:
-            return STDOFFSET
+        return DSTOFFSET if self._isdst(dt) else STDOFFSET
+
 
     def dst(self, dt):
-        if self._isdst(dt):
-            return DSTDIFF
-        else:
-            return ZERO
+        return DSTDIFF if self._isdst(dt) else ZERO
+
 
     def tzname(self, dt):
         return tzname[self._isdst(dt)]
 
+
     def _isdst(self, dt):
-        tt = (dt.year, dt.month, dt.day,
-              dt.hour, dt.minute, dt.second,
-              dt.weekday(), 0, -1)
-        stamp = mktime(tt)
+        stamp = mktime((dt.year, dt.month, dt.day, dt.hour, dt.minute,
+                        dt.second, dt.weekday(), 0, -1))
         tt = localtime(stamp)
         return tt.tm_isdst > 0
 
-utc = UTC()
 local_tz = LocalTimezone()

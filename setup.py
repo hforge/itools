@@ -85,5 +85,10 @@ if __name__ == '__main__':
         extension = Extension('itools.http.soup', sources, **flags)
         ext_modules.append(extension)
 
+    # GSS
+    sources = ['abnf/gss.c']
+    extension = Extension('itools.abnf.gss', sources, **flags)
+    ext_modules.append(extension)
+
     # Ok
     setup(ext_modules=ext_modules)

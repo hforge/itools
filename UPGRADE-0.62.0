@@ -8,11 +8,12 @@ find.
 New Dependencies
 ================
 
-This table summurizes the new and updated dependencies:
+The itools.web package now requires pytz [1].  The required version of
+Git [2] has been raised from 1.6 to 1.7 (used by itools.git).
 
-            0.61   0.62   Used by           Home
-            ----   ----   ---------------   ----------------------------
-Git          1.6    1.7   itools.handlers   http://git-scm.com/
+
+[1] http://pytz.sourceforge.net/
+[2] http://git-scm.com/
 
 
 Imports

@@ -1,5 +1,5 @@
 
-itools 0.62.0 (2010/07/XX)
+itools 0.62.0 (2010/07/19)
 ==========================
 
 itools is a Python library, it groups a number of packages into a single
@@ -42,8 +42,8 @@ been improved.
 
 
 [1] http://www.hforge.org/ikaaro
-[2] XXX
-[3] XXX
+[2] http://en.wikipedia.org/wiki/NoSQL
+[3] http://www.gtk.org/
 
 
 Resources

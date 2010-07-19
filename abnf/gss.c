@@ -6,15 +6,11 @@ typedef struct
 {
   PyObject_HEAD
   PyObject * data;
+  PyObject ** children;
+  unsigned children_number;
 } Node;
 
-
-static void
-Node_dealloc (Node * self)
-{
-  Py_XDECREF (self->data);
-  self->ob_type->tp_free ((PyObject *) self);
-}
+static PyTypeObject NodeType;
 
 
 static PyObject *
@@ -25,12 +21,38 @@ Node_new (PyTypeObject * type, PyObject * args, PyObject * kwds)
   self = (Node *) type->tp_alloc (type, 0);
   if (self != NULL)
     {
-      /* We store None, by default */
+      /* We store None by default */
       Py_INCREF (Py_None);
       self->data = Py_None;
+
+      /* 0 child by default */
+      self->children = NULL;
+      self->children_number = 0;
     }
 
   return (PyObject *) self;
+}
+
+
+static void
+Node_dealloc (Node * self)
+{
+  unsigned i;
+  PyObject **child_pt;
+
+  /* data */
+  Py_XDECREF (self->data);
+
+  /* The children */
+  if (self->children)
+    for (i = 0, child_pt = self->children;
+         i < self->children_number;
+         i++, child_pt++)
+      Py_DECREF (*child_pt);
+  PyMem_Free (self->children);
+
+  /* The object itself */
+  self->ob_type->tp_free ((PyObject *) self);
 }
 
 
@@ -55,7 +77,36 @@ Node_init (Node * self, PyObject * args, PyObject * kwds)
 }
 
 
+static PyObject *
+Node_append (Node * self, PyObject * args)
+{
+  PyObject *child;
+  PyObject **children = self->children;
+  unsigned children_number = self->children_number;
+
+  if (!PyArg_ParseTuple (args, "O!", &NodeType, &child))
+    return NULL;
+
+  /* Make place for the new child */
+  children = (PyObject **) PyMem_Realloc (children,
+                                          (children_number + 1) *
+                                          sizeof (PyObject *));
+  if (children == NULL)
+    return PyErr_NoMemory ();
+
+  /* All OK */
+  children[children_number] = child;
+  self->children = children;
+  self->children_number = children_number + 1;
+  Py_INCREF (child);
+
+  Py_RETURN_NONE;
+}
+
+
 static PyMethodDef Node_methods[] = {
+  {"append", (PyCFunction) Node_append, METH_VARARGS,
+   "Append a new child (a Node)."},
   {NULL}                        /* Sentinel */
 };
 
@@ -107,9 +158,11 @@ static PyTypeObject NodeType = {
   Node_new,                     /* tp_new */
 };
 
+
 static PyMethodDef module_methods[] = {
   {NULL}                        /* Sentinel */
 };
+
 
 #ifndef PyMODINIT_FUNC          /* declarations for DLL import/export */
 #define PyMODINIT_FUNC void

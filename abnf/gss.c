@@ -2,11 +2,89 @@
 #include "structmember.h"
 
 
+/************************
+ * An iterator for Node *
+ ************************/
+
+typedef struct
+{
+  PyObject_HEAD
+  PyObject * node;
+  unsigned children_number;
+  PyObject **current_child;
+  unsigned current_position;
+} NodeIterator;
+
+
+static void
+NodeIterator_dealloc (NodeIterator * self)
+{
+  Py_XDECREF (self->node);
+  self->ob_type->tp_free ((PyObject *) self);
+}
+
+
+static PyObject *
+NodeIterator_next (NodeIterator * self)
+{
+  PyObject *child;
+
+  /* The End ? */
+  if (self->current_position >= self->children_number)
+    return NULL;
+
+  /* All OK */
+  child = *(self->current_child);
+  self->current_child++;
+  self->current_position++;
+
+  Py_INCREF (child);
+  return child;
+}
+
+
+static PyTypeObject NodeIteratorType = {
+  PyObject_HEAD_INIT (NULL) 0,  /*ob_size */
+  "gss.NodeIterator",           /*tp_name */
+  sizeof (NodeIterator),        /*tp_basicsize */
+  0,                            /*tp_itemsize */
+  (destructor) NodeIterator_dealloc,    /*tp_dealloc */
+  0,                            /*tp_print */
+  0,                            /*tp_getattr */
+  0,                            /*tp_setattr */
+  0,                            /*tp_compare */
+  0,                            /*tp_repr */
+  0,                            /*tp_as_number */
+  0,                            /*tp_as_sequence */
+  0,                            /*tp_as_mapping */
+  0,                            /*tp_hash */
+  0,                            /*tp_call */
+  0,                            /*tp_str */
+  0,                            /*tp_getattro */
+  0,                            /*tp_setattro */
+  0,                            /*tp_as_buffer */
+  Py_TPFLAGS_DEFAULT,           /*tp_flags */
+  "NodeIterator object",        /* tp_doc */
+  0,                            /* tp_traverse */
+  0,                            /* tp_clear */
+  0,                            /* tp_richcompare */
+  0,                            /* tp_weaklistoffset */
+  PyObject_SelfIter,            /* tp_iter */
+  (iternextfunc) NodeIterator_next,     /* tp_iternext */
+  0,                            /* tp_methods */
+  0                             /* tp_members */
+};
+
+
+/*******************
+ * The Node object *
+ *******************/
+
 typedef struct
 {
   PyObject_HEAD
   PyObject * data;
-  PyObject ** children;
+  PyObject **children;
   unsigned children_number;
 } Node;
 
@@ -104,6 +182,29 @@ Node_append (Node * self, PyObject * args)
 }
 
 
+static PyObject *
+Node_iter (Node * self)
+{
+  NodeIterator *iter;
+
+  /* Creation */
+  iter = PyObject_New (NodeIterator, &NodeIteratorType);
+  if (!iter)
+    return NULL;
+
+  /* Save the node */
+  Py_INCREF (self);
+  iter->node = (PyObject *) self;
+
+  /* Set the parameters */
+  iter->children_number = self->children_number;
+  iter->current_child = self->children;
+  iter->current_position = 0;
+
+  return (PyObject *) iter;
+}
+
+
 static PyMethodDef Node_methods[] = {
   {"append", (PyCFunction) Node_append, METH_VARARGS,
    "Append a new child (a Node)."},
@@ -143,7 +244,7 @@ static PyTypeObject NodeType = {
   0,                            /* tp_clear */
   0,                            /* tp_richcompare */
   0,                            /* tp_weaklistoffset */
-  0,                            /* tp_iter */
+  (getiterfunc) Node_iter,      /* tp_iter */
   0,                            /* tp_iternext */
   Node_methods,                 /* tp_methods */
   Node_members,                 /* tp_members */
@@ -158,6 +259,10 @@ static PyTypeObject NodeType = {
   Node_new,                     /* tp_new */
 };
 
+
+/**********************
+ * Module declaration *
+ **********************/
 
 static PyMethodDef module_methods[] = {
   {NULL}                        /* Sentinel */
@@ -183,4 +288,6 @@ initgss (void)
 
   Py_INCREF (&NodeType);
   PyModule_AddObject (m, "Node", (PyObject *) & NodeType);
+
+  PyType_Ready (&NodeIteratorType);
 }

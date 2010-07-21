@@ -278,9 +278,9 @@ class Context(object):
             goto = self.soup_message.get_header('referer')
             # Replace goto if no referrer
             if goto is None:
-                uri = str(self.uri)
-                if '/;' in uri:
-                    goto = uri.split('/;')[0]
+                goto = str(self.uri)
+                if '/;' in goto:
+                    goto = goto.split('/;')[0]
 
         if type(goto) is str:
             goto = get_reference(goto)

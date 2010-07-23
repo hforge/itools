@@ -295,7 +295,7 @@ class STLForm(STLView, BaseForm):
                         value = datatype.get_namespace(value)
                     elif datatype.multiple:
                         # XXX Done for table multilingual fields (fragile)
-                        value = value[0]
+                        value = value[0] if value else value
                     else:
                         value = datatype.encode(value)
             else:

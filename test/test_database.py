@@ -532,6 +532,26 @@ class MultipleTestCase(TestCase):
 
 
 
+class BugXapianTestCase(TestCase):
+
+    def setUp(self):
+        make_catalog('tests/catalog', Document_4.fields)
+
+
+    def tearDown(self):
+        lfs.remove('tests/catalog')
+
+
+    def test_everything(self):
+        cat = Catalog('tests/catalog', Document_4.fields)
+
+        # This snippet should not raise an exception
+        # Visibly a bug in xapian. It counts twice the '\x00' character
+        cat.index_document(Document_4('\x00' * 239))
+        cat.save_changes()
+
+
+
 class Document(CatalogAware):
 
     fields = {'abspath': String(stored=True, indexed=True),
@@ -589,6 +609,20 @@ class Document_3(CatalogAware):
 
     def get_catalog_values(self):
         return {'abspath': self.abspath, 'data': self.data}
+
+
+
+class Document_4(CatalogAware):
+
+    fields = {'abspath': String(stored=True, indexed=True)}
+
+
+    def __init__(self, abspath):
+        self.abspath = abspath
+
+
+    def get_catalog_values(self):
+        return {'abspath': self.abspath}
 
 
 

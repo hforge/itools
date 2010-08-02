@@ -133,8 +133,14 @@ class WebServer(HTTPServer):
             return set_response(soup_message, 400)
 
         # (2) Initialize the context
-        context = Context(soup_message, path)
-        self.init_context(context)
+        # XXX This try/except can be removed if its body contains no bug
+        # anymore
+        try:
+            context = Context(soup_message, path)
+            self.init_context(context)
+        except Exception:
+            log_error('Internal error', domain='itools.web')
+            return set_response(soup_message, 500)
 
         # (3) Pass control to the Get method class
         try:

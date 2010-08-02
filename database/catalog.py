@@ -669,7 +669,8 @@ def _get_field_cls(name, fields, info):
 
 def _reduce_size(data):
     # If the data are too long, we replace it by its sha1
-    if len(data) > 240:
+    # XXX Visibly a bug in xapian counts twice the \x00 character
+    if len(data) + data.count("\x00") > 240:
         if isinstance(data, unicode):
             data = data.encode('utf-8')
         return sha1(data).hexdigest()

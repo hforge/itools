@@ -158,12 +158,17 @@ Node_init (Node * self, PyObject * args, PyObject * kwds)
 static PyObject *
 Node_append (Node * self, PyObject * args)
 {
-  PyObject *child;
-  PyObject **children = self->children;
-  unsigned children_number = self->children_number;
+  Node *child;
+  PyObject **children;
+  unsigned children_number;
 
-  if (!PyArg_ParseTuple (args, "O!", &NodeType, &child))
+  /* child is a Node ? */
+  if (!PyArg_ParseTuple (args, "O!", &NodeType, (PyObject *)&child))
     return NULL;
+
+  /* child OK */
+  children = child->children;
+  children_number = child->children_number;
 
   /* Make place for the new child */
   children = (PyObject **) PyMem_Realloc (children,
@@ -173,10 +178,10 @@ Node_append (Node * self, PyObject * args)
     return PyErr_NoMemory ();
 
   /* All OK */
-  children[children_number] = child;
-  self->children = children;
-  self->children_number = children_number + 1;
-  Py_INCREF (child);
+  children[children_number] = (PyObject *)self;
+  child->children = children;
+  child->children_number = children_number + 1;
+  Py_INCREF (self);
 
   Py_RETURN_NONE;
 }

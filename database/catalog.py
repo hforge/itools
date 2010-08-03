@@ -668,12 +668,14 @@ def _get_field_cls(name, fields, info):
 
 
 def _reduce_size(data):
-    # If the data are too long, we replace it by its sha1
-    # XXX Visibly a bug in xapian counts twice the \x00 character
+    # If the data is too long, we replace it by its sha1
+    # FIXME Visibly a bug in xapian counts twice the \x00 character
+    # http://bugs.hforge.org/show_bug.cgi?id=940
     if len(data) + data.count("\x00") > 240:
         if isinstance(data, unicode):
             data = data.encode('utf-8')
         return sha1(data).hexdigest()
+
     # All OK, we simply return the data
     return data
 

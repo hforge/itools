@@ -50,8 +50,8 @@ class Parser(object):
         #    (symbol, state, start, value)
         #
         # Where the 'start' field is a reference to the input stream.
-        node = Node((None, 1, 0, None))
-        gss = [node]
+        start_node = Node((None, 1, 0, None))
+        gss = [start_node]
 
         # Debug
 #        debug = (start_symbol == 'rulelist')
@@ -81,8 +81,10 @@ class Parser(object):
                     if node is None:
                         node = Node((token, next_state, data_idx+1, None))
                         map[next_state] = node
-                    stack.append(node)
-                    new_gss.append(stack)
+                        stack.append(node)
+                        new_gss.append(node)
+                    else:
+                        stack.append(node)
             gss = new_gss
 
             # Debug
@@ -137,7 +139,7 @@ class Parser(object):
                         # Next state
                         next_state = symbol_table.get((state, name), 0)
                         # Stop Condition
-                        if node == 0 and name == start_symbol and token == 0:
+                        if node is start_node and name == start_symbol and token == 0:
                             result.append(value)
                         else:
                             new_node = Node((name, next_state, data_idx, value))

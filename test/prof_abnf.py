@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from profile import run as profile
+from cProfile import run
 from timeit import Timer
 
 # Import from itools
@@ -26,15 +26,17 @@ test_string = 'http://www.winehq.org/?issue=343#Translations%20within%20WINE'
 #test_string = 'http://example.com/'
 
 
+timer0 = Timer(
+    "parse_uri('%s')" % test_string,
+    "from itools.uri.parsing import parse_uri")
+
+
 def bench():
     """Benchmark the speed of itools.abnf using "urlparse.urlsplit" as
     reference.
     """
     # itools
-    timer = Timer(
-        "parse_uri('%s')" % test_string,
-        "from itools.uri.parsing import parse_uri")
-    a = timer.repeat(5, number=1)
+    a = timer0.repeat(5, number=1)
     a = min(a) * 1000
 
     # stdlib
@@ -76,13 +78,17 @@ def bench2():
     print
 
 
+def profile():
+    timer0.timeit(100)
+
+
 
 if __name__ == '__main__':
     # Just "parse_uri"
     bench()
-#    profile('parse_uri("%s")' % test_string)
+#    run('profile()', '/tmp/profile')
 
     # The new GenericDataType
 #    bench2()
-#    profile('GenericDataType2.decode("%s")' % test_string)
+#    run('GenericDataType2.decode("%s")' % test_string)
 

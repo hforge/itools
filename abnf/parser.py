@@ -76,15 +76,14 @@ class Parser(object):
             for stack in gss:
                 state = stack.data[1]
                 next_state = token_table.get((state, token), 0)
-                if next_state != 0:
-                    node = map.get(next_state)
-                    if node is None:
-                        node = Node((token, next_state, data_idx+1, None))
-                        map[next_state] = node
-                        stack.append(node)
-                        new_gss.append(node)
-                    else:
-                        stack.append(node)
+                if next_state in map:
+                    node = map[next_state]
+                    stack.append(node)
+                elif next_state: # != 0
+                    node = Node((token, next_state, data_idx+1, None))
+                    map[next_state] = node
+                    stack.append(node)
+                    new_gss.append(node)
             gss = new_gss
 
             # Debug

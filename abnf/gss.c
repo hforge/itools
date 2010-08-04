@@ -156,7 +156,7 @@ Node_init (Node * self, PyObject * args, PyObject * kwds)
 
 
 static PyObject *
-Node_append (Node * self, PyObject * args)
+Node_push (Node * self, PyObject * args)
 {
   Node *child;
   PyObject **children;
@@ -211,8 +211,8 @@ Node_iter (Node * self)
 
 
 static PyMethodDef Node_methods[] = {
-  {"append", (PyCFunction) Node_append, METH_VARARGS,
-   "Append a new child (a Node)."},
+  {"push", (PyCFunction) Node_push, METH_VARARGS,
+   "n0.push(n1) => push n0 in n1."},
   {NULL}                        /* Sentinel */
 };
 

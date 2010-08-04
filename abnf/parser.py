@@ -38,12 +38,87 @@ class Parser(object):
         self.reduce_table = reduce_table
 
 
+    def shift(self, gss, token, data_idx):
+        token_table = self.token_table
+
+        map = {}
+        new_gss = []
+        for stack in gss:
+            state = stack.data[1]
+            next_state = token_table.get((state, token), 0)
+            if next_state in map:
+                node = map[next_state]
+                stack.push(node)
+            elif next_state: # != 0
+                node = Node((token, next_state, data_idx+1, None))
+                map[next_state] = node
+                stack.push(node)
+                new_gss.append(node)
+        return new_gss
+
+
+    def reduce(self, gss, token, data_idx, context, start_node, result):
+        reduce_table = self.reduce_table
+        symbol_table = self.symbol_table
+        start_symbol = self.start_symbol
+
+        new_gss = []
+        while gss:
+            stack = gss.pop()
+            kk, state, kk, kk = stack.data
+            shift, handles = reduce_table[state]
+            # Shift
+            if shift:
+                new_gss.append(stack)
+            # Reduce
+            for name, n, look_ahead, method in handles:
+                # Look-Ahead
+                if token not in look_ahead:
+                    continue
+                # Fork the stack
+                pointers = [[stack, []]]
+                while n > 0:
+                    n -= 1
+                    new_pointers = []
+                    while pointers:
+                        node, values = pointers.pop()
+                        symbol, kk, kk, value = node.data
+                        if type(symbol) is str:
+                            values.insert(0, value)
+                        for last_node in node:
+                            new_pointers.append([last_node, values[:]])
+                    pointers = new_pointers
+
+                for node, values in pointers:
+                    symbol, state, start, value = node.data
+                    # Semantic action
+                    if context is None:
+                        value = None
+                    elif method is None:
+                        aux = [ x for x in values if x is not None ]
+                        if len(aux) == 0:
+                            value = None
+                        else:
+                            value = values
+                    else:
+                        value = method(context, start, data_idx, *values)
+                    # Next state
+                    next_state = symbol_table.get((state, name), 0)
+                    # Stop Condition
+                    if ( node is start_node and
+                         name == start_symbol and
+                         token == 0 ):
+                        result.append(value)
+                    else:
+                        new_node = Node((name, next_state, data_idx, value))
+                        node.push(new_node)
+                        gss.append(new_node)
+        return new_gss
+
+
     def run(self, data, context=None):
         tokenizer = self.grammar.tokenizer
         start_symbol = self.start_symbol
-        token_table = self.token_table
-        symbol_table = self.symbol_table
-        reduce_table = self.reduce_table
 
         # Each node in the graph is a tuple with four elements :
         #
@@ -71,20 +146,7 @@ class Parser(object):
                             % (token, data_idx, repr(data[data_idx])))
 
             # Shift on all the parsing paths
-            map = {}
-            new_gss = []
-            for stack in gss:
-                state = stack.data[1]
-                next_state = token_table.get((state, token), 0)
-                if next_state in map:
-                    node = map[next_state]
-                    stack.push(node)
-                elif next_state: # != 0
-                    node = Node((token, next_state, data_idx+1, None))
-                    map[next_state] = node
-                    stack.push(node)
-                    new_gss.append(node)
-            gss = new_gss
+            gss = self.shift(gss, token, data_idx)
 
             # Debug
             if debug:
@@ -95,56 +157,8 @@ class Parser(object):
             token, data_idx = get_token()
 
             # Reduce
-            new_gss = []
-            while gss:
-                stack = gss.pop()
-                kk, state, kk, kk = stack.data
-                shift, handles = reduce_table[state]
-                # Shift
-                if shift:
-                    new_gss.append(stack)
-                # Reduce
-                for name, n, look_ahead, method in handles:
-                    # Look-Ahead
-                    if token not in look_ahead:
-                        continue
-                    # Fork the stack
-                    pointers = [[stack, []]]
-                    while n > 0:
-                        n -= 1
-                        new_pointers = []
-                        while pointers:
-                            node, values = pointers.pop()
-                            symbol, kk, kk, value = node.data
-                            if type(symbol) is str:
-                                values.insert(0, value)
-                            for last_node in node:
-                                new_pointers.append([last_node, values[:]])
-                        pointers = new_pointers
+            gss = self.reduce(gss, token, data_idx, context, start_node, result)
 
-                    for node, values in pointers:
-                        symbol, state, start, value = node.data
-                        # Semantic action
-                        if context is None:
-                            value = None
-                        elif method is None:
-                            aux = [ x for x in values if x is not None ]
-                            if len(aux) == 0:
-                                value = None
-                            else:
-                                value = values
-                        else:
-                            value = method(context, start, data_idx, *values)
-                        # Next state
-                        next_state = symbol_table.get((state, name), 0)
-                        # Stop Condition
-                        if node is start_node and name == start_symbol and token == 0:
-                            result.append(value)
-                        else:
-                            new_node = Node((name, next_state, data_idx, value))
-                            node.push(new_node)
-                            gss.append(new_node)
-            gss = new_gss
             # Debug
             if debug:
                 pprint_stack(gss, data, trace)

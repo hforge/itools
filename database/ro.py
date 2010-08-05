@@ -261,7 +261,7 @@ class ROGitDatabase(object):
         raise ValueError
 
 
-    def get_handler(self, key, cls=None):
+    def get_handler(self, key, cls=None, soft=False):
         key = self.normalize_key(key)
 
         # Synchronize
@@ -277,6 +277,8 @@ class ROGitDatabase(object):
 
         # Check the resource exists
         if not self.fs.exists(key):
+            if soft:
+                return None
             raise LookupError, 'the resource "%s" does not exist' % key
 
         # Folders are not cached

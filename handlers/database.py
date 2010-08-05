@@ -236,7 +236,7 @@ class RODatabase(object):
         raise ValueError
 
 
-    def get_handler(self, key, cls=None):
+    def get_handler(self, key, cls=None, soft=False):
         key = self.normalize_key(key)
 
         # Synchronize
@@ -252,6 +252,8 @@ class RODatabase(object):
 
         # Check the resource exists
         if not self.fs.exists(key):
+            if soft:
+                return None
             raise LookupError, 'the resource "%s" does not exist' % key
 
         # Folders are not cached
@@ -359,7 +361,7 @@ class RWDatabase(RODatabase):
         return list(names)
 
 
-    def get_handler(self, key, cls=None):
+    def get_handler(self, key, cls=None, soft=False):
         key = self.normalize_key(key)
 
         # Check state
@@ -372,10 +374,12 @@ class RWDatabase(RODatabase):
             return handler
 
         if key in self.handlers_old2new:
+            if soft:
+                return None
             raise LookupError, 'the resource "%s" does not exist' % key
 
         # Ok
-        return super(RWDatabase, self).get_handler(key, cls=cls)
+        return super(RWDatabase, self).get_handler(key, cls, soft)
 
 
     def set_handler(self, key, handler):

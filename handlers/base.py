@@ -59,13 +59,13 @@ class Handler(object):
         return database.get_handler_names(key)
 
 
-    def get_handler(self, reference, cls=None):
+    def get_handler(self, reference, cls=None, soft=False):
         database = self.database
         if database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
         key = database.fs.resolve2(self.key, reference)
-        return database.get_handler(key, cls=cls)
+        return database.get_handler(key, cls, soft)
 
 
     def get_handlers(self, reference='.'):

@@ -116,7 +116,7 @@ class GitDatabase(ROGitDatabase):
         return super(GitDatabase, self).has_handler(key)
 
 
-    def get_handler(self, key, cls=None):
+    def get_handler(self, key, cls=None, soft=False):
         key = self.normalize_key(key)
 
         # A hook to handle the new directories
@@ -129,7 +129,7 @@ class GitDatabase(ROGitDatabase):
                 return cls(key, database=self)
 
         # The other files
-        return super(GitDatabase, self).get_handler(key, cls)
+        return super(GitDatabase, self).get_handler(key, cls, soft)
 
 
     def set_handler(self, key, handler):

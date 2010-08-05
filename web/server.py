@@ -19,6 +19,7 @@
 
 # Import from the Standard Library
 from base64 import decodestring
+from binascii import Error as BinasciiError
 from copy import copy
 from types import FunctionType, MethodType
 from urllib import unquote
@@ -86,7 +87,15 @@ class WebServer(HTTPServer):
             return
 
         cookie = unquote(cookie)
-        cookie = decodestring(cookie)
+        # When we send:
+        # Set-Cookie: __ac="deleted"; expires=Wed, 31-Dec-97 23:59:59 GMT;
+        #             path=/; max-age="0"
+        # to FF4, it don't delete the cookie, but continue to send
+        # __ac="deleted" (not base64 encoded)
+        try:
+            cookie = decodestring(cookie)
+        except BinasciiError:
+            return
         username, password = cookie.split(':', 1)
 
         if username is None or password is None:
@@ -133,8 +142,14 @@ class WebServer(HTTPServer):
             return set_response(soup_message, 400)
 
         # (2) Initialize the context
-        context = Context(soup_message, path)
-        self.init_context(context)
+        # XXX This try/except can be removed if its body contains no bug
+        # anymore
+        try:
+            context = Context(soup_message, path)
+            self.init_context(context)
+        except Exception:
+            log_error('Internal error', domain='itools.web')
+            return set_response(soup_message, 500)
 
         # (3) Pass control to the Get method class
         try:

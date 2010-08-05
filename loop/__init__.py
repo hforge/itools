@@ -15,9 +15,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from loop import Loop
+from loop import Loop, cron
 
 
 __all__ = [
     'Loop',
+    'cron',
     ]

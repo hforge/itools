@@ -236,9 +236,7 @@ class RODatabase(object):
         raise ValueError
 
 
-    def get_handler(self, key, cls=None, soft=False):
-        key = self.normalize_key(key)
-
+    def _get_handler(self, key, cls=None, soft=False):
         # Synchronize
         handler = self._sync_filesystem(key)
         if handler is not None:
@@ -273,11 +271,16 @@ class RODatabase(object):
         return handler
 
 
+    def get_handler(self, key, cls=None, soft=False):
+        key = self.normalize_key(key)
+        return self._get_handler(key, cls, soft)
+
+
     def get_handlers(self, key):
         base = self.normalize_key(key)
         for name in self.get_handler_names(base):
             key = self.fs.resolve2(base, name)
-            yield self.get_handler(key)
+            yield self._get_handler(key)
 
 
     def touch_handler(self, key, handler=None):
@@ -361,9 +364,7 @@ class RWDatabase(RODatabase):
         return list(names)
 
 
-    def get_handler(self, key, cls=None, soft=False):
-        key = self.normalize_key(key)
-
+    def _get_handler(self, key, cls=None, soft=False):
         # Check state
         if key in self.handlers_new2old:
             handler = self.cache[key]
@@ -379,7 +380,7 @@ class RWDatabase(RODatabase):
             raise LookupError, 'the resource "%s" does not exist' % key
 
         # Ok
-        return super(RWDatabase, self).get_handler(key, cls, soft)
+        return super(RWDatabase, self)._get_handler(key, cls, soft)
 
 
     def set_handler(self, key, handler):
@@ -432,7 +433,7 @@ class RWDatabase(RODatabase):
 
     def touch_handler(self, key, handler=None):
         key = self.normalize_key(key)
-        handler = self.get_handler(key)
+        handler = self._get_handler(key)
 
         if handler.dirty is None:
             # Load the handler if needed
@@ -455,7 +456,7 @@ class RWDatabase(RODatabase):
         if self.has_handler(target):
             raise RuntimeError, messages.MSG_URI_IS_BUSY % target
 
-        handler = self.get_handler(source)
+        handler = self._get_handler(source)
         if isinstance(handler, Folder):
             # Folder
             fs = self.fs
@@ -481,7 +482,7 @@ class RWDatabase(RODatabase):
         if self.has_handler(target):
             raise RuntimeError, messages.MSG_URI_IS_BUSY % target
 
-        handler = self.get_handler(source)
+        handler = self._get_handler(source)
         if isinstance(handler, Folder):
             # Folder
             fs = self.fs

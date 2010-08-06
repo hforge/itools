@@ -65,7 +65,7 @@ class Handler(object):
             raise NotImplementedError, MSG_NOT_ATTACHED
 
         key = database.fs.resolve2(self.key, reference)
-        return database.get_handler(key, cls, soft)
+        return database._get_handler(key, cls, soft)
 
 
     def get_handlers(self, reference='.'):

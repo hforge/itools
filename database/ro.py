@@ -261,9 +261,7 @@ class ROGitDatabase(object):
         raise ValueError
 
 
-    def get_handler(self, key, cls=None, soft=False):
-        key = self.normalize_key(key)
-
+    def _get_handler(self, key, cls=None, soft=False):
         # Synchronize
         handler = self._sync_filesystem(key)
         if handler is not None:
@@ -298,11 +296,16 @@ class ROGitDatabase(object):
         return handler
 
 
+    def get_handler(self, key, cls=None, soft=False):
+        key = self.normalize_key(key)
+        return self._get_handler(key, cls, soft)
+
+
     def get_handlers(self, key):
         base = self.normalize_key(key)
         for name in self.get_handler_names(base):
             key = self.fs.resolve2(base, name)
-            yield self.get_handler(key)
+            yield self._get_handler(key)
 
 
     def touch_handler(self, key, handler=None):

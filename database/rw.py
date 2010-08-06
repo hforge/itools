@@ -116,9 +116,7 @@ class GitDatabase(ROGitDatabase):
         return super(GitDatabase, self).has_handler(key)
 
 
-    def get_handler(self, key, cls=None, soft=False):
-        key = self.normalize_key(key)
-
+    def _get_handler(self, key, cls=None, soft=False):
         # A hook to handle the new directories
         base = key + '/'
         n = len(base)
@@ -129,7 +127,7 @@ class GitDatabase(ROGitDatabase):
                 return cls(key, database=self)
 
         # The other files
-        return super(GitDatabase, self).get_handler(key, cls, soft)
+        return super(GitDatabase, self)._get_handler(key, cls, soft)
 
 
     def set_handler(self, key, handler):
@@ -153,7 +151,7 @@ class GitDatabase(ROGitDatabase):
         key = self.normalize_key(key)
 
         # Case 1: file
-        handler = self.get_handler(key)
+        handler = self._get_handler(key)
         if not isinstance(handler, Folder):
             self._discard_handler(key)
             if key in self.added:
@@ -189,7 +187,7 @@ class GitDatabase(ROGitDatabase):
 
         # Useful for the phantoms
         if handler is None:
-            handler = self.get_handler(key)
+            handler = self._get_handler(key)
 
         # The phantoms become real files
         if self.is_phantom(handler):
@@ -244,7 +242,7 @@ class GitDatabase(ROGitDatabase):
         if self.has_handler(target):
             raise RuntimeError, MSG_URI_IS_BUSY % target
 
-        handler = self.get_handler(source)
+        handler = self._get_handler(source)
 
         # Folder
         if isinstance(handler, Folder):
@@ -279,7 +277,7 @@ class GitDatabase(ROGitDatabase):
         cache = self.cache
 
         # Case 1: file
-        handler = self.get_handler(source)
+        handler = self._get_handler(source)
         if not isinstance(handler, Folder):
             if fs.exists(source):
                 fs.move(source, target)

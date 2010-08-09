@@ -138,7 +138,7 @@ class GitDatabase(ROGitDatabase):
             raise ValueError, 'only new files can be added, try to clone first'
 
         key = self.normalize_key(key)
-        if self.has_handler(key):
+        if self._get_handler(key, soft=True) is not None:
             raise RuntimeError, MSG_URI_IS_BUSY % key
 
         self.push_handler(key, handler)
@@ -239,7 +239,7 @@ class GitDatabase(ROGitDatabase):
             return
 
         # Check the target is free
-        if self.has_handler(target):
+        if self._get_handler(target, soft=True) is not None:
             raise RuntimeError, MSG_URI_IS_BUSY % target
 
         handler = self._get_handler(source)
@@ -269,7 +269,7 @@ class GitDatabase(ROGitDatabase):
             return
 
         # Check the target is free
-        if self.has_handler(target):
+        if self._get_handler(target, soft=True) is not None:
             raise RuntimeError, MSG_URI_IS_BUSY % target
 
         # Go

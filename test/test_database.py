@@ -108,11 +108,13 @@ class GitDatabaseTestCase(TestCase):
 
         fables.del_handler('31.txt')
         fables.set_handler('31.txt', TextFile())
-        self.assertEqual(fables.has_handler('31.txt'), True)
+        self.assertEqual(fables.get_handler('31.txt', soft=True) is not None,
+                         True)
         # Save
         self.database.save_changes()
         self.assertEqual(lfs.exists('fables/database/31.txt'), True)
-        self.assertEqual(fables.has_handler('31.txt'), True)
+        self.assertEqual(fables.get_handler('31.txt', soft=True) is not None,
+                         True)
 
 
     def test_dot_git(self):

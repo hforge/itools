@@ -66,11 +66,13 @@ class FolderTestCase(TestCase):
         folder = self.root.get_handler('tests')
         folder.del_handler('toto.txt')
         self.assertEqual(lfs.exists('tests/toto.txt'), True)
-        self.assertEqual(folder.has_handler('toto.txt'), False)
+        self.assertEqual(folder.get_handler('toto.txt', soft=True) is not None,
+                         False)
         # Save
         self.database.save_changes()
         self.assertEqual(lfs.exists('tests/toto.txt'), False)
-        self.assertEqual(folder.has_handler('toto.txt'), False)
+        self.assertEqual(folder.get_handler('toto.txt', soft=True) is not None,
+                         False)
 
 
     def test_remove_add(self):
@@ -78,11 +80,13 @@ class FolderTestCase(TestCase):
         folder.del_handler('toto.txt')
         folder.set_handler('toto.txt', TextFile())
         self.assertEqual(lfs.exists('tests/toto.txt'), True)
-        self.assertEqual(folder.has_handler('toto.txt'), True)
+        self.assertEqual(folder.get_handler('toto.txt', soft=True) is not None,
+                         True)
         # Save
         self.database.save_changes()
         self.assertEqual(lfs.exists('tests/toto.txt'), True)
-        self.assertEqual(folder.has_handler('toto.txt'), True)
+        self.assertEqual(folder.get_handler('toto.txt', soft=True) is not None,
+                         True)
 
 
     def test_add_remove(self):
@@ -102,11 +106,13 @@ class FolderTestCase(TestCase):
         folder.set_handler('toto.txt', TextFile())
         folder.del_handler('toto.txt')
         self.assertEqual(lfs.exists('tests/toto.txt'), True)
-        self.assertEqual(folder.has_handler('toto.txt'), False)
+        self.assertEqual(folder.get_handler('toto.txt', soft=True) is not None,
+                         False)
         # Save
         self.database.save_changes()
         self.assertEqual(lfs.exists('tests/toto.txt'), False)
-        self.assertEqual(folder.has_handler('toto.txt'), False)
+        self.assertEqual(folder.get_handler('toto.txt', soft=True) is not None,
+                         False)
 
 
     def test_remove_remove(self):
@@ -126,11 +132,14 @@ class FolderTestCase(TestCase):
     def test_remove_abort(self):
         database = self.database
         folder = self.root.get_handler('tests')
-        self.assertEqual(folder.has_handler('toto.txt'), True)
+        self.assertEqual(folder.get_handler('toto.txt', soft=True) is not None,
+                         True)
         folder.del_handler('toto.txt')
-        self.assertEqual(folder.has_handler('toto.txt'), False)
+        self.assertEqual(folder.get_handler('toto.txt', soft=True) is not None,
+                         False)
         database.abort_changes()
-        self.assertEqual(folder.has_handler('toto.txt'), True)
+        self.assertEqual(folder.get_handler('toto.txt', soft=True) is not None,
+                         True)
         # Save
         database.save_changes()
         self.assertEqual(lfs.exists('tests/toto.txt'), True)
@@ -154,11 +163,14 @@ class FolderTestCase(TestCase):
     def test_add_abort(self):
         database = self.database
         folder = self.root.get_handler('tests')
-        self.assertEqual(folder.has_handler('fofo.txt'), False)
+        self.assertEqual(folder.get_handler('fofo.txt', soft=True) is not None,
+                         False)
         folder.set_handler('fofo.txt', TextFile())
-        self.assertEqual(folder.has_handler('fofo.txt'), True)
+        self.assertEqual(folder.get_handler('fofo.txt', soft=True) is not None,
+                         True)
         database.abort_changes()
-        self.assertEqual(folder.has_handler('fofo.txt'), False)
+        self.assertEqual(folder.get_handler('fofo.txt', soft=True) is not None,
+                         False)
         # Save
         database.save_changes()
         self.assertEqual(lfs.exists('tests/fofo.txt'), False)

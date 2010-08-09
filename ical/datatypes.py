@@ -107,7 +107,7 @@ record_properties = freeze({
   'PERCENT-COMPLETE': Integer(multiple=False),
   'PRIORITY': Integer(multiple=False),
   'RESOURCES': Unicode(multiple=True),
-  'STATUS': Unicode(multiple=False),
+  'STATUS': String(multiple=False),
   'SUMMARY': Unicode(multiple=False, indexed=True, mandatory=True),
   # Date & Time component properties
   'COMPLETED': DateTime(multiple=False),

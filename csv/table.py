@@ -18,6 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from copy import deepcopy
 from datetime import datetime
 
 # Import from itools
@@ -322,6 +323,17 @@ class Property(object):
     def __init__(self, value, **kw):
         self.value = value
         self.parameters = kw or None
+
+
+    def clone(self):
+        # Copy the value and parameters
+        value = deepcopy(self.value)
+        parameters = {}
+        for p_key, p_value in self.parameters.iteritems():
+            c_value = deepcopy(p_value)
+            parameters[p_key] = c_value
+
+        return Property(value, **parameters)
 
 
     def get_parameter(self, name, default=None):

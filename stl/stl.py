@@ -138,9 +138,7 @@ class NamespaceStack(list):
     """
 
     def lookup(self, name):
-        stack = self[:]
-        stack.reverse()
-        for namespace in stack:
+        for namespace in reversed(self):
             try:
                 return lookup(namespace, name)
             except STLError:

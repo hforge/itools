@@ -162,7 +162,7 @@ subs_expr = compile("\$\{(.+?)\}")
 
 
 def substitute_boolean(data, stack, repeat_stack, encoding='utf-8'):
-    if isinstance(data, bool):
+    if type(data) is bool:
         return data
 
     match = subs_expr_solo.match(data)
@@ -180,7 +180,7 @@ def substitute_attribute(data, stack, repeat_stack, encoding='utf-8'):
     Returns a tuple with the interpreted string and the number of
     substitutions done.
     """
-    if not isinstance(data, str):
+    if type(data) is not str:
         raise ValueError, 'byte string expected, not %s' % type(data)
     # Solo, preserve the value None
     match = subs_expr_solo.match(data)
@@ -191,7 +191,7 @@ def substitute_attribute(data, stack, repeat_stack, encoding='utf-8'):
         if value is None:
             return None, 1
         # Send the string
-        if isinstance(value, MSG):
+        if type(value) is MSG:
             return value.gettext().encode(encoding), 1
         elif type(value) is unicode:
             return value.encode(encoding), 1
@@ -204,7 +204,7 @@ def substitute_attribute(data, stack, repeat_stack, encoding='utf-8'):
         if value is None:
             return ''
         # Send the string
-        if isinstance(value, MSG):
+        if type(value) is MSG:
             return value.gettext().encode(encoding)
         elif type(value) is unicode:
             return value.encode(encoding)
@@ -236,16 +236,17 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
             if value is None:
                 continue
             # Yield
-            if isinstance(value, MSG):
+            value_type = type(value)
+            if value_type is unicode:
+                yield TEXT, value.encode(encoding), 0
+            elif isinstance(value, MSG):
                 value = value.gettext()
                 yield TEXT, value.encode(encoding), 0
-            elif isinstance(value, (list, GeneratorType, XMLParser)):
+            elif value_type in (list, GeneratorType, XMLParser):
                 for x in value:
                     if type(x) is not tuple:
                         raise STLError, ERR_EXPR_XML % (type(x), segment)
                     yield x
-            elif type(value) is unicode:
-                yield TEXT, value.encode(encoding), 0
             else:
                 yield TEXT, str(value), 0
         elif segment:
@@ -264,7 +265,7 @@ def stl(document=None, namespace=freeze({}), prefix=None, events=None,
     if prefix is not None:
         stream = set_prefix(events, prefix)
         events = list(stream)
-    elif isinstance(events, (GeneratorType, XMLParser)):
+    elif type(events) in (GeneratorType, XMLParser):
         events = list(events)
 
     # Initialize the namespace stacks

@@ -334,13 +334,13 @@ def process_start_tag(tag_uri, tag_name, attributes, stack, repeat, encoding):
     return START_ELEMENT, (tag_uri, tag_name, aux), None
 
 
-def process(events, start, end, stack, repeat_stack, encoding, skip_events):
+def process(events, start, end, stack, re_stack, encoding, skip_events):
     skip = set()
     i = start
     while i < end:
         event, value, line = events[i]
         if event == TEXT:
-            stream = substitute(value, stack, repeat_stack, encoding)
+            stream = substitute(value, stack, re_stack, encoding)
             for event, value, kk in stream:
                 yield event, value, line
         elif event == START_ELEMENT:
@@ -348,47 +348,45 @@ def process(events, start, end, stack, repeat_stack, encoding, skip_events):
             # stl:repeat
             if stl_repeat in attributes:
                 attributes = attributes.copy()
-                expr = attributes.pop(stl_repeat)
-                name, values = evaluate_repeat(expr, stack, repeat_stack)
-                # Build new namespace stacks
-                loops = []
+                re_expr = attributes.pop(stl_repeat)
+                if_expr = attributes.pop(stl_if, None)
+                loop_end = find_end(events, i)
+                i += 1
+                # repeat...
+                name, values = evaluate_repeat(re_expr, stack, re_stack)
                 n_values = len(values)
                 for j, value in enumerate(values):
-                    loop_stack = stack[:]
-                    loop_stack.append({name: value})
-                    loop_repeat = repeat_stack[:]
-                    loop_repeat.append(
+                    # 1. New stacks
+                    stack.append({name: value})
+                    re_stack.append(
                         {name: {'index': j,
                                 'start': j == 0,
                                 'end': j == n_values - 1,
                                 'even': j % 2 and 'odd' or 'even'}})
-                    loops.append((loop_stack, loop_repeat))
-                # Filter the branches when "stl:if" is present
-                if stl_if in attributes:
-                    expr = attributes.pop(stl_if)
-                    loops = [ (x, y) for x, y in loops
-                              if evaluate_if(expr, x, y) ]
-                # Process the loops
-                loop_end = find_end(events, i)
-                i += 1
-                for loop_stack, loop_repeat in loops:
+                    # 2. stl:if
+                    if if_expr and not evaluate_if(if_expr, stack, re_stack):
+                        continue
+                    # 3. Process
                     x = process_start_tag(tag_uri, tag_name, attributes,
-                                          loop_stack, loop_repeat, encoding)
+                                          stack, re_stack, encoding)
                     if x is not None:
                         yield x
-                    for y in process(events, i, loop_end, loop_stack,
-                                     loop_repeat, encoding, skip_events):
+                    for y in process(events, i, loop_end, stack, re_stack,
+                                     encoding, skip_events):
                         yield y
                     if x is not None:
                         yield events[loop_end]
+                    # 4. Restore stacks
+                    stack.pop()
+                    re_stack.pop()
                 i = loop_end
             # stl:if
             elif stl_if in attributes:
                 attributes = attributes.copy()
                 expression = attributes.pop(stl_if)
-                if evaluate_if(expression, stack, repeat_stack):
+                if evaluate_if(expression, stack, re_stack):
                     x = process_start_tag(tag_uri, tag_name, attributes,
-                                          stack, repeat_stack, encoding)
+                                          stack, re_stack, encoding)
                     if x is None:
                         skip.add(find_end(events, i))
                     else:
@@ -399,7 +397,7 @@ def process(events, start, end, stack, repeat_stack, encoding, skip_events):
             else:
                 if tag_uri != stl_uri:
                     x = process_start_tag(tag_uri, tag_name, attributes,
-                                          stack, repeat_stack, encoding)
+                                          stack, re_stack, encoding)
                     if x is None:
                         skip.add(find_end(events, i))
                     else:

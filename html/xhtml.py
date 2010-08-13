@@ -47,7 +47,7 @@ stream_to_html_map = (
     lambda x: '',                      # XML_DECL
     lambda x: get_doctype(x[0], x[1]), # DOCUMENT_TYPE
     get_start_tag,                     # START_ELEMENT
-    lambda x: get_end_tag(x[0], x[1]), # END_ELEMENT
+    get_end_tag,                       # END_ELEMENT
     XMLContent.encode,                 # TEXT
     lambda x: '<!--%s-->' % x,         # COMMENT
     lambda x: '',                      # PI

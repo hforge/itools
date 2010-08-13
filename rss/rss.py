@@ -133,7 +133,7 @@ class RSSFile(TextFile):
                 if local_name == 'rss':
                     pass
                 elif local_name not in all_elements:
-                    data += get_end_tag(namespace_uri, local_name)
+                    data += get_end_tag((namespace_uri, local_name))
                 elif local_name == 'channel':
                     self.channel = stack.pop()
                 elif local_name == 'image':

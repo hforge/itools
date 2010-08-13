@@ -153,7 +153,7 @@ def _get_translatable_blocks(events):
 
                 # Is inline ?
                 if schema.is_inline:
-                    message.append_end_format([(get_end_tag(*value), False,
+                    message.append_end_format([(get_end_tag(value), False,
                                                 None)], id_stack.pop(), line)
                     continue
         elif type == TEXT:

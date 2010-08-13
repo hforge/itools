@@ -71,10 +71,21 @@ def get_start_tag(value):
         return s + '>'
 
 
-def get_end_tag(tag_uri, tag_name):
-    if is_empty(tag_uri, tag_name):
+def get_end_tag(value):
+    # NOTE This method must be fast, that's why we copy here some code from
+    # other methods (like get_qname), to reduce calls.
+
+    tag_uri, tag_name = value
+    namespace = get_namespace(tag_uri)
+    # Case 1: empty
+    schema = namespace.get_element_schema(tag_name)
+    if getattr(schema, 'is_empty', False):
         return ''
-    return '</%s>' % get_qname(tag_uri, tag_name)
+    # Case 2: no prefix
+    if tag_uri is None or namespace.prefix is None:
+        return '</%s>' % tag_name
+    # Case 3: prefix
+    return '</%s:%s>' % (namespace.prefix, tag_name)
 
 
 def get_doctype(name, doctype):
@@ -96,7 +107,7 @@ stream_to_str_map = (
     stream_to_str_xmldecl,             # XML_DECL
     lambda x: get_doctype(x[0], x[1]), # DOCUMENT_TYPE
     get_start_tag,                     # START_ELEMENT
-    lambda x: get_end_tag(x[0], x[1]), # END_ELEMENT
+    get_end_tag,                       # END_ELEMENT
     XMLContent.encode,                 # TEXT
     lambda x: '<!--%s-->' % x,         # COMMENT
     lambda x: '',                      # PI

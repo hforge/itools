@@ -764,9 +764,9 @@ def paragraph_stream(stream, elt_tag_name, elt_attributes, context,
                 end_tag = True
                 while context.tag_stack[-1]:
                     tag, attrib = context.tag_stack[-1].pop()
-                    content[-1] += get_end_tag(None, P_FORMAT.get(tag, 'b'))
+                    content[-1] += get_end_tag((None, P_FORMAT.get(tag, 'b')))
                 context.tag_stack.pop()
-                content[-1] += get_end_tag(None, P_FORMAT.get(tag_name, 'b'))
+                content[-1] += get_end_tag((None, P_FORMAT.get(tag_name, 'b')))
 
         #### TEXT ELEMENT ####
         elif event == TEXT:
@@ -1087,7 +1087,7 @@ def create_paragraph(context, element, content, style_css = {}):
         for tag in context.style_tag_stack:
             start_tags += '<%s>' % tag
         while context.style_tag_stack:
-            end_tags += get_end_tag(None, context.style_tag_stack.pop())
+            end_tags += get_end_tag((None, context.style_tag_stack.pop()))
     if element[0] in ('pre', 'xpre'):
         content = join_content(content)
         content = start_tags + content + end_tags

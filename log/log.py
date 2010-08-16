@@ -24,11 +24,20 @@ of the Glib API).
 """
 
 # Import from the Standard Library
-from os import getpid
+from datetime import datetime, timedelta
+from glob import glob
+from gzip import open as gz_open
+from os import getpid, remove
+from os.path import exists
 from socket import gethostname
+from shutil import move
 from sys import exc_info, exit, stdout, stderr
 from time import strftime
 from traceback import format_exception
+
+# Import from itools
+from itools.loop import cron
+
 
 
 # Log levels
@@ -37,6 +46,9 @@ ERROR = (1 << 3)
 WARNING = (1 << 2)
 INFO = (1 << 1)
 DEBUG = (1 << 0)
+
+# Number of files for the logrotate
+LOG_FILES_NUMBER = 4
 
 
 ###########################################################################
@@ -141,6 +153,89 @@ class Logger(object):
         # Exit on fatal errors
         if level & FATAL:
             exit()
+
+
+    def launch_rotate(self, interval):
+        log_file = self.log_file
+
+        # We save in a file ?
+        if log_file is None:
+            return
+
+        # Find the more recent date
+        dates = []
+        n2 = '[0-9][0-9]'
+        date_pattern = n2 + n2 + '-' + n2 + '-' + n2 + '_' + n2 + n2
+        for name in glob(log_file + '.' + date_pattern + '.gz'):
+            try:
+                date = datetime.strptime(name[-18:-3], '%Y-%m-%d_%H%M')
+            except ValueError:
+                continue
+            dates.append(date)
+        if dates:
+            dates.sort()
+            last = dates[-1]
+        else:
+            # If here, there is no rotated files => so, we create one
+            self.rotate()
+            last = datetime.now()
+
+        # Compute the next call
+        next_call = last + interval - datetime.now()
+        if next_call <= timedelta(0):
+            next_call = timedelta(seconds=0)
+
+        # Call cron
+        cron(self.rotate, interval, next_call)
+
+
+    def rotate(self):
+        log_file = self.log_file
+
+        # We save in a file ?
+        if log_file is None:
+            return
+
+        # Save the current log
+        # XXX In a multithreads context, we must add a lock here
+        new_name = log_file + '.' + strftime('%Y-%m-%d_%H%M')
+        # We don't delete an existing file
+        if exists(new_name + '.gz'):
+            # If here, interval < 1min
+            return True
+        # Yet a log file ?
+        if exists(log_file):
+            # Yes, we move it
+            move(log_file, new_name)
+        else:
+            # No, we create an empty one
+            open(new_name, 'w').close()
+
+        # Compress it
+        f_in = open(new_name, 'rb')
+        f_out = gz_open(new_name + '.gz', 'wb')
+        f_out.writelines(f_in)
+        f_out.close()
+        f_in.close()
+        remove(new_name)
+
+        # Suppress the old files
+        files = []
+        n2 = '[0-9][0-9]'
+        date_pattern = n2 + n2 + '-' + n2 + '-' + n2 + '_' + n2 + n2
+        for name in glob(log_file + '.' + date_pattern + '.gz'):
+            try:
+                date = datetime.strptime(name[-18:-3], '%Y-%m-%d_%H%M')
+            except ValueError:
+                continue
+            files.append( (date, name) )
+        files.sort(reverse=True)
+        for a_file in files[LOG_FILES_NUMBER:]:
+            remove(a_file[1])
+
+        # We return return always True to be "cron" compliant
+        return True
+
 
 
 register_logger(Logger(), None)

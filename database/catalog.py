@@ -44,6 +44,25 @@ OP_VALUE_LE = Query.OP_VALUE_LE
 TQ_FLAGS = (QueryParser.FLAG_LOVEHATE +
             QueryParser.FLAG_PHRASE +
             QueryParser.FLAG_WILDCARD)
+TRANSLATE_MAP = { ord(u'À'): ord(u'A'),
+                  ord(u'Â'): ord(u'A'),
+                  ord(u'â'): ord(u'a'),
+                  ord(u'à'): ord(u'a'),
+                  ord(u'Ç'): ord(u'C'),
+                  ord(u'ç'): ord(u'c'),
+                  ord(u'É'): ord(u'E'),
+                  ord(u'Ê'): ord(u'E'),
+                  ord(u'é'): ord(u'e'),
+                  ord(u'ê'): ord(u'e'),
+                  ord(u'è'): ord(u'e'),
+                  ord(u'ë'): ord(u'e'),
+                  ord(u'Î'): ord(u'I'),
+                  ord(u'î'): ord(u'i'),
+                  ord(u'ï'): ord(u'i'),
+                  ord(u'ô'): ord(u'o'),
+                  ord(u'û'): ord(u'u'),
+                  ord(u'ù'): ord(u'u'),
+                  ord(u'ü'): ord(u'u') }
 
 
 
@@ -735,6 +754,10 @@ def _index_unicode(xdoc, value, prefix, language, termpos):
     tg.set_termpos(termpos - 1)
     # XXX The words are saved twice: with prefix and with Zprefix
     #tg.set_stemmer(stemmer)
+
+    # Suppress the accents
+    value = value.translate(TRANSLATE_MAP)
+
     tg.index_text(value, 1, prefix)
     return tg.get_termpos() + 1
 

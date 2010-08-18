@@ -536,6 +536,7 @@ class POFile(TextFile):
         messages = self.messages
         if key in messages:
             unit = messages[key]
+            unit.target = target
         else:
             unit = POUnit(comments, context, source, target, {}, fuzzy)
             messages[key] = unit
@@ -570,6 +571,10 @@ class POFile(TextFile):
         if message:
             return ''.join(message.target)
         return None
+
+
+    def set_msgstr(self, source, target, context=None):
+        self._set_message(context, [source], [target])
 
 
     def gettext(self, source, context=None):

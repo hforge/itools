@@ -77,7 +77,7 @@ log_access (GSignalInvocationHint *ihint, guint n_param_values,
   /* The callback function must have this signature:
    * log_access(self, host, request_line, status_code, body_length)
    * => str str int int*/
-  p_server = (PyObject*) data;  request_line = get_request_line (s_msg);
+  p_server = (PyObject*) data;
   if (!PyObject_CallMethod (p_server, "log_access", "ssii",
                             soup_client_context_get_host (s_client),
                             request_line,

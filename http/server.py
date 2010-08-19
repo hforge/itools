@@ -15,36 +15,28 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from os import fstat
-from sys import stdout
+from time import strftime
 
 # Import from itools
 from soup import SoupServer
+from itools.log import Logger, register_logger, log_info
 
 
 class HTTPServer(SoupServer):
 
     def __init__(self, access_log=None):
         SoupServer.__init__(self)
-        # Access log
-        self.access_log = access_log
-        if access_log is not None:
-            self.access_log_file = open(access_log, 'a+')
+
+        # The logger
+        logger = AccessLogger(log_file=access_log)
+        register_logger(logger, 'itools.web_access')
 
 
-    def log_access(self, line):
-        # Default: stdout
-        if self.access_log is None:
-            stdout.write(line)
-            return
-
-        # File
-        log = self.access_log_file
-        if fstat(log.fileno())[3] == 0:
-            log = open(self.access_log, 'a+')
-            self.access_log_file = log
-        log.write(line)
-        log.flush()
+    def log_access(self, host, request_line, status_code, body_length):
+        now = strftime('%d/%b/%Y:%H:%M:%S')
+        message = '%s - - [%s] "%s" %d %d\n' % (host, now, request_line,
+                                                status_code, body_length)
+        log_info(message, domain='itools.web_access')
 
 
     def listen(self, address, port):
@@ -57,3 +49,10 @@ class HTTPServer(SoupServer):
         SoupServer.stop(self)
         if self.access_log:
             self.access_log_file.close()
+
+
+
+class AccessLogger(Logger):
+    def format(self, domain, level, message):
+        return message
+

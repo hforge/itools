@@ -58,41 +58,6 @@ get_request_line (SoupMessage * s_msg)
 }
 
 
-static gchar *
-get_access_log_line (SoupMessage * s_msg, SoupClientContext * s_client)
-{
-  /* Common Log Format
-   *  - IP address of the client
-   *  - RFC 1413 identity (not available)
-   *  - username (TODO not provided right now, should we?)
-   *  - time (FIXME we use the timezone name, use the offset, e.g. +0100)
-   *  - the request line
-   *  - the status code
-   *  - content length of the response
-   */
-  time_t ts_t;
-  struct tm * ts_tm;
-  char ts[32];
-  gchar * request_line;
-  gchar * log_line;
-
-  /* Timestamp */
-  ts_t = time (NULL);
-  ts_tm = gmtime (&ts_t);
-  strftime (ts, sizeof(ts), "%d/%b/%Y:%H:%M:%S %Z", ts_tm);
-
-  /* The log line */
-  request_line = get_request_line (s_msg);
-  log_line = g_strdup_printf ("%s - - [%s] \"%s\" %03d %d\n",
-                              soup_client_context_get_host (s_client),
-                              ts, request_line, s_msg->status_code,
-                              (int) s_msg->response_body->length);
-  free (request_line);
-
-  return log_line;
-}
-
-
 static gboolean
 log_access (GSignalInvocationHint *ihint, guint n_param_values,
             const GValue *param_values, gpointer data)
@@ -100,24 +65,32 @@ log_access (GSignalInvocationHint *ihint, guint n_param_values,
   PyObject * p_server;
   SoupMessage * s_msg;
   SoupClientContext * s_client;
-  gchar * log_line;
+  gchar * request_line;
 
-  /* The log line */
   s_msg = (SoupMessage*) g_value_get_object (param_values + 1);
   s_client = (SoupClientContext*) g_value_get_boxed(param_values + 2);
-  log_line = get_access_log_line (s_msg, s_client);
+
+  /* Must be freed */
+  request_line = get_request_line (s_msg);
 
   /* Python callback */
-  p_server = (PyObject*) data;
-  if (!PyObject_CallMethod (p_server, "log_access", "s", log_line))
+  /* The callback function must have this signature:
+   * log_access(self, host, request_line, status_code, body_length)
+   * => str str int int*/
+  p_server = (PyObject*) data;  request_line = get_request_line (s_msg);
+  if (!PyObject_CallMethod (p_server, "log_access", "ssii",
+                            soup_client_context_get_host (s_client),
+                            request_line,
+                            s_msg->status_code,
+                            (int) s_msg->response_body->length))
     {
+      free (request_line);
       /* The Python callback should never fail, it is its responsability to
        * catch and handle exceptions */
       printf("ERROR! Python's access log failed, this should never happen\n");
       abort ();
     }
-
-  free (log_line);
+  free (request_line);
 
   return TRUE;
 }
@@ -488,7 +461,7 @@ PyServerType_listen (PyServer * self, PyObject * args, PyObject * kwdict)
 
   /* Arguments */
   if (!PyArg_ParseTuple (args, "zI", &address, &port))
-    return -1;
+    return NULL;
 
   /* s_address */
   if ( (address != NULL) && (strcmp(address, "") != 0) )
@@ -499,7 +472,7 @@ PyServerType_listen (PyServer * self, PyObject * args, PyObject * kwdict)
   if (!s_address)
   {
     PyErr_Format (PyExc_RuntimeError, "Bad address/port arguments");
-    return -1;
+    return NULL;
   }
   soup_address_resolve_sync(s_address, NULL);
 

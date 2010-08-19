@@ -233,7 +233,7 @@ class Logger(object):
         for a_file in files[LOG_FILES_NUMBER:]:
             remove(a_file[1])
 
-        # We return return always True to be "cron" compliant
+        # We return always True to be "cron" compliant
         return True
 
 

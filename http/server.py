@@ -16,6 +16,7 @@
 
 # Import from the Standard Library
 from time import strftime
+from datetime import timedelta
 
 # Import from itools
 from soup import SoupServer
@@ -29,6 +30,7 @@ class HTTPServer(SoupServer):
 
         # The logger
         logger = AccessLogger(log_file=access_log)
+        logger.launch_rotate(timedelta(weeks=3))
         register_logger(logger, 'itools.web_access')
 
 

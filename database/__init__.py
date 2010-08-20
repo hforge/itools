@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from catalog import Catalog, make_catalog, split_unicode, CatalogAware
+from catalog import Catalog, make_catalog, CatalogAware
 from queries import AllQuery, NotQuery, StartQuery, TextQuery
 from queries import RangeQuery, PhraseQuery, AndQuery, OrQuery
 from registry import get_register_fields, register_field
@@ -36,7 +36,6 @@ __all__ = [
     'make_catalog',
     'Catalog',
     'CatalogAware',
-    'split_unicode',
     # Queries
     'RangeQuery',
     'PhraseQuery',

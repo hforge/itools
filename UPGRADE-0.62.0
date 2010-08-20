@@ -113,3 +113,5 @@ hardcoded to be 'abspath'.
   is_stored     stored
 
 (3) Do not support catalogs in memory.
+
+(4) The 'split_unicode' function has been removed, use TextQuery instead.

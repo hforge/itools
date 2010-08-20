@@ -28,7 +28,6 @@ from xapian import sortable_serialise, sortable_unserialise, TermGenerator
 from itools.datatypes import Integer, Unicode, String
 from itools.fs import lfs
 from itools.i18n import is_punctuation
-from itools.log import log_warning
 from queries import AllQuery, AndQuery, NotQuery, OrQuery, PhraseQuery
 from queries import RangeQuery, StartQuery, TextQuery
 
@@ -63,7 +62,9 @@ TRANSLATE_MAP = { ord(u'À'): ord(u'A'),
                   ord(u'ô'): ord(u'o'),
                   ord(u'û'): ord(u'u'),
                   ord(u'ù'): ord(u'u'),
-                  ord(u'ü'): ord(u'u') }
+                  ord(u'ü'): ord(u'u'),
+                  ord(u"'"): ord(u' ') }
+SIMPLIFIED_TRANSLATE_MAP = { ord(u"'"): ord(u' ') }
 
 
 
@@ -73,12 +74,27 @@ TRANSLATE_MAP = { ord(u'À'): ord(u'A'),
 
 def split_unicode(text, language='en'):
     xdoc = Document()
-    _index_unicode(xdoc, text, '', language, 1)
+
+    # Japanese or Chinese
+    if language in ['ja', 'zh']:
+        _index_cjk(xdoc, text, '', 1)
+    # Any other language
+    else:
+        tg = TermGenerator()
+        tg.set_document(xdoc)
+        tg.set_termpos(0)
+
+        # Hack for '
+        text = text.translate(SIMPLIFIED_TRANSLATE_MAP)
+
+        # Go
+        tg.index_text(text, 1)
+
     words = []
     for term_list_item in xdoc:
         term = unicode(term_list_item.term, 'utf-8')
         for termpos in term_list_item.positer:
-            words.append((termpos, term))
+            words.append( (termpos, term) )
     words.sort()
     return [ word[1] for word in words ]
 

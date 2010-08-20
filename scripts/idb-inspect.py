@@ -96,11 +96,11 @@ def dump_fields(db, metadata, docs, only_field, show_values, show_terms):
         if name == 'abspath':
             print ' * key field'
         if 'value' in info:
-            print ' * stored'
+            print ' * stored (%d)' % info['value']
         else:
             print ' * not stored'
         if 'prefix' in info:
-            print ' * indexed'
+            print ' * indexed (%s)' % info['prefix']
         else:
             print ' * not indexed'
 

@@ -28,6 +28,7 @@ from xapian import sortable_serialise, sortable_unserialise, TermGenerator
 from itools.datatypes import Integer, Unicode, String
 from itools.fs import lfs
 from itools.i18n import is_punctuation
+from itools.log import log_warning
 from queries import AllQuery, AndQuery, NotQuery, OrQuery, PhraseQuery
 from queries import RangeQuery, StartQuery, TextQuery
 
@@ -756,7 +757,12 @@ def _index_unicode(xdoc, value, prefix, language, termpos):
     #tg.set_stemmer(stemmer)
 
     # Suppress the accents
-    value = value.translate(TRANSLATE_MAP)
+    # XXX Delete the "if"
+    if isinstance(value, unicode):
+        value = value.translate(TRANSLATE_MAP)
+    else:
+        raise ValueError, 'The value "%s", field "%s", is not an unicode' % (
+                           value, prefix)
 
     tg.index_text(value, 1, prefix)
     return tg.get_termpos() + 1

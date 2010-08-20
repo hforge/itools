@@ -744,25 +744,25 @@ def _index_cjk(xdoc, value, prefix, termpos):
 
 
 
-def _index_unicode(xdoc, value, prefix, language, termpos):
-    # Japanese or Chinese
+def _index_unicode(xdoc, value, prefix, language, termpos,
+                   TRANSLATE_MAP=TRANSLATE_MAP):
+    # Check type
+    if type(value) is not unicode:
+        msg = 'The value "%s", field "%s", is not a unicode'
+        raise TypeError, msg % (value, prefix)
+
+    # Case 1: Japanese or Chinese
     if language in ['ja', 'zh']:
         return _index_cjk(xdoc, value, prefix, termpos)
 
-    # Any other language
+    # Case 2: Any other language
+    # XXX The words are saved twice: with prefix and with Zprefix
     tg = TermGenerator()
     tg.set_document(xdoc)
     tg.set_termpos(termpos - 1)
-    # XXX The words are saved twice: with prefix and with Zprefix
-    #tg.set_stemmer(stemmer)
-
-    # Suppress the accents
-    # XXX Delete the "if"
-    if isinstance(value, unicode):
-        value = value.translate(TRANSLATE_MAP)
-    else:
-        raise ValueError, 'The value "%s", field "%s", is not an unicode' % (
-                           value, prefix)
+    # Suppress the accents (FIXME This should be done by the stemmer)
+    value = value.translate(TRANSLATE_MAP)
+#    tg.set_stemmer(stemmer)
 
     tg.index_text(value, 1, prefix)
     return tg.get_termpos() + 1

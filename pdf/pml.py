@@ -1457,6 +1457,7 @@ def build_anchor_attributes(attributes, context):
 
 def build_img_attributes(attributes, context):
     attrs = {}
+    size = None
     for key, attr_value in attributes.iteritems():
         key = key[1]
         if key == 'src':
@@ -1469,7 +1470,7 @@ def build_img_attributes(attributes, context):
 
     exist_width = exist_attribute(attrs, ['width'])
     exist_height = exist_attribute(attrs, ['height'])
-    if exist_width or exist_height:
+    if size and (exist_width or exist_height):
         width, height = size
         width = width * 1.0
         height = height * 1.0

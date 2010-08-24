@@ -174,7 +174,7 @@ class FieldsTestCase(TestCase):
                  u' quelques-uns jouissent, au préjudice des autres,')
         expected = [u'celle', u'ci', u'consiste', u'dans', u'les',
             u'differents', u'privileges', u'dont', u'quelques', u'uns',
-            u'jouissent', u'au', u'préjudice', u'des', u'autres']
+            u'jouissent', u'au', u'prejudice', u'des', u'autres']
 
         words = split(Unicode, value, 'fr')
         self.assertEqual(words, expected)
@@ -408,12 +408,12 @@ class CatalogTestCase(TestCase):
         results = catalog.search(query)
         self.assertEqual(len(results), 4)
         # Not Query (1/2)
-        query = NotQuery(PhraseQuery('data', 'lion'))
+        query = NotQuery(PhraseQuery('data', u'lion'))
         results = catalog.search(query)
         self.assertEqual(len(results), 27)
         # Not Query (2/2)
-        query1 = PhraseQuery('data', 'mouse')
-        query2 = NotQuery(PhraseQuery('data', 'lion'))
+        query1 = PhraseQuery('data', u'mouse')
+        query2 = NotQuery(PhraseQuery('data', u'lion'))
         query = AndQuery(query1, query2)
         results = catalog.search(query)
         self.assertEqual(len(results), 2)
@@ -569,7 +569,7 @@ class Document(CatalogAware):
 
 
     def get_catalog_values(self):
-        data = lfs.open(self.abspath).read()
+        data = unicode(lfs.open(self.abspath).read())
 
         return {
             'abspath': basename(self.abspath),

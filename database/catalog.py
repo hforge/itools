@@ -741,12 +741,13 @@ def _index_unicode(xdoc, value, prefix, language, termpos,
         return _index_cjk(xdoc, value, prefix, termpos)
 
     # Case 2: Any other language
-    # XXX The words are saved twice: with prefix and with Zprefix
     tg = TermGenerator()
     tg.set_document(xdoc)
     tg.set_termpos(termpos - 1)
     # Suppress the accents (FIXME This should be done by the stemmer)
     value = value.translate(TRANSLATE_MAP)
+    # XXX With the stemmer, the words are saved twice:
+    # with prefix and with Zprefix
 #    tg.set_stemmer(stemmer)
 
     tg.index_text(value, 1, prefix)

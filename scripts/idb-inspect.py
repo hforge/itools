@@ -197,12 +197,12 @@ if  __name__ == '__main__':
                       help='dump all documents stored in the database')
 
     # Only field
-    parser.add_option('--only_field', action='store', dest='only_field',
+    parser.add_option('--only-field', action='store', dest='only_field',
                       metavar='REGEXP',
                       help='dump only fields that match the given regexp')
 
     # Only Docs
-    parser.add_option('--only_doc', action='store', dest='only_doc',
+    parser.add_option('--only-doc', action='store', dest='only_doc',
                       metavar='REGEXP',
                       help='dump only documents that have at least a "value" '
                            'that matches the regular expression')

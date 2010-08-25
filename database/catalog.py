@@ -546,9 +546,8 @@ class Catalog(object):
         # TextQuery, the field must be indexed
         if query_class is TextQuery:
             name = query.name
-            value = query.value
             if type(name) is not str:
-                raise TypeError, "unexpected '%s'" % type(name)
+                raise TypeError, "unexpected %s for 'name'" % type(name)
             # If there is a problem => an empty result
             if name not in metadata:
                 return Query()
@@ -559,6 +558,12 @@ class Catalog(object):
                 prefix = info['prefix']
             except KeyError:
                 raise ValueError, 'the field "%s" must be indexed' % name
+
+            # Remove accents from the value
+            value = query.value
+            if type(value) is not unicode:
+                raise TypeError, "unexpected %s for 'value'" % type(value)
+            value = value.translate(TRANSLATE_MAP)
 
             qp = QueryParser()
             qp.set_database(self._db)

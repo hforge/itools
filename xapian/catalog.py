@@ -225,7 +225,7 @@ class SearchResults(object):
         # Construction of the results
         results = []
         for doc in enquire.get_mset(start, size):
-            results.append(Doc(doc.get_document(), fields))
+            results.append(Doc(doc.document, fields))
 
         # sort_by=None/reverse=True
         if sort_by is None and reverse:

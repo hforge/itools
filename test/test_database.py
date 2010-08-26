@@ -423,23 +423,23 @@ class CatalogTestCase(TestCase):
         catalog = Catalog('tests/catalog', Document.fields)
 
         # Test +/-
-        query = TextQuery('title', 'Wolf')
+        query = TextQuery('title', u'Wolf')
         self.assertEqual(len(catalog.search(query)), 4)
-        query = TextQuery('title', 'Wolf -Dog')
+        query = TextQuery('title', u'Wolf -Dog')
         self.assertEqual(len(catalog.search(query)), 3)
-        query = TextQuery('title', 'Wolf -Dog +Lamb')
+        query = TextQuery('title', u'Wolf -Dog +Lamb')
         self.assertEqual(len(catalog.search(query)), 1)
 
         # Test ""
-        query = TextQuery('title', 'Wolf and')
+        query = TextQuery('title', u'Wolf and')
         self.assertEqual(len(catalog.search(query)), 24)
-        query = TextQuery('title', '"Wolf and"')
+        query = TextQuery('title', u'"Wolf and"')
         self.assertEqual(len(catalog.search(query)), 3)
 
         # Test *
-        query = TextQuery('title', 'Wol*')
+        query = TextQuery('title', u'Wol*')
         self.assertEqual(len(catalog.search(query)), 4)
-        query = TextQuery('title', 'Wo*')
+        query = TextQuery('title', u'Wo*')
         self.assertEqual(len(catalog.search(query)), 6)
 
 

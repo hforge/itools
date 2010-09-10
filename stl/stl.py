@@ -473,6 +473,12 @@ def rewrite_uris(stream, rewrite, ns_uri=xhtml_uri):
                             else:
                                 chunks.append(segment)
                         value = ''.join(chunks)
+                    # <object type="application/x-shockwave-flash" data="...">
+                    elif tag_name == 'object':
+                        if attr_name == 'data':
+                            attr_type = attributes.get((attr_uri, 'type'))
+                            if attr_type == 'application/x-shockwave-flash':
+                                value = rewrite(value)
                     # <param name="movie" value="X" />
                     elif tag_name == 'param':
                         if attr_name == 'value':

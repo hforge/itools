@@ -306,7 +306,7 @@ class UniqueError(ValueError):
     def __str__(self):
         return (
             u'the "{field}" field must be unique, the "{value}" value is '
-            u' already used.')
+            u' already used.').format(field=self.name, value=self.value)
 
 
 ###########################################################################

@@ -29,7 +29,7 @@ subp = None
 pipe_to_subprocess = None
 
 
-def start_subprocess(path):
+def start_subprocess(path, pid_file=None):
     """This methods starts another process that will be used to make
     questions to git.  This is done so because we fork to call the git
     commands, and using an specific process for this purpose minimizes
@@ -43,6 +43,8 @@ def start_subprocess(path):
         # Make and start the sub-process
         subp = Process(target=subprocess, args=(path, child_pipe))
         subp.start()
+        if pid_file is not None:
+            open(pid_file, 'w').write(str(subp.pid))
         register(stop_subprocess)
 
 

@@ -139,12 +139,6 @@ class ROGitDatabase(object):
         handler.__dict__.clear()
 
 
-    def _rollback(self):
-        """To be called when something goes wrong while saving the changes.
-        """
-        raise NotImplementedError
-
-
     def _abort_changes(self):
         """To be called to abandon the transaction.
         """

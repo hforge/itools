@@ -417,10 +417,6 @@ class GitDatabase(ROGitDatabase):
         self.resources_new2old.clear()
 
 
-    def _rollback(self):
-        pass
-
-
     def _before_commit(self):
         """This method is called before 'save_changes', and gives a chance
         to the database to check for preconditions, if an error occurs here
@@ -486,7 +482,7 @@ class GitDatabase(ROGitDatabase):
         # the transaction will be aborted
         try:
             data = self._before_commit()
-        except:
+        except Exception:
             self._abort_changes()
             self._cleanup()
             raise
@@ -495,7 +491,6 @@ class GitDatabase(ROGitDatabase):
         try:
             self._save_changes(data)
         except Exception:
-            self._rollback()
             self._abort_changes()
             raise
         finally:

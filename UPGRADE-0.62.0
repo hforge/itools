@@ -48,7 +48,19 @@ itools.csv
 This basically means that the table file handler is suitable only to store
 little data (e.g. small vocabularies).
 
-(2) The CSV file handler does not support indexing anymore.
+(2) Multilingual fields in tables must be defined explicitely:
+
+  # Before
+  record_properties = {
+      'title': Unicode(multiple=True),
+      ...}
+
+  # Now
+  record_properties = {
+      'title': Unicode(multilingual=True),
+      ...}
+
+(3) The CSV file handler does not support indexing anymore.
 
 
 itools.http

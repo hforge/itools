@@ -268,8 +268,11 @@ def parse_table(data):
 # Helper functions
 ###########################################################################
 def is_multilingual(datatype):
-    return issubclass(datatype, Unicode) and datatype.multiple
+    return getattr(datatype, 'multilingual', False)
 
+
+def is_multiple(datatype):
+    return getattr(datatype, 'multiple', False)
 
 
 def deserialize_parameters(parameters, schema, default=String(multiple=True)):
@@ -398,7 +401,7 @@ def property_to_str(name, property, datatype, p_schema, encoding='utf-8'):
             p_datatype = String(multiple=True)
         # Serialize the parameter
         # FIXME Use the encoding
-        if getattr(p_datatype, 'multiple', False):
+        if is_multiple(p_datatype):
             p_value = [
                 encode_param_value(p_name, x, p_datatype) for x in p_value ]
             p_value = ','.join(p_value)
@@ -583,7 +586,7 @@ class Table(File):
             datatype = get_datatype(name)
             value = datatype.decode(value)
             property = Property(value, **parameters)
-            if getattr(datatype, 'multiple', False) is True:
+            if is_multilingual(datatype) or is_multiple(datatype):
                 record.setdefault(name, []).append(property)
             elif name in record:
                 msg = "record %s: property '%s' can occur only once"
@@ -606,7 +609,7 @@ class Table(File):
         p_schema = self.record_parameters
         for name in names:
             datatype = get_datatype(name)
-            if getattr(datatype, 'multiple', False) is True:
+            if is_multilingual(datatype) or is_multiple(datatype):
                 properties = record[name]
             else:
                 properties = [record[name]]
@@ -801,7 +804,7 @@ class Table(File):
         except AttributeError:
             if name in self.record_properties:
                 datatype = self.get_datatype(name)
-                if getattr(datatype, 'multiple', False) is True:
+                if is_multilingual(datatype) or is_multiple(datatype):
                     return []
                 else:
                     return getattr(datatype, 'default')

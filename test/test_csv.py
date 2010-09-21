@@ -239,7 +239,7 @@ title;language=es,fr:El Capital
 class Books(Table):
 
     record_properties = {
-        'title': Unicode(multiple=True),
+        'title': Unicode(multilingual=True),
         'author': Unicode}
 
     record_parameters = {

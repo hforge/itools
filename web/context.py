@@ -128,8 +128,7 @@ class Context(object):
                 elif part.startswith('\n'):
                     part = part[1:]
                 # Parse the entity
-                entity = Entity()
-                entity.load_state_from_string(part)
+                entity = Entity(string=part)
                 # Find out the parameter name
                 header = entity.get_header('Content-Disposition')
                 value, header_parameters = header

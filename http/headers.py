@@ -84,11 +84,14 @@ def read_white_space(data):
 
 
 def read_token(data):
+    n = len(data)
+    if n == 0:
+        raise ValueError, 'unexpected empty string'
+
     if data[0] in ctls_tspecials:
         raise ValueError, UNEXPECTED_CHAR % data[0]
-    index = 1
 
-    n = len(data)
+    index = 1
     while index < n:
         # End mark
         if data[index] in ctls_tspecials:

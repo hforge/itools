@@ -16,18 +16,8 @@
 
 # Import from itools
 from itools.handlers import File
+from itools.log import log_warning
 from headers import get_type
-
-
-def parse_header(line):
-    if line:
-        name, value = line.split(':', 1)
-        name = name.strip().lower()
-        value = value.strip()
-        type = get_type(name)
-        return name, type.decode(value)
-
-    return None, None
 
 
 
@@ -38,8 +28,17 @@ def read_headers(file):
     line = line.strip()
     # Go
     while line:
-        name, value = parse_header(line)
-        entity_headers[name] = value
+        name, value = line.split(':', 1)
+        name = name.strip().lower()
+        datatype = get_type(name)
+        value = value.strip()
+        try:
+            value = datatype.decode(value)
+        except Exception:
+            log_warning("Failed to parse the '%s' header" % name,
+                        domain='itools.http')
+        else:
+            entity_headers[name] = value
         # Next
         line = file.readline()
         line = line.strip()

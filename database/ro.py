@@ -36,10 +36,6 @@ from registry import get_register_fields
 
 class ROGitDatabase(object):
 
-    # Flag to know whether to commit or not.  This is to avoid superfluos
-    # actions by the 'save' and 'abort' methods.
-    has_changed = False
-
     def __init__(self, path, size_min=4800, size_max=5200):
         # 1. Keep the path
         if not lfs.is_folder(path):
@@ -326,15 +322,11 @@ class ROGitDatabase(object):
 
 
     def save_changes(self):
-        raise NotImplementedError
+        return
 
 
     def abort_changes(self):
-        if not self.has_changed:
-            return
-
-        self._abort_changes()
-        self._cleanup()
+        return
 
 
     def push_phantom(self, key, handler):

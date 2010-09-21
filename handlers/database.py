@@ -119,12 +119,6 @@ class RODatabase(object):
         handler.__dict__.clear()
 
 
-    def _rollback(self):
-        """To be called when something goes wrong while saving the changes.
-        """
-        raise NotImplementedError
-
-
     def _abort_changes(self):
         """To be called to abandon the transaction.
         """
@@ -605,7 +599,6 @@ class RWDatabase(RODatabase):
         try:
             self._save_changes()
         except Exception:
-            self._rollback()
             self._abort_changes()
             raise
         finally:

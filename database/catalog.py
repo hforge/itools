@@ -647,7 +647,7 @@ def _decode(field_cls, data):
 # We must overload the normal behaviour (range + optimization)
 def _encode_simple_value(field_cls, value):
     # Overload the Integer type
-    # XXX warning: this doesn't work with the big integers!
+    # FIXME this doesn't work with the big integers!
     if issubclass(field_cls, Integer):
         return sortable_serialise(value)
     # A common field or a new field
@@ -658,17 +658,13 @@ def _encode_simple_value(field_cls, value):
 def _encode(field_cls, value):
     """Used to encode values in stored fields.
     """
-
-    is_multiple = (
-        field_cls.multiple
-        and isinstance(value, (tuple, list, set, frozenset)))
-
-    if is_multiple:
-        value = [ _encode_simple_value(field_cls, a_value)
-                  for a_value in value ]
-        return dumps(value)
-    else:
+    # Case 1: Single
+    if not field_cls.multiple:
         return _encode_simple_value(field_cls, value)
+
+    # Case 2: Multiple
+    value = [ _encode_simple_value(field_cls, a_value) for a_value in value ]
+    return dumps(value)
 
 
 

@@ -514,12 +514,15 @@ class Table(File):
 
             # Transform values to properties
             if is_multilingual(datatype):
-                language = value.parameters['language']
+                if type(value) is not list:
+                    value = [ value ]
                 record.setdefault(name, [])
-                record[name] = [
-                    x for x in record[name]
-                    if x.parameters['language'] != language ]
-                record[name].append(value)
+                for p in value:
+                    language = p.parameters['language']
+                    record[name] = [
+                        x for x in record[name]
+                        if x.parameters['language'] != language ]
+                    record[name].append(p)
             elif datatype.multiple:
                 if type(value) is list:
                     record[name] = [ to_property(x) for x in value ]

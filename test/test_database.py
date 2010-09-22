@@ -530,7 +530,7 @@ class MultipleTestCase(TestCase):
         doc1, doc2, doc3 = docs
         self.assertEqual(doc1.data, [1, 2, 3])
         self.assertEqual(doc2.data, [])
-        self.assertEqual(doc3.data, 42)
+        self.assertEqual(doc3.data, [42])
 
 
 

@@ -20,6 +20,7 @@ from sys import _getframe
 
 # Import from itools
 from itools.handlers import RODatabase
+from itools.i18n import get_language_name
 
 
 # XXX This code does not take into account changes in the filesystem once a
@@ -97,3 +98,9 @@ class MSG(object):
             return message.format(**kw)
 
         return message
+
+
+
+def get_language_msg(code):
+    language = get_language_name(code)
+    return MSG(language)

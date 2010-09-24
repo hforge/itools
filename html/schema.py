@@ -162,6 +162,7 @@ html_attributes = {
     'autocomplete': String, # <input>
     'pluginspage': String, # <embed>
     'quality': String, # <embed>
+    'autoplay': Boolean, # <embed>
     'wrap': String,
     }
 
@@ -393,7 +394,7 @@ html_elements = [
     #   http://alistapart.com/articles/byebyeembed
     # FIXME Check the attribute list for <embed>
     EmptyBlockElement('embed', ['quality', 'pluginspage', 'src', 'type',
-        'width', 'height']),
+        'autoplay', 'width', 'height']),
     ]
 
 

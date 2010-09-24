@@ -276,6 +276,7 @@ class STLForm(STLView, BaseForm):
         for name in schema:
             datatype = schema[name]
             is_readonly = getattr(datatype, 'readonly', False)
+            is_multilingual = getattr(datatype, 'multilingual', False)
 
             error = None
             if submit and not is_readonly:
@@ -294,9 +295,9 @@ class STLForm(STLView, BaseForm):
                 else:
                     if issubclass(datatype, Enumerate):
                         value = datatype.get_namespace(value)
-                    elif datatype.multiple:
-                        # XXX Done for table multilingual fields (fragile)
-                        value = value[0] if value else value
+                    elif is_multilingual:
+                        for language in value:
+                            value[language] = datatype.encode(value[language])
                     else:
                         value = datatype.encode(value)
             else:
@@ -315,6 +316,9 @@ class STLForm(STLView, BaseForm):
                 else:
                     if issubclass(datatype, Enumerate):
                         value = datatype.get_namespace(value)
+                    elif is_multilingual:
+                        for language in value:
+                            value[language] = datatype.encode(value[language])
                     else:
                         value = datatype.encode(value)
             namespace[name] = {'name': name, 'value': value, 'error': error}

@@ -432,7 +432,7 @@ def select_language(languages):
 #######################################################################
 # Get from the form or query
 #######################################################################
-def get_form_value(form, name, type=String, default=None):
+def _get_form_value(form, name, type=String, default=None):
     # Figure out the default value
     if default is None:
         default = type.get_default()
@@ -487,6 +487,21 @@ def get_form_value(form, name, type=String, default=None):
         raise FormError(invalid=True)
     return value
 
+
+def get_form_value(form, name, type=String, default=None):
+    # Not multilingual
+    is_multilingual = getattr(type, 'multilingual', False)
+    if is_multilingual is False:
+        return _get_form_value(form, name, type, default)
+
+    # Multilingual
+    values = {}
+    for key, value in form.iteritems():
+        if key.startswith('%s:' % name):
+            x, lang = key.split(':', 1)
+            values[lang] = _get_form_value(form, key, type, default)
+
+    return values
 
 
 class WebLogger(Logger):

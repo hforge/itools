@@ -22,7 +22,7 @@ from unittest import TestCase, main
 
 # Import from itools
 from itools.i18n import is_similar, get_most_similar, guess_language
-from itools.i18n import AcceptLanguageType
+from itools.i18n import AcceptLanguageType, format_number
 
 
 
@@ -238,6 +238,75 @@ class OracleTestCase(TestCase):
     def test_english_very_sort(self):
         text = """But from a cloudless blue sky"""
         self.assertEqual(guess_language(text), 'en')
+
+
+
+############################################################################
+# Format number
+############################################################################
+class FormatNumberTestCase(TestCase):
+    x = '123456.789'
+    accept = AcceptLanguageType.decode('en;q=1.0')
+
+
+    def test_format_decimal(self):
+        x = Decimal(self.x)
+        n = format_number(x, accept=self.accept)
+        self.assertEqual(n, u"123,456.79")
+
+
+    def test_format_int(self):
+        x = int(float(self.x))
+        n = format_number(x, accept=self.accept)
+        self.assertEqual(n, u"123,456.00")
+
+
+    def test_format_float(self):
+        x = float(self.x)
+        self.assertRaises(TypeError, format_number, x)
+
+
+    def test_format_es(self):
+        x = Decimal(self.x)
+        accept = AcceptLanguageType.decode('es;q=1.0')
+        n = format_number(x, accept=accept)
+        self.assertEqual(n, u"123.456,79")
+
+
+    def test_format_fr(self):
+        x = Decimal(self.x)
+        accept = AcceptLanguageType.decode('fr;q=1.0')
+        n = format_number(x, accept=accept)
+        self.assertEqual(n, u"123 456,79")
+
+
+    def test_places(self):
+        x = Decimal(self.x)
+        n = format_number(x, places=3, accept=self.accept)
+        self.assertEqual(n, u"123,456.789")
+
+
+    def test_currency(self):
+        x = Decimal(self.x)
+        n = format_number(x, curr=u"$", accept=self.accept)
+        self.assertEqual(n, u"123,456.79$")
+        n = format_number(x, curr=u" €", accept=self.accept)
+        self.assertEqual(n, u"123,456.79 €")
+
+
+    def test_sign(self):
+        x = Decimal(self.x)
+        n = format_number(x, pos=u"+", accept=self.accept)
+        self.assertEqual(n, u"+123,456.79")
+        x = -x
+        n = format_number(x, accept=self.accept)
+        self.assertEqual(n, u"-123,456.79")
+
+
+    def test_sign_currency(self):
+        x = -Decimal(self.x)
+        n = format_number(x, curr=u"$", accept=self.accept)
+        self.assertEqual(n, u"-123,456.79$")
 
 
 

@@ -118,10 +118,6 @@ def moneyfmt(value, places=2, curr=u'', sep=u',', dp=u'.', pos=u'',
     return u''.join(reversed(result))
 
 
-def get_number_format(accept):
-    return get_format(number_formats, accept)
-
-
 def format_number(x, places=2, curr='', pos=u'', neg=u'-', trailneg=u"", accept=None):
     """Convert Decimal to a number formatted unicode.
 
@@ -132,6 +128,8 @@ def format_number(x, places=2, curr='', pos=u'', neg=u'-', trailneg=u"", accept=
     trailneg:optional trailing minus indicator:  '-', ')', space or blank
     """
     format = get_format(number_formats, accept)
+    if type(x) is not Decimal:
+        x = Decimal(x)
     return moneyfmt(x, places=places, curr=curr, pos=pos, neg=neg,
             trailneg=trailneg, **format)
 

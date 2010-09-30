@@ -114,6 +114,7 @@ stream_to_str_map = (
     lambda x: '<![CDATA[%s]]>' % x)    # CDATA
 
 
+# XXX encoding is not used
 def stream_to_str(stream, encoding='UTF-8', map=stream_to_str_map):
     return ''.join( map[x](y) for x, y, z in stream )
 

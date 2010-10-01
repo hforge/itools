@@ -166,7 +166,7 @@ def get_tokens(property):
 
         # param-name begun
         elif status == 2:
-            if c.isalnum() or c in ('-'):
+            if c.isalnum() or c in ('-', '_'):
                 param_name += c
             elif c == '=':
                 parameters[param_name] = []

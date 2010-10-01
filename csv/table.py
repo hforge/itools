@@ -139,12 +139,11 @@ def read_name(line):
 #     8 --> value begun
 
 error1 = 'unexpected character (%s) at status %s'
-error2 = 'unexpected repeated character (%s) at status %s'
 
 def get_tokens(property):
     parameters = {}
     value = ''
-    status, last = 0, ''
+    status = 0
 
     # Init status
     c, property = property[0], property[1:]
@@ -195,12 +194,12 @@ def get_tokens(property):
         # param-value quoted begun (just after '"')
         elif status == 4:
             if c == '"':
-                if last == '"':
-                    raise SyntaxError, error2 % (c, status)
+                # XXX We don't allow the empty value (""), is that right?
+                if not param_value:
+                    raise SyntaxError, 'unexpected empty string ("")'
                 status = 6
             else:
                 param_value += c
-            last = c
 
         # param-value NOT quoted begun
         elif status == 5:

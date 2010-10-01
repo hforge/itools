@@ -197,10 +197,10 @@ def get_tokens(property):
             if c == '"':
                 if last == '"':
                     raise SyntaxError, error2 % (c, status)
-                last = '"'
                 status = 6
             else:
                 param_value += c
+            last = c
 
         # param-value NOT quoted begun
         elif status == 5:

@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from datetime import date
 from unittest import TestCase, main
 
 # Import from itools
@@ -236,6 +237,12 @@ title;language=es,fr:El Capital
 """
 
 
+quoted_parameters = """id:0/0
+ts:2007-07-13T17:19:21
+author;birth="1818-05-05";death="1883-03-14":Karl Marx
+"""
+
+
 class Books(Table):
 
     record_properties = {
@@ -243,7 +250,9 @@ class Books(Table):
         'author': Unicode}
 
     record_parameters = {
-        'language': String(multiple=False)}
+        'language': String(multiple=False),
+        'birth': Date(multiple=False),
+        'death': Date(multiple=False)}
 
 
 
@@ -289,7 +298,6 @@ class ParsingTableTestCase(TestCase):
         lines = parse_table(input)
         lines = list(lines)
         self.assertEqual(lines, [('a', '', {'b': ['']})])
-
 
 
 
@@ -367,6 +375,17 @@ class TableTestCase(TestCase):
         record_0 = table.get_record(0)
         value = table.get_record_value(record_0, 'title', language='es')
         self.assertEqual(value, u'El Capital')
+
+
+    def test_parameters_quoted(self):
+        table = Books(string=quoted_parameters)
+        record_0 = table.get_record(0)
+        property = record_0.get_property('author')
+        self.assertEqual(property.value, u"Karl Marx")
+        birth = property.get_parameter('birth')
+        self.assertEqual(birth, date(1818, 5, 5))
+        death = property.get_parameter('death')
+        self.assertEqual(death, date(1883, 3, 14))
 
 
     def test_parameters_save(self):

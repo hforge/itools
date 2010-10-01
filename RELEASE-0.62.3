@@ -1,0 +1,60 @@
+
+itools 0.62.3 (2010/10/01)
+==========================
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.abnf             itools.i18n             itools.rss
+  itools.core             itools.ical             itools.srx
+  itools.csv              itools.log              itools.stl
+  itools.database         itools.loop             itools.tmx
+  itools.datatypes        itools.odf              itools.uri
+  itools.fs               itools.office           itools.web
+  itools.gettext          itools.pdf              itools.workflow
+  itools.git              itools.pkg              itools.xliff
+  itools.handlers         itools.python           itools.xml
+  itools.html             itools.relaxng          itools.xmlfile
+  itools.http             itools.rest
+
+This release contains many bug fixes and small new features.
+
+The 'get_handler' method (from itools.handlers) accepts the new 'soft'
+parameter.  It defaults to 'False', so if the asked handler does not
+exist an exception will be raised.  If set to 'True' and the handler
+does not exist, the 'None' value will be returned.
+
+There have been several improvements in different packages regarding
+multilingual capabilities:
+
+ (csv) explicit support for multilingual properties in the Table handler
+ (gettext) the new utility function 'get_language_msg'
+ (i18n) the 'format_number' function (still work-in-progess, see #1003)
+ (web) handling multilingual fields using a suffix (e.g. 'title:en')
+
+Other the bugs fixed:
+
+ #987  (http) Context.load_body failed due to entity parsing error
+ #1001 (html) support for autoplay in <embed> tag
+ #1007 (csv)  table: allow "_" in parameter names
+ #1008 (csv)  table: error with quoted parameters
+
+
+Resources
+---------
+
+Download
+http://download.hforge.org/itools/0.62/itools-0.62.3.tar.gz
+
+Home
+http://www.hforge.org/itools/
+
+Documentation
+http://docs.hforge.org/itools
+
+Mailing list
+http://www.hforge.org/community/
+http://archives.hforge.org/index.cgi?list=itools
+
+Bug Tracker
+http://bugs.hforge.org/

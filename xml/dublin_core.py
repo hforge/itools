@@ -42,9 +42,13 @@ dc_elements = [
     ElementSchema('creator', context='creator', skip_content=True),
     ElementSchema('description'),
     ElementSchema('date', skip_content=True),
+    ElementSchema('format'),
     ElementSchema('language', skip_content=True),
+    ElementSchema('publisher'),
+    ElementSchema('rights'),
     ElementSchema('subject'),
     ElementSchema('title', context='title'),
+    ElementSchema('type'),
     ]
 
 

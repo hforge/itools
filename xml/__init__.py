@@ -18,7 +18,7 @@
 
 # Import from itools
 import dublin_core
-from namespaces import XMLNamespace, xml_uri, xmlns_uri
+from namespaces import XMLNamespace, xml_uri, xmlns_uri, DefaultNamespace
 from namespaces import register_namespace, get_namespace, has_namespace
 from namespaces import ElementSchema, get_element_schema, get_attr_datatype
 from namespaces import is_empty

@@ -16,7 +16,20 @@
 
 # Import from itools
 from itools.core import get_abspath
-from itools.xml import register_dtd
+from itools.xml import register_dtd, register_namespace, DefaultNamespace
+
+
+
+# Use the DefaultNamespace for these uri, but define a good prefix
+def register(uri, prefix):
+    register_namespace(DefaultNamespace(uri, prefix))
+register('http://www.w3.org/2000/svg', 'svg')
+register('http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd', 'sodipodi')
+register('http://www.inkscape.org/namespaces/inkscape', 'inkscape')
+register('http://www.w3.org/1999/02/22-rdf-syntax-ns#', 'rdf')
+register('http://creativecommons.org/ns#', 'cc')
+register('http://www.w3.org/1999/xlink', 'xlink')
+
 
 
 # Register -//W3C//DTD SVG 1.1//EN

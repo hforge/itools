@@ -18,6 +18,7 @@
 
 # Import from itools
 from itools.xml import START_ELEMENT
+from itools.handlers import register_handler_class
 from itools.xmlfile import XMLFile
 
 
@@ -51,11 +52,14 @@ def _convert_unit(value):
 
 class SVGFile(XMLFile):
 
+    class_mimetypes = ['image/svg+xml']
+    class_extension = 'svg'
+
 
     #######################################################################
     # API
     #######################################################################
-    def make_WEB_compliant(self):
+    def make_web_compliant(self):
         events = self.events
 
         # Get the root element
@@ -110,4 +114,4 @@ class SVGFile(XMLFile):
         return int(_convert_unit(w)), int(_convert_unit(h))
 
 
-
+register_handler_class(SVGFile)

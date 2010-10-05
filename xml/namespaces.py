@@ -33,11 +33,6 @@ them.
 
 This module provides an API to register namespace uris and handlers,
 and to ask this registry.
-
-It also provides a registry from namespace prefixes to namespace uris.
-While namespace prefixes are local to an XML document, it is sometimes
-useful to refer to a namespace through its prefix. This feature must
-be used carefully, collisions
 """
 
 
@@ -50,22 +45,13 @@ xmlns_uri = 'http://www.w3.org/2000/xmlns/'
 # The registry
 ###########################################################################
 namespaces = {}
-prefixes = {}
 
 
 def register_namespace(namespace, *args):
-    """Associates a namespace handler to a namespace uri. It a prefix is
-    given it also associates that that prefix to the given namespace.
+    """Associates a namespace handler to a namespace uri.
     """
     # Register the URI
     namespaces[namespace.uri] = namespace
-
-    # Register the prefix
-    prefix = namespace.prefix
-    if prefix is not None:
-        if prefix in prefixes:
-            warn('The prefix "%s" is already registered.' % prefix)
-        prefixes[prefix] = namespace.uri
 
     # Register additional URIs
     for uri in args:
@@ -89,20 +75,6 @@ def has_namespace(namespace_uri):
     """Returns true if there is namespace handler associated to the given uri.
     """
     return namespace_uri in namespaces
-
-
-def get_namespace_by_prefix(prefix):
-    """Returns the namespace handler associated to the given prefix. If there
-    is none the default namespace handler is returned, and a warning message
-    is issued.
-    """
-    if prefix in prefixes:
-        namespace_uri = prefixes[prefix]
-        return get_namespace(namespace_uri)
-
-    # Use default
-    warn('Unknown namespace prefix "%s" (using default)' % prefix)
-    return namespaces[None]
 
 
 def get_element_schema(namespace, name):

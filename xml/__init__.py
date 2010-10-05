@@ -45,6 +45,7 @@ __all__ = [
     # Namespaces
     'xml_uri',
     'xmlns_uri',
+    'DefaultNamespace',
     'XMLNamespace',
     'register_namespace',
     'get_namespace',

@@ -564,18 +564,29 @@ gboolean
 dtd_ignore_element (DTD * dtd)
 {
   /* TODO: handle the string ! */
+  int level = 1;
 
-  /* Search for '>' */
-  while (dtd->cursor_char != '>' && dtd->cursor_char != '\0')
-    dtd_move_cursor (dtd);
-
-  if (dtd->cursor_char == '\0')
-    return ERROR;
-
-  /* Read '>' */
-  dtd_move_cursor (dtd);
-
-  return ALL_OK;
+  for (;;)
+    {
+      switch (dtd->cursor_char)
+        {
+        case '>':
+          if (--level == 0)
+            {
+              dtd_move_cursor (dtd);
+              return ALL_OK;
+            }
+          break;
+        case '<':
+          level++;
+          break;
+        case '\0':
+          return ERROR;
+        default:
+          break;
+        }
+      dtd_move_cursor (dtd);
+    }
 }
 
 

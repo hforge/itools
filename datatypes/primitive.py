@@ -18,9 +18,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from decimal import Decimal as decimal
-from re import match
 from copy import deepcopy
+from decimal import Decimal as decimal
+from re import compile
 
 # Import from itools
 from itools.core import freeze
@@ -152,12 +152,13 @@ class PathDataType(DataType):
 
 
 
+email_expr = "^[0-9a-z]+[_\.0-9a-z-'+]*@([0-9a-z][0-9a-z-]+\.)+[a-z]{2,6}$"
+email_expr = compile(email_expr)
 class Email(String):
 
     @staticmethod
     def is_valid(value):
-        expr = "^[0-9a-z]+[_\.0-9a-z-'+]*@([0-9a-z][0-9a-z-]+\.)+[a-z]{2,6}$"
-        return match(expr, value.lower()) is not None
+        return email_expr.match(value.lower()) is not None
 
 
 

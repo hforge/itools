@@ -127,9 +127,10 @@ class ElementSchema(object):
 class XMLNamespace(object):
 
     def __init__(self, uri, prefix, elements=None, free_attributes=None,
-                 default_datatype=None):
+                 default_datatype=None, default_element=None):
         self.uri = uri
         self.prefix = prefix
+        self.default_element = default_element
         self.default_datatype = default_datatype
         # Elements
         self.elements = {}
@@ -150,10 +151,12 @@ class XMLNamespace(object):
         """Returns a dictionary that defines the schema for the given element.
         """
         element = self.elements.get(name)
-        if element is None:
-            raise XMLError, 'unexpected element "%s"' % name
+        if element is not None:
+            return element
+        if self.default_element is not None:
+            return self.default_element(name)
 
-        return element
+        raise XMLError, 'unexpected element "%s"' % name
 
 
     def get_attr_datatype(self, name):
@@ -168,17 +171,7 @@ class XMLNamespace(object):
 
 
 # The default namespace is used for free elements.
-
-class DefaultNamespace(XMLNamespace):
-    """Default namespace handler for elements and attributes that are not
-    bound to a particular namespace.
-    """
-
-    def get_element_schema(self, name):
-        return ElementSchema(name)
-
-
-default_namespace = DefaultNamespace(None, None)
+default_namespace = XMLNamespace(None, None, default_element=ElementSchema)
 
 
 

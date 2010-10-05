@@ -16,13 +16,15 @@
 
 # Import from itools
 from itools.core import get_abspath
-from itools.xml import register_dtd, register_namespace, DefaultNamespace
+from itools.xml import register_dtd, register_namespace
+from itools.xml import XMLNamespace, ElementSchema
 
 
 
-# Use the DefaultNamespace for these uri, but define a good prefix
+# Register the XML namespaces with a default element
 def register(uri, prefix):
-    register_namespace(DefaultNamespace(uri, prefix))
+    xmlns = XMLNamespace(uri, prefix, default_element=ElementSchema)
+    register_namespace(xmlns)
 register('http://www.w3.org/2000/svg', 'svg')
 register('http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd', 'sodipodi')
 register('http://www.inkscape.org/namespaces/inkscape', 'inkscape')

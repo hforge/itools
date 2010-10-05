@@ -181,7 +181,7 @@ doctype_load_urn (gchar * urn, GString * target)
     }
 
   /* And close the file */
-  fclose(file);
+  fclose (file);
 
   return ALL_OK;
 }
@@ -824,7 +824,7 @@ gboolean
 doctype_read_external_dtd (DocType * doctype, gchar * PubidLiteral,
                            gchar * SystemLiteral)
 {
-  gchar *filename=NULL;
+  gchar *filename = NULL;
   FILE *file;
   GString *err_buffer;
   gchar *error_msg;
@@ -833,8 +833,8 @@ doctype_read_external_dtd (DocType * doctype, gchar * PubidLiteral,
 
   /* Store the values */
   if (PubidLiteral)
-      doctype->PubidLiteral = g_string_chunk_insert (doctype->strings_storage,
-                                                     PubidLiteral);
+    doctype->PubidLiteral = g_string_chunk_insert (doctype->strings_storage,
+                                                   PubidLiteral);
   if (SystemLiteral)
     doctype->SystemLiteral = g_string_chunk_insert (doctype->strings_storage,
                                                     SystemLiteral);
@@ -853,11 +853,11 @@ doctype_read_external_dtd (DocType * doctype, gchar * PubidLiteral,
 
   /* With SystemLiteral */
   if (!filename && SystemLiteral)
-  {
+    {
       /* Search for the good file */
       filename = (gchar *) g_hash_table_lookup (doctype_URI_table,
                                                 SystemLiteral);
-  }
+    }
 
   /* Not found ! */
   if (!filename)
@@ -1046,17 +1046,17 @@ doctype_register_dtd (gchar * filename, gchar * urn, gchar * uri)
   /* Append */
   filename = g_string_chunk_insert (doctype_global_strings, filename);
   if (urn)
-  {
-    urn = g_string_chunk_insert (doctype_global_strings, urn);
-    g_hash_table_insert (doctype_URN_table, (gpointer) urn,
-                         (gpointer) filename);
-  }
+    {
+      urn = g_string_chunk_insert (doctype_global_strings, urn);
+      g_hash_table_insert (doctype_URN_table, (gpointer) urn,
+                           (gpointer) filename);
+    }
   if (uri)
-  {
-    uri = g_string_chunk_insert (doctype_global_strings, uri);
-    g_hash_table_insert (doctype_URI_table, (gpointer) uri,
-                         (gpointer) filename);
-  }
+    {
+      uri = g_string_chunk_insert (doctype_global_strings, uri);
+      g_hash_table_insert (doctype_URI_table, (gpointer) uri,
+                           (gpointer) filename);
+    }
 }
 
 

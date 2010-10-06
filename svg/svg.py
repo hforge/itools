@@ -64,16 +64,16 @@ class SVGFile(XMLFile):
 
         # Get the root element
         pos, (event, value, line) = _get_root(events)
-        ns, tag, attributs = value
+        ns, tag, attributes = value
 
         # All OK ?
         if tag != 'svg':
             raise ValueError, 'Invalid SVG file'
 
         # Get width, height and viewBox
-        w = attributs.get((None, 'width'))
-        h = attributs.get((None, 'height'))
-        viewBox = attributs.get((None, 'viewBox'))
+        w = attributes.get((None, 'width'))
+        h = attributes.get((None, 'height'))
+        viewBox = attributes.get((None, 'viewBox'))
 
         # Yet WEB compliant ?
         if viewBox:
@@ -82,12 +82,12 @@ class SVGFile(XMLFile):
         # Make the SVG WEB compliant
         w = _convert_unit(w)
         h = _convert_unit(h)
-        attributs[(None, 'width')] = '100%'
-        attributs[(None, 'height')] = '100%'
-        attributs[(None, 'viewBox')] = '0 0 %g %g' % (w, h)
+        attributes[(None, 'width')] = '100%'
+        attributes[(None, 'height')] = '100%'
+        attributes[(None, 'viewBox')] = '0 0 %g %g' % (w, h)
 
         # Save the changes
-        events[pos] = (event, (ns, tag, attributs), line)
+        events[pos] = (event, (ns, tag, attributes), line)
 
 
     def get_size(self):
@@ -95,16 +95,16 @@ class SVGFile(XMLFile):
 
         # Get the root element
         _, (_, value, _) = _get_root(events)
-        _, tag, attributs = value
+        _, tag, attributes = value
 
         # All OK ?
         if tag != 'svg':
             raise ValueError, 'Invalid SVG file'
 
         # Get width, height and viewBox
-        w = attributs.get((None, 'width'))
-        h = attributs.get((None, 'height'))
-        viewBox = attributs.get((None, 'viewBox'))
+        w = attributes.get((None, 'width'))
+        h = attributes.get((None, 'height'))
+        viewBox = attributes.get((None, 'viewBox'))
 
         # WEB compliant ?
         if viewBox:

@@ -36,10 +36,10 @@ static gchar *
 get_request_line (SoupMessage * s_msg)
 {
   SoupHTTPVersion s_http_version;
-  gchar * format;
-  SoupURI * s_uri;
-  char * uri;
-  gchar * request_line;
+  gchar *format;
+  SoupURI *s_uri;
+  char *uri;
+  gchar *request_line;
 
   /* The request URI */
   s_uri = soup_message_get_uri (s_msg);
@@ -71,15 +71,15 @@ get_access_log_line (SoupMessage * s_msg, SoupClientContext * s_client)
    *  - content length of the response
    */
   time_t ts_t;
-  struct tm * ts_tm;
+  struct tm *ts_tm;
   char ts[32];
-  gchar * request_line;
-  gchar * log_line;
+  gchar *request_line;
+  gchar *log_line;
 
   /* Timestamp */
   ts_t = time (NULL);
   ts_tm = gmtime (&ts_t);
-  strftime (ts, sizeof(ts), "%d/%b/%Y:%H:%M:%S %Z", ts_tm);
+  strftime (ts, sizeof (ts), "%d/%b/%Y:%H:%M:%S %Z", ts_tm);
 
   /* The log line */
   request_line = get_request_line (s_msg);
@@ -94,26 +94,27 @@ get_access_log_line (SoupMessage * s_msg, SoupClientContext * s_client)
 
 
 static gboolean
-log_access (GSignalInvocationHint *ihint, guint n_param_values,
-            const GValue *param_values, gpointer data)
+log_access (GSignalInvocationHint * ihint, guint n_param_values,
+            const GValue * param_values, gpointer data)
 {
-  PyObject * p_server;
-  SoupMessage * s_msg;
-  SoupClientContext * s_client;
-  gchar * log_line;
+  PyObject *p_server;
+  SoupMessage *s_msg;
+  SoupClientContext *s_client;
+  gchar *log_line;
 
   /* The log line */
-  s_msg = (SoupMessage*) g_value_get_object (param_values + 1);
-  s_client = (SoupClientContext*) g_value_get_boxed(param_values + 2);
+  s_msg = (SoupMessage *) g_value_get_object (param_values + 1);
+  s_client = (SoupClientContext *) g_value_get_boxed (param_values + 2);
   log_line = get_access_log_line (s_msg, s_client);
 
   /* Python callback */
-  p_server = (PyObject*) data;
+  p_server = (PyObject *) data;
   if (!PyObject_CallMethod (p_server, "log_access", "s", log_line))
     {
       /* The Python callback should never fail, it is its responsability to
        * catch and handle exceptions */
-      printf("ERROR! Python's access log failed, this should never happen\n");
+      printf
+        ("ERROR! Python's access log failed, this should never happen\n");
       abort ();
     }
 
@@ -137,7 +138,7 @@ typedef struct
 static PyObject *
 PyMessage_new (PyTypeObject * type, PyObject * args, PyObject * kwdict)
 {
-  PyMessage * self;
+  PyMessage *self;
 
   self = (PyMessage *) type->tp_alloc (type, 0);
   if (self != NULL)
@@ -151,10 +152,10 @@ static void
 PyMessage_dealloc (PyMessage * self)
 {
   if (self->s_msg)
-  {
-    g_type_free_instance ((GTypeInstance *) self->s_msg);
-    self->s_msg = NULL;
-  }
+    {
+      g_type_free_instance ((GTypeInstance *) self->s_msg);
+      self->s_msg = NULL;
+    }
 
   self->ob_type->tp_free ((PyObject *) self);
 }
@@ -168,10 +169,10 @@ PyMessage_init (PyMessage * self, PyObject * args, PyObject * kwdict)
 
   self->s_msg = soup_message_new ("GET", "http://localhost/");
   if (self->s_msg == NULL)
-  {
-    PyErr_Format (PyExc_RuntimeError, "call to 'soup_message_new' failed");
-    return -1;
-  }
+    {
+      PyErr_Format (PyExc_RuntimeError, "call to 'soup_message_new' failed");
+      return -1;
+    }
 
   return 0;
 }
@@ -181,12 +182,12 @@ static PyObject *
 PyMessage_get_request_line (PyMessage * self, PyObject * args,
                             PyObject * kwdict)
 {
-  PyObject * result;
-  gchar * c_result;
+  PyObject *result;
+  gchar *c_result;
 
-  c_result = get_request_line(self->s_msg);
+  c_result = get_request_line (self->s_msg);
   result = PyString_FromString (c_result);
-  free(c_result);
+  free (c_result);
 
   /* result can be NULL */
   return result;
@@ -214,39 +215,39 @@ PyMessage_get_headers (PyMessage * self, PyObject * args, PyObject * kwdict)
   PyObject *pair, *result;
 
   /* Initialize the result */
-  result = PyList_New(0);
+  result = PyList_New (0);
   if (result == NULL)
     return NULL;
 
   /* Read each header */
   soup_message_headers_iter_init (&iter, self->s_msg->request_headers);
   while (soup_message_headers_iter_next (&iter, &name, &value) == TRUE)
-  {
-    pair = Py_BuildValue ("(ss)", name, value);
-    if (pair == NULL)
     {
-      Py_DECREF (result);
-      return NULL;
-    }
-    if (PyList_Append (result, pair) == -1)
-    {
-      Py_DECREF (result);
+      pair = Py_BuildValue ("(ss)", name, value);
+      if (pair == NULL)
+        {
+          Py_DECREF (result);
+          return NULL;
+        }
+      if (PyList_Append (result, pair) == -1)
+        {
+          Py_DECREF (result);
+          Py_DECREF (pair);
+          return NULL;
+        }
+      /* Append increment the counter */
       Py_DECREF (pair);
-      return NULL;
     }
-    /* Append increment the counter */
-    Py_DECREF (pair);
-  }
 
   return result;
 }
 
 
 static PyObject *
-PyMessage_get_header (PyMessage * self, PyObject * args, PyObject *kwdict)
+PyMessage_get_header (PyMessage * self, PyObject * args, PyObject * kwdict)
 {
-  char * name;
-  const char * value;
+  char *name;
+  const char *value;
 
   if (!PyArg_ParseTuple (args, "s", &name))
     return NULL;
@@ -260,37 +261,37 @@ PyMessage_get_header (PyMessage * self, PyObject * args, PyObject *kwdict)
 
 
 static PyObject *
-PyMessage_get_host (PyMessage * self, PyObject * args, PyObject *kwdict)
+PyMessage_get_host (PyMessage * self, PyObject * args, PyObject * kwdict)
 {
-  SoupURI * s_uri;
+  SoupURI *s_uri;
 
   s_uri = soup_message_get_uri (self->s_msg);
-  return PyString_FromString(s_uri->host);
+  return PyString_FromString (s_uri->host);
 }
 
 
 static PyObject *
-PyMessage_get_method (PyMessage * self, PyObject * args, PyObject *kwdict)
+PyMessage_get_method (PyMessage * self, PyObject * args, PyObject * kwdict)
 {
   return PyString_FromString (self->s_msg->method);
 }
 
 
 static PyObject *
-PyMessage_get_query (PyMessage * self, PyObject * args, PyObject *kwdict)
+PyMessage_get_query (PyMessage * self, PyObject * args, PyObject * kwdict)
 {
-  SoupURI * s_uri;
+  SoupURI *s_uri;
 
   s_uri = soup_message_get_uri (self->s_msg);
   if (s_uri->query == NULL)
     Py_RETURN_NONE;
 
-  return PyString_FromString(s_uri->query);
+  return PyString_FromString (s_uri->query);
 }
 
 
 static PyObject *
-PyMessage_append_header (PyMessage * self, PyObject * args, PyObject *kwdict)
+PyMessage_append_header (PyMessage * self, PyObject * args, PyObject * kwdict)
 {
   char *name, *value;
 
@@ -304,7 +305,7 @@ PyMessage_append_header (PyMessage * self, PyObject * args, PyObject *kwdict)
 
 
 static PyObject *
-PyMessage_set_header (PyMessage * self, PyObject * args, PyObject *kwdict)
+PyMessage_set_header (PyMessage * self, PyObject * args, PyObject * kwdict)
 {
   char *name, *value;
 
@@ -318,7 +319,7 @@ PyMessage_set_header (PyMessage * self, PyObject * args, PyObject *kwdict)
 
 
 static PyObject *
-PyMessage_set_response (PyMessage * self, PyObject * args, PyObject *kwdict)
+PyMessage_set_response (PyMessage * self, PyObject * args, PyObject * kwdict)
 {
   char *content_type, *body;
   int content_length;
@@ -326,8 +327,8 @@ PyMessage_set_response (PyMessage * self, PyObject * args, PyObject *kwdict)
   if (!PyArg_ParseTuple (args, "ss#", &content_type, &body, &content_length))
     return NULL;
 
-  soup_message_set_response (self->s_msg, content_type, SOUP_MEMORY_COPY, body,
-                             (gsize)content_length);
+  soup_message_set_response (self->s_msg, content_type, SOUP_MEMORY_COPY,
+                             body, (gsize) content_length);
 
   Py_RETURN_NONE;
 }
@@ -370,50 +371,50 @@ static PyMethodDef PyMessage_methods[] = {
    "Set the response body"},
   {"set_status", (PyCFunction) PyMessage_set_status, METH_VARARGS,
    "Set the response status code"},
-  {NULL} /* Sentinel */
+  {NULL}                        /* Sentinel */
 };
 
 
 static PyTypeObject PyMessageType = {
-  PyObject_HEAD_INIT(NULL)
-  0,                                         /* ob_size */
-  "itools.http.soup.SoupMessage",            /* tp_name */
-  sizeof (PyMessage),                        /* tp_basicsize */
-  0,                                         /* tp_itemsize */
-  (destructor) PyMessage_dealloc,            /* tp_dealloc */
-  0,                                         /* tp_print */
-  0,                                         /* tp_getattr */
-  0,                                         /* tp_setattr */
-  0,                                         /* tp_compare */
-  0,                                         /* tp_repr */
-  0,                                         /* tp_as_number */
-  0,                                         /* tp_as_sequence */
-  0,                                         /* tp_as_mapping */
-  0,                                         /* tp_hash */
-  0,                                         /* tp_call */
-  0,                                         /* tp_str */
-  0,                                         /* tp_getattro */
-  0,                                         /* tp_setattro */
-  0,                                         /* tp_as_buffer */
-  Py_TPFLAGS_DEFAULT,                        /* tp_flags */
-  "Wrapper of SoupMessage",                  /* tp_doc */
-  0,                                         /* tp_traverse */
-  0,                                         /* tp_clear */
-  0,                                         /* tp_richcompare */
-  0,                                         /* tp_weaklistoffset */
-  0,                                         /* tp_iter */
-  0,                                         /* tp_iternext */
-  PyMessage_methods,                         /* tp_methods */
-  0,                                         /* tp_members */
-  0,                                         /* tp_getset */
-  0,                                         /* tp_base */
-  0,                                         /* tp_dict */
-  0,                                         /* tp_descr_get */
-  0,                                         /* tp_descr_set */
-  0,                                         /* tp_dictoffset */
-  (initproc) PyMessage_init,                 /* tp_init */
-  0,                                         /* tp_alloc */
-  (newfunc) PyMessage_new,                   /* tp_new */
+  PyObject_HEAD_INIT
+  (NULL) 0,                     /* ob_size */
+  "itools.http.soup.SoupMessage",       /* tp_name */
+  sizeof (PyMessage),           /* tp_basicsize */
+  0,                            /* tp_itemsize */
+  (destructor) PyMessage_dealloc,       /* tp_dealloc */
+  0,                            /* tp_print */
+  0,                            /* tp_getattr */
+  0,                            /* tp_setattr */
+  0,                            /* tp_compare */
+  0,                            /* tp_repr */
+  0,                            /* tp_as_number */
+  0,                            /* tp_as_sequence */
+  0,                            /* tp_as_mapping */
+  0,                            /* tp_hash */
+  0,                            /* tp_call */
+  0,                            /* tp_str */
+  0,                            /* tp_getattro */
+  0,                            /* tp_setattro */
+  0,                            /* tp_as_buffer */
+  Py_TPFLAGS_DEFAULT,           /* tp_flags */
+  "Wrapper of SoupMessage",     /* tp_doc */
+  0,                            /* tp_traverse */
+  0,                            /* tp_clear */
+  0,                            /* tp_richcompare */
+  0,                            /* tp_weaklistoffset */
+  0,                            /* tp_iter */
+  0,                            /* tp_iternext */
+  PyMessage_methods,            /* tp_methods */
+  0,                            /* tp_members */
+  0,                            /* tp_getset */
+  0,                            /* tp_base */
+  0,                            /* tp_dict */
+  0,                            /* tp_descr_get */
+  0,                            /* tp_descr_set */
+  0,                            /* tp_dictoffset */
+  (initproc) PyMessage_init,    /* tp_init */
+  0,                            /* tp_alloc */
+  (newfunc) PyMessage_new,      /* tp_new */
 };
 
 
@@ -425,15 +426,15 @@ typedef struct
 {
   PyObject_HEAD
   SoupServer * s_server;
-  SoupAddress * s_address;
+  SoupAddress *s_address;
 } PyServer;
 
 
 void
-s_server_callback (SoupMessage * s_msg, const char * path, gpointer server,
-                   char * p_server_callback)
+s_server_callback (SoupMessage * s_msg, const char *path, gpointer server,
+                   char *p_server_callback)
 {
-  PyMessage * p_message;
+  PyMessage *p_message;
 
   /* Create the Python Message object */
   p_message = PyObject_New (PyMessage, &PyMessageType);
@@ -448,7 +449,7 @@ s_server_callback (SoupMessage * s_msg, const char * path, gpointer server,
     {
       /* The Python callback should never fail, it is its responsibility to
        * catch and handle exceptions */
-      printf("ERROR! Python's callback failed, this should never happen\n");
+      printf ("ERROR! Python's callback failed, this should never happen\n");
       abort ();
     }
 
@@ -458,7 +459,7 @@ s_server_callback (SoupMessage * s_msg, const char * path, gpointer server,
 
 void
 s_server_path_callback (SoupServer * s_server, SoupMessage * s_msg,
-                        const char * path, GHashTable * g_query,
+                        const char *path, GHashTable * g_query,
                         SoupClientContext * s_client, gpointer server)
 {
   s_server_callback (s_msg, path, server, "path_callback");
@@ -467,7 +468,7 @@ s_server_path_callback (SoupServer * s_server, SoupMessage * s_msg,
 
 void
 s_server_star_callback (SoupServer * s_server, SoupMessage * s_msg,
-                        const char * path, GHashTable * g_query,
+                        const char *path, GHashTable * g_query,
                         SoupClientContext * s_client, gpointer server)
 {
   s_server_callback (s_msg, path, server, "star_callback");
@@ -494,20 +495,20 @@ PyServerType_init (PyServer * self, PyObject * args, PyObject * kwdict)
   /* http://bugzilla.gnome.org/show_bug.cgi?id=532778 */
   if (!g_thread_supported ())
     g_thread_init (NULL);
-  g_type_init();
+  g_type_init ();
 
   /* An interface is specified ? */
-  if ( (address != NULL) && (strcmp(address, "") != 0) )
+  if ((address != NULL) && (strcmp (address, "") != 0))
     s_address = soup_address_new (address, port);
   else
     s_address = soup_address_new_any (SOUP_ADDRESS_FAMILY_IPV4, port);
 
   if (!s_address)
-  {
-    PyErr_Format (PyExc_RuntimeError, "Bad address/port arguments");
-    return -1;
-  }
-  soup_address_resolve_sync(s_address, NULL);
+    {
+      PyErr_Format (PyExc_RuntimeError, "Bad address/port arguments");
+      return -1;
+    }
+  soup_address_resolve_sync (s_address, NULL);
 
   /* Keep address & port */
   self->s_address = s_address;
@@ -535,13 +536,12 @@ PyServerType_start (PyServer * self, PyObject * args, PyObject * kwdict)
 
   /* Make the server */
   s_server = soup_server_new (SOUP_SERVER_SERVER_HEADER, "itools.http",
-                              SOUP_SERVER_INTERFACE, self->s_address,
-                              NULL);
+                              SOUP_SERVER_INTERFACE, self->s_address, NULL);
   if (!s_server)
-  {
-    PyErr_Format (PyExc_RuntimeError, "could not make the SoupServer");
-    return NULL;
-  }
+    {
+      PyErr_Format (PyExc_RuntimeError, "could not make the SoupServer");
+      return NULL;
+    }
   self->s_server = s_server;
 
   /* Handlers */
@@ -564,51 +564,52 @@ PyServerType_start (PyServer * self, PyObject * args, PyObject * kwdict)
 
 static PyMethodDef PyServer_methods[] = {
   {"stop", (PyCFunction) PyServerType_stop, METH_NOARGS, "Stop the server"},
-  {"start", (PyCFunction) PyServerType_start, METH_NOARGS, "Start the server"},
-  {NULL} /* Sentinel */
+  {"start", (PyCFunction) PyServerType_start, METH_NOARGS,
+   "Start the server"},
+  {NULL}                        /* Sentinel */
 };
 
 
 static PyTypeObject PyServerType = {
-  PyObject_HEAD_INIT(NULL)
-  0,                                         /* ob_size */
-  "itools.http.soup.SoupServer",             /* tp_name */
-  sizeof (PyServer),                         /* tp_basicsize */
-  0,                                         /* tp_itemsize */
-  0,                                         /* tp_dealloc */
-  0,                                         /* tp_print */
-  0,                                         /* tp_getattr */
-  0,                                         /* tp_setattr */
-  0,                                         /* tp_compare */
-  0,                                         /* tp_repr */
-  0,                                         /* tp_as_number */
-  0,                                         /* tp_as_sequence */
-  0,                                         /* tp_as_mapping */
-  0,                                         /* tp_hash */
-  0,                                         /* tp_call */
-  0,                                         /* tp_str */
-  0,                                         /* tp_getattro */
-  0,                                         /* tp_setattro */
-  0,                                         /* tp_as_buffer */
-  Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,  /* tp_flags */
-  "HTTP Server",                             /* tp_doc */
-  0,                                         /* tp_traverse */
-  0,                                         /* tp_clear */
-  0,                                         /* tp_richcompare */
-  0,                                         /* tp_weaklistoffset */
-  0,                                         /* tp_iter */
-  0,                                         /* tp_iternext */
-  PyServer_methods,                          /* tp_methods */
-  0,                                         /* tp_members */
-  0,                                         /* tp_getset */
-  0,                                         /* tp_base */
-  0,                                         /* tp_dict */
-  0,                                         /* tp_descr_get */
-  0,                                         /* tp_descr_set */
-  0,                                         /* tp_dictoffset */
-  (initproc) PyServerType_init,              /* tp_init */
-  0,                                         /* tp_alloc */
-  PyType_GenericNew,                         /* tp_new */
+  PyObject_HEAD_INIT
+  (NULL) 0,                     /* ob_size */
+  "itools.http.soup.SoupServer",        /* tp_name */
+  sizeof (PyServer),            /* tp_basicsize */
+  0,                            /* tp_itemsize */
+  0,                            /* tp_dealloc */
+  0,                            /* tp_print */
+  0,                            /* tp_getattr */
+  0,                            /* tp_setattr */
+  0,                            /* tp_compare */
+  0,                            /* tp_repr */
+  0,                            /* tp_as_number */
+  0,                            /* tp_as_sequence */
+  0,                            /* tp_as_mapping */
+  0,                            /* tp_hash */
+  0,                            /* tp_call */
+  0,                            /* tp_str */
+  0,                            /* tp_getattro */
+  0,                            /* tp_setattro */
+  0,                            /* tp_as_buffer */
+  Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,     /* tp_flags */
+  "HTTP Server",                /* tp_doc */
+  0,                            /* tp_traverse */
+  0,                            /* tp_clear */
+  0,                            /* tp_richcompare */
+  0,                            /* tp_weaklistoffset */
+  0,                            /* tp_iter */
+  0,                            /* tp_iternext */
+  PyServer_methods,             /* tp_methods */
+  0,                            /* tp_members */
+  0,                            /* tp_getset */
+  0,                            /* tp_base */
+  0,                            /* tp_dict */
+  0,                            /* tp_descr_get */
+  0,                            /* tp_descr_set */
+  0,                            /* tp_dictoffset */
+  (initproc) PyServerType_init, /* tp_init */
+  0,                            /* tp_alloc */
+  PyType_GenericNew,            /* tp_new */
 };
 
 

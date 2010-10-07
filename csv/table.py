@@ -278,6 +278,8 @@ def deserialize_parameters(parameters, schema, default=String(multiple=True)):
     for name in parameters:
         value = parameters[name]
         datatype = schema.get(name, default)
+        if datatype is None:
+            raise NameError, 'parameter "{0}" not defined'.format(name)
         # Decode
         value = [ datatype.decode(x) for x in value ]
         # Multiple or single

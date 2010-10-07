@@ -73,7 +73,11 @@ log_access (GSignalInvocationHint * ihint, guint n_param_values,
   s_msg = (SoupMessage *) g_value_get_object (param_values + 1);
   s_client = (SoupClientContext *) g_value_get_boxed (param_values + 2);
 
-  /* Must be freed */
+  /* This is only useful for the request-aborted signal */
+  if (s_msg->status_code == SOUP_STATUS_IO_ERROR)
+    return TRUE;
+
+  /* Get the request line */
   request_line = get_request_line (s_msg);
   if (!request_line)
     request_line2 = "(BAD REQUEST LINE)";
@@ -85,13 +89,13 @@ log_access (GSignalInvocationHint * ihint, guint n_param_values,
    * log_access(self, host, request_line, status_code, body_length)
    * => str str int int*/
   p_server = (PyObject *) data;
-
   p_result = PyObject_CallMethod (p_server, "log_access", "ssii",
                                   soup_client_context_get_host (s_client),
                                   request_line2,
                                   s_msg->status_code,
                                   (int) s_msg->response_body->length);
 
+  /* Free request_line */
   if (request_line)
     free (request_line);
 

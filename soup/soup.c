@@ -43,6 +43,8 @@ get_request_line (SoupMessage * s_msg)
 
   /* The request URI */
   s_uri = soup_message_get_uri (s_msg);
+  if (!s_uri)
+    return NULL;
   uri = soup_uri_to_string (s_uri, TRUE);
 
   /* The HTTP version */
@@ -73,7 +75,7 @@ get_access_log_line (SoupMessage * s_msg, SoupClientContext * s_client)
   time_t ts_t;
   struct tm *ts_tm;
   char ts[32];
-  gchar *request_line;
+  gchar *request_line, *real_request_line;
   gchar *log_line;
 
   /* Timestamp */
@@ -81,13 +83,20 @@ get_access_log_line (SoupMessage * s_msg, SoupClientContext * s_client)
   ts_tm = gmtime (&ts_t);
   strftime (ts, sizeof (ts), "%d/%b/%Y:%H:%M:%S %Z", ts_tm);
 
-  /* The log line */
+  /* The request line */
   request_line = get_request_line (s_msg);
+  if (request_line)
+    real_request_line = request_line;
+  else
+    real_request_line = "(BAD REQUEST LINE)";
+
+  /* The log line */
   log_line = g_strdup_printf ("%s - - [%s] \"%s\" %03d %d\n",
                               soup_client_context_get_host (s_client),
-                              ts, request_line, s_msg->status_code,
+                              ts, real_request_line, s_msg->status_code,
                               (int) s_msg->response_body->length);
-  free (request_line);
+  if (request_line)
+    free (request_line);
 
   return log_line;
 }
@@ -97,7 +106,7 @@ static gboolean
 log_access (GSignalInvocationHint * ihint, guint n_param_values,
             const GValue * param_values, gpointer data)
 {
-  PyObject *p_server;
+  PyObject *p_server, *p_result;
   SoupMessage *s_msg;
   SoupClientContext *s_client;
   gchar *log_line;
@@ -109,17 +118,19 @@ log_access (GSignalInvocationHint * ihint, guint n_param_values,
 
   /* Python callback */
   p_server = (PyObject *) data;
-  if (!PyObject_CallMethod (p_server, "log_access", "s", log_line))
+  p_result = PyObject_CallMethod (p_server, "log_access", "s", log_line);
+  free (log_line);
+
+  /* The Python callback should never fail, it is its responsability to
+   * catch and handle exceptions */
+  if (!p_result)
     {
-      /* The Python callback should never fail, it is its responsability to
-       * catch and handle exceptions */
       printf
         ("ERROR! Python's access log failed, this should never happen\n");
       abort ();
     }
 
-  free (log_line);
-
+  Py_DECREF (p_result);
   return TRUE;
 }
 
@@ -186,6 +197,9 @@ PyMessage_get_request_line (PyMessage * self, PyObject * args,
   gchar *c_result;
 
   c_result = get_request_line (self->s_msg);
+  if (!c_result)
+    Py_RETURN_NONE;
+
   result = PyString_FromString (c_result);
   free (c_result);
 

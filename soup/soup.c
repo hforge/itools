@@ -114,6 +114,12 @@ log_access (GSignalInvocationHint * ihint, guint n_param_values,
   /* The log line */
   s_msg = (SoupMessage *) g_value_get_object (param_values + 1);
   s_client = (SoupClientContext *) g_value_get_boxed (param_values + 2);
+
+  /* This is only useful for the request-aborted signal */
+  if (s_msg->status_code == SOUP_STATUS_IO_ERROR)
+     return TRUE;
+
+  /* Get the log line */
   log_line = get_access_log_line (s_msg, s_client);
 
   /* Python callback */

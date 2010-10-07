@@ -43,6 +43,8 @@ get_request_line (SoupMessage * s_msg)
 
   /* The request URI */
   s_uri = soup_message_get_uri (s_msg);
+  if (!s_uri)
+    return NULL;
   uri = soup_uri_to_string (s_uri, TRUE);
 
   /* The HTTP version */
@@ -63,35 +65,45 @@ log_access (GSignalInvocationHint * ihint, guint n_param_values,
             const GValue * param_values, gpointer data)
 {
   PyObject *p_server;
+  PyObject *p_result;
   SoupMessage *s_msg;
   SoupClientContext *s_client;
-  gchar *request_line;
+  gchar *request_line, *request_line2;
 
   s_msg = (SoupMessage *) g_value_get_object (param_values + 1);
   s_client = (SoupClientContext *) g_value_get_boxed (param_values + 2);
 
   /* Must be freed */
   request_line = get_request_line (s_msg);
+  if (!request_line)
+    request_line2 = "(BAD REQUEST LINE)";
+  else
+    request_line2 = request_line;
 
   /* Python callback */
   /* The callback function must have this signature:
    * log_access(self, host, request_line, status_code, body_length)
    * => str str int int*/
   p_server = (PyObject *) data;
-  if (!PyObject_CallMethod (p_server, "log_access", "ssii",
-                            soup_client_context_get_host (s_client),
-                            request_line,
-                            s_msg->status_code,
-                            (int) s_msg->response_body->length))
+
+  p_result = PyObject_CallMethod (p_server, "log_access", "ssii",
+                                  soup_client_context_get_host (s_client),
+                                  request_line2,
+                                  s_msg->status_code,
+                                  (int) s_msg->response_body->length);
+
+  if (request_line)
+    free (request_line);
+
+  /* The Python callback should never fail, it is its responsability to catch
+   * and handle exceptions */
+  if (!p_result)
     {
-      free (request_line);
-      /* The Python callback should never fail, it is its responsability to
-       * catch and handle exceptions */
       printf ("ERROR! Python's access log failed, this should never happen\n");
       abort ();
     }
-  free (request_line);
 
+  Py_DECREF (p_result);
   return TRUE;
 }
 
@@ -158,6 +170,9 @@ PyMessage_get_request_line (PyMessage * self, PyObject * args,
   gchar *c_result;
 
   c_result = get_request_line (self->s_msg);
+  if (!c_result)
+    Py_RETURN_NONE;
+
   result = PyString_FromString (c_result);
   free (c_result);
 

@@ -24,6 +24,13 @@ try:
 except ImportError:
     PILImage = None
 
+# Import from rsvg
+try:
+    from cairo import Context, ImageSurface, FORMAT_ARGB32
+    from rsvg import Handle as rsvg_handle
+except ImportError:
+    rsvg_handle = None
+
 # Import from itools
 from file import File
 from registry import register_handler_class
@@ -33,26 +40,36 @@ class Image(File):
 
     class_mimetypes = ['image']
 
-
     def _load_state_from_file(self, file):
         self.data = file.read()
 
-        # The size, a tuple with the width and height, or None if PIL is not
-        # installed.
-        if PILImage is None:
-            self.size = 0, 0
+        # Size
+        handle = self._get_handle()
+        if handle:
+            self.size = self._get_size(handle)
         else:
-            f = StringIO(self.data)
-            try:
-                im = PILImage.open(f)
-            except (IOError, OverflowError):
-                self.size = 0, 0
-            else:
-                self.size = im.size
+            self.size = (0, 0)
 
         # A cache for thumbnails, where the key is the size and the format,
         # and the value is the thumbnail.
         self.thumbnails = {}
+
+
+    def _get_handle(self):
+        if PILImage is None:
+            return None
+
+        #data = self.to_str()
+        data = self.data
+        f = StringIO(data)
+        try:
+            return PILImage.open(f)
+        except (IOError, OverflowError):
+            return None
+
+
+    def _get_size(self, handle):
+        return handle.size
 
 
     #########################################################################
@@ -63,44 +80,106 @@ class Image(File):
 
 
     def get_thumbnail(self, width, height, format="jpeg"):
-        if PILImage is None:
+        format = format.lower()
+
+        # Get the handle
+        handle = self._get_handle()
+        if handle is None:
             return None, None
 
-        # Check the cache
+        # Cache hit
         thumbnails = self.thumbnails
         key = (width, height, format)
         if key in thumbnails:
             return thumbnails[key]
 
-        # Build the PIL object
-        data = self.to_str()
-        f = StringIO(data)
+        # Cache miss
+        value = self._get_thumbnail(handle, width, height, format)
+        thumbnails[key] = value
+        return value
+
+
+    def _get_thumbnail(self, handle, width, height, format):
+        # Do not create the thumbnail if not needed
+        image_width, image_height = self.size
+        if width >= image_width or height >= image_height:
+            return self.to_str(), format
+
+        # Convert to RGBA
         try:
-            im = PILImage.open(f).convert("RGBA")
+            im = handle.convert("RGBA")
         except IOError:
             return None, None
 
-        # Create the thumbnail if needed
-        state_width, state_height = self.size
-        if state_width > width or state_height > height:
-            # TODO Improve the quality of the thumbnails by cropping?
-            # The only problem would be the loss of information.
-            try:
-                im.thumbnail((width, height), PILImage.ANTIALIAS)
-            except IOError:
-                # PIL does not support interlaced PNG files, raises IOError
-                return None, None
-            else:
-                thumbnail = StringIO()
-                im.save(thumbnail, format.upper(), quality=80)
-                data = thumbnail.getvalue()
-                thumbnail.close()
-        else:
-            data = self.to_str()
+        # Make the thumbnail
+        # TODO Improve the quality of the thumbnails by cropping?
+        try:
+            im.thumbnail((width, height), PILImage.ANTIALIAS)
+        except IOError:
+            # PIL does not support interlaced PNG files, raises IOError
+            return None, None
+
+        thumbnail = StringIO()
+        im.save(thumbnail, format.upper(), quality=80)
+        data = thumbnail.getvalue()
+        thumbnail.close()
 
         # Store in the cache and return
-        thumbnails[key] = data, format.lower()
-        return data, format.lower()
+        return data, format
+
+
+
+class SVGFile(Image):
+
+    class_mimetypes = ['image/svg+xml']
+
+
+    def _get_handle(self):
+        if rsvg_handle is None:
+            return None
+
+        data = self.to_str()
+        svg = rsvg_handle()
+        svg.write(data)
+        svg.close()
+        return svg
+
+
+    def _get_size(self, handle):
+        return handle.get_property('width'), handle.get_property('height')
+
+
+    def _get_thumbnail(self, handle, width, height, format):
+        image_width, image_height = self.size
+        if width >= image_width or height >= image_height:
+            # Case 1: convert
+            surface = ImageSurface(FORMAT_ARGB32, image_width, image_height)
+            ctx = Context(surface)
+        else:
+            # Case 2: scale
+            surface = ImageSurface(FORMAT_ARGB32, width, height)
+            ctx = Context(surface)
+
+            image_width = float(image_width)
+            image_height = float(image_height)
+            ratio = image_width/image_height
+            if ratio > 1.0:
+                height = height/ratio
+            elif ratio < 1.0:
+                width = width * ratio
+
+            ctx.scale(width/image_width, height/image_height)
+
+        # Render
+        handle.render_cairo(ctx)
+        output = StringIO()
+        surface.write_to_png(output)
+        surface.finish()
+
+        # FIXME We do not use the 'format' parameter
+        return output.getvalue(), 'png'
+
 
 
 register_handler_class(Image)
+register_handler_class(SVGFile)

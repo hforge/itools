@@ -36,7 +36,7 @@ from base import Handler
 from config import ConfigFile
 from file import File
 from folder import Folder
-from image import Image
+from image import Image, SVGFile
 from js import JSFile
 from registry import register_handler_class, get_handler_class_by_mimetype
 from text import TextFile, guess_encoding
@@ -53,6 +53,7 @@ __all__ = [
     'File',
     'Folder',
     'Image',
+    'SVGFile',
     'JSFile',
     'TextFile',
     # Handlers / Archive

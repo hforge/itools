@@ -25,14 +25,14 @@ pytz                 itools.web       http://pytz.sourceforge.net/
 reportlab       2.3  itools.pdf       http://www.reportlab.org/
 xapian        1.0.8  itools.xapian    http://www.xapian.org/
 pywin32         212  (Windows)        http://sf.net/projects/pywin32/
-PIL           1.1.6  itools.handlers  http://www.pythonware.com/products/pil/
 matplotlib     0.91  ipkg-quality.py  http://matplotlib.sourceforge.net/
 
-For indexing office documents like PDF, DOC and XLS, you can install libraries
-and Python packages.  They are not mandatory for installing itools.
+To be able to handle some file formats you need:
 
 Software    Version  Format           Home
 ----------  -------  ---------------  ----------------------------------------
+PIL           1.1.6  PNG, JPG, etc.   http://www.pythonware.com/products/pil/
+rsvg           2.30  SVG              http://www.pygtk.org/
 xlrd          0.6.1  XLS              http://www.lexicon.net/sjmachin/xlrd.htm
 poppler      0.10.4  PDF              http://poppler.freedesktop.org/
 wv2           0.2.3  DOC              https://sourceforge.net/projects/wvware

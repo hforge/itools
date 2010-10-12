@@ -276,11 +276,11 @@ def is_multiple(datatype):
 
 def deserialize_parameters(parameters, schema, default=String(multiple=True)):
     for name in parameters:
-        value = parameters[name]
         datatype = schema.get(name, default)
         if datatype is None:
-            raise NameError, 'parameter "{0}" not defined'.format(name)
+            raise ValueError, 'parameter "{0}" not defined'.format(name)
         # Decode
+        value = parameters[name]
         value = [ datatype.decode(x) for x in value ]
         # Multiple or single
         if not datatype.multiple:

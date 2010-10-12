@@ -417,6 +417,14 @@ class GitDatabase(ROGitDatabase):
         self.resources_new2old.clear()
 
 
+    def abort_changes(self):
+        if not self.has_changed:
+            return
+
+        self._abort_changes()
+        self._cleanup()
+
+
     def _before_commit(self):
         """This method is called before 'save_changes', and gives a chance
         to the database to check for preconditions, if an error occurs here

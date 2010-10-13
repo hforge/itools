@@ -32,6 +32,7 @@ from itools.http import get_type, Entity
 from itools.http import Cookie, SetCookieDataType
 from itools.i18n import AcceptLanguageType, format_datetime
 from itools.log import Logger
+from itools.log import log_warning
 from itools.uri import decode_query, get_reference, Path
 from exceptions import FormError
 from messages import ERROR
@@ -200,7 +201,12 @@ class Context(object):
         value = self.soup_message.get_header(name)
         if value is None:
             return datatype.get_default()
-        return datatype.decode(value)
+        try:
+            return datatype.decode(value)
+        except ValueError:
+            log_warning('malformed header: %s: %s' % (name, value),
+                        domain='itools.web')
+            return datatype.get_default()
 
 
     def set_header(self, name, value):

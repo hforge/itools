@@ -825,9 +825,11 @@ class Table(File):
         if datatype.multiple:
             # Default
             if property is None:
-                # FIXME Probably we should check whether the datatype defines
-                # a default value.
-                return []
+                default = datatype.get_default()
+                # FIXME raise a TypeError instead
+                if type(default) is not list:
+                    return []
+                return default
             # Hit
             return [ x.value for x in property ]
 

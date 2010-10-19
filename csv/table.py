@@ -821,7 +821,7 @@ class Table(File):
         return [ x for x in self.records if x and get(x, key) == value ]
 
 
-    def update_from_csv(self, data, columns):
+    def update_from_csv(self, data, columns, skip_header=False):
         """Update the table by adding record from data
         The input parameters are :
 
@@ -830,7 +830,8 @@ class Table(File):
           columns and the table schema.
         """
         record_properties = self.record_properties
-        for line in parse(data, columns, record_properties):
+        for line in parse(data, columns, record_properties,
+                skip_header=skip_header):
             record = {}
             for index, key in enumerate(columns):
                 if key in record_properties:

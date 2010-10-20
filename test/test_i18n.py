@@ -19,6 +19,7 @@
 # Import from the Standard Library
 from decimal import Decimal
 from unittest import TestCase, main
+from sys import version_info
 
 # Import from itools
 from itools.i18n import is_similar, get_most_similar, guess_language
@@ -263,7 +264,11 @@ class FormatNumberTestCase(TestCase):
 
     def test_format_float(self):
         x = float(self.x)
-        self.assertRaises(TypeError, format_number, x)
+        if version_info.major == 2 and version_info.minor < 7:
+            self.assertRaises(TypeError, format_number, x)
+        else:
+            n = format_number(x, accept=self.accept)
+            self.assertEqual(n, u"123,456.79")
 
 
     def test_format_es(self):

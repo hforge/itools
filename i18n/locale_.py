@@ -118,7 +118,8 @@ def moneyfmt(value, places=2, curr=u'', sep=u',', dp=u'.', pos=u'',
     return u''.join(reversed(result))
 
 
-def format_number(x, places=2, curr='', pos=u'', neg=u'-', trailneg=u"", accept=None):
+def format_number(x, places=2, curr='', pos=u'', neg=u'-', trailneg=u"",
+                  accept=None):
     """Convert Decimal to a number formatted unicode.
 
     places:  required number of places after the decimal point
@@ -127,9 +128,9 @@ def format_number(x, places=2, curr='', pos=u'', neg=u'-', trailneg=u"", accept=
     neg:     optional sign for negative numbers: '-', '(', space or blank
     trailneg:optional trailing minus indicator:  '-', ')', space or blank
     """
-    format = get_format(number_formats, accept)
     if type(x) is not Decimal:
         x = Decimal(x)
+    format = get_format(number_formats, accept)
     return moneyfmt(x, places=places, curr=curr, pos=pos, neg=neg,
             trailneg=trailneg, **format)
 

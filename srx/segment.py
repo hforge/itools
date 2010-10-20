@@ -206,13 +206,13 @@ def _split_message(message, srx_handler=None):
     breaks.sort()
 
     # And now cut the message
-    forbidden_break = False
+    forbidden_break_level = 0
     current_message = Message()
     current_length = 0
     for type, value, line in message:
         if type == TEXT:
             text, context = value
-            if forbidden_break:
+            if forbidden_break_level > 0:
                 current_message.append_text(text, line, context)
                 current_length += len(text)
             else:
@@ -238,10 +238,10 @@ def _split_message(message, srx_handler=None):
                     current_message.append_text(text, line + line_offset,
                                                 context)
         elif type == START_FORMAT:
-            forbidden_break = True
+            forbidden_break_level += 1
             current_message.append_start_format(value[0], value[1], line)
         elif type == END_FORMAT:
-            forbidden_break = False
+            forbidden_break_level -= 1
             current_message.append_end_format(value[0], value[1], line)
 
     # Send the last message

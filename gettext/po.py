@@ -202,7 +202,7 @@ def decode_target(target):
 
 # Escape and unescape strings
 def escape(s):
-    return s.replace('\n', '\\n').replace('"', '\\"')
+    return s.replace('\r', '\\r').replace('\n', '\\n').replace('"', '\\"')
 
 
 expr = compile(r'(\\.)')

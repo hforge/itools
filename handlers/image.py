@@ -102,7 +102,7 @@ class Image(File):
     def _get_thumbnail(self, handle, width, height, format):
         # Do not create the thumbnail if not needed
         image_width, image_height = self.size
-        if width >= image_width or height >= image_height:
+        if width >= image_width and height >= image_height:
             return self.to_str(), format
 
         # Convert to RGBA

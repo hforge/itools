@@ -151,7 +151,7 @@ class SVGFile(Image):
 
     def _get_thumbnail(self, handle, width, height, format):
         image_width, image_height = self.size
-        if width >= image_width or height >= image_height:
+        if width >= image_width and height >= image_height:
             # Case 1: convert
             surface = ImageSurface(FORMAT_ARGB32, image_width, image_height)
             ctx = Context(surface)

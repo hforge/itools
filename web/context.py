@@ -359,11 +359,10 @@ class Context(object):
     # API / Utilities
     #######################################################################
     def format_datetime(self, datetime, tz=None):
-        # 1. Build the tzinfo object
         if tz is None and self.user:
             tz = self.user.get_timezone()
 
-        # TODO default to the local host timezone
+        # 1. Build the tzinfo object
         tzinfo = timezone(tz) if tz else local_tz
 
         # 2. Change datetime

@@ -28,6 +28,7 @@ class UTC(tzinfo):
         return timedelta(0)
 
     def tzname(self, dt):
+        # pytz.utc returns 'UTC', otherwise we could use it
         return "Z"
 
     def dst(self, dt):
@@ -63,5 +64,14 @@ class LocalTimezone(tzinfo):
                         dt.second, dt.weekday(), 0, -1))
         tt = localtime(stamp)
         return tt.tm_isdst > 0
+
+
+    def localize(self, dt, is_dst=False):
+        """Implemented for compatibility with pytz
+        """
+        if dt.tzinfo is not None:
+            raise ValueError, 'Not naive datetime (tzinfo is already set)'
+        return dt.replace(tzinfo=self)
+
 
 local_tz = LocalTimezone()

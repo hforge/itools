@@ -745,6 +745,7 @@ class GitDatabase(ROGitDatabase):
         self.added = set()
         self.changed = set()
         self.has_changed = False
+        self.removed = False
 
 
     def is_phantom(self, handler):
@@ -813,6 +814,7 @@ class GitDatabase(ROGitDatabase):
                 self.fs.remove(key)
             # Changed
             self.has_changed = True
+            self.removed = True
             return
 
         # Case 2: folder
@@ -832,6 +834,7 @@ class GitDatabase(ROGitDatabase):
 
         # Changed
         self.has_changed = True
+        self.removed = True
 
 
     def touch_handler(self, key, handler=None):
@@ -944,6 +947,7 @@ class GitDatabase(ROGitDatabase):
 
             # Changed
             self.has_changed = True
+            self.removed = True
             return
 
         # Case 2: Folder
@@ -973,6 +977,7 @@ class GitDatabase(ROGitDatabase):
 
         # Changed
         self.has_changed = True
+        self.removed = True
 
 
     #######################################################################
@@ -980,6 +985,7 @@ class GitDatabase(ROGitDatabase):
     def _cleanup(self):
         super(GitDatabase, self)._cleanup()
         self.has_changed = False
+        self.removed = False
 
 
     def _abort_changes(self):
@@ -1019,19 +1025,24 @@ class GitDatabase(ROGitDatabase):
                     self.fs.make_folder(parent_path)
                 handler.save_state()
 
-        for key in self.changed:
+        changed = self.changed
+        for key in changed:
             handler = self.cache[key]
             handler.save_state()
-
-        self.changed.clear()
 
         # Call a "git add" eventually for new and/or moved files
         if self.added:
             send_subprocess(['git', 'add'] + list(self.added), path=self.path)
             self.added.clear()
 
+        command = ['git', 'commit', '-q']
+        if self.removed or len(changed) > 10:
+            command.append('-a')
+        elif changed:
+            send_subprocess(['git', 'add'] + list(changed), path=self.path)
+        changed.clear()
+
         # Commit
-        command = ['git', 'commit', '-aq']
         if data is None:
             command.extend(['-m', 'no comment'])
         else:

@@ -253,6 +253,9 @@ class Enumerate(String):
 
 # TODO suppress now there is a single Enumerate class?
 def enumerate_is_valid(options, name):
+    if isinstance(name, list):
+        options = set([option['name'] for option in options])
+        return set(name).issubset(options)
     for option in options:
         if name == option['name']:
             return True

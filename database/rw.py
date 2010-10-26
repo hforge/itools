@@ -359,6 +359,17 @@ class GitDatabase(ROGitDatabase):
             new2old[path] = path
 
 
+    def is_changed(self, resource):
+        """We use for this function only the 2 dicts old2new and new2old.
+        """
+
+        old2new = self.resources_old2new
+        new2old = self.resources_new2old
+
+        path = str(resource.get_canonical_path())
+        return path in old2new or path in new2old
+
+
     def move_resource(self, source, new_path):
         old2new = self.resources_old2new
         new2old = self.resources_new2old

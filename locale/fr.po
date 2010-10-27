@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: fr\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-03-01 19:03+CET\n"
-"PO-Revision-Date: 2009-04-16 10:18+0200\n"
+"PO-Revision-Date: 2010-10-27 17:02+0100\n"
 "Last-Translator: David Versmisse <david.versmisse@itaapy.com>\n"
 "Language-Team: Français <fr@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -22,28 +22,32 @@ msgstr ""
 
 #: ../xmlfile/i18n.py:64
 msgid " %s=\""
-msgstr ""
+msgstr " %s=\""
 
 #: ../xmlfile/i18n.py:69
 msgid " %s=\"%s\""
-msgstr ""
+msgstr " %s=\"%s\""
 
 #: ../xmlfile/i18n.py:67
 msgid "\""
-msgstr ""
+msgstr "\""
 
-#: ../rest/rest.py:79 ../rest/rest.py:100 ../rest/rest.py:155
-#: ../rest/rest.py:177 ../rest/parser.py:109 ../rest/parser.py:371
+#: ../rest/rest.py:79
+#: ../rest/rest.py:100
+#: ../rest/rest.py:155
+#: ../rest/rest.py:177
+#: ../rest/parser.py:109
+#: ../rest/parser.py:371
 msgid "#"
-msgstr ""
+msgstr "#"
 
 #: ../tmx/tmx.py:229
 msgid "%s"
-msgstr ""
+msgstr "%s"
 
 #: ../xapian/utils.py:136
 msgid "%s%s"
-msgstr ""
+msgstr "%s%s"
 
 #: ../pdf/pml.py:332
 msgid "(WW) CSS filename \"%s\" does not exist"
@@ -61,224 +65,236 @@ msgstr "(WW) Le nom du fichier est None"
 msgid "(WW) The filename '%s' doesn't exist"
 msgstr "(WW) Le fichier \"%s\" n'existe pas"
 
-#: ../rest/parser.py:102 ../rest/parser.py:103 ../rest/parser.py:278
-#: ../rest/parser.py:311 ../rest/parser.py:317 ../rest/parser.py:324
+#: ../rest/parser.py:102
+#: ../rest/parser.py:103
+#: ../rest/parser.py:278
+#: ../rest/parser.py:311
+#: ../rest/parser.py:317
+#: ../rest/parser.py:324
 msgid "*"
-msgstr ""
+msgstr "*"
 
-#: ../handlers/utils.py:48 ../handlers/utils.py:49 ../handlers/utils.py:53
-#: ../handlers/utils.py:54 ../rest/parser.py:104 ../rest/parser.py:105
+#: ../handlers/utils.py:48
+#: ../handlers/utils.py:49
+#: ../handlers/utils.py:53
+#: ../handlers/utils.py:54
+#: ../rest/parser.py:104
+#: ../rest/parser.py:105
 msgid "-"
-msgstr ""
+msgstr "-"
 
-#: ../ical/table.py:364 ../ical/icalendar.py:336
+#: ../ical/table.py:364
+#: ../ical/icalendar.py:336
 msgid "-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN"
-msgstr ""
+msgstr "-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN"
 
-#: ../handlers/utils.py:48 ../rest/parser.py:106 ../rest/parser.py:107
+#: ../handlers/utils.py:48
+#: ../rest/parser.py:106
+#: ../rest/parser.py:107
 msgid "."
-msgstr ""
+msgstr "."
 
 #: ../rest/parser.py:235
 msgid ".."
-msgstr ""
+msgstr ".."
 
 #: ../xmlfile/i18n.py:72
 msgid "/>"
-msgstr ""
+msgstr "/>"
 
-#: ../ical/table.py:363 ../ical/icalendar.py:335
+#: ../ical/table.py:363
+#: ../ical/icalendar.py:335
 msgid "2.0"
-msgstr ""
+msgstr "2.0"
 
 #: ../rest/parser.py:156
 msgid ":"
-msgstr ""
+msgstr ":"
 
 #: ../rest/parser.py:150
 msgid "::"
-msgstr ""
+msgstr "::"
 
 #: ../xmlfile/i18n.py:177
 msgid "<!--%s-->"
-msgstr ""
+msgstr "<!--%s-->"
 
 #: ../xmlfile/i18n.py:52
 msgid "<%s"
-msgstr ""
+msgstr "<%s"
 
 #: ../gettext/po.py:142
 msgid "</g>"
-msgstr ""
+msgstr "</g>"
 
 #: ../gettext/po.py:138
 msgid "<g id='%d'>"
-msgstr ""
+msgstr "<g id='%d'>"
 
 #: ../gettext/po.py:136
 msgid "<x id='%d'/>"
-msgstr ""
+msgstr "<x id='%d'/>"
 
 #: ../xmlfile/i18n.py:74
 msgid ">"
-msgstr ""
+msgstr ">"
 
 #: ../i18n/languages.py:250
 msgid "???"
-msgstr ""
+msgstr "???"
 
 #: ../handlers/utils.py:48
 msgid "@"
-msgstr ""
+msgstr "@"
 
 #: ../handlers/utils.py:21
 msgid "AAAAAAAaaaaaaaCcEEEEEeeeeeIIIIIiiiiiNnOOOOOOOoooooooUUUUUuuuuuYYYyyyZz"
-msgstr ""
+msgstr "AAAAAAAaaaaaaaCcEEEEEeeeeeIIIIIiiiiiNnOOOOOOOoooooooUUUUUuuuuuYYYyyyZz"
 
 #: ../handlers/utils.py:29
 msgid "AE"
-msgstr ""
+msgstr "AE"
 
 #: ../i18n/languages.py:23
 msgid "Abkhazian"
-msgstr ""
+msgstr "Abkhazian"
 
 #: ../i18n/languages.py:22
 msgid "Afar"
-msgstr ""
+msgstr "Afar"
 
 #: ../i18n/languages.py:25
 msgid "Afrikaans"
-msgstr ""
+msgstr "Afrikaans"
 
 #: ../i18n/languages.py:26
-#, fuzzy
 msgid "Akan"
-msgstr "un"
+msgstr "Akan"
 
 #: ../i18n/languages.py:185
 msgid "Albanian"
-msgstr ""
+msgstr "Albanian"
 
 #: ../i18n/languages.py:27
 msgid "Amharic"
-msgstr ""
+msgstr "Amharic"
 
 #: ../i18n/languages.py:29
 msgid "Arabic"
-msgstr ""
+msgstr "Arabic"
 
 #: ../i18n/languages.py:28
 msgid "Aragonese"
-msgstr ""
+msgstr "Aragonese"
 
 #: ../i18n/languages.py:97
 msgid "Armenian"
-msgstr ""
+msgstr "Armenian"
 
 #: ../i18n/languages.py:30
 msgid "Assamese"
-msgstr ""
+msgstr "Assamese"
 
 #: ../i18n/languages.py:31
 msgid "Avaric"
-msgstr ""
+msgstr "Avaric"
 
 #: ../i18n/languages.py:24
 msgid "Avestan"
-msgstr ""
+msgstr "Avestan"
 
 #: ../i18n/languages.py:32
 msgid "Aymara"
-msgstr ""
+msgstr "Aymara"
 
 #: ../i18n/languages.py:33
 msgid "Azerbaijani"
-msgstr ""
+msgstr "Azerbaijani"
 
-#: ../ical/icalendar.py:506 ../ical/icalendar.py:522
+#: ../ical/icalendar.py:506
+#: ../ical/icalendar.py:522
 msgid "BEGIN:%s\n"
-msgstr ""
+msgstr "BEGIN:%s\n"
 
 #: ../i18n/languages.py:39
 msgid "Bambara"
-msgstr ""
+msgstr "Bambara"
 
 #: ../i18n/languages.py:34
 msgid "Bashkir"
-msgstr ""
+msgstr "Bashkir"
 
 #: ../i18n/languages.py:72
 msgid "Basque"
-msgstr ""
+msgstr "Basque"
 
 #: ../i18n/languages.py:35
 msgid "Belarusian"
-msgstr ""
+msgstr "Belarusian"
 
 #: ../i18n/languages.py:40
 msgid "Bengali"
-msgstr ""
+msgstr "Bengali"
 
 #: ../i18n/languages.py:37
 msgid "Bihari"
-msgstr ""
+msgstr "Bihari"
 
 #: ../i18n/languages.py:38
 msgid "Bislama"
-msgstr ""
+msgstr "Bislama"
 
 #: ../i18n/languages.py:43
 msgid "Bosnian"
-msgstr ""
+msgstr "Bosnian"
 
 #: ../i18n/languages.py:42
 msgid "Breton"
-msgstr ""
+msgstr "Breton"
 
 #: ../i18n/languages.py:36
 msgid "Bulgarian"
-msgstr ""
+msgstr "Bulgarian"
 
 #: ../i18n/languages.py:144
 msgid "Burmese"
-msgstr ""
+msgstr "Burmese"
 
 #: ../i18n/languages.py:44
 msgid "Catalan"
-msgstr ""
+msgstr "Catalan"
 
 #: ../i18n/languages.py:46
 msgid "Chamorro"
-msgstr ""
+msgstr "Chamorro"
 
 #: ../i18n/languages.py:45
 msgid "Chechen"
-msgstr ""
+msgstr "Chechen"
 
 #: ../i18n/languages.py:156
 msgid "Chichewa; Chewa; Nyanja"
-msgstr ""
+msgstr "Chichewa; Chewa; Nyanja"
 
 #: ../i18n/languages.py:219
 msgid "Chinese"
-msgstr ""
+msgstr "Chinese"
 
 #: ../i18n/languages.py:220
 msgid "Chinese/China"
-msgstr ""
+msgstr "Chinese/China"
 
 #: ../i18n/languages.py:221
 msgid "Chinese/Taiwan"
-msgstr ""
+msgstr "Chinese/Taiwan"
 
 #: ../i18n/languages.py:50
 msgid "Church Slavic"
-msgstr ""
+msgstr "Church Slavic"
 
 #: ../i18n/languages.py:51
 msgid "Chuvash"
-msgstr ""
+msgstr "Chuvash"
 
 #: ../scripts/ipkg-quality.py:58
 msgid "Code length"
@@ -286,47 +302,48 @@ msgstr "Longueur du code"
 
 #: ../i18n/languages.py:124
 msgid "Cornish"
-msgstr ""
+msgstr "Cornish"
 
 #: ../i18n/languages.py:47
 msgid "Corsican"
-msgstr ""
+msgstr "Corsican"
 
 #: ../i18n/languages.py:48
 msgid "Cree"
-msgstr ""
+msgstr "Cree"
 
 #: ../i18n/languages.py:94
 msgid "Croatian"
-msgstr ""
+msgstr "Croatian"
 
 #: ../i18n/languages.py:49
 msgid "Czech"
-msgstr ""
+msgstr "Czech"
 
 #: ../i18n/languages.py:53
 msgid "Danish"
-msgstr ""
+msgstr "Danish"
 
 #: ../i18n/languages.py:58
 msgid "Divehi; Dhivehi; Maldivian"
-msgstr ""
+msgstr "Divehi; Dhivehi; Maldivian"
 
 #: ../i18n/languages.py:150
 msgid "Dutch"
-msgstr ""
+msgstr "Dutch"
 
 #: ../i18n/languages.py:151
 msgid "Dutch/Belgium"
-msgstr ""
+msgstr "Dutch/Belgium"
 
 #: ../i18n/languages.py:59
 msgid "Dzongkha"
-msgstr ""
+msgstr "Dzongkha"
 
-#: ../ical/icalendar.py:530 ../ical/icalendar.py:533
+#: ../ical/icalendar.py:530
+#: ../ical/icalendar.py:533
 msgid "END:%s\n"
-msgstr ""
+msgstr "END:%s\n"
 
 #: ../i18n/languages.py:62
 msgid "English"
@@ -334,11 +351,11 @@ msgstr "Anglais"
 
 #: ../i18n/languages.py:63
 msgid "English/United Kingdom"
-msgstr ""
+msgstr "English/United Kingdom"
 
 #: ../i18n/languages.py:64
 msgid "English/United States"
-msgstr ""
+msgstr "English/United States"
 
 #: ../scripts/ipkg-quality.py:628
 msgid "Error, your project must be versioned with GIT."
@@ -346,11 +363,11 @@ msgstr "Erreur, votre projet doit être versionné avec GIT"
 
 #: ../i18n/languages.py:65
 msgid "Esperanto"
-msgstr ""
+msgstr "Esperanto"
 
 #: ../i18n/languages.py:71
 msgid "Estonian"
-msgstr ""
+msgstr "Estonian"
 
 #: ../web/context.py:64
 msgid "Everything looks fine (strange)."
@@ -358,7 +375,7 @@ msgstr "Tout paraît correct (étrange)."
 
 #: ../i18n/languages.py:60
 msgid "Ewe"
-msgstr ""
+msgstr "Ewe"
 
 #: ../scripts/ipkg-quality.py:71
 msgid "Exception handling"
@@ -366,15 +383,15 @@ msgstr "Gestion des exceptions"
 
 #: ../i18n/languages.py:77
 msgid "Faroese"
-msgstr ""
+msgstr "Faroese"
 
 #: ../i18n/languages.py:76
 msgid "Fijian"
-msgstr ""
+msgstr "Fijian"
 
 #: ../i18n/languages.py:75
 msgid "Finnish"
-msgstr ""
+msgstr "Finnish"
 
 #: ../i18n/languages.py:78
 msgid "French"
@@ -382,112 +399,111 @@ msgstr "Français"
 
 #: ../i18n/languages.py:79
 msgid "French/Belgium"
-msgstr ""
+msgstr "French/Belgium"
 
 #: ../i18n/languages.py:80
 msgid "French/Canada"
-msgstr ""
+msgstr "French/Canada"
 
 #: ../i18n/languages.py:81
 msgid "French/France"
-msgstr ""
+msgstr "French/France"
 
 #: ../i18n/languages.py:82
 msgid "French/Switzerland"
-msgstr ""
+msgstr "French/Switzerland"
 
 #: ../i18n/languages.py:83
 msgid "Frisian"
-msgstr ""
+msgstr "Frisian"
 
 #: ../i18n/languages.py:74
 msgid "Fulah"
-msgstr ""
+msgstr "Fulah"
 
 #: ../i18n/languages.py:85
 msgid "Gaelic"
-msgstr ""
+msgstr "Gaelic"
 
 #: ../i18n/languages.py:86
 msgid "Galician"
-msgstr ""
+msgstr "Galician"
 
 #: ../i18n/languages.py:128
-#, fuzzy
 msgid "Ganda"
-msgstr "et"
+msgstr "Ganda"
 
 #: ../i18n/languages.py:111
 msgid "Georgian"
-msgstr ""
+msgstr "Georgian"
 
 #: ../i18n/languages.py:54
 msgid "German"
-msgstr ""
+msgstr "German"
 
 #: ../i18n/languages.py:55
 msgid "German/Austria"
-msgstr ""
+msgstr "German/Austria"
 
 #: ../i18n/languages.py:56
 msgid "German/Germany"
-msgstr ""
+msgstr "German/Germany"
 
 #: ../i18n/languages.py:57
 msgid "German/Switzerland"
-msgstr ""
+msgstr "German/Switzerland"
 
 #: ../i18n/languages.py:61
 msgid "Greek"
-msgstr ""
+msgstr "Greek"
 
 #: ../i18n/languages.py:87
 msgid "Guarani"
-msgstr ""
+msgstr "Guarani"
 
 #: ../i18n/languages.py:88
 msgid "Gujarati"
-msgstr ""
+msgstr "Gujarati"
 
 #: ../i18n/languages.py:95
 msgid "Haitian"
-msgstr ""
+msgstr "Haitian"
 
 #: ../i18n/languages.py:90
 msgid "Hausa"
-msgstr ""
+msgstr "Hausa"
 
 #: ../i18n/languages.py:91
 msgid "Hebrew"
-msgstr ""
+msgstr "Hebrew"
 
 #: ../i18n/languages.py:98
 msgid "Herero"
-msgstr ""
+msgstr "Herero"
 
 #: ../i18n/languages.py:92
 msgid "Hindi"
-msgstr ""
+msgstr "Hindi"
 
 #: ../i18n/languages.py:93
 msgid "Hiri Motu"
-msgstr ""
+msgstr "Hiri Motu"
 
 #: ../i18n/languages.py:96
 msgid "Hungarian"
-msgstr ""
+msgstr "Hungarian"
 
 #: ../i18n/languages.py:106
 msgid "Icelandic"
-msgstr ""
+msgstr "Icelandic"
 
 #: ../i18n/languages.py:105
 msgid "Ido"
-msgstr ""
+msgstr "Ido"
 
 #: ../i18n/languages.py:102
 msgid "Igbo"
-msgstr ""
+msgstr "Igbo"
 
 #: ../scripts/ipkg-quality.py:78
 msgid "Import problems"
@@ -495,205 +511,203 @@ msgstr "Problèmes d'import"
 
 #: ../i18n/languages.py:100
 msgid "Indonesian"
-msgstr ""
+msgstr "Indonesian"
 
 #: ../i18n/languages.py:99
 msgid "Interlingua"
-msgstr ""
+msgstr "Interlingua"
 
 #: ../i18n/languages.py:101
 msgid "Interlingue; Occidental"
-msgstr ""
+msgstr "Interlingue; Occidental"
 
 #: ../i18n/languages.py:108
 msgid "Inuktitut"
-msgstr ""
+msgstr "Inuktitut"
 
 #: ../i18n/languages.py:104
 msgid "Inupiak"
-msgstr ""
+msgstr "Inupiak"
 
 #: ../i18n/languages.py:84
 msgid "Irish"
-msgstr ""
+msgstr "Irish"
 
 #: ../i18n/languages.py:107
 msgid "Italian"
-msgstr ""
+msgstr "Italian"
 
 #: ../i18n/languages.py:109
 msgid "Japanese"
-msgstr ""
+msgstr "Japanese"
 
 #: ../i18n/languages.py:110
 msgid "Javanese"
-msgstr ""
+msgstr "Javanese"
 
 #: ../i18n/languages.py:116
 msgid "Kalaallisut; Greenlandic"
-msgstr ""
+msgstr "Kalaallisut; Greenlandic"
 
 #: ../i18n/languages.py:118
-#, fuzzy
 msgid "Kannada"
-msgstr "et"
+msgstr "Kannada"
 
 #: ../i18n/languages.py:120
 msgid "Kanuri"
-msgstr ""
+msgstr "Kanuri"
 
 #: ../i18n/languages.py:121
 msgid "Kashmiri"
-msgstr ""
+msgstr "Kashmiri"
 
 #: ../i18n/languages.py:115
 msgid "Kazakh"
-msgstr ""
+msgstr "Kazakh"
 
 #: ../i18n/languages.py:117
 msgid "Khmer"
-msgstr ""
+msgstr "Khmer"
 
 #: ../i18n/languages.py:113
 msgid "Kikuyu; Gikuyu"
-msgstr ""
+msgstr "Kikuyu; Gikuyu"
 
 #: ../i18n/languages.py:173
 msgid "Kinyarwanda"
-msgstr ""
+msgstr "Kinyarwanda"
 
 #: ../i18n/languages.py:125
 msgid "Kirghiz; Kyrgyz"
-msgstr ""
+msgstr "Kirghiz; Kyrgyz"
 
 #: ../i18n/languages.py:123
 msgid "Komi"
-msgstr ""
+msgstr "Komi"
 
 #: ../i18n/languages.py:112
 msgid "Kongo"
-msgstr ""
+msgstr "Kongo"
 
 #: ../i18n/languages.py:119
 msgid "Korean"
-msgstr ""
+msgstr "Korean"
 
 #: ../i18n/languages.py:114
 msgid "Kuanyama; Kwanyama"
-msgstr ""
+msgstr "Kuanyama; Kwanyama"
 
 #: ../i18n/languages.py:122
 msgid "Kurdish"
-msgstr ""
+msgstr "Kurdish"
 
 #: ../i18n/languages.py:131
 msgid "Lao"
-msgstr ""
+msgstr "Lao"
 
 #: ../i18n/languages.py:126
 msgid "Latin"
-msgstr ""
+msgstr "Latin"
 
 #: ../i18n/languages.py:134
 msgid "Latvian"
-msgstr ""
+msgstr "Latvian"
 
 #: ../i18n/languages.py:129
 msgid "Limburgan"
-msgstr ""
+msgstr "Limburgan"
 
 #: ../i18n/languages.py:130
 msgid "Lingala"
-msgstr ""
+msgstr "Lingala"
 
 #: ../i18n/languages.py:132
 msgid "Lithuanian"
-msgstr ""
+msgstr "Lithuanian"
 
 #: ../i18n/languages.py:133
 msgid "Luba-Katanga"
-msgstr ""
+msgstr "Luba-Katanga"
 
 #: ../i18n/languages.py:127
 msgid "Luxembourgish"
-msgstr ""
+msgstr "Luxembourgish"
 
 #: ../i18n/languages.py:138
 msgid "Macedonian"
-msgstr ""
+msgstr "Macedonian"
 
 #: ../i18n/languages.py:135
 msgid "Malagasy"
-msgstr ""
+msgstr "Malagasy"
 
 #: ../i18n/languages.py:142
 msgid "Malay"
-msgstr ""
+msgstr "Malay"
 
 #: ../i18n/languages.py:139
 msgid "Malayalam"
-msgstr ""
+msgstr "Malayalam"
 
 #: ../i18n/languages.py:143
 msgid "Maltese"
-msgstr ""
+msgstr "Maltese"
 
 #: ../i18n/languages.py:89
-#, fuzzy
 msgid "Manx"
-msgstr "un"
+msgstr "Manx"
 
 #: ../i18n/languages.py:137
 msgid "Maori"
-msgstr ""
+msgstr "Maori"
 
 #: ../i18n/languages.py:141
 msgid "Marathi"
-msgstr ""
+msgstr "Marathi"
 
 #: ../i18n/languages.py:136
 msgid "Marshallese"
-msgstr ""
+msgstr "Marshallese"
 
 #: ../i18n/languages.py:140
 msgid "Mongolian"
-msgstr ""
+msgstr "Mongolian"
 
 #: ../i18n/languages.py:145
 msgid "Nauru"
-msgstr ""
+msgstr "Nauru"
 
 #: ../i18n/languages.py:155
 msgid "Navajo; Navaho"
-msgstr ""
+msgstr "Navajo; Navaho"
 
 #: ../i18n/languages.py:147
 msgid "Ndebele, North"
-msgstr ""
+msgstr "Ndebele, North"
 
 #: ../i18n/languages.py:154
 msgid "Ndebele, South"
-msgstr ""
+msgstr "Ndebele, South"
 
 #: ../i18n/languages.py:149
 msgid "Ndonga"
-msgstr ""
+msgstr "Ndonga"
 
 #: ../i18n/languages.py:148
 msgid "Nepali"
-msgstr ""
+msgstr "Nepali"
 
 #: ../i18n/languages.py:153
 msgid "Norwegian"
-msgstr ""
+msgstr "Norwegian"
 
 #: ../i18n/languages.py:146
 msgid "Norwegian Bokmal"
-msgstr ""
+msgstr "Norwegian Bokmal"
 
 #: ../i18n/languages.py:152
 msgid "Norwegian Nyrnosk"
-msgstr ""
+msgstr "Norwegian Nyrnosk"
 
 #: ../scripts/ipkg-quality.py:59
 msgid "Number of lines"
@@ -705,15 +719,15 @@ msgstr "Nombre de tokens"
 
 #: ../handlers/utils.py:31
 msgid "OE"
-msgstr ""
+msgstr "OE"
 
 #: ../i18n/languages.py:157
 msgid "Occitan"
-msgstr ""
+msgstr "Occitan"
 
 #: ../i18n/languages.py:158
 msgid "Ojibwa"
-msgstr ""
+msgstr "Ojibwa"
 
 #: ../scripts/ipkg-quality.py:619
 msgid "Options --worse and --show-lines are mutually exclusive."
@@ -721,27 +735,27 @@ msgstr "Les options --worse et --show-lines sont incompatibles."
 
 #: ../i18n/languages.py:160
 msgid "Oriya"
-msgstr ""
+msgstr "Oriya"
 
 #: ../i18n/languages.py:159
 msgid "Oromo"
-msgstr ""
+msgstr "Oromo"
 
 #: ../i18n/languages.py:161
 msgid "Ossetian; Ossetic"
-msgstr ""
+msgstr "Ossetian; Ossetic"
 
 #: ../i18n/languages.py:163
 msgid "Pali"
-msgstr ""
+msgstr "Pali"
 
 #: ../i18n/languages.py:162
 msgid "Panjabi; Punjabi"
-msgstr ""
+msgstr "Panjabi; Punjabi"
 
 #: ../i18n/languages.py:73
 msgid "Persian"
-msgstr ""
+msgstr "Persian"
 
 #: ../scripts/ipkg-quality.py:616
 msgid "Please give at least one file to analyse."
@@ -753,171 +767,167 @@ msgstr "Svp, installez matplotlib."
 
 #: ../i18n/languages.py:164
 msgid "Polish"
-msgstr ""
+msgstr "Polish"
 
 #: ../i18n/languages.py:166
 msgid "Portuguese"
-msgstr ""
+msgstr "Portuguese"
 
 #: ../i18n/languages.py:167
 msgid "Portuguese/Brazil"
-msgstr ""
+msgstr "Portuguese/Brazil"
 
 #: ../i18n/languages.py:165
 msgid "Pushto; Pashto"
-msgstr ""
+msgstr "Pushto; Pashto"
 
 #: ../i18n/languages.py:168
 msgid "Quechua"
-msgstr ""
+msgstr "Quechua"
 
 #: ../i18n/languages.py:171
 msgid "Romanian; Moldavian"
-msgstr ""
+msgstr "Romanian; Moldavian"
 
 #: ../i18n/languages.py:169
 msgid "Romansh"
-msgstr ""
+msgstr "Romansh"
 
 #: ../i18n/languages.py:170
 msgid "Rundi"
-msgstr ""
+msgstr "Rundi"
 
 #: ../i18n/languages.py:172
 msgid "Russian"
-msgstr ""
+msgstr "Russian"
 
 #: ../i18n/languages.py:177
 msgid "Sami"
-msgstr ""
+msgstr "Sami"
 
 #: ../i18n/languages.py:182
 msgid "Samoan"
-msgstr ""
+msgstr "Samoan"
 
 #: ../i18n/languages.py:178
 msgid "Sango"
-msgstr ""
+msgstr "Sango"
 
 #: ../i18n/languages.py:174
 msgid "Sanskrit"
-msgstr ""
+msgstr "Sanskrit"
 
 #: ../i18n/languages.py:175
 msgid "Sardinian"
-msgstr ""
+msgstr "Sardinian"
 
 #: ../i18n/languages.py:186
 msgid "Serbian"
-msgstr ""
+msgstr "Serbian"
 
 #: ../i18n/languages.py:183
 msgid "Shona"
-msgstr ""
+msgstr "Shona"
 
 #: ../i18n/languages.py:103
 msgid "Sichuan Yi; Nuosu"
-msgstr ""
+msgstr "Sichuan Yi; Nuosu"
 
 #: ../i18n/languages.py:176
 msgid "Sindhi"
-msgstr ""
+msgstr "Sindhi"
 
 #: ../i18n/languages.py:179
 msgid "Sinhala; Sinhalese"
-msgstr ""
+msgstr "Sinhala; Sinhalese"
 
 #: ../i18n/languages.py:180
 msgid "Slovak"
-msgstr ""
+msgstr "Slovak"
 
 #: ../i18n/languages.py:181
 msgid "Slovenian"
-msgstr ""
+msgstr "Slovenian"
 
 #: ../i18n/languages.py:184
 msgid "Somali"
-msgstr ""
+msgstr "Somali"
 
 #: ../web/messages.py:46
-msgid ""
-"Some required fields are missing, or some values are not valid. Please "
-"correct them and continue."
-msgstr ""
-"Des champs requis ne sont pas renseignés ou des valeurs ne sont pas valides. "
-"Merci de les corriger avant de continuer."
+msgid "Some required fields are missing, or some values are not valid. Please correct them and continue."
+msgstr "Des champs requis ne sont pas renseignés ou des valeurs ne sont pas valides. Merci de les corriger avant de continuer."
 
 #: ../i18n/languages.py:188
 msgid "Sotho"
-msgstr ""
+msgstr "Sotho"
 
 #: ../i18n/languages.py:66
 msgid "Spanish"
-msgstr ""
+msgstr "Spanish"
 
 #: ../i18n/languages.py:67
 msgid "Spanish/Argentina"
-msgstr ""
+msgstr "Spanish/Argentina"
 
 #: ../i18n/languages.py:68
 msgid "Spanish/Colombia"
-msgstr ""
+msgstr "Spanish/Colombia"
 
 #: ../i18n/languages.py:69
 msgid "Spanish/Mexico"
-msgstr ""
+msgstr "Spanish/Mexico"
 
 #: ../i18n/languages.py:70
 msgid "Spanish/Spain"
-msgstr ""
+msgstr "Spanish/Spain"
 
 #: ../scripts/ipkg-quality.py:63
 msgid "Style"
-msgstr ""
+msgstr "Style"
 
 #: ../i18n/languages.py:189
 msgid "Sundanese"
-msgstr ""
+msgstr "Sundanese"
 
 #: ../i18n/languages.py:191
 msgid "Swahili"
-msgstr ""
+msgstr "Swahili"
 
 #: ../i18n/languages.py:187
 msgid "Swati"
-msgstr ""
+msgstr "Swati"
 
 #: ../i18n/languages.py:190
 msgid "Swedish"
-msgstr ""
+msgstr "Swedish"
 
 #: ../i18n/languages.py:198
 msgid "Tagalog"
-msgstr ""
+msgstr "Tagalog"
 
 #: ../i18n/languages.py:205
 msgid "Tahitian"
-msgstr ""
+msgstr "Tahitian"
 
 #: ../i18n/languages.py:194
 msgid "Tajik"
-msgstr ""
+msgstr "Tajik"
 
 #: ../i18n/languages.py:192
 msgid "Tamil"
-msgstr ""
+msgstr "Tamil"
 
 #: ../i18n/languages.py:203
 msgid "Tatar"
-msgstr ""
+msgstr "Tatar"
 
 #: ../i18n/languages.py:193
 msgid "Telugu"
-msgstr ""
+msgstr "Telugu"
 
 #: ../i18n/languages.py:195
 msgid "Thai"
-msgstr ""
+msgstr "Thai"
 
 #: ../scripts/ipkg-quality.py:622
 msgid "The option --show-lines takes one file in parameter."
@@ -941,117 +951,123 @@ msgstr "Ce fichier est parfait !"
 
 #: ../i18n/languages.py:41
 msgid "Tibetan"
-msgstr ""
+msgstr "Tibetan"
 
 #: ../i18n/languages.py:196
 msgid "Tigrinya"
-msgstr ""
+msgstr "Tigrinya"
 
 #: ../i18n/languages.py:200
 msgid "Tonga"
-msgstr ""
+msgstr "Tonga"
 
 #: ../i18n/languages.py:202
 msgid "Tsonga"
-msgstr ""
+msgstr "Tsonga"
 
 #: ../i18n/languages.py:199
 msgid "Tswana"
-msgstr ""
+msgstr "Tswana"
 
 #: ../i18n/languages.py:201
 msgid "Turkish"
-msgstr ""
+msgstr "Turkish"
 
 #: ../i18n/languages.py:197
 msgid "Turkmen"
-msgstr ""
+msgstr "Turkmen"
 
 #: ../i18n/languages.py:204
 msgid "Twi"
-msgstr ""
+msgstr "Twi"
 
 #: ../i18n/languages.py:206
 msgid "Uighur; Uyghur"
-msgstr ""
+msgstr "Uighur; Uyghur"
 
 #: ../i18n/languages.py:207
 msgid "Ukrainian"
-msgstr ""
+msgstr "Ukrainian"
 
 #: ../i18n/languages.py:208
 msgid "Urdu"
-msgstr ""
+msgstr "Urdu"
 
 #: ../i18n/languages.py:209
 msgid "Uzbek"
-msgstr ""
+msgstr "Uzbek"
 
 #: ../i18n/languages.py:210
 msgid "Venda"
-msgstr ""
+msgstr "Venda"
 
 #: ../i18n/languages.py:211
 msgid "Vietnamese"
-msgstr ""
+msgstr "Vietnamese"
 
 #: ../i18n/languages.py:212
 msgid "Volapuk"
-msgstr ""
+msgstr "Volapuk"
 
 #: ../i18n/languages.py:213
 msgid "Walloon"
-msgstr ""
+msgstr "Walloon"
 
 #: ../i18n/languages.py:52
 msgid "Welsh"
-msgstr ""
+msgstr "Welsh"
 
 #: ../i18n/languages.py:214
 msgid "Wolof"
-msgstr ""
+msgstr "Wolof"
 
 #: ../i18n/languages.py:215
 msgid "Xhosa"
-msgstr ""
+msgstr "Xhosa"
 
 #: ../i18n/languages.py:216
 msgid "Yiddish"
-msgstr ""
+msgstr "Yiddish"
 
 #: ../i18n/languages.py:217
 msgid "Yoruba"
-msgstr ""
+msgstr "Yoruba"
 
 #: ../i18n/languages.py:218
 msgid "Zhuang; Chuang"
-msgstr ""
+msgstr "Zhuang; Chuang"
 
 #: ../i18n/languages.py:222
 msgid "Zulu"
-msgstr ""
+msgstr "Zulu"
 
-#: ../rest/parser.py:288 ../rest/parser.py:292
+#: ../rest/parser.py:288
+#: ../rest/parser.py:292
 msgid "["
-msgstr ""
+msgstr "["
 
 #: ../rest/parser.py:361
 msgid "]"
-msgstr ""
+msgstr "]"
 
-#: ../handlers/utils.py:48 ../rest/parser.py:299 ../rest/parser.py:349
+#: ../handlers/utils.py:48
+#: ../rest/parser.py:299
+#: ../rest/parser.py:349
 #: ../rest/parser.py:368
 msgid "_"
-msgstr ""
+msgstr "_"
 
-#: ../rest/parser.py:283 ../rest/parser.py:331 ../rest/parser.py:337
-#: ../rest/parser.py:344 ../rest/parser.py:391
+#: ../rest/parser.py:283
+#: ../rest/parser.py:331
+#: ../rest/parser.py:337
+#: ../rest/parser.py:344
+#: ../rest/parser.py:391
 msgid "`"
-msgstr ""
+msgstr "`"
 
 #: ../handlers/utils.py:28
 msgid "ae"
-msgstr ""
+msgstr "ae"
 
 #: ../i18n/oracle.py:262
 msgid "al"
@@ -1113,7 +1129,8 @@ msgstr ""
 msgid "donc"
 msgstr ""
 
-#: ../i18n/oracle.py:275 ../i18n/oracle.py:334
+#: ../i18n/oracle.py:275
+#: ../i18n/oracle.py:334
 msgid "du"
 msgstr ""
 
@@ -1223,7 +1240,7 @@ msgstr ""
 
 #: ../ical/table.py:119
 msgid "no title"
-msgstr ""
+msgstr "pas de titre"
 
 #: ../i18n/oracle.py:300
 msgid "nous"
@@ -1239,7 +1256,7 @@ msgstr ""
 
 #: ../handlers/utils.py:30
 msgid "oe"
-msgstr ""
+msgstr "oe"
 
 #: ../i18n/oracle.py:303
 msgid "of"
@@ -1283,7 +1300,7 @@ msgstr ""
 
 #: ../handlers/utils.py:32
 msgid "ss"
-msgstr ""
+msgstr "ss"
 
 #: ../scripts/ipkg-quality.py:73
 msgid "string exceptions are used"
@@ -1306,11 +1323,8 @@ msgid "the"
 msgstr ""
 
 #: ../csv/table.py:308
-msgid ""
-"the \"{field}\" field must be unique, the \"{value}\" value is  already used."
-msgstr ""
-"le champ \"{field}\" doit être unique, la valeur \"{value}\" est déjà "
-"utilisée"
+msgid "the \"{field}\" field must be unique, the \"{value}\" value is  already used."
+msgstr "le champ \"{field}\" doit être unique, la valeur \"{value}\" est déjà utilisée"
 
 #: ../i18n/oracle.py:317
 msgid "their"
@@ -1372,9 +1386,10 @@ msgstr ""
 msgid "your"
 msgstr ""
 
-#: ../rest/parser.py:294 ../rest/parser.py:384
+#: ../rest/parser.py:294
+#: ../rest/parser.py:384
 msgid "|"
-msgstr ""
+msgstr "|"
 
 #: ../i18n/oracle.py:229
 msgid "¡"
@@ -1386,15 +1401,16 @@ msgstr ""
 
 #: ../handlers/utils.py:19
 msgid "ÄÅÁÀÂÃĀäåáàâãāÇçÉÈÊËĒéèêëēÍÌÎÏĪíìîïīÑñÖÓÒÔÕØŌöóòôõøōÜÚÙÛŪüúùûūÝŸȲýÿȳŽž"
-msgstr ""
+msgstr "ÄÅÁÀÂÃĀäåáàâãāÇçÉÈÊËĒéèêëēÍÌÎÏĪíìîïīÑñÖÓÒÔÕØŌöóòôõøōÜÚÙÛŪüúùûūÝŸȲýÿȳŽž"
 
 #: ../handlers/utils.py:29
 msgid "Æ"
-msgstr ""
+msgstr "Æ"
 
-#: ../handlers/utils.py:32 ../i18n/oracle.py:232
+#: ../handlers/utils.py:32
+#: ../i18n/oracle.py:232
 msgid "ß"
-msgstr ""
+msgstr "ß"
 
 #: ../i18n/oracle.py:261
 msgid "à"
@@ -1406,7 +1422,7 @@ msgstr ""
 
 #: ../handlers/utils.py:28
 msgid "æ"
-msgstr ""
+msgstr "æ"
 
 #: ../i18n/oracle.py:233
 msgid "ç"
@@ -1442,11 +1458,11 @@ msgstr ""
 
 #: ../handlers/utils.py:31
 msgid "Œ"
-msgstr ""
+msgstr "Œ"
 
 #: ../handlers/utils.py:30
 msgid "œ"
-msgstr ""
+msgstr "œ"
 
 #: ../i18n/oracle.py:253
 msgid "、"

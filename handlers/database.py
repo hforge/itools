@@ -1016,8 +1016,9 @@ class GitDatabase(ROGitDatabase):
 
 
     def _save_changes(self, data):
-        # Synchronize eventually the handlers and the filesystem
-        for key in self.added:
+        # 1. Synchronize the handlers and the filesystem
+        added = self.added
+        for key in added:
             handler = self.cache.get(key)
             if handler and handler.dirty:
                 parent_path = dirname(key)
@@ -1030,26 +1031,44 @@ class GitDatabase(ROGitDatabase):
             handler = self.cache[key]
             handler.save_state()
 
-        # Call a "git add" eventually for new and/or moved files
-        if self.added:
-            send_subprocess(['git', 'add'] + list(self.added), path=self.path)
-            self.added.clear()
-
-        command = ['git', 'commit', '-q']
-        if self.removed or len(changed) > 10:
-            command.append('-a')
-        elif changed:
-            send_subprocess(['git', 'add'] + list(changed), path=self.path)
-        changed.clear()
-
-        # Commit
+        # 2. Build the 'git commit' command
+        git_commit = ['git', 'commit', '-q']
         if data is None:
-            command.extend(['-m', 'no comment'])
+            git_commit.extend(['-m', 'no comment'])
         else:
             git_author, git_message = data
-            command.extend(['--author=%s' % git_author, '-m', git_message])
+            git_commit.extend(['--author=%s' % git_author, '-m', git_message])
+
+        git_add = None
+        if self.removed or len(changed) > 10:
+            # Case 1: something removed or many things changed, then make
+            # an automatic commit (--all)
+            git_commit.append('-a')
+            if added:
+                git_add = list(added)
+        elif added:
+            # Case 2: nothing removed, something added, and few things
+            # changed, then call 'git add'
+            git_add = list(added) + list(changed)
+        elif changed:
+            # Case 3: nothing removed or added, few things changed
+            git_commit.append('--')
+            git_commit.extend(list(changed))
+        else:
+            # Case 4: nothing to do? (this should never happen)
+            return
+
+        # 3. Clear state
+        changed.clear()
+        added.clear()
+        self.removed = False
+
+        # 4. Call git
+        if git_add:
+            send_subprocess(['git', 'add'] + git_add, path=self.path)
+
         try:
-            send_subprocess(command, path=self.path)
+            send_subprocess(git_commit, path=self.path)
         except CalledProcessError, excp:
             # Avoid an exception for the 'nothing to commit' case
             # FIXME Not reliable, we may catch other cases

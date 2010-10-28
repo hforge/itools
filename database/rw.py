@@ -46,6 +46,7 @@ class GitDatabase(ROGitDatabase):
         self.added = set()
         self.changed = set()
         self.has_changed = False
+        self.removed = False
 
         # The resources that been added, removed, changed and moved can be
         # represented as a set of two element tuples.  But we implement this
@@ -161,6 +162,7 @@ class GitDatabase(ROGitDatabase):
                 self.fs.remove(key)
             # Changed
             self.has_changed = True
+            self.removed = True
             return
 
         # Case 2: folder
@@ -180,6 +182,7 @@ class GitDatabase(ROGitDatabase):
 
         # Changed
         self.has_changed = True
+        self.removed = True
 
 
     def touch_handler(self, key, handler=None):
@@ -292,6 +295,7 @@ class GitDatabase(ROGitDatabase):
 
             # Changed
             self.has_changed = True
+            self.removed = True
             return
 
         # Case 2: Folder
@@ -321,6 +325,7 @@ class GitDatabase(ROGitDatabase):
 
         # Changed
         self.has_changed = True
+        self.removed = True
 
 
     #######################################################################
@@ -397,6 +402,7 @@ class GitDatabase(ROGitDatabase):
     def _cleanup(self):
         super(GitDatabase, self)._cleanup()
         self.has_changed = False
+        self.removed = False
 
 
     def _abort_changes(self):
@@ -448,8 +454,9 @@ class GitDatabase(ROGitDatabase):
 
 
     def _save_changes(self, data):
-        # Synchronize eventually the handlers and the filesystem
-        for key in self.added:
+        # 1. Synchronize the handlers and the filesystem
+        added = self.added
+        for key in added:
             handler = self.cache.get(key)
             if handler and handler.dirty:
                 parent_path = dirname(key)
@@ -457,34 +464,57 @@ class GitDatabase(ROGitDatabase):
                     self.fs.make_folder(parent_path)
                 handler.save_state()
 
-        for key in self.changed:
+        changed = self.changed
+        for key in changed:
             handler = self.cache[key]
             handler.save_state()
 
-        self.changed.clear()
-
-        # Call a "git add" eventually for new and/or moved files
-        if self.added:
-            self.send_subprocess(['git', 'add'] + list(self.added))
-            self.added.clear()
-
-        # Commit
+        # 2. Build the 'git commit' command
         git_author, git_date, git_msg, docs_to_index, docs_to_unindex = data
-        command = ['git', 'commit', '-aq', '-m', git_msg or 'no comment']
+        git_commit = ['git', 'commit', '-q', '-m', git_msg or 'no comment']
         if git_author:
-            command.append('--author=%s' % git_author)
+            git_commit.append('--author=%s' % git_author)
         if git_date:
             git_date = ISODateTime.encode(git_date)
-            command.append('--date=%s' % git_date)
+            git_commit.append('--date=%s' % git_date)
+
+        git_add = None
+        if self.removed or len(changed) > 10:
+            # Case 1: something removed or many things changed, then make
+            # an automatic commit (--all)
+            git_commit.append('-a')
+            if added:
+                git_add = list(added)
+        elif added:
+            # Case 2: nothing removed, something added, and few things
+            # changed, then call 'git add'
+            git_add = list(added) + list(changed)
+        elif changed:
+            # Case 3: nothing removed or added, few things changed
+            git_commit.append('--')
+            git_commit.extend(list(changed))
+        else:
+            # Case 4: nothing to do? (this should never happen)
+            return
+
+        # 3. Clear state
+        changed.clear()
+        added.clear()
+        self.removed = False
+
+        # 4. Call git
+        if git_add:
+            send_subprocess(['git', 'add'] + git_add)
+
         try:
-            self.send_subprocess(command)
+            self.send_subprocess(git_commit)
         except CalledProcessError, excp:
             # Avoid an exception for the 'nothing to commit' case
             # FIXME Not reliable, we may catch other cases
             if excp.returncode != 1:
                 raise
 
-        # 2. Catalog
+        # 5. Catalog
         catalog = self.catalog
         for path in docs_to_unindex:
             catalog.unindex_document(path)

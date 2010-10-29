@@ -233,7 +233,7 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
             if isinstance(value, MSG):
                 value = value.gettext()
                 yield TEXT, value.encode(encoding), 0
-            elif isinstance(value, (list, GeneratorType, XMLParser)):
+            elif type(value) in (list, GeneratorType, XMLParser):
                 for x in value:
                     if type(x) is not tuple:
                         raise STLError, ERR_EXPR_XML % (type(x), segment)

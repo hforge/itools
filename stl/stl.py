@@ -190,6 +190,8 @@ def substitute_attribute(data, stack, repeat_stack, encoding='utf-8'):
             return None, 1
         # Send the string
         if type(value) is MSG:
+            if value.html is True:
+                return value.gettext(), 1
             return value.gettext().encode(encoding), 1
         elif type(value) is unicode:
             return value.encode(encoding), 1
@@ -203,6 +205,8 @@ def substitute_attribute(data, stack, repeat_stack, encoding='utf-8'):
             return ''
         # Send the string
         if type(value) is MSG:
+            if value.html is True:
+                return value.gettext()
             return value.gettext().encode(encoding)
         elif type(value) is unicode:
             return value.encode(encoding)
@@ -238,8 +242,15 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
             if value_type is unicode:
                 yield TEXT, value.encode(encoding), 0
             elif isinstance(value, MSG):
-                value = value.gettext()
-                yield TEXT, value.encode(encoding), 0
+                if value.html is True:
+                    value = value.gettext()
+                    for x in value:
+                        if type(x) is not tuple:
+                            raise STLError, ERR_EXPR_XML % (type(x), segment)
+                        yield x
+                else:
+                    value = value.gettext().encode(encoding)
+                    yield TEXT, value, 0
             elif value_type in (list, GeneratorType, XMLParser):
                 for x in value:
                     if type(x) is not tuple:

@@ -21,6 +21,12 @@ from sys import _getframe
 # Import from itools
 from itools.handlers import RODatabase
 from itools.i18n import get_language_name
+from itools.xml import XMLParser
+
+
+stl_namespaces = {
+    None: 'http://www.w3.org/1999/xhtml',
+    'stl': 'http://www.hforge.org/xml-namespaces/stl'}
 
 
 # XXX This code does not take into account changes in the filesystem once a
@@ -65,15 +71,16 @@ class Domain(dict):
 
 class MSG(object):
 
-    __slots__ = ['message', 'domain', 'kw']
+    __slots__ = ['message', 'domain', 'html', 'kw']
 
-    def __init__(self, message, domain=None, **kw):
+    def __init__(self, message, domain=None, html=False, **kw):
         if domain is None:
             domain = _getframe(1).f_globals.get('__name__')
             domain = domain.split('.', 1)[0]
 
         self.message = message
         self.domain = domain
+        self.html = html
         # FIXME Used by the subclass 'INFO' (from itools.web)
         self.kw = kw
 
@@ -95,7 +102,13 @@ class MSG(object):
 
         # Interpolation
         if kw:
-            return message.format(**kw)
+            message = message.format(**kw)
+
+        # HTML content
+        if self.html:
+            data = message.encode('utf_8')
+            events = XMLParser(data, namespaces=stl_namespaces)
+            return list(events)
 
         return message
 

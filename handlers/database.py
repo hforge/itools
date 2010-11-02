@@ -1052,8 +1052,7 @@ class GitDatabase(ROGitDatabase):
             git_add = list(added) + list(changed)
         elif changed:
             # Case 3: nothing removed or added, few things changed
-            git_commit.append('--')
-            git_commit.extend(list(changed))
+            git_add = list(changed)
         else:
             # Case 4: nothing to do? (this should never happen)
             return

@@ -503,7 +503,7 @@ class GitDatabase(ROGitDatabase):
 
         # 4. Call git
         if git_add:
-            send_subprocess(['git', 'add'] + git_add)
+            self.send_subprocess(['git', 'add'] + git_add)
 
         try:
             self.send_subprocess(git_commit)

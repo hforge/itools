@@ -784,7 +784,8 @@ def _index(xdoc, field_cls, value, prefix, language):
             xdoc.add_posting(prefix + data, position + 1)
     # Case 3: singleton
     else:
-        data = _reduce_size(_encode(field_cls, value))
+        data = _encode_simple_value(field_cls, value)
+        data = _reduce_size(data)
         xdoc.add_posting(prefix + data, 1)
 
 

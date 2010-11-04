@@ -768,7 +768,7 @@ def _index(xdoc, field_cls, value, prefix, language):
         field_cls.multiple
         and isinstance(value, (tuple, list, set, frozenset)))
 
-    # Unicode: a complex split
+    # Case 1: Unicode (a complex split)
     if issubclass(field_cls, Unicode):
         if is_multiple:
             termpos = 1
@@ -776,15 +776,16 @@ def _index(xdoc, field_cls, value, prefix, language):
                 termpos = _index_unicode(xdoc, x, prefix, language, termpos)
         else:
             _index_unicode(xdoc, value, prefix, language, 1)
-    # An other type: too easy
+    # Case 2: multiple
+    elif is_multiple:
+        for position, data in enumerate(value):
+            data = _encode_simple_value(field_cls, data)
+            data = _reduce_size(data)
+            xdoc.add_posting(prefix + data, position + 1)
+    # Case 3: singleton
     else:
-        if is_multiple:
-            for position, x in enumerate(value):
-                data = _reduce_size(_encode(field_cls, x))
-                xdoc.add_posting(prefix + data, position + 1)
-        else:
-            data = _reduce_size(_encode(field_cls, value))
-            xdoc.add_posting(prefix + data, 1)
+        data = _reduce_size(_encode(field_cls, value))
+        xdoc.add_posting(prefix + data, 1)
 
 
 

@@ -83,7 +83,10 @@ class TARFile(File):
     def get_contents(self):
         tar = self._open_tarfile()
         try:
-            return tar.getnames()
+            names = tar.getnames()
+            # Append trailing slash to directories, as it is with Zip files
+            return [
+                ('%s/' % x) if tar.getmember(x).isdir() else x for x in names ]
         finally:
             tar.close()
 

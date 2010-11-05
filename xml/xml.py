@@ -141,13 +141,21 @@ def find_end(events, start):
     return None
 
 
-def get_element(events, name):
-    i = 0
-    for event, value, line in events:
-        if event == START_ELEMENT:
-            if name == value[1]:
-                return Element(events, i)
-        i += 1
+def get_element(events, name, **kw):
+    attributes = [ ((None, x), y) for x, y in kw.items() ]
+    for i, event in enumerate(events):
+        type, value, line = event
+        if type != START_ELEMENT:
+            continue
+        tag_uri, tag_name, tag_attributes = value
+        if name != tag_name:
+            continue
+        for attr_key, attr_value in attributes:
+            if tag_attributes.get(attr_key) != attr_value:
+                break
+        else:
+            return Element(events, i)
+
     return None
 
 

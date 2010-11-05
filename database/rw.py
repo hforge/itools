@@ -61,6 +61,7 @@ class GitDatabase(ROGitDatabase):
         #  ('b', None)  resource 'b' removed       {'b':None}/{}
         #  ('b', 'b')   resource 'b' changed       {'b':'b'}/{'b':'b'}
         #  ('b', 'c')   resource 'b' moved to 'c'  {'b':'c'}/{'c':'b'}
+        #  ???          resource 'b' replaced      {'b':None}/{'b':None}
         #
         # In real life, every value is either None or an absolute path (as a
         # byte stringi).  For the description that follows, we use the tuples
@@ -355,13 +356,18 @@ class GitDatabase(ROGitDatabase):
         old2new = self.resources_old2new
         new2old = self.resources_new2old
 
+        # Case 1: added, moved in-here or already changed
         path = str(resource.get_canonical_path())
+        if path in new2old:
+            return
+
+        # Case 2: removed or moved away
         if path in old2new and not old2new[path]:
             raise ValueError, 'cannot change a resource that has been removed'
 
-        if path not in new2old:
-            old2new[path] = path
-            new2old[path] = path
+        # Case 3: not yet touched
+        old2new[path] = path
+        new2old[path] = path
 
 
     def is_changed(self, resource):

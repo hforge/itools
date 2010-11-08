@@ -92,7 +92,7 @@ class CSVFile(TextFile):
             self._add_row(line)
 
 
-    def to_str(self, encoding='UTF-8', separator=','):
+    def to_str(self, encoding='UTF-8', separator=',', newline='\n'):
         lines = []
         # When schema or columns (or both) are None there is plain
         # string to string conversion
@@ -113,7 +113,7 @@ class CSVFile(TextFile):
             for row in self.get_rows():
                 line = [ '"%s"' % x.replace('"', '""') for x in row ]
                 lines.append(separator.join(line))
-        return '\n'.join(lines)
+        return newline.join(lines)
 
 
     #########################################################################

@@ -190,8 +190,6 @@ def substitute_attribute(data, stack, repeat_stack, encoding='utf-8'):
             return None, 1
         # Send the string
         if type(value) is MSG:
-            if value.html is True:
-                return value.gettext(), 1
             return value.gettext().encode(encoding), 1
         elif type(value) is unicode:
             return value.encode(encoding), 1
@@ -205,8 +203,6 @@ def substitute_attribute(data, stack, repeat_stack, encoding='utf-8'):
             return ''
         # Send the string
         if type(value) is MSG:
-            if value.html is True:
-                return value.gettext()
             return value.gettext().encode(encoding)
         elif type(value) is unicode:
             return value.encode(encoding)

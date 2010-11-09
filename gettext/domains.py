@@ -107,8 +107,7 @@ class MSG(object):
         # HTML content
         if self.html:
             data = message.encode('utf_8')
-            events = XMLParser(data, namespaces=stl_namespaces)
-            return list(events)
+            return XMLParser(data, namespaces=stl_namespaces)
 
         return message
 

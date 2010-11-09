@@ -233,20 +233,14 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
             # Ignore if None
             if value is None:
                 continue
+            # Case MSG: it returns <unicode> or <XMLParser>
+            if isinstance(value, MSG):
+                value = value.gettext()
+
             # Yield
             value_type = type(value)
             if value_type is unicode:
                 yield TEXT, value.encode(encoding), 0
-            elif isinstance(value, MSG):
-                if value.html is True:
-                    value = value.gettext()
-                    for x in value:
-                        if type(x) is not tuple:
-                            raise STLError, ERR_EXPR_XML % (type(x), segment)
-                        yield x
-                else:
-                    value = value.gettext().encode(encoding)
-                    yield TEXT, value, 0
             elif value_type in (list, GeneratorType, XMLParser):
                 for x in value:
                     if type(x) is not tuple:

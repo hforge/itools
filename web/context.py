@@ -19,7 +19,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from datetime import datetime
+from datetime import datetime, timedelta
 from thread import get_ident, allocate_lock
 
 # Import from pytz
@@ -27,16 +27,16 @@ from pytz import timezone
 
 # Import from itools
 from itools.core import freeze, lazy, local_tz, utc
-from itools.datatypes import String
+from itools.datatypes import String, HTTPDate
 from itools.http import get_type, Entity
 from itools.http import Cookie, SetCookieDataType
 from itools.i18n import AcceptLanguageType, format_datetime
 from itools.log import Logger
 from itools.log import log_warning
 from itools.uri import decode_query, get_reference, Path
+from authentication import AuthCookie
 from exceptions import FormError
 from messages import ERROR
-
 
 
 class Context(object):
@@ -394,6 +394,17 @@ class Context(object):
     def get_remote_ip(self):
         remote_ip = self.get_header('X-Forwarded-For')
         return remote_ip.split(',', 1)[0].strip() if remote_ip else None
+
+
+    def set_auth_cookie(self, username, crypted, path='/',
+            expire_after=timedelta(minutes=30)):
+        """Set or renew the authentication cookie for the given time.
+        """
+        cookie = AuthCookie.encode((username, crypted))
+        # Compute expires datetime
+        expires = datetime.now() + expire_after
+        expires = HTTPDate.encode(expires)
+        self.set_cookie('__ac', cookie, path=path, expires=expires)
 
 
 ###########################################################################

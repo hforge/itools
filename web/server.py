@@ -18,11 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from base64 import decodestring
-from binascii import Error as BinasciiError
 from copy import copy
 from types import FunctionType, MethodType
-from urllib import unquote
 from warnings import warn
 
 # Import from itools
@@ -33,6 +30,7 @@ from itools.http import set_response
 from itools.i18n import init_language_selector
 from itools.log import log_error, log_warning, register_logger
 from itools.uri import Reference
+from authentication import AuthCookie
 from context import Context, set_context, del_context, select_language
 from context import WebLogger
 from exceptions import FormError
@@ -82,22 +80,11 @@ class WebServer(HTTPServer):
         context.user = None
 
         # (1) Read the id/auth cookie
-        cookie = context.get_cookie('__ac')
+        cookie = context.get_cookie('__ac', datatype=AuthCookie)
         if cookie is None:
             return
 
-        cookie = unquote(cookie)
-        # When we send:
-        # Set-Cookie: __ac="deleted"; expires=Wed, 31-Dec-97 23:59:59 GMT;
-        #             path=/; max-age="0"
-        # to FF4, it don't delete the cookie, but continue to send
-        # __ac="deleted" (not base64 encoded)
-        try:
-            cookie = decodestring(cookie)
-        except BinasciiError:
-            return
-        username, password = cookie.split(':', 1)
-
+        username, password = cookie
         if username is None or password is None:
             return
 
@@ -329,6 +316,12 @@ class RequestMethod(object):
             context.soup_message.set_header('Location', location)
         else:
             context.soup_message.set_response(context.content_type, body)
+
+        # Renew cookie for user authentication
+        cookie = context.get_cookie('__ac', datatype=AuthCookie)
+        if cookie:
+            username, crypted = cookie
+            context.set_auth_cookie(username, crypted)
 
 
     @classmethod

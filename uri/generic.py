@@ -384,31 +384,35 @@ def encode_query(query, schema=None):
     if schema is None:
         schema = {}
 
+    # XXX As of the application/x-www-form-urlencoded content type, it has not
+    # sense to have a parameter without a value, so "?a&b=1" should be the
+    # same as "?b=1" (check the spec).  But for the tests defined by RFC2396
+    # to pass, we must preserve these empty parameters.
+
     line = []
     for key in query:
         value = query[key]
         key = quote_plus(key)
 
-        # XXX As of the application/x-www-form-urlencoded content type,
-        # it has not sense to have a parameter without a value, so
-        # "?a&b=1" should be the same as "?b=1" (check the spec).
-        # But for the tests defined by RFC2396 to pass, we must preserve
-        # these empty parameters.
+        # Case 1: a
         if value is None:
             line.append(key)
             continue
 
-        # A list
+        # Case 2: a=x&a=y&a
         datatype = schema.get(key)
-        if isinstance(value, list):
+        if type(value) is list:
             for x in value:
-                if datatype is not None:
-                    x = datatype.encode(x)
-                line.append('%s=%s' % (key, quote_plus(x)))
+                if x is None:
+                    line.append(key)
+                else:
+                    if datatype:
+                        x = datatype.encode(x)
+                    line.append('%s=%s' % (key, quote_plus(x)))
             continue
 
-        # A singleton
-        if datatype is not None:
+        # Case 3: a=x
+        if datatype:
             value = datatype.encode(value)
         line.append('%s=%s' % (key, quote_plus(value)))
 

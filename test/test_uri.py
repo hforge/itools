@@ -21,6 +21,7 @@ from unittest import TestCase, main
 
 # Import from itools
 from itools.uri import get_reference, normalize_path, Path, Reference
+from itools.uri import decode_query, encode_query
 from itools.uri.parsing import uri_parser, parse_uri
 from itools.uri.generic import GenericDataType
 from itools.uri.mailto import Mailto, MailtoDataType
@@ -294,8 +295,7 @@ class PathTestCase(TestCase):
 
 
 class ParseTestCase(TestCase):
-    """
-    Tests to verify the correct parsing of generic references.
+    """Tests to verify the correct parsing of generic references.
     """
 
     def test_full(self):
@@ -343,6 +343,15 @@ class ParseTestCase(TestCase):
         uri = GenericDataType.decode('C:/stuff/blah')
         self.assertEqual('c:/stuff/blah', uri.path)
         self.assertEqual('file', uri.scheme)
+
+
+
+class QueryTestCase(TestCase):
+
+    def test_query(self):
+        input = 'a&a'
+        output = encode_query(decode_query(input))
+        self.assertEqual(output, input)
 
 
 

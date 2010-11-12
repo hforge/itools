@@ -417,7 +417,7 @@ class RequestMethod(object):
             context.site_root.after_traverse(context)
         except Exception:
             cls.internal_server_error(server, context)
-            context.content_type = 'text/html; charset=UTF-8'
+            context.set_content_type('text/html', charset='UTF-8')
 
         # (7) Build and return the response
         cls.set_body(context)

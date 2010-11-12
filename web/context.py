@@ -226,8 +226,10 @@ class Context(object):
         return self.body
 
 
-    def set_content_type(self, content_type):
-        self.content_type = content_type
+    def set_content_type(self, content_type, **kw):
+        parameters = [ '; %s=%s' % x for x in kw.items() ]
+        parameters = ''.join(parameters)
+        self.content_type = content_type + parameters
 
 
     def set_content_disposition(self, disposition, filename=None):

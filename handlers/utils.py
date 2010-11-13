@@ -16,10 +16,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-src = (ur"""ÄÅÁÀÂÃĀäåáàâãāÇçÉÈÊËĒéèêëēÍÌÎÏĪíìîïīÑñÖÓÒÔÕØŌöóòôõøōÜÚÙÛŪüúùûū"""
-       ur"""ÝŸȲýÿȳŽž""")
-dst = (ur"""AAAAAAAaaaaaaaCcEEEEEeeeeeIIIIIiiiiiNnOOOOOOOoooooooUUUUUuuuuu"""
-       ur"""YYYyyyZz""")
+src = (ur"""ÄÅÁÀÂÃĀäåáàâãāăÇçÉÈÊËĒéèêëēğÍÌÎÏĪíìîïīıļÑñÖÓÒÔÕØŌöóòôõøōőÜÚÙÛŪüúùûū"""
+       ur"""ŞşţÝŸȲýÿȳŽž""")
+dst = (ur"""AAAAAAAaaaaaaaaCcEEEEEeeeeegIIIIIiiiiiilNnOOOOOOOooooooooUUUUUuuuuu"""
+       ur"""SstYYYyyyZz""")
 
 transmap = {}
 for i in range(len(src)):

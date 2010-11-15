@@ -36,19 +36,19 @@ class QualityAcceptLanguageTestCase(TestCase):
 
 
     def test_da(self):
-        self.assertEqual(self.al.get_quality('da'), Decimal('1.0'))
+        self.assertEqual(self.al.get_quality('da'), (Decimal('1.0'), 0))
 
 
     def test_en_gb(self):
-        self.assertEqual(self.al.get_quality('en-gb'), Decimal('0.8'))
+        self.assertEqual(self.al.get_quality('en-gb'), (Decimal('0.8'), 0))
 
 
     def test_en(self):
-        self.assertEqual(self.al.get_quality('en'), Decimal('0.0'))
+        self.assertEqual(self.al.get_quality('en')[0], Decimal('0.0'))
 
 
     def test_en_us(self):
-        self.assertEqual(self.al.get_quality('en-us'), Decimal('0.0'))
+        self.assertEqual(self.al.get_quality('en-us')[0], Decimal('0.0'))
 
 
     def test_encode(self):
@@ -91,7 +91,7 @@ class ChangeAcceptLanguageTestCase(TestCase):
         al = AcceptLanguageType.decode("da, en-gb;q=0.8")
         al.set('es', 5.0)
 
-        self.assertEqual(al.get_quality('es'), Decimal('5.0'))
+        self.assertEqual(al.get_quality('es'), (Decimal('5.0'), 0))
 
 
 

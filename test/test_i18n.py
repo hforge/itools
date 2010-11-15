@@ -60,22 +60,24 @@ class QualityAcceptLanguageTestCase(TestCase):
 class SelectLanguageAcceptLanguageTestCase(TestCase):
 
     def setUp(self):
-        self.al = AcceptLanguageType.decode("da, en-gb;q=0.8")
+        self.al = AcceptLanguageType.decode("pt, en-gb;q=0.8")
 
 
     def testNone(self):
         """When none of the languages is acceptable."""
-        self.assertEqual(self.al.select_language(['en-us', 'es']), None)
+        self.assertEqual(self.al.select_language(['en-us', 'fr']), None)
+        self.assertEqual(self.al.select_language(['en-us', 'en']), None)
 
 
     def testImplicit(self):
         """When the prefered language is not explictly set."""
-        self.assertEqual(self.al.select_language(['en-us', 'en']), None)
+        self.assertEqual(self.al.select_language(['fr', 'pt-br']), 'pt-br')
 
 
     def testSeveral(self):
-        """When there're several accepted languages."""
-        self.assertEqual(self.al.select_language(['en-us', 'en', 'da']), 'da')
+        """When there're several accepted languages with the same quality.
+        """
+        self.assertEqual(self.al.select_language(['pt-br', 'pt']), 'pt')
 
 
 

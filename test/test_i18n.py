@@ -36,19 +36,19 @@ class QualityAcceptLanguageTestCase(TestCase):
 
 
     def test_da(self):
-        self.assertEqual(self.al.get_quality('da'), Decimal('1.0'))
+        self.assertEqual(self.al.get_quality('da'), (Decimal('1.0'), 0))
 
 
     def test_en_gb(self):
-        self.assertEqual(self.al.get_quality('en-gb'), Decimal('0.8'))
+        self.assertEqual(self.al.get_quality('en-gb'), (Decimal('0.8'), 0))
 
 
     def test_en(self):
-        self.assertEqual(self.al.get_quality('en'), Decimal('0.0'))
+        self.assertEqual(self.al.get_quality('en')[0], Decimal('0.0'))
 
 
     def test_en_us(self):
-        self.assertEqual(self.al.get_quality('en-us'), Decimal('0.0'))
+        self.assertEqual(self.al.get_quality('en-us')[0], Decimal('0.0'))
 
 
     def test_encode(self):
@@ -60,22 +60,24 @@ class QualityAcceptLanguageTestCase(TestCase):
 class SelectLanguageAcceptLanguageTestCase(TestCase):
 
     def setUp(self):
-        self.al = AcceptLanguageType.decode("da, en-gb;q=0.8")
+        self.al = AcceptLanguageType.decode("pt, en-gb;q=0.8")
 
 
     def testNone(self):
         """When none of the languages is acceptable."""
-        self.assertEqual(self.al.select_language(['en-us', 'es']), None)
+        self.assertEqual(self.al.select_language(['en-us', 'fr']), None)
+        self.assertEqual(self.al.select_language(['en-us', 'en']), None)
 
 
     def testImplicit(self):
         """When the prefered language is not explictly set."""
-        self.assertEqual(self.al.select_language(['en-us', 'en']), None)
+        self.assertEqual(self.al.select_language(['fr', 'pt-br']), 'pt-br')
 
 
     def testSeveral(self):
-        """When there're several accepted languages."""
-        self.assertEqual(self.al.select_language(['en-us', 'en', 'da']), 'da')
+        """When there're several accepted languages with the same quality.
+        """
+        self.assertEqual(self.al.select_language(['pt-br', 'pt']), 'pt')
 
 
 
@@ -89,7 +91,7 @@ class ChangeAcceptLanguageTestCase(TestCase):
         al = AcceptLanguageType.decode("da, en-gb;q=0.8")
         al.set('es', 5.0)
 
-        self.assertEqual(al.get_quality('es'), Decimal('5.0'))
+        self.assertEqual(al.get_quality('es'), (Decimal('5.0'), 0))
 
 
 

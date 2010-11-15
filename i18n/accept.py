@@ -49,22 +49,40 @@ class AcceptLanguage(dict):
 
 
     def get_quality(self, language):
+        """This method returns the quality of the given language. As defined
+        by the RFC 2616, if a langage is not defined it inherits the quality
+        from a "parent" language; for instance, if 'fr-FR' is not defined but
+        'fr' is, then 'fr-FR' inherits the quality from 'fr'.
+
+        To make the difference between an exact match and an inherited value,
+        this method returns a tuple: first value is the quality, and second
+        value is the number of steps it had to go back in the inheritance
+        chain (0 for an exact match).
+        """
+        steps = 0
         while language and language not in self:
             language = '-'.join(language.split('-')[:-1])
+            steps += 1
 
-        return self.get(language, zero)
+        return self.get(language, zero), steps
 
 
     def select_language(self, languages):
         """This is the selection language algorithm, it returns the user
         prefered language for the given list of available languages, if the
         intersection is void returns None.
+
+        The criterias used to select a language are:
+
+        1. The quality
+        2. The distance to the exact match
+        3. The order in the 'languages' parameter
         """
-        language, quality = None, zero
+        language, quality, steps = None, zero, 100
         for lang in languages:
-            q = self.get_quality(lang)
-            if q > quality:
-                language, quality = lang, q
+            q, s = self.get_quality(lang)
+            if q > quality or (q and q == quality and s < steps):
+                language, quality, steps = lang, q, s
 
         return language
 

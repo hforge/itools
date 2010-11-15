@@ -106,6 +106,21 @@ def stream_to_str_as_html(stream, encoding='UTF-8'):
     return stream_to_html(stream, encoding)
 
 
+def stream_is_empty(stream):
+
+    for type, value, line in stream:
+        if type == TEXT:
+            if value.replace('&nbsp;', '').strip():
+                return False
+        elif type == START_ELEMENT:
+            tag_uri, tag_name, attributes = value
+            if tag_name in ('img', 'object'):
+                # If the document contains at leat one image
+                # or one object (i.e. flash object) it is not empty
+                return False
+    return True
+
+
 ###########################################################################
 # Document
 ###########################################################################
@@ -196,17 +211,7 @@ class XHTMLFile(XMLFile):
         else:
             events = body.events
 
-        for type, value, line in events:
-            if type == TEXT:
-                if value.replace('&nbsp;', '').strip():
-                    return False
-            elif type == START_ELEMENT:
-                tag_uri, tag_name, attributes = value
-                if tag_name in ('img', 'object'):
-                    # If the document contains at leat one image
-                    # or one object (i.e. flash object) it is not empty
-                    return False
-        return True
+        return stream_is_empty(events)
 
 
 

@@ -21,7 +21,7 @@ from itools.xml import register_dtd, DocType
 from filters import sanitize_stream, sanitize_str
 from html import HTMLFile
 from parser import HTMLParser
-from xhtml import XHTMLFile, xhtml_uri
+from xhtml import XHTMLFile, xhtml_uri, stream_is_empty
 from xhtml import stream_to_str_as_html, stream_to_str_as_xhtml
 import schema
 
@@ -37,6 +37,7 @@ __all__ = [
     'sanitize_stream',
     'sanitize_str',
     # Other functions
+    'stream_is_empty',
     'stream_to_str_as_html',
     'stream_to_str_as_xhtml',
     # Constants

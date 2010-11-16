@@ -543,7 +543,7 @@ class PUT(RequestMethod):
         if_unmodified_since = context.get_header('If-Unmodified-Since')
         if if_unmodified_since is None:
             raise Conflict
-        mtime = context.resource.get_mtime().replace(microsecond=0)
+        mtime = context.resource.handler.get_mtime().replace(microsecond=0)
         if mtime > if_unmodified_since:
             raise Conflict
 
@@ -558,7 +558,7 @@ class PUT(RequestMethod):
         super(PUT, cls).set_body(context)
 
         # Set the Last-Modified header (if possible)
-        mtime = context.resource.get_mtime()
+        mtime = context.resource.handler.get_mtime()
         if mtime is None:
             return
         mtime = mtime.replace(microsecond=0)

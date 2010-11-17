@@ -17,7 +17,7 @@
 # Import from itools
 from itools.handlers import TextFile, register_handler_class
 from itools.xml import XMLParser, XML_DECL, START_ELEMENT, END_ELEMENT, TEXT
-from itools.xml import XMLNamespace, ElementSchema, xmlns_uri
+from itools.xml import XMLNamespace, ElementSchema, xml_uri, xmlns_uri
 from itools.xml import register_namespace, has_namespace
 from itools.datatypes import Boolean, Date, DateTime, Decimal, Integer
 from itools.datatypes import QName, String, Time, URI
@@ -442,6 +442,7 @@ class RelaxNGFile(TextFile):
                    'elements': [],
                    'references': {},
                    'prefix' : {}}
+        context['prefix']['xml'] = xml_uri
 
         # Parse the file
         read_file(context, self.key, file)

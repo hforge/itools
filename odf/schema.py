@@ -23,7 +23,7 @@ from itools.core import get_abspath
 from itools.datatypes import String
 from itools.handlers import ro_database
 from itools.relaxng import RelaxNGFile
-from itools.xml import register_namespace, has_namespace, ElementSchema
+from itools.xml import register_namespace, has_namespace, XMLNamespace
 
 
 ###########################################################################
@@ -224,3 +224,10 @@ duplicate_ns(namespaces, svg_uri, svg_uri_2)
 for uri, namespace in namespaces.iteritems():
     if not has_namespace(uri):
         register_namespace(namespace)
+
+# Specific to OpenOffice
+officeooo = XMLNamespace(
+    'http://openoffice.org/2009/office', 'officeooo', [],
+    {'rsid': String, 'paragraph-rsid': String})
+
+register_namespace(officeooo)

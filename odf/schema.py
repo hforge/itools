@@ -189,13 +189,6 @@ contexts = [
     ]
 
 
-# XXX These elements appear in openDocuments but they are neither in the doc,
-# nor the relaxNG file!
-unknown_elements = [
-    (style_uri, 'default-page-layout'),
-    (style_uri, 'list-level-label-alignment'),
-    ]
-
 ###########################################################################
 # Make the namespaces
 ###########################################################################
@@ -206,7 +199,7 @@ def duplicate_ns(namespaces, first_uri, second_uri):
     namespaces[second_uri] = ns
 
 # Read the Relax NG schema
-rng_file = get_abspath('OpenDocument-strict-schema-v1.1.rng')
+rng_file = get_abspath('OpenDocument-v1.2-cd05-schema.rng')
 rng_file = ro_database.get_handler(rng_file, RelaxNGFile)
 namespaces = rng_file.get_namespaces()
 
@@ -217,12 +210,6 @@ for uri, element_name in inline_elements:
 for uri, element_name in skip_content_elements:
     element = namespaces[uri].get_element_schema(element_name)
     element.skip_content = True
-for uri, element_name in unknown_elements:
-    elements = namespaces[uri].elements
-    if element_name in elements:
-        raise ValueError, 'element "%s" is defined twice' % element_name
-    elements[element_name] = ElementSchema(element_name,
-                                           default_datatype=String)
 for uri, element_name, context in contexts:
     element = namespaces[uri].get_element_schema(element_name)
     element.context = context

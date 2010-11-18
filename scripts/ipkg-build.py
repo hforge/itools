@@ -82,7 +82,7 @@ def build():
 
         # Build the templates in the target languages
         good_files = compile('.*\\.x.*ml.%s$' % source_language)
-        exclude = frozenset(['.git', 'build', 'dist'])
+        exclude = frozenset(['.git', 'build', 'docs', 'dist'])
         lines = get_files(exclude, filter=lambda x: good_files.match(x))
         lines = list(lines)
         if lines:

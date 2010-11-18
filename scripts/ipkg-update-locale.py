@@ -80,7 +80,7 @@ if __name__ == '__main__':
     lines = []
     for line in open('MANIFEST').readlines():
         line = line.strip()
-        if line.split(sep)[0] not in ('skeleton', 'test'):
+        if line.split(sep)[0] not in ('archive', 'docs', 'skeleton', 'test'):
             lines.append(line)
 
     # Process Python and HTML files

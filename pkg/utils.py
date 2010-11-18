@@ -204,7 +204,7 @@ def setup(ext_modules=freeze([])):
             subpackage = '%s.%s' % (package_name, path[0])
             files = package_data.setdefault(subpackage, [])
             files.append(join_path(*path[1:]))
-        elif path[0] not in ('scripts', 'test'):
+        elif path[0] not in ('archive', 'docs', 'scripts', 'test'):
             package_data[package_name].append(line)
 
     # The scripts

@@ -1,0 +1,8 @@
+digraph G {
+  "private" [peripheries=2];
+  "private" -> "pending" [label="request"];
+  "pending" -> "private" [label="reject"];
+  "pending" -> "public" [label="accept"];
+  "public" -> "private" [label="retire"];
+  "private" -> "public" [label="publish"];
+}

@@ -1,0 +1,14 @@
+digraph G {
+  "File" -> "TextFile";
+  "File" -> "Image";
+  "File" -> "ZIPFile";
+  "File" -> "TARFile";
+  "TextFile" -> "ConfigFile";
+  "TextFile" -> "CSVFile";
+  "TextFile" -> "XMLFile";
+
+  // "File" -> "OfficeDocument";
+  // "OfficeDocument" -> "OOFile";
+  "ZIPFile" -> "OOFile";
+  "OOFile" -> "ODFFile";
+}

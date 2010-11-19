@@ -85,15 +85,33 @@ def make_html():
     print 'Build finished. The HTML pages are in docs/_build/html'
 
 
+def make_pdf():
+    # Figures
+    make_figures('eps')
+    # Latex
+    command = sphinx.format(mode='latex')
+    print run(command)
+    # PDF
+    chdir('_build/latex')
+    print run('make all-pdf')
+    print 'Your PDF is available in docs/_build/latex'
+
+
 if __name__ == '__main__':
     # The command line parser
     version = 'itools %s' % itools.__version__
     description = ('Make the documentation.')
     parser = OptionParser('%prog', version=version, description=description)
+    parser.add_option('--pdf', action='store_true',
+        help="generate PDF instead of HTML")
 
     options, args = parser.parse_args()
     if len(args) != 0:
         parser.error('incorrect number of arguments')
 
+    # Go
     chdir('docs')
-    make_html()
+    if options.pdf:
+        make_pdf()
+    else:
+        make_html()

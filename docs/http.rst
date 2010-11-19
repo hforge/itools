@@ -1,5 +1,5 @@
-:mod:`itools.http` HTTP
-***********************
+:mod:`itools.http` -- HTTP
+**************************
 
 .. module:: itools.http
    :synopsis: HTTP

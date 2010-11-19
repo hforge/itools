@@ -1,5 +1,5 @@
-:mod:`itools.ical` iCalendar
-****************************
+:mod:`itools.ical` -- iCalendar
+*******************************
 
 .. module:: itools.ical
    :synopsis: iCalendar

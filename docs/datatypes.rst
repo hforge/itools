@@ -1,5 +1,5 @@
-:mod:`itools.datatypes` Datatypes
-*********************************
+:mod:`itools.datatypes` -- Datatypes
+************************************
 
 .. module:: itools.datatypes
    :synopsis: Datatypes

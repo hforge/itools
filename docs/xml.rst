@@ -1,5 +1,5 @@
-:mod:`itools.xml` eXtensible Markup Language (XML)
-**************************************************
+:mod:`itools.xml` -- eXtensible Markup Language (XML)
+*****************************************************
 
 .. module:: itools.xml
    :synopsis: eXtensible Markup Language (XML)

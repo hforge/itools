@@ -1,7 +1,7 @@
-:mod:`itools.xhtml` (X)HTML
-***************************
+:mod:`itools.html` -- (X)HTML
+*****************************
 
-.. module:: itools.xhtml
+.. module:: itools.html
    :synopsis: (X)HTML
 
 .. index:: (X)HTML
@@ -88,7 +88,7 @@ The parser will return the attributes this way::
 The file handlers
 =================
 
-The :mod:`itools.xhtml` package provides a file handler for XHTML documents.
+The :mod:`itools.html` package provides a file handler for XHTML documents.
 It is not much different from the handler for XML files (see
 :mod:`itools.xml`).
 

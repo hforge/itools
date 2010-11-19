@@ -1,5 +1,5 @@
-:mod:`itools.rss` RSS feeds
-***************************
+:mod:`itools.rss` -- RSS feeds
+******************************
 
 .. module:: itools.rss
    :synopsis: A RSS handler

@@ -1,5 +1,5 @@
-:mod:`itools.fs` Virtual File System
-*************************************
+:mod:`itools.fs` -- Virtual File System
+***************************************
 
 .. module:: itools.fs
    :synopsis: Virtual File System

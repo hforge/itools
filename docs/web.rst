@@ -1,5 +1,5 @@
-:mod:`itools.web` Web
-*********************
+:mod:`itools.web` -- Web
+************************
 
 .. module:: itools.web
    :synopsis: Web

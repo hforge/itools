@@ -6,7 +6,7 @@
 Welcome to itools's documentation!
 ==================================
 
-Contents:
+Modules:
 
 .. toctree::
    :maxdepth: 1
@@ -15,6 +15,7 @@ Contents:
    datatypes
    fs
    handlers
+   html
    http
    ical
    log
@@ -25,7 +26,6 @@ Contents:
    web
    workflow
    xapian
-   xhtml
    xml
 
 Howtos:
@@ -47,4 +47,3 @@ Indices and tables
 
 * :ref:`genindex`
 * :ref:`modindex`
-* :ref:`search`

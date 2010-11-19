@@ -1,5 +1,5 @@
-:mod:`itools.csv` CSV files support
-***********************************
+:mod:`itools.csv` -- CSV files support
+**************************************
 
 .. module:: itools.csv
    :synopsis: a Comma Separated Values files support

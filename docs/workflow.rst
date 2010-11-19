@@ -1,5 +1,5 @@
-:mod:`itools.workflow` Workflow
-*******************************
+:mod:`itools.workflow` -- Workflow
+**********************************
 
 .. module:: itools.workflow
    :synopsis: Workflow

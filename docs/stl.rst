@@ -1,5 +1,5 @@
-:mod:`itools.stl` Simple Template Language (STL)
-************************************************
+:mod:`itools.stl` -- Simple Template Language (STL)
+***************************************************
 
 .. module:: itools.stl
    :synopsis: A Simple Template Language

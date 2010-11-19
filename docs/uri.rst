@@ -1,5 +1,5 @@
-:mod:`itools.uri` Uniform Resource Identifiers
-**********************************************
+:mod:`itools.uri` -- Uniform Resource Identifiers
+*************************************************
 
 .. module:: itools.uri
    :synopsis: Uniform Resource Identifiers

@@ -1,5 +1,5 @@
-:mod:`itools.odf` Open Document Format support
-**********************************************
+:mod:`itools.odf` -- Open Document Format support
+*************************************************
 
 .. module:: itools.odf
    :synopsis: ODF support

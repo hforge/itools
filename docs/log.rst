@@ -1,5 +1,5 @@
-:mod:`itools.log` (Logging)
-***************************
+:mod:`itools.log` -- Logging
+****************************
 
 .. module:: itools.log
    :synopsis: Logging

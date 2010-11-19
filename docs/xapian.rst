@@ -1,5 +1,5 @@
-:mod:`itools.xapian` Xapian
-***************************
+:mod:`itools.xapian` -- Xapian
+******************************
 
 .. module:: itools.xapian
    :synopsis: A catalog based on Xapian

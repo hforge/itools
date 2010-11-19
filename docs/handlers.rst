@@ -1,5 +1,5 @@
-:mod:`itools.handlers` Handlers
-*******************************
+:mod:`itools.handlers` -- Handlers
+**********************************
 
 .. module:: itools.handlers
    :synopsis: The handlers

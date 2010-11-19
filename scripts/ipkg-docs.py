@@ -23,6 +23,7 @@ from os import chdir
 import itools
 from itools.core import get_pipe
 from itools.fs import lfs
+from itools.pkg import make_version
 
 
 def run(command):
@@ -97,21 +98,40 @@ def make_pdf():
     print 'Your PDF is available in docs/_build/latex'
 
 
+def make_release():
+    # Make HTML & PDF
+    make_html()
+
+    chdir('_build')
+    version = make_version()
+#    pkgname = '%s-%s' % (self.name.split('/')[0], version)
+    pkgname = 'toto'
+    # Copy to a folder with the right name
+    print run(['cp', '-r', 'html', pkgname])
+    # Make the tarball
+    print run(['tar', 'cpf', '%s.tar' % pkgname, pkgname])
+
+
 if __name__ == '__main__':
     # The command line parser
+    usage = '%prog [html|pdf|release]'
     version = 'itools %s' % itools.__version__
-    description = ('Make the documentation.')
-    parser = OptionParser('%prog', version=version, description=description)
-    parser.add_option('--pdf', action='store_true',
-        help="generate PDF instead of HTML")
+    description = ('Make the documentation, default mode is html.')
+    parser = OptionParser(usage, version=version, description=description)
 
     options, args = parser.parse_args()
-    if len(args) != 0:
+    if len(args) > 1:
         parser.error('incorrect number of arguments')
+
+    mode = args[0] if args else 'html'
 
     # Go
     chdir('docs')
-    if options.pdf:
-        make_pdf()
-    else:
+    if mode == 'html':
         make_html()
+    elif mode == 'pdf':
+        make_pdf()
+    elif mode == 'release':
+        make_release()
+    else:
+        parser.error('unkwnon "%s" mode' % mode)

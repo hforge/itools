@@ -33,14 +33,14 @@ def run(command):
     else:
         command_str = ' '.join(command)
     # Print
-    print '$ %s' % command_str
+    print command_str
     # Call
     return get_pipe(command)
 
 
 sphinx = (
-    'sphinx-build -b {mode} -d .build/doctrees -D latex_paper_size=a4 . '
-    '.build/{mode}')
+    'sphinx-build -b {mode} -d _build/doctrees -D latex_paper_size=a4 . '
+    '_build/{mode}')
 
 converters = {
     ('png', 'png'): 'cp {source} {target}',
@@ -80,9 +80,9 @@ def make_html():
     make_figures('png')
     # HTML
     command = sphinx.format(mode='html')
-    run(command)
+    print run(command)
     # Ok
-    print 'Build finished. The HTML pages are in %s/.build/html' % cwd
+    print 'Build finished. The HTML pages are in docs/_build/html'
 
 
 if __name__ == '__main__':

@@ -1,7 +1,12 @@
-Itools
-######
+.. itools documentation master file, created by
+   sphinx-quickstart on Fri Nov 19 11:23:59 2010.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
 
-Tutorial for *itools 0.62*, contents:
+Welcome to itools's documentation!
+==================================
+
+Contents:
 
 .. toctree::
    :maxdepth: 1
@@ -23,3 +28,9 @@ Tutorial for *itools 0.62*, contents:
    xhtml
    xml
 
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

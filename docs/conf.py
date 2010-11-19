@@ -214,3 +214,57 @@ man_pages = [
     ('index', 'itools', u'itools Documentation',
      [u'David Versmisse & J. David Ibáñez'], 1)
 ]
+
+###########################################################################
+# Autodoc
+###########################################################################
+autodoc_member_order = 'groupwise'
+
+# Template to make the files in autodoc/modules
+template_module = """:mod:`itools.{module}`
+##############################################
+.. automodule:: itools.{module}
+   :synopsis: {synopsis}
+   :show-inheritance:
+   :members:
+   :undoc-members:
+   :noindex:
+"""
+
+def setup(app):
+    # Populate the autodoc/modules path
+    from os import mkdir, listdir
+    from os.path import join, exists, isdir
+    import itools
+
+    # Make the autodoc/modules directory
+    mods_path = join('autodoc', 'modules')
+    if not exists(mods_path):
+        mkdir(mods_path)
+
+    # Make the autodoc/modules/*.rst files
+    installed_mods = listdir(mods_path)
+    itools_path = itools.__path__[0]
+    for module in listdir(itools_path):
+        # Not a module
+        if not isdir(join(itools_path, module)) or module == 'locale':
+            continue
+
+        # Already saved
+        if (module + '.rst') in installed_mods:
+            continue
+
+        # Synopsis
+        try:
+            __import__("itools.%s" % module)
+            doc = itools.__dict__[module].__doc__
+        except (ImportError, KeyError):
+            synopsis = "Itools %s module" % module
+        else:
+            synopsis = doc.split('\n\n')[0]
+
+        # And the save the file
+        print '[autodoc] make the modules/%s.rst file' % module
+        with open('autodoc/modules/%s.rst' % module, 'w') as rst_file:
+            rst_file.write(template_module.format(module=module,
+                                                  synopsis=synopsis))

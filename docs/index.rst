@@ -28,6 +28,10 @@ Contents:
    xhtml
    xml
 
+Other resources:
+
+* :ref:`autodoc`
+
 Indices and tables
 ==================
 

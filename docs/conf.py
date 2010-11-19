@@ -259,9 +259,12 @@ def setup(app):
             __import__("itools.%s" % module)
             doc = itools.__dict__[module].__doc__
         except (ImportError, KeyError):
-            synopsis = "Itools %s module" % module
-        else:
+            doc = None
+
+        if doc:
             synopsis = doc.split('\n\n')[0]
+        else:
+            synopsis = "Itools %s module" % module
 
         # And the save the file
         print '[autodoc] make the modules/%s.rst file' % module

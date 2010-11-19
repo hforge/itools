@@ -60,6 +60,9 @@ def make_figures(format):
     source_base = 'figures-src'
     target_base = 'figures'
 
+    if not lfs.exists(source_base):
+        return
+
     docs = lfs.open('docs')
     if not docs.exists(target_base):
         docs.make_folder(target_base)

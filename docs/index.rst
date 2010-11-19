@@ -40,6 +40,9 @@ Howtos:
 Other resources:
 
 * :ref:`autodoc`
+* Download the
+  `itools-examples.tgz <http://download.hforge.org/doc/itools-examples.tgz>`_
+  tarball.
 
 
 Indices and tables

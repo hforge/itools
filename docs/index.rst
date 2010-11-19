@@ -28,9 +28,19 @@ Contents:
    xhtml
    xml
 
+Howtos:
+
+.. toctree::
+   :maxdepth: 1
+
+   ipkg
+   igettext
+   windows
+
 Other resources:
 
 * :ref:`autodoc`
+
 
 Indices and tables
 ==================

@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="42cm"
+   height="22cm"
+   viewBox="1 1 42 22"
+   id="svg2178"
+   sodipodi:version="0.32"
+   inkscape:version="0.45.1"
+   sodipodi:docname="gettext.svg"
+   sodipodi:docbase="/home/jdavid/sandboxes/itools-docs/figures-src"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+  <metadata
+     id="metadata2285">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs2283" />
+  <sodipodi:namedview
+     inkscape:window-height="867"
+     inkscape:window-width="1438"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     guidetolerance="10.0"
+     gridtolerance="10.0"
+     objecttolerance="10.0"
+     borderopacity="1.0"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     id="base"
+     inkscape:zoom="0.82614138"
+     inkscape:cx="744.09448"
+     inkscape:cy="389.76379"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:current-layer="svg2178" />
+  <text
+     style="fill:#000000;text-anchor:start;font-size:0.67733335px;font-family:Luxi Mono;font-style:normal;font-weight:normal;font-variant:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:125%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;opacity:1;color:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+     x="34.45"
+     y="7.1"
+     id="text2180">msgmerge</text>
+  <text
+     style="font-size:0.67733335px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;font-family:Luxi Mono"
+     x="12.385094"
+     y="3.9658387"
+     id="text2182"
+     sodipodi:linespacing="125%">igettext-extract</text>
+  <rect
+     style="fill: #ffffff"
+     x="20"
+     y="3"
+     width="6"
+     height="3"
+     id="rect2184" />
+  <rect
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     x="20"
+     y="3"
+     width="6"
+     height="3"
+     id="rect2186" />
+  <text
+     style="font-size:0.67733335px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;font-family:Luxi Mono"
+     x="20.960871"
+     y="4.6316767"
+     id="text2188"
+     sodipodi:linespacing="125%">locale.pot</text>
+  <rect
+     style="fill: #ffffff"
+     x="2"
+     y="2"
+     width="9"
+     height="21"
+     rx="0.7"
+     ry="0.7"
+     id="rect2190" />
+  <rect
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     x="2"
+     y="2"
+     width="9"
+     height="21"
+     rx="0.7"
+     ry="0.7"
+     id="rect2192" />
+  <text
+     style="font-size:1.01600003px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;font-family:Luxi Sans"
+     x="2.6925466"
+     y="3.863354"
+     id="text2194"
+     sodipodi:linespacing="125%">SOURCE CODE</text>
+  <text
+     style="fill:#000000;text-anchor:start;font-size:0.67733335px;font-family:Luxi Mono;font-style:normal;font-weight:normal;font-variant:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:125%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;opacity:1;color:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+     x="3"
+     y="6"
+     id="text2196">hello.py</text>
+  <text
+     style="fill:#000000;text-anchor:start;font-size:0.67733335px;font-family:Luxi Mono;font-style:normal;font-weight:normal;font-variant:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:125%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;opacity:1;color:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+     x="3"
+     y="6.8"
+     id="text2198">fable.xhtml</text>
+  <text
+     style="fill:#000000;text-anchor:start;font-size:0.67733335px;font-family:Luxi Mono;font-style:normal;font-weight:normal;font-variant:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:125%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;opacity:1;color:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+     x="3"
+     y="7.6"
+     id="text2200">...</text>
+  <polyline
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     points="11,12.5 12,12.5 12,4.5 19.5132,4.5 "
+     id="polyline2202" />
+  <polygon
+     style="fill: #000000"
+     points="19.8882,4.5 19.3882,4.75 19.5132,4.5 19.3882,4.25 "
+     id="polygon2204" />
+  <polygon
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     points="19.8882,4.5 19.3882,4.75 19.5132,4.5 19.3882,4.25 "
+     id="polygon2206" />
+  <rect
+     style="fill: #ffffff"
+     x="29"
+     y="3"
+     width="6"
+     height="3"
+     id="rect2208" />
+  <rect
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     x="29"
+     y="3"
+     width="6"
+     height="3"
+     id="rect2210" />
+  <text
+     style="font-size:0.67733335px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:125%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Luxi Mono"
+     x="30.997517"
+     y="4.6316767"
+     id="text2212"
+     sodipodi:linespacing="125%">es.po</text>
+  <rect
+     style="fill: #ffffff"
+     x="37"
+     y="3"
+     width="6"
+     height="3"
+     id="rect2214" />
+  <rect
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     x="37"
+     y="3"
+     width="6"
+     height="3"
+     id="rect2216" />
+  <text
+     style="font-size:0.67733335px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:125%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Luxi Mono"
+     x="39.008381"
+     y="4.5975151"
+     id="text2218"
+     sodipodi:linespacing="125%">fr.po</text>
+  <rect
+     style="fill: #ffffff"
+     x="29"
+     y="9"
+     width="6"
+     height="3"
+     id="rect2220" />
+  <rect
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     x="29"
+     y="9"
+     width="6"
+     height="3"
+     id="rect2222" />
+  <text
+     style="font-size:0.67733335px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:125%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Luxi Mono"
+     x="30.997517"
+     y="10.665838"
+     id="text2224"
+     sodipodi:linespacing="125%">es.po</text>
+  <rect
+     style="fill: #ffffff"
+     x="37"
+     y="9"
+     width="6"
+     height="3"
+     id="rect2226" />
+  <rect
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     x="37"
+     y="9"
+     width="6"
+     height="3"
+     id="rect2228" />
+  <text
+     style="font-size:0.67733335px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:125%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Luxi Mono"
+     x="39.008385"
+     y="10.7"
+     id="text2230"
+     sodipodi:linespacing="125%">fr.po</text>
+  <rect
+     style="fill: #ffffff"
+     x="29"
+     y="15"
+     width="6"
+     height="3"
+     id="rect2232" />
+  <rect
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     x="29"
+     y="15"
+     width="6"
+     height="3"
+     id="rect2234" />
+  <text
+     style="font-size:0.67733335px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:125%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Luxi Mono"
+     x="30.963354"
+     y="16.66584"
+     id="text2236"
+     sodipodi:linespacing="125%">es.po</text>
+  <rect
+     style="fill:#ffffff"
+     x="36.658386"
+     y="14.931677"
+     width="6"
+     height="3"
+     id="rect2238" />
+  <rect
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     x="37"
+     y="15"
+     width="6"
+     height="3"
+     id="rect2240" />
+  <text
+     style="font-size:0.67733335px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:125%;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Luxi Mono"
+     x="38.97422"
+     y="16.631678"
+     id="text2242"
+     sodipodi:linespacing="125%">fr.po</text>
+  <line
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke-dasharray: 0.2; stroke: #000000"
+     x1="32"
+     y1="6.04962"
+     x2="32"
+     y2="8.5132"
+     id="line2244" />
+  <polygon
+     style="fill: #000000"
+     points="32,8.8882 31.75,8.3882 32,8.5132 32.25,8.3882 "
+     id="polygon2246" />
+  <polygon
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     points="32,8.8882 31.75,8.3882 32,8.5132 32.25,8.3882 "
+     id="polygon2248" />
+  <line
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke-dasharray: 0.2; stroke: #000000"
+     x1="40"
+     y1="6"
+     x2="40"
+     y2="8.5132"
+     id="line2250" />
+  <polygon
+     style="fill: #000000"
+     points="40,8.8882 39.75,8.3882 40,8.5132 40.25,8.3882 "
+     id="polygon2252" />
+  <polygon
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     points="40,8.8882 39.75,8.3882 40,8.5132 40.25,8.3882 "
+     id="polygon2254" />
+  <line
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     x1="32"
+     y1="12"
+     x2="32"
+     y2="14.5132"
+     id="line2256" />
+  <polygon
+     style="fill: #000000"
+     points="32,14.8882 31.75,14.3882 32,14.5132 32.25,14.3882 "
+     id="polygon2258" />
+  <polygon
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     points="32,14.8882 31.75,14.3882 32,14.5132 32.25,14.3882 "
+     id="polygon2260" />
+  <line
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     x1="40"
+     y1="12"
+     x2="40"
+     y2="14.5132"
+     id="line2262" />
+  <polygon
+     style="fill: #000000"
+     points="40,14.8882 39.75,14.3882 40,14.5132 40.25,14.3882 "
+     id="polygon2264" />
+  <polygon
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     points="40,14.8882 39.75,14.3882 40,14.5132 40.25,14.3882 "
+     id="polygon2266" />
+  <polyline
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     points="23,6 23,7.5 32,7.5 32,8.5132 "
+     id="polyline2268" />
+  <polygon
+     style="fill: #000000"
+     points="32,8.8882 31.75,8.3882 32,8.5132 32.25,8.3882 "
+     id="polygon2270" />
+  <polygon
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     points="32,8.8882 31.75,8.3882 32,8.5132 32.25,8.3882 "
+     id="polygon2272" />
+  <polyline
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     points="32,7.52481 40,7.52481 40,8.5132 "
+     id="polyline2274" />
+  <polygon
+     style="fill: #000000"
+     points="40,8.8882 39.75,8.3882 40,8.5132 40.25,8.3882 "
+     id="polygon2276" />
+  <polygon
+     style="fill: none; fill-opacity:0; stroke-width: 0.1; stroke: #000000"
+     points="40,8.8882 39.75,8.3882 40,8.5132 40.25,8.3882 "
+     id="polygon2278" />
+  <text
+     style="font-size:0.67733335px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;font-family:Luxi Sans"
+     x="33.179192"
+     y="13.631677"
+     id="text2280"
+     sodipodi:linespacing="125%">Human Translator</text>
+</svg>

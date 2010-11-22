@@ -18,12 +18,12 @@
 # Import from the Standard Library
 from optparse import OptionParser
 from os import chdir
+from subprocess import call
 
 # Import from itools
 import itools
 from itools.core import get_pipe
 from itools.fs import lfs
-from itools.pkg import make_version
 
 
 def run(command):
@@ -36,7 +36,7 @@ def run(command):
     # Print
     print command_str
     # Call
-    return get_pipe(command)
+    return call(command)
 
 
 sphinx = (
@@ -86,7 +86,7 @@ def make_html():
     command = sphinx.format(mode='html')
     print run(command)
     # Ok
-    print 'Build finished. The HTML pages are in docs/_build/html'
+    print 'The HTML pages are in docs/_build/html'
 
 
 def make_pdf():
@@ -98,21 +98,17 @@ def make_pdf():
     # PDF
     chdir('_build/latex')
     print run('make all-pdf')
-    print 'Your PDF is available in docs/_build/latex'
+    print 'The PDF is available in docs/_build/latex'
 
 
 def make_release():
-    # Make HTML & PDF
+    # Make HTML
     make_html()
 
-    chdir('_build')
-    version = make_version()
-#    pkgname = '%s-%s' % (self.name.split('/')[0], version)
-    pkgname = 'toto'
-    # Copy to a folder with the right name
-    print run(['cp', '-r', 'html', pkgname])
     # Make the tarball
-    print run(['tar', 'cpf', '%s.tar' % pkgname, pkgname])
+    chdir('_build/html')
+    call('tar cpf %s.tar *' % pkgname, shell=True)
+    print 'The tarball is available in docs/_build/html/%s.tar' % pkgname
 
 
 if __name__ == '__main__':
@@ -127,6 +123,8 @@ if __name__ == '__main__':
         parser.error('incorrect number of arguments')
 
     mode = args[0] if args else 'html'
+
+    pkgname = get_pipe(['python', 'setup.py', '--fullname']).rstrip()
 
     # Go
     chdir('docs')

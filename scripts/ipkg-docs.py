@@ -107,8 +107,9 @@ def make_release():
 
     # Make the tarball
     chdir('_build/html')
-    call('tar cpf %s.tar *' % pkgname, shell=True)
-    print 'The tarball is available in docs/_build/html/%s.tar' % pkgname
+    call('zip -r %s.zip *' % pkgname, shell=True)
+    call('mv %s.zip /tmp/' % pkgname, shell=True)
+    print 'The tarball is available in /tmp/%s.zip' % pkgname
 
 
 if __name__ == '__main__':

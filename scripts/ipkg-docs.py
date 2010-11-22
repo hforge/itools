@@ -124,7 +124,11 @@ if __name__ == '__main__':
 
     mode = args[0] if args else 'html'
 
-    pkgname = get_pipe(['python', 'setup.py', '--fullname']).rstrip()
+    # Find out the package name & version (for the release mode)
+    try:
+        pkgname = get_pipe(['python', 'setup.py', '--fullname']).rstrip()
+    except EnvironmentError:
+        pkgname = 'noname-noversion'
 
     # Go
     chdir('docs')

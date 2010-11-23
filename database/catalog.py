@@ -28,6 +28,7 @@ from xapian import sortable_serialise, sortable_unserialise, TermGenerator
 from itools.datatypes import Integer, Unicode, String
 from itools.fs import lfs
 from itools.i18n import is_punctuation
+from itools.log import log_warning
 from queries import AllQuery, AndQuery, NotQuery, OrQuery, PhraseQuery
 from queries import RangeQuery, StartQuery, TextQuery
 
@@ -67,6 +68,20 @@ TRANSLATE_MAP = { ord(u'À'): ord(u'A'),
 
 
 
+MSG_NOT_INDEXED = 'the "{name}" field is not indexed'
+def warn_not_indexed(name):
+    log_warning(MSG_NOT_INDEXED.format(name=name))
+
+MSG_NOT_STORED = 'the "{name}" field is not stored'
+def warn_not_stored(name):
+    log_warning(MSG_NOT_STORED.format(name=name))
+
+MSG_NOT_INDEXED_NOR_STORED = 'the "{name}" field is not indexed nor stored'
+def warn_not_indexed_nor_stored(name):
+    log_warning(MSG_NOT_INDEXED_NOR_STORED.format(name=name))
+
+
+
 ############
 # Public API
 class CatalogAware(object):
@@ -88,17 +103,15 @@ class Doc(object):
 
     def __getattr__(self, name):
         info = self._metadata.get(name)
-        if not info:
-            msg = 'the "%s" field is not indexed nor stored'
-            raise AttributeError, msg % name
+        if info is None:
+            raise AttributeError, MSG_NOT_INDEXED_NOR_STORED.format(name=name)
 
         field_cls = _get_field_cls(name, self._fields, info)
 
         # Get the data
-        try:
-            value = info['value']
-        except KeyError:
-            raise AttributeError, 'the "%s" field is not stored' % name
+        value = info.get('value')
+        if value is None:
+            raise AttributeError, MSG_NOT_STORED.format(name=name)
         data = self._xdoc.get_value(value)
 
         # Multilingual field: language negotiation
@@ -194,6 +207,7 @@ class SearchResults(object):
                 for name in sort_by:
                     # If there is a problem, ignore this field
                     if name not in metadata:
+                        warn_not_stored(name)
                         continue
                     sorter.add(metadata[name]['value'])
                 enquire.set_sort_by_key_then_relevance(sorter, reverse)
@@ -202,6 +216,8 @@ class SearchResults(object):
                 if sort_by in metadata:
                     value = metadata[sort_by]['value']
                     enquire.set_sort_by_value_then_relevance(value, reverse)
+                else:
+                    warn_not_stored(sort_by)
         else:
             enquire.set_sort_by_relevance()
 
@@ -296,6 +312,8 @@ class Catalog(object):
         metadata_modified = False
         xdoc = Document()
         for name, value in doc_values.iteritems():
+            if name not in fields:
+                warn_not_indexed_nor_stored(name)
             field_cls = fields[name]
 
             # New field ?
@@ -387,6 +405,7 @@ class Catalog(object):
         metadata = self._metadata
         # If there is a problem => an empty result
         if name not in metadata:
+            warn_not_indexed(name)
             return set()
 
         # Ok
@@ -456,6 +475,7 @@ class Catalog(object):
                 raise TypeError, "unexpected '%s'" % type(name)
             # If there is a problem => an empty result
             if name not in metadata:
+                warn_not_indexed(name)
                 return Query()
             info = metadata[name]
             try:
@@ -472,10 +492,13 @@ class Catalog(object):
                 raise TypeError, "unexpected '%s'" % type(name)
             # If there is a problem => an empty result
             if name not in metadata:
+                warn_not_indexed(name)
                 return Query()
 
             info = metadata[name]
-            value = info['value']
+            value = info.get('value')
+            if value is None:
+                raise AttributeError, MSG_NOT_STORED.format(name=name)
             field_cls = _get_field_cls(name, fields, info)
 
             left = query.left
@@ -504,10 +527,13 @@ class Catalog(object):
                 raise TypeError, "unexpected '%s'" % type(name)
             # If there is a problem => an empty result
             if name not in metadata:
+                warn_not_indexed(name)
                 return Query()
 
             info = metadata[name]
-            value_nb = info['value']
+            value_nb = info.get('value')
+            if value_nb is None:
+                raise AttributeError, MSG_NOT_STORED.format(name=name)
             field_cls = _get_field_cls(name, fields, info)
 
             value = query.value
@@ -550,6 +576,7 @@ class Catalog(object):
                 raise TypeError, "unexpected %s for 'name'" % type(name)
             # If there is a problem => an empty result
             if name not in metadata:
+                warn_not_indexed(name)
                 return Query()
 
             info = metadata[name]
@@ -826,6 +853,7 @@ def _get_xquery(catalog, query=None, **kw):
     for name, value in kw.iteritems():
         # If name is a field not yet indexed, return nothing
         if name not in metadata:
+            warn_not_indexed(name)
             return Query()
 
         # Ok

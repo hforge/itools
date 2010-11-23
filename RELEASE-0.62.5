@@ -1,0 +1,56 @@
+itools 0.62.5 (2010/1X/XX)
+==========================
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.abnf             itools.i18n             itools.rss
+  itools.core             itools.ical             itools.srx
+  itools.csv              itools.log              itools.stl
+  itools.database         itools.loop             itools.tmx
+  itools.datatypes        itools.odf              itools.uri
+  itools.fs               itools.office           itools.web
+  itools.gettext          itools.pdf              itools.workflow
+  itools.git              itools.pkg              itools.xliff
+  itools.handlers         itools.python           itools.xml
+  itools.html             itools.relaxng          itools.xmlfile
+  itools.http             itools.rest
+
+The documentation, written using Sphinx [1], is now included in the
+itools source, within the 'docs/' folder (previously it was in a
+separate package). The URL has also changed, now it is:
+
+  http://www.hforge.org/itools/docs/index
+
+The ipkg-docs.py script has been added, it is used to compile the
+documentation.
+
+There have been many small enhancements and bug fixes, including:
+
+  #886 (i18n)     Fix select_language in some corner cases
+ #1032 (gettext)  Support for HTML in <MSG> objects
+ #1044 (web)      Refactor authentication code
+ #1051 (odf)      Support ODF 1.2
+ #1058 (handlers) Now 'checkid' supports Turkish characters
+
+[1] http://sphinx.pocoo.org/
+
+
+Resources
+---------
+
+Download
+http://download.hforge.org/itools/0.62/itools-0.62.5.tar.gz
+
+Home
+http://www.hforge.org/itools/
+
+Documentation
+http://www.hforge.org/itools/docs/index
+
+Mailing list
+http://www.hforge.org/community/
+http://archives.hforge.org/index.cgi?list=itools
+
+Bug Tracker
+http://bugs.hforge.org/

@@ -19,7 +19,7 @@
 from distutils.core import Extension
 from imp import load_module, PKG_DIRECTORY
 from os import getcwd
-from sys import stderr, exit
+from sys import stderr
 
 # Import local itools first, otherwise installing the first time won't work.
 load_module('itools', None, getcwd(), ('', '', PKG_DIRECTORY))
@@ -35,11 +35,11 @@ if __name__ == '__main__':
     try:
         flags = get_compile_flags('pkg-config --cflags --libs glib-2.0')
     except OSError:
-        print >> stderr, 'Error: the command "pkg-config" is not found.'
-        print >> stderr, 'Install pkg-config before installing itools.'
-        exit(1)
+        print >> stderr, "[ERROR] 'pkg-config' not found, aborting..."
+        raise
     except EnvironmentError:
-        print >> stderr, 'Error: Glib 2.0 library or headers not found.'
+        err = '[ERROR] Glib 2.0 library or headers not found, aborting...'
+        print >> stderr, err
         raise
     else:
         sources = ['xml/parser.c', 'xml/doctype.c', 'xml/arp.c',
@@ -51,8 +51,8 @@ if __name__ == '__main__':
     try:
         flags = get_compile_flags('pkg-config --cflags --libs poppler fontconfig')
     except EnvironmentError:
-        print >> stderr, 'Warning: poppler headers are not found.'
-        print >> stderr, 'PDF indexation will not be available'
+        err = '[WARNING] poppler headers not found, PDF indexation will not work'
+        print >> stderr, err
     else:
         sources = ['pdf/pdftotext.cc']
         extension = Extension('itools.pdf.pdftotext', sources, **flags)
@@ -62,8 +62,8 @@ if __name__ == '__main__':
     try:
         flags = get_compile_flags('wv2-config --cflags --libs')
     except EnvironmentError:
-        print >> stderr, 'Warning: wv2 library is not found.'
-        print >> stderr, 'DOC indexation will not be available'
+        err = '[WARNING] wv2 not found, DOC indexation will not work'
+        print >> stderr, err
     else:
         sources = ['office/doctotext.cc']
         extension = Extension('itools.office.doctotext', sources, **flags)
@@ -74,8 +74,8 @@ if __name__ == '__main__':
     try:
         flags = get_compile_flags(line)
     except EnvironmentError:
-        print >> stderr, 'Error: libsoup library or headers not found.'
-        raise
+        err = '[WARNING] libsoup not found, itools.http will not work'
+        print >> stderr, err
     else:
         for include in flags['include_dirs']:
             if include.endswith('/libsoup-2.4'):

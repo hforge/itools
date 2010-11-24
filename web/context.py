@@ -397,7 +397,7 @@ class Context(object):
 
 
     def set_auth_cookie(self, username, crypted, path='/',
-            expire_after=timedelta(minutes=30)):
+            expire_after=timedelta(minutes=45)):
         """Set or renew the authentication cookie for the given time.
         """
         cookie = AuthCookie.encode((username, crypted))

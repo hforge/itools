@@ -317,12 +317,6 @@ class RequestMethod(object):
         else:
             context.soup_message.set_response(context.content_type, body)
 
-        # Renew cookie for user authentication
-        cookie = context.get_cookie('__ac', datatype=AuthCookie)
-        if cookie:
-            username, crypted = cookie
-            context.set_auth_cookie(username, crypted)
-
 
     @classmethod
     def internal_server_error(cls, server, context):
@@ -432,10 +426,10 @@ class GET(RequestMethod):
 
         # Set the last-modified header
         mtime = mtime.replace(microsecond=0)
-        context.set_header('last-modified', mtime)
+        context.set_header('Last-Modified', mtime)
         # Cache-Control: max-age=1
         # (because Apache does not cache pages with a query by default)
-        context.set_header('cache-control', 'max-age=1')
+        context.set_header('Cache-Control', 'max-age=1')
 
         # Check for the request header If-Modified-Since
         if_modified_since = context.get_header('if-modified-since')

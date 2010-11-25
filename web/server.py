@@ -30,7 +30,6 @@ from itools.http import set_response
 from itools.i18n import init_language_selector
 from itools.log import log_error, log_warning, register_logger
 from itools.uri import Reference
-from authentication import AuthCookie
 from context import Context, set_context, del_context, select_language
 from context import WebLogger
 from exceptions import FormError
@@ -66,7 +65,7 @@ class WebServer(HTTPServer):
         context.root = self.root
 
         # (3) The authenticated user
-        self.find_user(context)
+        context.authenticate()
 
         # (4) The Site Root
         self.find_site_root(context)
@@ -74,24 +73,6 @@ class WebServer(HTTPServer):
 
         # (5) Keep the context
         set_context(context)
-
-
-    def find_user(self, context):
-        context.user = None
-
-        # (1) Read the id/auth cookie
-        cookie = context.get_cookie('__ac', datatype=AuthCookie)
-        if cookie is None:
-            return
-
-        username, password = cookie
-        if username is None or password is None:
-            return
-
-        # (2) Get the user resource and authenticate
-        user = context.root.get_user(username)
-        if user is not None and user.authenticate(password):
-            context.user = user
 
 
     def find_site_root(self, context):

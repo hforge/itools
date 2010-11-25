@@ -19,6 +19,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from binascii import Error as BinasciiError
 from datetime import datetime, timedelta
 from thread import get_ident, allocate_lock
 
@@ -34,7 +35,7 @@ from itools.i18n import AcceptLanguageType, format_datetime
 from itools.log import Logger
 from itools.log import log_warning
 from itools.uri import decode_query, get_reference, Path
-from authentication import AuthCookie
+from authentication import Password
 from exceptions import FormError
 from messages import ERROR
 
@@ -396,15 +397,55 @@ class Context(object):
         return remote_ip.split(',', 1)[0].strip() if remote_ip else None
 
 
-    def set_auth_cookie(self, username, crypted, path='/',
-            expire_after=timedelta(minutes=45)):
+    def set_auth_cookie(self, username, crypted,
+                        expires_delta=timedelta(minutes=45)):
         """Set or renew the authentication cookie for the given time.
         """
-        cookie = AuthCookie.encode((username, crypted))
+        ua = self.get_header('User-Agent')
+        cookie = '%s::%s::%s' % (username, crypted, ua)
+        cookie = Password.encode(cookie)
         # Compute expires datetime
-        expires = datetime.now() + expire_after
+        expires = datetime.now() + expires_delta
         expires = HTTPDate.encode(expires)
-        self.set_cookie('__ac', cookie, path=path, expires=expires)
+        self.set_cookie('iauth', cookie, path='/', expires=expires)
+
+
+    def authenticate(self):
+        """Checks the authentication cookie and sets the context user if all
+        checks are ok.
+        """
+        self.user = None
+
+        # 1. Get the cookie
+        cookie = self.get_cookie('iauth')
+        if not cookie:
+            return
+
+        # 2. Parse the cookie
+        try:
+            cookie = Password.decode(cookie)
+        except BinasciiError:
+            return
+
+        username, password, ua =  cookie.split('::', 2)
+        if not username or not password:
+            return
+
+        # 3. Check user-agent
+        if ua != self.get_header('User-Agent'):
+            log_warning('cookie spoofing attempt?', domain='itools.web')
+            return
+
+        # 4. Authenticate
+        user = self.root.get_user(username)
+        if user and user.authenticate(password):
+            self.user = user
+
+
+    def logout(self):
+        self.del_cookie('iauth')
+        self.user = None
+
 
 
 ###########################################################################

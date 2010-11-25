@@ -18,7 +18,7 @@
 # Import from itools
 from access import AccessControl
 from authentication import generate_password, crypt_password
-from authentication import Password, AuthCookie
+from authentication import Password
 from context import Context, get_context, set_context
 from context import select_language
 from context import WebLogger
@@ -36,7 +36,6 @@ __all__ = [
     'generate_password',
     'crypt_password',
     'Password',
-    'AuthCookie',
     # Context
     'Context',
     'set_context',

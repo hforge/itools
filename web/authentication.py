@@ -20,7 +20,6 @@
 
 # Import from the Standard Library
 from base64 import decodestring, encodestring
-from binascii import Error as BinasciiError
 from hashlib import sha1
 from random import sample
 from urllib import quote, unquote
@@ -57,26 +56,3 @@ class Password(DataType):
     @staticmethod
     def encode(value):
         return quote(encodestring(value))
-
-
-
-class AuthCookie(DataType):
-
-    @staticmethod
-    def encode((username, crypted)):
-        return Password.encode('%s:%s' % (username, crypted))
-
-
-    @staticmethod
-    def decode(data):
-        # When we send:
-        # Set-Cookie: __ac="deleted"; expires=Wed, 31-Dec-97 23:59:59 GMT;
-        #             path=/; max-age="0"
-        # to FF4, it don't delete the cookie, but continue to send
-        # __ac="deleted" (not base64 encoded)
-        try:
-            cookie = Password.decode(data)
-        except BinasciiError:
-            return
-        username, crypted = cookie.split(':', 1)
-        return (username, crypted)

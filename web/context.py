@@ -35,7 +35,7 @@ from itools.i18n import AcceptLanguageType, format_datetime
 from itools.log import Logger
 from itools.log import log_warning
 from itools.uri import decode_query, get_reference, Path
-from authentication import Password
+from authentication import Password, crypt_password
 from exceptions import FormError
 from messages import ERROR
 
@@ -397,12 +397,18 @@ class Context(object):
         return remote_ip.split(',', 1)[0].strip() if remote_ip else None
 
 
-    def set_auth_cookie(self, username, crypted,
+    def _get_auth_token(self, user_token):
+        ua = self.get_header('User-Agent')
+        token = '%s:%s' % (user_token, ua)
+        return crypt_password(token)
+
+
+    def set_auth_cookie(self, username, user_token,
                         expires_delta=timedelta(minutes=45)):
         """Set or renew the authentication cookie for the given time.
         """
-        ua = self.get_header('User-Agent')
-        cookie = '%s::%s::%s' % (username, crypted, ua)
+        token = self._get_auth_token(user_token)
+        cookie = '%s:%s' % (username, token)
         cookie = Password.encode(cookie)
         # Compute expires datetime
         expires = datetime.now() + expires_delta
@@ -427,18 +433,18 @@ class Context(object):
         except BinasciiError:
             return
 
-        username, password, ua =  cookie.split('::', 2)
-        if not username or not password:
+        username, token =  cookie.split(':', 1)
+        if not username or not token:
             return
 
-        # 3. Check user-agent
-        if ua != self.get_header('User-Agent'):
-            log_warning('cookie spoofing attempt?', domain='itools.web')
-            return
-
-        # 4. Authenticate
+        # 3. Get the user
         user = self.root.get_user(username)
-        if user and user.authenticate(password):
+        if not user:
+            return
+
+        # 4. Check the token
+        user_token = user.get_auth_token()
+        if token == self._get_auth_token(user_token):
             self.user = user
 
 
@@ -587,4 +593,3 @@ class WebLogger(Logger):
         body = Logger.get_body(self)
         lines.extend(body)
         return lines
-

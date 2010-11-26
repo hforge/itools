@@ -42,6 +42,7 @@ def generate_password(length=6):
 
 
 def crypt_password(password):
+    # FIXME The word 'crypt' is incorrect, this is a secure-hash, not a crypt
     return sha1(password).digest()
 
 

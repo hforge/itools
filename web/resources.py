@@ -193,8 +193,8 @@ class RootResource(AccessControl, Resource):
         """Return a resource representing the user named after the username,
         or 'None'.  The nature of the resource, the location of the storage
         and the retrieval of the data remain at your discretion. The only
-        requirements are the "name" attribute, and the "authenticate" method
-        with a "password" parameter.
+        requirements are the "name" attribute, and the "get_auth_token"
+        method.
         """
         return None
 

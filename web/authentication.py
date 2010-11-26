@@ -20,31 +20,10 @@
 
 # Import from the Standard Library
 from base64 import decodestring, encodestring
-from hashlib import sha1
-from random import sample
 from urllib import quote, unquote
 
 # Import from itools
 from itools.datatypes import DataType
-
-
-###########################################################################
-# Authentication
-###########################################################################
-
-
-# ASCII letters and digits, except the characters: 0, O, 1, l
-tokens = 'abcdefghijkmnopqrstuvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ23456789'
-
-
-def generate_password(length=6):
-    return ''.join(sample(tokens, length))
-
-
-def crypt_password(password):
-    # FIXME The word 'crypt' is incorrect, this is a secure-hash, not a crypt
-    return sha1(password).digest()
-
 
 
 class Password(DataType):

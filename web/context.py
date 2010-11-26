@@ -21,6 +21,7 @@
 # Import from the Standard Library
 from binascii import Error as BinasciiError
 from datetime import datetime, timedelta
+from hashlib import sha224
 from thread import get_ident, allocate_lock
 
 # Import from pytz
@@ -35,7 +36,7 @@ from itools.i18n import AcceptLanguageType, format_datetime
 from itools.log import Logger
 from itools.log import log_warning
 from itools.uri import decode_query, get_reference, Path
-from authentication import Password, crypt_password
+from authentication import Password
 from exceptions import FormError
 from messages import ERROR
 
@@ -400,7 +401,7 @@ class Context(object):
     def _get_auth_token(self, user_token):
         ua = self.get_header('User-Agent')
         token = '%s:%s' % (user_token, ua)
-        return crypt_password(token)
+        return sha224(token).digest()
 
 
     def set_auth_cookie(self, username, user_token,

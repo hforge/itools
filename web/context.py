@@ -19,10 +19,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from binascii import Error as BinasciiError
+from base64 import decodestring, encodestring
 from datetime import datetime, timedelta
 from hashlib import sha224
 from thread import get_ident, allocate_lock
+from urllib import quote, unquote
 
 # Import from pytz
 from pytz import timezone
@@ -36,7 +37,6 @@ from itools.i18n import AcceptLanguageType, format_datetime
 from itools.log import Logger
 from itools.log import log_warning
 from itools.uri import decode_query, get_reference, Path
-from authentication import Password
 from exceptions import FormError
 from messages import ERROR
 
@@ -410,7 +410,7 @@ class Context(object):
         """
         token = self._get_auth_token(user_token)
         cookie = '%s:%s' % (username, token)
-        cookie = Password.encode(cookie)
+        cookie = quote(encodestring(cookie))
         # Compute expires datetime
         expires = datetime.now() + expires_delta
         expires = HTTPDate.encode(expires)
@@ -430,11 +430,12 @@ class Context(object):
 
         # 2. Parse the cookie
         try:
-            cookie = Password.decode(cookie)
-        except BinasciiError:
+            username, token = decodestring(unquote(cookie)).split(':', 1)
+        except Exception:
+            msg = 'bad authentication cookie "%s"' % cookie
+            log_warning(msg, domain='itools.web')
             return
 
-        username, token =  cookie.split(':', 1)
         if not username or not token:
             return
 

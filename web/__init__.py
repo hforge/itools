@@ -17,7 +17,6 @@
 
 # Import from itools
 from access import AccessControl
-from authentication import Password
 from context import Context, get_context, set_context
 from context import select_language
 from context import WebLogger
@@ -31,8 +30,6 @@ __all__ = [
     'AccessControl',
     'WebServer',
     'WebLogger',
-    # Authentication
-    'Password',
     # Context
     'Context',
     'set_context',

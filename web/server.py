@@ -433,8 +433,8 @@ class GET(RequestMethod):
             return
 
         mtime = getattr(context, 'mtime', None)
-        if context.mtime:
-            context.set_header('Last-Modified', context.mtime)
+        if mtime:
+            context.set_header('Last-Modified', mtime)
             # Cache-Control: max-age=1
             # (because Apache does not cache pages with a query by default)
             context.set_header('Cache-Control', 'max-age=1')

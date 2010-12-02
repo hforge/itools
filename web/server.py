@@ -253,7 +253,6 @@ class RequestMethod(object):
         """Implement cache if your method supports it.
         Most methods don't, hence the default implementation.
         """
-        pass
 
 
     @classmethod
@@ -401,27 +400,20 @@ class GET(RequestMethod):
 
     @classmethod
     def check_cache(cls, server, context):
-        # Get the resource's modification time
+        # 1. Get the resource's modification time
         resource = context.resource
         mtime = context.view.get_mtime(resource)
         if mtime is None:
             return
-
-        # Set the last-modified header
         mtime = mtime.replace(microsecond=0)
-        context.set_header('last-modified', mtime)
-        # Cache-Control: max-age=1
-        # (because Apache does not cache pages with a query by default)
-        context.set_header('cache-control', 'max-age=1')
 
-        # Check for the request header If-Modified-Since
+        # 2. Check for If-Modified-Since
         if_modified_since = context.get_header('if-modified-since')
-        if if_modified_since is None:
-            return
-
-        # Cache: check modification time
-        if mtime <= if_modified_since:
+        if if_modified_since and if_modified_since >= mtime:
             raise NotModified
+
+        # 3. Set the Last-Modified header
+        context.mtime = mtime
 
 
     @classmethod
@@ -432,6 +424,20 @@ class GET(RequestMethod):
             warn("Use of 'context.commit' is strongly discouraged.")
             return True
         return False
+
+
+    @classmethod
+    def set_body(cls, context):
+        super(GET, cls).set_body(context)
+        if context.status != 200:
+            return
+
+        mtime = getattr(context, 'mtime', None)
+        if context.mtime:
+            context.set_header('Last-Modified', context.mtime)
+            # Cache-Control: max-age=1
+            # (because Apache does not cache pages with a query by default)
+            context.set_header('Cache-Control', 'max-age=1')
 
 
 

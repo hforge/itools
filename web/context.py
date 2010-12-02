@@ -399,7 +399,10 @@ class Context(object):
 
 
     def _get_auth_token(self, user_token):
-        ua = self.get_header('User-Agent')
+        # We use the header X-User-Agent or User-Agent
+        ua = self.get_header('X-User-Agent')
+        if not ua:
+            ua = self.get_header('User-Agent')
         token = '%s:%s' % (user_token, ua)
         return sha224(token).digest()
 

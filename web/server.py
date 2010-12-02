@@ -436,6 +436,9 @@ class GET(RequestMethod):
             # Cache-Control: max-age=1
             # (because Apache does not cache pages with a query by default)
             context.set_header('Cache-Control', 'max-age=1')
+        elif context.user:
+            cookie = context.get_cookie('iauth')
+            context._set_auth_cookie(cookie)
 
 
 

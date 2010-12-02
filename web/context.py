@@ -407,6 +407,14 @@ class Context(object):
         return sha224(token).digest()
 
 
+    def _set_auth_cookie(self, cookie, expires_delta=timedelta(minutes=45)):
+        # Compute expires datetime (FIXME Probably should use the request date)
+        expires = datetime.now() + expires_delta
+        expires = HTTPDate.encode(expires)
+        # Set cookie
+        self.set_cookie('iauth', cookie, path='/', expires=expires)
+
+
     def login(self, user, expires_delta=timedelta(minutes=45)):
         user_id = user.get_user_id()
         user_token = user.get_auth_token()
@@ -415,11 +423,7 @@ class Context(object):
         token = self._get_auth_token(user_token)
         cookie = '%s:%s' % (user_id, token)
         cookie = quote(encodestring(cookie))
-        # Compute expires datetime (FIXME Probably should use the request date)
-        expires = datetime.now() + expires_delta
-        expires = HTTPDate.encode(expires)
-        # Set cookie
-        self.set_cookie('iauth', cookie, path='/', expires=expires)
+        self._set_auth_cookie(cookie, expires_delta)
 
         # Set the user
         self.user = user

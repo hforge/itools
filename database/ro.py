@@ -22,7 +22,7 @@ from datetime import datetime
 from sys import getrefcount
 
 # Import from xapian
-from xapian import DatabaseOpeningError
+from xapian import DatabaseError, DatabaseOpeningError
 
 # Import from itools
 from itools.core import LRUCache, freeze, lazy, send_subprocess
@@ -471,6 +471,5 @@ class ROGitDatabase(object):
         fields = get_register_fields()
         try:
             return Catalog(path, fields, read_only=True)
-        except DatabaseOpeningError:
+        except (DatabaseError, DatabaseOpeningError):
             return None
-

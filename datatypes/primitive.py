@@ -66,10 +66,6 @@ class Unicode(DataType):
     default = u''
 
 
-    def get_default(cls):
-        return cls.default
-
-
     @staticmethod
     def decode(value, encoding='UTF-8'):
         return unicode(value, encoding)

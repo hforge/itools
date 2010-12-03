@@ -30,7 +30,7 @@ class DataType(thingy):
         default = cls.default
         if cls.multiple:
             if isinstance(default, list):
-                return list(default)
+                return default
             # Change "default" explicitly to have an initialized list
             return []
         return default

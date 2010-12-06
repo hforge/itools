@@ -21,7 +21,7 @@ from log import log_fatal, log_error, log_warning, log_info, log_debug
 
 
 __all__ = [
-    'Logger'
+    'Logger',
     'register_logger',
     # Log levels
     'FATAL',

@@ -563,7 +563,7 @@ class iCalendar(TextFile):
         Return icalendar property values as a dict
             {property_name: Property object, ...}
 
-        *searching only for general properties, not components ones.
+        searching only for general properties, not components ones.
         """
         if name:
             return self.properties.get(name, None)

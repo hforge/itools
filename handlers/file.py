@@ -35,12 +35,14 @@ class File(Handler):
     The variables 'timestamp' and 'dirty' define the state of the file
     handler:
 
-       timestamp/dirty => means...
-       -------------------------------------
-       None/None => not loaded (yet)
-       None/<dt> => new, or moved
-       <dt>/None => loaded, but not changed
-       <dt>/<dt> => loaded, and changed
+      +--------------------------------------+
+      | timestamp/dirty => means...          |
+      +--------------------------------------+
+      | None/None => not loaded (yet)        |
+      | None/<dt> => new, or moved           |
+      | <dt>/None => loaded, but not changed |
+      | <dt>/<dt> => loaded, and changed     |
+      +--------------------------------------+
 
     """
 

@@ -262,7 +262,7 @@ def setup(app):
             doc = None
 
         if doc:
-            synopsis = doc.split('\n\n')[0]
+            synopsis = doc.split('\n\n')[0].strip().replace('\n', ' ')
         else:
             synopsis = "Itools %s module" % module
 

@@ -49,6 +49,8 @@ class Resource(object):
 
         return parent_path.resolve_name(self.name)
 
+    abspath = property(get_abspath)
+
 
     def get_canonical_path(self):
         if self.parent is None:
@@ -71,8 +73,8 @@ class Resource(object):
         return self.parent.get_root()
 
 
-    def get_pathto(self, handler):
-        return self.get_abspath().get_pathto(handler.get_abspath())
+    def get_pathto(self, resource):
+        return self.get_abspath().get_pathto(resource.abspath)
 
 
     def get_names(self, path='.'):

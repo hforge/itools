@@ -20,14 +20,13 @@ from itools.gettext import MSG
 
 
 
-
 class INFO(MSG):
-    pass
+    css = 'info'
 
 
 
 class ERROR(INFO):
-    pass
+    css = 'error'
 
 
 

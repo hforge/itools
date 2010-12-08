@@ -16,9 +16,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from string import Formatter
 from sys import _getframe
 
 # Import from itools
+from itools.core import thingy, thingy_type
 from itools.handlers import RODatabase
 from itools.i18n import get_language_name
 from itools.xml import XMLParser
@@ -69,20 +71,38 @@ class Domain(dict):
 
 
 
-class MSG(object):
+class MSGFormatter(Formatter):
+    def get_value(self, key, args, kw):
+        if type(key) is int:
+            return args[key]
 
-    __slots__ = ['message', 'domain', 'html', 'kw']
+        msg, kw = kw
+        if key in kw:
+            value = kw[key]
+        else:
+            value = getattr(msg, key)
 
-    def __init__(self, message, domain=None, html=False, **kw):
-        if domain is None:
-            domain = _getframe(1).f_globals.get('__name__')
-            domain = domain.split('.', 1)[0]
+        if type(value) is thingy_type and issubclass(value, MSG):
+            return value.gettext()
 
-        self.message = message
-        self.domain = domain
-        self.html = html
-        # FIXME Used by the subclass 'INFO' (from itools.web)
-        self.kw = kw
+        return value
+
+
+msg_formatter = MSGFormatter()
+
+
+class MSG(thingy):
+
+    domain = None
+    html = False
+
+    def __init__(self, message=None, **kw):
+        if self.domain is None:
+            domain = _getframe(2).f_globals.get('__name__')
+            self.domain = domain.split('.', 1)[0]
+
+        if message:
+            self.message = message
 
 
     def gettext(self, language=None, **kw):
@@ -101,8 +121,7 @@ class MSG(object):
                 message = domain.gettext(message, language)
 
         # Interpolation
-        if kw:
-            message = message.format(**kw)
+        message = msg_formatter.vformat(message, [], (self, kw))
 
         # HTML content
         if self.html:

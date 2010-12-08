@@ -20,22 +20,9 @@ from itools.gettext import MSG
 
 
 
+
 class INFO(MSG):
-
-    def __call__(self, **kw):
-        if not kw:
-            # Also skipping stl calls
-            raise AttributeError, 'missing variables to substitute'
-        message = MSG.gettext(self, language=None, **kw)
-        # Send a translated copy of this instance
-        return self.__class__(message, domain=self.domain)
-
-
-    def gettext(self, language=None, **kw):
-        # Gettext calling was defered
-        kw_ = self.kw.copy()
-        kw_.update(kw)
-        return MSG.gettext(self, language=language, **kw_)
+    pass
 
 
 
@@ -47,4 +34,3 @@ class ERROR(INFO):
 MSG_MISSING_OR_INVALID = ERROR(
     u'Some required fields are missing, or some values are not valid. '
     u'Please correct them and continue.')
-

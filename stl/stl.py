@@ -28,7 +28,7 @@ from re import compile
 from types import GeneratorType, MethodType
 
 # Import from itools
-from itools.core import freeze, thingy
+from itools.core import freeze, thingy, thingy_type
 from itools.datatypes import Boolean
 from itools.gettext import MSG
 from itools.log import log_error
@@ -233,8 +233,9 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
             # Ignore if None
             if value is None:
                 continue
+
             # Case MSG: it returns <unicode> or <XMLParser>
-            if isinstance(value, MSG):
+            if type(value) is thingy_type and issubclass(value, MSG):
                 value = value.gettext()
 
             # Yield

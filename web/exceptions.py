@@ -32,10 +32,11 @@ class FormError(StandardError):
 
     def get_message(self):
         # Custom message
-        if self.msg is not None:
-            if isinstance(self.msg, MSG):
-                return self.msg
-            return ERROR(self.msg)
+        value = self.msg
+        if value is not None:
+            if type(value) is thingy_type and issubclass(value, MSG):
+                return value
+            return ERROR(value)
         # Default message
         msg = u'There are errors... XXX'
         return ERROR(msg)

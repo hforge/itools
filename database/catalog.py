@@ -102,20 +102,25 @@ class Doc(object):
 
 
     def __getattr__(self, name):
+        # 1. Get the raw value
         info = self._metadata.get(name)
         if info is None:
             raise AttributeError, MSG_NOT_INDEXED_NOR_STORED.format(name=name)
 
-        field_cls = _get_field_cls(name, self._fields, info)
-
-        # Get the data
-        value = info.get('value')
-        if value is None:
+        stored = info.get('value')
+        if stored is None:
             raise AttributeError, MSG_NOT_STORED.format(name=name)
-        data = self._xdoc.get_value(value)
+        raw_value = self._xdoc.get_value(stored)
 
-        # Multilingual field: language negotiation
-        if not data and issubclass(field_cls, Unicode) and 'from' not in info:
+        # 2. Decode
+        field_cls = _get_field_cls(name, self._fields, info)
+        if raw_value:
+            value = _decode(field_cls, raw_value)
+            setattr(self, name, value)
+            return value
+
+        # 3. Special Case: multilingual field (language negotiation)
+        if issubclass(field_cls, Unicode) and 'from' not in info:
             prefix = '%s_' % name
             n = len(prefix)
 
@@ -135,12 +140,12 @@ class Doc(object):
                     language = languages[0]
                 return values[language]
 
-        # Standard (monolingual)
+        # 4. Default
         # FIXME Xapian does not make the difference between the empty string
         # and the absence of value (None).
-        if data == '':
-            return field_cls.get_default()
-        return _decode(field_cls, data)
+        value = field_cls.get_default()
+        setattr(self, name, value)
+        return value
 
 
 
@@ -422,8 +427,6 @@ class Catalog(object):
     # API / Private
     #######################################################################
     def _get_info(self, field_cls, name):
-        info = {}
-
         # The key field ?
         if name == 'abspath':
             if not (issubclass(field_cls, String) and
@@ -432,6 +435,7 @@ class Catalog(object):
                 raise ValueError, ('the abspath field must be declared as '
                                    'String(stored=True, indexed=True)')
         # Stored ?
+        info = {}
         if getattr(field_cls, 'stored', False):
             info['value'] = self._value_nb
             self._value_nb += 1

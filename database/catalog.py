@@ -136,6 +136,10 @@ class Doc(object):
                 return values[language]
 
         # Standard (monolingual)
+        # FIXME Xapian does not make the difference between the empty string
+        # and the absence of value (None).
+        if data == '':
+            return field_cls.get_default()
         return _decode(field_cls, data)
 
 
@@ -650,8 +654,6 @@ def _decode_simple_value(field_cls, data):
     """
     # Overload the Integer type, cf _encode_simple_value
     if issubclass(field_cls, Integer):
-        if data == '':
-            return None
         return int(sortable_unserialise(data))
     # A common field or a new field
     return field_cls.decode(data)
@@ -659,15 +661,16 @@ def _decode_simple_value(field_cls, data):
 
 
 def _decode(field_cls, data):
-    if field_cls.multiple:
-        try:
-            value = loads(data)
-        except (ValueError, MemoryError):
-            return _decode_simple_value(field_cls, data)
-        return [ _decode_simple_value(field_cls, a_value)
-                 for a_value in value ]
-    else:
+    # Singleton
+    if not field_cls.multiple:
         return _decode_simple_value(field_cls, data)
+
+    # Multiple
+    try:
+        value = loads(data)
+    except (ValueError, MemoryError):
+        return _decode_simple_value(field_cls, data)
+    return [ _decode_simple_value(field_cls, a_value) for a_value in value ]
 
 
 

@@ -153,3 +153,7 @@ class thingy_lazy_property(lazy):
                 setattr(owner, name, value)
                 return value
 
+
+
+def is_thingy(value, cls):
+    return type(value) is thingy_type and issubclass(value, cls)

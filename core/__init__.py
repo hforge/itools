@@ -28,6 +28,7 @@ from subprocess_ import start_subprocess, stop_subprocess
 from subprocess_ import read_subprocess, send_subprocess
 from timezones import utc, local_tz
 from thingy import thingy_type, thingy, thingy_property, thingy_lazy_property
+from thingy import is_thingy
 from utils import get_abspath, merge_dicts, get_sizeof, get_pipe, get_version
 
 
@@ -44,6 +45,7 @@ __all__ = [
     'thingy',
     'thingy_property',
     'thingy_lazy_property',
+    'is_thingy',
     # Frozen types
     'freeze',
     'frozendict',
@@ -80,4 +82,3 @@ __all__ = [
     'get_time_spent',
     'vmsize',
    ]
-

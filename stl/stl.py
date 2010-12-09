@@ -28,7 +28,7 @@ from re import compile
 from types import GeneratorType, MethodType
 
 # Import from itools
-from itools.core import freeze, thingy, thingy_type
+from itools.core import freeze, thingy, is_thingy
 from itools.datatypes import Boolean
 from itools.gettext import MSG
 from itools.log import log_error
@@ -189,7 +189,7 @@ def substitute_attribute(data, stack, repeat_stack, encoding='utf-8'):
         if value is None:
             return None, 1
         # Send the string
-        if type(value) is MSG:
+        if is_thingy(value, MSG):
             return value.gettext().encode(encoding), 1
         elif type(value) is unicode:
             return value.encode(encoding), 1
@@ -202,7 +202,7 @@ def substitute_attribute(data, stack, repeat_stack, encoding='utf-8'):
         if value is None:
             return ''
         # Send the string
-        if type(value) is MSG:
+        if is_thingy(value, MSG):
             return value.gettext().encode(encoding)
         elif type(value) is unicode:
             return value.encode(encoding)
@@ -235,7 +235,7 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
                 continue
 
             # Case MSG: it returns <unicode> or <XMLParser>
-            if type(value) is thingy_type and issubclass(value, MSG):
+            if is_thingy(value, MSG):
                 value = value.gettext()
 
             # Yield

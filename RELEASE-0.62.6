@@ -1,0 +1,50 @@
+itools 0.62.6 (2010/12/XX)
+==========================
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.abnf             itools.i18n             itools.rss
+  itools.core             itools.ical             itools.srx
+  itools.csv              itools.log              itools.stl
+  itools.database         itools.loop             itools.tmx
+  itools.datatypes        itools.odf              itools.uri
+  itools.fs               itools.office           itools.web
+  itools.gettext          itools.pdf              itools.workflow
+  itools.git              itools.pkg              itools.xliff
+  itools.handlers         itools.python           itools.xml
+  itools.html             itools.relaxng          itools.xmlfile
+  itools.http             itools.rest
+
+This is mostly a bug fix release, including:
+
+- itools.core
+  Add the 'is_thingy' function.
+
+- itools.gettext
+  Now MSG is a thingy.
+
+- itools.web (bugs concerned: #878, #1044)
+  Now the authentication cookie expires after 45min of inactivity.
+  Include the user-agent in the authentication cookie.
+  Send Last-Modified only for 200 responses.
+
+
+Resources
+---------
+
+Download
+http://download.hforge.org/itools/0.62/itools-0.62.6.tar.gz
+
+Home
+http://www.hforge.org/itools/
+
+Documentation
+http://www.hforge.org/itools/docs
+
+Mailing list
+http://www.hforge.org/community/
+http://archives.hforge.org/index.cgi?list=itools
+
+Bug Tracker
+http://bugs.hforge.org/

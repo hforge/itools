@@ -72,6 +72,7 @@ class Domain(dict):
 
 
 class MSGFormatter(Formatter):
+
     def get_value(self, key, args, kw):
         if type(key) is int:
             return args[key]
@@ -95,6 +96,7 @@ class MSG(thingy):
 
     domain = None
     html = False
+    format = True
 
     def __init__(self, message=None, **kw):
         if self.domain is None:
@@ -121,10 +123,11 @@ class MSG(thingy):
                 message = domain.gettext(message, language)
 
         # Interpolation
-        message = msg_formatter.vformat(message, [], (self, kw))
+        if self.format is True:
+            message = msg_formatter.vformat(message, [], (self, kw))
 
         # HTML content
-        if self.html:
+        if self.html is True:
             data = message.encode('utf_8')
             return XMLParser(data, namespaces=stl_namespaces)
 

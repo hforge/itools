@@ -17,15 +17,28 @@
 
 # Import from itools
 from itools.gettext import MSG
+from itools.gettext.domains import stl_namespaces
+from itools.stl import stl
+from itools.xml import XMLParser
 
 
 
 class INFO(MSG):
+
     css = 'info'
+
+    def _format(self, message, **kw):
+        if self.format == 'stl':
+            events = XMLParser(message.encode('utf_8'),
+                               namespaces=stl_namespaces)
+            return stl(events=events, namespace=self)
+
+        return super(INFO, self)._format(message, **kw)
 
 
 
 class ERROR(INFO):
+
     css = 'error'
 
 

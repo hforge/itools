@@ -95,8 +95,7 @@ msg_formatter = MSGFormatter()
 class MSG(thingy):
 
     domain = None
-    html = False
-    format = True
+    format = 'replace'
 
     def __init__(self, message=None, **kw):
         if self.domain is None:
@@ -105,6 +104,22 @@ class MSG(thingy):
 
         if message:
             self.message = message
+
+
+    def _format(self, message, **kw):
+        if self.format == 'replace':
+            return msg_formatter.vformat(message, [], (self, kw))
+        elif self.format == 'none':
+            return message
+        elif self.format == 'html':
+            data = message.encode('utf_8')
+            return XMLParser(data, namespaces=stl_namespaces)
+        elif self.format == 'replace_html':
+            message = msg_formatter.vformat(message, [], (self, kw))
+            data = message.encode('utf_8')
+            return XMLParser(data, namespaces=stl_namespaces)
+
+        raise ValueError, 'unexpected format "{0}"'.format(self.format)
 
 
     def gettext(self, language=None, **kw):
@@ -122,16 +137,7 @@ class MSG(thingy):
             if language is not None:
                 message = domain.gettext(message, language)
 
-        # Interpolation
-        if self.format is True:
-            message = msg_formatter.vformat(message, [], (self, kw))
-
-        # HTML content
-        if self.html is True:
-            data = message.encode('utf_8')
-            return XMLParser(data, namespaces=stl_namespaces)
-
-        return message
+        return self._format(message, **kw)
 
 
 

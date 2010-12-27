@@ -15,14 +15,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.handlers import TextFile, register_handler_class
-from itools.xml import XMLParser, XML_DECL, START_ELEMENT, END_ELEMENT, TEXT
-from itools.xml import XMLNamespace, ElementSchema, xml_uri, xmlns_uri
-from itools.xml import register_namespace, has_namespace
 from itools.datatypes import Boolean, Date, DateTime, Decimal, Integer
 from itools.datatypes import QName, String, Time, URI
-from itools.uri import get_reference
 from itools.fs import vfs
+from itools.handlers import TextFile, register_handler_class
+from itools.log import log_warning
+from itools.uri import get_reference
+from itools.xml import XMLNamespace, ElementSchema, xml_uri, xmlns_uri
+from itools.xml import XMLParser, XML_DECL, START_ELEMENT, END_ELEMENT, TEXT
+from itools.xml import register_namespace, has_namespace
 
 
 # Namespace of Relax NG
@@ -419,9 +420,13 @@ def make_namespaces(context):
         # Find the prefix
         for prefix, uri in prefix2uri.iteritems():
             if uri == namespace:
+                result[uri] = XMLNamespace(uri, prefix,
+                                           data['elements'].values(),
+                                           data['free_attributes'], String)
                 break
-        result[uri] = (XMLNamespace(uri, prefix, data['elements'].values(),
-                       data['free_attributes'], String))
+        else:
+            log_warning('relaxng: namespace "%s" not found' % namespace)
+
     return result
 
 

@@ -406,14 +406,16 @@ class GET(RequestMethod):
         if mtime is None:
             return
         mtime = mtime.replace(microsecond=0)
+        context.mtime = mtime
 
         # 2. Check for If-Modified-Since
         if_modified_since = context.get_header('if-modified-since')
         if if_modified_since and if_modified_since >= mtime:
+            context.set_header('Last-Modified', mtime)
+            # Cache-Control: max-age=1
+            # (because Apache does not cache pages with a query by default)
+            context.set_header('Cache-Control', 'max-age=1')
             raise NotModified
-
-        # 3. Set the Last-Modified header
-        context.mtime = mtime
 
 
     @classmethod

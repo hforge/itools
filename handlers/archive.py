@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from datetime import datetime
 from os.path import join
 from zipfile import ZipFile
 from tarfile import open as open_tarfile
@@ -28,6 +29,19 @@ from file import File
 from registry import register_handler_class
 
 
+
+class Info(object):
+
+    __slots__ = ['name', 'mtime']
+
+    def __init__(self, name, mtime):
+        self.name = name
+        # XXX This datetime is naive because (apparently) neither ZIP nor TAR
+        # archives keep the timezone, so this field is mostly useless
+        self.mtime = mtime
+
+
+
 class ZIPFile(File):
 
     class_mimetypes = ['application/zip']
@@ -37,6 +51,19 @@ class ZIPFile(File):
     def _open_zipfile(self):
         archive = StringIO(self.to_str())
         return ZipFile(archive)
+
+
+    def get_members(self):
+        zip = self._open_zipfile()
+        try:
+            names = zip.namelist()
+            names.sort()
+            for name in names:
+                member = zip.getinfo(name)
+                mtime = datetime(*(member.date_time))
+                yield Info(name, mtime)
+        finally:
+            zip.close()
 
 
     def get_contents(self):
@@ -77,6 +104,21 @@ class TARFile(File):
     def _open_tarfile(self):
         archive = StringIO(self.to_str())
         return open_tarfile(mode=self.class_mode, fileobj=archive)
+
+
+    def get_members(self):
+        tar = self._open_tarfile()
+        try:
+            names = tar.getnames()
+            names.sort()
+            for name in names:
+                member = tar.getmember(name)
+                if member.isdir():
+                    name = '%s/' % name
+                mtime = datetime.utcfromtimestamp(member.mtime)
+                yield Info(name, mtime)
+        finally:
+            tar.close()
 
 
     def get_contents(self):
@@ -140,4 +182,3 @@ class Bzip2File(File):
 # Register
 for cls in [ZIPFile, TARFile, TGZFile, TBZ2File, GzipFile, Bzip2File]:
     register_handler_class(cls)
-

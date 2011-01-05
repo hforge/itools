@@ -1,4 +1,4 @@
-itools 0.62.6 (2010/12/XX)
+itools 0.62.6 (2011/01/XX)
 ==========================
 
 itools is a Python library, it groups a number of packages into a single
@@ -16,18 +16,27 @@ meta-package for easier development and deployment:
   itools.html             itools.relaxng          itools.xmlfile
   itools.http             itools.rest
 
-This is mostly a bug fix release, including:
+This release is about bug fixes and small features.
 
-- itools.core
-  Add the 'is_thingy' function.
+itools.core:
+- Add the 'is_thingy' function.
 
-- itools.gettext
-  Now MSG is a thingy.
+itools.gettext:
+- Now MSG is a thingy, and the boolean 'html' variable has been replaced
+  by the more flexible 'format' variable:
 
-- itools.web (bugs concerned: #878, #1044)
-  Now the authentication cookie expires after 45min of inactivity.
-  Include the user-agent in the authentication cookie.
-  Send Last-Modified only for 200 responses.
+    MSG(u'...', html=True)               # Before
+    MSG(u'...', format='replace_html')   # Now
+
+  The possible values of 'format' are: none, replace, html and replace_html.
+
+itools.stl:
+- Now the INFO & ERROR classes can contain STL, with format='stl'.
+
+itools.web (bugs concerned: #878, #1044)
+- Now the authentication cookie expires after 45min of inactivity.
+- Include the user-agent in the authentication cookie.
+- Send Last-Modified only for 200 and 304 responses.
 
 
 Resources

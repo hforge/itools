@@ -20,7 +20,7 @@ from copy import deepcopy
 
 # Import from itools
 from itools.core import freeze
-from itools.datatypes import Enumerate
+from itools.datatypes import Enumerate, String
 from itools.gettext import MSG
 from itools.stl import stl
 from itools.uri import decode_query, Reference
@@ -291,7 +291,8 @@ class STLForm(STLView, BaseForm):
                     if issubclass(datatype, Enumerate):
                         value = datatype.get_namespace(None)
                     else:
-                        value = context.get_form_value(name)
+                        generic_datatype = String(multilingual=is_multilingual)
+                        value = context.get_form_value(name, type=generic_datatype)
                 else:
                     if issubclass(datatype, Enumerate):
                         value = datatype.get_namespace(value)

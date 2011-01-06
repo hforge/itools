@@ -26,9 +26,8 @@ from itools.i18n import get_language_name
 from itools.xml import XMLParser
 
 
-stl_namespaces = {
-    None: 'http://www.w3.org/1999/xhtml',
-    'stl': 'http://www.hforge.org/xml-namespaces/stl'}
+xhtml_namespaces = {
+    None: 'http://www.w3.org/1999/xhtml'}
 
 
 # XXX This code does not take into account changes in the filesystem once a
@@ -113,11 +112,11 @@ class MSG(thingy):
             return message
         elif self.format == 'html':
             data = message.encode('utf_8')
-            return XMLParser(data, namespaces=stl_namespaces)
+            return XMLParser(data, namespaces=xhtml_namespaces)
         elif self.format == 'replace_html':
             message = msg_formatter.vformat(message, [], (self, kw))
             data = message.encode('utf_8')
-            return XMLParser(data, namespaces=stl_namespaces)
+            return XMLParser(data, namespaces=xhtml_namespaces)
 
         raise ValueError, 'unexpected format "{0}"'.format(self.format)
 

@@ -17,10 +17,8 @@
 
 # Import from itools
 from itools.gettext import MSG
-from itools.gettext.domains import stl_namespaces
-from itools.stl import stl
+from itools.stl import stl, stl_namespaces
 from itools.xml import XMLParser
-
 
 
 class INFO(MSG):

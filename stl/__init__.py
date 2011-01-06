@@ -19,6 +19,11 @@ from stl import STLError, STLFile, STLTemplate, stl
 from stl import rewrite_uris, set_prefix
 
 
+stl_namespaces = {
+    None: 'http://www.w3.org/1999/xhtml',
+    'stl': 'http://www.hforge.org/xml-namespaces/stl'}
+
+
 __all__ = [
     'STLError',
     'stl',
@@ -27,4 +32,5 @@ __all__ = [
     # Helper functions
     'rewrite_uris',
     'set_prefix',
+    'stl_namespaces',
     ]

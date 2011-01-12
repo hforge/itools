@@ -27,6 +27,8 @@ To build a query:
   query = AndQuery(s1, s2, s3)
 """
 
+# Import from the Standard Library
+from pprint import PrettyPrinter, _recursion, _sorted
 
 
 class BaseQuery(object):
@@ -82,7 +84,7 @@ class AndQuery(BaseQuery):
 
 
     def __repr_parameters__(self):
-        return ', '.join([ repr(x) for x in self.atoms ])
+        return '\n' + ',\n'.join([ repr(x) for x in self.atoms ])
 
 
 
@@ -98,7 +100,7 @@ class OrQuery(BaseQuery):
 
 
     def __repr_parameters__(self):
-        return ', '.join([ repr(x) for x in self.atoms ])
+        return '\n' + ',\n'.join([ repr(x) for x in self.atoms ])
 
 
 
@@ -134,3 +136,55 @@ class TextQuery(BaseQuery):
 
     def __repr_parameters__(self):
         return "%r, %r" % (self.name, self.value)
+
+
+
+class QueryPrinter(PrettyPrinter):
+
+    def _format(self, query, stream, indent, allowance, context, level):
+        level = level + 1
+        objid = id(query)
+        if objid in context:
+            stream.write(_recursion(query))
+            self._recursive = True
+            self._readable = False
+            return
+        rep = self._repr(query, context, level - 1)
+        typ = type(query)
+        sepLines = len(rep) > (self._width - 1 - indent - allowance)
+        write = stream.write
+
+        if self._depth and level > self._depth:
+            write(rep)
+            return
+
+        if issubclass(typ, (AndQuery, OrQuery, NotQuery)):
+            write('<%s.%s(' % (
+                query.__module__,
+                query.__class__.__name__))
+            if self._indent_per_level > 1:
+                write((self._indent_per_level - 1) * ' ')
+            if issubclass(typ, NotQuery):
+                atoms = [query.query]
+            else:
+                atoms = query.atoms
+            if atoms:
+                context[objid] = 1
+                indent = indent + self._indent_per_level
+                for atom in atoms:
+                    if sepLines:
+                        write('\n%s' % (' ' * indent))
+                    self._format(atom, stream, indent + 2,
+                            allowance + 1, context, level)
+                indent = indent - self._indent_per_level
+                del context[objid]
+            write('>')
+            return
+
+        write(rep)
+
+
+def pprint_query(query, stream=None, indent=1, width=80, depth=None):
+    printer = QueryPrinter(stream=stream, indent=indent, width=width,
+            depth=depth)
+    printer.pprint(query)

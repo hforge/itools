@@ -259,7 +259,7 @@ def enumerate_is_valid(options, name):
 
 
 def enumerate_get_namespace(options, name):
-    if isinstance(name, list):
+    if type(name) is list:
         for option in options:
             option['selected'] = option['name'] in name
     else:

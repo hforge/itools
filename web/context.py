@@ -45,6 +45,7 @@ class Context(object):
 
     user = None
     resource = None
+    server = None
 
 
     def __init__(self, soup_message, path):
@@ -407,15 +408,20 @@ class Context(object):
         return sha224(token).digest()
 
 
-    def _set_auth_cookie(self, cookie, expires_delta=timedelta(minutes=45)):
+    def _set_auth_cookie(self, cookie):
         # Compute expires datetime (FIXME Probably should use the request date)
-        expires = datetime.now() + expires_delta
-        expires = HTTPDate.encode(expires)
+        auth_cookie_expires = self.server.auth_cookie_expires
+        if auth_cookie_expires != timedelta(0):
+            expires = datetime.now() + auth_cookie_expires
+            expires = HTTPDate.encode(expires)
+        else:
+            expires = None
+
         # Set cookie
         self.set_cookie('iauth', cookie, path='/', expires=expires)
 
 
-    def login(self, user, expires_delta=timedelta(minutes=45)):
+    def login(self, user):
         user_id = user.get_user_id()
         user_token = user.get_auth_token()
 
@@ -423,7 +429,7 @@ class Context(object):
         token = self._get_auth_token(user_token)
         cookie = '%s:%s' % (user_id, token)
         cookie = quote(encodestring(cookie))
-        self._set_auth_cookie(cookie, expires_delta)
+        self._set_auth_cookie(cookie)
 
         # Set the user
         self.user = user

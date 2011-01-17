@@ -19,6 +19,7 @@
 
 # Import from the Standard Library
 from copy import copy
+from datetime import timedelta
 from types import FunctionType, MethodType
 from warnings import warn
 
@@ -42,6 +43,7 @@ class WebServer(HTTPServer):
     event_log = None
 
     database = None
+    auth_cookie_expires = timedelta(0)
 
 
     def __init__(self, root, access_log=None, event_log=None):

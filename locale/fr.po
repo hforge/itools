@@ -11,10 +11,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-01 19:03+CET\n"
+"POT-Creation-Date: 2011-01-18 17:01+CET\n"
 "PO-Revision-Date: 2010-10-27 17:02+0100\n"
 "Last-Translator: David Versmisse <david.versmisse@itaapy.com>\n"
 "Language-Team: Français <fr@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -32,12 +33,8 @@ msgstr " %s=\"%s\""
 msgid "\""
 msgstr "\""
 
-#: ../rest/rest.py:79
-#: ../rest/rest.py:100
-#: ../rest/rest.py:155
-#: ../rest/rest.py:177
-#: ../rest/parser.py:109
-#: ../rest/parser.py:371
+#: ../rest/rest.py:79 ../rest/rest.py:100 ../rest/rest.py:155
+#: ../rest/rest.py:177 ../rest/parser.py:109 ../rest/parser.py:371
 msgid "#"
 msgstr "#"
 
@@ -45,52 +42,52 @@ msgstr "#"
 msgid "%s"
 msgstr "%s"
 
-#: ../xapian/utils.py:136
+#: ../database/catalog.py:751
 msgid "%s%s"
 msgstr "%s%s"
+
+#: ../database/catalog.py:67
+msgid "'"
+msgstr ""
 
 #: ../pdf/pml.py:332
 msgid "(WW) CSS filename \"%s\" does not exist"
 msgstr "(WW) Fichier \"%s\" CSS inexistant"
 
-#: ../pdf/pml.py:1155
+#: ../pdf/pml.py:1147
 msgid "(WW) Cannot add an image inside a td without predefined size"
 msgstr "(WW) Ne peut insérer une image au sein d'un td sans taille prédéfinie"
 
-#: ../pdf/pml.py:1151
+#: ../pdf/pml.py:1143
 msgid "(WW) Filename is None"
 msgstr "(WW) Le nom du fichier est None"
 
-#: ../pdf/utils.py:235
+#: ../pdf/utils.py:233
 msgid "(WW) The filename '%s' doesn't exist"
 msgstr "(WW) Le fichier \"%s\" n'existe pas"
 
-#: ../rest/parser.py:102
-#: ../rest/parser.py:103
-#: ../rest/parser.py:278
-#: ../rest/parser.py:311
-#: ../rest/parser.py:317
-#: ../rest/parser.py:324
+#: ../rest/parser.py:102 ../rest/parser.py:103 ../rest/parser.py:278
+#: ../rest/parser.py:311 ../rest/parser.py:317 ../rest/parser.py:324
 msgid "*"
 msgstr "*"
 
-#: ../handlers/utils.py:48
-#: ../handlers/utils.py:49
-#: ../handlers/utils.py:53
-#: ../handlers/utils.py:54
-#: ../rest/parser.py:104
-#: ../rest/parser.py:105
+#: ../i18n/locale_.py:70 ../i18n/locale_.py:153 ../i18n/locale_.py:154
+#: ../i18n/locale_.py:155
+msgid ","
+msgstr ""
+
+#: ../i18n/locale_.py:71 ../i18n/locale_.py:121 ../handlers/utils.py:48
+#: ../handlers/utils.py:49 ../handlers/utils.py:53 ../handlers/utils.py:54
+#: ../rest/parser.py:104 ../rest/parser.py:105
 msgid "-"
 msgstr "-"
 
-#: ../ical/table.py:364
-#: ../ical/icalendar.py:336
+#: ../ical/icalendar.py:268
 msgid "-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN"
 msgstr "-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN"
 
-#: ../handlers/utils.py:48
-#: ../rest/parser.py:106
-#: ../rest/parser.py:107
+#: ../i18n/locale_.py:70 ../i18n/locale_.py:153 ../i18n/locale_.py:154
+#: ../handlers/utils.py:48 ../rest/parser.py:106 ../rest/parser.py:107
 msgid "."
 msgstr "."
 
@@ -102,8 +99,11 @@ msgstr ".."
 msgid "/>"
 msgstr "/>"
 
-#: ../ical/table.py:363
-#: ../ical/icalendar.py:335
+#: ../i18n/locale_.py:106 ../i18n/locale_.py:109
+msgid "0"
+msgstr ""
+
+#: ../ical/icalendar.py:267
 msgid "2.0"
 msgstr "2.0"
 
@@ -123,15 +123,15 @@ msgstr "<!--%s-->"
 msgid "<%s"
 msgstr "<%s"
 
-#: ../gettext/po.py:142
+#: ../gettext/po.py:141
 msgid "</g>"
 msgstr "</g>"
 
-#: ../gettext/po.py:138
+#: ../gettext/po.py:137
 msgid "<g id='%d'>"
 msgstr "<g id='%d'>"
 
-#: ../gettext/po.py:136
+#: ../gettext/po.py:135
 msgid "<x id='%d'/>"
 msgstr "<x id='%d'/>"
 
@@ -147,8 +147,14 @@ msgstr "???"
 msgid "@"
 msgstr "@"
 
+#: ../database/catalog.py:48 ../database/catalog.py:49
+#, fuzzy
+msgid "A"
+msgstr "AE"
+
 #: ../handlers/utils.py:21
-msgid "AAAAAAAaaaaaaaCcEEEEEeeeeeIIIIIiiiiiNnOOOOOOOoooooooUUUUUuuuuuYYYyyyZz"
+#, fuzzy
+msgid "AAAAAAAaaaaaaaaCcEEEEEeeeeegIIIIIiiiiiilNnOOOOOOOooooooooUUUUUuuuuuSstYYYyyyZz"
 msgstr "AAAAAAAaaaaaaaCcEEEEEeeeeeIIIIIiiiiiNnOOOOOOOoooooooUUUUUuuuuuYYYyyyZz"
 
 #: ../handlers/utils.py:29
@@ -211,11 +217,6 @@ msgstr "Aymara"
 msgid "Azerbaijani"
 msgstr "Azerbaijani"
 
-#: ../ical/icalendar.py:506
-#: ../ical/icalendar.py:522
-msgid "BEGIN:%s\n"
-msgstr "BEGIN:%s\n"
-
 #: ../i18n/languages.py:39
 msgid "Bambara"
 msgstr "Bambara"
@@ -259,6 +260,10 @@ msgstr "Bulgarian"
 #: ../i18n/languages.py:144
 msgid "Burmese"
 msgstr "Burmese"
+
+#: ../database/catalog.py:52
+msgid "C"
+msgstr ""
 
 #: ../i18n/languages.py:44
 msgid "Catalan"
@@ -340,10 +345,10 @@ msgstr "Dutch/Belgium"
 msgid "Dzongkha"
 msgstr "Dzongkha"
 
-#: ../ical/icalendar.py:530
-#: ../ical/icalendar.py:533
-msgid "END:%s\n"
-msgstr "END:%s\n"
+#: ../database/catalog.py:54 ../database/catalog.py:55
+#, fuzzy
+msgid "E"
+msgstr "AE"
 
 #: ../i18n/languages.py:62
 msgid "English"
@@ -368,10 +373,6 @@ msgstr "Esperanto"
 #: ../i18n/languages.py:71
 msgid "Estonian"
 msgstr "Estonian"
-
-#: ../web/context.py:64
-msgid "Everything looks fine (strange)."
-msgstr "Tout paraît correct (étrange)."
 
 #: ../i18n/languages.py:60
 msgid "Ewe"
@@ -493,6 +494,10 @@ msgstr "Hiri Motu"
 msgid "Hungarian"
 msgstr "Hungarian"
 
+#: ../database/catalog.py:60
+msgid "I"
+msgstr ""
+
 #: ../i18n/languages.py:106
 msgid "Icelandic"
 msgstr "Icelandic"
@@ -528,6 +533,10 @@ msgstr "Inuktitut"
 #: ../i18n/languages.py:104
 msgid "Inupiak"
 msgstr "Inupiak"
+
+#: ../web/views.py:289 ../web/views.py:311
+msgid "Invalid value."
+msgstr ""
 
 #: ../i18n/languages.py:84
 msgid "Irish"
@@ -853,9 +862,13 @@ msgstr "Slovenian"
 msgid "Somali"
 msgstr "Somali"
 
-#: ../web/messages.py:46
-msgid "Some required fields are missing, or some values are not valid. Please correct them and continue."
-msgstr "Des champs requis ne sont pas renseignés ou des valeurs ne sont pas valides. Merci de les corriger avant de continuer."
+#: ../web/messages.py:45
+msgid ""
+"Some required fields are missing, or some values are not valid. Please "
+"correct them and continue."
+msgstr ""
+"Des champs requis ne sont pas renseignés ou des valeurs ne sont pas valides. "
+"Merci de les corriger avant de continuer."
 
 #: ../i18n/languages.py:188
 msgid "Sotho"
@@ -933,17 +946,17 @@ msgstr "Thai"
 msgid "The option --show-lines takes one file in parameter."
 msgstr "L'option --show-lines prend un seul fichier en paramètre"
 
-#: ../web/context.py:61
-msgid "There are {inv} field(s) invalid."
-msgstr "Il y a {inv} champ(s) invalide(s)."
+#: ../web/views.py:40
+msgid "There are errors, check below."
+msgstr ""
 
-#: ../web/context.py:57
-msgid "There are {miss} field(s) missing and {inv} invalid."
-msgstr "Il manque {miss} champ(s) et {inv} sont invalide(s)"
+#: ../web/exceptions.py:42
+msgid "There are errors... XXX"
+msgstr ""
 
-#: ../web/context.py:59
-msgid "There are {miss} field(s) missing."
-msgstr "Il y a {miss} champ(s) invalide(s)."
+#: ../web/views.py:287 ../web/views.py:309
+msgid "This field is required."
+msgstr "Ce champ est obligatoire."
 
 #: ../scripts/ipkg-quality.py:407
 msgid "This file is perfect !"
@@ -1041,8 +1054,7 @@ msgstr "Zhuang; Chuang"
 msgid "Zulu"
 msgstr "Zulu"
 
-#: ../rest/parser.py:288
-#: ../rest/parser.py:292
+#: ../rest/parser.py:288 ../rest/parser.py:292
 msgid "["
 msgstr "["
 
@@ -1050,20 +1062,20 @@ msgstr "["
 msgid "]"
 msgstr "]"
 
-#: ../handlers/utils.py:48
-#: ../rest/parser.py:299
-#: ../rest/parser.py:349
+#: ../handlers/utils.py:48 ../rest/parser.py:299 ../rest/parser.py:349
 #: ../rest/parser.py:368
 msgid "_"
 msgstr "_"
 
-#: ../rest/parser.py:283
-#: ../rest/parser.py:331
-#: ../rest/parser.py:337
-#: ../rest/parser.py:344
-#: ../rest/parser.py:391
+#: ../rest/parser.py:283 ../rest/parser.py:331 ../rest/parser.py:337
+#: ../rest/parser.py:344 ../rest/parser.py:391
 msgid "`"
 msgstr "`"
+
+#: ../database/catalog.py:50 ../database/catalog.py:51
+#, fuzzy
+msgid "a"
+msgstr "ae"
 
 #: ../handlers/utils.py:28
 msgid "ae"
@@ -1105,6 +1117,10 @@ msgstr "mauvaise indentation"
 msgid "but"
 msgstr "mais"
 
+#: ../database/catalog.py:53
+msgid "c"
+msgstr ""
+
 #: ../i18n/oracle.py:269
 msgid "como"
 msgstr ""
@@ -1129,10 +1145,15 @@ msgstr ""
 msgid "donc"
 msgstr ""
 
-#: ../i18n/oracle.py:275
-#: ../i18n/oracle.py:334
+#: ../i18n/oracle.py:275 ../i18n/oracle.py:334
 msgid "du"
 msgstr ""
+
+#: ../database/catalog.py:56 ../database/catalog.py:57
+#: ../database/catalog.py:58 ../database/catalog.py:59
+#, fuzzy
+msgid "e"
+msgstr "ae"
 
 #: ../i18n/oracle.py:276
 msgid "el"
@@ -1174,7 +1195,7 @@ msgstr ""
 msgid "he"
 msgstr ""
 
-#: ../i18n/oracle.py:286
+#: ../i18n/oracle.py:286 ../database/catalog.py:61 ../database/catalog.py:62
 msgid "i"
 msgstr ""
 
@@ -1186,7 +1207,7 @@ msgstr ""
 msgid "ils"
 msgstr ""
 
-#: ../pdf/utils.py:253
+#: ../pdf/utils.py:251
 msgid "image not valid : %s"
 msgstr "image %s non valide"
 
@@ -1238,10 +1259,6 @@ msgstr ""
 msgid "no"
 msgstr ""
 
-#: ../ical/table.py:119
-msgid "no title"
-msgstr "pas de titre"
-
 #: ../i18n/oracle.py:300
 msgid "nous"
 msgstr ""
@@ -1250,7 +1267,7 @@ msgstr ""
 msgid "nueva"
 msgstr ""
 
-#: ../i18n/oracle.py:302
+#: ../i18n/oracle.py:302 ../database/catalog.py:63
 msgid "o"
 msgstr ""
 
@@ -1322,9 +1339,12 @@ msgstr ""
 msgid "the"
 msgstr ""
 
-#: ../csv/table.py:308
-msgid "the \"{field}\" field must be unique, the \"{value}\" value is  already used."
-msgstr "le champ \"{field}\" doit être unique, la valeur \"{value}\" est déjà utilisée"
+#: ../csv/table.py:310
+msgid ""
+"the \"{field}\" field must be unique, the \"{value}\" value is  already used."
+msgstr ""
+"le champ \"{field}\" doit être unique, la valeur \"{value}\" est déjà "
+"utilisée"
 
 #: ../i18n/oracle.py:317
 msgid "their"
@@ -1340,6 +1360,11 @@ msgstr ""
 
 #: ../i18n/oracle.py:320
 msgid "tu"
+msgstr ""
+
+#: ../database/catalog.py:64 ../database/catalog.py:65
+#: ../database/catalog.py:66
+msgid "u"
 msgstr ""
 
 #: ../i18n/oracle.py:321
@@ -1386,8 +1411,7 @@ msgstr ""
 msgid "your"
 msgstr ""
 
-#: ../rest/parser.py:294
-#: ../rest/parser.py:384
+#: ../rest/parser.py:294 ../rest/parser.py:384
 msgid "|"
 msgstr "|"
 
@@ -1399,21 +1423,49 @@ msgstr ""
 msgid "¿"
 msgstr ""
 
+#: ../database/catalog.py:48
+msgid "À"
+msgstr ""
+
+#: ../database/catalog.py:49
+msgid "Â"
+msgstr ""
+
 #: ../handlers/utils.py:19
-msgid "ÄÅÁÀÂÃĀäåáàâãāÇçÉÈÊËĒéèêëēÍÌÎÏĪíìîïīÑñÖÓÒÔÕØŌöóòôõøōÜÚÙÛŪüúùûūÝŸȲýÿȳŽž"
+#, fuzzy
+msgid "ÄÅÁÀÂÃĀäåáàâãāăÇçÉÈÊËĒéèêëēğÍÌÎÏĪíìîïīıļÑñÖÓÒÔÕØŌöóòôõøōőÜÚÙÛŪüúùûūŞşţÝŸȲýÿȳŽž"
 msgstr "ÄÅÁÀÂÃĀäåáàâãāÇçÉÈÊËĒéèêëēÍÌÎÏĪíìîïīÑñÖÓÒÔÕØŌöóòôõøōÜÚÙÛŪüúùûūÝŸȲýÿȳŽž"
 
 #: ../handlers/utils.py:29
 msgid "Æ"
 msgstr "Æ"
 
-#: ../handlers/utils.py:32
-#: ../i18n/oracle.py:232
+#: ../database/catalog.py:52
+msgid "Ç"
+msgstr ""
+
+#: ../database/catalog.py:54
+msgid "É"
+msgstr ""
+
+#: ../database/catalog.py:55
+msgid "Ê"
+msgstr ""
+
+#: ../database/catalog.py:60
+msgid "Î"
+msgstr ""
+
+#: ../handlers/utils.py:32 ../i18n/oracle.py:232
 msgid "ß"
 msgstr "ß"
 
-#: ../i18n/oracle.py:261
+#: ../i18n/oracle.py:261 ../database/catalog.py:51
 msgid "à"
+msgstr ""
+
+#: ../database/catalog.py:50
+msgid "â"
 msgstr ""
 
 #: ../i18n/oracle.py:231
@@ -1424,16 +1476,36 @@ msgstr ""
 msgid "æ"
 msgstr "æ"
 
-#: ../i18n/oracle.py:233
+#: ../i18n/oracle.py:233 ../database/catalog.py:53
 msgid "ç"
 msgstr ""
 
-#: ../i18n/oracle.py:234
+#: ../database/catalog.py:58
+msgid "è"
+msgstr ""
+
+#: ../database/catalog.py:56
+msgid "é"
+msgstr ""
+
+#: ../i18n/oracle.py:234 ../database/catalog.py:57
 msgid "ê"
+msgstr ""
+
+#: ../database/catalog.py:59
+msgid "ë"
 msgstr ""
 
 #: ../i18n/oracle.py:235
 msgid "í"
+msgstr ""
+
+#: ../database/catalog.py:61
+msgid "î"
+msgstr ""
+
+#: ../database/catalog.py:62
+msgid "ï"
 msgstr ""
 
 #: ../i18n/oracle.py:236
@@ -1444,15 +1516,27 @@ msgstr ""
 msgid "ó"
 msgstr ""
 
+#: ../database/catalog.py:63
+msgid "ô"
+msgstr ""
+
 #: ../i18n/oracle.py:237
 msgid "ö"
+msgstr ""
+
+#: ../database/catalog.py:65
+msgid "ù"
 msgstr ""
 
 #: ../i18n/oracle.py:240
 msgid "ú"
 msgstr ""
 
-#: ../i18n/oracle.py:239
+#: ../database/catalog.py:64
+msgid "û"
+msgstr ""
+
+#: ../i18n/oracle.py:239 ../database/catalog.py:66
 msgid "ü"
 msgstr ""
 
@@ -1511,11 +1595,32 @@ msgstr ""
 #~ msgid "Aesthetics (and readibility)"
 #~ msgstr "Esthétisme (et lisibilité)"
 
+#~ msgid "BEGIN:%s\n"
+#~ msgstr "BEGIN:%s\n"
+
 #~ msgid "CSV syntax error: wrong number of columns"
 #~ msgstr "Erreur de syntaxe CSV : nombre de colonnes erroné"
 
 #~ msgid "CSV syntax error: wrong number of columns at line %d"
 #~ msgstr "Erreur de syntaxe CSV : nombre de colonnes erroné à la ligne %d"
+
+#~ msgid "END:%s\n"
+#~ msgstr "END:%s\n"
+
+#~ msgid "Everything looks fine (strange)."
+#~ msgstr "Tout paraît correct (étrange)."
+
+#~ msgid "There are {inv} field(s) invalid."
+#~ msgstr "Il y a {inv} champ(s) invalide(s)."
+
+#~ msgid "There are {miss} field(s) missing and {inv} invalid."
+#~ msgstr "Il manque {miss} champ(s) et {inv} sont invalide(s)"
+
+#~ msgid "There are {miss} field(s) missing."
+#~ msgstr "Il y a {miss} champ(s) invalide(s)."
+
+#~ msgid "no title"
+#~ msgstr "pas de titre"
 
 #~ msgid "request method \"$name\" not yet implemented"
 #~ msgstr "Méthode &laquo;&nbsp;$name&nbsp;&raquo; pas encore implémentée"

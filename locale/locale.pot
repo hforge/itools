@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2010-03-01 19:03+CET\n"
+"POT-Creation-Date: 2011-01-18 17:01+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -40,23 +40,27 @@ msgstr ""
 msgid "%s"
 msgstr ""
 
-#: ../xapian/utils.py:136
+#: ../database/catalog.py:751
 msgid "%s%s"
+msgstr ""
+
+#: ../database/catalog.py:67
+msgid "'"
 msgstr ""
 
 #: ../pdf/pml.py:332
 msgid "(WW) CSS filename \"%s\" does not exist"
 msgstr ""
 
-#: ../pdf/pml.py:1155
+#: ../pdf/pml.py:1147
 msgid "(WW) Cannot add an image inside a td without predefined size"
 msgstr ""
 
-#: ../pdf/pml.py:1151
+#: ../pdf/pml.py:1143
 msgid "(WW) Filename is None"
 msgstr ""
 
-#: ../pdf/utils.py:235
+#: ../pdf/utils.py:233
 msgid "(WW) The filename '%s' doesn't exist"
 msgstr ""
 
@@ -70,6 +74,15 @@ msgstr ""
 msgid "*"
 msgstr ""
 
+#: ../i18n/locale_.py:70
+#: ../i18n/locale_.py:153
+#: ../i18n/locale_.py:154
+#: ../i18n/locale_.py:155
+msgid ","
+msgstr ""
+
+#: ../i18n/locale_.py:71
+#: ../i18n/locale_.py:121
 #: ../handlers/utils.py:48
 #: ../handlers/utils.py:49
 #: ../handlers/utils.py:53
@@ -79,11 +92,13 @@ msgstr ""
 msgid "-"
 msgstr ""
 
-#: ../ical/table.py:364
-#: ../ical/icalendar.py:336
+#: ../ical/icalendar.py:268
 msgid "-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN"
 msgstr ""
 
+#: ../i18n/locale_.py:70
+#: ../i18n/locale_.py:153
+#: ../i18n/locale_.py:154
 #: ../handlers/utils.py:48
 #: ../rest/parser.py:106
 #: ../rest/parser.py:107
@@ -98,8 +113,12 @@ msgstr ""
 msgid "/>"
 msgstr ""
 
-#: ../ical/table.py:363
-#: ../ical/icalendar.py:335
+#: ../i18n/locale_.py:106
+#: ../i18n/locale_.py:109
+msgid "0"
+msgstr ""
+
+#: ../ical/icalendar.py:267
 msgid "2.0"
 msgstr ""
 
@@ -119,15 +138,15 @@ msgstr ""
 msgid "<%s"
 msgstr ""
 
-#: ../gettext/po.py:142
+#: ../gettext/po.py:141
 msgid "</g>"
 msgstr ""
 
-#: ../gettext/po.py:138
+#: ../gettext/po.py:137
 msgid "<g id='%d'>"
 msgstr ""
 
-#: ../gettext/po.py:136
+#: ../gettext/po.py:135
 msgid "<x id='%d'/>"
 msgstr ""
 
@@ -143,8 +162,13 @@ msgstr ""
 msgid "@"
 msgstr ""
 
+#: ../database/catalog.py:48
+#: ../database/catalog.py:49
+msgid "A"
+msgstr ""
+
 #: ../handlers/utils.py:21
-msgid "AAAAAAAaaaaaaaCcEEEEEeeeeeIIIIIiiiiiNnOOOOOOOoooooooUUUUUuuuuuYYYyyyZz"
+msgid "AAAAAAAaaaaaaaaCcEEEEEeeeeegIIIIIiiiiiilNnOOOOOOOooooooooUUUUUuuuuuSstYYYyyyZz"
 msgstr ""
 
 #: ../handlers/utils.py:29
@@ -207,11 +231,6 @@ msgstr ""
 msgid "Azerbaijani"
 msgstr ""
 
-#: ../ical/icalendar.py:506
-#: ../ical/icalendar.py:522
-msgid "BEGIN:%s\n"
-msgstr ""
-
 #: ../i18n/languages.py:39
 msgid "Bambara"
 msgstr ""
@@ -254,6 +273,10 @@ msgstr ""
 
 #: ../i18n/languages.py:144
 msgid "Burmese"
+msgstr ""
+
+#: ../database/catalog.py:52
+msgid "C"
 msgstr ""
 
 #: ../i18n/languages.py:44
@@ -336,9 +359,9 @@ msgstr ""
 msgid "Dzongkha"
 msgstr ""
 
-#: ../ical/icalendar.py:530
-#: ../ical/icalendar.py:533
-msgid "END:%s\n"
+#: ../database/catalog.py:54
+#: ../database/catalog.py:55
+msgid "E"
 msgstr ""
 
 #: ../i18n/languages.py:62
@@ -363,10 +386,6 @@ msgstr ""
 
 #: ../i18n/languages.py:71
 msgid "Estonian"
-msgstr ""
-
-#: ../web/context.py:64
-msgid "Everything looks fine (strange)."
 msgstr ""
 
 #: ../i18n/languages.py:60
@@ -489,6 +508,10 @@ msgstr ""
 msgid "Hungarian"
 msgstr ""
 
+#: ../database/catalog.py:60
+msgid "I"
+msgstr ""
+
 #: ../i18n/languages.py:106
 msgid "Icelandic"
 msgstr ""
@@ -523,6 +546,11 @@ msgstr ""
 
 #: ../i18n/languages.py:104
 msgid "Inupiak"
+msgstr ""
+
+#: ../web/views.py:289
+#: ../web/views.py:311
+msgid "Invalid value."
 msgstr ""
 
 #: ../i18n/languages.py:84
@@ -849,7 +877,7 @@ msgstr ""
 msgid "Somali"
 msgstr ""
 
-#: ../web/messages.py:46
+#: ../web/messages.py:45
 msgid "Some required fields are missing, or some values are not valid. Please correct them and continue."
 msgstr ""
 
@@ -929,16 +957,17 @@ msgstr ""
 msgid "The option --show-lines takes one file in parameter."
 msgstr ""
 
-#: ../web/context.py:61
-msgid "There are {inv} field(s) invalid."
+#: ../web/views.py:40
+msgid "There are errors, check below."
 msgstr ""
 
-#: ../web/context.py:57
-msgid "There are {miss} field(s) missing and {inv} invalid."
+#: ../web/exceptions.py:42
+msgid "There are errors... XXX"
 msgstr ""
 
-#: ../web/context.py:59
-msgid "There are {miss} field(s) missing."
+#: ../web/views.py:287
+#: ../web/views.py:309
+msgid "This field is required."
 msgstr ""
 
 #: ../scripts/ipkg-quality.py:407
@@ -1062,6 +1091,11 @@ msgstr ""
 msgid "`"
 msgstr ""
 
+#: ../database/catalog.py:50
+#: ../database/catalog.py:51
+msgid "a"
+msgstr ""
+
 #: ../handlers/utils.py:28
 msgid "ae"
 msgstr ""
@@ -1102,6 +1136,10 @@ msgstr ""
 msgid "but"
 msgstr ""
 
+#: ../database/catalog.py:53
+msgid "c"
+msgstr ""
+
 #: ../i18n/oracle.py:269
 msgid "como"
 msgstr ""
@@ -1129,6 +1167,13 @@ msgstr ""
 #: ../i18n/oracle.py:275
 #: ../i18n/oracle.py:334
 msgid "du"
+msgstr ""
+
+#: ../database/catalog.py:56
+#: ../database/catalog.py:57
+#: ../database/catalog.py:58
+#: ../database/catalog.py:59
+msgid "e"
 msgstr ""
 
 #: ../i18n/oracle.py:276
@@ -1172,6 +1217,8 @@ msgid "he"
 msgstr ""
 
 #: ../i18n/oracle.py:286
+#: ../database/catalog.py:61
+#: ../database/catalog.py:62
 msgid "i"
 msgstr ""
 
@@ -1183,7 +1230,7 @@ msgstr ""
 msgid "ils"
 msgstr ""
 
-#: ../pdf/utils.py:253
+#: ../pdf/utils.py:251
 msgid "image not valid : %s"
 msgstr ""
 
@@ -1235,10 +1282,6 @@ msgstr ""
 msgid "no"
 msgstr ""
 
-#: ../ical/table.py:119
-msgid "no title"
-msgstr ""
-
 #: ../i18n/oracle.py:300
 msgid "nous"
 msgstr ""
@@ -1248,6 +1291,7 @@ msgid "nueva"
 msgstr ""
 
 #: ../i18n/oracle.py:302
+#: ../database/catalog.py:63
 msgid "o"
 msgstr ""
 
@@ -1319,7 +1363,7 @@ msgstr ""
 msgid "the"
 msgstr ""
 
-#: ../csv/table.py:308
+#: ../csv/table.py:310
 msgid "the \"{field}\" field must be unique, the \"{value}\" value is  already used."
 msgstr ""
 
@@ -1337,6 +1381,12 @@ msgstr ""
 
 #: ../i18n/oracle.py:320
 msgid "tu"
+msgstr ""
+
+#: ../database/catalog.py:64
+#: ../database/catalog.py:65
+#: ../database/catalog.py:66
+msgid "u"
 msgstr ""
 
 #: ../i18n/oracle.py:321
@@ -1396,12 +1446,36 @@ msgstr ""
 msgid "¿"
 msgstr ""
 
+#: ../database/catalog.py:48
+msgid "À"
+msgstr ""
+
+#: ../database/catalog.py:49
+msgid "Â"
+msgstr ""
+
 #: ../handlers/utils.py:19
-msgid "ÄÅÁÀÂÃĀäåáàâãāÇçÉÈÊËĒéèêëēÍÌÎÏĪíìîïīÑñÖÓÒÔÕØŌöóòôõøōÜÚÙÛŪüúùûūÝŸȲýÿȳŽž"
+msgid "ÄÅÁÀÂÃĀäåáàâãāăÇçÉÈÊËĒéèêëēğÍÌÎÏĪíìîïīıļÑñÖÓÒÔÕØŌöóòôõøōőÜÚÙÛŪüúùûūŞşţÝŸȲýÿȳŽž"
 msgstr ""
 
 #: ../handlers/utils.py:29
 msgid "Æ"
+msgstr ""
+
+#: ../database/catalog.py:52
+msgid "Ç"
+msgstr ""
+
+#: ../database/catalog.py:54
+msgid "É"
+msgstr ""
+
+#: ../database/catalog.py:55
+msgid "Ê"
+msgstr ""
+
+#: ../database/catalog.py:60
+msgid "Î"
 msgstr ""
 
 #: ../handlers/utils.py:32
@@ -1410,7 +1484,12 @@ msgid "ß"
 msgstr ""
 
 #: ../i18n/oracle.py:261
+#: ../database/catalog.py:51
 msgid "à"
+msgstr ""
+
+#: ../database/catalog.py:50
+msgid "â"
 msgstr ""
 
 #: ../i18n/oracle.py:231
@@ -1422,15 +1501,37 @@ msgid "æ"
 msgstr ""
 
 #: ../i18n/oracle.py:233
+#: ../database/catalog.py:53
 msgid "ç"
 msgstr ""
 
+#: ../database/catalog.py:58
+msgid "è"
+msgstr ""
+
+#: ../database/catalog.py:56
+msgid "é"
+msgstr ""
+
 #: ../i18n/oracle.py:234
+#: ../database/catalog.py:57
 msgid "ê"
+msgstr ""
+
+#: ../database/catalog.py:59
+msgid "ë"
 msgstr ""
 
 #: ../i18n/oracle.py:235
 msgid "í"
+msgstr ""
+
+#: ../database/catalog.py:61
+msgid "î"
+msgstr ""
+
+#: ../database/catalog.py:62
+msgid "ï"
 msgstr ""
 
 #: ../i18n/oracle.py:236
@@ -1441,15 +1542,28 @@ msgstr ""
 msgid "ó"
 msgstr ""
 
+#: ../database/catalog.py:63
+msgid "ô"
+msgstr ""
+
 #: ../i18n/oracle.py:237
 msgid "ö"
+msgstr ""
+
+#: ../database/catalog.py:65
+msgid "ù"
 msgstr ""
 
 #: ../i18n/oracle.py:240
 msgid "ú"
 msgstr ""
 
+#: ../database/catalog.py:64
+msgid "û"
+msgstr ""
+
 #: ../i18n/oracle.py:239
+#: ../database/catalog.py:66
 msgid "ü"
 msgstr ""
 

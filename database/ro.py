@@ -434,11 +434,13 @@ class ROGitDatabase(object):
         return self.get_blob(hash, cls)
 
 
-    def get_revisions(self, files, n=None):
+    def get_revisions(self, files, n=None, author_pattern=None):
         cmd = ['git', 'rev-list', '--pretty=format:%an%n%at%n%s']
         if n is not None:
-            cmd = cmd + ['-n', str(n)]
-        cmd = cmd + ['HEAD', '--'] + files
+            cmd += ['-n', str(n)]
+        if author_pattern is not None:
+            cmd += ['--author=%s' % author_pattern]
+        cmd += ['HEAD', '--'] + files
         data = self.send_subprocess(cmd)
 
         # Parse output

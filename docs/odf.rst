@@ -25,21 +25,21 @@ Here a python example to generate a letter::
     #!/usr/bin/env python
     # -*- coding: UTF-8 -*-
 
+    from itools.fs import lfs
     from itools.handlers import RWDatabase
     from itools.odf.odf import stl_to_odt, ODTFile
-    from itools.stl import stl
 
     namespace = {'firstname': 'Jean',
                  'lastname': 'Dupond'}
     # Load the model
-    rw_database = RWDatabase()
-    handler = rw_database('model_letter.odt')
+    rw_database = RWDatabase(fs=lfs)
+    handler = rw_database.get_handler('model_letter.odt', ODTFile)
     # Fill the odt file handler with the namespace dictionnary content.
     document = stl_to_odt(handler, namespace)
     # Save the letter
     handler = ODTFile(string=document)
     rw_database.set_handler('model_letter2.odt', handler)
-    rw_database.save_change()
+    rw_database.save_changes()
 
 
 

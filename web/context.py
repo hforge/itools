@@ -23,7 +23,6 @@ from base64 import decodestring, encodestring
 from copy import copy
 from datetime import datetime, timedelta
 from hashlib import sha224
-from thread import get_ident, allocate_lock
 from types import FunctionType, MethodType
 from urllib import quote, unquote
 from warnings import warn
@@ -973,35 +972,18 @@ class DELETE(RequestMethod):
 
 
 ###########################################################################
-# One context per thread
+# Keep the context globally
 ###########################################################################
-contexts = {}
-contexts_lock = allocate_lock()
+context = None
 
 
-def set_context(context):
-    ident = get_ident()
-
-    contexts_lock.acquire()
-    try:
-        contexts[ident] = context
-    finally:
-        contexts_lock.release()
+def set_context(ctx):
+    global context
+    context = ctx
 
 
 def get_context():
-    return contexts.get(get_ident())
-
-
-def del_context():
-    ident = get_ident()
-
-    contexts_lock.acquire()
-    try:
-        del contexts[ident]
-    finally:
-        contexts_lock.release()
-
+    return context
 
 
 #######################################################################

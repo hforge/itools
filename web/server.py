@@ -25,7 +25,7 @@ from itools.http import HTTPServer
 from itools.http import set_response
 from itools.i18n import init_language_selector
 from itools.log import log_error, log_warning, register_logger
-from context import Context, set_context, del_context, select_language
+from context import Context, set_context, select_language
 from context import WebLogger
 
 
@@ -120,7 +120,7 @@ class WebServer(HTTPServer):
             log_error('Failed to handle request', domain='itools.web')
             set_response(soup_message, 500)
         finally:
-            del_context()
+            set_context(None)
 
 
     def star_callback(self, soup_message, path):

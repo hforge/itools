@@ -38,6 +38,7 @@ from itools.http import get_type, Entity
 from itools.http import Cookie, SetCookieDataType
 from itools.http import ClientError, NotModified, Forbidden, NotFound, Conflict
 from itools.http import NotImplemented, MethodNotAllowed, Unauthorized
+from itools.http import set_response
 from itools.i18n import AcceptLanguageType, format_datetime, format_date
 from itools.i18n import format_number
 from itools.log import Logger, log_error, log_warning
@@ -52,9 +53,10 @@ class Context(thingy):
     user = None
     resource = None
     server = None
+    status = None # response status
 
 
-    def __init__(self, soup_message, path):
+    def init_context(self, soup_message, path):
         self.soup_message = soup_message
 
         # The request method
@@ -87,9 +89,6 @@ class Context(thingy):
             self.path = path
             self.view_name = None
 
-        # Form
-        self.body = self.load_body()
-
         # Cookies
         self.cookies = {}
 
@@ -116,7 +115,8 @@ class Context(thingy):
         return AcceptLanguageType.decode(accept_language)
 
 
-    def load_body(self):
+    @thingy_lazy_property
+    def body(self):
         # Case 1: nothing
         body = self.soup_message.get_body()
         if not body:
@@ -190,8 +190,7 @@ class Context(thingy):
         """
         # FIXME This method should give an error if the given resource is
         # not within the site root.
-        site_root = self.site_root
-        return '/%s' % site_root.get_pathto(resource)
+        return '/%s' % self.site_root.get_pathto(resource)
 
 
     #######################################################################
@@ -497,28 +496,76 @@ class Context(thingy):
     #######################################################################
     # HTTP methods
     #######################################################################
-    def http_get(self, server):
-        return GET.handle_request(server, self)
+    def find_site_root(self):
+        """This method may be overriden to support virtual hosting.
+        """
+        self.site_root = self.root
 
 
-    def http_head(self, server):
-        return HEAD.handle_request(server, self)
+    def handle_request(self, soup_message, path):
+        # (1) If path is null => 400 Bad Request
+        if path is None:
+            log_warning('Unexpected HTTP path (null)', domain='itools.web')
+            return set_response(soup_message, 400)
+
+        # (2) Initialize the context
+        # XXX This try/except can be removed if its body contains no bug
+        # anymore
+        try:
+            context = self()
+            context.init_context(soup_message, path)
+            # The authenticated user
+            context.authenticate()
+            # The Site Root
+            context.find_site_root()
+            context.site_root.before_traverse(context)  # Hook
+            # Keep the context
+            set_context(context)
+        except Exception:
+            log_error('Internal error', domain='itools.web')
+            return set_response(soup_message, 500)
+
+        # (3) Get the method that will handle the request
+        method_name = soup_message.get_method()
+        method = getattr(context, 'http_%s' % method_name.lower(), None)
+        # 501 Not Implemented
+        if method is None:
+            log_warning('Unexpected "%s" HTTP method' % method_name,
+                        domain='itools.web')
+            return set_response(soup_message, 501)
+
+        # (4) Pass control to the method
+        try:
+            method()
+        except Exception:
+            log_error('Failed to handle request', domain='itools.web')
+            set_response(soup_message, 500)
+        finally:
+            set_context(None)
 
 
-    def http_post(self, server):
-        return POST.handle_request(server, self)
+    def http_get(self):
+        return GET.handle_request(self)
 
 
-    def http_options(self, server):
-        return OPTIONS.handle_request(server, self)
+    def http_head(self):
+        return HEAD.handle_request(self)
 
 
-    def http_put(self, server):
-        return PUT.handle_request(server, self)
+    def http_post(self):
+        return POST.handle_request(self)
 
 
-    def http_delete(self, server):
-        return DELETE.handle_request(server, self)
+    def http_options(self):
+        return OPTIONS.handle_request(self)
+
+
+    def http_put(self):
+        return PUT.handle_request(self)
+
+
+    def http_delete(self):
+        return DELETE.handle_request(self)
 
 
 ###########################################################################
@@ -547,7 +594,7 @@ status2name = {
 class RequestMethod(object):
 
     @classmethod
-    def find_resource(cls, server, context):
+    def find_resource(cls, context):
         """Sets 'context.resource' to the requested resource if it exists.
 
         Otherwise sets 'context.status' to 404 (not found error) and
@@ -573,7 +620,7 @@ class RequestMethod(object):
 
 
     @classmethod
-    def find_view(cls, server, context):
+    def find_view(cls, context):
         query = context.uri.query
         context.view = context.resource.get_view(context.view_name, query)
         if context.view is None:
@@ -581,7 +628,7 @@ class RequestMethod(object):
 
 
     @classmethod
-    def check_access(cls, server, context):
+    def check_access(cls, context):
         """Tell whether the user is allowed to access the view on the
         resource.
         """
@@ -603,7 +650,7 @@ class RequestMethod(object):
 
 
     @classmethod
-    def check_method(cls, server, context, method_name=None):
+    def check_method(cls, context, method_name=None):
         if method_name is None:
             method_name = context.method
         # Get the method
@@ -616,32 +663,31 @@ class RequestMethod(object):
 
 
     @classmethod
-    def check_cache(cls, server, context):
+    def check_cache(cls, context):
         """Implement cache if your method supports it.
         Most methods don't, hence the default implementation.
         """
 
 
     @classmethod
-    def check_conditions(cls, server, context):
+    def check_conditions(cls, context):
         """Check conditions to match before the response can be processed:
         resource, state, request headers...
         """
-        pass
 
 
     @classmethod
-    def check_transaction(cls, server, context):
+    def check_transaction(cls, context):
         """Return True if your method is supposed to change the state.
         """
         raise NotImplementedError
 
 
     @classmethod
-    def commit_transaction(cls, server, context):
-        database = server.database
+    def commit_transaction(cls, context):
+        database = context.database
         # Check conditions are met
-        if cls.check_transaction(server, context) is False:
+        if cls.check_transaction(context) is False:
             database.abort_changes()
             return
 
@@ -649,7 +695,7 @@ class RequestMethod(object):
         try:
             database.save_changes()
         except Exception:
-            cls.internal_server_error(server, context)
+            cls.internal_server_error(context)
 
 
     @classmethod
@@ -668,29 +714,29 @@ class RequestMethod(object):
 
 
     @classmethod
-    def internal_server_error(cls, server, context):
+    def internal_server_error(cls, context):
         log_error('Internal Server Error', domain='itools.web')
         context.status = 500
-        context.entity = server.root.internal_server_error(context)
+        context.entity = context.root.internal_server_error(context)
 
 
     @classmethod
-    def handle_request(cls, server, context):
+    def handle_request(cls, context):
         root = context.site_root
 
         # (1) Find out the requested resource and view
         try:
             # The requested resource and view
-            cls.find_resource(server, context)
-            cls.find_view(server, context)
+            cls.find_resource(context)
+            cls.find_view(context)
             # Access Control
-            cls.check_access(server, context)
+            cls.check_access(context)
             # Check the request method is supported
-            cls.check_method(server, context)
+            cls.check_method(context)
             # Check the client's cache
-            cls.check_cache(server, context)
+            cls.check_cache(context)
             # Check pre-conditions
-            cls.check_conditions(server, context)
+            cls.check_conditions(context)
         except Unauthorized, error:
             status = error.code
             context.status = status
@@ -714,7 +760,7 @@ class RequestMethod(object):
             method = view.on_query_error
             context.query_error = error
         except Exception:
-            cls.internal_server_error(server, context)
+            cls.internal_server_error(context)
             method = None
         else:
             # GET, POST...
@@ -725,7 +771,7 @@ class RequestMethod(object):
             try:
                 context.entity = method(resource, context)
             except Exception:
-                cls.internal_server_error(server, context)
+                cls.internal_server_error(context)
             else:
                 # Ok: set status
                 if context.status is not None:
@@ -738,21 +784,21 @@ class RequestMethod(object):
                     context.status = 200
 
         # (4) Commit the transaction
-        cls.commit_transaction(server, context)
+        cls.commit_transaction(context)
 
         # (5) Build response, when postponed (useful for POST methods)
         if isinstance(context.entity, (FunctionType, MethodType)):
             try:
                 context.entity = context.entity(context.resource, context)
             except Exception:
-                cls.internal_server_error(server, context)
-            server.database.abort_changes()
+                cls.internal_server_error(context)
+            context.database.abort_changes()
 
         # (6) After Traverse hook
         try:
             context.site_root.after_traverse(context)
         except Exception:
-            cls.internal_server_error(server, context)
+            cls.internal_server_error(context)
             context.set_content_type('text/html', charset='UTF-8')
 
         # (7) Build and return the response
@@ -766,7 +812,7 @@ class GET(RequestMethod):
 
 
     @classmethod
-    def check_cache(cls, server, context):
+    def check_cache(cls, context):
         # 1. Get the resource's modification time
         resource = context.resource
         mtime = context.view.get_mtime(resource)
@@ -786,7 +832,7 @@ class GET(RequestMethod):
 
 
     @classmethod
-    def check_transaction(cls, server, context):
+    def check_transaction(cls, context):
         # GET is not expected to change the state
         if getattr(context, 'commit', False) is True:
             # FIXME To be removed one day.
@@ -817,8 +863,8 @@ class GET(RequestMethod):
 class HEAD(GET):
 
     @classmethod
-    def check_method(cls, server, context):
-        GET.check_method(server, context, method_name='GET')
+    def check_method(cls, context):
+        GET.check_method(context, method_name='GET')
 
 
 
@@ -828,17 +874,17 @@ class POST(RequestMethod):
 
 
     @classmethod
-    def check_method(cls, server, context):
+    def check_method(cls, context):
         # If there was an error, the method name always will be 'GET'
         if context.status is None:
             method_name = 'POST'
         else:
             method_name = 'GET'
-        RequestMethod.check_method(server, context, method_name=method_name)
+        RequestMethod.check_method(context, method_name=method_name)
 
 
     @classmethod
-    def check_transaction(cls, server, context):
+    def check_transaction(cls, context):
         return getattr(context, 'commit', True) and context.status < 400
 
 
@@ -846,7 +892,7 @@ class POST(RequestMethod):
 class OPTIONS(RequestMethod):
 
     @classmethod
-    def handle_request(cls, server, context):
+    def handle_request(cls, context):
         root = context.site_root
 
         known_methods = ['GET', 'HEAD', 'POST', 'OPTIONS', 'PUT', 'DELETE']
@@ -854,8 +900,8 @@ class OPTIONS(RequestMethod):
 
         # (1) Find out the requested resource and view
         try:
-            cls.find_resource(server, context)
-            cls.find_view(server, context)
+            cls.find_resource(context)
+            cls.find_view(context)
         except ClientError, error:
             status = error.code
             context.status = status
@@ -893,7 +939,7 @@ class OPTIONS(RequestMethod):
         try:
             context.site_root.after_traverse(context)
         except Exception:
-            cls.internal_server_error(server, context)
+            cls.internal_server_error(context)
 
         # (6) Build and return the response
         context.soup_message.set_status(context.status)
@@ -910,12 +956,12 @@ class PUT(RequestMethod):
 
 
     @classmethod
-    def find_view(cls, server, context):
-        find_view_by_method(server, context)
+    def find_view(cls, context):
+        find_view_by_method(context)
 
 
     @classmethod
-    def check_conditions(cls, server, context):
+    def check_conditions(cls, context):
         """The resource is not locked, the request must have a correct
            "If-Unmodified-Since" header.
         """
@@ -928,7 +974,7 @@ class PUT(RequestMethod):
 
 
     @classmethod
-    def check_transaction(cls, server, context):
+    def check_transaction(cls, context):
         return getattr(context, 'commit', True) and context.status < 400
 
 
@@ -951,13 +997,13 @@ class DELETE(RequestMethod):
 
 
     @classmethod
-    def find_view(cls, server, context):
+    def find_view(cls, context):
         # Look for the "delete" view
-        return find_view_by_method(server, context)
+        return find_view_by_method(context)
 
 
     @classmethod
-    def check_conditions(cls, server, context):
+    def check_conditions(cls, context):
         resource = context.resource
         parent = resource.parent
         # The root cannot delete itself
@@ -966,9 +1012,8 @@ class DELETE(RequestMethod):
 
 
     @classmethod
-    def check_transaction(cls, server, context):
+    def check_transaction(cls, context):
         return getattr(context, 'commit', True) and context.status < 400
-
 
 
 

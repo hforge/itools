@@ -31,7 +31,8 @@ from warnings import warn
 from pytz import timezone
 
 # Import from itools
-from itools.core import freeze, lazy, local_tz, fixed_offset
+from itools.core import fixed_offset, local_tz
+from itools.core import freeze, thingy, thingy_lazy_property
 from itools.datatypes import String, HTTPDate
 from itools.http import get_type, Entity
 from itools.http import Cookie, SetCookieDataType
@@ -46,7 +47,7 @@ from messages import ERROR
 from views import BaseView
 
 
-class Context(object):
+class Context(thingy):
 
     user = None
     resource = None
@@ -102,12 +103,12 @@ class Context(object):
         self.scripts = []
 
 
-    @lazy
+    @thingy_lazy_property
     def timestamp(self):
         return datetime.utcnow().replace(tzinfo=fixed_offset(0))
 
 
-    @lazy
+    @thingy_lazy_property
     def accept_language(self):
         accept_language = self.soup_message.get_header('accept-language')
         if accept_language is None:

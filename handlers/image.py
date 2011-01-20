@@ -20,7 +20,7 @@ from cStringIO import StringIO
 
 # Import from the Python Image Library
 try:
-    from PIL import Image as PILImage
+    from PIL import Image as PILImage, ImageOps
 except ImportError:
     PILImage = None
 
@@ -79,7 +79,7 @@ class Image(File):
         return self.size
 
 
-    def get_thumbnail(self, width, height, format="jpeg"):
+    def get_thumbnail(self, width, height, format="jpeg", strict=False):
         format = format.lower()
 
         # Get the handle
@@ -88,21 +88,21 @@ class Image(File):
             return None, None
 
         # Cache hit
+        key = (width, height, format, strict)
         thumbnails = self.thumbnails
-        key = (width, height, format)
         if key in thumbnails:
             return thumbnails[key]
 
         # Cache miss
-        value = self._get_thumbnail(handle, width, height, format)
+        value = self._get_thumbnail(handle, width, height, format, strict)
         thumbnails[key] = value
         return value
 
 
-    def _get_thumbnail(self, handle, width, height, format):
+    def _get_thumbnail(self, handle, width, height, format, strict):
         # Do not create the thumbnail if not needed
         image_width, image_height = self.size
-        if width >= image_width and height >= image_height:
+        if not strict and width >= image_width and height >= image_height:
             return self.to_str(), format
 
         # Convert to RGBA
@@ -112,9 +112,14 @@ class Image(File):
             return None, None
 
         # Make the thumbnail
-        # TODO Improve the quality of the thumbnails by cropping?
         try:
-            im.thumbnail((width, height), PILImage.ANTIALIAS)
+            if not strict:
+                im.thumbnail((width, height), PILImage.ANTIALIAS)
+            else:
+                # FIXME We should wrap too smal image inside an image with the
+                # right size
+                im = ImageOps.fit(im, (width, height), PILImage.ANTIALIAS, 0,
+                                  (.5, .5))
         except IOError:
             # PIL does not support interlaced PNG files, raises IOError
             return None, None

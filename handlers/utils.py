@@ -15,6 +15,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from the Standard Library
+import unicodedata
+
+
 
 src = (ur"""ÄÅÁÀÂÃĀäåáàâãāăÇçÉÈÊËĒéèêëēğÍÌÎÏĪíìîïīıļÑñÖÓÒÔÕØŌöóòôõøōőÜÚÙÛŪüúùûū"""
        ur"""ŞşţÝŸȲýÿȳŽž""")
@@ -24,7 +28,7 @@ dst = (ur"""AAAAAAAaaaaaaaaCcEEEEEeeeeegIIIIIiiiiiilNnOOOOOOOooooooooUUUUUuuuuu"
 transmap = {}
 for i in range(len(src)):
     a, b = src[i], dst[i]
-    transmap[ord(a)] = ord(b)
+    transmap[ord(a)] = b
 transmap[ord(u'æ')] = u'ae'
 transmap[ord(u'Æ')] = u'AE'
 transmap[ord(u'œ')] = u'oe'
@@ -40,6 +44,9 @@ def checkid(id):
     """
     if isinstance(id, str):
         id = unicode(id, 'utf8')
+
+    # Normalize unicode
+    id = unicodedata.normalize('NFKC', id)
 
     # Strip diacritics
     id = id.strip().translate(transmap)

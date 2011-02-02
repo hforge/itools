@@ -32,4 +32,4 @@ def get_handler_class_by_mimetype(mimetype):
         if main_type in handler_classes:
             return handler_classes[main_type]
 
-    raise ValueError
+    raise ValueError, mimetype

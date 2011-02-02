@@ -28,6 +28,7 @@ from xapian import DatabaseError, DatabaseOpeningError
 from itools.core import LRUCache, freeze, lazy, send_subprocess
 from itools.fs import lfs
 from itools.handlers import Folder, get_handler_class_by_mimetype
+from itools.log import log_warning
 from itools.uri import Path
 from catalog import Catalog
 from registry import get_register_fields
@@ -241,11 +242,12 @@ class ROGitDatabase(object):
         try:
             return get_handler_class_by_mimetype(mimetype)
         except ValueError:
+            log_warning('unknown handler class "{0}"'.format(mimetype))
             if fs.is_file(key):
-                from file import File
+                from itools.handlers import File
                 return File
             elif fs.is_folder(key):
-                from folder import Folder
+                from itools.handlers import Folder
                 return Folder
 
         raise ValueError

@@ -55,7 +55,8 @@ class WebServer(HTTPServer):
 
 
     def set_context(self, path, context):
-        context = context(server=self, root=self.root)
+        context = context(server=self, mount_path=path)
+        context.root = self.root
         self.add_handler(path, context.handle_request)
         return context
 

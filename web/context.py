@@ -56,8 +56,9 @@ class Context(thingy):
     status = None # response status
 
 
-    def init_context(self, soup_message, path):
-        self.soup_message = soup_message
+    def init_context(self):
+        soup_message = self.soup_message
+        path = self.path
 
         # The request method
         self.method = soup_message.get_method()
@@ -100,6 +101,12 @@ class Context(thingy):
         # attribute lets the interface to add those resources.
         self.styles = []
         self.scripts = []
+
+        # The authenticated user
+        self.authenticate()
+        # The Site Root
+        self.find_site_root()
+        self.site_root.before_traverse(self)  # Hook
 
 
     @thingy_lazy_property
@@ -508,22 +515,10 @@ class Context(thingy):
             log_warning('Unexpected HTTP path (null)', domain='itools.web')
             return set_response(soup_message, 400)
 
-        # (2) Initialize the context
-        # XXX This try/except can be removed if its body contains no bug
-        # anymore
-        try:
-            context = self()
-            context.init_context(soup_message, path)
-            # The authenticated user
-            context.authenticate()
-            # The Site Root
-            context.find_site_root()
-            context.site_root.before_traverse(context)  # Hook
-            # Keep the context
-            set_context(context)
-        except Exception:
-            log_error('Internal error', domain='itools.web')
-            return set_response(soup_message, 500)
+        # (2) Attach to the soup message and path
+        context = self()
+        context.soup_message = soup_message
+        context.path = path
 
         # (3) Get the method that will handle the request
         method_name = soup_message.get_method()
@@ -534,37 +529,44 @@ class Context(thingy):
                         domain='itools.web')
             return set_response(soup_message, 501)
 
-        # (4) Pass control to the method
+        # (4) Go
+        set_context(context)
         try:
             method()
-        except Exception:
-            log_error('Failed to handle request', domain='itools.web')
-            set_response(soup_message, 500)
+        except StandardError:
+            log_error('Internal error', domain='itools.web')
+            return set_response(soup_message, 500)
         finally:
             set_context(None)
 
 
     def http_get(self):
+        self.init_context()
         return GET.handle_request(self)
 
 
     def http_head(self):
+        self.init_context()
         return HEAD.handle_request(self)
 
 
     def http_post(self):
+        self.init_context()
         return POST.handle_request(self)
 
 
     def http_options(self):
+        self.init_context()
         return OPTIONS.handle_request(self)
 
 
     def http_put(self):
+        self.init_context()
         return PUT.handle_request(self)
 
 
     def http_delete(self):
+        self.init_context()
         return DELETE.handle_request(self)
 
 

@@ -24,6 +24,7 @@ from exceptions import FormError
 from messages import INFO, ERROR, MSG_MISSING_OR_INVALID
 from resources import Resource, RootResource
 from server import WebServer
+from static import StaticContext
 from views import BaseView, BaseForm, STLView, STLForm
 
 __all__ = [
@@ -32,6 +33,7 @@ __all__ = [
     'WebLogger',
     # Context
     'Context',
+    'StaticContext',
     'set_context',
     'get_context',
     'select_language',

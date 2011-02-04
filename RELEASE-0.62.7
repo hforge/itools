@@ -1,0 +1,58 @@
+itools 0.62.7 (2011/02/XX)
+==========================
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.abnf             itools.i18n             itools.rss
+  itools.core             itools.ical             itools.srx
+  itools.csv              itools.log              itools.stl
+  itools.database         itools.loop             itools.tmx
+  itools.datatypes        itools.odf              itools.uri
+  itools.fs               itools.office           itools.web
+  itools.gettext          itools.pdf              itools.workflow
+  itools.git              itools.pkg              itools.xliff
+  itools.handlers         itools.python           itools.xml
+  itools.html             itools.relaxng          itools.xmlfile
+  itools.http             itools.rest
+
+This release has some minor features and bug fixes.
+
+itools.database:
+- new utility function 'pprint_query'
+- now the 'get_revisions' method can filter by author and message
+- fix the default values in the 'get_handler_class' method
+
+itools.datatypes:
+- fix 'enumerate_get_namespace' when value is a Path
+
+itools.handlers:
+- fix the 'checkid' function for some cases
+
+itools.web:
+- define the expiration time of the authenticatation cookie in the server
+  class, change the default back to 0 (does not expire)
+
+Other:
+- documentation, update the ODF chapter
+- update the French translation
+
+
+Resources
+---------
+
+Download
+http://download.hforge.org/itools/0.62/itools-0.62.7.tar.gz
+
+Home
+http://www.hforge.org/itools/
+
+Documentation
+http://www.hforge.org/itools/docs
+
+Mailing list
+http://www.hforge.org/community/
+http://archives.hforge.org/index.cgi?list=itools
+
+Bug Tracker
+http://bugs.hforge.org/

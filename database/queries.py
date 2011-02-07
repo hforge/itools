@@ -28,7 +28,7 @@ To build a query:
 """
 
 # Import from the Standard Library
-from pprint import PrettyPrinter, _recursion, _sorted
+from pprint import PrettyPrinter, _recursion
 
 
 class BaseQuery(object):

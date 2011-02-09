@@ -420,28 +420,44 @@ def process(events, start, end, stack, re_stack, encoding, skip_events):
 ########################################################################
 css_uri_expr = compile (r"url\(([a-zA-Z0-9\./%\-\_]*/%3[bB]{1}download)\);")
 
-def set_prefix(stream, prefix, ns_uri=xhtml_uri):
+def set_prefix(stream, prefix, ns_uri=xhtml_uri, uri=None):
     if isinstance(prefix, str):
         prefix = Path(prefix)
-    rewrite = partial(resolve_pointer, prefix)
+
+    ref = None
+    if uri:
+        ref = Reference(scheme=uri.scheme, authority=uri.authority,
+                        path='/', query={})
+    rewrite = partial(resolve_pointer, prefix, ref)
 
     return rewrite_uris(stream, rewrite, ns_uri)
 
 
 
-def resolve_pointer(offset, value):
+def resolve_pointer(offset, reference, value):
     # FIXME Exception for STL
     if value[:2] == '${':
         return value
 
     # Absolute URI or path
     uri = get_reference(value)
-    if uri.scheme or uri.authority or uri.path.is_absolute():
+    if uri.scheme or uri.authority:
         return value
 
     # Resolve Path
-    path = offset.resolve(uri.path)
-    value = Reference('', '', path, uri.query.copy(), uri.fragment)
+    if uri.path.is_absolute():
+        if reference is None:
+            return value
+        # Do not call resolve with absolute path
+        path = uri.path
+    else:
+        path = offset.resolve(uri.path)
+
+    scheme = authority = ''
+    if reference:
+        scheme = reference.scheme
+        authority = reference.authority
+    value = Reference(scheme, authority, path, uri.query.copy(), uri.fragment)
     return str(value)
 
 

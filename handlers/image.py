@@ -17,6 +17,7 @@
 
 # Import from the Standard Library
 from cStringIO import StringIO
+from math import floor
 
 # Import from the Python Image Library
 try:
@@ -50,7 +51,8 @@ class Image(File):
         else:
             self.size = (0, 0)
 
-        # A cache for thumbnails, where the key is the size and the format,
+        # A cache for thumbnails, where the key is the size, the format and
+        # strict (the xxx)
         # and the value is the thumbnail.
         self.thumbnails = {}
 
@@ -116,10 +118,27 @@ class Image(File):
             if not strict:
                 im.thumbnail((width, height), PILImage.ANTIALIAS)
             else:
-                # FIXME We should wrap too smal image inside an image with the
-                # right size
-                im = ImageOps.fit(im, (width, height), PILImage.ANTIALIAS, 0,
-                                  (.5, .5))
+                if image_width < width or image_height < height:
+                    # If image width or image_height is smaller than
+                    # thumb size, create a thumb and wrap it into a background
+                    # of required size
+                    if image_width < width and image_height < height:
+                        w, h = image_width, image_height
+                    else:
+                        if image_width < width:
+                            w = image_width * height / float(image_height)
+                            w = int(floor(w))
+                            h = height
+                        else:
+                            w = width
+                            h = image_height * width / float(image_width)
+                            h = int(floor(h))
+                        im.thumbnail((w, h), PILImage.ANTIALIAS)
+                    background = PILImage.new('RGBA', (width, height), (255, 255, 255, 0))
+                    background.paste(im, ((width - w) / 2, (height - h) / 2))
+                    im = background
+                else:
+                    im = ImageOps.fit(im, (width, height), PILImage.ANTIALIAS, 0, (.5, .5))
         except IOError:
             # PIL does not support interlaced PNG files, raises IOError
             return None, None

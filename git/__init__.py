@@ -18,6 +18,11 @@
 from git import describe, get_branch_name, get_filenames, get_metadata
 from git import get_revisions, is_available
 
+try:
+    from _libgit import WorkTree
+except ImportError:
+    from _git import WorkTree
+
 
 
 __all__ = [
@@ -27,4 +32,5 @@ __all__ = [
     'get_metadata',
     'get_revisions',
     'is_available',
-    ]
+    # New API (uses libgit2 if available)
+    'WorkTree']

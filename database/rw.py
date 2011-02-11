@@ -24,7 +24,6 @@ from subprocess import CalledProcessError
 
 # Import from itools
 from itools.core import get_pipe, lazy, send_subprocess
-from itools.datatypes import ISODateTime
 from itools.fs import lfs
 from itools.handlers import Folder
 from catalog import Catalog, make_catalog
@@ -477,18 +476,14 @@ class GitDatabase(ROGitDatabase):
 
         # 2. Build the 'git commit' command
         git_author, git_date, git_msg, docs_to_index, docs_to_unindex = data
-        git_commit = ['git', 'commit', '-q', '-m', git_msg or 'no comment']
-        if git_author:
-            git_commit.append('--author=%s' % git_author)
-        if git_date:
-            git_date = ISODateTime.encode(git_date)
-            git_commit.append('--date=%s' % git_date)
+        git_msg = git_msg or 'no comment'
+        git_all = False
 
-        git_add = None
+        git_add = []
         if self.removed or len(changed) > 10:
             # Case 1: something removed or many things changed, then make
             # an automatic commit (--all)
-            git_commit.append('-a')
+            git_all = True
             if added:
                 git_add = list(added)
         elif added:
@@ -508,16 +503,8 @@ class GitDatabase(ROGitDatabase):
         self.removed = False
 
         # 4. Call git
-        if git_add:
-            self.send_subprocess(['git', 'add'] + git_add)
-
-        try:
-            self.send_subprocess(git_commit)
-        except CalledProcessError, excp:
-            # Avoid an exception for the 'nothing to commit' case
-            # FIXME Not reliable, we may catch other cases
-            if excp.returncode != 1:
-                raise
+        self.worktree.git_add(*git_add)
+        self.worktree.git_commit(git_msg, git_author, git_date, True, git_all)
 
         # 5. Catalog
         catalog = self.catalog

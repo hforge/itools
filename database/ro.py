@@ -27,6 +27,7 @@ from xapian import DatabaseError, DatabaseOpeningError
 # Import from itools
 from itools.core import LRUCache, freeze, lazy, send_subprocess
 from itools.fs import lfs
+from itools.git import WorkTree
 from itools.handlers import Folder, get_handler_class_by_mimetype
 from itools.log import log_warning
 from itools.uri import Path
@@ -60,10 +61,13 @@ class ROGitDatabase(object):
         # 3. Initialize the database, but chrooted
         self.fs = lfs.open(self.path_data)
 
-        # 4. A mapping from key to handler
+        # 4. New interface to Git
+        self.worktree = WorkTree(self.path_data)
+
+        # 5. A mapping from key to handler
         self.cache = LRUCache(size_min, size_max, automatic=False)
 
-        # 5. The git cache
+        # 6. The git cache
         self.git_cache = LRUCache(900, 1100)
 
 

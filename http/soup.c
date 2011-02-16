@@ -123,18 +123,6 @@ typedef struct
   SoupMessage * s_msg;
 } PyMessage;
 
-static PyObject *
-PyMessage_new (PyTypeObject * type, PyObject * args, PyObject * kwdict)
-{
-  PyMessage *self;
-
-  self = (PyMessage *) type->tp_alloc (type, 0);
-  if (self != NULL)
-    self->s_msg = NULL;
-
-  return (PyObject *) self;
-}
-
 
 static void
 PyMessage_dealloc (PyMessage * self)
@@ -405,7 +393,7 @@ static PyTypeObject PyMessageType = {
   0,                            /* tp_dictoffset */
   (initproc) PyMessage_init,    /* tp_init */
   0,                            /* tp_alloc */
-  (newfunc) PyMessage_new,      /* tp_new */
+  0,                            /* tp_new */
 };
 
 
@@ -594,7 +582,7 @@ static PyTypeObject PyServerType = {
   0,                            /* tp_dictoffset */
   (initproc) PyServerType_init, /* tp_init */
   0,                            /* tp_alloc */
-  PyType_GenericNew,            /* tp_new */
+  0,                            /* tp_new */
 };
 
 
@@ -625,12 +613,14 @@ initsoup (void)
     return;
 
   /* Server Type */
+  PyServerType.tp_new = PyType_GenericNew;
   if (PyType_Ready (&PyServerType) != 0)
     return;
   Py_INCREF (&PyServerType);
   PyModule_AddObject (module, "SoupServer", (PyObject *) & PyServerType);
 
   /* Message Type */
+  PyMessageType.tp_new = PyType_GenericNew;
   if (PyType_Ready (&PyMessageType) != 0)
     return;
   Py_INCREF (&PyMessageType);

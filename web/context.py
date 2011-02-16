@@ -354,8 +354,8 @@ class Context(object):
     def del_cookie(self, name):
         self.cookies[name] = None
         # libsoup
-        expires = 'Wed, 31-Dec-97 23:59:59 GMT'
-        cookie = Cookie('deleted', expires=expires, max_age='0')
+        expires = 'Thu, 01-Jan-1970 00:00:01 GMT'
+        cookie = Cookie('', expires=expires)
         cookie = SetCookieDataType.encode({name: cookie})
         self.soup_message.append_header('Set-Cookie', cookie)
 

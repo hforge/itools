@@ -174,7 +174,9 @@ def setup(ext_modules=freeze([])):
     config = get_config()
 
     # Initialize variables
-    package_name = config.get_value('name')
+    package_name = config.get_value('package_name')
+    if package_name is None:
+        package_name = config.get_value('name')
     packages = [package_name]
     package_data = {package_name: []}
 

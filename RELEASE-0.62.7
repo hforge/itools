@@ -1,4 +1,4 @@
-itools 0.62.7 (2011/02/XX)
+itools 0.62.7 (2011/02/17)
 ==========================
 
 itools is a Python library, it groups a number of packages into a single
@@ -24,14 +24,15 @@ itools.database:
 - fix the default values in the 'get_handler_class' method
 
 itools.datatypes:
-- fix 'enumerate_get_namespace' when value is a Path
+- fix 'enumerate_get_namespace' when value is a Path object
 
 itools.handlers:
 - fix the 'checkid' function for some cases
 
 itools.web:
-- define the expiration time of the authenticatation cookie in the server
-  class, change the default back to 0 (does not expire)
+- define the expiration time of the authenticatation cookie in the
+  server class, change the default back to 0 (does not expire)
+- fix 'Context.del_cookie' for some browsers, like Firefox 4 (#1155)
 
 Other:
 - documentation, update the ODF chapter

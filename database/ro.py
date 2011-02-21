@@ -35,6 +35,11 @@ from registry import get_register_fields
 
 
 
+class ReadonlyError(StandardError):
+    pass
+
+
+
 class ROGitDatabase(object):
 
     def __init__(self, path, size_min=4800, size_max=5200):
@@ -139,7 +144,7 @@ class ROGitDatabase(object):
     def _abort_changes(self):
         """To be called to abandon the transaction.
         """
-        raise NotImplementedError
+        raise ReadonlyError
 
 
     def _cleanup(self):
@@ -304,23 +309,42 @@ class ROGitDatabase(object):
         """Report a modification of the key/handler to the database.  We must
         pass the handler because of phantoms.
         """
-        raise NotImplementedError, 'cannot set handler'
+        raise ReadonlyError, 'cannot set handler'
 
 
     def set_handler(self, key, handler):
-        raise NotImplementedError, 'cannot set handler'
+        raise ReadonlyError, 'cannot set handler'
 
 
     def del_handler(self, key):
-        raise NotImplementedError, 'cannot del handler'
+        raise ReadonlyError, 'cannot del handler'
 
 
     def copy_handler(self, source, target):
-        raise NotImplementedError, 'cannot copy handler'
+        raise ReadonlyError, 'cannot copy handler'
 
 
     def move_handler(self, source, target):
-        raise NotImplementedError, 'cannot move handler'
+        raise ReadonlyError, 'cannot move handler'
+
+
+    #######################################################################
+    # Layer 1: resources
+    #######################################################################
+    def remove_resource(self, resource):
+         raise ReadonlyError
+
+
+    def add_resource(self, resource):
+         raise ReadonlyError
+
+
+    def change_resource(self, resource):
+         raise ReadonlyError
+
+
+    def move_resource(self, source, new_path):
+         raise ReadonlyError
 
 
     def save_changes(self):

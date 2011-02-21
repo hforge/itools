@@ -20,6 +20,7 @@ from copy import deepcopy
 
 # Import from itools
 from itools.core import freeze
+from itools.database import ReadonlyError
 from itools.datatypes import Enumerate, String
 from itools.gettext import MSG
 from itools.stl import stl
@@ -211,7 +212,12 @@ class BaseForm(BaseView):
         if method is None:
             msg = "the '%s' method is not defined"
             raise NotImplementedError, msg % context.form_action
-        goto = method(resource, context, form)
+        try:
+            goto = method(resource, context, form)
+        except ReadonlyError:
+            context.message = MSG('This website is under maintenance. '
+                                  'Please try again later.')
+            return self.GET
 
         # (4) Return
         if goto is None:
@@ -292,7 +298,8 @@ class STLForm(STLView, BaseForm):
                         value = datatype.get_namespace(None)
                     else:
                         generic_datatype = String(multilingual=is_multilingual)
-                        value = context.get_form_value(name, type=generic_datatype)
+                        value = context.get_form_value(name,
+                                                       type=generic_datatype)
                 else:
                     if issubclass(datatype, Enumerate):
                         value = datatype.get_namespace(value)

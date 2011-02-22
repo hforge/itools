@@ -74,6 +74,8 @@ class Resource(object):
 
 
     def get_pathto(self, resource):
+        # XXX brain.abspath is the canonical path
+        # not the possible virtual path
         return self.get_abspath().get_pathto(resource.abspath)
 
 

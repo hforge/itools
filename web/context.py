@@ -33,7 +33,8 @@ from itools.core import freeze, lazy, local_tz, utc
 from itools.datatypes import String, HTTPDate
 from itools.http import get_type, Entity
 from itools.http import Cookie, SetCookieDataType
-from itools.i18n import AcceptLanguageType, format_datetime
+from itools.i18n import AcceptLanguageType, format_datetime, format_date
+from itools.i18n import format_number
 from itools.log import Logger
 from itools.log import log_warning
 from itools.uri import decode_query, get_reference, Path
@@ -377,7 +378,17 @@ class Context(object):
             datetime = tzinfo.localize(datetime)
 
         # Ok
-        return format_datetime(datetime, self.accept_language)
+        return format_datetime(datetime, accept=self.accept_language)
+
+
+    def format_date(self, date):
+        return format_date(date, accept=self.accept_language)
+
+
+    def format_number(self, number, places=2, curr='', pos=u'', neg=u'-',
+            trailneg=u""):
+        return format_number(number, places=places, curr=curr, pos=pos,
+                neg=neg, trailneg=trailneg, accept=self.accept_language)
 
 
     def agent_is_a_robot(self):

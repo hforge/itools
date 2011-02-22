@@ -215,8 +215,8 @@ class BaseForm(BaseView):
         try:
             goto = method(resource, context, form)
         except ReadonlyError:
-            context.message = MSG('This website is under maintenance. '
-                                  'Please try again later.')
+            context.message = ERROR('This website is under maintenance. '
+                                    'Please try again later.')
             return self.GET
 
         # (4) Return

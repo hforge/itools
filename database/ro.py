@@ -464,7 +464,7 @@ class ROGitDatabase(object):
         return self.get_blob(hash, cls)
 
 
-    def get_revisions(self, files, n=None, author_pattern=None,
+    def get_revisions(self, files=None, n=None, author_pattern=None,
                       grep_pattern=None):
         return self.worktree.git_log(files, n, author_pattern, grep_pattern)
 

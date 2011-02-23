@@ -14,8 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from the Standard Library
+from datetime import datetime
+
 # Import from pygit2
-from pygit2 import Repository
+from pygit2 import Repository, GIT_SORT_TIME, GIT_SORT_REVERSE
 
 # Import from itools
 from itools.fs import lfs
@@ -50,3 +53,39 @@ class WorkTree(_git.WorkTree):
                 index.add(path, 0)
             index.write()
             self.timestamp = lfs.get_mtime(self.index_path)
+
+
+    def git_log(self, files=None, n=None, author=None, grep=None,
+                reverse=False):
+        # Not implemented
+        if files or author or grep:
+            proxy = super(WorkTree, self)
+            return proxy.git_log(files, n, author, grep, reverse)
+
+        # Get the sha
+        repo_path = '%s/.git' % self.path
+        ref = open('%s/HEAD' % repo_path).read().split()[-1]
+        sha = open('%s/%s' % (repo_path, ref)).read().strip()
+
+        # Sort
+        sort = GIT_SORT_TIME
+        if reverse is True:
+            sort |= GIT_SORT_REVERSE
+
+        # Go
+        commits = []
+        for commit in self.repo.walk(sha, GIT_SORT_TIME):
+            ts = commit.commit_time
+            commits.append(
+                {'revision': commit.sha,             # commit
+                 'username': commit.author[0],       # author name
+                 'date': datetime.fromtimestamp(ts), # author date
+                 'message': commit.message_short,    # subject
+                })
+            if n is not None:
+                n -= 1
+                if n == 0:
+                    break
+
+        # Ok
+        return commits

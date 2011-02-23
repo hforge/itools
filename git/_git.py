@@ -84,12 +84,12 @@ class WorkTree(object):
         data = self._send_subprocess(cmd)
 
         # 3. Parse output
-        revisions = []
+        commits = []
         lines = data.splitlines()
         for idx in range(len(lines) / 4):
             base = idx * 4
             ts = int(lines[base+2])
-            revisions.append(
+            commits.append(
                 {'revision': lines[base].split()[1], # commit
                  'username': lines[base+1],          # author name
                  'date': datetime.fromtimestamp(ts), # author date
@@ -97,4 +97,4 @@ class WorkTree(object):
                 })
 
         # Ok
-        return revisions
+        return commits

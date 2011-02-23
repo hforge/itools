@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from datetime import datetime
 from subprocess import CalledProcessError
 
 # Import from itools
@@ -60,3 +61,40 @@ class WorkTree(object):
             # FIXME Not reliable, we may catch other cases
             if excp.returncode != 1:
                 raise
+
+
+    def git_log(self, files=None, n=None, author=None, grep=None,
+                reverse=False):
+        # 1. Build the git command
+        cmd = ['git', 'rev-list', '--pretty=format:%an%n%at%n%s']
+        if n is not None:
+            cmd += ['-n', str(n)]
+        if author:
+            cmd += ['--author=%s' % author]
+        if grep:
+            cmd += ['--grep=%s' % grep]
+        if reverse:
+            cmd.append('--reverse')
+        cmd.append('HEAD')
+        if files:
+            cmd.append('--')
+            cmd.extend(files)
+
+        # 2. Run
+        data = self._send_subprocess(cmd)
+
+        # 3. Parse output
+        revisions = []
+        lines = data.splitlines()
+        for idx in range(len(lines) / 4):
+            base = idx * 4
+            ts = int(lines[base+2])
+            revisions.append(
+                {'revision': lines[base].split()[1], # commit
+                 'username': lines[base+1],          # author name
+                 'date': datetime.fromtimestamp(ts), # author date
+                 'message': lines[base+3],           # subject
+                })
+
+        # Ok
+        return revisions

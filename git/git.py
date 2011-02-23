@@ -18,7 +18,7 @@
 from datetime import datetime
 
 # Import from itools
-from itools.core import freeze, get_pipe
+from itools.core import get_pipe
 
 
 def is_available():
@@ -113,12 +113,3 @@ def describe(match=None, cwd=None):
         return None
     tag, n, commit = data.rsplit('-', 2)
     return tag, int(n), commit
-
-
-
-def get_revisions(files=freeze([]), cwd=None):
-    command = ['git', 'rev-list', 'HEAD', '--'] + files
-    data = get_pipe(command, cwd=cwd)
-
-    return [ x.rstrip() for x in data.splitlines() ]
-

@@ -50,7 +50,7 @@ except ImportError:
 import itools
 from itools.core import merge_dicts
 from itools.fs import lfs
-from itools.git import git
+from itools.git import git, WorkTree
 
 
 # Define list of problems
@@ -460,12 +460,13 @@ def create_graph():
     tmp_directory = '%s/ipkg_quality.git' % mkdtemp()
     call(['git', 'clone',  cwd, tmp_directory])
     chdir(tmp_directory)
+    worktree = WorkTree(tmp_directory)
     # First step: we create a list of statistics
     statistics = {}
-    commit_ids = git.get_revisions()
-    commit_ids.reverse()
-    print 'Script will analyse %s commits.' % len(commit_ids)
-    for commit_id in commit_ids:
+    commits = worktree.git_log(reverse=True)
+    print 'Script will analyse %s commits.' % len(commits)
+    for commit in commits:
+        commit_id = commit['revision']
         # We move to a given commit
         call(['git', 'reset', '--hard', commit_id])
         # Print script evolution

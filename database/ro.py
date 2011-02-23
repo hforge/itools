@@ -466,30 +466,7 @@ class ROGitDatabase(object):
 
     def get_revisions(self, files, n=None, author_pattern=None,
                       grep_pattern=None):
-        cmd = ['git', 'rev-list', '--pretty=format:%an%n%at%n%s']
-        if n is not None:
-            cmd += ['-n', str(n)]
-        if author_pattern is not None:
-            cmd += ['--author=%s' % author_pattern]
-        if grep_pattern is not None:
-            cmd += ['--grep=%s' % grep_pattern]
-        cmd += ['HEAD', '--'] + files
-        data = self.send_subprocess(cmd)
-
-        # Parse output
-        revisions = []
-        lines = data.splitlines()
-        for idx in range(len(lines) / 4):
-            base = idx * 4
-            ts = int(lines[base+2])
-            revisions.append(
-                {'revision': lines[base].split()[1], # commit
-                 'username': lines[base+1],          # author name
-                 'date': datetime.fromtimestamp(ts), # author date
-                 'message': lines[base+3],           # subject
-                })
-        # Ok
-        return revisions
+        return self.worktree.git_log(files, n, author_pattern, grep_pattern)
 
 
     def get_last_revision(self, files):

@@ -55,7 +55,7 @@ class WorkTree(_git.WorkTree):
             self.timestamp = lfs.get_mtime(self.index_path)
 
 
-    def git_log(self, files=None, n=None, author=None, grep=None,
+    def xgit_log(self, files=None, n=None, author=None, grep=None,
                 reverse=False):
         # Not implemented
         if files or author or grep:

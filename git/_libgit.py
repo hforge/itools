@@ -16,6 +16,7 @@
 
 # Import from the Standard Library
 from datetime import datetime
+from os.path import exists
 
 # Import from pygit2
 from pygit2 import Repository, GIT_SORT_TIME, GIT_SORT_REVERSE
@@ -47,6 +48,11 @@ class WorkTree(_git.WorkTree):
 
 
     def git_add(self, *args):
+        # TODO Implement first commit with libgit2
+        if not exists(self.index_path):
+            super(WorkTree, self).git_add(*args)
+            return
+
         if args:
             index = self._get_index()
             for path in args:

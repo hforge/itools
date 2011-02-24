@@ -184,7 +184,7 @@ class ROGitDatabase(object):
         handler.database = self
         handler.key = key
         # Folders are not stored in the cache
-        if isinstance(handler, Folder):
+        if type(handler) is Folder:
             return
         # Store in the cache
         self.cache[key] = handler
@@ -282,10 +282,7 @@ class ROGitDatabase(object):
 
         # Folders are not cached
         if self.fs.is_folder(key):
-            if cls is None:
-                cls = Folder
-            folder = cls(key, database=self)
-            return folder
+            return Folder(key, database=self)
 
         # Cache miss
         if cls is None:

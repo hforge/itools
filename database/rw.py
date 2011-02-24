@@ -547,24 +547,11 @@ def make_git_database(path, size_min, size_max):
     initialized and the content of the folder will be added to it in a first
     commit.
     """
-    # 1. Make the data folder
     path = lfs.get_absolute_path(path)
-    path_data = '%s/database' % path
-    if not lfs.exists(path_data):
-        lfs.make_folder(path_data)
-
-    # 2. Initialize git
-    send_subprocess(['git', 'init', '-q'], path=path_data)
-    send_subprocess(['git', 'add', '.'], path=path_data)
-    cmd = ['git', 'commit', '-q', '-m', 'Initial commit']
-    try:
-        send_subprocess(cmd, path=path_data)
-    except CalledProcessError:
-        pass
-
-    # 3. The catalog
+    # Git init
+    send_subprocess(['git', 'init', '-q', '%s/database' % path])
+    # The catalog
     make_catalog('%s/catalog' % path, get_register_fields())
-
     # Ok
     return GitDatabase(path, size_min, size_max)
 

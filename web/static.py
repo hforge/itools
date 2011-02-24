@@ -15,13 +15,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.handlers import RODatabase, File
+from itools.handlers import ro_database, File
 from itools.http import set_response
 from itools.uri import Path
 from context import Context
-
-
-database = RODatabase()
 
 
 class StaticContext(Context):
@@ -32,7 +29,7 @@ class StaticContext(Context):
         path = '%s%s' % (self.local_path, path)
         # Load the handler
         try:
-            handler = database.get_handler(path)
+            handler = ro_database.get_handler(path)
         except LookupError:
             return set_response(self.soup_message, 404)
 

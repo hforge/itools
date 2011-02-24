@@ -50,5 +50,5 @@ __all__ = [
     # Messages
     'INFO',
     'ERROR',
-    'MSG_MISSING_OR_INVALID'
+    'MSG_MISSING_OR_INVALID',
     ]

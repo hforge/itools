@@ -24,8 +24,6 @@ from lazy import lazy
 from mimetypes_ import add_type, guess_all_extensions, guess_extension
 from mimetypes_ import guess_type, has_encoding, has_extension
 from odict import OrderedDict
-from subprocess_ import start_subprocess, stop_subprocess
-from subprocess_ import read_subprocess, send_subprocess
 from timezones import fixed_offset, local_tz
 from thingy import thingy_type, thingy, thingy_property, thingy_lazy_property
 from thingy import is_thingy
@@ -62,11 +60,6 @@ __all__ = [
     'guess_type',
     'has_encoding',
     'has_extension',
-    # Subprocess
-    'start_subprocess',
-    'read_subprocess',
-    'send_subprocess',
-    'stop_subprocess',
     # Time
     'fixed_offset',
     'local_tz',

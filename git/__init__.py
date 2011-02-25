@@ -17,6 +17,7 @@
 # Import from itools
 from git import describe, get_branch_name, get_filenames, get_metadata
 from git import is_available
+from subprocess_ import start_subprocess
 
 try:
     from _libgit import WorkTree
@@ -32,4 +33,6 @@ __all__ = [
     'get_metadata',
     'is_available',
     # New API (uses libgit2 if available)
-    'WorkTree']
+    'start_subprocess',
+    'WorkTree',
+    ]

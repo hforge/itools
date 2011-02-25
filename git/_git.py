@@ -19,8 +19,9 @@ from datetime import datetime
 from subprocess import CalledProcessError
 
 # Import from itools
-from itools.core import send_subprocess, utc
+from itools.core import utc
 from itools.datatypes import ISODateTime
+from subprocess_ import send_subprocess
 
 
 class WorkTree(object):

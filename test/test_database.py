@@ -22,7 +22,6 @@ from random import sample
 import re
 
 # Import from itools
-from itools.core import start_subprocess
 from itools.database import AndQuery, RangeQuery, PhraseQuery, NotQuery
 from itools.database import AllQuery, OrQuery, TextQuery
 from itools.database import make_catalog, Catalog, CatalogAware, StartQuery
@@ -30,6 +29,7 @@ from itools.database import make_git_database
 from itools.database.catalog import _index, _decode
 from itools.datatypes import String, Unicode, Boolean, Integer
 from itools.fs import lfs
+from itools.git import start_subprocess
 from itools.handlers import TextFile
 
 # Import from xapian

@@ -18,14 +18,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from datetime import datetime
 from sys import getrefcount
 
 # Import from xapian
 from xapian import DatabaseError, DatabaseOpeningError
 
 # Import from itools
-from itools.core import LRUCache, freeze, lazy, send_subprocess
+from itools.core import LRUCache, lazy
 from itools.fs import lfs
 from itools.git import WorkTree
 from itools.handlers import Folder, get_handler_class_by_mimetype
@@ -371,97 +370,58 @@ class ROGitDatabase(object):
     #######################################################################
     # Git
     #######################################################################
-    def send_subprocess(self, cmd):
-        return send_subprocess(cmd, path=self.path_data)
-
-
     def get_diff(self, revision):
-        cmd = ['git', 'show', revision, '--pretty=format:%an%n%at%n%s']
-        data = self.send_subprocess(cmd)
-        lines = data.splitlines()
-
-        ts = int(lines[1])
-        return {
-            'author_name': lines[0],
-            'author_date': datetime.fromtimestamp(ts),
-            'subject': lines[2],
-            'diff': '\n'.join(lines[2:])}
+        return self.worktree.git_show(revision)
 
 
-    def get_files_affected(self, revisions):
+    def get_files_affected(self, from_, to):
         """Get the unordered set of files affected by a list of revisions.
         """
-        cmd = ['git', 'show', '--numstat', '--pretty=format:'] + revisions
-        data = self.send_subprocess(cmd)
-        lines = data.splitlines()
-        files = set()
-        for line in lines:
-            if not line:
-                continue
-            before, after, filename = line.split('\t')
-            files.add(filename)
-        return freeze(files)
+        expr = '%s..%s' % (from_, to)
+        return self.worktree.get_files_changed(expr)
 
 
-    def get_stats(self, from_, to=None, paths=[]):
+    def get_stats(self, from_, to=None, paths=None):
         if to is None:
-            cmd = ['git', 'show', '--pretty=format:', '--stat', from_]
-        else:
-            cmd = ['git', 'diff', '--stat', from_, to]
+            return self.worktree.git_show(from_, stat=True)['diff']
 
-        if paths:
-            cmd.append('--')
-            cmd.extend(paths)
-        return self.send_subprocess(cmd)
+        expr = '%s..%s' % (from_, to)
+        return self.worktree.git_diff(expr, paths, stat=True)
 
 
-    def get_diff_between(self, from_, to='HEAD', paths=[]):
+    def get_diff_between(self, from_, to='HEAD', paths=None):
         """Get the diff of the given path from the given commit revision to
         HEAD.
 
         If "stat" is True, get a diff stat only.
         """
-        cmd = ['git', 'diff', from_, to]
-        if paths:
-            cmd.append('--')
-            cmd.extend(paths)
-        return self.send_subprocess(cmd)
+        expr = '%s..%s' % (from_, to)
+        return self.worktree.git_diff(expr, paths)
 
 
-    def get_blob(self, hash, cls):
-        if type(hash) is not str:
-            raise TypeError, 'get_blob expects a string, %s found' % type(hash)
+    def get_blob(self, sha, cls):
+        if sha in self.git_cache:
+            return self.git_cache[sha]
 
-        if len(hash) != 40:
-            raise ValueError, 'a git hash is 40 chars long, not %d' % len(hash)
-
-        if hash in self.git_cache:
-            return self.git_cache[hash]
-
-        cmd = ['git', 'show', hash]
-        blob = self.send_subprocess(cmd)
+        blob = self.worktree.git_cat_file(sha)
         blob = cls(string=blob)
-        self.git_cache[hash] = blob
+        self.git_cache[sha] = blob
         return blob
 
 
-    def get_commit_hashs(self, file):
+    def get_commit_hashs(self, path):
         """Give the hashs for all commit concerning file
         """
-        cmd = ['git', 'log', '--reverse', '--pretty=format:%H', file]
-        log = self.send_subprocess(cmd)
-        return log.splitlines()
+        return [
+            x['revision'] for x in self.worktree.git_log(path, reverse=True) ]
 
 
     def get_blob_by_revision_and_path(self, revision, path, cls):
         """Get the file contents located at the given path after the given
         commit revision has been committed.
         """
-        arg = '%s:%s' % (revision, path)
-        cmd = ['git', 'rev-parse', arg]
-        hash = self.send_subprocess(cmd)
-        hash = hash.rstrip('\n')
-        return self.get_blob(hash, cls)
+        sha = self.worktree.get_blob_id(revision, path)
+        return self.get_blob(sha, cls)
 
 
     def get_revisions(self, files=None, n=None, author_pattern=None,

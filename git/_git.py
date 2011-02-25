@@ -19,7 +19,7 @@ from datetime import datetime
 from subprocess import CalledProcessError
 
 # Import from itools
-from itools.core import send_subprocess
+from itools.core import send_subprocess, utc
 from itools.datatypes import ISODateTime
 
 
@@ -36,9 +36,27 @@ class WorkTree(object):
     #######################################################################
     # Public API
     #######################################################################
+    def git_init(self):
+        send_subprocess(['git', 'init', '-q', self.path])
+
+
     def git_add(self, *args):
         if args:
             self._send_subprocess(['git', 'add'] + list(args))
+
+
+    def git_cat_file(self, sha):
+        if type(sha) is not str:
+            raise TypeError, 'expected string, got %s' % type(sha)
+
+        if len(sha) != 40:
+            raise ValueError, '"%s" is not an sha' % sha
+
+        return self._send_subprocess(['git', 'cat-file', '-p', sha])
+
+
+    def git_clean(self):
+        self._send_subprocess(['git', 'clean', '-fxdq'])
 
 
     def git_commit(self, message, author=None, date=None, quiet=False,
@@ -63,10 +81,23 @@ class WorkTree(object):
                 raise
 
 
-    def git_log(self, files=None, n=None, author=None, grep=None,
-                reverse=False):
+    def git_diff(self, expr, paths=None, stat=False):
+        cmd = ['git', 'diff', expr]
+        if stat:
+            cmd.append('--stat')
+        if paths:
+            cmd.append('--')
+            cmd.extend(paths)
+        return self._send_subprocess(cmd)
+
+
+    def git_log(self, paths=None, n=None, author=None, grep=None,
+                reverse=False, include_files=False):
         # 1. Build the git command
-        cmd = ['git', 'rev-list', '--pretty=format:%an%n%at%n%s']
+        cmd = ['git', 'log', '--pretty=format:%H%n%an%n%at%n%s']
+        if include_files:
+            cmd.append('--raw')
+            cmd.append('--name-only')
         if n is not None:
             cmd += ['-n', str(n)]
         if author:
@@ -75,26 +106,70 @@ class WorkTree(object):
             cmd += ['--grep=%s' % grep]
         if reverse:
             cmd.append('--reverse')
-        cmd.append('HEAD')
-        if files:
+        if paths:
             cmd.append('--')
-            cmd.extend(files)
+            if type(paths) is str:
+                cmd.append(paths)
+            else:
+                cmd.extend(paths)
 
         # 2. Run
-        data = self._send_subprocess(cmd)
+        lines = self._send_subprocess(cmd).splitlines()
+        n = len(lines)
 
         # 3. Parse output
         commits = []
-        lines = data.splitlines()
-        for idx in range(len(lines) / 4):
-            base = idx * 4
-            ts = int(lines[base+2])
-            commits.append(
-                {'revision': lines[base].split()[1], # commit
-                 'username': lines[base+1],          # author name
-                 'date': datetime.fromtimestamp(ts), # author date
-                 'message': lines[base+3],           # subject
-                })
+        idx = 0
+        while idx < n:
+            date = int(lines[idx + 2])
+            commits.append({
+                'revision': lines[idx],                    # sha
+                'username': lines[idx + 1],                # author name
+                'date': datetime.fromtimestamp(date, utc), # author date
+                'message': lines[idx + 3]})                # message
+            idx += 4
+            if include_files:
+                paths = []
+                commits[-1]['paths'] = paths
+                while idx < n and lines[idx]:
+                    paths.append(lines[idx])
+                    idx += 1
 
         # Ok
         return commits
+
+
+    def git_reset(self):
+        try:
+            self._send_subprocess(['git', 'reset', '--hard', '-q'])
+        except CalledProcessError:
+            pass
+
+
+    def git_show(self, commit, stat=False):
+        cmd = ['git', 'show', commit, '--pretty=format:%an%n%at%n%s']
+        if stat:
+            cmd.append('--stat')
+        data = self._send_subprocess(cmd)
+        author, date, message, diff = data.split('\n', 3)
+
+        return {
+            'author_name': author,
+            'author_date': datetime.fromtimestamp(int(date)),
+            'subject': message,
+            'diff': diff}
+
+
+    def get_files_changed(self, expr):
+        """Get the files that have been changed by a set of commits.
+        """
+        cmd = ['git', 'show', '--numstat', '--pretty=format:', expr]
+        data = self._send_subprocess(cmd)
+        lines = data.splitlines()
+        return frozenset([ line.split('\t')[-1] for line in lines if line ])
+
+
+    def get_blob_id(self, commit_id, path):
+        cmd = ['git', 'rev-parse', '%s:%s' % (commit_id, path)]
+        blob_id = self._send_subprocess(cmd)
+        return blob_id.rstrip('\n')

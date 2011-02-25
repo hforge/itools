@@ -20,11 +20,11 @@
 # Import from the Standard Library
 from datetime import datetime
 from os.path import dirname
-from subprocess import CalledProcessError
 
 # Import from itools
-from itools.core import get_pipe, lazy, send_subprocess
+from itools.core import get_pipe, lazy
 from itools.fs import lfs
+from itools.git import WorkTree
 from itools.handlers import Folder
 from catalog import Catalog, make_catalog
 from registry import get_register_fields
@@ -420,12 +420,9 @@ class GitDatabase(ROGitDatabase):
 
         # Clean the filesystem (in a try/except to avoid a problem with new
         # repositories)
-        try:
-            self.send_subprocess(['git', 'reset', '--hard', '-q'])
-        except CalledProcessError:
-            pass
+        self.worktree.git_reset()
         if self.added:
-            self.send_subprocess(['git', 'clean', '-fxdq'])
+            self.worktree.git_clean()
 
         # Reset state
         self.added.clear()
@@ -549,7 +546,8 @@ def make_git_database(path, size_min, size_max):
     """
     path = lfs.get_absolute_path(path)
     # Git init
-    send_subprocess(['git', 'init', '-q', '%s/database' % path])
+    worktree = WorkTree('%s/database' % path)
+    worktree.git_init()
     # The catalog
     make_catalog('%s/catalog' % path, get_register_fields())
     # Ok

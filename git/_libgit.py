@@ -22,6 +22,7 @@ from os.path import exists
 from pygit2 import Repository, GIT_SORT_TIME, GIT_SORT_REVERSE
 
 # Import from itools
+from itools.core import lazy
 from itools.fs import lfs
 import _git
 
@@ -32,8 +33,12 @@ class WorkTree(_git.WorkTree):
 
     def __init__(self, path):
         self.path = path
-        self.repo = Repository('%s/.git' % path)
         self.index_path = '%s/.git/index' % path
+
+
+    @lazy
+    def repo(self):
+        return Repository('%s/.git' % self.path)
 
 
     def _get_index(self):

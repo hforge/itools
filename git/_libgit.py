@@ -53,6 +53,11 @@ class WorkTree(_git.WorkTree):
             super(WorkTree, self).git_add(*args)
             return
 
+        # TODO Implement "git add ."
+        if '.' in args:
+            super(WorkTree, self).git_add(*args)
+            return
+
         if args:
             index = self._get_index()
             for path in args:

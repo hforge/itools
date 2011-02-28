@@ -16,22 +16,46 @@
 
 # Import from the Standard Library
 from datetime import datetime
+from os.path import exists
 from subprocess import CalledProcessError
 
+# Import from pygit2
+from pygit2 import Repository, GIT_SORT_TIME, GIT_SORT_REVERSE
+
 # Import from itools
-from itools.core import utc
+from itools.core import lazy, utc
 from itools.datatypes import ISODateTime
+from itools.fs import lfs
 from subprocess_ import send_subprocess
 
 
 class WorkTree(object):
 
+    timestamp = None
+
     def __init__(self, path):
         self.path = path
+        self.index_path = '%s/.git/index' % path
 
 
     def _send_subprocess(self, cmd):
         return send_subprocess(cmd, path=self.path)
+
+
+    @lazy
+    def repo(self):
+        return Repository('%s/.git' % self.path)
+
+
+    def _get_index(self):
+        path = self.index_path
+
+        index = self.repo.index
+        if not self.timestamp or self.timestamp < lfs.get_mtime(path):
+            index.read()
+            self.timestamp = lfs.get_mtime(path)
+
+        return index
 
 
     #######################################################################
@@ -47,10 +71,24 @@ class WorkTree(object):
         if type(rm) is not list:
             raise TypeError, 'git rm expects a list, got %s' % repr(rm)
 
-        if add:
-            self._send_subprocess(['git', 'add'] + add)
-        if rm:
-            self._send_subprocess(['git', 'rm'] + rm)
+        if not add and not rm:
+            return
+
+        # TODO Implement with libgit2
+        if not exists(self.index_path) or '.' in add:
+            if add:
+                self._send_subprocess(['git', 'add'] + add)
+            if rm:
+                self._send_subprocess(['git', 'rm'] + rm)
+            return
+
+        index = self._get_index()
+        for path in add:
+            index.add(path, 0)
+        for path in rm:
+            del index[path]
+        index.write()
+        self.timestamp = lfs.get_mtime(self.index_path)
 
 
     def git_cat_file(self, sha):
@@ -142,6 +180,42 @@ class WorkTree(object):
 
         # Ok
         return commits
+
+
+#    def git_log(self, files=None, n=None, author=None, grep=None,
+#                reverse=False):
+#        # Not implemented
+#        if files or author or grep:
+#            proxy = super(WorkTree, self)
+#            return proxy.git_log(files, n, author, grep, reverse)
+#
+#        # Get the sha
+#        repo_path = '%s/.git' % self.path
+#        ref = open('%s/HEAD' % repo_path).read().split()[-1]
+#        sha = open('%s/%s' % (repo_path, ref)).read().strip()
+#
+#        # Sort
+#        sort = GIT_SORT_TIME
+#        if reverse is True:
+#            sort |= GIT_SORT_REVERSE
+#
+#        # Go
+#        commits = []
+#        for commit in self.repo.walk(sha, GIT_SORT_TIME):
+#            ts = commit.commit_time
+#            commits.append(
+#                {'revision': commit.sha,             # commit
+#                 'username': commit.author[0],       # author name
+#                 'date': datetime.fromtimestamp(ts), # author date
+#                 'message': commit.message_short,    # subject
+#                })
+#            if n is not None:
+#                n -= 1
+#                if n == 0:
+#                    break
+#
+#        # Ok
+#        return commits
 
 
     def git_reset(self):

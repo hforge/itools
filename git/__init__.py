@@ -17,12 +17,8 @@
 # Import from itools
 from git import describe, get_branch_name, get_filenames, get_metadata
 from git import is_available
+from git2 import WorkTree
 from subprocess_ import start_subprocess
-
-try:
-    from _libgit import WorkTree
-except ImportError:
-    from _git import WorkTree
 
 
 

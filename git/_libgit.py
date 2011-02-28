@@ -47,7 +47,7 @@ class WorkTree(_git.WorkTree):
         return index
 
 
-    def git_add(self, *args):
+    def xgit_add(self, *args):
         # TODO Implement first commit with libgit2
         if not exists(self.index_path):
             super(WorkTree, self).git_add(*args)

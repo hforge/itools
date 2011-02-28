@@ -41,9 +41,16 @@ class WorkTree(object):
         send_subprocess(['git', 'init', '-q', self.path])
 
 
-    def git_add(self, *args):
-        if args:
-            self._send_subprocess(['git', 'add'] + list(args))
+    def git_update_index(self, add, rm):
+        if type(add) is not list:
+            raise TypeError, 'git add expects a list, got %s' % repr(add)
+        if type(rm) is not list:
+            raise TypeError, 'git rm expects a list, got %s' % repr(rm)
+
+        if add:
+            self._send_subprocess(['git', 'add'] + add)
+        if rm:
+            self._send_subprocess(['git', 'rm'] + rm)
 
 
     def git_cat_file(self, sha):
@@ -60,8 +67,7 @@ class WorkTree(object):
         self._send_subprocess(['git', 'clean', '-fxdq'])
 
 
-    def git_commit(self, message, author=None, date=None, quiet=False,
-                   all=False):
+    def git_commit(self, message, author=None, date=None, quiet=False):
         cmd = ['git', 'commit', '-m', message]
         if author:
             cmd.append('--author=%s' % author)
@@ -70,8 +76,6 @@ class WorkTree(object):
             cmd.append('--date=%s' % date)
         if quiet:
             cmd.append('-q')
-        if all:
-            cmd.append('-a')
 
         try:
             self._send_subprocess(cmd)
@@ -141,6 +145,7 @@ class WorkTree(object):
 
 
     def git_reset(self):
+        # Use a try/except because this fails with new repositories
         try:
             self._send_subprocess(['git', 'reset', '--hard', '-q'])
         except CalledProcessError:

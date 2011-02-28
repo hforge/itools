@@ -52,23 +52,32 @@ class WorkTree(_git.WorkTree):
         return index
 
 
-    def xgit_add(self, *args):
+    def xgit_update_index(self, add, rm):
+        if type(add) is not list:
+            raise TypeError, 'git add expects a list, got %s' % repr(add)
+        if type(rm) is not list:
+            raise TypeError, 'git rm expects a list, got %s' % repr(rm)
+
+        if not add and not rm:
+            return
+
         # TODO Implement first commit with libgit2
         if not exists(self.index_path):
-            super(WorkTree, self).git_add(*args)
+            super(WorkTree, self).git_update_index(add, rm)
             return
 
         # TODO Implement "git add ."
-        if '.' in args:
-            super(WorkTree, self).git_add(*args)
+        if '.' in add:
+            super(WorkTree, self).git_update_index(add, rm)
             return
 
-        if args:
-            index = self._get_index()
-            for path in args:
-                index.add(path, 0)
-            index.write()
-            self.timestamp = lfs.get_mtime(self.index_path)
+        index = self._get_index()
+        for path in add:
+            index.add(path, 0)
+        for path in rm:
+            del index[path]
+        index.write()
+        self.timestamp = lfs.get_mtime(self.index_path)
 
 
     def xgit_log(self, files=None, n=None, author=None, grep=None,

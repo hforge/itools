@@ -16,7 +16,9 @@
 
 # Import from the Standard Library
 from datetime import datetime
-from os.path import exists
+from os import remove, rmdir, walk
+from os.path import exists, isfile
+from shutil import copy2
 from subprocess import CalledProcessError
 
 # Import from pygit2
@@ -47,8 +49,11 @@ class WorkTree(object):
         return Repository('%s/.git' % self.path)
 
 
-    def _get_index(self):
+    @property
+    def index(self):
         path = self.index_path
+        if not exists(path):
+            return None
 
         index = self.repo.index
         if not self.timestamp or self.timestamp < lfs.get_mtime(path):
@@ -65,29 +70,49 @@ class WorkTree(object):
         send_subprocess(['git', 'init', '-q', self.path])
 
 
-    def git_update_index(self, add, rm):
-        if type(add) is not list:
-            raise TypeError, 'git add expects a list, got %s' % repr(add)
-        if type(rm) is not list:
-            raise TypeError, 'git rm expects a list, got %s' % repr(rm)
-
-        if not add and not rm:
+    def git_add(self, *args):
+        index = self.index
+        if index is None:
+            self._send_subprocess(['git', 'add'] + list(args))
             return
+        for path in args:
+            abspath = '%s/%s' % (self.path, path)
+            # 1. File
+            if isfile(abspath):
+                index.add(path, 0)
+                continue
+            # 2. Folder
+            for root, dirs, files in walk(abspath):
+                for name in files:
+                    index.add('%s/%s' % (root[n:], name), 0)
 
-        # TODO Implement with libgit2
-        if not exists(self.index_path) or '.' in add:
-            if add:
-                self._send_subprocess(['git', 'add'] + add)
-            if rm:
-                self._send_subprocess(['git', 'rm'] + rm)
-            return
 
-        index = self._get_index()
-        for path in add:
-            index.add(path, 0)
-        for path in rm:
-            del index[path]
-        index.write()
+    def git_rm(self, *args):
+        index = self.index
+        n = len(self.path) + 1
+        for path in args:
+            abspath = '%s/%s' % (self.path, path)
+            # 1. File
+            if isfile(abspath):
+                del index[path]
+                remove(abspath)
+                continue
+            # 2. Folder
+            for root, dirs, files in walk(abspath, topdown=False):
+                for name in files:
+                    del index['%s/%s' % (root[n:], name)]
+                    remove('%s/%s' % (root, name))
+                for name in dirs:
+                    rmdir('%s/%s' % (root, name))
+
+
+    def git_mv(self, source, target):
+        copy2(source, target)
+        self.git_rm(source)
+
+
+    def git_save_index(self):
+        self.index.write()
         self.timestamp = lfs.get_mtime(self.index_path)
 
 

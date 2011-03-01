@@ -44,7 +44,6 @@ class GitDatabase(ROGitDatabase):
         # The "git add" arguments
         self.added = set()
         self.changed = set()
-        self.removed = set()
         self.has_changed = False
 
         # The resources that been added, removed, changed and moved can be
@@ -144,7 +143,6 @@ class GitDatabase(ROGitDatabase):
 
         self.push_handler(key, handler)
         self.added.add(key)
-        self.removed.discard(key)
         # Changed
         self.has_changed = True
 
@@ -160,8 +158,7 @@ class GitDatabase(ROGitDatabase):
                 self.added.remove(key)
             else:
                 self.changed.discard(key)
-                self.removed.add(key)
-                self.fs.remove(key)
+                self.worktree.git_rm(key)
             # Changed
             self.has_changed = True
             return
@@ -177,10 +174,9 @@ class GitDatabase(ROGitDatabase):
             if k.startswith(base):
                 self._discard_handler(k)
                 self.changed.discard(k)
-                self.removed.add(k)
 
         if self.fs.exists(key):
-            self.fs.remove(key)
+            self.worktree.git_rm(key)
 
         # Changed
         self.has_changed = True
@@ -197,7 +193,6 @@ class GitDatabase(ROGitDatabase):
         if self.is_phantom(handler):
             self.cache[key] = handler
             self.added.add(key)
-            self.removed.discard(key)
             self.has_changed = True
             return
 
@@ -260,7 +255,6 @@ class GitDatabase(ROGitDatabase):
             handler = handler.clone()
             self.push_handler(target, handler)
             self.added.add(target)
-            self.removed.discard(target)
 
         # Changed
         self.has_changed = True
@@ -286,19 +280,15 @@ class GitDatabase(ROGitDatabase):
         handler = self._get_handler(source)
         if not isinstance(handler, Folder):
             if fs.exists(source):
-                fs.move(source, target)
+                self.worktree.git_mv(source, target)
 
             # Remove source
-            if source in self.added:
-                self.added.remove(source)
-            else:
-                self.changed.discard(source)
-                self.removed.add(source)
+            self.added.discard(source)
+            self.changed.discard(source)
             del cache[source]
             # Add target
             self.push_handler(target, handler)
             self.added.add(target)
-            self.removed.discard(target)
 
             # Changed
             self.has_changed = True
@@ -314,7 +304,6 @@ class GitDatabase(ROGitDatabase):
                 self.push_handler(new_key, handler)
                 self.added.remove(key)
                 self.added.add(new_key)
-                self.removed.discard(new_key)
 
         for key in self.changed.copy():
             if key.startswith(base):
@@ -324,12 +313,11 @@ class GitDatabase(ROGitDatabase):
                 self.changed.remove(key)
 
         if fs.exists(source):
-            fs.move(source, target)
+            self.worktree.git_mv(source, target)
         for path in fs.traverse(target):
             if not fs.is_folder(path):
                 path = fs.get_relative_path(path)
                 self.added.add(path)
-                self.removed.discard(path)
 
         # Changed
         self.has_changed = True
@@ -432,7 +420,6 @@ class GitDatabase(ROGitDatabase):
         # Reset state
         self.added.clear()
         self.changed.clear()
-        self.removed.clear()
 
         # 2. Catalog
         self.catalog.abort_changes()
@@ -481,21 +468,15 @@ class GitDatabase(ROGitDatabase):
         git_author, git_date, git_msg, docs_to_index, docs_to_unindex = data
         git_msg = git_msg or 'no comment'
 
-        # Nothing to do? (this should never happen)
-        removed = self.removed
-        if not changed and not added and not removed:
-            return
-
         # 3. Call git
         git_add = list(added) + list(changed)
-        git_rm = list(removed)
-        self.worktree.git_update_index(git_add, git_rm)
+        self.worktree.git_add(*git_add)
+        self.worktree.git_save_index()
         self.worktree.git_commit(git_msg, git_author, git_date, True)
 
         # 4. Clear state
         changed.clear()
         added.clear()
-        removed.clear()
 
         # 5. Catalog
         catalog = self.catalog

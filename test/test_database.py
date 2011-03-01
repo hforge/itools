@@ -48,7 +48,7 @@ class GitDatabaseTestCase(TestCase):
 
     def setUp(self):
         self.database = make_git_database('fables', 20, 20)
-        self.database.worktree.git_update_index(['.'], [])
+        self.database.worktree.git_add('.')
         self.database.worktree.git_commit('Initial commit', quiet=True)
         self.root = self.database.get_handler('.')
 

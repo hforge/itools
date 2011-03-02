@@ -159,8 +159,8 @@ class WorkTree(object):
         return self._send_subprocess(cmd)
 
 
-    def git_log(self, paths=None, n=None, author=None, grep=None,
-                reverse=False, include_files=False):
+    def _git_log(self, paths=None, n=None, author=None, grep=None,
+                 reverse=False, include_files=False):
         # 1. Build the git command
         cmd = ['git', 'log', '--pretty=format:%H%n%an%n%at%n%s']
         if include_files:
@@ -207,40 +207,39 @@ class WorkTree(object):
         return commits
 
 
-#    def git_log(self, files=None, n=None, author=None, grep=None,
-#                reverse=False):
-#        # Not implemented
-#        if files or author or grep:
-#            proxy = super(WorkTree, self)
-#            return proxy.git_log(files, n, author, grep, reverse)
-#
-#        # Get the sha
-#        repo_path = '%s/.git' % self.path
-#        ref = open('%s/HEAD' % repo_path).read().split()[-1]
-#        sha = open('%s/%s' % (repo_path, ref)).read().strip()
-#
-#        # Sort
-#        sort = GIT_SORT_TIME
-#        if reverse is True:
-#            sort |= GIT_SORT_REVERSE
-#
-#        # Go
-#        commits = []
-#        for commit in self.repo.walk(sha, GIT_SORT_TIME):
-#            ts = commit.commit_time
-#            commits.append(
-#                {'revision': commit.sha,             # commit
-#                 'username': commit.author[0],       # author name
-#                 'date': datetime.fromtimestamp(ts), # author date
-#                 'message': commit.message_short,    # subject
-#                })
-#            if n is not None:
-#                n -= 1
-#                if n == 0:
-#                    break
-#
-#        # Ok
-#        return commits
+    def git_log(self, files=None, n=None, author=None, grep=None,
+                reverse=False):
+        # Not implemented
+        if files or author or grep:
+            return self._git_log(files, n, author, grep, reverse)
+
+        # Get the sha
+        repo_path = '%s/.git' % self.path
+        ref = open('%s/HEAD' % repo_path).read().split()[-1]
+        sha = open('%s/%s' % (repo_path, ref)).read().strip()
+
+        # Sort
+        sort = GIT_SORT_TIME
+        if reverse is True:
+            sort |= GIT_SORT_REVERSE
+
+        # Go
+        commits = []
+        for commit in self.repo.walk(sha, GIT_SORT_TIME):
+            ts = commit.commit_time
+            commits.append(
+                {'revision': commit.sha,             # commit
+                 'username': commit.author[0],       # author name
+                 'date': datetime.fromtimestamp(ts), # author date
+                 'message': commit.message_short,    # subject
+                })
+            if n is not None:
+                n -= 1
+                if n == 0:
+                    break
+
+        # Ok
+        return commits
 
 
     def git_reset(self):

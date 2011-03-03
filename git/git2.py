@@ -22,7 +22,7 @@ from shutil import copy2
 from subprocess import CalledProcessError
 
 # Import from pygit2
-from pygit2 import Repository, GIT_SORT_TIME, GIT_SORT_REVERSE
+from pygit2 import Repository, GIT_SORT_TIME, GIT_SORT_REVERSE, GIT_OBJ_TREE
 
 # Import from itools
 from itools.core import lazy, utc
@@ -38,6 +38,7 @@ class WorkTree(object):
     def __init__(self, path):
         self.path = path
         self.index_path = '%s/.git/index' % path
+        self.cache = {} # {sha: object}
 
 
     def _send_subprocess(self, cmd):
@@ -47,6 +48,26 @@ class WorkTree(object):
     @lazy
     def repo(self):
         return Repository('%s/.git' % self.path)
+
+
+    def get_object_by_sha(self, sha):
+        cache = self.cache
+        if sha not in cache:
+            cache[sha] = self.repo[sha]
+
+        return cache[sha]
+
+
+    def get_object_by_commit_and_path(self, commit, path):
+        obj = commit.tree
+        for name in path.split('/'):
+            if obj.type != GIT_OBJ_TREE:
+                return None
+            entry = get_tree_entry_by_name(obj, name)
+            if entry is None:
+                return None
+            obj = self.get_object_by_sha(entry.sha)
+        return obj
 
 
     @property
@@ -210,7 +231,7 @@ class WorkTree(object):
     def git_log(self, files=None, n=None, author=None, grep=None,
                 reverse=False):
         # Not implemented
-        if files or author or grep:
+        if author or grep:
             return self._git_log(files, n, author, grep, reverse)
 
         # Get the sha
@@ -226,6 +247,21 @@ class WorkTree(object):
         # Go
         commits = []
         for commit in self.repo.walk(sha, GIT_SORT_TIME):
+            if files:
+                parents = commit.parents
+                parent = parents[0] if parents else None
+                for path in files:
+                    a = self.get_object_by_commit_and_path(commit, path)
+                    if parent is None:
+                        if a:
+                            break
+                    else:
+                        b = self.get_object_by_commit_and_path(parent, path)
+                        if a is not b:
+                            break
+                else:
+                    continue
+
             ts = commit.commit_time
             commits.append(
                 {'revision': commit.sha,             # commit
@@ -277,3 +313,16 @@ class WorkTree(object):
         cmd = ['git', 'rev-parse', '%s:%s' % (commit_id, path)]
         blob_id = self._send_subprocess(cmd)
         return blob_id.rstrip('\n')
+
+
+
+# TODO We implement this function because the equivalent in libgit2/pygit2
+# does not work. Investigate the problem and open an issue in github.
+def get_tree_entry_by_name(tree, name):
+    i = 0
+    while i < len(tree):
+        entry = tree[i]
+        if entry.name == name:
+            return entry
+        i += 1
+    return None

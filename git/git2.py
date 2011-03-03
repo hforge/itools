@@ -17,8 +17,8 @@
 # Import from the Standard Library
 from datetime import datetime
 from os import remove, rmdir, walk
-from os.path import exists, isfile
-from shutil import copy2
+from os.path import exists, isabs, isfile, normpath
+from shutil import copy2, copytree
 from subprocess import CalledProcessError
 
 # Import from pygit2
@@ -36,9 +36,15 @@ class WorkTree(object):
     timestamp = None
 
     def __init__(self, path):
-        self.path = path
+        self.path = normpath(path) + '/'
         self.index_path = '%s/.git/index' % path
         self.cache = {} # {sha: object}
+
+
+    def get_abspath(self, path):
+        if isabs(path):
+            raise ValueError, 'unexpected absolute path "%s"' % path
+        return '%s%s' % (self.path, path)
 
 
     def _send_subprocess(self, cmd):
@@ -96,9 +102,9 @@ class WorkTree(object):
         if index is None:
             self._send_subprocess(['git', 'add'] + list(args))
             return
-        n = len(self.path) + 1
+        n = len(self.path)
         for path in args:
-            abspath = '%s/%s' % (self.path, path)
+            abspath = self.get_abspath(path)
             # 1. File
             if isfile(abspath):
                 index.add(path, 0)
@@ -111,9 +117,9 @@ class WorkTree(object):
 
     def git_rm(self, *args):
         index = self.index
-        n = len(self.path) + 1
+        n = len(self.path)
         for path in args:
-            abspath = '%s/%s' % (self.path, path)
+            abspath = self.get_abspath(path)
             # 1. File
             if isfile(abspath):
                 del index[path]
@@ -129,7 +135,13 @@ class WorkTree(object):
 
 
     def git_mv(self, source, target):
-        copy2(source, target)
+        source_abs = self.get_abspath(source)
+        target = self.get_abspath(target)
+        if isfile(source_abs):
+            copy2(source_abs, target)
+        else:
+            copytree(source_abs, target)
+
         self.git_rm(source)
 
 

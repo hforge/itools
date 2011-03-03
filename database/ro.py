@@ -403,8 +403,8 @@ class ROGitDatabase(object):
         if sha in self.git_cache:
             return self.git_cache[sha]
 
-        blob = self.worktree.git_cat_file(sha)
-        blob = cls(string=blob)
+        blob = self.worktree.lookup(sha)
+        blob = cls(string=blob.data)
         self.git_cache[sha] = blob
         return blob
 

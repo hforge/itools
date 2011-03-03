@@ -23,7 +23,9 @@ from shutil import copy2, copytree
 from subprocess import CalledProcessError
 
 # Import from pygit2
-from pygit2 import Repository, GIT_SORT_TIME, GIT_SORT_REVERSE, GIT_OBJ_TREE
+from pygit2 import Repository
+from pygit2 import GIT_SORT_TIME, GIT_SORT_REVERSE
+from pygit2 import GIT_OBJ_COMMIT, GIT_OBJ_TREE
 
 # Import from itools
 from itools.core import lazy, utc
@@ -42,7 +44,7 @@ class WorkTree(object):
         self.cache = {} # {sha: object}
 
 
-    def get_abspath(self, path):
+    def _get_abspath(self, path):
         if isabs(path):
             raise ValueError, 'unexpected absolute path "%s"' % path
         return '%s%s' % (self.path, path)
@@ -57,7 +59,7 @@ class WorkTree(object):
         return Repository('%s/.git' % self.path)
 
 
-    def get_object_by_sha(self, sha):
+    def lookup(self, sha):
         cache = self.cache
         if sha not in cache:
             cache[sha] = self.repo[sha]
@@ -65,7 +67,7 @@ class WorkTree(object):
         return cache[sha]
 
 
-    def get_object_by_commit_and_path(self, commit, path):
+    def _lookup_by_commit_and_path(self, commit, path):
         obj = commit.tree
         for name in path.split('/'):
             if obj.type != GIT_OBJ_TREE:
@@ -73,7 +75,7 @@ class WorkTree(object):
             entry = get_tree_entry_by_name(obj, name)
             if entry is None:
                 return None
-            obj = self.get_object_by_sha(entry.sha)
+            obj = self.lookup(entry.sha)
         return obj
 
 
@@ -105,7 +107,7 @@ class WorkTree(object):
             return
         n = len(self.path)
         for path in args:
-            abspath = self.get_abspath(path)
+            abspath = self._get_abspath(path)
             # 1. File
             if isfile(abspath):
                 index.add(path, 0)
@@ -120,7 +122,7 @@ class WorkTree(object):
         index = self.index
         n = len(self.path)
         for path in args:
-            abspath = self.get_abspath(path)
+            abspath = self._get_abspath(path)
             # 1. File
             if isfile(abspath):
                 del index[path]
@@ -136,8 +138,8 @@ class WorkTree(object):
 
 
     def git_mv(self, source, target):
-        source_abs = self.get_abspath(source)
-        target = self.get_abspath(target)
+        source_abs = self._get_abspath(source)
+        target = self._get_abspath(target)
         if isfile(source_abs):
             copy2(source_abs, target)
         else:
@@ -149,16 +151,6 @@ class WorkTree(object):
     def git_save_index(self):
         self.index.write()
         self.timestamp = lfs.get_mtime(self.index_path)
-
-
-    def git_cat_file(self, sha):
-        if type(sha) is not str:
-            raise TypeError, 'expected string, got %s' % type(sha)
-
-        if len(sha) != 40:
-            raise ValueError, '"%s" is not an sha' % sha
-
-        return self._send_subprocess(['git', 'cat-file', '-p', sha])
 
 
     def git_clean(self):
@@ -225,12 +217,12 @@ class WorkTree(object):
                 parents = commit.parents
                 parent = parents[0] if parents else None
                 for path in files:
-                    a = self.get_object_by_commit_and_path(commit, path)
+                    a = self._lookup_by_commit_and_path(commit, path)
                     if parent is None:
                         if a:
                             break
                     else:
-                        b = self.get_object_by_commit_and_path(parent, path)
+                        b = self._lookup_by_commit_and_path(parent, path)
                         if a is not b:
                             break
                 else:
@@ -284,9 +276,12 @@ class WorkTree(object):
 
 
     def get_blob_id(self, commit_id, path):
-        cmd = ['git', 'rev-parse', '%s:%s' % (commit_id, path)]
-        blob_id = self._send_subprocess(cmd)
-        return blob_id.rstrip('\n')
+        commit = self.lookup(commit_id)
+        if commit.type != GIT_OBJ_COMMIT:
+            raise ValueError, 'XXX'
+
+        blob = self._lookup_by_commit_and_path(commit, path)
+        return blob.sha
 
 
 

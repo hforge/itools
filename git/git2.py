@@ -96,6 +96,7 @@ class WorkTree(object):
         if index is None:
             self._send_subprocess(['git', 'add'] + list(args))
             return
+        n = len(self.path) + 1
         for path in args:
             abspath = '%s/%s' % (self.path, path)
             # 1. File

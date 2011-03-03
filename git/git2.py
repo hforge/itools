@@ -18,6 +18,7 @@
 from datetime import datetime
 from os import remove, rmdir, walk
 from os.path import exists, isabs, isfile, normpath
+from re import search
 from shutil import copy2, copytree
 from subprocess import CalledProcessError
 
@@ -193,60 +194,8 @@ class WorkTree(object):
         return self._send_subprocess(cmd)
 
 
-    def _git_log(self, paths=None, n=None, author=None, grep=None,
-                 reverse=False, include_files=False):
-        # 1. Build the git command
-        cmd = ['git', 'log', '--pretty=format:%H%n%an%n%at%n%s']
-        if include_files:
-            cmd.append('--raw')
-            cmd.append('--name-only')
-        if n is not None:
-            cmd += ['-n', str(n)]
-        if author:
-            cmd += ['--author=%s' % author]
-        if grep:
-            cmd += ['--grep=%s' % grep]
-        if reverse:
-            cmd.append('--reverse')
-        if paths:
-            cmd.append('--')
-            if type(paths) is str:
-                cmd.append(paths)
-            else:
-                cmd.extend(paths)
-
-        # 2. Run
-        lines = self._send_subprocess(cmd).splitlines()
-        n = len(lines)
-
-        # 3. Parse output
-        commits = []
-        idx = 0
-        while idx < n:
-            date = int(lines[idx + 2])
-            commits.append({
-                'revision': lines[idx],                    # sha
-                'username': lines[idx + 1],                # author name
-                'date': datetime.fromtimestamp(date, utc), # author date
-                'message': lines[idx + 3]})                # message
-            idx += 4
-            if include_files:
-                paths = []
-                commits[-1]['paths'] = paths
-                while idx < n and lines[idx]:
-                    paths.append(lines[idx])
-                    idx += 1
-
-        # Ok
-        return commits
-
-
     def git_log(self, files=None, n=None, author=None, grep=None,
                 reverse=False):
-        # Not implemented
-        if author or grep:
-            return self._git_log(files, n, author, grep, reverse)
-
         # Get the sha
         repo_path = '%s/.git' % self.path
         ref = open('%s/HEAD' % repo_path).read().split()[-1]
@@ -260,6 +209,18 @@ class WorkTree(object):
         # Go
         commits = []
         for commit in self.repo.walk(sha, GIT_SORT_TIME):
+            # --author=<pattern>
+            if author:
+                name, email, time = commit.author
+                if not search(author, name) and not search(author, email):
+                    continue
+
+            # --grep=<pattern>
+            if grep:
+                if not search(grep, commit.message):
+                    continue
+
+            # -- path ...
             if files:
                 parents = commit.parents
                 parent = parents[0] if parents else None

@@ -15,18 +15,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from git import describe, get_branch_name, get_filenames, get_metadata
-from git import is_available
-from git2 import WorkTree
+from git import WorkTree
 
 
 
-__all__ = [
-    'describe',
-    'get_branch_name',
-    'get_filenames',
-    'get_metadata',
-    'is_available',
-    # New API (uses libgit2 if available)
-    'WorkTree',
-    ]
+__all__ = ['WorkTree']

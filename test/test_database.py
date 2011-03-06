@@ -29,7 +29,6 @@ from itools.database import make_git_database
 from itools.database.catalog import _index, _decode
 from itools.datatypes import String, Unicode, Boolean, Integer
 from itools.fs import lfs
-from itools.git import start_subprocess
 from itools.handlers import TextFile
 
 # Import from xapian
@@ -685,6 +684,5 @@ class Document_4(CatalogAware):
 
 
 
-start_subprocess('fables')
 if __name__ == '__main__':
     main()

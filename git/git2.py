@@ -28,10 +28,9 @@ from pygit2 import GIT_SORT_TIME, GIT_SORT_REVERSE
 from pygit2 import GIT_OBJ_COMMIT, GIT_OBJ_TREE
 
 # Import from itools
-from itools.core import lazy, utc
+from itools.core import get_pipe, lazy, utc
 from itools.datatypes import ISODateTime
 from itools.fs import lfs
-from subprocess_ import send_subprocess
 
 
 class WorkTree(object):
@@ -51,7 +50,7 @@ class WorkTree(object):
 
 
     def _send_subprocess(self, cmd):
-        return send_subprocess(cmd, path=self.path)
+        return get_pipe(cmd, cwd=self.path)
 
 
     @lazy
@@ -97,7 +96,7 @@ class WorkTree(object):
     # Public API
     #######################################################################
     def git_init(self):
-        send_subprocess(['git', 'init', '-q', self.path])
+        get_pipe(['git', 'init', '-q', self.path])
 
 
     def git_add(self, *args):
@@ -169,10 +168,10 @@ class WorkTree(object):
 
         try:
             self._send_subprocess(cmd)
-        except CalledProcessError, excp:
+        except EnvironmentError, excp:
             # Avoid an exception for the 'nothing to commit' case
             # FIXME Not reliable, we may catch other cases
-            if excp.returncode != 1:
+            if excp.errno != 1:
                 raise
 
 
@@ -248,7 +247,7 @@ class WorkTree(object):
         # Use a try/except because this fails with new repositories
         try:
             self._send_subprocess(['git', 'reset', '--hard', '-q'])
-        except CalledProcessError:
+        except EnvironmentError:
             pass
 
 

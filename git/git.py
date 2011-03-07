@@ -16,14 +16,14 @@
 
 # Import from the Standard Library
 from datetime import datetime
-from os import remove, rmdir, walk
-from os.path import exists, isabs, isfile, normpath
+from os import listdir, remove, rmdir, walk
+from os.path import abspath, exists, isabs, isfile
 from re import search
 from shutil import copy2, copytree
 
 # Import from pygit2
-from pygit2 import Repository
-from pygit2 import GIT_SORT_TIME, GIT_SORT_REVERSE
+from pygit2 import Repository, GitError
+from pygit2 import GIT_SORT_REVERSE, GIT_SORT_TIME
 from pygit2 import GIT_OBJ_COMMIT, GIT_OBJ_TREE
 
 # Import from itools
@@ -37,19 +37,32 @@ class WorkTree(object):
     timestamp = None
 
     def __init__(self, path):
-        self.path = normpath(path) + '/'
+        self.path = abspath(path) + '/'
         self.index_path = '%s/.git/index' % path
         self.cache = {} # {sha: object}
 
 
     def _get_abspath(self, path):
         if isabs(path):
+            if path.startswith(self.path):
+                return path
             raise ValueError, 'unexpected absolute path "%s"' % path
+        if path == '.':
+            return self.path
         return '%s%s' % (self.path, path)
 
 
     def _send_subprocess(self, cmd):
         return get_pipe(cmd, cwd=self.path)
+
+
+    def _resolve_reference(self, reference):
+        if reference != 'HEAD':
+            raise NotImplementedError
+
+        repo_path = '%s/.git' % self.path
+        ref = open('%s/HEAD' % repo_path).read().split()[-1]
+        return open('%s/%s' % (repo_path, ref)).read().strip()
 
 
     @lazy
@@ -70,6 +83,7 @@ class WorkTree(object):
         for name in path.split('/'):
             if obj.type != GIT_OBJ_TREE:
                 return None
+            #entry = obj[name] if name in obj else None
             entry = get_tree_entry_by_name(obj, name)
             if entry is None:
                 return None
@@ -79,14 +93,17 @@ class WorkTree(object):
 
     @property
     def index(self):
-        path = self.index_path
-        if not exists(path):
-            return None
-
         index = self.repo.index
-        if not self.timestamp or self.timestamp < lfs.get_mtime(path):
-            index.read()
-            self.timestamp = lfs.get_mtime(path)
+        # Bare repository
+        if index is None:
+            raise RuntimeError, 'expected standard repository, not bare'
+
+        path = self.index_path
+        if exists(path):
+            mtime = lfs.get_mtime(path)
+            if not self.timestamp or self.timestamp < mtime:
+                index.read()
+                self.timestamp = mtime
 
         return index
 
@@ -100,20 +117,17 @@ class WorkTree(object):
 
     def git_add(self, *args):
         index = self.index
-        if index is None:
-            self._send_subprocess(['git', 'add'] + list(args))
-            return
         n = len(self.path)
         for path in args:
             abspath = self._get_abspath(path)
             # 1. File
             if isfile(abspath):
-                index.add(path, 0)
+                index.add(path)
                 continue
             # 2. Folder
             for root, dirs, files in walk(abspath):
                 for name in files:
-                    index.add('%s/%s' % (root[n:], name), 0)
+                    index.add('%s/%s' % (root[n:], name))
 
 
     def git_rm(self, *args):
@@ -146,16 +160,22 @@ class WorkTree(object):
         self.git_rm(source)
 
 
-    def git_save_index(self):
-        self.index.write()
-        self.timestamp = lfs.get_mtime(self.index_path)
-
-
     def git_clean(self):
-        self._send_subprocess(['git', 'clean', '-fxdq'])
+        index = self.index
+        n = len(self.path)
+        for root, dirs, files in walk(self.path, topdown=False):
+            for name in files:
+                path = '%s/%s' % (root[n:], name)
+                if path not in index:
+                    remove('%s/%s' % (root, name))
+            if not listdir(root):
+                rmdir(root)
 
 
     def git_commit(self, message, author=None, date=None, quiet=False):
+        self.index.write()
+        self.timestamp = lfs.get_mtime(self.index_path)
+
         cmd = ['git', 'commit', '-m', message]
         if author:
             cmd.append('--author=%s' % author)
@@ -187,9 +207,7 @@ class WorkTree(object):
     def git_log(self, files=None, n=None, author=None, grep=None,
                 reverse=False):
         # Get the sha
-        repo_path = '%s/.git' % self.path
-        ref = open('%s/HEAD' % repo_path).read().split()[-1]
-        sha = open('%s/%s' % (repo_path, ref)).read().strip()
+        sha = self._resolve_reference('HEAD')
 
         # Sort
         sort = GIT_SORT_TIME
@@ -250,18 +268,24 @@ class WorkTree(object):
             pass
 
 
-    def git_show(self, commit, stat=False):
-        cmd = ['git', 'show', commit, '--pretty=format:%an%n%at%n%s']
-        if stat:
-            cmd.append('--stat')
-        data = self._send_subprocess(cmd)
-        author, date, message, diff = data.split('\n', 3)
+    def git_show(self, sha):
+        commit = self.lookup(sha)
 
+        cmd = ['git', 'show', sha, '--pretty=format:']
+        diff = self._send_subprocess(cmd)[1:]
+
+        author = commit.author
         return {
-            'author_name': author,
-            'author_date': datetime.fromtimestamp(int(date)),
-            'subject': message,
+            'author_name': author[0],
+            'author_date': datetime.fromtimestamp(author[2]),
+            'subject': commit.message_short,
             'diff': diff}
+
+
+    def git_stats(self, commit):
+        cmd = ['git', 'show', '--pretty=format:', '--stat', commit]
+        data = self._send_subprocess(cmd)
+        return data[1:]
 
 
     def describe(self, match=None):
@@ -291,24 +315,29 @@ class WorkTree(object):
     def get_branch_name(self):
         """Returns the name of the current branch.
         """
-        data = self._send_subprocess(['git', 'branch'])
-        for line in data.splitlines():
-            if line.startswith('*'):
-                return line[2:]
-
-        return None
+        ref = open('%s/.git/HEAD' % self.path).read().rstrip()
+        ref = ref.rsplit('/', 1)
+        return ref[1] if len(ref) == 2 else None
 
 
     def get_filenames(self):
         """Returns the list of filenames tracked by git.
         """
-        data = self._send_subprocess(['git', 'ls-files'])
-        return [ x.strip() for x in data.splitlines() ]
+        index = self.index
+
+        filenames = []
+        i = 0
+        while i < len(index):
+            filenames.append(index[i].path)
+            i += 1
+
+        return filenames
 
 
-    def get_files_changed(self, expr):
+    def get_files_changed(self, since, until):
         """Get the files that have been changed by a set of commits.
         """
+        expr = '%s..%s' % (since, until)
         cmd = ['git', 'show', '--numstat', '--pretty=format:', expr]
         data = self._send_subprocess(cmd)
         lines = data.splitlines()
@@ -320,58 +349,28 @@ class WorkTree(object):
 
         For now only the commit id and the timestamp are returned.
         """
-        data = self._send_subprocess(['git', 'cat-file', 'commit', reference])
-        lines = data.splitlines()
+        sha = self._resolve_reference(reference)
+        commit = self.lookup(sha)
+        parents = commit.parents
+        an, ae, ad = commit.author
+        cn, ce, cd = commit.committer
 
-        # Default values
-        metadata = {
-            'tree': None,
-            'parent': None,
-            'author': (None, None),
-            'committer': (None, None),
-            'message': []}
-
-        # Parse the data (with a simple automaton)
-        state = 0
-        for line in lines:
-            if state == 0:
-                # Heading
-                line = line.strip()
-                if not line:
-                    state = 1
-                    continue
-                key, value = line.split(' ', 1)
-                if key == 'tree':
-                    metadata['tree'] = value
-                elif key == 'parent':
-                    metadata['parent'] = value
-                elif key == 'author':
-                    name, ts, tz = value.rsplit(' ', 2)
-                    ts = datetime.fromtimestamp(int(ts))
-                    metadata['author'] = (name, ts)
-                elif key == 'committer':
-                    name, ts, tz = value.rsplit(' ', 2)
-                    ts = datetime.fromtimestamp(int(ts))
-                    metadata['committer'] = (name, ts)
-            else:
-                # Message
-                metadata['message'].append(line)
-
-        # Post-process message
-        metadata['message'] = '\n'.join(metadata['message'])
-
-        # Ok
-        return metadata
+        return {
+            'tree': commit.tree.sha,
+            'parent': parents[0].sha if parents else None,
+            'author': ('%s <%s>' % (an, ae), datetime.fromtimestamp(ad)),
+            'committer': ('%s <%s>' % (cn, ce), datetime.fromtimestamp(cd)),
+            'message': commit.message}
 
 
     def is_available(self):
         """Returns True if we are in a git working directory, False otherwise.
         """
         try:
-            data = self._send_subprocess(['git', 'branch'])
-        except EnvironmentError:
+            self.repo
+        except GitError:
             return False
-        return bool(data)
+        return True
 
 
 

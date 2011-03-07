@@ -471,7 +471,6 @@ class GitDatabase(ROGitDatabase):
         # 3. Call git
         git_add = list(added) + list(changed)
         self.worktree.git_add(*git_add)
-        self.worktree.git_save_index()
         self.worktree.git_commit(git_msg, git_author, git_date, True)
 
         # 4. Clear state

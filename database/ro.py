@@ -374,28 +374,27 @@ class ROGitDatabase(object):
         return self.worktree.git_show(revision)
 
 
-    def get_files_affected(self, from_, to):
+    def get_files_affected(self, since, until):
         """Get the unordered set of files affected by a list of revisions.
         """
-        expr = '%s..%s' % (from_, to)
-        return self.worktree.get_files_changed(expr)
+        return self.worktree.get_files_changed(since, until)
 
 
-    def get_stats(self, from_, to=None, paths=None):
-        if to is None:
-            return self.worktree.git_show(from_, stat=True)['diff']
+    def get_stats(self, since, until=None, paths=None):
+        if until is None:
+            return self.worktree.git_stats(since)
 
-        expr = '%s..%s' % (from_, to)
+        expr = '%s..%s' % (since, until)
         return self.worktree.git_diff(expr, paths, stat=True)
 
 
-    def get_diff_between(self, from_, to='HEAD', paths=None):
+    def get_diff_between(self, since, until='HEAD', paths=None):
         """Get the diff of the given path from the given commit revision to
         HEAD.
 
         If "stat" is True, get a diff stat only.
         """
-        expr = '%s..%s' % (from_, to)
+        expr = '%s..%s' % (since, until)
         return self.worktree.git_diff(expr, paths)
 
 

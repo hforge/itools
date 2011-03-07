@@ -22,7 +22,7 @@ from re import search
 from shutil import copy2, copytree
 
 # Import from pygit2
-from pygit2 import Repository, GitError
+from pygit2 import Repository, GitError, init_repository
 from pygit2 import GIT_SORT_REVERSE, GIT_SORT_TIME
 from pygit2 import GIT_OBJ_COMMIT, GIT_OBJ_TREE
 
@@ -112,7 +112,7 @@ class WorkTree(object):
     # Public API
     #######################################################################
     def git_init(self):
-        get_pipe(['git', 'init', '-q', self.path])
+        self.repo = init_repository(self.path, False)
 
 
     def git_add(self, *args):

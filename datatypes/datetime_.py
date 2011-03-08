@@ -254,5 +254,5 @@ class ISODateTime(DataType):
             return ''
         fmt = '%Y-%m-%dT%H:%M:%S'
         if value.tzinfo is not None:
-            fmt += '%Z'
+            fmt += '%z'
         return value.strftime(fmt)

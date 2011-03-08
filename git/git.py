@@ -17,9 +17,10 @@
 # Import from the Standard Library
 from datetime import datetime
 from os import listdir, remove, rmdir, walk
-from os.path import abspath, exists, isabs, isfile
+from os.path import abspath, exists, getmtime, isabs, isfile
 from re import search
 from shutil import copy2, copytree
+from subprocess import Popen, PIPE
 
 # Import from pygit2
 from pygit2 import Repository, GitError, init_repository
@@ -27,9 +28,7 @@ from pygit2 import GIT_SORT_REVERSE, GIT_SORT_TIME
 from pygit2 import GIT_OBJ_COMMIT, GIT_OBJ_TREE
 
 # Import from itools
-from itools.core import get_pipe, lazy, utc
-from itools.datatypes import ISODateTime
-from itools.fs import lfs
+from itools.core import lazy
 
 
 class WorkTree(object):
@@ -52,8 +51,14 @@ class WorkTree(object):
         return '%s%s' % (self.path, path)
 
 
-    def _send_subprocess(self, cmd):
-        return get_pipe(cmd, cwd=self.path)
+    def _call(self, command):
+        """Wrapper around 'subprocess.Popen'
+        """
+        popen = Popen(command, stdout=PIPE, stderr=PIPE, cwd=self.path)
+        stdoutdata, stderrdata = popen.communicate()
+        if popen.returncode != 0:
+            raise EnvironmentError, (popen.returncode, stderrdata)
+        return stdoutdata
 
 
     def _resolve_reference(self, reference):
@@ -100,7 +105,7 @@ class WorkTree(object):
 
         path = self.index_path
         if exists(path):
-            mtime = lfs.get_mtime(path)
+            mtime = getmtime(path)
             if not self.timestamp or self.timestamp < mtime:
                 index.read()
                 self.timestamp = mtime
@@ -174,19 +179,19 @@ class WorkTree(object):
 
     def git_commit(self, message, author=None, date=None, quiet=False):
         self.index.write()
-        self.timestamp = lfs.get_mtime(self.index_path)
+        self.timestamp = getmtime(self.index_path)
 
         cmd = ['git', 'commit', '-m', message]
         if author:
             cmd.append('--author=%s' % author)
         if date:
-            date = ISODateTime.encode(date)
+            date = date.strftime('%Y-%m-%dT%H:%M:%S%Z')
             cmd.append('--date=%s' % date)
         if quiet:
             cmd.append('-q')
 
         try:
-            self._send_subprocess(cmd)
+            self._call(cmd)
         except EnvironmentError, excp:
             # Avoid an exception for the 'nothing to commit' case
             # FIXME Not reliable, we may catch other cases
@@ -201,7 +206,7 @@ class WorkTree(object):
         if paths:
             cmd.append('--')
             cmd.extend(paths)
-        return self._send_subprocess(cmd)
+        return self._call(cmd)
 
 
     def git_log(self, files=None, n=None, author=None, grep=None,
@@ -263,7 +268,7 @@ class WorkTree(object):
     def git_reset(self):
         # Use a try/except because this fails with new repositories
         try:
-            self._send_subprocess(['git', 'reset', '--hard', '-q'])
+            self._call(['git', 'reset', '--hard', '-q'])
         except EnvironmentError:
             pass
 
@@ -271,20 +276,20 @@ class WorkTree(object):
     def git_show(self, sha):
         commit = self.lookup(sha)
 
-        cmd = ['git', 'show', sha, '--pretty=format:']
-        diff = self._send_subprocess(cmd)[1:]
+        data = self._call(['git', 'show', sha, '--pretty=format:'])
+        data = data[1:]
 
         author = commit.author
         return {
             'author_name': author[0],
             'author_date': datetime.fromtimestamp(author[2]),
             'subject': commit.message_short,
-            'diff': diff}
+            'diff': data}
 
 
     def git_stats(self, commit):
         cmd = ['git', 'show', '--pretty=format:', '--stat', commit]
-        data = self._send_subprocess(cmd)
+        data = self._call(cmd)
         return data[1:]
 
 
@@ -296,7 +301,7 @@ class WorkTree(object):
 
         # Call
         try:
-            data = self._send_subprocess(command)
+            data = self._call(command)
         except EnvironmentError:
             return None
         tag, n, commit = data.rsplit('-', 2)
@@ -339,7 +344,7 @@ class WorkTree(object):
         """
         expr = '%s..%s' % (since, until)
         cmd = ['git', 'show', '--numstat', '--pretty=format:', expr]
-        data = self._send_subprocess(cmd)
+        data = self._call(cmd)
         lines = data.splitlines()
         return frozenset([ line.split('\t')[-1] for line in lines if line ])
 

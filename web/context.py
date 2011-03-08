@@ -374,8 +374,7 @@ class Context(object):
         tzinfo = timezone(tz) if tz else local_tz
 
         # Add the information
-        return a_datetime.replace(tzinfo=tzinfo)
-
+        return tzinfo.localize(a_datetime)
 
 
     def format_datetime(self, datetime, tz=None):

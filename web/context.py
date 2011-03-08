@@ -364,6 +364,20 @@ class Context(object):
     #######################################################################
     # API / Utilities
     #######################################################################
+    def add_user_tzinfo(self, a_datetime):
+        # a_datetime has yet a tzinfo ?
+        if a_datetime.tzinfo:
+            return a_datetime
+
+        # Search for the good tzinfo
+        tz = self.user.get_timezone() if self.user else None
+        tzinfo = timezone(tz) if tz else local_tz
+
+        # Add the information
+        return a_datetime.replace(tzinfo=tzinfo)
+
+
+
     def format_datetime(self, datetime, tz=None):
         if tz is None and self.user:
             tz = self.user.get_timezone()

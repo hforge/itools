@@ -23,7 +23,7 @@ def register_handler_class(handler_class):
         handler_classes[mimetype] = handler_class
 
 
-def get_handler_class_by_mimetype(mimetype):
+def get_handler_class_by_mimetype(mimetype, soft=False):
     if mimetype is not None:
         if mimetype in handler_classes:
             return handler_classes[mimetype]
@@ -31,5 +31,8 @@ def get_handler_class_by_mimetype(mimetype):
         main_type = mimetype.split('/')[0]
         if main_type in handler_classes:
             return handler_classes[main_type]
+
+    if soft:
+        return None
 
     raise ValueError, mimetype

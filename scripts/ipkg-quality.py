@@ -50,7 +50,7 @@ except ImportError:
 import itools
 from itools.core import merge_dicts
 from itools.fs import lfs
-from itools.git import WorkTree
+from itools.git import Worktree
 
 
 # Define list of problems
@@ -460,7 +460,7 @@ def create_graph():
     tmp_directory = '%s/ipkg_quality.git' % mkdtemp()
     call(['git', 'clone',  cwd, tmp_directory])
     chdir(tmp_directory)
-    worktree = WorkTree(tmp_directory)
+    worktree = Worktree(tmp_directory)
     # First step: we create a list of statistics
     statistics = {}
     commits = worktree.git_log(reverse=True)
@@ -598,7 +598,7 @@ if __name__ == '__main__':
     options, args = parser.parse_args()
 
     # Filenames
-    worktree = WorkTree('.')
+    worktree = Worktree('.')
     if args:
         filenames = set([])
         for arg in args:

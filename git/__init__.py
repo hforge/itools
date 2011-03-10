@@ -15,11 +15,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from git import WorkTree, init_worktree
+from worktree import Worktree, init_worktree
 
 
 
 __all__ = [
-    'WorkTree',
+    'Worktree',
     'init_worktree',
     ]

@@ -28,7 +28,7 @@ from pygit2 import GIT_SORT_REVERSE, GIT_SORT_TIME
 from pygit2 import GIT_OBJ_COMMIT, GIT_OBJ_TREE
 
 
-class WorkTree(object):
+class Worktree(object):
 
     timestamp = None
 
@@ -390,4 +390,4 @@ class WorkTree(object):
 
 def init_worktree(path):
     init_repository(path, False)
-    return WorkTree(path)
+    return Worktree(path)

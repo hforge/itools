@@ -28,7 +28,7 @@ from traceback import print_exception
 # Import from itools
 import itools
 import itools.gettext
-from itools.git import WorkTree
+from itools.git import Worktree
 from itools.handlers import ro_database
 from itools.html import XHTMLFile
 import itools.pdf
@@ -38,7 +38,7 @@ from itools.fs import lfs
 
 
 def build():
-    worktree = WorkTree('.')
+    worktree = Worktree('.')
     # Try using git facilities
     git_available = worktree.is_available()
     if not git_available:

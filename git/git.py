@@ -17,7 +17,7 @@
 # Import from the Standard Library
 from datetime import datetime
 from os import listdir, remove, rmdir, walk
-from os.path import abspath, exists, getmtime, isabs, isfile
+from os.path import abspath, exists, getmtime, isabs, isdir, isfile, normpath
 from re import search
 from shutil import copy2, copytree
 from subprocess import Popen, PIPE
@@ -96,6 +96,39 @@ class WorkTree(object):
         return obj
 
 
+    def walk(self, path='.'):
+        # 1. Check and normalize path
+        if isabs(path):
+            raise ValueError, 'unexpected absolute path "%s"' % path
+
+        path = normpath(path)
+        if path == '.':
+            path = ''
+        elif path == '.git':
+            raise ValueError, 'cannot walk .git'
+        elif not isdir('%s%s' % (self.path, path)):
+            yield path
+            return
+        else:
+            path += '/'
+
+        # 2. Go
+        stack = [path]
+        while stack:
+            folder_rel = stack.pop()
+            folder_abs = '%s%s' % (self.path, folder_rel)
+            for name in listdir(folder_abs):
+                path_abs = '%s%s' % (folder_abs, name)
+                path_rel = '%s%s' % (folder_rel, name)
+                if path_rel == '.git':
+                    continue
+                if isdir(path_abs):
+                    path_rel += '/'
+                    stack.append(path_rel)
+
+                yield path_rel
+
+
     @property
     def index(self):
         index = self.repo.index
@@ -122,17 +155,10 @@ class WorkTree(object):
 
     def git_add(self, *args):
         index = self.index
-        n = len(self.path)
         for path in args:
-            abspath = self._get_abspath(path)
-            # 1. File
-            if isfile(abspath):
-                index.add(path)
-                continue
-            # 2. Folder
-            for root, dirs, files in walk(abspath):
-                for name in files:
-                    index.add('%s/%s' % (root[n:], name))
+            for path in self.walk(path):
+                if path[-1] != '/':
+                    index.add(path)
 
 
     def git_rm(self, *args):
@@ -167,14 +193,15 @@ class WorkTree(object):
 
     def git_clean(self):
         index = self.index
-        n = len(self.path)
-        for root, dirs, files in walk(self.path, topdown=False):
-            for name in files:
-                path = '%s/%s' % (root[n:], name)
-                if path not in index:
-                    remove('%s/%s' % (root, name))
-            if not listdir(root):
-                rmdir(root)
+
+        walk = self.walk()
+        for path in sorted(walk, reverse=True):
+            abspath = '%s%s' % (self.path, path)
+            if path[-1] == '/':
+                if not listdir(abspath):
+                    rmdir(abspath)
+            elif path not in index:
+                remove(abspath)
 
 
     def git_commit(self, message, author=None, date=None, quiet=False):

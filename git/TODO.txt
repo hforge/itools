@@ -1,0 +1,11 @@
+
+- Rewrite Worktree.walk to use two callbacks, for files and folders.
+  Replace call to os.walk by Worktree.walk
+
+- Use 'os.path.join' to prepare for Windows support
+
+- Add docstrings
+
+- Remove "git_" prefix from methods
+
+- Implement "git status"

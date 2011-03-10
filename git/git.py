@@ -27,9 +27,6 @@ from pygit2 import Repository, GitError, init_repository
 from pygit2 import GIT_SORT_REVERSE, GIT_SORT_TIME
 from pygit2 import GIT_OBJ_COMMIT, GIT_OBJ_TREE
 
-# Import from itools
-from itools.core import lazy
-
 
 class WorkTree(object):
 
@@ -39,6 +36,7 @@ class WorkTree(object):
         self.path = abspath(path) + '/'
         self.index_path = '%s/.git/index' % path
         self.cache = {} # {sha: object}
+        self.repo = Repository('%s/.git' % self.path)
 
 
     def _get_abspath(self, path):
@@ -68,11 +66,6 @@ class WorkTree(object):
         repo_path = '%s/.git' % self.path
         ref = open('%s/HEAD' % repo_path).read().split()[-1]
         return open('%s/%s' % (repo_path, ref)).read().strip()
-
-
-    @lazy
-    def repo(self):
-        return Repository('%s/.git' % self.path)
 
 
     def lookup(self, sha):
@@ -149,10 +142,6 @@ class WorkTree(object):
     #######################################################################
     # Public API
     #######################################################################
-    def git_init(self):
-        self.repo = init_repository(self.path, False)
-
-
     def git_add(self, *args):
         index = self.index
         for path in args:
@@ -396,3 +385,9 @@ class WorkTree(object):
         except GitError:
             return False
         return True
+
+
+
+def init_worktree(path):
+    init_repository(path, False)
+    return WorkTree(path)

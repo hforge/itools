@@ -88,10 +88,10 @@ class WorkTree(object):
         for name in path.split('/'):
             if obj.type != GIT_OBJ_TREE:
                 return None
-            #entry = obj[name] if name in obj else None
-            entry = get_tree_entry_by_name(obj, name)
-            if entry is None:
+
+            if name not in obj:
                 return None
+            entry = obj[name]
             obj = self.lookup(entry.sha)
         return obj
 
@@ -356,14 +356,7 @@ class WorkTree(object):
         """Returns the list of filenames tracked by git.
         """
         index = self.index
-
-        filenames = []
-        i = 0
-        while i < len(index):
-            filenames.append(index[i].path)
-            i += 1
-
-        return filenames
+        return [ index[i].path for i in range(0, len(index)) ]
 
 
     def get_files_changed(self, since, until):
@@ -403,16 +396,3 @@ class WorkTree(object):
         except GitError:
             return False
         return True
-
-
-
-# TODO We implement this function because the equivalent in libgit2/pygit2
-# does not work. Investigate the problem and open an issue in github.
-def get_tree_entry_by_name(tree, name):
-    i = 0
-    while i < len(tree):
-        entry = tree[i]
-        if entry.name == name:
-            return entry
-        i += 1
-    return None

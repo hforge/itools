@@ -72,6 +72,18 @@ class PhraseQuery(BaseQuery):
         return "%r, %r" % (self.name, self.value)
 
 
+
+class GEQuery(BaseQuery):
+
+    def __init__(self, name, value):
+        self.name = name
+        self.value = value
+
+
+    def __repr_parameters__(self):
+        return "%r, %r" % (self.name, self.value)
+
+
 ############################################################################
 # Boolean or complex searches
 ############################################################################

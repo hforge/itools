@@ -17,8 +17,9 @@
 
 # Import from itools
 from catalog import Catalog, make_catalog, CatalogAware
-from queries import AllQuery, NotQuery, StartQuery, TextQuery
-from queries import RangeQuery, PhraseQuery, AndQuery, OrQuery, pprint_query
+from queries import AllQuery, AndQuery, NotQuery, OrQuery
+from queries import PhraseQuery, TextQuery, RangeQuery, GEQuery, StartQuery
+from queries import pprint_query
 from registry import get_register_fields, register_field
 from ro import ROGitDatabase, ReadonlyError
 from rw import GitDatabase, make_git_database, check_database
@@ -46,4 +47,5 @@ __all__ = [
     'NotQuery',
     'StartQuery',
     'TextQuery',
+    'GEQuery',
     'pprint_query']

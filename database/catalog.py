@@ -30,7 +30,7 @@ from itools.fs import lfs
 from itools.i18n import is_punctuation
 from itools.log import log_warning
 from queries import AllQuery, AndQuery, NotQuery, OrQuery, PhraseQuery
-from queries import RangeQuery, StartQuery, TextQuery
+from queries import RangeQuery, StartQuery, TextQuery, GEQuery
 
 
 
@@ -617,6 +617,24 @@ class Catalog(object):
         if query_class is NotQuery:
             return Query(OP_AND_NOT, Query(''), i2x(query.query))
 
+        # Greater-than-or-Equal
+        if query_class is GEQuery:
+            name = query.name
+            if type(name) is not str:
+                raise TypeError, "unexpected '%s'" % type(name)
+            # If there is a problem => an empty result
+            if name not in metadata:
+                warn_not_indexed(name)
+                return Query()
+
+            info = metadata[name]
+            value = info.get('value')
+            if value is None:
+                raise AttributeError, MSG_NOT_STORED.format(name=name)
+            field_cls = _get_field_cls(name, fields, info)
+
+            return Query(OP_VALUE_GE, value, _encode(field_cls, query.value))
+
 
 
 def make_catalog(uri, fields):
@@ -839,8 +857,7 @@ def _make_PhraseQuery(field_cls, value, prefix):
         term = term_list_item.term
         for termpos in term_list_item.positer:
             words.append((termpos, term))
-    words.sort()
-    words = [ word[1] for word in words ]
+    words = [ word[1] for word in sorted(words) ]
 
     # Make the query
     return Query(OP_PHRASE, words)

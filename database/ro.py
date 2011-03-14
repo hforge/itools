@@ -370,34 +370,6 @@ class ROGitDatabase(object):
     #######################################################################
     # Git
     #######################################################################
-    def get_diff(self, revision):
-        return self.worktree.git_show(revision)
-
-
-    def get_files_affected(self, since, until):
-        """Get the unordered set of files affected by a list of revisions.
-        """
-        return self.worktree.get_files_changed(since, until)
-
-
-    def get_stats(self, since, until=None, paths=None):
-        if until is None:
-            return self.worktree.git_stats(since)
-
-        expr = '%s..%s' % (since, until)
-        return self.worktree.git_diff(expr, paths, stat=True)
-
-
-    def get_diff_between(self, since, until='HEAD', paths=None):
-        """Get the diff of the given path from the given commit revision to
-        HEAD.
-
-        If "stat" is True, get a diff stat only.
-        """
-        expr = '%s..%s' % (since, until)
-        return self.worktree.git_diff(expr, paths)
-
-
     def get_blob(self, sha, cls):
         if sha in self.git_cache:
             return self.git_cache[sha]
@@ -408,29 +380,14 @@ class ROGitDatabase(object):
         return blob
 
 
-    def get_commit_hashs(self, path):
-        """Give the hashs for all commit concerning file
-        """
-        return [
-            x['revision'] for x in self.worktree.git_log(path, reverse=True) ]
-
-
-    def get_blob_by_revision_and_path(self, revision, path, cls):
+    def get_blob_by_revision_and_path(self, sha, path, cls):
         """Get the file contents located at the given path after the given
         commit revision has been committed.
         """
-        sha = self.worktree.get_blob_id(revision, path)
-        return self.get_blob(sha, cls)
-
-
-    def get_revisions(self, files=None, n=None, author_pattern=None,
-                      grep_pattern=None):
-        return self.worktree.git_log(files, n, author_pattern, grep_pattern)
-
-
-    def get_last_revision(self, files):
-        revisions = self.get_revisions(files, 1)
-        return revisions[0] if revisions else None
+        worktree = self.worktree
+        commit = worktree.lookup(sha)
+        obj = worktree.lookup_from_commit_by_path(commit, path)
+        return self.get_blob(obj.sha, cls)
 
 
     #######################################################################

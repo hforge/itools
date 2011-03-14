@@ -83,25 +83,6 @@ class Worktree(object):
         return open('%s/%s' % (repo_path, ref)).read().strip()
 
 
-    def _commit_resolve_path(self, commit, path):
-        """Return the object (tree or blob) the given path points to from the
-        given commit, or None if the given path does not exist.
-
-        TODO Implement Tree.getitem_by_path(path) => TreeEntry in pygit2 to
-        speed up things.
-        """
-        obj = commit.tree
-        for name in path.split('/'):
-            if obj.type != GIT_OBJ_TREE:
-                return None
-
-            if name not in obj:
-                return None
-            entry = obj[name]
-            obj = self.lookup(entry.sha)
-        return obj
-
-
     #######################################################################
     # External API
     #######################################################################
@@ -160,6 +141,25 @@ class Worktree(object):
             cache[sha] = self.repo[sha]
 
         return cache[sha]
+
+
+    def lookup_from_commit_by_path(self, commit, path):
+        """Return the object (tree or blob) the given path points to from the
+        given commit, or None if the given path does not exist.
+
+        TODO Implement Tree.getitem_by_path(path) => TreeEntry in pygit2 to
+        speed up things.
+        """
+        obj = commit.tree
+        for name in path.split('/'):
+            if obj.type != GIT_OBJ_TREE:
+                return None
+
+            if name not in obj:
+                return None
+            entry = obj[name]
+            obj = self.lookup(entry.sha)
+        return obj
 
 
     @property
@@ -289,18 +289,19 @@ class Worktree(object):
                 raise
 
 
-    def git_diff(self, expr, paths=None, stat=False):
-        cmd = ['git', 'diff', expr]
-        if stat:
-            cmd.append('--stat')
-        if paths:
-            cmd.append('--')
-            cmd.extend(paths)
-        return self._call(cmd)
-
-
-    def git_log(self, files=None, n=None, author=None, grep=None,
+    def git_log(self, paths=None, n=None, author=None, grep=None,
                 reverse=False):
+        """Equivalent to 'git log', optional keyword parameters are:
+
+          paths   -- return only commits where the given paths have been
+                     changed
+          n       -- show at most the given number of commits
+          author  -- filter out commits whose author does not match the given
+                     pattern
+          grep    -- filter out commits whose message does not match the
+                     given pattern
+          reverse -- return results in reverse order
+        """
         # Get the sha
         sha = self._resolve_reference('HEAD')
 
@@ -324,16 +325,16 @@ class Worktree(object):
                     continue
 
             # -- path ...
-            if files:
+            if paths:
                 parents = commit.parents
                 parent = parents[0] if parents else None
-                for path in files:
-                    a = self._commit_resolve_path(commit, path)
+                for path in paths:
+                    a = self.lookup_from_commit_by_path(commit, path)
                     if parent is None:
                         if a:
                             break
                     else:
-                        b = self._commit_resolve_path(parent, path)
+                        b = self.lookup_from_commit_by_path(parent, path)
                         if a is not b:
                             break
                 else:
@@ -341,11 +342,10 @@ class Worktree(object):
 
             ts = commit.commit_time
             commits.append(
-                {'revision': commit.sha,             # commit
-                 'username': commit.author[0],       # author name
-                 'date': datetime.fromtimestamp(ts), # author date
-                 'message': commit.message_short,    # subject
-                })
+                {'sha': commit.sha,
+                 'author_name': commit.author[0],
+                 'author_date': datetime.fromtimestamp(ts),
+                 'message_short': commit.message_short})
             if n is not None:
                 n -= 1
                 if n == 0:
@@ -363,24 +363,29 @@ class Worktree(object):
             pass
 
 
-    def git_show(self, sha):
-        commit = self.lookup(sha)
+    def git_diff(self, since, until=None, paths=None):
+        if until is None:
+            data = self._call(['git', 'show', since, '--pretty=format:'])
+            return data[1:]
 
-        data = self._call(['git', 'show', sha, '--pretty=format:'])
-        data = data[1:]
-
-        author = commit.author
-        return {
-            'author_name': author[0],
-            'author_date': datetime.fromtimestamp(author[2]),
-            'subject': commit.message_short,
-            'diff': data}
+        cmd = ['git', 'diff', '%s..%s' % (since, until)]
+        if paths:
+            cmd.append('--')
+            cmd.extend(paths)
+        return self._call(cmd)
 
 
-    def git_stats(self, commit):
-        cmd = ['git', 'show', '--pretty=format:', '--stat', commit]
-        data = self._call(cmd)
-        return data[1:]
+    def git_stats(self, since, until=None, paths=None):
+        if until is None:
+            cmd = ['git', 'show', '--pretty=format:', '--stat', since]
+            data = self._call(cmd)
+            return data[1:]
+
+        cmd = ['git', 'diff', '--stat', '%s..%s' % (since, until)]
+        if paths:
+            cmd.append('--')
+            cmd.extend(paths)
+        return self._call(cmd)
 
 
     def describe(self, match=None):
@@ -396,15 +401,6 @@ class Worktree(object):
             return None
         tag, n, commit = data.rsplit('-', 2)
         return tag, int(n), commit
-
-
-    def get_blob_id(self, commit_id, path):
-        commit = self.lookup(commit_id)
-        if commit.type != GIT_OBJ_COMMIT:
-            raise ValueError, 'XXX'
-
-        blob = self._commit_resolve_path(commit, path)
-        return blob.sha
 
 
     def get_branch_name(self):
@@ -446,9 +442,15 @@ class Worktree(object):
         return {
             'tree': commit.tree.sha,
             'parent': parents[0].sha if parents else None,
-            'author': ('%s <%s>' % (an, ae), datetime.fromtimestamp(ad)),
-            'committer': ('%s <%s>' % (cn, ce), datetime.fromtimestamp(cd)),
-            'message': commit.message}
+            'author_name': an,
+            'author_email': ae,
+            'author_date': datetime.fromtimestamp(ad),
+            'committer_name': cn,
+            'committer_email': ce,
+            'committer_date': datetime.fromtimestamp(cd),
+            'message': commit.message,
+            'message_short': commit.message_short,
+            }
 
 
     def is_available(self):

@@ -466,9 +466,8 @@ def create_graph():
     commits = worktree.git_log(reverse=True)
     print 'Script will analyse %s commits.' % len(commits)
     for commit in commits:
-        commit_id = commit['revision']
         # We move to a given commit
-        call(['git', 'reset', '--hard', commit_id])
+        call(['git', 'reset', '--hard', commit['sha']])
         # Print script evolution
         stdout.write('.')
         stdout.flush()
@@ -478,7 +477,7 @@ def create_graph():
         # We get code quality for this files
         stats, files_db = analyse(filenames, ignore_errors=True)
         metadata = worktree.get_metadata()
-        date_time = metadata['committer'][1]
+        date_time = metadata['committer_date']
         commit_date = date(date_time.year, date_time.month, date_time.day)
         if commit_date not in statistics:
             statistics[commit_date] = stats

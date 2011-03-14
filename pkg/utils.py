@@ -62,7 +62,7 @@ def make_version(cwd='.'):
 
     # Get the timestamp
     head = worktree.get_metadata()
-    timestamp = head['committer'][1]
+    timestamp = head['committer_date']
     timestamp = timestamp.strftime('%Y%m%d%H%M')
     return '%s-%s' % (version, timestamp)
 

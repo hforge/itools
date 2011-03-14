@@ -280,7 +280,7 @@ class GitDatabase(ROGitDatabase):
         handler = self._get_handler(source)
         if not isinstance(handler, Folder):
             if fs.exists(source):
-                self.worktree.git_mv(source, target)
+                self.worktree.git_mv(source, target, add=False)
 
             # Remove source
             self.added.discard(source)
@@ -313,7 +313,7 @@ class GitDatabase(ROGitDatabase):
                 self.changed.remove(key)
 
         if fs.exists(source):
-            self.worktree.git_mv(source, target)
+            self.worktree.git_mv(source, target, add=False)
         for path in fs.traverse(target):
             if not fs.is_folder(path):
                 path = fs.get_relative_path(path)
@@ -471,7 +471,7 @@ class GitDatabase(ROGitDatabase):
         # 3. Call git
         git_add = list(added) + list(changed)
         self.worktree.git_add(*git_add)
-        self.worktree.git_commit(git_msg, git_author, git_date, True)
+        self.worktree.git_commit(git_msg, git_author, git_date)
 
         # 4. Clear state
         changed.clear()

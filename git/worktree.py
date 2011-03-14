@@ -30,16 +30,24 @@ from pygit2 import GIT_OBJ_COMMIT, GIT_OBJ_TREE
 
 class Worktree(object):
 
-    timestamp = None
-
     def __init__(self, path):
         self.path = abspath(path) + '/'
-        self.index_path = '%s/.git/index' % path
         self.cache = {} # {sha: object}
         self.repo = Repository('%s/.git' % self.path)
+        # FIXME These two fields are already available by libgit2. TODO
+        # expose them through pygit2 and use them here.
+        self.index_path = '%s/.git/index' % path
+        self.index_mtime = None
 
 
+    #######################################################################
+    # Internal utility functions
+    #######################################################################
     def _get_abspath(self, path):
+        """Return the absolute version of the given path. This will be used by
+        calls to the operating system, this way the code does not require the
+        working directory to be set to the working tree.
+        """
         if isabs(path):
             if path.startswith(self.path):
                 return path
@@ -50,7 +58,8 @@ class Worktree(object):
 
 
     def _call(self, command):
-        """Wrapper around 'subprocess.Popen'
+        """Interface to cal git.git for functions not yet implemented using
+        libgit2.
         """
         popen = Popen(command, stdout=PIPE, stderr=PIPE, cwd=self.path)
         stdoutdata, stderrdata = popen.communicate()
@@ -60,6 +69,12 @@ class Worktree(object):
 
 
     def _resolve_reference(self, reference):
+        """This method returns the SHA the given reference points to. For now 
+        only HEAD is supported.
+
+        FIXME This is quick & dirty. TODO Implement references in pygit2 and
+        use them here.
+        """
         if reference != 'HEAD':
             raise NotImplementedError
 
@@ -68,15 +83,13 @@ class Worktree(object):
         return open('%s/%s' % (repo_path, ref)).read().strip()
 
 
-    def lookup(self, sha):
-        cache = self.cache
-        if sha not in cache:
-            cache[sha] = self.repo[sha]
+    def _commit_resolve_path(self, commit, path):
+        """Return the object (tree or blob) the given path points to from the
+        given commit, or None if the given path does not exist.
 
-        return cache[sha]
-
-
-    def _lookup_by_commit_and_path(self, commit, path):
+        TODO Implement Tree.getitem_by_path(path) => TreeEntry in pygit2 to
+        speed up things.
+        """
         obj = commit.tree
         for name in path.split('/'):
             if obj.type != GIT_OBJ_TREE:
@@ -89,7 +102,22 @@ class Worktree(object):
         return obj
 
 
+    #######################################################################
+    # External API
+    #######################################################################
     def walk(self, path='.'):
+        """This utility method traverses the working tree starting at the
+        given path, it yields relative paths from the working tree, where
+        folders end by '/' to distigish them from files.  The '.git' folder
+        at the root is excluded from the traversal.
+
+        FIXME The '/' trick will not work on Windows.
+        TODO Idea: change the prototype to accept two callbacks, one for
+        folders and another for files, instead of yielding the values.  These
+        callbacks will be applied with a partial order: 'a' before 'b' if 'b'
+        is a directory that contains 'a'. This will work on Windows and would
+        allow us to rewrite 'git rm' (but will it work for 'git status'?).
+        """
         # 1. Check and normalize path
         if isabs(path):
             raise ValueError, 'unexpected absolute path "%s"' % path
@@ -122,8 +150,26 @@ class Worktree(object):
                 yield path_rel
 
 
+    def lookup(self, sha):
+        """Return the object by the given SHA. We use a cache to warrant that
+        two calls with the same SHA will resolve to the same object, so the
+        'is' operator will work.
+        """
+        cache = self.cache
+        if sha not in cache:
+            cache[sha] = self.repo[sha]
+
+        return cache[sha]
+
+
     @property
     def index(self):
+        """Gives access to the index file. Reloads the index file if it has
+        been modified in the filesystem.
+
+        TODO An error condition should be raised if the index file has
+        been modified both in the filesystem and in memory.
+        """
         index = self.repo.index
         # Bare repository
         if index is None:
@@ -132,17 +178,17 @@ class Worktree(object):
         path = self.index_path
         if exists(path):
             mtime = getmtime(path)
-            if not self.timestamp or self.timestamp < mtime:
+            if not self.index_mtime or self.index_mtime < mtime:
                 index.read()
-                self.timestamp = mtime
+                self.index_mtime = mtime
 
         return index
 
 
-    #######################################################################
-    # Public API
-    #######################################################################
     def git_add(self, *args):
+        """Equivalent 'git add', adds the given paths to the index file.
+        If a path is a folder, adds all its content recursively.
+        """
         index = self.index
         for path in args:
             for path in self.walk(path):
@@ -151,6 +197,10 @@ class Worktree(object):
 
 
     def git_rm(self, *args):
+        """Equivalent to 'git rm', removes the given paths from the index
+        file and from the filesystem. If a path is a folder removes all
+        its content recursively, files and folders.
+        """
         index = self.index
         n = len(self.path)
         for path in args:
@@ -169,18 +219,36 @@ class Worktree(object):
                     rmdir('%s/%s' % (root, name))
 
 
-    def git_mv(self, source, target):
+    def git_mv(self, source, target, add=True):
+        """Equivalent to 'git mv': moves the file or folder in the filesystem
+        from 'source' to 'target', removes the source from the index file,
+        and adds the target to the index file.
+
+        NOTE If the boolean parameter 'add' is set to False then the target
+        files will not be added to the index file (this feature is used by
+        itools.database). TODO Check whether we cannot change itools.database
+        so we can remove this parameter.
+        """
         source_abs = self._get_abspath(source)
         target = self._get_abspath(target)
+        # 1. Copy
         if isfile(source_abs):
             copy2(source_abs, target)
         else:
             copytree(source_abs, target)
 
+        # 2. Git rm
         self.git_rm(source)
+
+        # 3. Git add
+        if add is True:
+            self.git_add(target)
 
 
     def git_clean(self):
+        """Equivalent to 'git clean -fxd', removes all files from the working
+        tree that are not in the files, and removes the empty folders too.
+        """
         index = self.index
 
         walk = self.walk()
@@ -193,18 +261,24 @@ class Worktree(object):
                 remove(abspath)
 
 
-    def git_commit(self, message, author=None, date=None, quiet=False):
-        self.index.write()
-        self.timestamp = getmtime(self.index_path)
+    def git_commit(self, message, author=None, date=None):
+        """Equivalent to 'git commit', we must give the message and we can
+        also give the author and date.
 
-        cmd = ['git', 'commit', '-m', message]
+        This feature is not yet implemented by libgit2. We first write the
+        index file changes to disk and the we call Git.
+        TODO Wait the feature is implemented by libgit2, expose it through
+        pygit2, use it here.
+        """
+        self.index.write()
+        self.index_mtime = getmtime(self.index_path)
+
+        cmd = ['git', 'commit', '-q', '-m', message]
         if author:
             cmd.append('--author=%s' % author)
         if date:
             date = date.strftime('%Y-%m-%dT%H:%M:%S%Z')
             cmd.append('--date=%s' % date)
-        if quiet:
-            cmd.append('-q')
 
         try:
             self._call(cmd)
@@ -254,12 +328,12 @@ class Worktree(object):
                 parents = commit.parents
                 parent = parents[0] if parents else None
                 for path in files:
-                    a = self._lookup_by_commit_and_path(commit, path)
+                    a = self._commit_resolve_path(commit, path)
                     if parent is None:
                         if a:
                             break
                     else:
-                        b = self._lookup_by_commit_and_path(parent, path)
+                        b = self._commit_resolve_path(parent, path)
                         if a is not b:
                             break
                 else:
@@ -329,7 +403,7 @@ class Worktree(object):
         if commit.type != GIT_OBJ_COMMIT:
             raise ValueError, 'XXX'
 
-        blob = self._lookup_by_commit_and_path(commit, path)
+        blob = self._commit_resolve_path(commit, path)
         return blob.sha
 
 

@@ -356,6 +356,12 @@ class Worktree(object):
 
 
     def git_reset(self):
+        """Equivalent to 'git reset --hard -q', this method restores the
+        state of the working tree and index file to match the state of the
+        latest commit.
+
+        TODO Implement this operation with libgit2.
+        """
         # Use a try/except because this fails with new repositories
         try:
             self._call(['git', 'reset', '--hard', '-q'])
@@ -364,6 +370,12 @@ class Worktree(object):
 
 
     def git_diff(self, since, until=None, paths=None):
+        """Return the diff between two commits, eventually reduced to the
+        given paths.
+
+        TODO Implement using Python's difflib standard library, to avoid
+        calling Git.
+        """
         if until is None:
             data = self._call(['git', 'show', since, '--pretty=format:'])
             return data[1:]
@@ -376,6 +388,11 @@ class Worktree(object):
 
 
     def git_stats(self, since, until=None, paths=None):
+        """Return statistics of the changes done between two commits,
+        eventually reduced to the given paths.
+
+        TODO Implement using libgit2
+        """
         if until is None:
             cmd = ['git', 'show', '--pretty=format:', '--stat', since]
             data = self._call(cmd)
@@ -388,17 +405,20 @@ class Worktree(object):
         return self._call(cmd)
 
 
-    def describe(self, match=None):
-        # The command
-        command = ['git', 'describe', '--tags', '--long']
-        if match:
-            command.extend(['--match', match])
+    def git_describe(self):
+        """Equivalent to 'git describe', returns a unique but short
+        identifier for the current commit based on tags.
 
+        TODO Implement using libgit2
+        """
         # Call
+        command = ['git', 'describe', '--tags', '--long']
         try:
             data = self._call(command)
         except EnvironmentError:
             return None
+
+        # Parse
         tag, n, commit = data.rsplit('-', 2)
         return tag, int(n), commit
 
@@ -415,11 +435,13 @@ class Worktree(object):
         """Returns the list of filenames tracked by git.
         """
         index = self.index
-        return [ index[i].path for i in range(0, len(index)) ]
+        return [ index[i].path for i in range(len(index)) ]
 
 
     def get_files_changed(self, since, until):
-        """Get the files that have been changed by a set of commits.
+        """Return the files that have been changed between two commits.
+
+        TODO Implement with libgit2
         """
         expr = '%s..%s' % (since, until)
         cmd = ['git', 'show', '--numstat', '--pretty=format:', expr]
@@ -429,9 +451,8 @@ class Worktree(object):
 
 
     def get_metadata(self, reference='HEAD'):
-        """Returns some metadata about the given commit reference.
-
-        For now only the commit id and the timestamp are returned.
+        """Resolves the given reference and returns metadata information
+        about the commit in the form of a dict.
         """
         sha = self._resolve_reference(reference)
         commit = self.lookup(sha)

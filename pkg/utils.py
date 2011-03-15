@@ -45,7 +45,7 @@ def make_version(cwd='.'):
         return None
 
     # The tag
-    description = worktree.describe()
+    description = worktree.git_describe()
 
     # The version name
     if description:

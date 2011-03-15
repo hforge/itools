@@ -17,9 +17,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from time import mktime
+from copy import deepcopy
 from datetime import date, datetime, time, timedelta, tzinfo
 from email.utils import parsedate_tz, mktime_tz, formatdate
+from time import mktime
 
 # Import from itools
 from itools.core import utc
@@ -155,6 +156,14 @@ class FixedOffset(tzinfo):
 
     def dst(self, dt):
         return timedelta(0)
+
+
+    # XXX The default deepcopy function generates a TB with this class!
+    def __deepcopy__(self, memo):
+        clone = self.__new__(self.__class__)
+        clone.__offset = deepcopy(self.__offset)
+        clone.__name = deepcopy(self.__name)
+        return clone
 
 
 

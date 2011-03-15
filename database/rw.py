@@ -24,7 +24,7 @@ from os.path import dirname
 # Import from itools
 from itools.core import get_pipe, lazy
 from itools.fs import lfs
-from itools.git import init_worktree
+from itools.git import open_worktree
 from itools.handlers import Folder
 from catalog import Catalog, make_catalog
 from registry import get_register_fields
@@ -520,7 +520,7 @@ def make_git_database(path, size_min, size_max):
     """
     path = lfs.get_absolute_path(path)
     # Git init
-    worktree = init_worktree('%s/database' % path)
+    open_worktree('%s/database' % path, init=True)
     # The catalog
     make_catalog('%s/catalog' % path, get_register_fields())
     # Ok

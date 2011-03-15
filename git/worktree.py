@@ -24,16 +24,15 @@ from subprocess import Popen, PIPE
 
 # Import from pygit2
 from pygit2 import Repository, GitError, init_repository
-from pygit2 import GIT_SORT_REVERSE, GIT_SORT_TIME
-from pygit2 import GIT_OBJ_COMMIT, GIT_OBJ_TREE
+from pygit2 import GIT_SORT_REVERSE, GIT_SORT_TIME, GIT_OBJ_TREE
 
 
 class Worktree(object):
 
-    def __init__(self, path):
+    def __init__(self, path, repo):
         self.path = abspath(path) + '/'
+        self.repo = repo
         self.cache = {} # {sha: object}
-        self.repo = Repository('%s/.git' % self.path)
         # FIXME These two fields are already available by libgit2. TODO
         # expose them through pygit2 and use them here.
         self.index_path = '%s/.git/index' % path
@@ -474,17 +473,16 @@ class Worktree(object):
             }
 
 
-    def is_available(self):
-        """Returns True if we are in a git working directory, False otherwise.
-        """
-        try:
-            self.repo
-        except GitError:
-            return False
-        return True
 
+def open_worktree(path, init=False, soft=False):
+    try:
+        if init:
+            repo = init_repository(path, False)
+        else:
+            repo = Repository('%s/.git' % path)
+    except GitError:
+        if soft:
+            return None
+        raise
 
-
-def init_worktree(path):
-    init_repository(path, False)
-    return Worktree(path)
+    return Worktree(path, repo)

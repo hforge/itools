@@ -50,7 +50,7 @@ except ImportError:
 import itools
 from itools.core import merge_dicts
 from itools.fs import lfs
-from itools.git import Worktree
+from itools.git import open_worktree
 
 
 # Define list of problems
@@ -460,7 +460,7 @@ def create_graph():
     tmp_directory = '%s/ipkg_quality.git' % mkdtemp()
     call(['git', 'clone',  cwd, tmp_directory])
     chdir(tmp_directory)
-    worktree = Worktree(tmp_directory)
+    worktree = open_worktree(tmp_directory)
     # First step: we create a list of statistics
     statistics = {}
     commits = worktree.git_log(reverse=True)
@@ -597,13 +597,13 @@ if __name__ == '__main__':
     options, args = parser.parse_args()
 
     # Filenames
-    worktree = Worktree('.')
+    worktree = open_worktree('.', soft=True)
     if args:
         filenames = set([])
         for arg in args:
             filenames = filenames.union(glob(arg))
         filenames = list(filenames)
-    elif worktree.is_available():
+    elif worktree:
         filenames = worktree.get_filenames()
         filenames = [ x for x in filenames if x.endswith('.py') ]
     else:
@@ -625,7 +625,7 @@ if __name__ == '__main__':
     # (1) Export graph
     if options.graph:
         # Check if GIT is available
-        if not worktree.is_available():
+        if not worktree:
             parser.error(u'Error, your project must be versioned with GIT.')
         # Check if create_graph is available
         if not create_graph_is_available:

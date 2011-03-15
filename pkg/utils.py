@@ -27,7 +27,7 @@ from sys import _getframe, argv
 
 # Import from itools
 from itools.core import freeze, get_pipe, get_version
-from itools.git import Worktree
+from itools.git import open_worktree
 from itools.handlers import ro_database
 from handlers import SetupConf
 
@@ -38,7 +38,7 @@ def make_version(cwd='.'):
     be written to the 'version.txt' file, which will be read once the software
     is installed to get the version number.
     """
-    worktree = Worktree(cwd)
+    worktree = open_worktree(cwd)
     # The name of the active branch
     branch = worktree.get_branch_name()
     if branch is None:
@@ -197,8 +197,8 @@ def get_config():
 
 
 def get_manifest():
-    worktree = Worktree('.')
-    if worktree.is_available():
+    worktree = open_worktree('.', soft=True)
+    if worktree:
         exclude = frozenset(['.gitignore'])
         return [ x for x in worktree.get_filenames() if x not in exclude ]
 

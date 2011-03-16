@@ -30,7 +30,7 @@ from itools.fs import lfs
 from itools.i18n import is_punctuation
 from itools.log import log_warning
 from queries import AllQuery, AndQuery, NotQuery, OrQuery, PhraseQuery
-from queries import RangeQuery, StartQuery, TextQuery
+from queries import RangeQuery, StartQuery, TextQuery, _MultipleQuery
 
 
 
@@ -468,7 +468,7 @@ class Catalog(object):
     def _query2xquery(self, query):
         """take a "itools" query and return a "xapian" query
         """
-        query_class = query.__class__
+        query_class = type(query)
         fields = self._fields
         metadata = self._metadata
 
@@ -604,8 +604,12 @@ class Catalog(object):
             qp.set_database(self._db)
             return qp.parse_query(_encode(field_cls, value), TQ_FLAGS, prefix)
 
-        # And
         i2x = self._query2xquery
+        # Multiple query with single atom
+        if isinstance(query, _MultipleQuery) and len(query.atoms) == 1:
+            return i2x(query.atoms[0])
+
+        # And
         if query_class is AndQuery:
             return Query(OP_AND, [ i2x(q) for q in query.atoms ])
 

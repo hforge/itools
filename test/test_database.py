@@ -421,6 +421,35 @@ class CatalogTestCase(TestCase):
         self.assertEqual(len(results), 2)
 
 
+    def test_AndQuery_empty(self):
+        catalog = Catalog('tests/catalog', Document.fields)
+
+        query = AndQuery()
+        query.append(PhraseQuery('data', u'mouse'))
+        query.append(NotQuery(PhraseQuery('data', u'lion')))
+        results = catalog.search(query)
+        self.assertEqual(len(results), 2)
+
+
+    def test_AndQuery_single(self):
+        catalog = Catalog('tests/catalog', Document.fields)
+
+        query = AndQuery(PhraseQuery('data', u'mouse'))
+        query.append(NotQuery(PhraseQuery('data', u'lion')))
+        results = catalog.search(query)
+        self.assertEqual(len(results), 2)
+
+
+    def test_AndQuery_multiple(self):
+        catalog = Catalog('tests/catalog', Document.fields)
+
+        query = AndQuery(
+                PhraseQuery('data', u'mouse'),
+                NotQuery(PhraseQuery('data', u'lion')))
+        results = catalog.search(query)
+        self.assertEqual(len(results), 2)
+
+
     def test_TextQuery(self):
         catalog = Catalog('tests/catalog', Document.fields)
 

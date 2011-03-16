@@ -75,20 +75,7 @@ class PhraseQuery(BaseQuery):
 ############################################################################
 # Boolean or complex searches
 ############################################################################
-class AndQuery(BaseQuery):
-
-    def __init__(self, *args):
-        self.atoms = [ x for x in args if not isinstance(x, AllQuery) ]
-        if len(self.atoms) == 0 and len(args) > 0:
-            self.atoms = [AllQuery()]
-
-
-    def __repr_parameters__(self):
-        return '\n' + ',\n'.join([ repr(x) for x in self.atoms ])
-
-
-
-class OrQuery(BaseQuery):
+class _MultipleQuery(BaseQuery):
 
     def __init__(self, *args):
         for x in args:
@@ -99,8 +86,24 @@ class OrQuery(BaseQuery):
             self.atoms = args
 
 
+    def append(self, *args):
+        if self.atoms and isinstance(self.atoms[0], AllQuery):
+            return
+        self.atoms += args
+
+
     def __repr_parameters__(self):
         return '\n' + ',\n'.join([ repr(x) for x in self.atoms ])
+
+
+
+class AndQuery(_MultipleQuery):
+    pass
+
+
+
+class OrQuery(_MultipleQuery):
+    pass
 
 
 

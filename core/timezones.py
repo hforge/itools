@@ -20,21 +20,50 @@ from time import altzone, daylight, localtime, mktime, timezone, tzname
 
 
 ###########################################################################
-# UTC
+# Fixed offset
 ###########################################################################
-class UTC(tzinfo):
 
-    def utcoffset(self, dt):
-        return timedelta(0)
+# FIXME pytz imports gettext, if we import pytz early then 'setup.py install'
+# fails because pytz imports itools.gettext by mistake.
+# TODO Rename itools.gettext to something else? That would allow to simplify
+# the code below
 
-    def tzname(self, dt):
-        # pytz.utc returns 'UTC', otherwise we could use it
-        return "Z"
+FixedOffset = None
+utc = None
 
-    def dst(self, dt):
-        return timedelta(0)
+def _init():
+    global FixedOffset
+    if FixedOffset is None:
+        from pytz import _FixedOffset
+        class FixedOffset(_FixedOffset):
+            def tzname(self, dt):
+                minutes = self._minutes
+                sign = '-' if minutes < 0 else '+'
+                minutes = abs(minutes)
+                return '%s%02d:%02d' % (sign, minutes/60, minutes%60)
 
-utc = UTC()
+    global utc
+    if utc is None:
+        from pytz import UTC as _UTC
+        class UTC(_UTC.__class__):
+            def tzname(self, dt):
+                return "Z"
+        utc = UTC()
+
+
+def fixed_offset(offset, _tzinfos={}):
+    # Cache
+    tz = _tzinfos.get(offset)
+    if tz:
+        return tz
+
+    # Initialize global variables (XXX see comments above)
+    _init()
+
+    # Ok
+    tz = utc if offset == 0 else FixedOffset(offset)
+    _tzinfos[offset] = tz
+    return tz
 
 
 ###########################################################################

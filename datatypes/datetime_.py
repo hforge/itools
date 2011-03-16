@@ -17,13 +17,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from copy import deepcopy
-from datetime import date, datetime, time, timedelta, tzinfo
+from datetime import date, datetime, time
 from email.utils import parsedate_tz, mktime_tz, formatdate
 from time import mktime
 
 # Import from itools
-from itools.core import utc
+from itools.core import fixed_offset
 from base import DataType
 
 
@@ -128,45 +127,6 @@ class ISOCalendarDate(DataType):
 # TODO ISOWeekDate
 # TODO ISOOrdinalDate
 
-
-
-class FixedOffset(tzinfo):
-    """Fixed offset in minutes east from UTC."""
-
-    def __init__(self, sign, offset_h, offset_m):
-        if sign == '+':
-            fact = 1
-        else:
-            fact = -1
-        minutes = fact * (offset_h * 60 + offset_m)
-        self.__offset = timedelta(minutes=minutes)
-        if offset_m:
-            self.__name = '%c%.2d:%.2d' % (sign, offset_h, offset_m)
-        else:
-            self.__name = '%c%.2d:00' % (sign, offset_h)
-
-
-    def utcoffset(self, dt):
-        return self.__offset
-
-
-    def tzname(self, dt):
-        return self.__name
-
-
-    def dst(self, dt):
-        return timedelta(0)
-
-
-    # XXX The default deepcopy function generates a TB with this class!
-    def __deepcopy__(self, memo):
-        clone = self.__new__(self.__class__)
-        clone.__offset = deepcopy(self.__offset)
-        clone.__name = deepcopy(self.__name)
-        return clone
-
-
-
 class ISOTime(DataType):
     """Extended formats (from max. to min. precission): %H:%M:%S, %H:%M
 
@@ -182,7 +142,7 @@ class ISOTime(DataType):
         # Timezone
         if data[-1] == 'Z':
             data = data[:-1]
-            tzinfo = utc
+            tzinfo = fixed_offset(0)
         else:
             p_pos = data.find('+')
             m_pos = data.find('-')
@@ -200,7 +160,10 @@ class ISOTime(DataType):
                 o_h = int(offset[0])
                 o_m = int(offset[1]) if offset[1] else 0
                 data = data[:pos]
-                tzinfo = FixedOffset(sign, o_h, o_m)
+                offset = (o_h * 60 + o_m)
+                if sign == '-':
+                    offset = -offset
+                tzinfo = fixed_offset(offset)
 
         # Extended formats
         if ':' in data:

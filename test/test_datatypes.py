@@ -24,12 +24,14 @@ from time import timezone, mktime
 from unittest import TestCase, main
 
 # Import from itools
-from itools.core import utc
+from itools.core import fixed_offset
 from itools.datatypes import ISOTime, ISOCalendarDate, ISODateTime, HTTPDate
 from itools.datatypes import Integer, Decimal, Boolean, Unicode, URI, Email
 from itools.datatypes import QName, Tokens, Enumerate
 from itools.datatypes import XMLContent, XMLAttribute
-from itools.datatypes.datetime_ import FixedOffset
+
+
+utc = fixed_offset(0)
 
 
 def datetime_utc2local(dt):
@@ -139,7 +141,7 @@ class EnumerateTestCase(TestCase):
 class ISOTimeTestCase(TestCase):
 
     def test_time_decode(self):
-        gmt2 = FixedOffset('+', 2, 0)
+        gmt2 = fixed_offset(120)
         test_times = {
             '13:45:30': (13, 45, 30),
             '13:45': (13, 45),
@@ -163,7 +165,7 @@ class ISOTimeTestCase(TestCase):
 
 
     def test_time_encode(self):
-        gmt2 = FixedOffset('+', 2, 0)
+        gmt2 = fixed_offset(120)
         test_times = {
             (13, 45, 30): '13:45:30',
             (13, 45): '13:45:00',

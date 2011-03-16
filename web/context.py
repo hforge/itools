@@ -29,7 +29,7 @@ from urllib import quote, unquote
 from pytz import timezone
 
 # Import from itools
-from itools.core import freeze, lazy, local_tz, utc
+from itools.core import freeze, lazy, local_tz, fixed_offset
 from itools.datatypes import String, HTTPDate
 from itools.http import get_type, Entity
 from itools.http import Cookie, SetCookieDataType
@@ -100,7 +100,7 @@ class Context(object):
 
     @lazy
     def timestamp(self):
-        return datetime.utcnow().replace(tzinfo=utc)
+        return datetime.utcnow().replace(tzinfo=fixed_offset(0))
 
 
     @lazy

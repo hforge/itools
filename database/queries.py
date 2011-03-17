@@ -78,38 +78,47 @@ class PhraseQuery(BaseQuery):
 class _MultipleQuery(BaseQuery):
 
     def __init__(self, *args):
-        for x in args:
-            if isinstance(x, AllQuery):
-                self.atoms = [x]
-                break
-        else:
-            self.atoms = args
-
-
-    def append(self, *args):
-        if self.atoms and isinstance(self.atoms[0], AllQuery):
-            return
-        self.atoms += args
+        self.atoms = []
+        for arg in args:
+            self.append(arg)
 
 
     def __repr_parameters__(self):
         return '\n' + ',\n'.join([ repr(x) for x in self.atoms ])
 
 
+    def append(self, atom):
+        raise NotImplementedError
+
+
 
 class AndQuery(_MultipleQuery):
 
-    def __init__(self, *args):
-        self.atoms = args
-
-
-    def append(self, *args):
-        self.atoms += args
+    def append(self, atom):
+        atoms = self.atoms
+        n = len(atoms)
+        if n == 0:
+            atoms.append(atom)
+        elif n == 1 and type(atoms[0]) is AllQuery:
+            self.atoms = [atom]
+        elif type(atom) is not AllQuery:
+            atoms.append(atom)
 
 
 
 class OrQuery(_MultipleQuery):
-    pass
+
+    def append(self, atom):
+        atoms = self.atoms
+        n = len(atoms)
+        if n == 0:
+            atoms.append(atom)
+        elif type(atoms[0]) is AllQuery:
+            pass
+        elif type(atom) is AllQuery:
+            self.atoms = [atom]
+        else:
+            atoms.append(atom)
 
 
 

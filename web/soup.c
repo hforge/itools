@@ -436,7 +436,7 @@ static PyMethodDef PyMessage_methods[] = {
 static PyTypeObject PyMessageType = {
   PyObject_HEAD_INIT
   (NULL) 0,                     /* ob_size */
-  "itools.http.soup.SoupMessage",       /* tp_name */
+  "itools.web.soup.SoupMessage",/* tp_name */
   sizeof (PyMessage),           /* tp_basicsize */
   0,                            /* tp_itemsize */
   (destructor) PyMessage_dealloc,       /* tp_dealloc */
@@ -603,7 +603,7 @@ PyServerType_listen (PyServer * self, PyObject * args, PyObject * kwdict)
   soup_address_resolve_sync (s_address, NULL);
 
   /* s_server */
-  s_server = soup_server_new (SOUP_SERVER_SERVER_HEADER, "itools.http",
+  s_server = soup_server_new (SOUP_SERVER_SERVER_HEADER, "itools.web",
                               SOUP_SERVER_INTERFACE, s_address, NULL);
   if (!s_server)
     {
@@ -666,7 +666,7 @@ static PyMethodDef PyServer_methods[] = {
 static PyTypeObject PyServerType = {
   PyObject_HEAD_INIT
   (NULL) 0,                     /* ob_size */
-  "itools.http.soup.SoupServer",        /* tp_name */
+  "itools.web.soup.SoupServer", /* tp_name */
   sizeof (PyServer),            /* tp_basicsize */
   0,                            /* tp_itemsize */
   0,                            /* tp_dealloc */

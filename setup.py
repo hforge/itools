@@ -74,7 +74,7 @@ if __name__ == '__main__':
     try:
         flags = get_compile_flags(line)
     except EnvironmentError:
-        err = '[WARNING] libsoup not found, itools.http will not work'
+        err = '[WARNING] libsoup not found, itools.web will not work'
         print >> stderr, err
     else:
         for include in flags['include_dirs']:

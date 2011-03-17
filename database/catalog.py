@@ -32,6 +32,9 @@ from itools.log import log_warning
 from queries import AllQuery, AndQuery, NotQuery, OrQuery, PhraseQuery
 from queries import RangeQuery, StartQuery, TextQuery, _MultipleQuery
 
+# Local imports
+from resources import Resource
+
 
 
 # Constants
@@ -79,17 +82,6 @@ def warn_not_stored(name):
 MSG_NOT_INDEXED_NOR_STORED = 'the "{name}" field is not indexed nor stored'
 def warn_not_indexed_nor_stored(name):
     log_warning(MSG_NOT_INDEXED_NOR_STORED.format(name=name))
-
-
-
-############
-# Public API
-class CatalogAware(object):
-
-    def get_catalog_values(self):
-        """Returns a dictionary with the values of the fields to be indexed.
-        """
-        raise NotImplementedError
 
 
 
@@ -312,10 +304,10 @@ class Catalog(object):
         # Check the input
         if type(document) is dict:
             doc_values = document
-        elif isinstance(document, CatalogAware):
+        elif isinstance(document, Resource):
             doc_values = document.get_catalog_values()
         else:
-            raise ValueError, 'the document must be a CatalogAware object'
+            raise ValueError, 'the document must be a Resource object'
 
         # Make the xapian document
         metadata_modified = False

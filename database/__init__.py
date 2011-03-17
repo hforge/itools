@@ -16,10 +16,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from catalog import Catalog, make_catalog, CatalogAware
+from catalog import Catalog, make_catalog
 from queries import AllQuery, NotQuery, StartQuery, TextQuery
 from queries import RangeQuery, PhraseQuery, AndQuery, OrQuery, pprint_query
 from registry import get_register_fields, register_field
+from resources import Resource
 from ro import ROGitDatabase, ReadonlyError
 from rw import GitDatabase, make_git_database, check_database
 
@@ -33,10 +34,11 @@ __all__ = [
     'check_database',
     'get_register_fields',
     'register_field',
+    # Resources
+    'Resource',
     # Xapian
     'make_catalog',
     'Catalog',
-    'CatalogAware',
     # Queries
     'RangeQuery',
     'PhraseQuery',

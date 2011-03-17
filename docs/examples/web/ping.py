@@ -15,10 +15,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.http import HTTPServer
+from itools.web import WebServer
 from itools.loop import Loop
 
-class Ping(HTTPServer):
+class Ping(WebServer):
+
     def listen(self, address, port):
         super(Ping, self).listen(address, port)
         self.add_handler('/', self.path_callback)

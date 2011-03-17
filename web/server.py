@@ -19,16 +19,17 @@
 
 # Import from the Standard Library
 from datetime import timedelta
+from time import strftime
 
 # Import from itools
-from itools.http import HTTPServer
 from itools.i18n import init_language_selector
-from itools.log import register_logger
+from itools.log import Logger, register_logger, log_info
 from context import select_language
 from context import WebLogger
+from soup import SoupServer
 
 
-class WebServer(HTTPServer):
+class WebServer(SoupServer):
 
     access_log = None
     event_log = None
@@ -38,20 +39,51 @@ class WebServer(HTTPServer):
 
 
     def __init__(self, root, access_log=None, event_log=None):
-        super(WebServer, self).__init__(access_log)
+        super(WebServer, self).__init__()
         # The application's root
         self.root = root
-        # Logging
+        # Access log
+        logger = AccessLogger(log_file=access_log)
+        logger.launch_rotate(timedelta(weeks=3))
+        register_logger(logger, 'itools.web_access')
+        # Events log
         register_logger(WebLogger(log_file=event_log), 'itools.web')
+
+        # Useful the current uploads stats
+        self.upload_stats = {}
+
+
+    def log_access(self, host, request_line, status_code, body_length):
+        now = strftime('%d/%b/%Y:%H:%M:%S')
+        message = '%s - - [%s] "%s" %d %d\n' % (host, now, request_line,
+                                                status_code, body_length)
+        log_info(message, domain='itools.web_access')
 
 
     def listen(self, address, port):
         # Language negotiation
         init_language_selector(select_language)
-
         # Add handlers
-        HTTPServer.listen(self, address, port)
+        super(WebServer, self).listen(address, port)
         self.add_handler('*', self.star_callback)
+        # Say hello
+        address = address if address is not None else '*'
+        print 'Listen %s:%d' % (address, port)
+
+
+    def set_upload_stats(self, upload_id, uploaded_size, total_size):
+        """This function is called by the C part of your server.
+        """
+        if uploaded_size is None or total_size is None:
+            self.upload_stats.pop(upload_id, None)
+        else:
+            self.upload_stats[upload_id] = (uploaded_size, total_size)
+
+
+    def stop(self):
+        super(WebServer, self).stop()
+        if self.access_log:
+            self.access_log_file.close()
 
 
     def set_context(self, path, context):
@@ -81,3 +113,9 @@ class WebServer(HTTPServer):
         known_methods = ['GET', 'HEAD', 'POST', 'OPTIONS', 'PUT', 'DELETE']
         soup_message.set_status(200)
         soup_message.set_header('Allow', ','.join(known_methods))
+
+
+
+class AccessLogger(Logger):
+    def format(self, domain, level, message):
+        return message

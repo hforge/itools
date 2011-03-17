@@ -21,6 +21,76 @@ from messages import ERROR
 
 
 
+class HTTPError(Exception):
+    """Base class for all errors, client or server side.
+    """
+
+
+class NotModified(HTTPError):
+    code = 304
+    title = 'Not Modified'
+
+
+class ClientError(HTTPError):
+    """Base class for 4xx responses.
+    """
+
+
+class BadRequest(ClientError):
+    code = 400
+    title = 'Bad Request'
+
+
+class Unauthorized(ClientError):
+    code = 401
+    title = 'Unauthorized'
+
+
+class Forbidden(ClientError):
+    code = 403
+    title = 'Forbidden'
+
+
+class NotFound(ClientError):
+    code = 404
+    title = 'Not Found'
+
+
+class MethodNotAllowed(ClientError):
+    code = 405
+    title = 'Method Not Allowed'
+
+
+class Conflict(ClientError):
+    code = 409
+    title = 'Conflict'
+
+
+class ServerError(HTTPError):
+    """Base class for 5xx responses.
+    """
+
+
+class InternalServerError(ServerError):
+    code = 500
+    title = 'Internal Server Error'
+
+
+class NotImplemented(ServerError):
+    code = 501
+    title = 'Not Implemented'
+
+
+class BadGateway(ServerError):
+    code = 502
+    title = 'Bad Gateway'
+
+
+class ServiceUnavailable(ServerError):
+    code = 503
+    title = 'Service Unavailable'
+
+
 class FormError(StandardError):
     """Raised when a form is invalid (missing or invalid fields).
     """
@@ -45,6 +115,3 @@ class FormError(StandardError):
 
     def __str__(self):
         return self.get_message().gettext()
-
-
-

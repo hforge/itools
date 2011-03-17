@@ -20,13 +20,21 @@ from access import AccessControl
 from context import Context, get_context, set_context
 from context import select_language
 from context import WebLogger
+from exceptions import HTTPError, ClientError, ServerError
+from exceptions import NotModified
+from exceptions import BadRequest, Unauthorized, Forbidden, NotFound
+from exceptions import InternalServerError, NotImplemented, BadGateway
+from exceptions import ServiceUnavailable, MethodNotAllowed, Conflict
 from exceptions import FormError
+from headers import Cookie, SetCookieDataType
 from messages import INFO, ERROR, MSG_MISSING_OR_INVALID
 from server import WebServer
+from soup import SoupMessage
 from static import StaticContext
 from views import BaseView, BaseForm, STLView, STLForm
 
 __all__ = [
+    'SoupMessage',
     'AccessControl',
     'WebServer',
     'WebLogger',
@@ -45,6 +53,20 @@ __all__ = [
     'STLView',
     'STLForm',
     # Exceptions
+    'BadGateway',
+    'BadRequest',
+    'ClientError',
+    'Conflict',
+    'Forbidden',
+    'HTTPError',
+    'InternalServerError',
+    'MethodNotAllowed',
+    'NotFound',
+    'NotImplemented',
+    'NotModified',
+    'ServerError',
+    'ServiceUnavailable',
+    'Unauthorized',
     'FormError',
     # Messages
     'INFO',

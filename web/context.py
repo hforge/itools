@@ -34,17 +34,19 @@ from pytz import timezone
 from itools.core import fixed_offset, local_tz
 from itools.core import freeze, thingy, thingy_lazy_property
 from itools.datatypes import String, HTTPDate
-from itools.http import get_type, Entity
-from itools.http import Cookie, SetCookieDataType
-from itools.http import ClientError, NotModified, Forbidden, NotFound, Conflict
-from itools.http import NotImplemented, MethodNotAllowed, Unauthorized
-from itools.http import set_response
 from itools.i18n import AcceptLanguageType, format_datetime, format_date
 from itools.i18n import format_number
 from itools.log import Logger, log_error, log_warning
 from itools.uri import decode_query, get_reference, Path, Reference
+
+# Local imports
+from entities import Entity
+from exceptions import ClientError, NotModified, Forbidden, NotFound, Conflict
+from exceptions import NotImplemented, MethodNotAllowed, Unauthorized
 from exceptions import FormError
+from headers import get_type, Cookie, SetCookieDataType
 from messages import ERROR
+from utils import set_response
 from views import BaseView
 
 

@@ -16,9 +16,9 @@
 
 # Import from itools
 from itools.handlers import ro_database, File
-from itools.http import set_response
 from itools.uri import Path
 from context import Context
+from utils import set_response
 
 
 class StaticContext(Context):

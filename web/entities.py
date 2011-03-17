@@ -36,7 +36,7 @@ def read_headers(file):
             value = datatype.decode(value)
         except Exception:
             log_warning("Failed to parse the '%s' header" % name,
-                        domain='itools.http')
+                        domain='itools.web')
         else:
             entity_headers[name] = value
         # Next

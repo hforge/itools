@@ -377,7 +377,7 @@ class Context(object):
         return tzinfo.localize(a_datetime)
 
 
-    def format_datetime(self, datetime, tz=None):
+    def add_tzinfo(self, datetime, tz=None):
         if tz is None and self.user:
             tz = self.user.get_timezone()
 
@@ -390,6 +390,11 @@ class Context(object):
         else:
             datetime = tzinfo.localize(datetime)
 
+        return datetime
+
+
+    def format_datetime(self, datetime, tz=None):
+        datetime = self.add_tzinfo(datetime, tz)
         # Ok
         return format_datetime(datetime, accept=self.accept_language)
 

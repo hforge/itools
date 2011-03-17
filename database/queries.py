@@ -98,7 +98,13 @@ class _MultipleQuery(BaseQuery):
 
 
 class AndQuery(_MultipleQuery):
-    pass
+
+    def __init__(self, *args):
+        self.atoms = args
+
+
+    def append(self, *args):
+        self.atoms += args
 
 
 

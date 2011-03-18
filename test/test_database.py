@@ -24,7 +24,7 @@ import re
 # Import from itools
 from itools.core import start_subprocess
 from itools.database import AndQuery, RangeQuery, PhraseQuery, NotQuery
-from itools.database import TextQuery
+from itools.database import AllQuery, OrQuery, TextQuery
 from itools.database import make_catalog, Catalog, CatalogAware, StartQuery
 from itools.database import make_git_database
 from itools.database.catalog import _index, _decode
@@ -448,6 +448,26 @@ class CatalogTestCase(TestCase):
                 NotQuery(PhraseQuery('data', u'lion')))
         results = catalog.search(query)
         self.assertEqual(len(results), 2)
+
+
+    def test_AndQuery_with_AllQuery(self):
+        catalog = Catalog('tests/catalog', Document.fields)
+
+        query = AndQuery(
+                PhraseQuery('data', u'lion'),
+                AllQuery())
+        results = catalog.search(query)
+        self.assertEqual(len(results), 4)
+
+
+    def test_OrQuery_with_AllQuery(self):
+        catalog = Catalog('tests/catalog', Document.fields)
+
+        query = OrQuery(
+                PhraseQuery('data', u'lion'),
+                AllQuery())
+        results = catalog.search(query)
+        self.assertEqual(len(results), 31)
 
 
     def test_TextQuery(self):

@@ -453,21 +453,27 @@ class CatalogTestCase(TestCase):
     def test_AndQuery_with_AllQuery(self):
         catalog = Catalog('tests/catalog', Document.fields)
 
-        query = AndQuery(
+        query1 = AndQuery(
                 PhraseQuery('data', u'lion'),
                 AllQuery())
-        results = catalog.search(query)
-        self.assertEqual(len(results), 4)
+        results1 = catalog.search(query1)
+        # Must be equal to the same query without AllQuery
+        query2 = PhraseQuery('data', u'lion')
+        results2 = catalog.search(query2)
+        self.assertEqual(len(results1), len(results2))
 
 
     def test_OrQuery_with_AllQuery(self):
         catalog = Catalog('tests/catalog', Document.fields)
 
-        query = OrQuery(
+        query1 = OrQuery(
                 PhraseQuery('data', u'lion'),
                 AllQuery())
-        results = catalog.search(query)
-        self.assertEqual(len(results), 31)
+        results1 = catalog.search(query1)
+        # Must be equal to AllQuery
+        query2 = AllQuery()
+        results2 = catalog.search(query2)
+        self.assertEqual(len(results1), len(results2))
 
 
     def test_TextQuery(self):

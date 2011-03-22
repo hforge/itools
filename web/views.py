@@ -117,10 +117,18 @@ class BaseView(object):
         query = uri.query
         # Remove the view name if default
         view_name = context.view_name
+        has_view_name = view_name is not None
         if view_name:
             resource = context.resource
             if view_name == resource.get_default_view_name():
+                has_view_name = False
                 uri = uri.resolve2('..')
+
+        if has_view_name is False and uri.path != '/':
+            # Adding trailing slash if path is not / and if path does not
+            # contain view_name
+            uri.path.endswith_slash = True
+
         # Remove noise from query parameters
         canonical_query_parameters = self.canonical_query_parameters
         for parameter in query.keys():

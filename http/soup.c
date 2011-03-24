@@ -18,6 +18,8 @@
 #include <Python.h>
 #include <soup.h>
 #include <string.h>
+#include <ctype.h>
+
 
 /* Variable names are prefixed by one letter:
  *   p_xxx - is a Python object
@@ -60,22 +62,16 @@ get_request_line (SoupMessage * s_msg)
 }
 
 
-static gboolean
-log_access (GSignalInvocationHint * ihint, guint n_param_values,
-            const GValue * param_values, gpointer data)
+static void
+log_access (PyObject * p_server, SoupMessage * s_msg,
+            SoupClientContext * s_client)
 {
-  PyObject *p_server;
   PyObject *p_result;
-  SoupMessage *s_msg;
-  SoupClientContext *s_client;
   gchar *request_line, *request_line2;
-
-  s_msg = (SoupMessage *) g_value_get_object (param_values + 1);
-  s_client = (SoupClientContext *) g_value_get_boxed (param_values + 2);
 
   /* This is only useful for the request-aborted signal */
   if (s_msg->status_code == SOUP_STATUS_IO_ERROR)
-    return TRUE;
+    return;
 
   /* Get the request line */
   request_line = get_request_line (s_msg);
@@ -88,7 +84,6 @@ log_access (GSignalInvocationHint * ihint, guint n_param_values,
   /* The callback function must have this signature:
    * log_access(self, host, request_line, status_code, body_length)
    * => str str int int*/
-  p_server = (PyObject *) data;
   p_result = PyObject_CallMethod (p_server, "log_access", "ssii",
                                   soup_client_context_get_host (s_client),
                                   request_line2,
@@ -99,16 +94,16 @@ log_access (GSignalInvocationHint * ihint, guint n_param_values,
   if (request_line)
     free (request_line);
 
-  /* The Python callback should never fail, it is its responsability to catch
+  /* The Python callback should never fail, it is its responsibility to catch
    * and handle exceptions */
   if (!p_result)
     {
-      printf ("ERROR! Python's access log failed, this should never happen\n");
+      printf
+        ("ERROR! Python's access log failed, this should never happen\n");
       abort ();
     }
 
   Py_DECREF (p_result);
-  return TRUE;
 }
 
 
@@ -137,13 +132,102 @@ PyMessage_dealloc (PyMessage * self)
 }
 
 
+/* Just useful for the upload percent computation *
+ * This function returns 0 if an error is detected  */
+static unsigned int
+get_upload_id (SoupMessage * s_msg)
+{
+  SoupURI *s_uri;
+  char *pointer;
+  unsigned int id = 0;
+
+  /* Search for "upload_id=xxx" in the query */
+  s_uri = soup_message_get_uri (s_msg);
+  if (s_uri == NULL)
+    return 0;
+  if (s_uri->query == NULL)
+    return 0;
+  pointer = strstr (s_uri->query, "upload_id=");
+  if (pointer == NULL)
+    return 0;
+  /* "upload_id=" has 10 characters */
+  pointer += 10;
+
+  /* Decode the id */
+  for (; isdigit (*pointer); pointer++)
+    id = 10 * id + (*pointer - '0');
+
+  /* All OK */
+  return id;
+}
+
+
+/* Just useful for the upload percent computation */
+static void
+got_chunk_callback (SoupMessage * s_msg, SoupBuffer * chunk,
+                    gpointer user_data)
+{
+  goffset content_length;
+  double percent;
+  unsigned int id;
+  PyObject *p_result;
+  PyObject *p_server = (PyObject *) user_data;
+
+  /* Get content length */
+  content_length =
+    soup_message_headers_get_content_length (s_msg->request_headers);
+  if (content_length == 0)
+    return;
+
+  /* And compute the current percent */
+  percent = (double) s_msg->request_body->length / content_length * 100.0;
+
+  /* Get the id */
+  id = get_upload_id (s_msg);
+
+  /* And finally call the "set_upload_stats" method */
+  p_result =
+    PyObject_CallMethod (p_server, "set_upload_stats", "Id", id, percent);
+  /* The Python callback should never fail, it is its responsibility to catch
+   * and handle exceptions */
+  if (p_result == NULL)
+    {
+      printf (
+      "ERROR! Python's set_upload_stats failed, this should never happen\n");
+      abort ();
+    }
+  Py_DECREF (p_result);
+}
+
+
+/* Just useful for the upload percent computation */
+static void
+got_headers_callback (SoupMessage * s_msg, gpointer user_data)
+{
+  unsigned int id;
+
+  /* Just for POST */
+  if (s_msg->method == NULL || strcmp (s_msg->method, "POST") != 0)
+    return;
+
+  /* if id == 0 => upload_id is not detected */
+  id = get_upload_id (s_msg);
+  if (id == 0)
+    return;
+
+  /* All OK */
+  g_signal_connect (s_msg, "got-chunk", G_CALLBACK (got_chunk_callback),
+                    user_data);
+}
+
+
 static int
 PyMessage_init (PyMessage * self, PyObject * args, PyObject * kwdict)
 {
   if (self->s_msg)
     g_type_free_instance ((GTypeInstance *) self->s_msg);
-
   self->s_msg = soup_message_new ("GET", "http://localhost/");
+
   if (self->s_msg == NULL)
     {
       PyErr_Format (PyExc_RuntimeError, "call to 'soup_message_new' failed");
@@ -408,6 +492,46 @@ typedef struct
 } PyServer;
 
 
+static void
+request_started_callback (SoupServer * s_server, SoupMessage * s_msg,
+                          SoupClientContext * s_client, gpointer user_data)
+{
+  g_signal_connect (s_msg, "got-headers", G_CALLBACK (got_headers_callback),
+                    user_data);
+}
+
+
+static void
+request_end_callback (SoupServer * s_server, SoupMessage * s_msg,
+                      SoupClientContext * s_client, gpointer user_data)
+{
+  unsigned int id;
+  PyObject *p_result;
+  PyObject *p_server = (PyObject *) user_data;
+
+  /* Just useful for the upload percent computation */
+  /* Just for POST with upload_id=xxx */
+  if (s_msg->method != NULL && strcmp (s_msg->method, "POST") == 0 &&
+      (id = get_upload_id (s_msg)) != 0)
+    {
+      p_result =
+        PyObject_CallMethod (p_server, "set_upload_stats", "Is", id, NULL);
+      /* The Python callback should never fail, it is its responsibility to
+       * catch and handle exceptions */
+      if (p_result == NULL)
+        {
+          printf (
+        "ERROR! Python's set_upload_stats failed, this should never happen\n");
+          abort ();
+        }
+      Py_DECREF (p_result);
+    }
+
+  /* And call the logger */
+  log_access (p_server, s_msg, s_client);
+}
+
+
 void
 s_server_callback (SoupServer * s_server, SoupMessage * s_msg,
                    const char *path, GHashTable * g_query,
@@ -460,7 +584,6 @@ static PyObject *
 PyServerType_listen (PyServer * self, PyObject * args, PyObject * kwdict)
 {
   /* libsoup variables */
-  guint signal_id;
   char *address = NULL;
   guint port = 8080;
   SoupServer *s_server;
@@ -494,11 +617,12 @@ PyServerType_listen (PyServer * self, PyObject * args, PyObject * kwdict)
   self->s_server = s_server;
 
   /* Signals */
-  signal_id = g_signal_lookup ("request-finished", SOUP_TYPE_SERVER);
-  g_signal_add_emission_hook (signal_id, 0, log_access, self, NULL);
-
-  signal_id = g_signal_lookup ("request-aborted", SOUP_TYPE_SERVER);
-  g_signal_add_emission_hook (signal_id, 0, log_access, self, NULL);
+  g_signal_connect (s_server, "request-started",
+                    G_CALLBACK (request_started_callback), (gpointer) self);
+  g_signal_connect (s_server, "request-finished",
+                    G_CALLBACK (request_end_callback), (gpointer) self);
+  g_signal_connect (s_server, "request-aborted",
+                    G_CALLBACK (request_end_callback), (gpointer) self);
 
   /* Go */
   soup_server_run_async (self->s_server);

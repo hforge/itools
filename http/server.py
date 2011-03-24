@@ -33,6 +33,9 @@ class HTTPServer(SoupServer):
         logger.launch_rotate(timedelta(weeks=3))
         register_logger(logger, 'itools.web_access')
 
+        # Useful the current uploads stats
+        self.upload_stats = {}
+
 
     def log_access(self, host, request_line, status_code, body_length):
         now = strftime('%d/%b/%Y:%H:%M:%S')
@@ -45,6 +48,15 @@ class HTTPServer(SoupServer):
         SoupServer.listen(self, address, port)
         address = address if address is not None else '*'
         print 'Listen %s:%d' % (address, port)
+
+
+    def set_upload_stats(self, upload_id, percent):
+        """This function is called by the C part of your server.
+        """
+        if percent is None:
+            self.upload_stats.pop(upload_id, None)
+        else:
+            self.upload_stats[upload_id] = percent
 
 
     def stop(self):

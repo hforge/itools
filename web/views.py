@@ -115,18 +115,18 @@ class BaseView(object):
         """
         uri = deepcopy(context.uri)
         query = uri.query
+
         # Remove the view name if default
-        view_name = context.view_name
-        has_view_name = view_name is not None
+        name = uri.path.get_name()
+        view_name = name[1:] if name and name[0] == ';' else None
         if view_name:
             resource = context.resource
             if view_name == resource.get_default_view_name():
-                has_view_name = False
                 uri = uri.resolve2('..')
+                view_name = None
 
-        if has_view_name is False and uri.path != '/':
-            # Adding trailing slash if path is not / and if path does not
-            # contain view_name
+        # Be sure the canonical URL either has a view or ends by an slash
+        if not view_name and uri.path != '/':
             uri.path.endswith_slash = True
 
         # Remove noise from query parameters
@@ -135,6 +135,8 @@ class BaseView(object):
             if parameter not in canonical_query_parameters:
                 del query[parameter]
         uri.query = query
+
+        # Ok
         return uri
 
 

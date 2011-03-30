@@ -89,10 +89,6 @@ digraph G {
   "itools.relaxng" -> "itools.xml";
 #  "itools.relaxng" -> "itools.uri";
 
-#  "itools.rest" -> "itools.handlers";
-  "itools.rest" -> "itools.html";
-#  "itools.rest" -> "itools.xml";
-
 #  "itools.rss" -> "itools.core";
 #  "itools.rss" -> "itools.datatypes";
   "itools.rss" -> "itools.handlers";

@@ -122,6 +122,7 @@ class OptionalBuildExt(build_ext):
 class FixedSdist(sdist):
     """Fixing sdist not reading the MANIFEST
     http://bugs.python.org/issue11104
+    FIXME Remove this once issue 11104 is resolved, hopefully by Python 2.7.2
     """
 
     def get_file_list(self):

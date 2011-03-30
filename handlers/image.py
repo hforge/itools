@@ -133,7 +133,7 @@ class Image(File):
                 if (image_width >= width and image_height >= height and
                     (max_ratio / min_ratio - 1) <= MAX_CROP_RATIO):
                     im = ImageOps.fit(im, (width, height), PILImage.ANTIALIAS,
-                                      0, (.5, .5))
+                                      0, (.2, .2))
                 else:
                     # Case 2: do nothing (small images)
                     if image_width < width and image_height < height:

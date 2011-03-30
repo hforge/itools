@@ -37,6 +37,11 @@ from file import File
 from registry import register_handler_class
 
 
+# This number controls the max surface ratio that we can lose when we crop.
+MAX_CROP_RATIO = 2.0
+
+
+
 class Image(File):
 
     class_mimetypes = ['image']
@@ -118,28 +123,32 @@ class Image(File):
             if not strict:
                 im.thumbnail((width, height), PILImage.ANTIALIAS)
             else:
-                if image_width < width or image_height < height:
-                    # If image width or image_height is smaller than
-                    # thumb size, create a thumb and wrap it into a background
-                    # of required size
+                # Reduction ratio
+                width_ratio = float(width) / image_width
+                height_ratio = float(height) / image_height
+                max_ratio = max(width_ratio, height_ratio)
+                min_ratio = min(width_ratio, height_ratio)
+
+                # Case 1: reduce and crop (big images with a good ratio)
+                if (image_width >= width and image_height >= height and
+                    (max_ratio / min_ratio - 1) <= MAX_CROP_RATIO):
+                    im = ImageOps.fit(im, (width, height), PILImage.ANTIALIAS,
+                                      0, (.5, .5))
+                else:
+                    # Case 2: do nothing (small images)
                     if image_width < width and image_height < height:
                         w, h = image_width, image_height
+                    # Case 3: reduce but not crop (the others)
                     else:
-                        if image_width < width:
-                            w = image_width * height / float(image_height)
-                            w = int(floor(w))
-                            h = height
-                        else:
-                            w = width
-                            h = image_height * width / float(image_width)
-                            h = int(floor(h))
-                        im.thumbnail((w, h), PILImage.ANTIALIAS)
-                    background = PILImage.new('RGBA', (width, height), (255, 255, 255, 0))
+                        w, h = image_width * min_ratio, image_height * min_ratio
+                        w, h = int(floor(w)), int(floor(h))
+
+                    im.thumbnail((w, h), PILImage.ANTIALIAS)
+                    background = PILImage.new('RGBA', (width, height),
+                                              (255, 255, 255, 0))
                     background.paste(im, ((width - w) / 2, (height - h) / 2))
                     im = background
-                else:
-                    im = ImageOps.fit(im, (width, height), PILImage.ANTIALIAS, 0, (.5, .5))
-        except IOError:
+        except (IOError, ZeroDivisionError):
             # PIL does not support interlaced PNG files, raises IOError
             return None, None
 

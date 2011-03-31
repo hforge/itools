@@ -29,7 +29,7 @@ from queries import AllQuery, AndQuery, NotQuery, OrQuery, PhraseQuery
 from queries import RangeQuery, StartQuery, TextQuery
 from results import SearchResults
 from utils import _encode, _get_field_cls, _reduce_size, _make_PhraseQuery
-from utils import _index, _get_xquery
+from utils import _index, _get_xquery, TRANSLATE_MAP
 
 
 
@@ -407,6 +407,12 @@ class Catalog(object):
                 prefix = info['prefix']
             except KeyError:
                 raise ValueError, 'the field "%s" must be indexed' % name
+
+            # Remove accents from the value
+            value = query.value
+            if type(value) is not unicode:
+                raise TypeError, "unexpected %s for 'value'" % type(value)
+            value = value.translate(TRANSLATE_MAP)
 
             qp = QueryParser()
             qp.set_database(self._db)

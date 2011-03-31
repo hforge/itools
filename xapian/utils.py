@@ -18,6 +18,7 @@
 # Import from the standard library
 from hashlib import sha1
 from marshal import dumps, loads
+from warnings import warn
 
 # Import from xapian
 from xapian import sortable_serialise, sortable_unserialise
@@ -32,6 +33,26 @@ from itools.i18n import is_punctuation
 # Constants
 OP_AND = Query.OP_AND
 OP_PHRASE = Query.OP_PHRASE
+TRANSLATE_MAP = { ord(u'À'): ord(u'A'),
+                  ord(u'Â'): ord(u'A'),
+                  ord(u'â'): ord(u'a'),
+                  ord(u'à'): ord(u'a'),
+                  ord(u'Ç'): ord(u'C'),
+                  ord(u'ç'): ord(u'c'),
+                  ord(u'É'): ord(u'E'),
+                  ord(u'Ê'): ord(u'E'),
+                  ord(u'é'): ord(u'e'),
+                  ord(u'ê'): ord(u'e'),
+                  ord(u'è'): ord(u'e'),
+                  ord(u'ë'): ord(u'e'),
+                  ord(u'Î'): ord(u'I'),
+                  ord(u'î'): ord(u'i'),
+                  ord(u'ï'): ord(u'i'),
+                  ord(u'ô'): ord(u'o'),
+                  ord(u'û'): ord(u'u'),
+                  ord(u'ù'): ord(u'u'),
+                  ord(u'ü'): ord(u'u'),
+                  ord(u"'"): ord(u' ') }
 
 
 
@@ -149,17 +170,27 @@ def _index_cjk(xdoc, value, prefix, termpos):
 
 
 
-def _index_unicode(xdoc, value, prefix, language, termpos):
-    # Japanese or Chinese
+def _index_unicode(xdoc, value, prefix, language, termpos,
+                   TRANSLATE_MAP=TRANSLATE_MAP):
+    # Check type
+    if type(value) is not unicode:
+        warn('The value "%s", field "%s", is not a unicode' % (value, prefix))
+
+    # Case 1: Japanese or Chinese
     if language in ['ja', 'zh']:
         return _index_cjk(xdoc, value, prefix, termpos)
 
-    # Any other language
+    # Case 2: Any other language
     tg = TermGenerator()
     tg.set_document(xdoc)
     tg.set_termpos(termpos - 1)
-    # XXX The words are saved twice: with prefix and with Zprefix
+    # Suppress the accents (FIXME This should be done by the stemmer)
+    if type(value) is unicode:
+        value = value.translate(TRANSLATE_MAP)
+    # XXX With the stemmer, the words are saved twice:
+    # with prefix and with Zprefix
     #tg.set_stemmer(stemmer)
+
     tg.index_text(value, 1, prefix)
     return tg.get_termpos() + 1
 

@@ -416,6 +416,9 @@ def property_to_str(name, property, datatype, p_schema, encoding='utf-8'):
         value = datatype.encode(property.value, encoding=encoding)
     else:
         value = datatype.encode(property.value)
+    if type(value) is not str:
+        raise ValueError, 'property "{0}" is not str but {1}'.format(
+                name, type(value))
     value = escape_data(value)
 
     # Ok

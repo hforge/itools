@@ -50,13 +50,13 @@ class HTTPServer(SoupServer):
         print 'Listen %s:%d' % (address, port)
 
 
-    def set_upload_stats(self, upload_id, percent):
+    def set_upload_stats(self, upload_id, uploaded_size, total_size):
         """This function is called by the C part of your server.
         """
-        if percent is None:
+        if uploaded_size is None or total_size is None:
             self.upload_stats.pop(upload_id, None)
         else:
-            self.upload_stats[upload_id] = percent
+            self.upload_stats[upload_id] = (uploaded_size, total_size)
 
 
     def stop(self):

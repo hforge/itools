@@ -167,27 +167,22 @@ static void
 got_chunk_callback (SoupMessage * s_msg, SoupBuffer * chunk,
                     gpointer user_data)
 {
-  goffset content_length;
-  double percent;
-  unsigned int id;
+  unsigned int id, uploaded_size, total_size;
   PyObject *p_result;
   PyObject *p_server = (PyObject *) user_data;
 
-  /* Get content length */
-  content_length =
+  /* Get uploaded_size and total_size */
+  uploaded_size = (unsigned int) s_msg->request_body->length;
+  total_size = (unsigned int)
     soup_message_headers_get_content_length (s_msg->request_headers);
-  if (content_length == 0)
-    return;
-
-  /* And compute the current percent */
-  percent = (double) s_msg->request_body->length / content_length * 100.0;
 
   /* Get the id */
   id = get_upload_id (s_msg);
 
   /* And finally call the "set_upload_stats" method */
   p_result =
-    PyObject_CallMethod (p_server, "set_upload_stats", "Id", id, percent);
+    PyObject_CallMethod (p_server, "set_upload_stats", "III", id,
+                         uploaded_size, total_size);
   /* The Python callback should never fail, it is its responsibility to catch
    * and handle exceptions */
   if (p_result == NULL)
@@ -515,7 +510,8 @@ request_end_callback (SoupServer * s_server, SoupMessage * s_msg,
       (id = get_upload_id (s_msg)) != 0)
     {
       p_result =
-        PyObject_CallMethod (p_server, "set_upload_stats", "Is", id, NULL);
+        PyObject_CallMethod (p_server, "set_upload_stats", "Iss", id,
+                             NULL, NULL);
       /* The Python callback should never fail, it is its responsibility to
        * catch and handle exceptions */
       if (p_result == NULL)

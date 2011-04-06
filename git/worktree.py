@@ -74,6 +74,9 @@ class Worktree(object):
         FIXME This is quick & dirty. TODO Implement references in pygit2 and
         use them here.
         """
+        if len(reference) == 40:
+            return reference
+
         if reference != 'HEAD':
             raise NotImplementedError
 
@@ -289,7 +292,7 @@ class Worktree(object):
 
 
     def git_log(self, paths=None, n=None, author=None, grep=None,
-                reverse=False):
+                reverse=False, reference='HEAD'):
         """Equivalent to 'git log', optional keyword parameters are:
 
           paths   -- return only commits where the given paths have been
@@ -302,7 +305,7 @@ class Worktree(object):
           reverse -- return results in reverse order
         """
         # Get the sha
-        sha = self._resolve_reference('HEAD')
+        sha = self._resolve_reference(reference)
 
         # Sort
         sort = GIT_SORT_TIME

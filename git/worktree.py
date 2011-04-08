@@ -21,9 +21,10 @@ from os.path import abspath, exists, getmtime, isabs, isdir, isfile, normpath
 from re import search
 from shutil import copy2, copytree
 from subprocess import Popen, PIPE
+import time
 
 # Import from pygit2
-from pygit2 import Repository, GitError, init_repository
+from pygit2 import Repository, Commit, GitError, init_repository
 from pygit2 import GIT_SORT_REVERSE, GIT_SORT_TIME, GIT_OBJ_TREE
 
 
@@ -74,15 +75,23 @@ class Worktree(object):
         FIXME This is quick & dirty. TODO Implement references in pygit2 and
         use them here.
         """
+        # Case 1: SHA
         if len(reference) == 40:
             return reference
 
-        if reference != 'HEAD':
-            raise NotImplementedError
+        # Case 2: HEAD
+        if reference == 'HEAD':
+            repo_path = '%s.git' % self.path
+            ref = open('%s/HEAD' % repo_path).read().split()[-1]
+            path = '%s/%s' % (repo_path, ref)
+            if exists(path):
+                return open(path).read().strip()
 
-        repo_path = '%s/.git' % self.path
-        ref = open('%s/HEAD' % repo_path).read().split()[-1]
-        return open('%s/%s' % (repo_path, ref)).read().strip()
+            # This happens for the first commit
+            return None
+
+        # Case 3: TODO
+        raise NotImplementedError
 
 
     #######################################################################
@@ -272,23 +281,42 @@ class Worktree(object):
         TODO Wait the feature is implemented by libgit2, expose it through
         pygit2, use it here.
         """
+        # Write index
         self.index.write()
         self.index_mtime = getmtime(self.index_path)
 
-        cmd = ['git', 'commit', '-q', '-m', message]
-        if author:
-            cmd.append('--author=%s' % author)
-        if date:
-            date = date.strftime('%Y-%m-%dT%H:%M:%S%Z')
-            cmd.append('--date=%s' % date)
+        # Tree
+        tree = self.index.create_tree()
+        tree = tree.sha # We only need the sha
 
-        try:
-            self._call(cmd)
-        except EnvironmentError, excp:
-            # Avoid an exception for the 'nothing to commit' case
-            # FIXME Not reliable, we may catch other cases
-            if excp.errno != 1:
-                raise
+        # Parent
+        parent = self._resolve_reference('HEAD')
+        parents = [parent] if parent else []
+
+        # Committer
+        offset = - (time.altzone if time.daylight else time.timezone)
+        commit_time = time.time() + offset
+        offset = offset / 60
+
+        cmd = ['git', 'config', '--get', 'user.name']
+        name = self._call(cmd).rstrip()
+        cmd = ['git', 'config', '--get', 'user.email']
+        email = self._call(cmd).rstrip()
+        committer = (name, email, commit_time, offset)
+
+        # Author
+        if author is None:
+            author = (name, email)
+
+        if date:
+            author_time = time.mktime(date.timetuple())
+        else:
+            author_time = commit_time
+
+        author = (author[0], author[1], author_time, offset)
+
+        # TODO Check the 'nothing to commit' case
+        commit = Commit(self.repo, author, committer, message, tree, parents)
 
 
     def git_log(self, paths=None, n=None, author=None, grep=None,

@@ -24,7 +24,7 @@ from subprocess import Popen, PIPE
 import time
 
 # Import from pygit2
-from pygit2 import Repository, Commit, GitError, init_repository
+from pygit2 import Repository, GitError, init_repository
 from pygit2 import GIT_SORT_REVERSE, GIT_SORT_TIME, GIT_OBJ_TREE
 
 
@@ -287,7 +287,6 @@ class Worktree(object):
 
         # Tree
         tree = self.index.create_tree()
-        tree = tree.sha # We only need the sha
 
         # Parent
         parent = self._resolve_reference('HEAD')
@@ -316,7 +315,8 @@ class Worktree(object):
         author = (author[0], author[1], author_time, offset)
 
         # TODO Check the 'nothing to commit' case
-        commit = Commit(self.repo, author, committer, message, tree, parents)
+        repo = self.repo
+        return repo.create_commit(author, committer, message, tree, parents)
 
 
     def git_log(self, paths=None, n=None, author=None, grep=None,

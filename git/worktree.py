@@ -289,7 +289,8 @@ class Worktree(object):
         tree = self.index.create_tree()
 
         # Parent
-        parent = self._resolve_reference('HEAD')
+        reference = 'HEAD'
+        parent = self._resolve_reference(reference)
         parents = [parent] if parent else []
 
         # Committer
@@ -315,8 +316,8 @@ class Worktree(object):
         author = (author[0], author[1], author_time, offset)
 
         # TODO Check the 'nothing to commit' case
-        repo = self.repo
-        return repo.create_commit(author, committer, message, tree, parents)
+        return self.repo.create_commit(reference, author, committer, message,
+                                       tree, parents)
 
 
     def git_log(self, paths=None, n=None, author=None, grep=None,

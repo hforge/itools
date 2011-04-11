@@ -345,7 +345,7 @@ class Worktree(object):
         for commit in self.repo.walk(sha, GIT_SORT_TIME):
             # --author=<pattern>
             if author:
-                name, email, time = commit.author
+                name, email, time, offset = commit.author
                 if not search(author, name) and not search(author, email):
                     continue
 
@@ -487,18 +487,19 @@ class Worktree(object):
         sha = self._resolve_reference(reference)
         commit = self.lookup(sha)
         parents = commit.parents
-        an, ae, ad = commit.author
-        cn, ce, cd = commit.committer
+        # TODO Use the offset
+        an, ae, at, ao = commit.author
+        cn, ce, ct, co = commit.committer
 
         return {
             'tree': commit.tree.sha,
             'parent': parents[0].sha if parents else None,
             'author_name': an,
             'author_email': ae,
-            'author_date': datetime.fromtimestamp(ad),
+            'author_date': datetime.fromtimestamp(at),
             'committer_name': cn,
             'committer_email': ce,
-            'committer_date': datetime.fromtimestamp(cd),
+            'committer_date': datetime.fromtimestamp(ct),
             'message': commit.message,
             'message_short': commit.message_short,
             }

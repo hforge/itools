@@ -1,4 +1,4 @@
-itools 0.62.8 (2011/03/29)
+itools 0.62.8 (2011/04/XX)
 ==========================
 
 itools is a Python library, it groups a number of packages into a single
@@ -16,6 +16,8 @@ meta-package for easier development and deployment:
   itools.html             itools.relaxng
   itools.http             itools.rss
 
+The itools.rest package has been removed.
+
 There has been an small change to the API.  The 'utc' singleton from
 itools.core has been replaced by the 'fixed_offset' factory. This is
 how to update the code:
@@ -28,9 +30,11 @@ how to update the code:
 Bugs fixed include:
 
    #970 traceback if writing on read-only ikaaro
+  #1099 Image thumbnails can now fit the thumbnail size by cropping (XXX)
   #1144 Method get_canonical_uri does not return a canonical uri
   #1179 Indexing Tokens do not do what is expected
   #1188 Prevent a traceback with a deepcopy of FixedOffset
+  #1200 Workaround to Python bug http://bugs.python.org/issue11104
 
 
 Resources

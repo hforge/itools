@@ -290,8 +290,8 @@ class Worktree(object):
         parents = [parent] if parent else []
 
         # Committer
+        commit_time = time.time()
         offset = - (time.altzone if time.daylight else time.timezone)
-        commit_time = time.time() + offset
         offset = offset / 60
 
         cmd = ['git', 'config', '--get', 'user.name']

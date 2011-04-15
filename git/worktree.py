@@ -79,19 +79,14 @@ class Worktree(object):
         if len(reference) == 40:
             return reference
 
-        # Case 2: HEAD
-        if reference == 'HEAD':
-            repo_path = '%s.git' % self.path
-            ref = open('%s/HEAD' % repo_path).read().split()[-1]
-            path = '%s/%s' % (repo_path, ref)
-            if exists(path):
-                return open(path).read().strip()
-
-            # This happens for the first commit
+        # Case 2: reference
+        reference = self.repo.lookup_reference(reference)
+        try:
+            reference = reference.resolve()
+        except KeyError:
             return None
 
-        # Case 3: TODO
-        raise NotImplementedError
+        return reference.sha
 
 
     #######################################################################
@@ -281,6 +276,8 @@ class Worktree(object):
         TODO Wait the feature is implemented by libgit2, expose it through
         pygit2, use it here.
         """
+        # TODO Check the 'nothing to commit' case
+
         # Write index
         self.index.write()
         self.index_mtime = getmtime(self.index_path)
@@ -289,8 +286,7 @@ class Worktree(object):
         tree = self.index.create_tree()
 
         # Parent
-        reference = 'HEAD'
-        parent = self._resolve_reference(reference)
+        parent = self._resolve_reference('HEAD')
         parents = [parent] if parent else []
 
         # Committer
@@ -315,9 +311,19 @@ class Worktree(object):
 
         author = (author[0], author[1], author_time, offset)
 
-        # TODO Check the 'nothing to commit' case
-        return self.repo.create_commit(reference, author, committer, message,
-                                       tree, parents)
+        # Create the commit
+        repo = self.repo
+        update_ref = 'HEAD' if parent else None
+        commit = repo.create_commit(update_ref, author, committer, message,
+                                    tree, parents)
+
+        # TODO Workaround https://github.com/libgit2/libgit2/issues/132
+        if parent is None:
+            head = repo.lookup_reference('HEAD')
+            target = head.get_target()
+            repo.create_reference(target, commit)
+
+        return commit
 
 
     def git_log(self, paths=None, n=None, author=None, grep=None,

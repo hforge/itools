@@ -276,6 +276,8 @@ class Worktree(object):
         TODO Wait the feature is implemented by libgit2, expose it through
         pygit2, use it here.
         """
+        from calendar import timegm
+
         # TODO Check the 'nothing to commit' case
 
         # Write index
@@ -290,26 +292,32 @@ class Worktree(object):
         parents = [parent] if parent else []
 
         # Committer
-        commit_time = time.time()
-        offset = - (time.altzone if time.daylight else time.timezone)
-        offset = offset / 60
+        when_time = time.time()
+        when_offset = - (time.altzone if time.daylight else time.timezone)
+        when_offset = when_offset / 60
 
         cmd = ['git', 'config', '--get', 'user.name']
         name = self._call(cmd).rstrip()
         cmd = ['git', 'config', '--get', 'user.email']
         email = self._call(cmd).rstrip()
-        committer = (name, email, commit_time, offset)
+        committer = (name, email, when_time, when_offset)
 
         # Author
         if author is None:
             author = (name, email)
 
         if date:
-            author_time = time.mktime(date.timetuple())
-        else:
-            author_time = commit_time
+            if date.tzinfo:
+                from pytz import utc
+                when_time = date.astimezone(utc)            # To UTC
+                when_time = when_time.timetuple()           # As struct_time
+                when_time = timegm(when_time)               # To unix time
+                when_offset = date.utcoffset().seconds / 60
+            else:
+                err = "Worktree.git_commit doesn't support naive datatime yet"
+                raise NotImplementedError, err
 
-        author = (author[0], author[1], author_time, offset)
+        author = (author[0], author[1], when_time, when_offset)
 
         # Create the commit
         repo = self.repo

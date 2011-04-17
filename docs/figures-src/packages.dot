@@ -3,140 +3,150 @@ digraph G {
 
   "itools.core";
 
-#  "itools.csv" -> "itools.core";
-#  "itools.csv" -> "itools.datatypes";
+  //"itools.csv" -> "itools.core";
+  //"itools.csv" -> "itools.datatypes";
   "itools.csv" -> "itools.handlers";
 
-#  "itools.database" -> "itools.core";
-#  "itools.database" -> "itools.datatypes";
-#  "itools.database" -> "itools.fs";
+  //"itools.database" -> "itools.core";
+  //"itools.database" -> "itools.datatypes";
+  //"itools.database" -> "itools.fs";
+  "itools.database" -> "itools.git";
   "itools.database" -> "itools.handlers";
-#  "itools.xapian" -> "itools.i18n";
-#  "itools.database" -> "itools.uri";
+  //"itools.database" -> "itools.i18n";
+  "itools.database" -> "itools.log";
+  //"itools.database" -> "itools.uri";
 
-#  "itools.datatypes" -> "itools.core";
+  //"itools.datatypes" -> "itools.core";
   "itools.datatypes" -> "itools.uri";
 
-#  "itools.fs" -> "itools.core";
+  //"itools.fs" -> "itools.core";
   "itools.fs" -> "itools.datatypes";
   "itools.fs" -> "itools.i18n";
-#  "itools.fs" -> "itools.uri";
+  //"itools.fs" -> "itools.uri";
 
-#  "itools.gettext" -> "itools.core";
-#  "itools.gettext" -> "itools.handlers";
+  //"itools.gettext" -> "itools.core";
+  //"itools.gettext" -> "itools.handlers";
+  //"itools.gettext" -> "itools.i18n";
   "itools.gettext" -> "itools.srx";
+  //"itools.gettext" -> "itools.xml";
 
-  "itools.git" -> "itools.core";
+  //"itools.git" -> "itools.core";
+  //"itools.git" -> "itools.datatypes";
+  "itools.git" -> "itools.fs";
 
-#  "itools.handlers" -> "itools.core";
-#  "itools.handlers" -> "itools.datatypes";
+  //"itools.handlers" -> "itools.core";
+  //"itools.handlers" -> "itools.datatypes";
   "itools.handlers" -> "itools.fs";
 
-#  "itools.html" -> "itools.core";
-#  "itools.html" -> "itools.datatypes";
-#  "itools.html" -> "itools.handlers";
-#  "itools.html" -> "itools.xml";
+  //"itools.html" -> "itools.core";
+  //"itools.html" -> "itools.datatypes";
+  //"itools.html" -> "itools.handlers";
+  //"itools.html" -> "itools.xml";
   "itools.html" -> "itools.xmlfile";
 
-#  "itools.http" -> "itools.datatypes";
+  //"itools.http" -> "itools.datatypes";
   "itools.http" -> "itools.handlers";
+  "itools.http" -> "itools.log";
 
   "itools.i18n";
 
-#  "itools.ical" -> "itools.core";
+  //"itools.ical" -> "itools.core";
   "itools.ical" -> "itools.csv";
-#  "itools.ical" -> "itools.datatypes";
-#  "itools.ical" -> "itools.handlers";
+  //"itools.ical" -> "itools.datatypes";
+  //"itools.ical" -> "itools.handlers";
 
-  "itools.log";
+  "itools.log" -> "itools.loop";
 
   "itools.loop";
 
-#  "itools.odf" -> "itools.core";
-#  "itools.odf" -> "itools.datatypes";
-#  "itools.odf" -> "itools.fs";
-#  "itools.odf" -> "itools.handlers";
+  //"itools.odf" -> "itools.core";
+  //"itools.odf" -> "itools.datatypes";
+  //"itools.odf" -> "itools.fs";
+  //"itools.odf" -> "itools.handlers";
   "itools.odf" -> "itools.relaxng";
   "itools.odf" -> "itools.stl";
-#  "itools.odf" -> "itools.xml";
-#  "itools.odf" -> "itools.xmlfile";
+  //"itools.odf" -> "itools.xml";
+  //"itools.odf" -> "itools.xmlfile";
 
   "itools.office" -> "itools.handlers";
 
-#  "itools.pdf" -> "itools.core";
-#  "itools.pdf" -> "itools.datatypes";
-#  "itools.pdf" -> "itools.fs";
-#  "itools.pdf" -> "itools.handlers";
+  //"itools.pdf" -> "itools.core";
+  //"itools.pdf" -> "itools.datatypes";
+  //"itools.pdf" -> "itools.fs";
+  //"itools.pdf" -> "itools.handlers";
   "itools.pdf" -> "itools.relaxng";
   "itools.pdf" -> "itools.stl";
-#  "itools.pdf" -> "itools.uri";
-#  "itools.pdf" -> "itools.xml";
-#  "itools.pdf" -> "itools.xmlfile";
+  //"itools.pdf" -> "itools.uri";
+  //"itools.pdf" -> "itools.xml";
+  //"itools.pdf" -> "itools.xmlfile";
 
-#  "itools.pkg" -> "itools.core";
-#  "itools.pkg" -> "itools.datatypes";
-#  "itools.pkg" -> "itools.fs";
+  //"itools.pkg" -> "itools.core";
+  //"itools.pkg" -> "itools.datatypes";
+  //"itools.pkg" -> "itools.fs";
   "itools.pkg" -> "itools.git";
   "itools.pkg" -> "itools.handlers";
 
-#  "itools.python" -> "itools.handlers";
+  //"itools.python" -> "itools.handlers";
   "itools.python" -> "itools.srx";
 
-#  "itools.relaxng" -> "itools.core";
-#  "itools.relaxng" -> "itools.datatypes";
-#  "itools.relaxng" -> "itools.fs";
+  //"itools.relaxng" -> "itools.core";
+  //"itools.relaxng" -> "itools.datatypes";
+  //"itools.relaxng" -> "itools.fs";
   "itools.relaxng" -> "itools.handlers";
+  "itools.relaxng" -> "itools.log";
+  //"itools.relaxng" -> "itools.uri";
   "itools.relaxng" -> "itools.xml";
-#  "itools.relaxng" -> "itools.uri";
 
-#  "itools.rss" -> "itools.core";
-#  "itools.rss" -> "itools.datatypes";
+  //"itools.rss" -> "itools.core";
+  //"itools.rss" -> "itools.datatypes";
   "itools.rss" -> "itools.handlers";
   "itools.rss" -> "itools.xml";
 
-#  "itools.srx" -> "itools.core";
+  //"itools.srx" -> "itools.core";
   "itools.srx" -> "itools.handlers";
   "itools.srx" -> "itools.xml";
 
-#  "itools.stl" -> "itools.core";
-#  "itools.stl" -> "itools.datatypes";
+  //"itools.stl" -> "itools.core";
+  //"itools.stl" -> "itools.datatypes";
   "itools.stl" -> "itools.gettext";
   "itools.stl" -> "itools.html";
   "itools.stl" -> "itools.log";
-#  "itools.stl" -> "itools.uri";
-#  "itools.stl" -> "itools.xml";
-#  "itools.stl" -> "itools.xmlfile";
+  //"itools.stl" -> "itools.uri";
+  //"itools.stl" -> "itools.xml";
+  //"itools.stl" -> "itools.xmlfile";
 
-#  "itools.tmx" -> "itools.core";
-#  "itools.tmx" -> "itools.datatypes";
+  //"itools.tmx" -> "itools.core";
+  //"itools.tmx" -> "itools.datatypes";
   "itools.tmx" -> "itools.handlers";
   "itools.tmx" -> "itools.xml";
 
   "itools.uri" -> "itools.abnf";
   "itools.uri" -> "itools.core";
 
-#  "itools.web" -> "itools.core";
-#  "itools.web" -> "itools.datatypes";
-#  "itools.web" -> "itools.gettext";
+  //"itools.web" -> "itools.core";
+  "itools.web" -> "itools.database";
+  //"itools.web" -> "itools.datatypes";
+  "itools.web" -> "itools.gettext";
   "itools.web" -> "itools.http";
-#  "itools.web" -> "itools.i18n";
-#  "itools.web" -> "itools.log";
+  //"itools.web" -> "itools.i18n";
+  //"itools.web" -> "itools.log";
   "itools.web" -> "itools.stl";
-#  "itools.web" -> "itools.uri";
+  //"itools.web" -> "itools.uri";
+  //"itools.web" -> "itools.xml";
 
   "itools.workflow";
 
-#  "itools.xliff" -> "itools.core";
-#  "itools.xliff" -> "itools.datatypes";
+  //"itools.xliff" -> "itools.core";
+  //"itools.xliff" -> "itools.datatypes";
   "itools.xliff" -> "itools.gettext";
-#  "itools.xliff" -> "itools.handlers";
-#  "itools.xliff" -> "itools.srx";
-#  "itools.xliff" -> "itools.xml";
+  //"itools.xliff" -> "itools.handlers";
+  //"itools.xliff" -> "itools.srx";
+  //"itools.xliff" -> "itools.xml";
 
   "itools.xml" -> "itools.datatypes";
 
-#  "itools.xmlfile" -> "itools.datatypes";
-#  "itools.xmlfile" -> "itools.handlers";
+  //"itools.xmlfile" -> "itools.datatypes";
+  //"itools.xmlfile" -> "itools.handlers";
   "itools.xmlfile" -> "itools.srx";
-#  "itools.xmlfile" -> "itools.xml";
+  //"itools.xmlfile" -> "itools.xml";
 }

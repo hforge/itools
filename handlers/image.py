@@ -21,9 +21,12 @@ from math import floor
 
 # Import from the Python Image Library
 try:
-    from PIL import Image as PILImage, ImageOps
+    from PIL.Image import ANTIALIAS, new as new_image, open as open_image
+    from PIL.ImageOps import fit as fit_image
 except ImportError:
-    PILImage = None
+    PIL = False
+else:
+    PIL = True
 
 # Import from rsvg
 try:
@@ -62,14 +65,14 @@ class Image(File):
 
 
     def _get_handle(self):
-        if PILImage is None:
+        if PIL is False:
             return None
 
         #data = self.to_str()
         data = self.data
         f = StringIO(data)
         try:
-            return PILImage.open(f)
+            return open_image(f)
         except (IOError, OverflowError):
             return None
 
@@ -118,9 +121,10 @@ class Image(File):
             return None, None
 
         # Make the thumbnail
+        size = (width, height)
         try:
             if not fit:
-                im.thumbnail((width, height), PILImage.ANTIALIAS)
+                im.thumbnail(size, ANTIALIAS)
             else:
                 # Reduction ratio
                 width_ratio = float(width) / image_width
@@ -131,8 +135,7 @@ class Image(File):
                 # Case 1: reduce and crop (big images with a good ratio)
                 if (image_width >= width and image_height >= height and
                     (max_ratio / min_ratio - 1) <= MAX_CROP_RATIO):
-                    im = ImageOps.fit(im, (width, height), PILImage.ANTIALIAS,
-                                      0, (.2, .2))
+                    im = fit_image(im, size, ANTIALIAS, 0, (.2, .2))
                 else:
                     # Case 2: do nothing (small images)
                     if image_width < width and image_height < height:
@@ -142,9 +145,8 @@ class Image(File):
                         w, h = image_width * min_ratio, image_height * min_ratio
                         w, h = int(floor(w)), int(floor(h))
 
-                    im.thumbnail((w, h), PILImage.ANTIALIAS)
-                    background = PILImage.new('RGBA', (width, height),
-                                              (255, 255, 255, 0))
+                    im.thumbnail((w, h), ANTIALIAS)
+                    background = new_image('RGBA', size, (255, 255, 255, 0))
                     background.paste(im, ((width - w) / 2, (height - h) / 2))
                     im = background
         except (IOError, ZeroDivisionError):

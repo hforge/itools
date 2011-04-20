@@ -56,9 +56,8 @@ class Image(File):
         else:
             self.size = (0, 0)
 
-        # A cache for thumbnails, where the key is the size, the format and
-        # strict (the xxx)
-        # and the value is the thumbnail.
+        # A cache for thumbnails.
+        # The key is the tuple (width, height, format, fit)
         self.thumbnails = {}
 
 
@@ -86,7 +85,7 @@ class Image(File):
         return self.size
 
 
-    def get_thumbnail(self, width, height, format="jpeg", strict=False):
+    def get_thumbnail(self, width, height, format="jpeg", fit=False):
         format = format.lower()
 
         # Get the handle
@@ -95,21 +94,21 @@ class Image(File):
             return None, None
 
         # Cache hit
-        key = (width, height, format, strict)
+        key = (width, height, format, fit)
         thumbnails = self.thumbnails
         if key in thumbnails:
             return thumbnails[key]
 
         # Cache miss
-        value = self._get_thumbnail(handle, width, height, format, strict)
+        value = self._get_thumbnail(handle, width, height, format, fit)
         thumbnails[key] = value
         return value
 
 
-    def _get_thumbnail(self, handle, width, height, format, strict):
+    def _get_thumbnail(self, handle, width, height, format, fit):
         # Do not create the thumbnail if not needed
         image_width, image_height = self.size
-        if not strict and width >= image_width and height >= image_height:
+        if not fit and width >= image_width and height >= image_height:
             return self.to_str(), format
 
         # Convert to RGBA
@@ -120,7 +119,7 @@ class Image(File):
 
         # Make the thumbnail
         try:
-            if not strict:
+            if not fit:
                 im.thumbnail((width, height), PILImage.ANTIALIAS)
             else:
                 # Reduction ratio

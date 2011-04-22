@@ -1,11 +1,56 @@
+libgit2
+===========================================================================
 
-- Rewrite Worktree.walk to use two callbacks, for files and folders.
-  Replace call to os.walk by Worktree.walk
+ #1 [libgit2] git_tree_entry_byname bug
+    https://github.com/libgit2/libgit2/issues/127
 
-- Use 'os.path.join' to prepare for Windows support
+ #2 [libgit2] git_commit_create usability issues
+    https://github.com/libgit2/libgit2/issues/132
 
-- Add docstrings
+ #3 [libgit2] git_tree_create_fromindex performance issues
+    https://github.com/libgit2/libgit2/issues/75
 
-- Remove "git_" prefix from methods
 
-- Implement "git status"
+pygit2
+===========================================================================
+
+ #1 [pygit2] Finish 'Repository_listall_references' (there is a TODO)
+
+ #2 [pygit2] Finish test_refs.py (the XXX)
+
+ #3 [pygit2] Support these functions:
+
+    git_reference_create_symbolic
+    git_reference_set_target
+    git_reference_set_oid
+    git_reference_rename
+    git_reference_delete
+    git_reference_packall
+
+ #4 [pygit2] Write 'Tree_getitem_by_path', expose it as
+    'Tree.get_entry_by_path'
+
+ #5 [pygit2] Write the methods:
+
+    - Repository.get(sha)
+    - Tree.get(name)
+    - Index.get(path)
+
+    They will return None when the object is not there.
+
+ #6 [pygit2] Add the 'Repository.path' and 'Repository.workdir' getters,
+    they will expose the 'git_repository_path' and 'git_repository_workdir'
+    functions.
+
+
+itools.git
+===========================================================================
+
+ #1 Rewrite Worktree.walk to use two callbacks, for files and folders.
+    Replace call to os.walk by Worktree.walk
+
+ #2 Use 'os.path.join' to prepare for Windows support
+
+ #3 Add docstrings
+
+ #4 Implement "git status"

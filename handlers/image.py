@@ -17,12 +17,10 @@
 
 # Import from the Standard Library
 from cStringIO import StringIO
-from math import floor
 
 # Import from the Python Image Library
 try:
     from PIL.Image import ANTIALIAS, new as new_image, open as open_image
-    from PIL.ImageOps import fit as fit_image
 except ImportError:
     PIL = False
 else:
@@ -56,8 +54,10 @@ class Image(File):
         handle = self._get_handle()
         if handle:
             self.size = self._get_size(handle)
+            self.img_format = self._get_format(handle)
         else:
             self.size = (0, 0)
+            self.img_format = self._get_format(handle)
 
         # A cache for thumbnails.
         # The key is the tuple (width, height, format, fit)
@@ -68,17 +68,23 @@ class Image(File):
         if PIL is False:
             return None
 
-        #data = self.to_str()
-        data = self.data
-        f = StringIO(data)
+        # Open image
+        f = StringIO(self.data)
         try:
-            return open_image(f)
+            im = open_image(f)
         except (IOError, OverflowError):
             return None
+
+        # Ok
+        return im
 
 
     def _get_size(self, handle):
         return handle.size
+
+
+    def _get_format(self, handle):
+        return handle.format
 
 
     #########################################################################
@@ -88,79 +94,74 @@ class Image(File):
         return self.size
 
 
-    def get_thumbnail(self, width, height, format="jpeg", fit=False):
-        format = format.lower()
-
+    def get_thumbnail(self, xnewsize, ynewsize, format='JPEG', fit=False):
         # Get the handle
         handle = self._get_handle()
         if handle is None:
             return None, None
 
         # Cache hit
-        key = (width, height, format, fit)
+        key = (xnewsize, ynewsize, format, fit)
         thumbnails = self.thumbnails
         if key in thumbnails:
             return thumbnails[key]
 
         # Cache miss
-        value = self._get_thumbnail(handle, width, height, format, fit)
-        thumbnails[key] = value
-        return value
+        xsize, ysize = self.size
+        xratio, yratio = float(xnewsize)/xsize, float(ynewsize)/ysize
+        # Case 1: fit
+        if fit:
+            # Scale the image so no more than one side overflows
+            ratio = max(xratio, yratio)
+            im, xsize, ysize = self._scale_down(handle, ratio)
+
+            # Crop the image so none side overflows
+            xsize = min(xsize, xnewsize)
+            ysize = min(ysize, ynewsize)
+            im.crop((0, 0, xsize, ysize))
+
+            # Paste the image into a background so it fits the target size
+            if xsize < xnewsize or ysize < xnewsize:
+                newsize = (xnewsize, ynewsize)
+                background = new_image('RGBA', newsize, (255, 255, 255, 0))
+                x = (xnewsize - xsize) / 2
+                y = (ynewsize - ysize) / 2
+                background.paste(im, (x, y))
+                im = background
+
+        # Case 2: thumbnail
+        else:
+            # Scale the image so none side overflows
+            ratio = min(xratio, yratio)
+            im, xsize, ysize = self._scale_down(handle, ratio)
+
+        # To string
+        output = StringIO()
+        format = format or self.img_format
+        im.save(output, format, quality=80)
+        value = output.getvalue()
+        output.close()
+
+        # Ok
+        format = format.lower()
+        thumbnails[key] = value, format
+        return value, format
 
 
-    def _get_thumbnail(self, handle, width, height, format, fit):
-        # Do not create the thumbnail if not needed
-        image_width, image_height = self.size
-        if not fit and width >= image_width and height >= image_height:
-            return self.to_str(), format
-
+    def _scale_down(self, im, ratio):
         # Convert to RGBA
         try:
-            im = handle.convert("RGBA")
+            im = im.convert("RGBA")
         except IOError:
-            return None, None
+            return None
 
-        # Make the thumbnail
-        size = (width, height)
-        try:
-            if fit:
-                # Reduction ratio
-                width_ratio = float(width) / image_width
-                height_ratio = float(height) / image_height
-                max_ratio = max(width_ratio, height_ratio)
-                min_ratio = min(width_ratio, height_ratio)
+        # Scale
+        xsize, ysize = self.size
+        if ratio < 1.0:
+            xsize, ysize = int(xsize * ratio), int(ysize * ratio)
+            im = im.resize((xsize, ysize), ANTIALIAS)
 
-                # Case 1: small images
-                if image_width < width and image_height < height:
-                    w, h = image_width, image_height
-                    background = new_image('RGBA', size, (255, 255, 255, 0))
-                    background.paste(im, ((width - w) / 2, (height - h) / 2))
-                    im = background
-                # Case 2: big images with a good ratio (reduce and crop)
-                elif (image_width >= width and image_height >= height and
-                    (max_ratio / min_ratio - 1) <= MAX_CROP_RATIO):
-                    im = fit_image(im, size, ANTIALIAS, 0, (.2, .2))
-                # Case 3: the others (reduce but not crop)
-                else:
-                    w, h = image_width * min_ratio, image_height * min_ratio
-                    w, h = int(floor(w)), int(floor(h))
-                    im.thumbnail((w, h), ANTIALIAS)
-                    background = new_image('RGBA', size, (255, 255, 255, 0))
-                    background.paste(im, ((width - w) / 2, (height - h) / 2))
-                    im = background
-            else:
-                im.thumbnail(size, ANTIALIAS)
-        except (IOError, ZeroDivisionError):
-            # PIL does not support interlaced PNG files, raises IOError
-            return None, None
-
-        thumbnail = StringIO()
-        im.save(thumbnail, format.upper(), quality=80)
-        data = thumbnail.getvalue()
-        thumbnail.close()
-
-        # Store in the cache and return
-        return data, format
+        return im, xsize, ysize
 
 
 
@@ -184,26 +185,22 @@ class SVGFile(Image):
         return handle.get_property('width'), handle.get_property('height')
 
 
-    def _get_thumbnail(self, handle, width, height, format):
-        image_width, image_height = self.size
-        if width >= image_width and height >= image_height:
-            # Case 1: convert
-            surface = ImageSurface(FORMAT_ARGB32, image_width, image_height)
+    def _get_format(self, handle):
+        return 'PNG'
+
+
+    def _scale_down(self, handle, ratio):
+        xsize, ysize = self.size
+        if ratio >= 1.0:
+            # Convert
+            surface = ImageSurface(FORMAT_ARGB32, xsize, ysize)
             ctx = Context(surface)
         else:
-            # Case 2: scale
-            surface = ImageSurface(FORMAT_ARGB32, width, height)
+            # Scale
+            xsize, ysize = int(xsize * ratio), int(ysize * ratio)
+            surface = ImageSurface(FORMAT_ARGB32, xsize, ysize)
             ctx = Context(surface)
-
-            image_width = float(image_width)
-            image_height = float(image_height)
-            ratio = image_width/image_height
-            if ratio > 1.0:
-                height = height/ratio
-            elif ratio < 1.0:
-                width = width * ratio
-
-            ctx.scale(width/image_width, height/image_height)
+            ctx.scale(ratio, ratio)
 
         # Render
         handle.render_cairo(ctx)
@@ -211,8 +208,11 @@ class SVGFile(Image):
         surface.write_to_png(output)
         surface.finish()
 
-        # FIXME We do not use the 'format' parameter
-        return output.getvalue(), 'png'
+        # Transform to a PIL image for further manipulation
+        output.seek(0)
+        im = open_image(output)
+
+        return im, xsize, ysize
 
 
 

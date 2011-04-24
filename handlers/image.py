@@ -18,9 +18,16 @@
 # Import from the Standard Library
 from cStringIO import StringIO
 
+# Import from pygtk
+try:
+    import gio
+    from gtk import gdk
+except ImportError:
+    gdk = None
+
 # Import from the Python Image Library
 try:
-    from PIL.Image import ANTIALIAS, new as new_image, open as open_image
+    from PIL.Image import new as new_image, open as open_image, frombuffer
 except ImportError:
     PIL = False
 else:
@@ -65,26 +72,22 @@ class Image(File):
 
 
     def _get_handle(self):
-        if PIL is False:
+        if gdk is None:
             return None
 
         # Open image
-        f = StringIO(self.data)
-        try:
-            im = open_image(f)
-        except (IOError, OverflowError):
-            return None
-
-        # Ok
-        return im
+        stream = gio.memory_input_stream_new_from_data(self.data)
+        pixbuf = gdk.pixbuf_new_from_stream(stream)
+        return pixbuf
 
 
     def _get_size(self, handle):
-        return handle.size
+        return handle.get_width(), handle.get_height()
 
 
     def _get_format(self, handle):
-        return handle.format
+        return 'PNG'
+        #return handle.format
 
 
     #########################################################################
@@ -148,18 +151,27 @@ class Image(File):
         return value, format
 
 
-    def _scale_down(self, im, ratio):
-        # Convert to RGBA
-        try:
-            im = im.convert("RGBA")
-        except IOError:
-            return None
-
-        # Scale
+    def _scale_down(self, pixbuf, ratio):
         xsize, ysize = self.size
-        if ratio < 1.0:
+        if ratio >= 1.0:
+            # Create surface & context, set buffer
+            surface = ImageSurface(FORMAT_ARGB32, xsize, ysize)
+            ctx = Context(surface)
+        else:
+            # Scale
             xsize, ysize = int(xsize * ratio), int(ysize * ratio)
-            im = im.resize((xsize, ysize), ANTIALIAS)
+            surface = ImageSurface(FORMAT_ARGB32, xsize, ysize)
+            ctx = Context(surface)
+            ctx.scale(ratio, ratio)
+
+        ctx2 = gdk.CairoContext(ctx)
+        ctx2.set_source_pixbuf(pixbuf, 0, 0)
+        ctx2.paint()
+
+        # Transform to a PIL image for further manipulation
+        size = (xsize, ysize)
+        im = frombuffer('RGBA', size, surface.get_data(), 'raw', 'BGRA', 0, 1)
+        surface.finish()
 
         return im, xsize, ysize
 
@@ -204,13 +216,11 @@ class SVGFile(Image):
 
         # Render
         handle.render_cairo(ctx)
-        output = StringIO()
-        surface.write_to_png(output)
-        surface.finish()
 
         # Transform to a PIL image for further manipulation
-        output.seek(0)
-        im = open_image(output)
+        size = (xsize, ysize)
+        im = frombuffer('RGBA', size, surface.get_data(), 'raw', 'BGRA', 0, 1)
+        surface.finish()
 
         return im, xsize, ysize
 

@@ -88,13 +88,14 @@ class Image(File):
         return self.size
 
 
-    def get_thumbnail(self, width, height, format="jpeg", fit=False):
-        format = format.lower()
-
+    def get_thumbnail(self, width, height, format=None, fit=False):
         # Get the handle
         handle = self._get_handle()
         if handle is None:
             return None, None
+
+        format = format or handle.format
+        format = format.lower()
 
         # Cache hit
         key = (width, height, format, fit)
@@ -112,7 +113,7 @@ class Image(File):
         # Do not create the thumbnail if not needed
         image_width, image_height = self.size
         if not fit and width >= image_width and height >= image_height:
-            return self.to_str(), format
+            return self.to_str(), handle.format
 
         # Convert to RGBA
         try:

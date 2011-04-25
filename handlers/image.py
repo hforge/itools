@@ -59,10 +59,6 @@ class Image(File):
         else:
             self.size = (0, 0)
 
-        # A cache for thumbnails.
-        # The key is the tuple (width, height, format, fit)
-        self.thumbnails = {}
-
 
     def _get_handle(self):
         if PIL is False:
@@ -96,17 +92,7 @@ class Image(File):
 
         format = format or handle.format
         format = format.lower()
-
-        # Cache hit
-        key = (width, height, format, fit)
-        thumbnails = self.thumbnails
-        if key in thumbnails:
-            return thumbnails[key]
-
-        # Cache miss
-        value = self._get_thumbnail(handle, width, height, format, fit)
-        thumbnails[key] = value
-        return value
+        return self._get_thumbnail(handle, width, height, format, fit)
 
 
     def _get_thumbnail(self, handle, width, height, format, fit):

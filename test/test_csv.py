@@ -227,7 +227,7 @@ class CSVTestCase(TestCase):
         data = 'house,2005-10-10\nwindow,2005-05-10\ncomputer,2005-10-10'
         handler = Things()
         handler.load_state_from_string(data)
-        handler.add_row(['flower', Date.decode('2005-05-10')])
+        handler.add_row([u'flower', Date.decode('2005-05-10')])
         self.assertEqual(handler.search(date=Date.decode('2005-05-10')),
                          [1,3])
 
@@ -237,44 +237,44 @@ class CSVTestCase(TestCase):
         handler = Things()
         handler.load_state_from_string(data)
 
-        self.assertEqual(handler.search(name='window'), [1])
+        self.assertEqual(handler.search(name=u'window'), [1])
         handler.del_row(1)
-        self.assertEqual(handler.search(name='window'), [])
-        self.assertEqual(handler.search(name='computer'), [2])
+        self.assertEqual(handler.search(name=u'window'), [])
+        self.assertEqual(handler.search(name=u'computer'), [2])
         handler.del_row(2)
-        self.assertEqual(handler.search(name='computer'), [])
+        self.assertEqual(handler.search(name=u'computer'), [])
 
 
     def test_build_csv_data(self):
         handler = People()
         handler.load_state_from_string('')
-        handler.add_row(['Piotr', 'Macuk', Date.decode('1975-12-08')])
-        handler.add_row(['Basia', 'Macuk', Date.decode('2002-02-14')])
-        self.assertEqual(handler.search(surname='macuk'), [0, 1])
-        handler.add_row(['Pawe³', 'Macuk', Date.decode('1977-05-13')])
-        self.assertEqual(handler.search(surname='macuk'), [0, 1, 2])
+        handler.add_row([u'Piotr', u'Macuk', Date.decode('1975-12-08')])
+        handler.add_row([u'Basia', u'Macuk', Date.decode('2002-02-14')])
+        self.assertEqual(handler.search(surname=u'macuk'), [0, 1])
+        handler.add_row([u'Pawe³', u'Macuk', Date.decode('1977-05-13')])
+        self.assertEqual(handler.search(surname=u'macuk'), [0, 1, 2])
         handler.del_row(2)
-        self.assertEqual(handler.search(surname='macuk'), [0, 1])
+        self.assertEqual(handler.search(surname=u'macuk'), [0, 1])
         handler.del_row(0)
-        self.assertEqual(handler.search(surname='macuk'), [1])
+        self.assertEqual(handler.search(surname=u'macuk'), [1])
 
 
     def test_advanced_search(self):
         handler = Countries()
         handler.load_state_from_uri('tests/test_adv.csv')
-        result1 = handler.search(name='dde', country='sweden')
+        result1 = handler.search(name=u'dde', country=u'sweden')
         self.assertEqual(result1, [5, 6])
 
-        q1 = OrQuery(PhraseQuery('name', 'dde'), PhraseQuery('name', 'fse'))
-        q2 = PhraseQuery('country', 'france')
+        q1 = OrQuery(PhraseQuery('name', u'dde'), PhraseQuery('name', u'fse'))
+        q2 = PhraseQuery('country', u'france')
         q3 = AndQuery(q1, q2)
         result2 = handler.search(q3)
         self.assertEqual(result2, [4])
 
         # previous results as query items
-        q1 = OrQuery(PhraseQuery('name', 'dde'), PhraseQuery('name', 'fse'))
-        q2 = OrQuery(PhraseQuery('country', 'poland'),
-                     PhraseQuery('country', 'france'))
+        q1 = OrQuery(PhraseQuery('name', u'dde'), PhraseQuery('name', u'fse'))
+        q2 = OrQuery(PhraseQuery('country', u'poland'),
+                     PhraseQuery('country', u'france'))
         q = AndQuery(q1, q2)
         result5 = handler.search(q)
         self.assertEqual(result5, [1, 4])
@@ -464,9 +464,9 @@ class TableTestCase(TestCase):
 
     def test_unique(self):
         agenda = Agenda(string=agenda_file)
-        email = 'karl@itaapy.com'
+        email = u'karl@itaapy.com'
         # Add
-        record = {'firstname': 'Karl', 'lastname': 'Smith', 'email': email}
+        record = {'firstname': u'Karl', 'lastname': u'Smith', 'email': email}
         self.assertRaises(UniqueError, agenda.add_record, record)
         # Update
         self.assertRaises(UniqueError, agenda.update_record, 1, email=email)

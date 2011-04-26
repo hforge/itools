@@ -409,7 +409,7 @@ class icalTestCase(TestCase):
         cal = self.cal1
         event = cal.get_components('VEVENT')[0]
 
-        name, value = 'SUMMARY', Property('This is a new summary')
+        name, value = 'SUMMARY', Property(u'This is a new summary')
         cal.update_component(event.uid, **{name: value})
         self.assertEqual(event.get_property_values(name), value)
 
@@ -845,7 +845,7 @@ class icalTableTestCase(TestCase):
         cal = self.cal1
         event = cal.get_components('VEVENT')[0]
 
-        name, value = 'SUMMARY', Property('This is a new summary')
+        name, value = 'SUMMARY', Property(u'This is a new summary')
         cal.update_record(event.id, **{name: value})
         self.assertEqual(event.get_property(name), value)
 

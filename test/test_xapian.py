@@ -86,7 +86,7 @@ class FieldsTestCase(TestCase):
                  u' quelques-uns jouissent, au préjudice des autres,')
         expected = [u'celle', u'ci', u'consiste', u'dans', u'les',
             u'differents', u'privileges', u'dont', u'quelques', u'uns',
-            u'jouissent', u'au', u'préjudice', u'des', u'autres']
+            u'jouissent', u'au', u'prejudice', u'des', u'autres']
 
         words = split(Unicode, value, 'fr')
         self.assertEqual(words, expected)
@@ -318,12 +318,12 @@ class CatalogTestCase(TestCase):
         results = catalog.search(query)
         self.assertEqual(len(results), 4)
         # Not Query (1/2)
-        query = NotQuery(PhraseQuery('data', 'lion'))
+        query = NotQuery(PhraseQuery('data', u'lion'))
         results = catalog.search(query)
         self.assertEqual(len(results), 27)
         # Not Query (2/2)
-        query1 = PhraseQuery('data', 'mouse')
-        query2 = NotQuery(PhraseQuery('data', 'lion'))
+        query1 = PhraseQuery('data', u'mouse')
+        query2 = NotQuery(PhraseQuery('data', u'lion'))
         query = AndQuery(query1, query2)
         results = catalog.search(query)
         self.assertEqual(len(results), 2)
@@ -333,23 +333,23 @@ class CatalogTestCase(TestCase):
         catalog = Catalog('tests/catalog', Document.fields)
 
         # Test +/-
-        query = TextQuery('title', 'Wolf')
+        query = TextQuery('title', u'Wolf')
         self.assertEqual(len(catalog.search(query)), 4)
-        query = TextQuery('title', 'Wolf -Dog')
+        query = TextQuery('title', u'Wolf -Dog')
         self.assertEqual(len(catalog.search(query)), 3)
-        query = TextQuery('title', 'Wolf -Dog +Lamb')
+        query = TextQuery('title', u'Wolf -Dog +Lamb')
         self.assertEqual(len(catalog.search(query)), 1)
 
         # Test ""
-        query = TextQuery('title', 'Wolf and')
+        query = TextQuery('title', u'Wolf and')
         self.assertEqual(len(catalog.search(query)), 24)
-        query = TextQuery('title', '"Wolf and"')
+        query = TextQuery('title', u'"Wolf and"')
         self.assertEqual(len(catalog.search(query)), 3)
 
         # Test *
-        query = TextQuery('title', 'Wol*')
+        query = TextQuery('title', u'Wol*')
         self.assertEqual(len(catalog.search(query)), 4)
-        query = TextQuery('title', 'Wo*')
+        query = TextQuery('title', u'Wo*')
         self.assertEqual(len(catalog.search(query)), 6)
 
 
@@ -456,13 +456,15 @@ class Document(CatalogAware):
 
     def get_catalog_values(self):
         data = lfs.open(self.abspath).read()
+        # data is unicode
+        data = Unicode.decode(data)
 
         return {
             'name': basename(self.abspath),
             'title': data.splitlines()[0],
             'data': data,
             'size': len(data),
-            'about_wolf': re.search('wolf', data, re.I) is not None,
+            'about_wolf': re.search(u'wolf', data, re.I) is not None,
             'is_long': len(data) > 1024,
         }
 

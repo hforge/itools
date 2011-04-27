@@ -18,7 +18,6 @@
 # Import from the standard library
 from hashlib import sha1
 from marshal import dumps, loads
-from warnings import warn
 
 # Import from xapian
 from xapian import sortable_serialise, sortable_unserialise
@@ -174,7 +173,8 @@ def _index_unicode(xdoc, value, prefix, language, termpos,
                    TRANSLATE_MAP=TRANSLATE_MAP):
     # Check type
     if type(value) is not unicode:
-        warn('The value "%s", field "%s", is not a unicode' % (value, prefix))
+        msg = 'The value "%s", field "%s", is not a unicode'
+        raise TypeError, msg % (value, prefix)
 
     # Case 1: Japanese or Chinese
     if language in ['ja', 'zh']:
@@ -185,11 +185,8 @@ def _index_unicode(xdoc, value, prefix, language, termpos,
     tg.set_document(xdoc)
     tg.set_termpos(termpos - 1)
     # Suppress the accents (FIXME This should be done by the stemmer)
-    if type(value) is unicode:
-        value = value.translate(TRANSLATE_MAP)
-    # XXX With the stemmer, the words are saved twice:
-    # with prefix and with Zprefix
-    #tg.set_stemmer(stemmer)
+    value = value.translate(TRANSLATE_MAP)
+#    tg.set_stemmer(stemmer)
 
     tg.index_text(value, 1, prefix)
     return tg.get_termpos() + 1

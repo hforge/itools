@@ -68,7 +68,7 @@ All the software required by itools is available in squeeze (Debian Testing)
 but not yet in lenny (Debian Stable).  So first you will need to upgrade to
 squeeze, then install the required packages:
 
-  # apt-get install libsoup24 python-gobject python-xapian ...
+  # apt-get install libsoup2.4 python-gobject python-xapian ...
 
 And finally install the itools package by hand (see Section 2).
 

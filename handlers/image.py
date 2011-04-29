@@ -15,17 +15,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the Standard Library
-from cStringIO import StringIO
-
-# Import from the Python Image Library
+# Import from pygtk
 try:
-    from PIL.Image import frombuffer, new as new_image, open as open_image
-    from PIL.Image import ANTIALIAS
+    from gtk.gdk import INTERP_HYPER, Pixbuf, pixbuf_new_from_stream
+    from gio import memory_input_stream_new_from_data
 except ImportError:
-    PIL = False
+    gdk = False
 else:
-    PIL = True
+    gdk = True
 
 # Import from rsvg
 try:
@@ -62,26 +59,20 @@ class Image(File):
 
 
     def _get_handle(self):
-        if PIL is False:
+        if gdk is False:
             return None
 
-        # Open image
-        f = StringIO(self.data)
-        try:
-            im = open_image(f)
-        except (IOError, OverflowError):
-            return None
-
-        # Ok
-        return im
+        # Load image
+        stream = memory_input_stream_new_from_data(self.data)
+        return pixbuf_new_from_stream(stream)
 
 
     def _get_size(self, handle):
-        return handle.size
+        return handle.get_width(), handle.get_height()
 
 
     def _get_format(self, handle):
-        return handle.format
+        return self.get_mimetype().split('/', 1)[-1]
 
 
     #########################################################################
@@ -103,53 +94,55 @@ class Image(File):
         if fit:
             # Scale the image so no more than one side overflows
             ratio = max(xratio, yratio)
-            im, xsize, ysize = self._scale_down(handle, ratio)
+            pixbuf, xsize, ysize = self._scale_down(handle, ratio)
 
             # Crop the image so none side overflows
             xsize = min(xsize, xnewsize)
             ysize = min(ysize, ynewsize)
-            im.crop((0, 0, xsize, ysize))
+            new_pixbuf = Pixbuf(
+                pixbuf.get_colorspace(),
+                pixbuf.get_has_alpha(),
+                pixbuf.get_bits_per_sample(),
+                xnewsize, ynewsize)
+            new_pixbuf.fill(0xFFFFFFFF)
 
-            # Paste the image into a background so it fits the target size
-            if xsize < xnewsize or ysize < xnewsize:
-                newsize = (xnewsize, ynewsize)
-                background = new_image('RGBA', newsize, (255, 255, 255, 0))
-                x = (xnewsize - xsize) / 2
-                y = (ynewsize - ysize) / 2
-                background.paste(im, (x, y))
-                im = background
+            x = (xnewsize - xsize) / 2
+            y = (ynewsize - ysize) / 2
+            pixbuf.composite(
+                new_pixbuf,
+                x, y,               # destination coordinates
+                xsize, ysize,
+                0, 0,               # offset: upper-left corner
+                1, 1, INTERP_HYPER, # do not scale
+                255)                # alpha: 0-255
+            pixbuf = new_pixbuf
 
         # Case 2: thumbnail
         else:
             # Scale the image so none side overflows
             ratio = min(xratio, yratio)
-            im, xsize, ysize = self._scale_down(handle, ratio)
+            pixbuf, xsize, ysize = self._scale_down(handle, ratio)
 
         # To string
-        output = StringIO()
+        output = []
+        def save_func(data): output.append(data)
         format = format or self.img_format
-        im.save(output, format, quality=80)
-        value = output.getvalue()
-        output.close()
+        kw = {}
+        if format == 'jpeg':
+            kw['quality'] = '80'
+        pixbuf.save_to_callback(save_func, format, kw)
 
         # Ok
-        return value, format.lower()
+        return ''.join(output), format
 
 
-    def _scale_down(self, im, ratio):
-        # Convert to RGBA
-        try:
-            im = im.convert("RGBA")
-        except IOError:
-            return None
-
-        # Scale
+    def _scale_down(self, pixbuf, ratio):
         xsize, ysize = self.size
         if ratio < 1.0:
             xsize, ysize = int(xsize * ratio), int(ysize * ratio)
-            im = im.resize((xsize, ysize), ANTIALIAS)
+            pixbuf = pixbuf.scale_simple(xsize, ysize, INTERP_HYPER)
 
-        return im, xsize, ysize
+        return pixbuf, xsize, ysize
 
 
 
@@ -174,7 +167,7 @@ class SVGFile(Image):
 
 
     def _get_format(self, handle):
-        return 'PNG'
+        return 'png'
 
 
     def _scale_down(self, handle, ratio):
@@ -193,12 +186,12 @@ class SVGFile(Image):
         # Render
         handle.render_cairo(ctx)
 
-        # Transform to a PIL image for further manipulation
-        size = (xsize, ysize)
-        im = frombuffer('RGBA', size, surface.get_data(), 'raw', 'BGRA', 0, 1)
+        # Transform to a pixbuf for further manipulation
+#        size = (xsize, ysize)
+#        im = frombuffer('RGBA', size, surface.get_data(), 'raw', 'BGRA', 0, 1)
         surface.finish()
 
-        return im, xsize, ysize
+        return pixbuf, xsize, ysize
 
 
 

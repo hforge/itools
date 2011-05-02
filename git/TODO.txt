@@ -1,23 +1,25 @@
 libgit2
 ===========================================================================
 
- #1 [libgit2] git_tree_entry_byname bug
+ #1 git_tree_entry_byname bug
     https://github.com/libgit2/libgit2/issues/127
 
- #2 [libgit2] git_commit_create usability issues
+ #2 git_commit_create usability issues
     https://github.com/libgit2/libgit2/issues/132
 
- #3 [libgit2] git_tree_create_fromindex performance issues
+ #3 git_tree_create_fromindex performance issues
     https://github.com/libgit2/libgit2/issues/75
 
 
 pygit2
 ===========================================================================
 
- #1 [pygit2] Write 'Tree_getitem_by_path', expose it as
-    'Tree.get_entry_by_path'
+ #1 Replace the internal function 'wrap_object' by the function:
 
- #2 [pygit2] Write the methods:
+      static Object *
+      lookup_object(Repository *repo, const git_oid *oid, git_otype type)
+
+ #2 Write the methods:
 
     - Repository.get(sha)
     - Tree.get(name)
@@ -25,9 +27,8 @@ pygit2
 
     They will return None when the object is not there.
 
- #3 [pygit2] Add the 'Repository.path' and 'Repository.workdir' getters,
-    they will expose the 'git_repository_path' and 'git_repository_workdir'
-    functions.
+ #3 Write 'Tree_getitem_by_path', expose it as
+    'Tree.get_entry_by_path'
 
 
 itools.git

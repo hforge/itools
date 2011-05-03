@@ -4,10 +4,7 @@ libgit2
  #1 git_tree_entry_byname bug
     https://github.com/libgit2/libgit2/issues/127
 
- #2 git_commit_create usability issues
-    https://github.com/libgit2/libgit2/issues/132
-
- #3 git_tree_create_fromindex performance issues
+ #2 git_tree_create_fromindex performance issues
     https://github.com/libgit2/libgit2/issues/75
 
 

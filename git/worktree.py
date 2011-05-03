@@ -320,18 +320,8 @@ class Worktree(object):
         author = (author[0], author[1], when_time, when_offset)
 
         # Create the commit
-        repo = self.repo
-        update_ref = 'HEAD' if parent else None
-        commit = repo.create_commit(update_ref, author, committer, message,
-                                    tree, parents)
-
-        # TODO Workaround https://github.com/libgit2/libgit2/issues/132
-        if parent is None:
-            head = repo.lookup_reference('HEAD')
-            target = head.get_target()
-            repo.create_reference(target, commit)
-
-        return commit
+        return self.repo.create_commit('HEAD', author, committer, message,
+                                       tree, parents)
 
 
     def git_log(self, paths=None, n=None, author=None, grep=None,

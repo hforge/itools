@@ -130,6 +130,11 @@ class URI(String):
         return True
 
 
+    @staticmethod
+    def is_empty(value):
+        return not value
+
+
 
 class PathDataType(DataType):
     # TODO Do like URI, do not decode (just an string), and use 'is_valid'

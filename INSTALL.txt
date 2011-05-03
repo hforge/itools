@@ -64,13 +64,14 @@ And finally install itools with distutils:
 3. Install on Debian
 ========================
 
-All the software required by itools is available in squeeze (Debian Testing)
-but not yet in lenny (Debian Stable).  So first you will need to upgrade to
-squeeze, then install the required packages:
+All the software required by itools is available in Debian Stable (squeeze).
+Install these packages:
 
-  # apt-get install gettext git libsoup2.4
-  # apt-get install python-gobject python-tz python-xapian
-  # apt-get install python-imaging python-rsvg python-xlrd
+  # apt-get install gettext git python-gobject-dev python-tz
+  # apt-get install libsoup2.4-dev python-xapian
+  # apt-get install python-imaging python-rsvg
+  # apt-get install g++ libpoppler-dev libwv2-dev python-xlrd
+  # apt-get install python-reportlab
 
 And finally install the itools package by hand (see Section 2).
 

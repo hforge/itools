@@ -11,12 +11,7 @@ libgit2
 pygit2
 ===========================================================================
 
- #1 Replace the internal function 'wrap_object' by the function:
-
-      static Object *
-      lookup_object(Repository *repo, const git_oid *oid, git_otype type)
-
- #2 Write the methods:
+ #1 Write the methods:
 
     - Repository.get(sha)
     - Tree.get(name)
@@ -24,7 +19,7 @@ pygit2
 
     They will return None when the object is not there.
 
- #3 Write 'Tree_getitem_by_path', expose it as
+ #2 Write 'Tree_getitem_by_path', expose it as
     'Tree.get_entry_by_path'
 
 

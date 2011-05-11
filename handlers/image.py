@@ -17,7 +17,7 @@
 
 # Import from pygtk
 try:
-    from gtk.gdk import INTERP_HYPER, Pixbuf, pixbuf_new_from_stream
+    from gtk.gdk import INTERP_BILINEAR, Pixbuf, pixbuf_new_from_stream
     from gio import memory_input_stream_new_from_data
 except ImportError:
     gdk = False
@@ -110,11 +110,11 @@ class Image(File):
             y = (ynewsize - ysize) / 2
             pixbuf.composite(
                 new_pixbuf,
-                x, y,               # destination coordinates
+                x, y,                  # destination coordinates
                 xsize, ysize,
-                0, 0,               # offset: upper-left corner
-                1, 1, INTERP_HYPER, # do not scale
-                255)                # alpha: 0-255
+                0, 0,                  # offset: upper-left corner
+                1, 1, INTERP_BILINEAR, # do not scale
+                255)                   # alpha: 0-255
             pixbuf = new_pixbuf
 
         # Case 2: thumbnail
@@ -140,7 +140,7 @@ class Image(File):
         xsize, ysize = self.size
         if ratio < 1.0:
             xsize, ysize = int(xsize * ratio), int(ysize * ratio)
-            pixbuf = pixbuf.scale_simple(xsize, ysize, INTERP_HYPER)
+            pixbuf = pixbuf.scale_simple(xsize, ysize, INTERP_BILINEAR)
 
         return pixbuf, xsize, ysize
 

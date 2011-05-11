@@ -108,7 +108,7 @@ class Image(File):
             # Crop the image so none side overflows
             xsize = min(xsize, xnewsize)
             ysize = min(ysize, ynewsize)
-            im.crop((0, 0, xsize, ysize))
+            im = im.crop((0, 0, xsize, ysize))
 
             # Paste the image into a background so it fits the target size
             if xsize < xnewsize or ysize < xnewsize:

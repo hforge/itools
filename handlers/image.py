@@ -55,10 +55,8 @@ class Image(File):
         handle = self._get_handle()
         if handle:
             self.size = self._get_size(handle)
-            self.img_format = self._get_format(handle)
         else:
             self.size = (0, 0)
-            self.img_format = self._get_format(handle)
 
 
     def _get_handle(self):
@@ -96,6 +94,7 @@ class Image(File):
         handle = self._get_handle()
         if handle is None:
             return None, None
+        format = format or self._get_format(handle)
 
         xsize, ysize = self.size
         xratio, yratio = float(xnewsize)/xsize, float(ynewsize)/ysize
@@ -127,7 +126,6 @@ class Image(File):
 
         # To string
         output = StringIO()
-        format = format or self.img_format
         im.save(output, format, quality=80)
         value = output.getvalue()
         output.close()

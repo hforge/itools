@@ -21,7 +21,7 @@ from warnings import warn
 
 # Import from itools
 from itools.xml import DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, COMMENT
-from itools.xml import TEXT, XMLError
+from itools.xml import TEXT, XMLError, DocType
 from xhtml import xhtml_uri
 
 
@@ -32,7 +32,7 @@ from xhtml import xhtml_uri
 #     a SGML format that does not support our DocType parser.
 #     But we must only have (for these HTML pages) a "to_str" function
 #     So, ...
-class DocType_ersatz(object):
+class DocType_ersatz(DocType):
 
     def __init__(self, PubidLiteral=None, SystemLiteral=None, intSubset=None):
         self.PubidLiteral = PubidLiteral

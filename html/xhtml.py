@@ -21,19 +21,17 @@ from itools.datatypes import XMLContent, XMLAttribute
 from itools.handlers import register_handler_class
 from itools.xml import START_ELEMENT, END_ELEMENT, TEXT
 from itools.xml import stream_to_str, get_qname, get_attribute_qname
-from itools.xml import get_end_tag, get_doctype, get_element
+from itools.xml import get_doctype, get_element, get_namespace
 from itools.xmlfile import XMLFile
 
-
-xhtml_uri = 'http://www.w3.org/1999/xhtml'
-
+# Import from here
+from schema import html_namespace, html_uri as xhtml_uri
 
 
 
 def get_start_tag(value):
     tag_uri, tag_name, attributes = value
-    qname = get_qname(tag_uri, tag_name)
-    s = '<%s' % qname
+    s = '<%s' % get_qname(tag_uri, tag_name)
     # Output the attributes
     for attr_uri, attr_name in attributes:
         value = attributes[(attr_uri, attr_name)]
@@ -41,6 +39,19 @@ def get_start_tag(value):
         value = XMLAttribute.encode(value)
         s += ' %s="%s"' % (qname, value)
     return s + '>'
+
+
+def get_end_tag(value):
+    tag_uri, tag_name = value
+    if tag_uri and tag_uri != xhtml_uri:
+        raise ValueError, tag_uri
+
+    # Case 1: empty
+    schema = html_namespace.get_element_schema(tag_name)
+    if getattr(schema, 'is_empty', False):
+        return ''
+    # Case 2: not empty
+    return '</%s>' % tag_name
 
 
 stream_to_html_map = (

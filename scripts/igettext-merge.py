@@ -18,7 +18,8 @@
 # Import from the Standard Library
 from optparse import OptionParser
 from os.path import exists
-import sys
+from shutil import copyfile
+from sys import stdout
 
 # Import from itools
 import itools
@@ -42,21 +43,23 @@ if __name__ == '__main__':
     if len(args) != 2:
         parser.error('incorrect number of arguments')
 
-    if options.output is None:
-        output = sys.stdout
+    pot, po = args
+    # Case 1: a PO file already exist, merge it with locale.pot
+    if exists(po):
+        command = ['msgmerge', '-s', po, pot]
+        if options.output:
+            if options.output == po:
+                command.append('-U')
+            else:
+                command.extend(['-o', options.output])
+        data = get_pipe(command)
+    # Case 2: PO doesn't exist, just copy locale.pot
     else:
-        output = open(options.output, 'w')
-
-    try:
-        pot, po = args
-        if exists(po):
-            # a .po file already exist, merge it with locale.pot
-            command = ['msgmerge', '-s', po, pot]
-            data = get_pipe(command)
-            output.write(data)
+        if options.output:
+            copyfile(pot, options.output)
         else:
-            # po doesn't exist, just copy locale.pot
-            output.write(open(pot).read())
-    finally:
-        if options.output is not None:
-            output.close()
+            data = open(pot).read()
+
+    # Stdout
+    if not options.output:
+        stdout.write(data)

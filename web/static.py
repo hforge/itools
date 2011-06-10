@@ -14,8 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from the Standard Library
+from datetime import datetime
+from os.path import basename, getmtime, isfile
+
 # Import from itools
-from itools.handlers import ro_database, File
+from itools.fs.common import get_mimetype
 from itools.uri import Path
 from context import Context
 from utils import set_response
@@ -27,24 +31,22 @@ class StaticContext(Context):
         n = len(Path(self.mount_path))
         path = Path(self.path)[n:]
         path = '%s%s' % (self.local_path, path)
-        # Load the handler
-        try:
-            handler = ro_database.get_handler(path)
-        except LookupError:
+
+        # 404 Not Found
+        if not isfile(path):
             return set_response(self.soup_message, 404)
 
-        # Check it is a file
-        if not isinstance(handler, File):
-            return set_response(self.soup_message, 404)
-
-        # Modification time
-        mtime = handler.get_mtime()
+        # 304 Not Modified
+        mtime = getmtime(path)
+        mtime = datetime.fromtimestamp(mtime)
         since = self.get_header('If-Modified-Since')
         if since and since >= mtime:
             return set_response(self.soup_message, 304)
 
+        # 200 Ok
         # FIXME Check we set the encoding for text files
-        mimetype = handler.get_mimetype()
+        mimetype = get_mimetype(basename(path))
+        data = open(path).read()
         self.soup_message.set_status(200)
-        self.soup_message.set_response(mimetype, handler.to_str())
+        self.soup_message.set_response(mimetype, data)
         self.set_header('Last-Modified', mtime)

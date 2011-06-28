@@ -277,6 +277,7 @@ html_elements = [
     EmptyElement('br', core_attrs),
     Element('button', common_attrs + focus_attrs + ['name', 'value', 'type',
         'disabled']),
+    BlockElement('caption', common_attrs),
     Element('cite', common_attrs),
     Element('code', common_attrs),
     EmptyBlockElement('col', common_attrs + cellhalign_attrs +

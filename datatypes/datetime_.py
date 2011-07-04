@@ -209,22 +209,41 @@ class ISOTime(DataType):
 
 class ISODateTime(DataType):
 
-    @staticmethod
-    def decode(value):
+    time_is_required = True
+
+    def decode(self, value):
         if not value:
             return None
-        date, time = value.split('T')
+
+        value = value.split('T')
+        date, time = value[0], value[1:]
+
         date = ISOCalendarDate.decode(date)
-        time = ISOTime.decode(time)
+        if time:
+            time = ISOTime.decode(time[0])
+            return datetime.combine(date, time)
 
-        return datetime.combine(date, time)
+        if self.time_is_required:
+            raise ValueError, 'expected time field not found'
+
+        return date
 
 
-    @staticmethod
-    def encode(value):
+    def encode(self, value):
         if value is None:
             return ''
-        fmt = '%Y-%m-%dT%H:%M:%S'
-        if value.tzinfo is not None:
-            fmt += '%z'
+
+        value_type = type(value)
+        if value_type is datetime:
+            # Datetime
+            fmt = '%Y-%m-%dT%H:%M:%S'
+            if value.tzinfo is not None:
+                fmt += '%z'
+        elif value_type is date and not self.time_is_required:
+            # Date
+            fmt = '%Y-%m-%d'
+        else:
+            # Error
+            raise TypeError, "unexpected value of type '%s'" % value_type
+
         return value.strftime(fmt)

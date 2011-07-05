@@ -334,7 +334,7 @@ class GitDatabase(ROGitDatabase):
         new2old = self.resources_new2old
 
         for x in resource.traverse_resources():
-            path = str(x.get_canonical_path())
+            path = str(x.get_abspath())
             old2new[path] = None
             new2old.pop(path, None)
 
@@ -345,7 +345,7 @@ class GitDatabase(ROGitDatabase):
 
         # Catalog
         for x in resource.traverse_resources():
-            path = str(x.get_canonical_path())
+            path = str(x.get_abspath())
             new2old[path] = None
 
 
@@ -354,7 +354,7 @@ class GitDatabase(ROGitDatabase):
         new2old = self.resources_new2old
 
         # Case 1: added, moved in-here or already changed
-        path = str(resource.get_canonical_path())
+        path = str(resource.get_abspath())
         if path in new2old:
             return
 
@@ -374,7 +374,7 @@ class GitDatabase(ROGitDatabase):
         old2new = self.resources_old2new
         new2old = self.resources_new2old
 
-        path = str(resource.get_canonical_path())
+        path = str(resource.get_abspath())
         return path in old2new or path in new2old
 
 
@@ -382,9 +382,9 @@ class GitDatabase(ROGitDatabase):
         old2new = self.resources_old2new
         new2old = self.resources_new2old
 
-        old_path = source.get_canonical_path()
+        old_path = source.get_abspath()
         for x in source.traverse_resources():
-            source_path = x.get_canonical_path()
+            source_path = x.get_abspath()
             target_path = new_path.resolve2(old_path.get_pathto(source_path))
 
             source_path = str(source_path)

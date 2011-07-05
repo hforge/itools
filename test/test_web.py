@@ -18,7 +18,7 @@
 from unittest import TestCase, main
 
 # Import from itools
-from itools.web import BaseView, RootResource, WebServer
+from itools.web import BaseView, WebServer
 from itools.web import Cookie, SetCookieDataType
 from itools.web.headers import ContentType, ContentDisposition, CookieDataType
 from itools.web.headers import read_token, read_quoted_string, read_parameter
@@ -166,23 +166,23 @@ class CookieTestCase(TestCase):
 
 
 
-class MyRootView(BaseView):
-    access = True
-    def GET(self, resource, context):
-        return 'hello world'
-
-
-class MyRoot(RootResource):
-    default_view_name = 'view'
-    view = MyRootView()
-
-
-class ServerTestCase(TestCase):
-
-    def test00_simple(self):
-        root = MyRoot()
-        server = WebServer(root)
-##        server.start()
+#class MyRootView(BaseView):
+#    access = True
+#    def GET(self, resource, context):
+#        return 'hello world'
+#
+#
+#class MyRoot(RootResource):
+#    default_view_name = 'view'
+#    view = MyRootView()
+#
+#
+#class ServerTestCase(TestCase):
+#
+#    def test00_simple(self):
+#        root = MyRoot()
+#        server = WebServer(root)
+#        server.start()
 
 
 

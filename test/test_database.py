@@ -25,7 +25,7 @@ import re
 from itools.core import start_subprocess
 from itools.database import AndQuery, RangeQuery, PhraseQuery, NotQuery
 from itools.database import AllQuery, OrQuery, TextQuery
-from itools.database import make_catalog, Catalog, CatalogAware, StartQuery
+from itools.database import make_catalog, Catalog, Resource, StartQuery
 from itools.database import make_git_database
 from itools.database.catalog import _index, _decode
 from itools.datatypes import String, Unicode, Boolean, Integer
@@ -611,7 +611,7 @@ class BugXapianTestCase(TestCase):
 
 
 
-class Document(CatalogAware):
+class Document(Resource):
 
     fields = {'abspath': String(stored=True, indexed=True),
               'title': Unicode(stored=True, indexed=True),
@@ -639,7 +639,7 @@ class Document(CatalogAware):
 
 
 
-class Document_2(CatalogAware):
+class Document_2(Resource):
 
     fields = {'abspath': String(stored=True, indexed=True),
               'data': Unicode(stored=True, indexed=True)}
@@ -655,7 +655,7 @@ class Document_2(CatalogAware):
 
 
 
-class Document_3(CatalogAware):
+class Document_3(Resource):
 
     fields = {'abspath': String(stored=True, indexed=True),
               'data': Integer(stored=True, multiple=True)}
@@ -671,7 +671,7 @@ class Document_3(CatalogAware):
 
 
 
-class Document_4(CatalogAware):
+class Document_4(Resource):
 
     fields = {'abspath': String(stored=True, indexed=True)}
 

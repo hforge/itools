@@ -44,9 +44,6 @@ __all__ = [
     'set_context',
     'get_context',
     'select_language',
-    # Model
-    'Resource',
-    'RootResource',
     # View-Controller
     'BaseView',
     'BaseForm',

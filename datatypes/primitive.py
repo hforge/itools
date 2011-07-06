@@ -68,17 +68,17 @@ class Unicode(DataType):
 
     @staticmethod
     def decode(value, encoding='UTF-8'):
-        return unicode(value, encoding)
+        return unicode(value, encoding).strip()
 
 
     @staticmethod
     def encode(value, encoding='UTF-8'):
-        return value.encode(encoding)
+        return value.strip().encode(encoding)
 
 
     @staticmethod
     def is_empty(value):
-        return value.strip() == u''
+        return value == u''
 
 
 

@@ -19,12 +19,21 @@
 fields_registry = {}
 
 def register_field(name, field_cls):
-    if name in fields_registry:
-        if fields_registry[name] is field_cls:
-            return
-        raise ValueError, 'register conflict over the "%s" field' % name
+    if name not in fields_registry:
+        fields_registry[name] = field_cls
+        return
 
-    fields_registry[name] = field_cls
+    # Error?
+    old = fields_registry[name]
+    new = field_cls
+    if old is new:
+        return
+
+    keys = ['decode', 'encode', 'is_empty', 'default',
+            'indexed', 'stored', 'multiple']
+    for key in keys:
+        if getattr(old, key) is not getattr(new, key):
+            raise ValueError, 'register conflict over the "%s" field' % name
 
 
 def get_register_fields():

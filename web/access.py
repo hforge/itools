@@ -30,19 +30,19 @@ class AccessControl(object):
         access = view.access
 
         # Private (False) or Public (True)
-        if isinstance(access, bool):
+        if type(access) is bool:
             return access
 
-        # Access Control through a method
-        if isinstance(access, str):
-            method = getattr(self, access, None)
-            if method is None:
-                raise ValueError, 'access control "%s" not defined' % access
-
-            return method(user, resource)
-
         # Only booleans and strings are allowed
-        raise TypeError, 'unexpected value "%s"' % access
+        if type(access) is not str:
+            raise TypeError, 'unexpected value "%s"' % access
+
+        # Access Control through a method
+        method = getattr(self, access, None)
+        if method is None:
+            raise ValueError, 'access control "%s" not defined' % access
+
+        return method(user, resource)
 
 
     #########################################################################

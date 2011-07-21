@@ -96,6 +96,10 @@ class Image(File):
             return None, None
         format = format or self._get_format(handle)
 
+        # Icon's thumbnail is the icon itself
+        if format == 'ICO':
+            return self.to_str(), format.lower()
+
         xsize, ysize = self.size
         xratio, yratio = float(xnewsize)/xsize, float(ynewsize)/ysize
         # Case 1: fit

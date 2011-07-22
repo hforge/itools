@@ -21,11 +21,12 @@ from queries import AllQuery, NotQuery, StartQuery, TextQuery
 from queries import RangeQuery, PhraseQuery, AndQuery, OrQuery, pprint_query
 from registry import get_register_fields, register_field
 from resources import Resource
-from ro import ROGitDatabase, ReadonlyError
+from ro import ROGitDatabase, ReadonlyError, magic
 from rw import GitDatabase, make_git_database, check_database
 
 
 __all__ = [
+    'magic',
     # Database
     'ReadonlyError',
     'ROGitDatabase',

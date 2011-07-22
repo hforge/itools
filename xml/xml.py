@@ -180,4 +180,3 @@ class Element(object):
 
     def get_content(self, encoding='UTF-8'):
         return stream_to_str(self.get_content_elements())
-

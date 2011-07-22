@@ -36,6 +36,7 @@ from itools.uri import Path, Reference, get_reference
 from itools.xml import XMLParser, find_end, get_attr_datatype, stream_to_str
 from itools.xml import DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, TEXT
 from itools.xml import xmlns_uri
+from itools.xml import is_xml_stream
 from itools.xmlfile import XMLFile, get_units
 from itools.html import xhtml_uri
 from itools.html import stream_to_str_as_html, stream_to_str_as_xhtml
@@ -239,10 +240,9 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
                 value = value.gettext()
 
             # Yield
-            value_type = type(value)
-            if value_type is unicode:
+            if type(value) is unicode:
                 yield TEXT, value.encode(encoding), 0
-            elif value_type in (list, GeneratorType, XMLParser):
+            elif is_xml_stream(value):
                 for x in value:
                     if type(x) is not tuple:
                         raise STLError, ERR_EXPR_XML % (type(x), segment)

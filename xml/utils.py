@@ -14,9 +14,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from the Standard Library
+from types import GeneratorType
+
 # Import from itools
 from parser import XMLParser, TEXT, XML_DECL
 
+
+
+def is_xml_stream(value):
+    return type(value) in (list, GeneratorType, XMLParser)
 
 
 def xml_to_text(stream):

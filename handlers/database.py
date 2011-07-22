@@ -213,13 +213,17 @@ class RODatabase(object):
         return []
 
 
+    def get_mimetype(self, key):
+        return self.fs.get_mimetype(key)
+
+
     def get_handler_class(self, key):
-        fs = self.fs
-        mimetype = fs.get_mimetype(key)
+        mimetype = self.get_mimetype(key)
 
         try:
             return get_handler_class_by_mimetype(mimetype)
         except ValueError:
+            fs = self.fs
             if fs.is_file(key):
                 from file import File
                 return File

@@ -21,7 +21,8 @@
 from datetime import datetime
 from sys import getrefcount
 
-# Import from xapian
+# Import from other libraries
+from magic import open as open_magic, MIME_TYPE
 from xapian import DatabaseError, DatabaseOpeningError
 
 # Import from itools
@@ -33,6 +34,11 @@ from itools.log import log_warning
 from itools.uri import Path
 from catalog import Catalog
 from registry import get_register_fields
+
+
+
+magic = open_magic(MIME_TYPE)
+magic.load()
 
 
 
@@ -244,9 +250,14 @@ class ROGitDatabase(object):
         return []
 
 
-    def get_handler_class(self, key):
+    def get_mimetype(self, key):
         fs = self.fs
-        mimetype = fs.get_mimetype(key)
+        abspath = fs._resolve_path(key)
+        return magic.file(abspath)
+
+
+    def get_handler_class(self, key):
+        mimetype = self.get_mimetype(key)
 
         try:
             return get_handler_class_by_mimetype(mimetype)

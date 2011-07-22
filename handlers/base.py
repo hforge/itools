@@ -116,4 +116,4 @@ class Handler(object):
 
 
     def get_mimetype(self):
-        return self.database.fs.get_mimetype(self.key)
+        return self.database.get_mimetype(self.key)

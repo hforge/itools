@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from the Standard Library
+from types import MethodType
+
 
 
 fields_registry = {}
@@ -29,10 +32,16 @@ def register_field(name, field_cls):
     if old is new:
         return
 
-    keys = ['decode', 'encode', 'is_empty', 'default',
-            'indexed', 'stored', 'multiple']
+    keys = ['default', 'indexed', 'stored', 'multiple',
+            'decode', 'encode', 'is_empty']
     for key in keys:
-        if getattr(old, key) is not getattr(new, key):
+        old_value = getattr(old, key)
+        new_value = getattr(new, key)
+        if type(old_value) is MethodType:
+            old_value = old_value.im_func
+        if type(new_value) is MethodType:
+            new_value = new_value.im_func
+        if old_value is not new_value:
             raise ValueError, 'register conflict over the "%s" field' % name
 
 

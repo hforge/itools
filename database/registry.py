@@ -35,8 +35,8 @@ def register_field(name, field_cls):
     keys = ['default', 'indexed', 'stored', 'multiple',
             'decode', 'encode', 'is_empty']
     for key in keys:
-        old_value = getattr(old, key)
-        new_value = getattr(new, key)
+        old_value = getattr(old, key, None)
+        new_value = getattr(new, key, None)
         if type(old_value) is MethodType:
             old_value = old_value.im_func
         if type(new_value) is MethodType:

@@ -58,6 +58,13 @@ class BaseView(object):
 
 
     #######################################################################
+    # GET
+    #######################################################################
+    def GET(self, resource, context):
+        raise NotImplementedError
+
+
+    #######################################################################
     # Query
     query_schema = {}
 
@@ -80,16 +87,6 @@ class BaseView(object):
     # Caching
     def get_mtime(self, resource):
         return None
-
-
-    #######################################################################
-    # Request methods
-    def GET(self, resource, context):
-        raise NotImplementedError
-
-
-    def POST(self, resource, context):
-        raise NotImplementedError
 
 
     #######################################################################
@@ -140,9 +137,9 @@ class BaseView(object):
         return uri
 
 
-
-class BaseForm(BaseView):
-
+    #######################################################################
+    # POST
+    #######################################################################
     schema = {}
 
 
@@ -177,28 +174,26 @@ class BaseForm(BaseView):
         return datatype.get_default()
 
 
-    def _get_action(self, resource, context):
+    def get_action(self, resource, context):
         """Default function to retrieve the name of the action from a form
         """
+        # 1. Get the action name
         form = context.get_form()
         action = form.get('action')
-        if action is None:
-            context.form_action = 'action'
-            return
+        action = ('action_%s' % action) if action else 'action'
 
-        action = 'action_%s' % action
-        # Save the query of the action into context.form_query
+        # 2. Check whether the action has a query
         if '?' in action:
             action, query = action.split('?')
             # Deserialize query using action specific schema
             schema = getattr(self, '%s_query_schema' % action, None)
             context.form_query = decode_query(query, schema)
 
+        # 3. Save the action name (used by get_schema)
         context.form_action = action
 
-
-    def get_action_method(self, resource, context):
-        return getattr(self, context.form_action, None)
+        # 4. Return the method
+        return getattr(self, action, None)
 
 
     def on_form_error(self, resource, context):
@@ -208,7 +203,10 @@ class BaseForm(BaseView):
 
     def POST(self, resource, context):
         # (1) Find out which button has been pressed, if more than one
-        self._get_action(resource, context)
+        method = self.get_action(resource, context)
+        if method is None:
+            msg = "POST method not supported because no '%s' defined"
+            raise NotImplementedError, msg % context.form_action
 
         # (2) Automatically validate and get the form input (from the schema).
         try:
@@ -218,10 +216,6 @@ class BaseForm(BaseView):
             return self.on_form_error(resource, context)
 
         # (3) Action
-        method = self.get_action_method(resource, context)
-        if method is None:
-            msg = "the '%s' method is not defined"
-            raise NotImplementedError, msg % context.form_action
         try:
             goto = method(resource, context, form)
         except ReadonlyError:
@@ -239,10 +233,6 @@ class BaseForm(BaseView):
 class STLView(BaseView):
 
     template = None
-
-
-    def get_namespace(self, resource, context, query=None):
-        return {}
 
 
     def get_template(self, resource, context):
@@ -264,9 +254,9 @@ class STLView(BaseView):
         return stl(template, namespace)
 
 
-
-class STLForm(STLView, BaseForm):
-
+    #######################################################################
+    # POST
+    #######################################################################
     def get_namespace(self, resource, context, query=None):
         """This utility method builds a namespace suitable to use to produce
         an HTML form. Its input data is a dictionnary that defines the form
@@ -340,4 +330,3 @@ class STLForm(STLView, BaseForm):
                         value = datatype.encode(value)
             namespace[name] = {'name': name, 'value': value, 'error': error}
         return namespace
-

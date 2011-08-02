@@ -31,7 +31,7 @@ from messages import INFO, ERROR, MSG_MISSING_OR_INVALID
 from server import WebServer
 from soup import SoupMessage
 from static import StaticContext
-from views import BaseView, BaseForm, STLView, STLForm
+from views import BaseView, STLView
 
 __all__ = [
     'SoupMessage',
@@ -46,9 +46,7 @@ __all__ = [
     'select_language',
     # View-Controller
     'BaseView',
-    'BaseForm',
     'STLView',
-    'STLForm',
     # Exceptions
     'BadGateway',
     'BadRequest',

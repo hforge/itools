@@ -270,11 +270,6 @@ class Worktree(object):
     def git_commit(self, message, author=None, date=None):
         """Equivalent to 'git commit', we must give the message and we can
         also give the author and date.
-
-        This feature is not yet implemented by libgit2. We first write the
-        index file changes to disk and the we call Git.
-        TODO Wait the feature is implemented by libgit2, expose it through
-        pygit2, use it here.
         """
         from calendar import timegm
 

@@ -44,7 +44,7 @@ class BrokenHandler(TextFile):
 
 
 
-class GitDatabaseTestCase(TestCase):
+class RWDatabaseTestCase(TestCase):
 
     def setUp(self):
         self.database = make_git_database('fables', 20, 20)

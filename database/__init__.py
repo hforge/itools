@@ -19,22 +19,25 @@
 from catalog import Catalog, make_catalog
 from queries import AllQuery, NotQuery, StartQuery, TextQuery
 from queries import RangeQuery, PhraseQuery, AndQuery, OrQuery, pprint_query
+from metadata import Metadata
 from registry import get_register_fields, register_field
 from resources import Resource
-from ro import ROGitDatabase, ReadonlyError, magic
-from rw import GitDatabase, make_git_database, check_database
+from ro import RODatabase, ReadonlyError, magic
+from rw import RWDatabase, make_git_database, check_database
 
 
 __all__ = [
     'magic',
     # Database
     'ReadonlyError',
-    'ROGitDatabase',
-    'GitDatabase',
+    'RODatabase',
+    'RWDatabase',
     'make_git_database',
     'check_database',
     'get_register_fields',
     'register_field',
+    # Metadata
+    'Metadata',
     # Resources
     'Resource',
     # Xapian

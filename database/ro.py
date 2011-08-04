@@ -33,6 +33,7 @@ from itools.handlers import Folder, get_handler_class_by_mimetype
 from itools.log import log_warning
 from itools.uri import Path
 from catalog import Catalog
+from metadata import Metadata
 from registry import get_register_fields
 
 
@@ -47,7 +48,7 @@ class ReadonlyError(StandardError):
 
 
 
-class ROGitDatabase(object):
+class RODatabase(object):
 
     def __init__(self, path, size_min=4800, size_max=5200):
         # 1. Keep the path
@@ -343,6 +344,83 @@ class ROGitDatabase(object):
     #######################################################################
     # Layer 1: resources
     #######################################################################
+    resources_registry = {}
+
+    @classmethod
+    def register_resource_class(self, resource_class, format=None):
+        if format is None:
+            format = resource_class.class_id
+        self.resources_registry[format] = resource_class
+
+
+    @classmethod
+    def unregister_resource_class(self, resource_class):
+        for class_id, cls in self.resources_registry.items():
+            if resource_class is cls:
+                del self.resources_registry[class_id]
+
+
+    def get_resource_class(self, class_id):
+        if type(class_id) is not str:
+            raise TypeError, 'expected byte string, got %s' % class_id
+
+        # Standard case
+        registry = self.resources_registry
+        cls = registry.get(class_id)
+        if cls:
+            return cls
+
+        # Dynamic model
+        if class_id[0] == '/':
+            model = self.get_resource(class_id)
+            cls = model.build_resource_class()
+            registry[class_id] = cls
+            return cls
+
+        # Fallback on mimetype
+        if '/' in class_id:
+            class_id = class_id.split('/')[0]
+            cls = registry.get(class_id)
+            if cls:
+                return cls
+
+        # Default
+        return self.resources_registry['application/octet-stream']
+
+
+    def get_resource(self, abspath, soft=False):
+        if type(abspath) is str:
+            path = abspath[1:]
+            abspath = Path(abspath)
+        else:
+            path = str(abspath)[1:]
+
+        path_to_metadata = '%s.metadata' % path
+        metadata = self.get_handler(path_to_metadata, Metadata, soft=soft)
+        if metadata is None:
+            return None
+
+        # 2. Class
+        class_id = metadata.format
+        cls = self.get_resource_class(class_id)
+        if cls is None:
+            if self.fs.exists(path):
+                is_file = self.fs.is_file(path)
+            else:
+                # FIXME This is just a guess, it may fail.
+                is_file = '/' in format
+
+            if is_file:
+                cls = self.get_resource_class('application/octet-stream')
+            else:
+                cls = self.get_resource_class('application/x-not-regular-file')
+
+        # Ok
+        resource = cls(metadata)
+        resource.abspath = abspath
+        return resource
+
+
     def remove_resource(self, resource):
          raise ReadonlyError
 

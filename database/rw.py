@@ -28,7 +28,7 @@ from itools.fs import lfs
 from itools.handlers import Folder
 from catalog import Catalog, make_catalog
 from registry import get_register_fields
-from ro import ROGitDatabase
+from ro import RODatabase
 
 
 
@@ -36,10 +36,10 @@ MSG_URI_IS_BUSY = 'The "%s" URI is busy.'
 
 
 
-class GitDatabase(ROGitDatabase):
+class RWDatabase(RODatabase):
 
     def __init__(self, path, size_min, size_max):
-        super(GitDatabase, self).__init__(path, size_min, size_max)
+        super(RWDatabase, self).__init__(path, size_min, size_max)
 
         # The "git add" arguments
         self.added = set()
@@ -114,7 +114,7 @@ class GitDatabase(ROGitDatabase):
                 return True
 
         # Normal case
-        return super(GitDatabase, self).has_handler(key)
+        return super(RWDatabase, self).has_handler(key)
 
 
     def _get_handler(self, key, cls=None, soft=False):
@@ -126,7 +126,7 @@ class GitDatabase(ROGitDatabase):
                 return Folder(key, database=self)
 
         # The other files
-        return super(GitDatabase, self)._get_handler(key, cls, soft)
+        return super(RWDatabase, self)._get_handler(key, cls, soft)
 
 
     def set_handler(self, key, handler):
@@ -213,7 +213,7 @@ class GitDatabase(ROGitDatabase):
         key = self.normalize_key(key)
 
         # On the filesystem
-        names = super(GitDatabase, self).get_handler_names(key)
+        names = super(RWDatabase, self).get_handler_names(key)
         names = set(names)
 
         # In added
@@ -403,7 +403,7 @@ class GitDatabase(ROGitDatabase):
     # Transactions
     #######################################################################
     def _cleanup(self):
-        super(GitDatabase, self)._cleanup()
+        super(RWDatabase, self)._cleanup()
         self.has_changed = False
         self.removed = False
 
@@ -551,7 +551,7 @@ def make_git_database(path, size_min, size_max):
     # The catalog
     make_catalog('%s/catalog' % path, get_register_fields())
     # Ok
-    return GitDatabase(path, size_min, size_max)
+    return RWDatabase(path, size_min, size_max)
 
 
 

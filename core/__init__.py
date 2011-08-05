@@ -24,11 +24,11 @@ from lazy import lazy
 from mimetypes_ import add_type, guess_all_extensions, guess_extension
 from mimetypes_ import guess_type, has_encoding, has_extension
 from odict import OrderedDict
+from prototypes import prototype_type, prototype, is_prototype
+from prototypes import proto_property, proto_lazy_property
 from subprocess_ import start_subprocess, stop_subprocess
 from subprocess_ import read_subprocess, send_subprocess
 from timezones import fixed_offset, local_tz
-from thingy import thingy_type, thingy, thingy_property, thingy_lazy_property
-from thingy import is_thingy
 from utils import get_abspath, merge_dicts, get_sizeof, get_pipe, get_version
 
 
@@ -41,11 +41,11 @@ else:
 
 __all__ = [
     # Thingies are cool
-    'thingy_type',
-    'thingy',
-    'thingy_property',
-    'thingy_lazy_property',
-    'is_thingy',
+    'prototype_type',
+    'prototype',
+    'is_prototype',
+    'proto_property',
+    'proto_lazy_property',
     # Frozen types
     'freeze',
     'frozendict',

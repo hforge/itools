@@ -23,33 +23,41 @@ from lazy import lazy
 
 
 """
-This module implements what we call so far a "thingy", till we find a better
-name.
+This module provides prototype-based programming:
 
-From a semantical point of view a thingy is an abstraction of classes and
+  http://en.wikipedia.org/wiki/Prototype-based_programming
+
+From a semantical point of view a prototype is an abstraction of classes and
 instances.  From an implementation point of view thingies are Python classes
 that when instantiated create new classes, instead of class instances.
 
-There are two ways to create a thingy:
+There are two ways to create a new prototype:
 
   (1) Statically
-  class my_thingy(thingy):
+  class my_prototype(prototype):
       ...
 
   (2) Dynamically
-  my_thingy = thingy(...)
+  my_prototype = prototype(...)
+
+And you can combine this ad-aeternam:
+
+  proto1 = prototype(...)
+  class proto2(proto1):
+      ...
+  proto3 = proto2(...)
 
 """
 
 
 
-class thingy_type(type):
+class prototype_type(type):
 
     def __new__(mcs, class_name, bases, dict):
         """
-        This method is called when a thingy is created "statically":
+        This method is called when a prototype is created "statically":
 
-            class A(thingy):
+            class A(prototype):
                ...
         """
         # We don't have instance methods
@@ -73,8 +81,8 @@ class thingy_type(type):
             # But unfortunately it does not; so thingies work-around this
             # limit using a naming convention (and metaclasses):
             #
-            # class A(thingy):
-            #     x = thingy()
+            # class A(prototype):
+            #     x = prototype()
             #     def x__f(self):
             #         ...
             #
@@ -82,13 +90,13 @@ class thingy_type(type):
                 source_name = name
                 name, rest = name.split('__', 1)
                 sub = dict.get(name)
-                if issubclass(type(sub), thingy_type):
+                if issubclass(type(sub), prototype_type):
                     # Closure
                     name = rest
                     while '__' in name:
                         subname, rest = name.split('__', 1)
                         aux = getattr(sub, subname, None)
-                        if not issubclass(type(aux), thingy_type):
+                        if not issubclass(type(aux), prototype_type):
                             break
                         sub, name = aux, rest
 
@@ -97,9 +105,9 @@ class thingy_type(type):
                     # Fix the name
                     if type(value) is classmethod:
                         value.__get__(None, dict).im_func.__name__ = name
-                    elif type(value) is thingy_property:
+                    elif type(value) is proto_property:
                         value.__name__ = name
-                    elif type(value) is thingy_lazy_property:
+                    elif type(value) is proto_lazy_property:
                         value.__name__ = name
 
 
@@ -108,20 +116,20 @@ class thingy_type(type):
 
 
 
-class thingy(object):
+class prototype(object):
 
-    __metaclass__ = thingy_type
+    __metaclass__ = prototype_type
 
 
     def __new__(cls, *args, **kw):
         """
-        This method is called when a thingy is created "dynamically":
+        This method is called when a prototype is created "dynamically":
 
-            thingy(...)
+            prototype(...)
         """
         # Make the new class
         name = '[anonymous] from %s.%s' % (cls.__module__, cls.__name__)
-        new_class = type.__new__(thingy_type, name, (cls,), kw)
+        new_class = type.__new__(prototype_type, name, (cls,), kw)
         # Fix the module so repr(...) gives something meaningful
         new_class.__module__ = _getframe(1).f_globals.get('__name__')
         # Initialize
@@ -135,14 +143,14 @@ class thingy(object):
 
 
 
-class thingy_property(lazy):
+class proto_property(lazy):
 
     def __get__(self, instance, owner):
         return self.meth(owner)
 
 
 
-class thingy_lazy_property(lazy):
+class proto_lazy_property(lazy):
 
     def __get__(self, instance, owner):
         name = self.__name__
@@ -155,5 +163,5 @@ class thingy_lazy_property(lazy):
 
 
 
-def is_thingy(value, cls):
-    return type(value) is thingy_type and issubclass(value, cls)
+def is_prototype(value, cls):
+    return type(value) is prototype_type and issubclass(value, cls)

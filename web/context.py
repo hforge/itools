@@ -32,7 +32,7 @@ from pytz import timezone
 
 # Import from itools
 from itools.core import fixed_offset, local_tz
-from itools.core import freeze, thingy, thingy_lazy_property
+from itools.core import freeze, prototype, proto_lazy_property
 from itools.datatypes import String, HTTPDate
 from itools.i18n import AcceptLanguageType, format_datetime, format_date
 from itools.i18n import format_number
@@ -50,7 +50,7 @@ from utils import set_response
 from views import BaseView
 
 
-class Context(thingy):
+class Context(prototype):
 
     user = None
     resource = None
@@ -111,12 +111,12 @@ class Context(thingy):
         self.site_root.before_traverse(self)  # Hook
 
 
-    @thingy_lazy_property
+    @proto_lazy_property
     def timestamp(self):
         return datetime.utcnow().replace(tzinfo=fixed_offset(0))
 
 
-    @thingy_lazy_property
+    @proto_lazy_property
     def accept_language(self):
         accept_language = self.soup_message.get_header('accept-language')
         if accept_language is None:
@@ -124,7 +124,7 @@ class Context(thingy):
         return AcceptLanguageType.decode(accept_language)
 
 
-    @thingy_lazy_property
+    @proto_lazy_property
     def body(self):
         # Case 1: nothing
         body = self.soup_message.get_body()

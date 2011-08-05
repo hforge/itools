@@ -15,11 +15,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.core import thingy
+from itools.core import prototype
 
 
 
-class DataType(thingy):
+class DataType(prototype):
 
     # Default value
     default = None

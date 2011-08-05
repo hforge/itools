@@ -20,7 +20,7 @@ from string import Formatter
 from sys import _getframe
 
 # Import from itools
-from itools.core import thingy, is_thingy
+from itools.core import prototype, is_prototype
 from itools.handlers import RODatabase
 from itools.i18n import get_language_name
 from itools.xml import XMLParser
@@ -82,7 +82,7 @@ class MSGFormatter(Formatter):
         else:
             value = getattr(msg, key)
 
-        if is_thingy(value, MSG):
+        if is_prototype(value, MSG):
             return value.gettext()
 
         return value
@@ -91,7 +91,7 @@ class MSGFormatter(Formatter):
 msg_formatter = MSGFormatter()
 
 
-class MSG(thingy):
+class MSG(prototype):
 
     domain = None
     format = 'replace'

@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.core import is_thingy
+from itools.core import is_prototype
 from itools.gettext import MSG
 from messages import ERROR
 
@@ -105,7 +105,7 @@ class FormError(StandardError):
         # Custom message
         value = self.msg
         if value is not None:
-            if is_thingy(value, MSG):
+            if is_prototype(value, MSG):
                 return value
             return ERROR(value)
         # Default message

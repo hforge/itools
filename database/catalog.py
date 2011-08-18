@@ -25,6 +25,7 @@ from xapian import Document, Query, QueryParser, Enquire, MultiValueSorter
 from xapian import sortable_serialise, sortable_unserialise, TermGenerator
 
 # Import from itools
+from itools.core import lazy
 from itools.datatypes import Integer, Unicode, String, Tokens
 from itools.fs import lfs
 from itools.i18n import is_punctuation
@@ -147,14 +148,19 @@ class SearchResults(object):
         self._catalog = catalog
         self._xquery = xquery
 
-        # Enquire
-        enquire = Enquire(catalog._db)
-        enquire.set_query(xquery)
-        self._enquire = enquire
 
-        # Max
-        max = enquire.get_mset(0,0).get_matches_upper_bound()
-        self._max = enquire.get_mset(0, max).size()
+    @lazy
+    def _enquire(self):
+        enquire = Enquire(self._catalog._db)
+        enquire.set_query(self._xquery)
+        return enquire
+
+
+    @lazy
+    def _max(self):
+        enquire = self._enquire
+        max = enquire.get_mset(0, 0).get_matches_upper_bound()
+        return enquire.get_mset(0, max).size()
 
 
     def __len__(self):

@@ -14,9 +14,58 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from itools
+from itools.core import freeze, is_prototype
+
+# Import from itools.database
+from fields import Field
+from registry import register_field
+from ro import RODatabase
+
+
+
+class DBResourceMetaclass(type):
+
+    def __new__(mcs, name, bases, dict):
+        cls = type.__new__(mcs, name, bases, dict)
+        if 'class_id' in dict:
+            RODatabase.register_resource_class(cls)
+
+        # Register fields in the catalog
+        for name, field in cls.get_fields():
+            if field.indexed or field.stored:
+                datatype = field.get_datatype()
+                register_field(name, datatype)
+
+        return cls
+
 
 
 class Resource(object):
+
+    __metaclass__ = DBResourceMetaclass
+    __hash__ = None
+
+
+    fields = freeze([])
+
+
+    @classmethod
+    def get_field(self, name):
+        field = getattr(self, name, None)
+        if is_prototype(field, Field):
+            return field
+
+        return None
+
+
+    @classmethod
+    def get_fields(self):
+        for name in self.fields:
+            field = self.get_field(name)
+            if field:
+                yield name, field
+
 
     def get_catalog_values(self):
         """Returns a dictionary with the values of the fields to be indexed.

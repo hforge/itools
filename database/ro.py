@@ -32,7 +32,7 @@ from itools.git import WorkTree
 from itools.handlers import Folder, get_handler_class_by_mimetype
 from itools.log import log_warning
 from itools.uri import Path
-from catalog import Catalog
+from catalog import Catalog, _get_xquery, SearchResults
 from metadata import Metadata
 from registry import get_register_fields
 
@@ -561,7 +561,7 @@ class RODatabase(object):
 
 
     #######################################################################
-    # Catalog
+    # Search
     #######################################################################
     @lazy
     def catalog(self):
@@ -571,3 +571,10 @@ class RODatabase(object):
             return Catalog(path, fields, read_only=True)
         except (DatabaseError, DatabaseOpeningError):
             return None
+
+
+    def search(self, query=None, **kw):
+        """Launch a search in the catalog.
+        """
+        xquery = _get_xquery(self.catalog, query, **kw)
+        return SearchResults(self, xquery)

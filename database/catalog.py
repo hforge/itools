@@ -33,9 +33,6 @@ from itools.log import log_warning
 from queries import AllQuery, AndQuery, NotQuery, OrQuery, PhraseQuery
 from queries import RangeQuery, StartQuery, TextQuery, _MultipleQuery
 
-# Local imports
-from resources import Resource
-
 
 
 # Constants
@@ -144,14 +141,14 @@ class Doc(object):
 
 class SearchResults(object):
 
-    def __init__(self, catalog, xquery):
-        self._catalog = catalog
+    def __init__(self, database, xquery):
+        self._database = database
         self._xquery = xquery
 
 
     @lazy
     def _enquire(self):
-        enquire = Enquire(self._catalog._db)
+        enquire = Enquire(self._database.catalog._db)
         enquire.set_query(self._xquery)
         return enquire
 
@@ -169,11 +166,11 @@ class SearchResults(object):
 
 
     def search(self, query=None, **kw):
-        catalog = self._catalog
+        database = self._database
 
-        xquery = _get_xquery(catalog, query, **kw)
+        xquery = _get_xquery(database.catalog, query, **kw)
         query = Query(Query.OP_AND, [self._xquery, xquery])
-        return SearchResults(catalog, query)
+        return self.__class__(database, query)
 
 
     def get_documents(self, sort_by=None, reverse=False, start=0, size=0):
@@ -204,10 +201,10 @@ class SearchResults(object):
         By default all the documents are returned.
         """
         enquire = self._enquire
-        fields = self._catalog._fields
-        metadata = self._catalog._metadata
+        catalog = self._database.catalog
 
         # sort_by != None
+        metadata = catalog._metadata
         if sort_by is not None:
             if isinstance(sort_by, list):
                 sorter = MultiValueSorter()
@@ -233,6 +230,7 @@ class SearchResults(object):
             size = self._max
 
         # Construction of the results
+        fields = catalog._fields
         results = [ Doc(x.document, fields, metadata)
                     for x in enquire.get_mset(start, size) ]
 
@@ -243,12 +241,18 @@ class SearchResults(object):
         return results
 
 
+    def get_resources(self, sort_by=None, reverse=False):
+        database = self._database
+        for brain in self.get_documents(sort_by=sort_by, reverse=reverse):
+            yield database.get_resource(brain.abspath)
+
+
 
 class Catalog(object):
 
     def __init__(self, ref, fields, read_only=False, asynchronous_mode=True):
         # Load the database
-        if isinstance(ref, Database) or isinstance(ref, WritableDatabase):
+        if isinstance(ref, (Database, WritableDatabase)):
             self._db = ref
         else:
             path = lfs.get_absolute_path(ref)
@@ -310,10 +314,8 @@ class Catalog(object):
         # Check the input
         if type(document) is dict:
             doc_values = document
-        elif isinstance(document, Resource):
-            doc_values = document.get_catalog_values()
         else:
-            raise ValueError, 'the document must be a Resource object'
+            doc_values = document.get_catalog_values()
 
         # Make the xapian document
         metadata_modified = False
@@ -399,13 +401,6 @@ class Catalog(object):
     #######################################################################
     # API / Public / Search
     #######################################################################
-    def search(self, query=None, **kw):
-        """Launch a search in the catalog.
-        """
-        xquery = _get_xquery(self, query, **kw)
-        return SearchResults(self, xquery)
-
-
     def get_unique_values(self, name):
         """Return all the terms of a given indexed field
         """
@@ -876,4 +871,3 @@ def _get_xquery(catalog, query=None, **kw):
         xqueries.append(query)
 
     return Query(OP_AND, xqueries)
-

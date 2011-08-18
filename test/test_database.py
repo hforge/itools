@@ -54,10 +54,13 @@ class RWDatabaseTestCase(TestCase):
 
 
     def tearDown(self):
-        if lfs.exists('fables/catalog'):
-            lfs.remove('fables/catalog')
-        for name in ['31.txt', 'agenda', '.git', 'broken.txt']:
-            path = 'fables/database/%s' % name
+        paths = [
+            'fables/catalog',
+            'fables/database/.git',
+            'fables/database/31.txt',
+            'fables/database/agenda',
+            'fables/database/broken.txt']
+        for path in paths:
             if lfs.exists(path):
                 lfs.remove(path)
 

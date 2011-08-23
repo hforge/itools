@@ -19,7 +19,7 @@
 from copy import deepcopy
 
 # Import from itools
-from itools.core import freeze
+from itools.core import freeze, prototype
 from itools.database import ReadonlyError
 from itools.datatypes import Enumerate, String
 from itools.gettext import MSG
@@ -47,7 +47,7 @@ def process_form(get_value, schema):
 
 
 
-class BaseView(object):
+class BaseView(prototype):
 
     # Access Control
     access = False

@@ -376,7 +376,7 @@ def encode_param_value(p_name, p_value, p_datatype):
 
 
 
-def property_to_str(name, property, datatype, p_schema, encoding='utf-8'):
+def _property_to_str(name, property, datatype, p_schema, encoding='utf-8'):
     """This method serializes the given property to a byte string:
 
       name[;parameters]=value
@@ -424,6 +424,14 @@ def property_to_str(name, property, datatype, p_schema, encoding='utf-8'):
     # Ok
     property = '%s%s:%s\n' % (name, parameters, value)
     return fold_line(property)
+
+
+def property_to_str(name, property, datatype, p_schema, encoding='utf-8'):
+    try:
+        return _property_to_str(name, property, datatype, p_schema, encoding)
+    except StandardError:
+        err = 'failed to serialize "%s" property, probably a bad value'
+        raise ValueError, err % name
 
 
 

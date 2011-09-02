@@ -28,6 +28,22 @@ from pygit2 import Repository, GitError, init_repository
 from pygit2 import GIT_SORT_REVERSE, GIT_SORT_TIME, GIT_OBJ_TREE
 
 
+def message_short(commit):
+    """Helper function to get the subject line of the commit message.
+
+    XXX This code is based on the 'message_short' value that was once
+    available in libgit2 (and removed by 5ae2f0c0135). It should be removed
+    once libgit2 gets the feature back, see issue #250 for the discussion:
+
+      https://github.com/libgit2/libgit2/pull/250
+    """
+    message = commit.message
+    message = message.split('\n\n')[0]
+    message = message.replace('\n', ' ')
+    return message.rstrip()
+
+
+
 class Worktree(object):
 
     def __init__(self, path, repo):
@@ -86,7 +102,7 @@ class Worktree(object):
         except KeyError:
             return None
 
-        return reference.sha
+        return reference.oid
 
 
     #######################################################################
@@ -164,7 +180,7 @@ class Worktree(object):
             if name not in obj:
                 return None
             entry = obj[name]
-            obj = self.lookup(entry.sha)
+            obj = self.lookup(entry.oid)
         return obj
 
 
@@ -372,10 +388,10 @@ class Worktree(object):
 
             ts = commit.commit_time
             commits.append(
-                {'sha': commit.sha,
+                {'sha': commit.hex,
                  'author_name': commit.author[0],
                  'author_date': datetime.fromtimestamp(ts),
-                 'message_short': commit.message_short})
+                 'message_short': message_short(commit)})
             if n is not None:
                 n -= 1
                 if n == 0:
@@ -492,8 +508,8 @@ class Worktree(object):
         cn, ce, ct, co = commit.committer
 
         return {
-            'tree': commit.tree.sha,
-            'parent': parents[0].sha if parents else None,
+            'tree': commit.tree.hex,
+            'parent': parents[0].hex if parents else None,
             'author_name': an,
             'author_email': ae,
             'author_date': datetime.fromtimestamp(at),
@@ -501,7 +517,7 @@ class Worktree(object):
             'committer_email': ce,
             'committer_date': datetime.fromtimestamp(ct),
             'message': commit.message,
-            'message_short': commit.message_short,
+            'message_short': message_short(commit),
             }
 
 

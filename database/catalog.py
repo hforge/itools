@@ -26,7 +26,7 @@ from xapian import sortable_serialise, sortable_unserialise, TermGenerator
 
 # Import from itools
 from itools.core import lazy
-from itools.datatypes import Integer, Unicode, String, Tokens
+from itools.datatypes import Integer, Unicode, String
 from itools.fs import lfs
 from itools.i18n import is_punctuation
 from itools.log import log_warning
@@ -663,8 +663,7 @@ def _decode_simple_value(field_cls, data):
 
 def _decode(field_cls, data):
     # Singleton
-    # XXX Tokens = special case, it's bad
-    if not (field_cls.multiple or issubclass(field_cls, Tokens)):
+    if not field_cls.multiple:
         return _decode_simple_value(field_cls, data)
 
     # Multiple
@@ -691,8 +690,7 @@ def _encode(field_cls, value):
     """Used to encode values in stored fields.
     """
     # Case 1: Single
-    # XXX Tokens = special case, it's bad
-    if not (field_cls.multiple or issubclass(field_cls, Tokens)):
+    if not field_cls.multiple:
         return _encode_simple_value(field_cls, value)
 
     # Case 2: Multiple
@@ -797,10 +795,8 @@ def _index(xdoc, field_cls, value, prefix, language):
 
     Where <word> will be a <str> value.
     """
-    # XXX Tokens = special case, it's bad
-    is_multiple = (
-        (field_cls.multiple or issubclass(field_cls, Tokens))
-        and isinstance(value, (tuple, list, set, frozenset)))
+    is_multiple = (field_cls.multiple
+                   and isinstance(value, (tuple, list, set, frozenset)))
 
     # Case 1: Unicode (a complex split)
     if issubclass(field_cls, Unicode):

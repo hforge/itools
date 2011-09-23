@@ -502,6 +502,31 @@ class Context(prototype):
         self.user = None
 
 
+    def is_access_allowed(self, user, resource, view):
+        """Returns True if the given user is allowed to access the given
+        method of the given resource. False otherwise.
+        """
+        # Get the access control definition (default to False)
+        if view is None:
+            return False
+        access = view.access
+
+        # Private (False) or Public (True)
+        if type(access) is bool:
+            return access
+
+        # Only booleans and strings are allowed
+        if type(access) is not str:
+            raise TypeError, 'unexpected value "%s"' % access
+
+        # Access Control through a method
+        method = getattr(self.root, access, None)
+        if method is None:
+            raise ValueError, 'access control "%s" not defined' % access
+
+        return method(user, resource)
+
+
     #######################################################################
     # HTTP methods
     #######################################################################
@@ -636,13 +661,9 @@ class RequestMethod(object):
         """Tell whether the user is allowed to access the view on the
         resource.
         """
-        user = context.user
-        resource = context.resource
-        view = context.view
-
         # Get the check-point
-        ac = resource.get_access_control()
-        if ac.is_access_allowed(user, resource, view):
+        user = context.user
+        if context.is_access_allowed(user, context.resource, context.view):
             return
 
         # Unauthorized (401)

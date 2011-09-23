@@ -16,7 +16,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from access import AccessControl
 from context import Context, get_context, set_context
 from context import select_language
 from context import WebLogger
@@ -35,7 +34,6 @@ from views import BaseView, STLView
 
 __all__ = [
     'SoupMessage',
-    'AccessControl',
     'WebServer',
     'WebLogger',
     # Context

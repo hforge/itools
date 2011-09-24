@@ -92,7 +92,7 @@ class _MultipleQuery(BaseQuery):
 
 
 
-class AndQuery(_MultipleQuery):
+class _AndQuery(_MultipleQuery):
 
     def append(self, atom):
         atoms = self.atoms
@@ -106,7 +106,7 @@ class AndQuery(_MultipleQuery):
 
 
 
-class OrQuery(_MultipleQuery):
+class _OrQuery(_MultipleQuery):
 
     def append(self, atom):
         atoms = self.atoms
@@ -119,6 +119,28 @@ class OrQuery(_MultipleQuery):
             self.atoms = [atom]
         else:
             atoms.append(atom)
+
+
+
+def _flat_query(cls, *args):
+    query = cls()
+    for subquery in args:
+        if isinstance(subquery, cls):
+            for atom in subquery.atoms:
+                query.append(atom)
+        else:
+            query.append(subquery)
+    return query
+
+
+
+def AndQuery(*args):
+    return _flat_query(_AndQuery, *args)
+
+
+
+def OrQuery(*args):
+    return _flat_query(_OrQuery, *args)
 
 
 
@@ -176,7 +198,7 @@ class QueryPrinter(PrettyPrinter):
             write(rep)
             return
 
-        if issubclass(typ, (AndQuery, OrQuery, NotQuery)):
+        if issubclass(typ, (_AndQuery, _OrQuery, NotQuery)):
             write('<%s.%s(' % (
                 query.__module__,
                 query.__class__.__name__))

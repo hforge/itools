@@ -30,7 +30,7 @@ from itools.datatypes import Integer, Unicode, String
 from itools.fs import lfs
 from itools.i18n import is_punctuation
 from itools.log import log_warning
-from queries import AllQuery, AndQuery, NotQuery, OrQuery, PhraseQuery
+from queries import AllQuery, _AndQuery, NotQuery, _OrQuery, PhraseQuery
 from queries import RangeQuery, StartQuery, TextQuery, _MultipleQuery
 
 
@@ -603,11 +603,11 @@ class Catalog(object):
             return i2x(query.atoms[0])
 
         # And
-        if query_class is AndQuery:
+        if query_class is _AndQuery:
             return Query(OP_AND, [ i2x(q) for q in query.atoms ])
 
         # Or
-        if query_class is OrQuery:
+        if query_class is _OrQuery:
             return Query(OP_OR, [ i2x(q) for q in query.atoms ])
 
         # Not

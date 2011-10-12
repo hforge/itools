@@ -34,11 +34,7 @@ safe_tags = frozenset([
     'kbd', 'label', 'legend', 'li', 'map', 'menu', 'ol', 'optgroup', 'option',
     'p', 'pre', 'q', 's', 'samp', 'select', 'small', 'span', 'strike',
     'strong', 'sub', 'sup', 'table', 'tbody', 'td', 'textarea', 'tfoot', 'th',
-    'thead', 'tr', 'tt', 'u', 'ul', 'var',
-    # flash
-    'embed', 'object', 'param',
-    # iframe
-    'iframe'])
+    'thead', 'tr', 'tt', 'u', 'ul', 'var'])
 
 safe_attrs = frozenset([
     'abbr', 'accept', 'accept-charset', 'accesskey', 'action', 'align', 'alt',
@@ -50,15 +46,11 @@ safe_attrs = frozenset([
     'method', 'multiple', 'name', 'nohref', 'noshade', 'nowrap', 'prompt',
     'readonly', 'rel', 'rev', 'rows', 'rowspan', 'rules', 'scope', 'selected',
     'shape', 'size', 'span', 'src', 'start', 'style', 'summary', 'tabindex',
-    'target', 'title', 'type', 'usemap', 'valign', 'value', 'vspace', 'width',
-    # flash,
-    'data',
-    # iframe
-    'frameborder', 'marginheight', 'marginwidth', 'scrolling'])
+    'target', 'title', 'type', 'usemap', 'valign', 'value', 'vspace', 'width'])
 
 
 uri_attrs = frozenset([
-    'action', 'background', 'data', 'dynsrc', 'href', 'lowsrc', 'src'])
+    'action', 'background', 'href', 'lowsrc', 'src'])
 
 safe_schemes = frozenset([
     'file', 'ftp', 'http', 'https', 'irc', 'mailto', None])
@@ -84,12 +76,6 @@ def sanitize_stream(stream):
             if tag_name not in safe_tags:
                 skip = 1
                 continue
-            # Check unsafe object
-            if tag_name == 'object':
-                attr_value = attributes.get((None, 'type'))
-                if attr_value != 'application/x-shockwave-flash':
-                    skip = 1
-                    continue
             # Filter attributes
             attributes = attributes.copy()
             for attr_key in attributes.keys():

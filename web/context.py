@@ -25,7 +25,6 @@ from datetime import datetime, timedelta
 from hashlib import sha224
 from types import FunctionType, MethodType
 from urllib import quote, unquote
-from warnings import warn
 
 # Import from pytz
 from pytz import timezone
@@ -705,7 +704,7 @@ class RequestMethod(object):
     def check_transaction(cls, context):
         """Return True if your method is supposed to change the state.
         """
-        raise NotImplementedError
+        return getattr(context, 'commit', True) and context.status < 400
 
 
     @classmethod
@@ -832,7 +831,15 @@ class RequestMethod(object):
 
 
 
-class GET(RequestMethod):
+class SafeMethod(RequestMethod):
+
+    @classmethod
+    def check_transaction(cls, context):
+        return False
+
+
+
+class GET(SafeMethod):
 
     method_name = 'GET'
 
@@ -855,16 +862,6 @@ class GET(RequestMethod):
             # (because Apache does not cache pages with a query by default)
             context.set_header('Cache-Control', 'max-age=1')
             raise NotModified
-
-
-    @classmethod
-    def check_transaction(cls, context):
-        # GET is not expected to change the state
-        if getattr(context, 'commit', False) is True:
-            # FIXME To be removed one day.
-            warn("Use of 'context.commit' is strongly discouraged.")
-            return True
-        return False
 
 
     @classmethod
@@ -909,13 +906,8 @@ class POST(RequestMethod):
         RequestMethod.check_method(context, method_name=method_name)
 
 
-    @classmethod
-    def check_transaction(cls, context):
-        return getattr(context, 'commit', True) and context.status < 400
 
-
-
-class OPTIONS(RequestMethod):
+class OPTIONS(SafeMethod):
 
     @classmethod
     def handle_request(cls, context):
@@ -1000,11 +992,6 @@ class PUT(RequestMethod):
 
 
     @classmethod
-    def check_transaction(cls, context):
-        return getattr(context, 'commit', True) and context.status < 400
-
-
-    @classmethod
     def set_body(cls, context):
         super(PUT, cls).set_body(context)
 
@@ -1035,11 +1022,6 @@ class DELETE(RequestMethod):
         # The root cannot delete itself
         if parent is None:
             raise MethodNotAllowed
-
-
-    @classmethod
-    def check_transaction(cls, context):
-        return getattr(context, 'commit', True) and context.status < 400
 
 
 

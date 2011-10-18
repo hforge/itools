@@ -65,6 +65,8 @@ class Metadata(File):
 
             # 1. Get the datatype
             field = resource_class.get_field(name)
+            if field is None:
+                raise ValueError, "Field %s does not exist" % name
 
             # 2. Deserialize the parameters
             params_schema = field.parameters_schema

@@ -31,12 +31,20 @@ class DBResourceMetaclass(type):
         if 'class_id' in dict:
             RODatabase.register_resource_class(cls)
 
-        # Register fields in the catalog
-        for name, field in cls.get_fields():
-            if field.indexed or field.stored:
-                datatype = field.get_datatype()
-                register_field(name, datatype)
+        # Lookup fields
+        if 'fields' not in dict:
+            cls.fields = [ x for x in dir(cls)
+                           if is_prototype(getattr(cls, x), Field) ]
 
+        # Register new fields in the catalog
+        for name in cls.fields:
+            if name in dict:
+                field = dict[name]
+                if field.indexed or field.stored:
+                    datatype = field.get_datatype()
+                    register_field(name, datatype)
+
+        # Ok
         return cls
 
 

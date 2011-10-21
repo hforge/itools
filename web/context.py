@@ -501,10 +501,13 @@ class Context(prototype):
         self.user = None
 
 
-    def is_access_allowed(self, user, resource, view):
+    def is_access_allowed(self, resource, view, user=None):
         """Returns True if the given user is allowed to access the given
         method of the given resource. False otherwise.
         """
+        if user is None:
+            user = context.user
+
         # Get the access control definition (default to False)
         if view is None:
             return False
@@ -661,12 +664,11 @@ class RequestMethod(object):
         resource.
         """
         # Get the check-point
-        user = context.user
-        if context.is_access_allowed(user, context.resource, context.view):
+        if context.is_access_allowed(context.resource, context.view):
             return
 
         # Unauthorized (401)
-        if user is None:
+        if context.user is None:
             raise Unauthorized
 
         # Forbidden (403)

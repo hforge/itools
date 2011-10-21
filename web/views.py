@@ -237,10 +237,23 @@ class STLView(BaseView):
 
     def get_template(self, resource, context):
         # Check there is a template defined
-        if self.template is None:
+        template = self.template
+        if template is None:
             msg = "%s is missing the 'template' variable"
             raise NotImplementedError, msg % repr(self.__class__)
-        return context.get_template(self.template)
+
+        # Case 1: a path to a file somewhere
+        template_type = type(template)
+        if template_type is str:
+            return context.get_template(template)
+
+        # Case 2: the stream ready to use
+        if template_type is list:
+            return template
+
+        # Error
+        error = 'unexpected type "%s" for the template' % template_type
+        raise TypeError, error
 
 
     def GET(self, resource, context):
@@ -251,6 +264,9 @@ class STLView(BaseView):
 
         # STL
         template = self.get_template(resource, context)
+        if type(template) is list:
+            return stl(None, namespace, events=template)
+
         return stl(template, namespace)
 
 

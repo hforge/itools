@@ -207,6 +207,15 @@ class Worktree(object):
         return index
 
 
+    def update_tree_cache(self):
+        """libgit2 is able to read the tree cache, but not to write it.
+        To speed up 'git_commit' this method should be called from time to
+        time, it updates the tree cache by calling 'git write-tree'.
+        """
+        command = ['git', 'write-tree']
+        self._call(command)
+
+
     def git_add(self, *args):
         """Equivalent 'git add', adds the given paths to the index file.
         If a path is a folder, adds all its content recursively.

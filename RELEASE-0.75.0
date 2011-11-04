@@ -1,0 +1,63 @@
+itools 0.75.0 (2011/XX/XX)
+==========================
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.abnf             itools.i18n             itools.rss
+  itools.core             itools.ical             itools.srx
+  itools.csv              itools.log              itools.stl
+  itools.database         itools.loop             itools.tmx
+  itools.datatypes        itools.odf              itools.uri
+  itools.fs               itools.office           itools.web
+  itools.gettext          itools.pdf              itools.workflow
+  itools.git              itools.pkg              itools.xliff
+  itools.handlers         itools.python           itools.xml
+  itools.html             itools.relaxng          itools.xmlfile
+
+There is a new dependency, itools.database requires the magic module from
+libmagic [1].
+
+itools.core:
+- Rename thingy to prototype. Err.. That's what thingies were about,
+  prototype programming [2].
+
+itools.web:
+- The itools.http package has been merged into itools.web, some stuff
+  has been moved to ikaaro.
+- Now views are prototypes, and they are bound to the resource and context
+  (so you can type self.context or self.resource). The class hierarchy has
+  been simplified by merging 'BaseForm' into 'BaseView'.
+- Safe methods (GET, HEAD, ...) cannot commit. We are RESTful [3], right?
+- The context does more, and it can be subclassed, and the server can be
+  told which context class to use for some path. The new 'StaticContext'
+  class serves files from the filesystem.
+
+itools.database:
+- Some stuff moved from ikaaro: metadata, resources, etc. While still work
+  in progress, the itools.database package is more complete.
+
+
+[1] http://www.darwinsys.com/file/
+[2] http://en.wikipedia.org/wiki/Prototype-based_programming
+[3] http://en.wikipedia.org/wiki/Representational_state_transfer
+
+
+Resources
+---------
+
+Download
+http://download.hforge.org/itools/0.75/itools-0.75.0.tar.gz
+
+Home
+http://www.hforge.org/itools/
+
+Documentation
+http://www.hforge.org/itools/docs
+
+Mailing list
+http://www.hforge.org/community/
+http://archives.hforge.org/index.cgi?list=itools
+
+Bug Tracker
+http://bugs.hforge.org/

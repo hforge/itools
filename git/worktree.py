@@ -27,6 +27,9 @@ import time
 from pygit2 import Repository, GitError, init_repository
 from pygit2 import GIT_SORT_REVERSE, GIT_SORT_TIME, GIT_OBJ_TREE
 
+# Import from itools
+from itools.core import lazy
+
 
 def message_short(commit):
     """Helper function to get the subject line of the commit message.
@@ -292,6 +295,18 @@ class Worktree(object):
                 remove(abspath)
 
 
+    @lazy
+    def username(self):
+        cmd = ['git', 'config', '--get', 'user.name']
+        return self._call(cmd).rstrip()
+
+
+    @lazy
+    def useremail(self):
+        cmd = ['git', 'config', '--get', 'user.email']
+        return self._call(cmd).rstrip()
+
+
     def git_commit(self, message, author=None, date=None):
         """Equivalent to 'git commit', we must give the message and we can
         also give the author and date.
@@ -316,10 +331,8 @@ class Worktree(object):
         when_offset = - (time.altzone if time.daylight else time.timezone)
         when_offset = when_offset / 60
 
-        cmd = ['git', 'config', '--get', 'user.name']
-        name = self._call(cmd).rstrip()
-        cmd = ['git', 'config', '--get', 'user.email']
-        email = self._call(cmd).rstrip()
+        name = self.username
+        email = self.useremail
         committer = (name, email, when_time, when_offset)
 
         # Author

@@ -334,7 +334,7 @@ class RWDatabase(RODatabase):
         new2old = self.resources_new2old
 
         for x in resource.traverse_resources():
-            path = str(x.get_abspath())
+            path = str(x.abspath)
             old2new[path] = None
             new2old.pop(path, None)
 
@@ -345,7 +345,7 @@ class RWDatabase(RODatabase):
 
         # Catalog
         for x in resource.traverse_resources():
-            path = str(x.get_abspath())
+            path = str(x.abspath)
             new2old[path] = None
 
 
@@ -354,7 +354,7 @@ class RWDatabase(RODatabase):
         new2old = self.resources_new2old
 
         # Case 1: added, moved in-here or already changed
-        path = str(resource.get_abspath())
+        path = str(resource.abspath)
         if path in new2old:
             return
 
@@ -374,7 +374,7 @@ class RWDatabase(RODatabase):
         old2new = self.resources_old2new
         new2old = self.resources_new2old
 
-        path = str(resource.get_abspath())
+        path = str(resource.abspath)
         return path in old2new or path in new2old
 
 
@@ -382,9 +382,9 @@ class RWDatabase(RODatabase):
         old2new = self.resources_old2new
         new2old = self.resources_new2old
 
-        old_path = source.get_abspath()
+        old_path = source.abspath
         for x in source.traverse_resources():
-            source_path = x.get_abspath()
+            source_path = x.abspath
             target_path = new_path.resolve2(old_path.get_pathto(source_path))
 
             source_path = str(source_path)

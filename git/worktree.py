@@ -353,8 +353,8 @@ class Worktree(object):
         author = (author[0], author[1], when_time, when_offset)
 
         # Create the commit
-        return self.repo.create_commit('HEAD', author, committer, message,
-                                       tree, parents)
+        return self.repo.create_commit('HEAD', author, committer, None,
+                                       message, tree, parents)
 
 
     def git_log(self, paths=None, n=None, author=None, grep=None,

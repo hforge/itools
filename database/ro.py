@@ -344,40 +344,48 @@ class RODatabase(object):
     #######################################################################
     # Layer 1: resources
     #######################################################################
-    resources_registry = {}
+    _resources_registry = {}
 
     @classmethod
     def register_resource_class(self, resource_class, format=None):
         if format is None:
             format = resource_class.class_id
-        self.resources_registry[format] = resource_class
+        self._resources_registry[format] = resource_class
 
 
     @classmethod
     def unregister_resource_class(self, resource_class):
-        for class_id, cls in self.resources_registry.items():
+        registry = self._resources_registry
+        for class_id, cls in registry.items():
             if resource_class is cls:
-                del self.resources_registry[class_id]
+                del registry[class_id]
 
 
     def get_resource_class(self, class_id):
         if type(class_id) is not str:
             raise TypeError, 'expected byte string, got %s' % class_id
 
-        # Standard case
-        registry = self.resources_registry
+        # Check dynamic models are not broken
+        registry = self._resources_registry
+        if class_id[0] == '/':
+            model = self.get_resource(class_id, None)
+            if model is None:
+                registry.pop(class_id, None)
+                err = 'the resource "%s" does not exist' % class_id
+                raise LookupError, err
+
+        # Cache hit
         cls = registry.get(class_id)
         if cls:
             return cls
 
-        # Dynamic model
+        # Cache miss: dynamic model
         if class_id[0] == '/':
-            model = self.get_resource(class_id)
             cls = model.build_resource_class()
             registry[class_id] = cls
             return cls
 
-        # Fallback on mimetype
+        # Cache miss: fallback on mimetype
         if '/' in class_id:
             class_id = class_id.split('/')[0]
             cls = registry.get(class_id)
@@ -385,7 +393,19 @@ class RODatabase(object):
                 return cls
 
         # Default
-        return self.resources_registry['application/octet-stream']
+        return self._resources_registry['application/octet-stream']
+
+
+    def get_resource_classes(self):
+        registry = self._resources_registry
+        for class_id, cls in self._resources_registry.items():
+            if class_id[0] == '/':
+                model = self.get_resource(class_id, None)
+                if model is None:
+                    registry.pop(class_id, None)
+                    continue
+
+            yield cls
 
 
     def get_resource(self, abspath, soft=False):

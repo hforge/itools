@@ -511,7 +511,7 @@ class Context(prototype):
         # Get the access control definition (default to False)
         if view is None:
             return False
-        access = view.access
+        access = getattr(view, 'access_%s' % context.method, view.access)
 
         # Private (False) or Public (True)
         if type(access) is bool:

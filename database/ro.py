@@ -368,7 +368,7 @@ class RODatabase(object):
         # Check dynamic models are not broken
         registry = self._resources_registry
         if class_id[0] == '/':
-            model = self.get_resource(class_id, None)
+            model = self.get_resource(class_id, soft=True)
             if model is None:
                 registry.pop(class_id, None)
                 err = 'the resource "%s" does not exist' % class_id
@@ -400,7 +400,7 @@ class RODatabase(object):
         registry = self._resources_registry
         for class_id, cls in self._resources_registry.items():
             if class_id[0] == '/':
-                model = self.get_resource(class_id, None)
+                model = self.get_resource(class_id, soft=True)
                 if model is None:
                     registry.pop(class_id, None)
                     continue

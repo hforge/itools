@@ -779,7 +779,6 @@ class RequestMethod(object):
 
         # (2) Always deserialize the query
         resource = context.resource
-        context.view = context.view(resource=resource, context=context) # bind
         view = context.view
         try:
             context.query = view.get_query(context)

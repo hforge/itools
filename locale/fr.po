@@ -64,7 +64,7 @@ msgstr "(WW) Le fichier \"%s\" n'existe pas"
 #: ../i18n/locale_.py:70 ../i18n/locale_.py:153 ../i18n/locale_.py:154
 #: ../i18n/locale_.py:155
 msgid ","
-msgstr ""
+msgstr ","
 
 #: ../i18n/locale_.py:71 ../i18n/locale_.py:121 ../handlers/utils.py:55
 #: ../handlers/utils.py:56 ../handlers/utils.py:60 ../handlers/utils.py:61
@@ -126,14 +126,12 @@ msgid "@"
 msgstr "@"
 
 #: ../database/catalog.py:49 ../database/catalog.py:50
-#, fuzzy
 msgid "A"
-msgstr "AE"
+msgstr "A"
 
 #: ../handlers/utils.py:25
-#, fuzzy
 msgid "AAAAAAAaaaaaaaaCcEEEEEeeeeegIIIIIiiiiiilNnOOOOOOOooooooooUUUUUuuuuuSstYYYyyyZz"
-msgstr "AAAAAAAaaaaaaaCcEEEEEeeeeeIIIIIiiiiiNnOOOOOOOoooooooUUUUUuuuuuYYYyyyZz"
+msgstr "AAAAAAAaaaaaaaaCcEEEEEeeeeegIIIIIiiiiiilNnOOOOOOOooooooooUUUUUuuuuuSstYYYyyyZz"
 
 #: ../handlers/utils.py:33
 msgid "AE"
@@ -241,7 +239,7 @@ msgstr "Burmese"
 
 #: ../database/catalog.py:53
 msgid "C"
-msgstr ""
+msgstr "C"
 
 #: ../i18n/languages.py:44
 msgid "Catalan"
@@ -324,9 +322,8 @@ msgid "Dzongkha"
 msgstr "Dzongkha"
 
 #: ../database/catalog.py:55 ../database/catalog.py:56
-#, fuzzy
 msgid "E"
-msgstr "AE"
+msgstr "E"
 
 #: ../i18n/languages.py:62
 msgid "English"
@@ -474,7 +471,7 @@ msgstr "Hungarian"
 
 #: ../database/catalog.py:61
 msgid "I"
-msgstr ""
+msgstr "I"
 
 #: ../i18n/languages.py:106
 msgid "Icelandic"
@@ -514,7 +511,7 @@ msgstr "Inupiak"
 
 #: ../web/views.py:310 ../web/views.py:333
 msgid "Invalid value."
-msgstr ""
+msgstr "Valeur invalide."
 
 #: ../i18n/languages.py:84
 msgid "Irish"
@@ -926,11 +923,11 @@ msgstr "L'option --show-lines prend un seul fichier en paramètre"
 
 #: ../web/views.py:41
 msgid "There are errors, check below."
-msgstr ""
+msgstr "Il y a des erreurs, vérifiez ci-dessous."
 
 #: ../web/exceptions.py:112
 msgid "There are errors... XXX"
-msgstr ""
+msgstr "Il y a des erreurs... XXX"
 
 #: ../web/views.py:308 ../web/views.py:331
 msgid "This field is required."
@@ -1037,9 +1034,8 @@ msgid "_"
 msgstr "_"
 
 #: ../database/catalog.py:51 ../database/catalog.py:52
-#, fuzzy
 msgid "a"
-msgstr "ae"
+msgstr "a"
 
 #: ../handlers/utils.py:32
 msgid "ae"
@@ -1047,7 +1043,7 @@ msgstr "ae"
 
 #: ../i18n/oracle.py:262
 msgid "al"
-msgstr ""
+msgstr "al"
 
 #: ../scripts/ipkg-quality.py:74
 msgid "all exceptions are catched"
@@ -1115,9 +1111,8 @@ msgstr ""
 
 #: ../database/catalog.py:57 ../database/catalog.py:58
 #: ../database/catalog.py:59 ../database/catalog.py:60
-#, fuzzy
 msgid "e"
-msgstr "ae"
+msgstr "e"
 
 #: ../i18n/oracle.py:276
 msgid "el"
@@ -1392,9 +1387,8 @@ msgid "Â"
 msgstr ""
 
 #: ../handlers/utils.py:23
-#, fuzzy
 msgid "ÄÅÁÀÂÃĀäåáàâãāăÇçÉÈÊËĒéèêëēğÍÌÎÏĪíìîïīıļÑñÖÓÒÔÕØŌöóòôõøōőÜÚÙÛŪüúùûūŞşţÝŸȲýÿȳŽž"
-msgstr "ÄÅÁÀÂÃĀäåáàâãāÇçÉÈÊËĒéèêëēÍÌÎÏĪíìîïīÑñÖÓÒÔÕØŌöóòôõøōÜÚÙÛŪüúùûūÝŸȲýÿȳŽž"
+msgstr "ÄÅÁÀÂÃĀäåáàâãāăÇçÉÈÊËĒéèêëēğÍÌÎÏĪíìîïīıļÑñÖÓÒÔÕØŌöóòôõøōőÜÚÙÛŪüúùûūŞşţÝŸȲýÿȳŽž"
 
 #: ../handlers/utils.py:33
 msgid "Æ"

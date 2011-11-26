@@ -24,7 +24,7 @@ from subprocess import Popen, PIPE
 import time
 
 # Import from pygit2
-from pygit2 import Repository, GitError, init_repository
+from pygit2 import Repository, Signature, GitError, init_repository
 from pygit2 import GIT_SORT_REVERSE, GIT_SORT_TIME, GIT_OBJ_TREE
 
 # Import from itools
@@ -333,7 +333,7 @@ class Worktree(object):
 
         name = self.username
         email = self.useremail
-        committer = (name, email, when_time, when_offset)
+        committer = Signature(name, email, when_time, when_offset)
 
         # Author
         if author is None:
@@ -350,11 +350,11 @@ class Worktree(object):
                 err = "Worktree.git_commit doesn't support naive datatime yet"
                 raise NotImplementedError, err
 
-        author = (author[0], author[1], when_time, when_offset)
+        author = Signature(author[0], author[1], when_time, when_offset)
 
         # Create the commit
-        return self.repo.create_commit('HEAD', author, committer, None,
-                                       message, tree, parents)
+        return self.repo.create_commit('HEAD', author, committer, message,
+                                       tree, parents)
 
 
     def git_log(self, paths=None, n=None, author=None, grep=None,
@@ -383,8 +383,9 @@ class Worktree(object):
         for commit in self.repo.walk(sha, GIT_SORT_TIME):
             # --author=<pattern>
             if author:
-                name, email, time, offset = commit.author
-                if not search(author, name) and not search(author, email):
+                commit_author = commit.author
+                if not search(author, commit_author.name) and \
+                   not search(author, commit_author.email):
                     continue
 
             # --grep=<pattern>
@@ -411,7 +412,7 @@ class Worktree(object):
             ts = commit.commit_time
             commits.append(
                 {'sha': commit.hex,
-                 'author_name': commit.author[0],
+                 'author_name': commit.author.name,
                  'author_date': datetime.fromtimestamp(ts),
                  'message_short': message_short(commit)})
             if n is not None:
@@ -525,19 +526,19 @@ class Worktree(object):
         sha = self._resolve_reference(reference)
         commit = self.lookup(sha)
         parents = commit.parents
-        # TODO Use the offset
-        an, ae, at, ao = commit.author
-        cn, ce, ct, co = commit.committer
+        author = commit.author
+        committer = commit.committer
 
+        # TODO Use the offset for the author/committer time
         return {
             'tree': commit.tree.hex,
             'parent': parents[0].hex if parents else None,
-            'author_name': an,
-            'author_email': ae,
-            'author_date': datetime.fromtimestamp(at),
-            'committer_name': cn,
-            'committer_email': ce,
-            'committer_date': datetime.fromtimestamp(ct),
+            'author_name': author.name,
+            'author_email': author.email,
+            'author_date': datetime.fromtimestamp(author.time),
+            'committer_name': committer.name,
+            'committer_email': committer.email,
+            'committer_date': datetime.fromtimestamp(committer.time),
             'message': commit.message,
             'message_short': message_short(commit),
             }

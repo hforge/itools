@@ -32,17 +32,12 @@ from messages import ERROR
 
 def process_form(get_value, schema):
     values = {}
-    error = None
     for name in schema:
         datatype = schema[name]
         try:
-            value = get_value(name, type=datatype)
-        except FormError, error:
-            error = ERROR(u'There are errors, check below.')
-            value = get_value(name)
-        values[name] = value
-    if error:
-        raise FormError, error
+            values[name] = get_value(name, type=datatype)
+        except FormError:
+            raise FormError, ERROR(u'There are errors, check below.')
     return values
 
 

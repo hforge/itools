@@ -22,7 +22,6 @@ from datetime import datetime
 from sys import getrefcount
 
 # Import from other libraries
-from magic import open as open_magic, MIME_TYPE
 from xapian import DatabaseError, DatabaseOpeningError
 
 # Import from itools
@@ -33,13 +32,10 @@ from itools.handlers import Folder, get_handler_class_by_mimetype
 from itools.log import log_warning
 from itools.uri import Path
 from catalog import Catalog, _get_xquery, SearchResults
+from magic_ import magic_from_file
 from metadata import Metadata
 from registry import get_register_fields
 
-
-
-magic = open_magic(MIME_TYPE)
-magic.load()
 
 
 
@@ -254,7 +250,7 @@ class RODatabase(object):
     def get_mimetype(self, key):
         fs = self.fs
         abspath = fs._resolve_path(key)
-        return magic.file(abspath)
+        return magic_from_file(abspath)
 
 
     def get_handler_class(self, key):

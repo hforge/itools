@@ -20,15 +20,17 @@ from catalog import Catalog, make_catalog
 from fields import Field
 from queries import AllQuery, NotQuery, StartQuery, TextQuery
 from queries import RangeQuery, PhraseQuery, AndQuery, OrQuery, pprint_query
+from magic_ import magic_from_buffer, magic_from_file
 from metadata import Metadata
 from registry import get_register_fields, register_field
 from resources import Resource
-from ro import RODatabase, ReadonlyError, magic
+from ro import RODatabase, ReadonlyError
 from rw import RWDatabase, make_git_database, check_database
 
 
 __all__ = [
-    'magic',
+    'magic_from_buffer',
+    'magic_from_file',
     # Database
     'ReadonlyError',
     'RODatabase',

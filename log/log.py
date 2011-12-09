@@ -95,9 +95,12 @@ def register_logger(logger, *args):
 
 class Logger(object):
 
-    def __init__(self, log_file=None, min_level=INFO):
+    def __init__(self, log_file=None, min_level=INFO, rotate=None):
         self.log_file = log_file
         self.min_level = min_level
+        self.rotate_interval = rotate
+        if rotate:
+            self.launch_rotate()
 
 
     def format_header(self, domain, level, message):
@@ -155,7 +158,7 @@ class Logger(object):
             exit()
 
 
-    def launch_rotate(self, interval):
+    def launch_rotate(self):
         log_file = self.log_file
 
         # We save in a file ?
@@ -181,12 +184,12 @@ class Logger(object):
             last = datetime.now()
 
         # Compute the next call
-        next_call = last + interval - datetime.now()
+        next_call = last + self.rotate_interval - datetime.now()
         if next_call <= timedelta(0):
             next_call = timedelta(seconds=0)
 
         # Call cron
-        cron(self.rotate, interval, next_call)
+        cron(self.rotate, next_call)
 
 
     def rotate(self):
@@ -194,7 +197,7 @@ class Logger(object):
 
         # We save in a file ?
         if log_file is None:
-            return
+            return False
 
         # Save the current log
         # XXX In a multithreads context, we must add a lock here
@@ -202,7 +205,7 @@ class Logger(object):
         # We don't delete an existing file
         if exists(new_name + '.gz'):
             # If here, interval < 1min
-            return True
+            return self.rotate_interval
         # Yet a log file ?
         if exists(log_file):
             # Yes, we move it
@@ -234,9 +237,8 @@ class Logger(object):
             remove(a_file[1])
 
         # We return always True to be "cron" compliant
-        return True
+        return self.rotate_interval
 
 
-
+# Register
 register_logger(Logger(), None)
-

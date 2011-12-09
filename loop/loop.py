@@ -18,9 +18,10 @@
 from cProfile import runctx
 from os import getpid, remove as remove_file
 from signal import signal, SIGINT, SIGTERM
+from sys import version_info
 
 # Import from pygobject
-from gobject import MainLoop, timeout_add_seconds, idle_add
+from gobject import MainLoop, timeout_add_seconds
 
 
 class Loop(MainLoop):
@@ -61,40 +62,55 @@ class Loop(MainLoop):
 
 
 
-def _cron_mgr(callback, interval):
-    ret = callback()
-    if ret:
-        timeout_add_seconds(interval, callback)
+if version_info[:2] == (2, 6):
+    # Python 2.6
+    def total_seconds(td):
+        if type(td) is int:
+            return td
+        seconds = (td.seconds + td.days * 24 * 3600)
+        return (td.microseconds + seconds * 10**6) / 10**6
+else:
+    # Python 2.7
+    def total_seconds(td):
+        if type(td) is int:
+            return td
+        return int(td.total_seconds())
+
+
+
+def callback_wrapper(callback, interval, *args):
+    """This function wraps the actual callback. It allows the callback to
+    return a timedelta object specifying the interval for the next try.
+    Otherwise it accepts the standard return values (True/Flase).
+    """
+    new_interval = callback(*args)
+    # Case 1: stop or continue with the same interval
+    if type(new_interval) is bool:
+        return new_interval
+
+    # Case 2: change the interval
+    new_interval = total_seconds(new_interval)
+    if new_interval == interval:
+        return True
+
+    timeout_add_seconds(new_interval, callback_wrapper,
+                        callback, new_interval, *args)
     return False
 
 
 
-def _total_seconds(td):
-    # FIXME This function exists in python >= 2.7
-    return ( (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6)
-              / 10**6 )
+def cron(callback, interval, *args):
+    """Add new cronjob.
 
+       callback -- the callable to run.
 
+       interval -- timedelta specifying when the cronjob will be called.
 
-def cron(callback, interval, first_call_delay=None):
-    """Set a new event.
-
-       callback is a callable. It must return True (continue) or False (stop).
-
-       interval and first_call_delay are datetime.timedelta objects. Their
-       resolutions must be the second.
-
-       first_call_delay can be None. In this case, callback is called
-       immediately but when the application is idle. So first_call_delay=None
-       and first_call_delay=0s have not exactly the same meaning.
+       args -- payload that will be passed to the callable on each call.
     """
-    interval = _total_seconds(interval)
-    if not interval > 0:
-        raise ValueError, ("cron: your timedelta has a too small resolution "
-                           "(< 1s)")
+    interval = total_seconds(interval)
+    if interval == 0:
+        error = "cron: your timedelta has a too small resolution (< 1s)"
+        raise ValueError, error
 
-    if first_call_delay is None:
-        idle_add(_cron_mgr, callback, interval)
-    else:
-        first_call_delay = _total_seconds(first_call_delay)
-        timeout_add_seconds(first_call_delay, _cron_mgr, callback, interval)
+    timeout_add_seconds(interval, callback_wrapper, callback, interval, *args)

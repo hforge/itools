@@ -43,11 +43,11 @@ class WebServer(SoupServer):
         # The application's root
         self.root = root
         # Access log
-        logger = AccessLogger(log_file=access_log)
-        logger.launch_rotate(timedelta(weeks=3))
+        logger = AccessLogger(access_log, rotate=timedelta(weeks=3))
         register_logger(logger, 'itools.web_access')
         # Events log
-        register_logger(WebLogger(log_file=event_log), 'itools.web')
+        logger = WebLogger(event_log)
+        register_logger(logger, 'itools.web')
 
         # Useful the current uploads stats
         self.upload_stats = {}

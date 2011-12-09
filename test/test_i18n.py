@@ -266,7 +266,7 @@ class FormatNumberTestCase(TestCase):
 
     def test_format_float(self):
         x = float(self.x)
-        if version_info[0] == 2 and version_info[1] < 7:
+        if version_info[:2] == (2, 6):
             self.assertRaises(TypeError, format_number, x)
         else:
             n = format_number(x, accept=self.accept)

@@ -501,9 +501,17 @@ class Catalog(object):
             if value is None:
                 raise AttributeError, MSG_NOT_STORED.format(name=name)
             field_cls = _get_field_cls(name, fields, info)
+            if field_cls.multiple:
+                error = 'range-query not supported on multiple fields'
+                raise ValueError, error
 
             left = query.left
+            if left is not None:
+                left = _encode_simple_value(field_cls, left)
+
             right = query.right
+            if right is not None:
+                right = _encode_simple_value(field_cls, right)
 
             # Case 1: no limits, return everything
             if left is None and right is None:
@@ -511,15 +519,14 @@ class Catalog(object):
 
             # Case 2: left limit only
             if right is None:
-                return Query(OP_VALUE_GE, value, _encode(field_cls, left))
+                return Query(OP_VALUE_GE, value, left)
 
             # Case 3: right limit only
             if left is None:
-                return Query(OP_VALUE_LE, value, _encode(field_cls, right))
+                return Query(OP_VALUE_LE, value, right)
 
             # Case 4: left and right
-            return Query(OP_VALUE_RANGE, value, _encode(field_cls, left),
-                         _encode(field_cls, right))
+            return Query(OP_VALUE_RANGE, value, left, right)
 
         # StartQuery, the field must be stored
         if query_class is StartQuery:

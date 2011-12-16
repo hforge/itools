@@ -33,8 +33,8 @@ from pytz import timezone
 from itools.core import fixed_offset, local_tz
 from itools.core import freeze, prototype, proto_lazy_property
 from itools.datatypes import String, HTTPDate
-from itools.i18n import AcceptLanguageType, format_datetime, format_date
-from itools.i18n import format_number
+from itools.i18n import AcceptLanguageType, format_number
+from itools.i18n import format_datetime, format_date, format_time
 from itools.log import Logger, log_error, log_warning
 from itools.uri import decode_query, get_reference, Path, Reference
 
@@ -400,6 +400,10 @@ class Context(prototype):
 
     def format_date(self, date):
         return format_date(date, accept=self.accept_language)
+
+
+    def format_time(self, time):
+        return format_time(time, accept=self.accept_language)
 
 
     def format_number(self, number, places=2, curr='', pos=u'', neg=u'-',

@@ -21,9 +21,9 @@ import unicodedata
 
 
 src = (ur"""ÄÅÁÀÂÃĀäåáàâãāăÇçÉÈÊËĒéèêëēğÍÌÎÏĪíìîïīıļÑñÖÓÒÔÕØŌöóòôõøōőÜÚÙÛŪüúùûū"""
-       ur"""ŞşţÝŸȲýÿȳŽž""")
+       ur"""ŞşţÝŸȲýÿȳŽž°«»""")
 dst = (ur"""AAAAAAAaaaaaaaaCcEEEEEeeeeegIIIIIiiiiiilNnOOOOOOOooooooooUUUUUuuuuu"""
-       ur"""SstYYYyyyZz""")
+       ur"""SstYYYyyyZz---""")
 
 transmap = {}
 for i in range(len(src)):
@@ -36,13 +36,13 @@ transmap[ord(u'Œ')] = u'OE'
 transmap[ord(u'ß')] = u'ss'
 
 
-def checkid(id):
+def checkid(id, soft=True):
     """Turn a bytestring or unicode into an identifier only composed of
     alphanumerical characters and a limited list of signs.
 
     It only supports Latin-based alphabets.
     """
-    if isinstance(id, str):
+    if type(id) is str:
         id = unicode(id, 'utf8')
 
     # Normalize unicode
@@ -52,11 +52,13 @@ def checkid(id):
     id = id.strip().translate(transmap)
 
     # Check for unallowed characters
-    allowed_characters = set([u'.', u'-', u'_', u'@'])
-    id = [ (c.isalnum() or c in allowed_characters) and c or u'-' for c in id ]
+    if soft:
+        allowed_characters = set([u'.', u'-', u'_', u'@'])
+        id = [ x if (x.isalnum() or x in allowed_characters) else u'-'
+               for x in id ]
+        id = u''.join(id)
 
     # Merge hyphens
-    id = u''.join(id)
     id = id.split(u'-')
     id = u'-'.join([x for x in id if x])
     id = id.strip('-')

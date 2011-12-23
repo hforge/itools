@@ -141,10 +141,6 @@ class Context(prototype):
             boundary = '--%s' % boundary
             form = {}
             for part in body.split(boundary)[1:-1]:
-                if part.startswith('\r\n'):
-                    part = part[2:]
-                elif part.startswith('\n'):
-                    part = part[1:]
                 # Parse the entity
                 entity = Entity(string=part)
                 # Find out the parameter name

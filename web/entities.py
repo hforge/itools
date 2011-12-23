@@ -24,8 +24,9 @@ from headers import get_type
 def read_headers(file):
     entity_headers = {}
     # Setup
-    line = file.readline()
-    line = line.strip()
+    line = file.readline().strip()
+    while not line:
+        line = file.readline().strip()
     # Go
     while line:
         name, value = line.split(':', 1)
@@ -40,8 +41,7 @@ def read_headers(file):
         else:
             entity_headers[name] = value
         # Next
-        line = file.readline()
-        line = line.strip()
+        line = file.readline().strip()
 
     return entity_headers
 

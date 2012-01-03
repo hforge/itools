@@ -186,7 +186,7 @@ class Logger(object):
         # Compute the next call
         next_call = last + self.rotate_interval - datetime.now()
         if next_call <= timedelta(0):
-            next_call = timedelta(seconds=0)
+            next_call = timedelta(seconds=1)
 
         # Call cron
         cron(self.rotate, next_call)

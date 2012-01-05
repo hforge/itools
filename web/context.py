@@ -19,11 +19,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from base64 import decodestring, encodestring
+from datetime import datetime, timedelta
+from hashlib import sha224
 from thread import get_ident, allocate_lock
+from urllib import quote, unquote
 
 # Import from itools
 from itools.core import freeze
-from itools.datatypes import String
+from itools.datatypes import String, HTTPDate
 from itools.gettext import MSG
 from itools.http import get_type, Entity
 from itools.http import Cookie, SetCookieDataType
@@ -402,6 +406,81 @@ class Context(object):
     def get_remote_ip(self):
         remote_ip = self.get_header('X-Forwarded-For')
         return remote_ip.split(',', 1)[0].strip() if remote_ip else None
+
+
+    def _get_auth_token(self, user_token):
+        # We use the header X-User-Agent or User-Agent
+        ua = self.get_header('X-User-Agent')
+        if not ua:
+            ua = self.get_header('User-Agent')
+        token = '%s:%s' % (user_token, ua)
+        return sha224(token).digest()
+
+
+    def _set_auth_cookie(self, cookie):
+        # Compute expires datetime (FIXME Probably should use the request date)
+        auth_cookie_expires = self.server.auth_cookie_expires
+        if auth_cookie_expires != timedelta(0):
+            expires = datetime.now() + auth_cookie_expires
+            expires = HTTPDate.encode(expires)
+        else:
+            expires = None
+
+        # Set cookie
+        self.set_cookie('iauth', cookie, path='/', expires=expires)
+
+
+    def login(self, user):
+        user_id = user.get_user_id()
+        user_token = user.get_auth_token()
+
+        # Make cookie
+        token = self._get_auth_token(user_token)
+        cookie = '%s:%s' % (user_id, token)
+        cookie = quote(encodestring(cookie))
+        self._set_auth_cookie(cookie)
+
+        # Set the user
+        self.user = user
+
+
+    def authenticate(self):
+        """Checks the authentication cookie and sets the context user if all
+        checks are ok.
+        """
+        self.user = None
+
+        # 1. Get the cookie
+        cookie = self.get_cookie('iauth')
+        if not cookie:
+            return
+
+        # 2. Parse the cookie
+        try:
+            username, token = decodestring(unquote(cookie)).split(':', 1)
+        except Exception:
+            msg = 'bad authentication cookie "%s"' % cookie
+            log_warning(msg, domain='itools.web')
+            return
+
+        if not username or not token:
+            return
+
+        # 3. Get the user
+        user = self.root.get_user(username)
+        if not user:
+            return
+
+        # 4. Check the token
+        user_token = user.get_auth_token()
+        if token == self._get_auth_token(user_token):
+            self.user = user
+
+
+    def logout(self):
+        self.del_cookie('iauth')
+        self.user = None
+
 
 
 ###########################################################################

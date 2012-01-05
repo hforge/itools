@@ -21,6 +21,7 @@
 from base64 import decodestring
 from binascii import Error as BinasciiError
 from copy import copy
+from datetime import timedelta
 from types import FunctionType, MethodType
 from urllib import unquote
 from warnings import warn
@@ -42,6 +43,7 @@ class WebServer(HTTPServer):
     event_log = None
 
     database = None
+    auth_cookie_expires = timedelta(0)
 
 
     def __init__(self, root, address=None, port=8080, access_log=None,
@@ -69,7 +71,7 @@ class WebServer(HTTPServer):
         context.root = self.root
 
         # (3) The authenticated user
-        self.find_user(context)
+        context.authenticate()
 
         # (4) The Site Root
         self.find_site_root(context)
@@ -440,6 +442,10 @@ class GET(RequestMethod):
             # Cache-Control: max-age=1
             # (because Apache does not cache pages with a query by default)
             context.set_header('Cache-Control', 'max-age=1')
+        elif (context.user and
+              context.server.auth_cookie_expires != timedelta(0)):
+            cookie = context.get_cookie('iauth')
+            context._set_auth_cookie(cookie)
 
 
 

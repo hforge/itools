@@ -21,7 +21,7 @@ from messages import ERROR
 
 
 
-class HTTPError(Exception):
+class HTTPError(StandardError):
     """Base class for all errors, client or server side.
     """
 

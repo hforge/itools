@@ -603,7 +603,7 @@ class Context(prototype):
 # The Request Methods
 ###########################################################################
 
-def find_view_by_method(server, context):
+def find_view_by_method(context):
     """Associating an uncommon HTTP or WebDAV method to a special view.
     method "PUT" -> view "http_put" <instance of BaseView>
     """
@@ -975,11 +975,6 @@ class PUT(RequestMethod):
 
 
     @classmethod
-    def find_view(cls, context):
-        find_view_by_method(context)
-
-
-    @classmethod
     def check_conditions(cls, context):
         """The resource is not locked, the request must have a correct
            "If-Unmodified-Since" header.
@@ -987,7 +982,7 @@ class PUT(RequestMethod):
         if_unmodified_since = context.get_header('If-Unmodified-Since')
         if if_unmodified_since is None:
             raise Conflict
-        mtime = context.resource.get_mtime().replace(microsecond=0)
+        mtime = context.resource.get_value('mtime').replace(microsecond=0)
         if mtime > if_unmodified_since:
             raise Conflict
 

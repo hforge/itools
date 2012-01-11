@@ -131,12 +131,12 @@ class Context(prototype):
             return {}
 
         # Case 2: urlencoded
-        type, type_parameters = self.get_header('content-type')
-        if type == 'application/x-www-form-urlencoded':
+        content_type, type_parameters = self.get_header('content-type')
+        if content_type == 'application/x-www-form-urlencoded':
             return decode_query(body)
 
         # Case 3: multipart
-        if type.startswith('multipart/'):
+        if content_type.startswith('multipart/'):
             boundary = type_parameters.get('boundary')
             boundary = '--%s' % boundary
             form = {}
@@ -171,7 +171,8 @@ class Context(prototype):
                             form[name] = [form[name], body]
             return form
 
-        # Case 4: ?
+        # Case 4: This is useful for REST services
+        # XXX Should just return the body as a string? deserialized?
         return {'body': body}
 
 
@@ -996,7 +997,7 @@ class PUT(RequestMethod):
         super(PUT, cls).set_body(context)
 
         # Set the Last-Modified header (if possible)
-        mtime = context.resource.get_mtime()
+        mtime = context.resource.get_value('mtime')
         if mtime is None:
             return
         mtime = mtime.replace(microsecond=0)

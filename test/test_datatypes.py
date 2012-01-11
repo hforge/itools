@@ -20,7 +20,6 @@
 from datetime import time, date, datetime
 import decimal
 import random
-from time import timezone, mktime
 from unittest import TestCase, main
 
 # Import from itools
@@ -38,14 +37,7 @@ def datetime_utc2local(dt):
     """Given a naive datetime object in UTC, return a naive datetime object
     in local time.
     """
-    # Transform the datetime object to Unix time.
-    parts = dt.utctimetuple()
-    timestamp = mktime(parts)
-    # Change from UTC to local time. (XXX david: I'm still not sure about the
-    # line below.)
-    timestamp = timestamp - timezone
-    # Transform the Unix time to a naive datetime object.
-    return datetime.fromtimestamp(timestamp)
+    return utc.localize(dt)
 
 
 

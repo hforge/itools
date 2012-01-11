@@ -52,6 +52,9 @@ def _init():
 
 
 def fixed_offset(offset, _tzinfos={}):
+    """Returns a pytz compatible fixed-offset timezone. The given offset
+    is in minutes.
+    """
     # Cache
     tz = _tzinfos.get(offset)
     if tz:

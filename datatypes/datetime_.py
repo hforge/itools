@@ -17,8 +17,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from calendar import timegm
 from datetime import date, datetime, time
-from email.utils import parsedate_tz, mktime_tz, formatdate
+from email.utils import parsedate_tz, formatdate
 from time import mktime
 
 # Import from itools
@@ -31,10 +32,8 @@ from base import DataType
 ###########################################################################
 
 class HTTPDate(DataType):
-    """This datatype is named "HTTPDate" for historical reasons, but supports
-    many of the date formats used in Internet protocols.
+    """The behaviour of this datatype is as described in RFC 2616 (HTTP 1.1)
     """
-    # TODO As specified by RFC 1945 (HTTP 1.0), should check HTTP 1.1
 
     @staticmethod
     def decode(data):
@@ -42,13 +41,21 @@ class HTTPDate(DataType):
         asctime() format, and non-standard formats sent by some HTTP
         clients.
         """
+        # Parse the date into a tuple, including the timezone
         parts = parsedate_tz(data)
         if parts is None:
             raise ValueError, 'date "%s" is not supported' % data
-#        has_tz = parts[-1] is None
-        timestamp = mktime_tz(parts)
+        parts, tz = parts[:9], parts[9]
 
-        return datetime.fromtimestamp(timestamp)
+        # Get a naive datetime
+        timestamp = mktime(parts)
+        naive_dt = datetime.fromtimestamp(timestamp)
+
+        # Return an aware datetime (if tz is None assume GMT)
+        if tz is None:
+            tz = 0
+        tz = fixed_offset(tz/60)
+        return tz.localize(naive_dt)
 
 
     @staticmethod
@@ -59,13 +66,11 @@ class HTTPDate(DataType):
 
         "Day" and "Month" are the English names abbreviated.
         """
-        # The given "value" must be a naive datetime object, we consider it
-        # represents a local time.  Transform it to Unix time (always UTC).
-        parts = value.timetuple()
-        timestamp = mktime(parts)
+        # Datetime to unix timestamp in utc
+        parts = value.utctimetuple()
+        timestamp = timegm(parts)
 
-        # Transform the Unix time to a string in RFC 2822 format (with "GMT"
-        # instead of "-0000").
+        # Serialize timestamp to a RFC-2822 string (always GMT)
         return formatdate(timestamp, usegmt=True)
 
 

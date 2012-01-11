@@ -853,12 +853,16 @@ class GET(SafeMethod):
         if mtime is None:
             return
         mtime = mtime.replace(microsecond=0)
-        context.mtime = mtime
+        # If naive, assume local time
+        if mtime.tzinfo is None:
+            mtime = local_tz.localize(mtime)
 
-        # 2. Check for If-Modified-Since
+        # 2. Set Last-Modified (XXX do we need this for 304 responses?)
+        context.set_header('Last-Modified', mtime)
+
+        # 3. Check for If-Modified-Since
         if_modified_since = context.get_header('if-modified-since')
         if if_modified_since and if_modified_since >= mtime:
-            context.set_header('Last-Modified', mtime)
             # Cache-Control: max-age=1
             # (because Apache does not cache pages with a query by default)
             context.set_header('Cache-Control', 'max-age=1')

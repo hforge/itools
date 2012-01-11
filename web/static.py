@@ -19,6 +19,7 @@ from datetime import datetime
 from os.path import basename, getmtime, isfile
 
 # Import from itools
+from itools.core import fixed_offset
 from itools.fs.common import get_mimetype
 from itools.uri import Path
 from context import Context
@@ -38,7 +39,9 @@ class StaticContext(Context):
 
         # 304 Not Modified
         mtime = getmtime(path)
-        mtime = datetime.fromtimestamp(mtime)
+        mtime = datetime.utcfromtimestamp(mtime)
+        mtime = mtime.replace(microsecond=0)
+        mtime = fixed_offset(0).localize(mtime)
         since = self.get_header('If-Modified-Since')
         if since and since >= mtime:
             return set_response(self.soup_message, 304)

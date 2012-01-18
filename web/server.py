@@ -19,6 +19,7 @@
 
 # Import from the Standard Library
 from base64 import decodestring
+from binascii import Error as BinasciiError
 from copy import copy
 from logging import getLogger, WARNING, FileHandler, StreamHandler, Formatter
 from os import fstat, getpid, remove as remove_file
@@ -529,7 +530,10 @@ class Server(object):
                 return
 
             cookie = unquote(cookie)
-            cookie = decodestring(cookie)
+            try:
+                cookie = decodestring(cookie)
+            except BinasciiError:
+                return
             username, password = cookie.split(':', 1)
         elif self.auth_type == 'http_basic':
             # (1bis) Read the username/password from header

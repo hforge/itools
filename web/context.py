@@ -55,6 +55,7 @@ class Context(prototype):
     resource = None
     server = None
     status = None # response status
+    mtime = None # Last-Modified
 
 
     def init_context(self):
@@ -240,6 +241,9 @@ class Context(prototype):
 
 
     def set_content_type(self, content_type, **kw):
+        if type(content_type) is not str:
+            raise TypeError, 'expected string, got %s' % repr(content_type)
+
         parameters = [ '; %s=%s' % x for x in kw.items() ]
         parameters = ''.join(parameters)
         self.content_type = content_type + parameters
@@ -858,12 +862,13 @@ class GET(SafeMethod):
         if mtime.tzinfo is None:
             mtime = local_tz.localize(mtime)
 
-        # 2. Set Last-Modified (XXX do we need this for 304 responses?)
-        context.set_header('Last-Modified', mtime)
+        # 2. Set Last-Modified
+        context.mtime = mtime
 
         # 3. Check for If-Modified-Since
         if_modified_since = context.get_header('if-modified-since')
         if if_modified_since and if_modified_since >= mtime:
+            context.set_header('Last-Modified', mtime)
             # Cache-Control: max-age=1
             # (because Apache does not cache pages with a query by default)
             context.set_header('Cache-Control', 'max-age=1')
@@ -876,9 +881,8 @@ class GET(SafeMethod):
         if context.status != 200:
             return
 
-        mtime = getattr(context, 'mtime', None)
-        if mtime:
-            context.set_header('Last-Modified', mtime)
+        if context.mtime:
+            context.set_header('Last-Modified', context.mtime)
             # Cache-Control: max-age=1
             # (because Apache does not cache pages with a query by default)
             context.set_header('Cache-Control', 'max-age=1')

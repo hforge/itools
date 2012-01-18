@@ -1,6 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2009 Juan David Ibáñez Palomar <jdavid@itaapy.com>
-# Copyright (C) 2009 Hervé Cauwelier <herve@itaapy.com>
+# Copyright (C) 2012 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,20 +15,31 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from office import MSWord, MSExcel
-from ooxml import MSWordX, MSExcelX, MSPowerPointX
-from ppt import MSPowerPoint
-from rtf import RTF
+from itools.handlers import File, register_handler_class
+
+
+prefix = 'application/vnd.openxmlformats-officedocument.'
+
+
+class MSWordX(File):
+    class_mimetypes = [prefix + 'wordprocessingml.document']
+    class_extension = 'docx'
 
 
 
-__all__ = [
-    'MSWord',
-    'MSExcel',
-    'MSPowerPoint',
-    'RTF',
-    # OOXML
-    'MSWordX',
-    'MSExcelX',
-    'MSPowerPointX',
-    ]
+class MSExcelX(File):
+    class_mimetypes = [prefix + 'spreadsheetml.sheet']
+    class_extension = 'xlsx'
+
+
+
+class MSPowerPointX(File):
+    class_mimetypes = [prefix + 'presentationml.presentation']
+    class_extension = 'pptx'
+
+
+
+# Register
+register_handler_class(MSWordX)
+register_handler_class(MSExcelX)
+register_handler_class(MSPowerPointX)

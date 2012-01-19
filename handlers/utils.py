@@ -21,9 +21,9 @@ import unicodedata
 
 
 src = (ur"""ÄÅÁÀÂÃĀäåáàâãāăÇçÉÈÊËĒéèêëēğÍÌÎÏĪíìîïīıļÑñÖÓÒÔÕØŌöóòôõøōőÜÚÙÛŪüúùûū"""
-       ur"""ŞşţÝŸȲýÿȳŽž°«»""")
+       ur"""ŞşţÝŸȲýÿȳŽž°«»’""")
 dst = (ur"""AAAAAAAaaaaaaaaCcEEEEEeeeeegIIIIIiiiiiilNnOOOOOOOooooooooUUUUUuuuuu"""
-       ur"""SstYYYyyyZz---""")
+       ur"""SstYYYyyyZz----""")
 
 transmap = {}
 for i in range(len(src)):

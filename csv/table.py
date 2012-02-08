@@ -31,20 +31,30 @@ from parser import parse
 ###########################################################################
 # Parser
 ###########################################################################
-def unescape_data(data):
+escape_table = (
+    ('\r', r'\r'),
+    ('\n', r'\n'))
+
+
+def unescape_data(data, escape_table=escape_table):
     """Unescape the data
     """
-    data = [ x.replace("\\r", "\r").replace("\\n", "\n")
-             for x in data.split('\\\\') ]
-    return '\\'.join(data)
+    out = []
+    for segment in data.split(r"\\"):
+        for c, c_escaped in escape_table:
+            segment = segment.replace(c_escaped, c)
+        out.append(segment)
+
+    return '\\'.join(out)
 
 
 
-def escape_data(data):
+def escape_data(data, escape_table=escape_table):
     """Escape the data
     """
-    data = data.replace("\\", "\\\\")
-    data = data.replace("\r", "\\r").replace("\n", "\\n")
+    data = data.replace("\\", r"\\")
+    for c, c_escaped in escape_table:
+        data = data.replace(c, c_escaped)
     return data
 
 
@@ -198,8 +208,15 @@ def get_tokens(property):
                 if not param_value:
                     raise SyntaxError, 'unexpected empty string ("")'
                 status = 6
+            elif c == "\\":
+                param_value += c
+                status = 41
             else:
                 param_value += c
+
+        elif status == 41: # XXX Special case (not for ical)
+            param_value += c
+            status = 4
 
         # param-value NOT quoted begun
         elif status == 5:
@@ -255,7 +272,6 @@ def parse_table(data):
     are byte strings.
     """
     for line in unfold_lines(data):
-        parameters = {}
         name, line = read_name(line)
         # Read the parameters and the property value
         value, parameters = get_tokens(line)
@@ -281,7 +297,7 @@ def deserialize_parameters(parameters, schema, default=String(multiple=True)):
             raise ValueError, 'parameter "{0}" not defined'.format(name)
         # Decode
         value = parameters[name]
-        value = [ datatype.decode(x) for x in value ]
+        value = [ decode_param_value(x, datatype) for x in value ]
         # Multiple or single
         if not datatype.multiple:
             if len(value) > 1:
@@ -365,15 +381,35 @@ class Property(object):
 
 
 
+params_escape_table = (
+    ('"', r'\"'),
+    ('\r', r'\r'),
+    ('\n', r'\n'))
+
+
 def encode_param_value(p_name, p_value, p_datatype):
     p_value = p_datatype.encode(p_value)
-    if '"' in p_value:
+
+    # Special case (not used by ical)
+    if getattr(p_datatype, 'escape', False):
+        p_value = escape_data(p_value, params_escape_table)
+        return '"%s"' % p_value
+
+    # Standard case (ical behavior)
+    if '"' in p_value or '\n' in p_value:
         error = 'the "%s" parameter contains a double quote'
         raise ValueError, error % p_name
     if ';' in p_value or ':' in p_value or ',' in p_value:
         return '"%s"' % p_value
     return p_value
 
+
+def decode_param_value(p_value, p_datatype):
+    # Special case (not used by ical)
+    if getattr(p_datatype, 'escape', False):
+        p_value = unescape_data(p_value, params_escape_table)
+
+    return p_datatype.decode(p_value)
 
 
 def _property_to_str(name, property, datatype, p_schema, encoding='utf-8'):

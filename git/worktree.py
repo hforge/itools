@@ -16,8 +16,9 @@
 
 # Import from the Standard Library
 from datetime import datetime
-from os import listdir, remove, rmdir, walk
-from os.path import abspath, exists, getmtime, isabs, isdir, isfile, normpath
+from os import listdir, makedirs, remove, rmdir, walk
+from os.path import abspath, dirname, exists, getmtime, isabs, isdir, isfile
+from os.path import normpath
 from re import search
 from shutil import copy2, copytree
 from subprocess import Popen, PIPE
@@ -26,6 +27,7 @@ import time
 # Import from pygit2
 from pygit2 import Repository, Signature, GitError, init_repository
 from pygit2 import GIT_SORT_REVERSE, GIT_SORT_TIME, GIT_OBJ_TREE
+from pygit2 import GIT_STATUS_WT_MODIFIED, GIT_STATUS_WT_DELETED
 
 # Import from itools
 from itools.core import lazy
@@ -428,14 +430,28 @@ class Worktree(object):
         """Equivalent to 'git reset --hard -q', this method restores the
         state of the working tree and index file to match the state of the
         latest commit.
-
-        TODO Implement this operation with libgit2.
         """
-        # Use a try/except because this fails with new repositories
-        try:
-            self._call(['git', 'reset', '--hard', '-q'])
-        except EnvironmentError:
-            pass
+        # (1) Read tree
+        head = self._resolve_reference('HEAD')
+        tree_oid = self.lookup(head).tree.oid
+        index = self.index
+        index.read_tree(tree_oid)
+        index.write()
+
+        # (2) Checkout tree
+        repo = self.repo
+        for entry in index:
+            path = entry.path
+            status = repo.status_file(path)
+            if status & (GIT_STATUS_WT_MODIFIED | GIT_STATUS_WT_DELETED):
+                # Checkout
+                data = self.lookup(index[path].oid).data
+                path = self._get_abspath(path)
+                folder = dirname(path)
+                if not exists(folder):
+                    makedirs(folder)
+                with open(path, 'w') as f:
+                    f.write(data)
 
 
     def git_diff(self, since, until=None, paths=None):

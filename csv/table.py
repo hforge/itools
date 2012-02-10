@@ -204,9 +204,6 @@ def get_tokens(property):
         # param-value quoted begun (just after '"')
         elif status == 4:
             if c == '"':
-                # XXX We don't allow the empty value (""), is that right?
-                if not param_value:
-                    raise SyntaxError, 'unexpected empty string ("")'
                 status = 6
             elif c == "\\":
                 param_value += c

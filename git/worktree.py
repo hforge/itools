@@ -320,7 +320,7 @@ class Worktree(object):
         self.index_mtime = getmtime(self.index_path)
 
         # Tree
-        tree = self.index.create_tree()
+        tree = self.index.write_tree()
 
         # Parent
         parent = self._resolve_reference('HEAD')

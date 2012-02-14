@@ -511,12 +511,12 @@ class Context(prototype):
         method of the given resource. False otherwise.
         """
         if user is None:
-            user = context.user
+            user = self.user
 
         # Get the access control definition (default to False)
         if view is None:
             return False
-        access = getattr(view, 'access_%s' % context.method, view.access)
+        access = getattr(view, 'access_%s' % self.method, view.access)
 
         # Private (False) or Public (True)
         if type(access) is bool:

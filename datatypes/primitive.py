@@ -153,7 +153,7 @@ class PathDataType(DataType):
 
 
 
-email_expr = "^[0-9a-z]+[_\.0-9a-z-'+]*@([0-9a-z][0-9a-z-]+\.)+[a-z]{2,6}$"
+email_expr = "^[0-9a-z]+[_\.0-9a-z-'+]*@([0-9a-z-]+\.)+[a-z]{2,6}$"
 email_expr = compile(email_expr)
 class Email(String):
 

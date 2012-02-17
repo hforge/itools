@@ -76,8 +76,11 @@ class BasicTypeTest(TestCase):
 
 
     def test_Email(self):
-        for name, result in {'toto.titi@libre.fr':True,
-                             'toto@':False}.iteritems():
+        emails = {
+            'toto.titi@libre.fr': True,
+            'toto@a.com': True,
+            'toto@': False}
+        for name, result in emails.iteritems():
             self.assertEqual(Email.is_valid(name), result)
 
 

@@ -28,7 +28,7 @@ from traceback import print_exception
 # Import from itools
 import itools
 import itools.gettext
-from itools import git
+from itools.git import open_worktree
 from itools.handlers import ro_database
 from itools.html import XHTMLFile
 import itools.pdf
@@ -38,9 +38,9 @@ from itools.fs import lfs
 
 
 def build():
+    worktree = open_worktree('.', soft=True)
     # Try using git facilities
-    git_available = git.is_available()
-    if not git_available:
+    if not worktree:
         print "Warning: not using git."
 
     # Read configuration for languages
@@ -52,7 +52,7 @@ def build():
     manifest = [ x for x in get_manifest() if not islink(x) ]
     manifest.append('MANIFEST')
     # Find out the version string
-    if git_available:
+    if worktree:
         version = make_version()
         open('version.txt', 'w').write(version)
         print '* Version:', version

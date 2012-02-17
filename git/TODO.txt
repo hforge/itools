@@ -1,0 +1,36 @@
+libgit2
+===========================================================================
+
+ #1 git_tree_entry_byname bug
+    https://github.com/libgit2/libgit2/issues/127
+
+ #2 git_tree_create_fromindex performance issues
+    https://github.com/libgit2/libgit2/issues/75
+
+
+pygit2
+===========================================================================
+
+ #1 Write the methods:
+
+    - Repository.get(sha)
+    - Tree.get(name)
+    - Index.get(path)
+
+    They will return None when the object is not there.
+
+ #2 Write 'Tree_getitem_by_path', expose it as
+    'Tree.get_entry_by_path'
+
+
+itools.git
+===========================================================================
+
+ #1 Rewrite Worktree.walk to use two callbacks, for files and folders.
+    Replace call to os.walk by Worktree.walk
+
+ #2 Use 'os.path.join' to prepare for Windows support
+
+ #3 Add docstrings
+
+ #4 Implement "git status"

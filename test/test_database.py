@@ -22,7 +22,6 @@ from random import sample
 import re
 
 # Import from itools
-from itools.core import start_subprocess
 from itools.database import AndQuery, RangeQuery, PhraseQuery, NotQuery
 from itools.database import AllQuery, OrQuery, TextQuery
 from itools.database import make_catalog, Catalog, Resource, StartQuery
@@ -49,7 +48,7 @@ class RWDatabaseTestCase(TestCase):
     def setUp(self):
         self.database = make_git_database('fables', 20, 20)
         self.database.worktree.git_add('.')
-        self.database.worktree.git_commit('Initial commit', quiet=True)
+        self.database.worktree.git_commit('Initial commit')
         self.root = self.database.get_handler('.')
 
 
@@ -688,6 +687,5 @@ class Document_4(Resource):
 
 
 
-start_subprocess('fables')
 if __name__ == '__main__':
     main()

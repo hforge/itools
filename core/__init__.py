@@ -26,8 +26,6 @@ from mimetypes_ import guess_type, has_encoding, has_extension
 from odict import OrderedDict
 from prototypes import prototype_type, prototype, is_prototype
 from prototypes import proto_property, proto_lazy_property
-from subprocess_ import start_subprocess, stop_subprocess
-from subprocess_ import read_subprocess, send_subprocess
 from timezones import fixed_offset, local_tz
 from utils import get_abspath, merge_dicts, get_sizeof, get_pipe, get_version
 
@@ -62,11 +60,6 @@ __all__ = [
     'guess_type',
     'has_encoding',
     'has_extension',
-    # Subprocess
-    'start_subprocess',
-    'read_subprocess',
-    'send_subprocess',
-    'stop_subprocess',
     # Time
     'fixed_offset',
     'local_tz',

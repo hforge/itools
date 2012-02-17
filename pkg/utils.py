@@ -27,24 +27,25 @@ from sys import _getframe, argv
 
 # Import from itools
 from itools.core import freeze, get_pipe, get_version
-from itools import git
+from itools.git import open_worktree
 from itools.handlers import ro_database
 from handlers import SetupConf
 
 
 
-def make_version(cwd=None):
+def make_version(cwd='.'):
     """This function finds out the version number from the source, this will
     be written to the 'version.txt' file, which will be read once the software
     is installed to get the version number.
     """
+    worktree = open_worktree(cwd)
     # The name of the active branch
-    branch = git.get_branch_name(cwd=cwd)
+    branch = worktree.get_branch_name()
     if branch is None:
         return None
 
     # The tag
-    description = git.describe(cwd=cwd)
+    description = worktree.git_describe()
 
     # The version name
     if description:
@@ -60,8 +61,8 @@ def make_version(cwd=None):
         version = branch
 
     # Get the timestamp
-    head = git.get_metadata(cwd=cwd)
-    timestamp = head['committer'][1]
+    head = worktree.get_metadata()
+    timestamp = head['committer_date']
     timestamp = timestamp.strftime('%Y%m%d%H%M')
     return '%s-%s' % (version, timestamp)
 
@@ -196,9 +197,10 @@ def get_config():
 
 
 def get_manifest():
-    if git.is_available():
+    worktree = open_worktree('.', soft=True)
+    if worktree:
         exclude = frozenset(['.gitignore'])
-        return [ x for x in git.get_filenames() if x not in exclude ]
+        return [ x for x in worktree.get_filenames() if x not in exclude ]
 
     # No git: find out source files
     config = get_config()

@@ -50,7 +50,7 @@ except ImportError:
 import itools
 from itools.core import merge_dicts
 from itools.fs import lfs
-from itools.git import git, WorkTree
+from itools.git import open_worktree
 
 
 # Define list of problems
@@ -460,25 +460,24 @@ def create_graph():
     tmp_directory = '%s/ipkg_quality.git' % mkdtemp()
     call(['git', 'clone',  cwd, tmp_directory])
     chdir(tmp_directory)
-    worktree = WorkTree(tmp_directory)
+    worktree = open_worktree(tmp_directory)
     # First step: we create a list of statistics
     statistics = {}
     commits = worktree.git_log(reverse=True)
     print 'Script will analyse %s commits.' % len(commits)
     for commit in commits:
-        commit_id = commit['revision']
         # We move to a given commit
-        call(['git', 'reset', '--hard', commit_id])
+        call(['git', 'reset', '--hard', commit['sha']])
         # Print script evolution
         stdout.write('.')
         stdout.flush()
         # We list files
-        filenames = git.get_filenames()
+        filenames = worktree.get_filenames()
         filenames = [ x for x in filenames if x.endswith('.py') ]
         # We get code quality for this files
         stats, files_db = analyse(filenames, ignore_errors=True)
-        metadata = git.get_metadata()
-        date_time = metadata['committer'][1]
+        metadata = worktree.get_metadata()
+        date_time = metadata['committer_date']
         commit_date = date(date_time.year, date_time.month, date_time.day)
         if commit_date not in statistics:
             statistics[commit_date] = stats
@@ -495,7 +494,7 @@ def create_graph():
     for a_date in dates:
         values.append(statistics[a_date])
     # Base graph informations
-    base_title = '[%s %s]' % (project_name, git.get_branch_name())
+    base_title = '[%s %s]' % (project_name, worktree.get_branch_name())
     # We generate graphs
     chdir(cwd)
     for problem_dict in ['code_length', 'aesthetics_problems',
@@ -598,13 +597,14 @@ if __name__ == '__main__':
     options, args = parser.parse_args()
 
     # Filenames
+    worktree = open_worktree('.', soft=True)
     if args:
         filenames = set([])
         for arg in args:
             filenames = filenames.union(glob(arg))
         filenames = list(filenames)
-    elif git.is_available():
-        filenames = git.get_filenames()
+    elif worktree:
+        filenames = worktree.get_filenames()
         filenames = [ x for x in filenames if x.endswith('.py') ]
     else:
         filenames = []
@@ -625,7 +625,7 @@ if __name__ == '__main__':
     # (1) Export graph
     if options.graph:
         # Check if GIT is available
-        if not git.is_available():
+        if not worktree:
             parser.error(u'Error, your project must be versioned with GIT.')
         # Check if create_graph is available
         if not create_graph_is_available:

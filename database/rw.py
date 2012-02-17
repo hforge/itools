@@ -20,11 +20,11 @@
 # Import from the Standard Library
 from datetime import datetime
 from os.path import dirname
-from subprocess import CalledProcessError
 
 # Import from itools
-from itools.core import get_pipe, lazy, send_subprocess
+from itools.core import get_pipe, lazy
 from itools.fs import lfs
+from itools.git import open_worktree
 from itools.handlers import Folder
 from catalog import Catalog, make_catalog
 from registry import get_register_fields
@@ -45,7 +45,6 @@ class RWDatabase(RODatabase):
         self.added = set()
         self.changed = set()
         self.has_changed = False
-        self.removed = False
 
         # The resources that been added, removed, changed and moved can be
         # represented as a set of two element tuples.  But we implement this
@@ -157,10 +156,9 @@ class RWDatabase(RODatabase):
                 self.added.remove(key)
             else:
                 self.changed.discard(key)
-                self.fs.remove(key)
+                self.worktree.git_rm(key)
             # Changed
             self.has_changed = True
-            self.removed = True
             return
 
         # Case 2: folder
@@ -176,11 +174,10 @@ class RWDatabase(RODatabase):
                 self.changed.discard(k)
 
         if self.fs.exists(key):
-            self.fs.remove(key)
+            self.worktree.git_rm(key)
 
         # Changed
         self.has_changed = True
-        self.removed = True
 
 
     def touch_handler(self, key, handler=None):
@@ -281,7 +278,7 @@ class RWDatabase(RODatabase):
         handler = self._get_handler(source)
         if type(handler) is not Folder:
             if fs.exists(source):
-                fs.move(source, target)
+                self.worktree.git_mv(source, target, add=False)
 
             # Remove source
             self.added.discard(source)
@@ -293,7 +290,6 @@ class RWDatabase(RODatabase):
 
             # Changed
             self.has_changed = True
-            self.removed = True
             return
 
         # Case 2: Folder
@@ -315,7 +311,7 @@ class RWDatabase(RODatabase):
                 self.changed.remove(key)
 
         if fs.exists(source):
-            fs.move(source, target)
+            self.worktree.git_mv(source, target, add=False)
         for path in fs.traverse(target):
             if not fs.is_folder(path):
                 path = fs.get_relative_path(path)
@@ -323,7 +319,6 @@ class RWDatabase(RODatabase):
 
         # Changed
         self.has_changed = True
-        self.removed = True
 
 
     #######################################################################
@@ -405,7 +400,6 @@ class RWDatabase(RODatabase):
     def _cleanup(self):
         super(RWDatabase, self)._cleanup()
         self.has_changed = False
-        self.removed = False
 
 
     def _abort_changes(self):
@@ -416,14 +410,10 @@ class RWDatabase(RODatabase):
         for key in self.changed:
             cache[key].abort_changes()
 
-        # Clean the filesystem (in a try/except to avoid a problem with new
-        # repositories)
-        try:
-            self.send_subprocess(['git', 'reset', '--hard', '-q'])
-        except CalledProcessError:
-            pass
+        # 2. Git
+        self.worktree.git_reset()
         if self.added:
-            self.send_subprocess(['git', 'clean', '-fxdq'])
+            self.worktree.git_clean()
 
         # Reset state
         self.added.clear()
@@ -475,34 +465,15 @@ class RWDatabase(RODatabase):
         # 2. Build the 'git commit' command
         git_author, git_date, git_msg, docs_to_index, docs_to_unindex = data
         git_msg = git_msg or 'no comment'
-        git_all = False
 
-        git_add = []
-        if self.removed or len(changed) > 10:
-            # Case 1: something removed or many things changed, then make
-            # an automatic commit (--all)
-            git_all = True
-            if added:
-                git_add = list(added)
-        elif added:
-            # Case 2: nothing removed, something added, and few things
-            # changed, then call 'git add'
-            git_add = list(added) + list(changed)
-        elif changed:
-            # Case 3: nothing removed or added, few things changed
-            git_add = list(changed)
-        else:
-            # Case 4: nothing to do? (this should never happen)
-            return
+        # 3. Call git
+        git_add = list(added) + list(changed)
+        self.worktree.git_add(*git_add)
+        self.worktree.git_commit(git_msg, git_author, git_date)
 
-        # 3. Clear state
+        # 4. Clear state
         changed.clear()
         added.clear()
-        self.removed = False
-
-        # 4. Call git
-        self.worktree.git_add(*git_add)
-        self.worktree.git_commit(git_msg, git_author, git_date, True, git_all)
 
         # 5. Catalog
         catalog = self.catalog
@@ -547,7 +518,7 @@ def make_git_database(path, size_min, size_max):
     """
     path = lfs.get_absolute_path(path)
     # Git init
-    send_subprocess(['git', 'init', '-q', '%s/database' % path])
+    open_worktree('%s/database' % path, init=True)
     # The catalog
     make_catalog('%s/catalog' % path, get_register_fields())
     # Ok

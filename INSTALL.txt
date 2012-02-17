@@ -20,6 +20,7 @@ pkg-config     0.23  itools           http://pkg-config.freedesktop.org/
 pytz                 itools.core      http://pytz.sourceforge.net/
 glib           2.20  itools.fs        http://www.gtk.org/
 pygobject      2.20  itools.fs        http://www.pygtk.org/
+pygit2         0.16  itools.git       https://github.com/libgit2/pygit2
 Git             1.7  itools.git       http://git-scm.com/
 libsoup        2.28  itools.web       http://live.gnome.org/LibSoup
 reportlab       2.3  itools.pdf       http://www.reportlab.org/
@@ -64,11 +65,10 @@ And finally install itools with distutils:
   $ python setup.py install
 
 
-3. Install on Debian
-========================
+3. Install on Debian Stable (squeeze)
+=====================================
 
-All the software required by itools is available in Debian Stable (squeeze).
-Install these packages:
+1. Most dependencies are packaged in Debian:
 
   # apt-get install gettext git python-gobject-dev python-tz
   # apt-get install libsoup2.4-dev python-xapian
@@ -76,26 +76,40 @@ Install these packages:
   # apt-get install g++ libpoppler-dev libwv2-dev python-xlrd
   # apt-get install python-reportlab
 
-And finally install the itools package by hand (see Section 2).
+2. Install libgit2 and pygit2 manually, check:
+
+  - https://github.com/libgit2/libgit2
+  - https://github.com/libgit2/pygit2
+
+3. And finally install the itools package by hand (see Section 2).
 
 
 4. Install on Gentoo
 ========================
 
-If you use Gentoo you are lucky.  Since itools is available in the hforge
-overlay, start by installing this overlay, to do so:
+If you use Gentoo you are lucky.  First because libgit2 and pygit2 are
+packaged (you just need to unmask them). And second, because itools is
+available in the hforge overlay, start by installing this overlay.
 
-1. Edit the /etc/layman/layman.cfg file and add the hforge overlay list, so
+Step by step:
+
+1. Unmask and install libgit2/pygit2
+
+  # echo "dev-libs/libgit2  ~amd64" >> /etc/portage/package.keywords
+  # echo "dev-python/pygit2 ~amd64" >> /etc/portage/package.keywords
+  # emerge pygit2
+
+2. Edit the /etc/layman/layman.cfg file and add the hforge overlay list, so
    the 'overlays' variable looks this way:
 
   overlays  : http://www.gentoo.org/proj/en/overlays/repositories.xml
               http://overlay.hforge.org/list.xml
 
-2. Add the hforge overlay:
+3. Add the hforge overlay:
 
   # layman -a hforge-overlay
 
-Then unmask the itools package and emerge:
+4. Unmask itools and emerge:
 
   # echo "dev-python/itools ~amd64" >> /etc/portage/package.keywords
   # layman -S

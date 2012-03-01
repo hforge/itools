@@ -23,6 +23,7 @@ from itools.core import freeze, prototype
 from itools.database import ReadonlyError
 from itools.datatypes import Enumerate, String
 from itools.gettext import MSG
+from itools.handlers import File
 from itools.stl import stl
 from itools.uri import decode_query, Reference
 from exceptions import FormError
@@ -222,6 +223,24 @@ class BaseView(prototype):
         if goto is None:
             return self.GET
         return goto
+
+
+    #######################################################################
+    # PUT
+    #######################################################################
+    def PUT(self, resource, context):
+        # Check content-range
+        range = context.get_header('content-range')
+        if range:
+            raise NotImplemented
+        # Check if handler is a File
+        handler = resource.get_value('data')
+        if not isinstance(handler, File):
+            raise ValueError, u"PUT only allowed on files"
+        # Save the data
+        body = context.get_form_value('body')
+        handler.load_state_from_string(body)
+        context.database.change_resource(resource)
 
 
 

@@ -19,6 +19,7 @@ from itools.core import add_type
 from itools.csv import parse_table, Property, property_to_str
 from itools.csv import deserialize_parameters
 from itools.handlers import File, register_handler_class
+from itools.log import log_warning
 
 
 class Metadata(File):
@@ -66,7 +67,11 @@ class Metadata(File):
             # 1. Get the datatype
             field = resource_class.get_field(name)
             if field is None:
-                raise ValueError, "Field %s does not exist" % name
+                msg = 'unexpected field "%s"' % name
+                if resource_class.fields_soft:
+                    log_warning(msg, domain='itools.database')
+                    continue
+                raise ValueError, msg
 
             # 2. Deserialize the parameters
             params_schema = field.parameters_schema

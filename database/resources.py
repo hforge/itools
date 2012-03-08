@@ -57,6 +57,11 @@ class Resource(object):
 
     fields = freeze([])
 
+    # Says what to do when a field not defined by the schema is found.
+    #   soft = False: raise an exception
+    #   soft = True : log a warning
+    fields_soft = False
+
 
     @classmethod
     def get_field(self, name):

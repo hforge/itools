@@ -195,6 +195,42 @@ class ISOCalendarDateTestCase(TestCase):
         self.assertEqual(value, expected)
 
 
+    def test_date_decode_m(self):
+        data = '1975-05'
+        value = ISOCalendarDate.decode(data)
+        expected = date(1975, 5, 1)
+        self.assertEqual(value, expected)
+
+
+    def test_date_decode_d(self):
+        data = '1975'
+        value = ISOCalendarDate.decode(data)
+        expected = date(1975, 1, 1)
+        self.assertEqual(value, expected)
+
+
+    def test_date_decode_fr(self):
+        class ISOCalendarDateFR(ISOCalendarDate):
+            format_date = '%d/%m/%Y'
+            sep_date = '/'
+
+        data = '07/05/1975'
+        value = ISOCalendarDateFR.decode(data)
+        expected = date(1975, 05, 07)
+        self.assertEqual(value, expected)
+
+
+    def test_date_encode_fr(self):
+        class ISOCalendarDateFR(ISOCalendarDate):
+            format_date = '%d/%m/%Y'
+            sep_date = '/'
+
+        data = date(1975, 05, 07)
+        value = ISOCalendarDateFR.encode(data)
+        expected = '07/05/1975'
+        self.assertEqual(value, expected)
+
+
 class ISODateTimeTestCase(TestCase):
 
     def test_datetime_decode(self):

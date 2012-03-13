@@ -88,45 +88,39 @@ class ISOCalendarDate(DataType):
 
     Basic formats: %Y%m%d, %Y%m, %Y
     """
+    format_date = '%Y-%m-%d'
+    sep_date = '-'
 
-    @staticmethod
-    def decode(data):
+    @classmethod
+    def decode(cls, data):
         if not data:
             return None
+        format_date = cls.format_date
+        sep_date = cls.sep_date
 
-        # The year
-        year = int(data[:4])
-        data = data[4:]
-        if not data:
-            return date(year, 1, 1)
+        values = data.split(cls.sep_date)
+        year, month, day = 1, 1, 1
 
-        # Extended format
-        if data[0] == '-':
-            data = data[1:]
-            month = int(data[:2])
-            data = data[2:]
-            if not data:
-                return date(year, month, 1)
-            # The day
-            day = int(data[1:])
-            return date(year, month, day)
+        for i, key in enumerate(format_date.split(sep_date)):
+            if i >= len(values):
+                break
+            value = int(values[i])
+            if key == '%Y':
+                year = value
+            elif key == '%m':
+                month = value
+            elif key == '%d':
+                day = value
 
-        # Basic format
-        month = int(data[:2])
-        data = data[2:]
-        if not data:
-            return date(year, month, 1)
-        # The day
-        day = int(data)
         return date(year, month, day)
 
 
-    @staticmethod
-    def encode(value):
+    @classmethod
+    def encode(cls, value):
         # We choose the extended format as the canonical representation
         if value is None:
             return ''
-        return value.strftime('%Y-%m-%d')
+        return value.strftime(cls.format_date)
 
 
 # TODO ISOWeekDate

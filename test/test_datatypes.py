@@ -255,6 +255,36 @@ class ISODateTimeTestCase(TestCase):
             self.assertEqual(value, expected)
 
 
+    def test_datetime_decode_fr(self):
+        test_dates = {
+            '07/05/1975T00:15:00':    (1975, 5, 7, 0,15),
+            '21/07/1969T02:56:15': (1969, 7, 21, 2, 56, 15)}
+
+        class ISOCalendarDateFR(ISOCalendarDate):
+            format_date = '%d/%m/%Y'
+            sep_date = '/'
+
+        for data, result in test_dates.iteritems():
+            value =  ISODateTime(cls_date=ISOCalendarDateFR).decode(data)
+            expected = datetime(*result)
+            self.assertEqual(value, expected)
+
+
+    def test_datetime_encode_fr(self):
+        test_dates = {
+            (1975, 5, 7, 0,15):       '07/05/1975T00:15:00',
+            (1969, 7, 21, 2, 56, 15): '21/07/1969T02:56:15'}
+
+        class ISOCalendarDateFR(ISOCalendarDate):
+            format_date = '%d/%m/%Y'
+            sep_date = '/'
+
+        for data, expected in test_dates.iteritems():
+            data = datetime(*data)
+            value =  ISODateTime(cls_date=ISOCalendarDateFR).encode(data)
+            self.assertEqual(value, expected)
+
+
 
 class XMLTestCase(TestCase):
     data  = """<dc:title xmlns:dc="http://purl.org/dc/elements/1.1/">""" \

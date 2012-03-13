@@ -208,6 +208,7 @@ class ISOTime(DataType):
 
 class ISODateTime(DataType):
 
+    cls_date = ISOCalendarDate
     time_is_required = True
 
     def decode(self, value):
@@ -217,7 +218,7 @@ class ISODateTime(DataType):
         value = value.split('T')
         date, time = value[0], value[1:]
 
-        date = ISOCalendarDate.decode(date)
+        date = self.cls_date.decode(date)
         if time:
             time = ISOTime.decode(time[0])
             return datetime.combine(date, time)
@@ -231,16 +232,16 @@ class ISODateTime(DataType):
     def encode(self, value):
         if value is None:
             return ''
-
+        fmt_date = self.cls_date.format_date
         value_type = type(value)
         if value_type is datetime:
             # Datetime
-            fmt = '%Y-%m-%dT%H:%M:%S'
+            fmt = fmt_date + 'T%H:%M:%S'
             if value.tzinfo is not None:
                 fmt += '%z'
         elif value_type is date and not self.time_is_required:
             # Date
-            fmt = '%Y-%m-%d'
+            fmt = fmt_date
         else:
             # Error
             raise TypeError, "unexpected value of type '%s'" % value_type

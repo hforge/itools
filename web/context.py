@@ -23,6 +23,7 @@ from base64 import decodestring, encodestring
 from copy import copy
 from datetime import datetime, timedelta
 from hashlib import sha224
+from sys import exc_clear
 from types import FunctionType, MethodType
 from urllib import quote, unquote
 
@@ -781,6 +782,11 @@ class RequestMethod(object):
         except NotModified:
             context.http_not_modified()
             return
+        finally:
+            # Fucking Python. Clear the exception, otherwise a later call
+            # to the logging system will print an exception that has been
+            # handled already.
+            exc_clear()
 
         # (2) Always deserialize the query
         resource = context.resource

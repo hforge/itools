@@ -48,6 +48,12 @@ def message_short(commit):
     return message.rstrip()
 
 
+def make_parent_dirs(path):
+    folder = dirname(path)
+    if not exists(folder):
+        makedirs(folder)
+
+
 
 class Worktree(object):
 
@@ -269,6 +275,7 @@ class Worktree(object):
         target = self._get_abspath(target)
         # 1. Copy
         if isfile(source_abs):
+            make_parent_dirs(target)
             copy2(source_abs, target)
         else:
             copytree(source_abs, target)
@@ -447,9 +454,7 @@ class Worktree(object):
                 # Checkout
                 data = self.lookup(index[path].oid).data
                 path = self._get_abspath(path)
-                folder = dirname(path)
-                if not exists(folder):
-                    makedirs(folder)
+                make_parent_dirs(path)
                 with open(path, 'w') as f:
                     f.write(data)
 

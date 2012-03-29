@@ -70,7 +70,7 @@ if __name__ == '__main__':
         ext_modules.append(extension)
 
     # libsoup wrapper
-    line = 'pkg-config --cflags --libs pygobject-2.0 libsoup-2.4'
+    line = 'pkg-config --cflags --libs gthread-2.0 pygobject-2.0 libsoup-2.4'
     try:
         flags = get_compile_flags(line)
     except EnvironmentError:

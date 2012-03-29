@@ -24,7 +24,7 @@ pygit2         0.16  itools.git       https://github.com/libgit2/pygit2
 Git             1.7  itools.git       http://git-scm.com/
 libsoup        2.28  itools.web       http://live.gnome.org/LibSoup
 reportlab       2.3  itools.pdf       http://www.reportlab.org/
-libmagic        5.0  itools.database  http://www.darwinsys.com/file/ [1]
+libmagic       5.05  itools.database  http://www.darwinsys.com/file/ [1]
 xapian        1.0.8  itools.database  http://www.xapian.org/
 pywin32         212  (Windows)        http://sf.net/projects/pywin32/
 matplotlib     0.91  ipkg-quality.py  http://matplotlib.sourceforge.net/

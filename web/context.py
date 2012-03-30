@@ -418,8 +418,11 @@ class Context(prototype):
         footprints = [
             'Ask Jeeves/Teoma', 'Bot/', 'crawler', 'Crawler',
             'freshmeat.net URI validator', 'Gigabot', 'Google',
-            'LinkChecker', 'msnbot', 'Python-urllib', 'Yahoo', 'Wget',
-            'Zope External Editor']
+            'LinkChecker', 'msnbot', 'Yahoo', 'Wget',
+            'Python-urllib', 'Python-httplib2/',
+            'CFNetwork/', # iPhone apps
+            'Zope External Editor',
+            ]
 
         user_agent = self.get_header('User-Agent')
         for footprint in footprints:
@@ -769,13 +772,13 @@ class RequestMethod(object):
             cls.check_cache(context)
             # Check pre-conditions
             cls.check_conditions(context)
-        except Unauthorized, error:
-            status = error.code
-            context.status = status
-            context.view_name = status2name[status]
-            context.view = root.get_view(context.view_name)
         except ClientError, error:
             status = error.code
+            if context.agent_is_a_robot():
+                soup_message = context.soup_message
+                soup_message.set_status(status)
+                soup_message.set_response('text/plain', error.title)
+                return
             context.status = status
             context.view_name = status2name[status]
             context.view = root.get_view(context.view_name)

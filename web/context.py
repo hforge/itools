@@ -25,8 +25,11 @@ from hashlib import sha224
 from thread import get_ident, allocate_lock
 from urllib import quote, unquote
 
+# Import from pytz
+from pytz import timezone
+
 # Import from itools
-from itools.core import freeze
+from itools.core import freeze, fixed_offset, lazy, local_tz
 from itools.datatypes import String, HTTPDate
 from itools.gettext import MSG
 from itools.http import get_type, Entity
@@ -274,6 +277,23 @@ class Context(object):
     def http_not_modified(self):
         self.soup_message.set_status(304)
 
+
+    #######################################################################
+    # API / TIME
+    #######################################################################
+    @lazy
+    def timestamp(self):
+        return datetime.utcnow().replace(tzinfo=fixed_offset(0))
+
+
+    def fix_tzinfo(self, datetime, tz=None):
+        # 1. Build the tzinfo object
+        tzinfo = timezone(tz) if tz else local_tz
+
+        # 2. Change datetime
+        if datetime.tzinfo:
+            return datetime.astimezone(tzinfo)
+        return tzinfo.localize(datetime)
 
     #######################################################################
     # API / Redirect

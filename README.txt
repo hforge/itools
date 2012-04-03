@@ -31,6 +31,7 @@ Software    Version  Used by          Home
 ----------  -------  ---------------  ----------------------------------------
 Python        2.6.4  itools           http://www.python.org/
 pkg-config     0.23  itools           http://pkg-config.freedesktop.org/
+pytz                 itools.core      http://pytz.sourceforge.net/
 glib           2.20  itools.fs        http://www.gtk.org/
 pygobject      2.18  itools.fs        http://www.pygtk.org/
 Git             1.6  itools.git       http://git-scm.com/

@@ -20,12 +20,12 @@
 # Import from the Standard Library
 from datetime import datetime
 from os.path import dirname
-from subprocess import CalledProcessError
 from sys import getrefcount
 
 # Import from itools
 from itools.core import LRUCache, send_subprocess, freeze
 from itools.fs import vfs, lfs
+from itools.git import open_worktree
 from itools.uri import Path
 from folder import Folder
 import messages
@@ -653,6 +653,14 @@ class ROGitDatabase(RODatabase):
         # Keep the path close, to be used by 'send_subprocess'
         self.path = '%s/' % fs.path
 
+        # 2. Keep the path to the data
+        if not lfs.is_folder(self.path):
+            error = '"%s" should be a folder, but it is not' % self.path
+            raise ValueError, error
+
+        # New interface to git
+        self.worktree = open_worktree(self.path)
+
 
     def normalize_key(self, path, __root=Path('/')):
         # Performance is critical so assume the path is already relative to
@@ -811,10 +819,9 @@ class GitDatabase(ROGitDatabase):
                 self.added.remove(key)
             else:
                 self.changed.discard(key)
-                self.fs.remove(key)
+                self.worktree.git_rm(key)
             # Changed
             self.has_changed = True
-            self.removed = True
             return
 
         # Case 2: folder
@@ -830,11 +837,10 @@ class GitDatabase(ROGitDatabase):
                 self.changed.discard(k)
 
         if self.fs.exists(key):
-            self.fs.remove(key)
+            self.worktree.git_rm(key)
 
         # Changed
         self.has_changed = True
-        self.removed = True
 
 
     def touch_handler(self, key, handler=None):
@@ -935,7 +941,7 @@ class GitDatabase(ROGitDatabase):
         handler = self._get_handler(source)
         if not isinstance(handler, Folder):
             if fs.exists(source):
-                fs.move(source, target)
+                self.worktree.git_mv(source, target, add=False)
 
             # Remove source
             self.added.discard(source)
@@ -947,7 +953,6 @@ class GitDatabase(ROGitDatabase):
 
             # Changed
             self.has_changed = True
-            self.removed = True
             return
 
         # Case 2: Folder
@@ -969,7 +974,7 @@ class GitDatabase(ROGitDatabase):
                 self.changed.remove(key)
 
         if fs.exists(source):
-            fs.move(source, target)
+            self.worktree.git_mv(source, target, add=False)
         for path in fs.traverse(target):
             if not fs.is_folder(path):
                 path = fs.get_relative_path(path)
@@ -977,7 +982,6 @@ class GitDatabase(ROGitDatabase):
 
         # Changed
         self.has_changed = True
-        self.removed = True
 
 
     #######################################################################
@@ -989,22 +993,17 @@ class GitDatabase(ROGitDatabase):
 
 
     def _abort_changes(self):
+        # 1. Handlers
         cache = self.cache
-        # Added handlers
         for key in self.added:
             self._discard_handler(key)
-        # Changed handlers
         for key in self.changed:
             cache[key].abort_changes()
 
-        # And now, clean the filesystem
-        try:
-            # In a try/except to avoid a problem with new repositories
-            send_subprocess(['git', 'reset', '--hard', '-q'], path=self.path)
-        except CalledProcessError:
-            pass
+        # 2. Git
+        self.worktree.git_reset()
         if self.added:
-            send_subprocess(['git', 'clean', '-fxdq'], path=self.path)
+            self.worktree.git_clean()
 
         # Reset state
         self.added.clear()
@@ -1032,47 +1031,18 @@ class GitDatabase(ROGitDatabase):
             handler.save_state()
 
         # 2. Build the 'git commit' command
-        git_commit = ['git', 'commit', '-q']
-        if data is None:
-            git_commit.extend(['-m', 'no comment'])
-        else:
-            git_author, git_message = data
-            git_commit.extend(['--author=%s' % git_author, '-m', git_message])
+        git_author, git_date, git_msg, docs_to_index, docs_to_unindex = data
+        git_msg = git_msg or 'no comment'
 
-        git_add = None
-        if self.removed or len(changed) > 10:
-            # Case 1: something removed or many things changed, then make
-            # an automatic commit (--all)
-            git_commit.append('-a')
-            if added:
-                git_add = list(added)
-        elif added:
-            # Case 2: nothing removed, something added, and few things
-            # changed, then call 'git add'
-            git_add = list(added) + list(changed)
-        elif changed:
-            # Case 3: nothing removed or added, few things changed
-            git_add = list(changed)
-        else:
-            # Case 4: nothing to do? (this should never happen)
-            return
+        # 3. Call git
+        git_add = list(added) + list(changed)
+        self.worktree.git_add(*git_add)
+        self.worktree.git_commit(git_msg, git_author, git_date)
 
-        # 3. Clear state
+        # 4. Clear state
         changed.clear()
         added.clear()
-        self.removed = False
 
-        # 4. Call git
-        if git_add:
-            send_subprocess(['git', 'add'] + git_add, path=self.path)
-
-        try:
-            send_subprocess(git_commit, path=self.path)
-        except CalledProcessError, excp:
-            # Avoid an exception for the 'nothing to commit' case
-            # FIXME Not reliable, we may catch other cases
-            if excp.returncode != 1:
-                raise
 
 
 
@@ -1088,21 +1058,12 @@ def make_git_database(path, size_min, size_max):
     if not lfs.exists(path):
         lfs.make_folder(path)
 
-    # Init
-    send_subprocess(['git', 'init', '-q'], path=path)
-
-    # Add
-    send_subprocess(['git', 'add', '.'], path=path)
-
-    # Commit or not ?
-    try:
-        send_subprocess(['git', 'commit', '-q', '-m', 'Initial commit'],
-                        path=path)
-    except CalledProcessError:
-        pass
+    # Git init
+    path_database = '%s/database' % path
+    open_worktree(path_database, init=True)
 
     # Ok
-    return GitDatabase(path, size_min, size_max)
+    return GitDatabase(path_database, size_min, size_max)
 
 
 # A built-in database for handler operations

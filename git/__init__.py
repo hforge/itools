@@ -17,10 +17,10 @@
 # Import from itools
 from git import describe, get_branch_name, get_filenames, get_metadata
 from git import get_revisions, is_available
-
-
+from worktree import open_worktree
 
 __all__ = [
+    'open_worktree',
     'describe',
     'get_branch_name',
     'get_filenames',

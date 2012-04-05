@@ -105,7 +105,10 @@ def fold_line(data):
 
 
 
-def read_name(line):
+# XXX The RFC only allows '-', we allow more because this is used by
+# itools.database (metadata). This set matches checkid (itools.handlers)
+allowed = frozenset(['-', '_', '.', '@'])
+def read_name(line, allowed=allowed):
     """Reads the property name from the line. Returns the name and the
     rest of the line:
 
@@ -124,7 +127,7 @@ def read_name(line):
         c = line[idx]
         if c in (';', ':'):
             return line[:idx], line[idx:]
-        if c.isalnum() or c in ('-', '_'):
+        if c.isalnum() or c in allowed:
             idx += 1
             continue
         raise SyntaxError, "unexpected character '%s' (%s)" % (c, ord(c))

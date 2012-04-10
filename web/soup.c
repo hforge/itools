@@ -68,6 +68,7 @@ log_access (PyObject * p_server, SoupMessage * s_msg,
 {
   PyObject *p_result;
   gchar *request_line, *request_line2;
+  const char *host;
 
   /* This is only useful for the request-aborted signal */
   if (s_msg->status_code == SOUP_STATUS_IO_ERROR)
@@ -84,10 +85,12 @@ log_access (PyObject * p_server, SoupMessage * s_msg,
   /* The callback function must have this signature:
    * log_access(self, host, request_line, status_code, body_length)
    * => str str int int*/
+  host = soup_message_headers_get_list (s_msg->request_headers,
+                                        "X-Forwarded-For");
+  if (host == NULL)
+    host = soup_client_context_get_host (s_client);
   p_result = PyObject_CallMethod (p_server, "log_access", "ssii",
-                                  soup_client_context_get_host (s_client),
-                                  request_line2,
-                                  s_msg->status_code,
+                                  host, request_line2, s_msg->status_code,
                                   (int) s_msg->response_body->length);
 
   /* Free request_line */

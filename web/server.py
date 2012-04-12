@@ -35,7 +35,7 @@ class WebServer(SoupServer):
     event_log = None
 
     database = None
-    auth_cookie_expires = timedelta(0)
+    session_timeout = timedelta(0)
 
 
     def __init__(self, root, access_log=None, event_log=None):

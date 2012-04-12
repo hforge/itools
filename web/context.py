@@ -446,10 +446,10 @@ class Context(prototype):
 
 
     def _set_auth_cookie(self, cookie):
-        # Compute expires datetime (FIXME Probably should use the request date)
-        auth_cookie_expires = self.server.auth_cookie_expires
-        if auth_cookie_expires != timedelta(0):
-            expires = datetime.now() + auth_cookie_expires
+        # Compute expires datetime (FIXME Use the request date)
+        session_timeout = self.server.session_timeout
+        if session_timeout != timedelta(0):
+            expires = datetime.now() + session_timeout
             expires = HTTPDate.encode(expires)
         else:
             expires = None
@@ -895,8 +895,7 @@ class GET(SafeMethod):
             # Cache-Control: max-age=1
             # (because Apache does not cache pages with a query by default)
             context.set_header('Cache-Control', 'max-age=1')
-        elif (context.user and
-              context.server.auth_cookie_expires != timedelta(0)):
+        elif context.user and context.server.session_timeout != timedelta(0):
             cookie = context.get_cookie('iauth')
             context._set_auth_cookie(cookie)
 

@@ -449,7 +449,7 @@ class Context(prototype):
         # Compute expires datetime (FIXME Use the request date)
         session_timeout = self.server.session_timeout
         if session_timeout != timedelta(0):
-            expires = datetime.now() + session_timeout
+            expires = self.timestamp + session_timeout
             expires = HTTPDate.encode(expires)
         else:
             expires = None

@@ -229,11 +229,17 @@ class Enumerate(String):
         return deepcopy(cls.options)
 
 
-    def is_valid(cls, name):
+    def is_valid(self, name):
         """Returns True if the given name is part of this Enumerate's options.
         """
-        options = cls.get_options()
-        return enumerate_is_valid(options, name)
+        options = self.get_options()
+        if isinstance(name, list):
+            options = set([option['name'] for option in options])
+            return set(name).issubset(options)
+        for option in options:
+            if name == option['name']:
+                return True
+        return False
 
 
     def get_namespace(cls, name):
@@ -249,18 +255,6 @@ class Enumerate(String):
         """
         options = cls.get_options()
         return enumerate_get_value(options, name, default)
-
-
-
-# TODO suppress now there is a single Enumerate class?
-def enumerate_is_valid(options, name):
-    if isinstance(name, list):
-        options = set([option['name'] for option in options])
-        return set(name).issubset(options)
-    for option in options:
-        if name == option['name']:
-            return True
-    return False
 
 
 def enumerate_get_namespace(options, name):

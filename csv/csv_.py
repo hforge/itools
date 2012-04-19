@@ -25,6 +25,8 @@ from parser import parse
 
 
 
+# TODO Drop the 'Row' class, use a list or a tuple instead.
+# Row.get_value(name) will be replaced by CSVFile.get_value(row, name)
 class Row(list):
 
     def get_value(self, name):
@@ -56,10 +58,6 @@ class CSVFile(TextFile):
     # List of the schema column names
     # Example: ['firstname', 'lastname', 'age']
     columns = None
-
-    # The class to use for each row (this allows easy specialization)
-    # TODO The ability to change the row class should be removed.
-    row_class = Row
 
     # Parsing options
     class_csv_guess = False
@@ -123,7 +121,7 @@ class CSVFile(TextFile):
         """Append new row as an instance of row class.
         """
         # Build the row
-        row = self.row_class(row)
+        row = Row(row)
         row.number = self.n_lines
         row.columns = self.columns
         # Add

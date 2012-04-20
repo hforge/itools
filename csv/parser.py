@@ -20,58 +20,80 @@
 from csv import reader as read_csv, Sniffer
 
 # Import from itools
-from itools.datatypes import String
+from itools.datatypes import String, Unicode
 
 
 sniffer = Sniffer()
 
+def parse_line(reader, line, datatypes, encoding, n_columns):
+    # Check column length
+    if len(line) != n_columns:
+        msg = 'CSV syntax error: wrong number of columns at line %d: %s'
+        line_num = getattr(reader, 'line_num', None)
+        raise ValueError, msg % (line_num, line)
 
-def parse(data, columns=None, schema=None, guess=False, skip_header=False,
+    # Decode values
+    decoded = []
+    for i, datatype in datatypes:
+        value = line[i]
+        try:
+            value = datatype.decode(value, encoding=encoding)
+        except TypeError:
+            value = datatype.decode(value)
+        decoded.append(value)
+
+    # Next line
+    try:
+        next_line = reader.next()
+    except StopIteration:
+        next_line = None
+
+    # Ok
+    return decoded, next_line
+
+
+
+def parse(data, columns=None, schema=None, guess=False, has_header=False,
           encoding='UTF-8', **kw):
     """This method is a generator that returns one CSV row at a time.  To
     do the job it wraps the standard Python's csv parser.
     """
-    # Find out the dialect
-    if data:
-        lines = data.splitlines(True)
-        # The dialect
-        if guess is True:
-            dialect = sniffer.sniff('\n'.join(lines[:10]))
-            # Fix the fucking sniffer
-            dialect.doublequote = True
-            if dialect.delimiter == '' or dialect.delimiter == ' ':
-                dialect.delimiter = ','
-            reader = read_csv(lines, dialect, **kw)
-        else:
-            reader = read_csv(lines, **kw)
-        # The first line is a header
-        if skip_header is True:
-            reader.next()
+    if not data:
+        return
 
-        # Find out the number of columns, if not specified
-        if columns is not None:
-            n_columns = len(columns)
-        else:
-            line = reader.next()
-            n_columns = len(line)
-            yield line
-        # Go
-        for line in reader:
-            if len(line) != n_columns:
-                msg = (
-                    'CSV syntax error: wrong number of columns at line %d: %s')
-                line_num = getattr(reader, 'line_num', None)
-                raise ValueError, msg % (line_num, line)
-            if schema is not None:
-                datatypes = [schema.get(c, String) for c in columns]
-                decoded = []
-                for i, datatype in enumerate(datatypes):
-                    try:
-                        value = datatype.decode(line[i], encoding=encoding)
-                    except TypeError:
-                        value = datatype.decode(line[i])
-                    decoded.append(value)
-                line = decoded
-            yield line
+    lines = data.splitlines(True)
 
+    # 1. The reader, guess dialect if requested
+    if guess is True:
+        dialect = sniffer.sniff('\n'.join(lines[:10]))
+        # Fix the sniffer
+        dialect.doublequote = True
+        if dialect.delimiter == '' or dialect.delimiter == ' ':
+            dialect.delimiter = ','
+        reader = read_csv(lines, dialect, **kw)
+    else:
+        reader = read_csv(lines, **kw)
 
+    # 2. Find out the number of columns, if not specified
+    line = reader.next()
+    n_columns = len(columns) if columns is not None else len(line)
+
+    # 3. The header
+    if has_header is True:
+        datatypes = [ Unicode for x in range(n_columns) ]
+        datatypes = enumerate(datatypes)
+        datatypes = list(datatypes)
+        header, line = parse_line(reader, line, datatypes, encoding, n_columns)
+        yield header
+
+    # 4. The content
+    if schema is not None:
+        datatypes = [ schema.get(c, String) for c in columns ]
+    else:
+        datatypes = [ String for x in range(n_columns) ]
+    datatypes = enumerate(datatypes)
+    datatypes = list(datatypes)
+
+    while line is not None:
+        decoded, line = parse_line(reader, line, datatypes, encoding, n_columns)
+        yield decoded

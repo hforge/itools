@@ -19,7 +19,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.datatypes import String
+from itools.datatypes import String, Unicode
 from itools.handlers import TextFile, guess_encoding, register_handler_class
 from parser import parse
 
@@ -61,6 +61,7 @@ class CSVFile(TextFile):
 
     # Parsing options
     class_csv_guess = False
+    has_header = False
     skip_header = False
 
 
@@ -68,6 +69,7 @@ class CSVFile(TextFile):
     # Load & Save
     #########################################################################
     def reset(self):
+        self.header = None
         self.lines = []
         self.n_lines = 0
 
@@ -77,21 +79,34 @@ class CSVFile(TextFile):
 
 
     def _load_state_from_file(self, file):
-        # Read the data, and find out the encoding
+        # Guess encoding
         data = file.read()
         self.encoding = guess_encoding(data)
 
-        schema = self.schema
-        columns = self.columns
+        # Build the parser
+        parser = parse(data, self.columns, self.schema, self.class_csv_guess,
+                       self.has_header, self.encoding)
 
-        for line in parse(data, columns, schema, guess=self.class_csv_guess,
-                          skip_header=self.skip_header,
-                          encoding=self.encoding):
+        # Header
+        if self.has_header:
+            self.header = parser.next()
+
+        # Content
+        for line in parser:
             self._add_row(line)
 
 
     def to_str(self, encoding='UTF-8', separator=',', newline='\n'):
+        def escape(data):
+            return '"%s"' % data.replace('"', '""')
+
         lines = []
+        # Header
+        if self.has_header:
+            line = [ escape(Unicode.encode(x, encoding)) for x in self.header ]
+            line = separator.join(line)
+            lines.append(line)
+
         # When schema or columns (or both) are None there is plain
         # string to string conversion
         schema = self.schema
@@ -105,11 +120,11 @@ class CSVFile(TextFile):
                         data = datatype.encode(row[i], encoding=encoding)
                     except TypeError:
                         data = datatype.encode(row[i])
-                    line.append('"%s"' % data.replace('"', '""'))
+                    line.append(escape(data))
                 lines.append(separator.join(line))
         else:
             for row in self.get_rows():
-                line = [ '"%s"' % x.replace('"', '""') for x in row ]
+                line = [ escape(x) for x in row ]
                 lines.append(separator.join(line))
         return newline.join(lines)
 

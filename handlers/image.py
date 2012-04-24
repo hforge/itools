@@ -140,10 +140,7 @@ class Image(File):
 
     def _scale_down(self, im, ratio):
         # Convert to RGBA
-        try:
-            im = im.convert("RGBA")
-        except IOError:
-            return None
+        im = im.convert("RGBA")
 
         # Scale
         xsize, ysize = self.size

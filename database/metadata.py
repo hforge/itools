@@ -64,7 +64,7 @@ class Metadata(File):
             if name == 'format':
                 raise ValueError, 'unexpected "format" property'
 
-            # 1. Get the datatype
+            # 1. Get the field
             field = resource_class.get_field(name)
             if field is None:
                 msg = 'unexpected field "%s"' % name
@@ -123,7 +123,16 @@ class Metadata(File):
         # Properties
         for name in names:
             property = properties[name]
+
+            # Get the field
             field = resource_class.get_field(name)
+            if field is None:
+                msg = 'unexpected field "%s"' % name
+                if resource_class.fields_soft:
+                    log_warning(msg, domain='itools.database')
+                    continue
+                raise ValueError, msg
+
             datatype = field.datatype
             params_schema = field.parameters_schema
             is_empty = datatype.is_empty

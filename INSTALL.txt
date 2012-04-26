@@ -37,7 +37,7 @@ To be able to handle some file formats you need:
 
 Software    Version  Format           Home
 ----------  -------  ---------------  ----------------------------------------
-PIL           1.1.6  PNG, JPG, etc.   http://www.pythonware.com/products/pil/
+PIL           1.1.7  PNG, JPG, etc.   http://www.pythonware.com/products/pil/
 rsvg           2.30  SVG              http://www.pygtk.org/
 xlrd          0.6.1  XLS              http://www.lexicon.net/sjmachin/xlrd.htm
 poppler      0.10.4  PDF              http://poppler.freedesktop.org/

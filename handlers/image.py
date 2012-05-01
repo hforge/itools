@@ -55,6 +55,19 @@ class Image(File):
         self.thumbnails = {}
 
 
+    def _get_handle(self):
+        if PILImage is False:
+            return None
+
+        # Open image
+        f = StringIO(self.data)
+        try:
+            im = PILImage.open(f)
+        except (IOError, OverflowError):
+            return None
+
+        # Ok
+        return im
     #########################################################################
     # API
     #########################################################################
@@ -62,45 +75,66 @@ class Image(File):
         return self.size
 
 
-    def get_thumbnail(self, width, height, format="jpeg"):
-        if PILImage is None:
+    def get_thumbnail(self, xnewsize, ynewsize, format=None, fit=False):
+        # Get the handle
+        handle = self._get_handle()
+        if handle is None:
             return None, None
+        format = format or handle.format
 
-        # Check the cache
-        thumbnails = self.thumbnails
-        key = (width, height, format)
-        if key in thumbnails:
-            return thumbnails[key]
+        # Icon's thumbnail is the icon itself
+        if format == 'ICO':
+            return self.to_str(), format.lower()
 
-        # Build the PIL object
-        data = self.to_str()
-        f = StringIO(data)
-        try:
-            im = PILImage.open(f).convert("RGBA")
-        except IOError:
-            return None, None
+        xsize, ysize = self.size
+        xratio, yratio = float(xnewsize)/xsize, float(ynewsize)/ysize
+        # Case 1: fit
+        if fit:
+            # Scale the image so no more than one side overflows
+            ratio = max(xratio, yratio)
+            im, xsize, ysize = self._scale_down(handle, ratio)
 
-        # Create the thumbnail if needed
-        state_width, state_height = self.size
-        if state_width > width or state_height > height:
-            # TODO Improve the quality of the thumbnails by cropping?
-            # The only problem would be the loss of information.
-            try:
-                im.thumbnail((width, height), PILImage.ANTIALIAS)
-            except IOError:
-                # PIL does not support interlaced PNG files, raises IOError
-                return None, None
-            else:
-                thumbnail = StringIO()
-                im.save(thumbnail, format.upper(), quality=80)
-                data = thumbnail.getvalue()
-                thumbnail.close()
+            # Crop the image so none side overflows
+            xsize = min(xsize, xnewsize)
+            ysize = min(ysize, ynewsize)
+            im = im.crop((0, 0, xsize, ysize))
+
+            # Paste the image into a background so it fits the target size
+            if xsize < xnewsize or ysize < xnewsize:
+                newsize = (xnewsize, ynewsize)
+                background = PILImage.new('RGBA', newsize, (255, 255, 255, 0))
+                x = (xnewsize - xsize) / 2
+                y = (ynewsize - ysize) / 2
+                background.paste(im, (x, y))
+                im = background
+
+        # Case 2: thumbnail
         else:
-            data = self.to_str()
+            # Scale the image so none side overflows
+            ratio = min(xratio, yratio)
+            im, xsize, ysize = self._scale_down(handle, ratio)
 
-        # Store in the cache and return
-        thumbnails[key] = data, format.lower()
-        return data, format.lower()
+        # To string
+        output = StringIO()
+        im.save(output, format, quality=80)
+        value = output.getvalue()
+        output.close()
+
+        # Ok
+        return value, format.lower()
+
+
+    def _scale_down(self, im, ratio):
+        # Convert to RGBA
+        im = im.convert("RGBA")
+
+        # Scale
+        xsize, ysize = self.size
+        if ratio < 1.0:
+            xsize, ysize = int(xsize * ratio), int(ysize * ratio)
+            im = im.resize((xsize, ysize), PILImage.ANTIALIAS)
+
+        return im, xsize, ysize
 
 
 register_handler_class(Image)

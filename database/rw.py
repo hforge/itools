@@ -26,6 +26,7 @@ from itools.core import get_pipe, lazy
 from itools.fs import lfs
 from itools.git import open_worktree
 from itools.handlers import Folder
+from itools.log import log_error
 from catalog import Catalog, make_catalog
 from registry import get_register_fields
 from ro import RODatabase
@@ -493,7 +494,11 @@ class RWDatabase(RODatabase):
         try:
             data = self._before_commit()
         except Exception:
-            self._abort_changes()
+            log_error('Transaction failed', domain='itools.database')
+            try:
+                self._abort_changes()
+            except Exception:
+                log_error('Aborting failed', domain='itools.database')
             self._cleanup()
             raise
 
@@ -501,7 +506,11 @@ class RWDatabase(RODatabase):
         try:
             self._save_changes(data)
         except Exception:
-            self._abort_changes()
+            log_error('Transaction failed', domain='itools.database')
+            try:
+                self._abort_changes()
+            except Exception:
+                log_error('Aborting failed', domain='itools.database')
             raise
         finally:
             self._cleanup()

@@ -730,7 +730,8 @@ class RequestMethod(object):
         try:
             database.save_changes()
         except Exception:
-            cls.internal_server_error(context)
+            context.status = 500
+            context.entity = context.root.internal_server_error(context)
 
 
     @classmethod

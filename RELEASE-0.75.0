@@ -1,4 +1,4 @@
-itools 0.75.0 (2011/XX/XX)
+itools 0.75.0 (2012/05/XX)
 ==========================
 
 itools is a Python library, it groups a number of packages into a single
@@ -22,6 +22,13 @@ itools.core:
 - Rename thingy to prototype. Err.. That's what thingies were about,
   prototype programming [2].
 
+itools.datatypes
+- HTTPDate returns aware datetimes
+
+itools.loop:
+- improve cron, allow callable to return the next interval, allow to pass
+  payload to the callable.
+
 itools.web:
 - The itools.http package has been merged into itools.web, some stuff
   has been moved to ikaaro.
@@ -32,10 +39,18 @@ itools.web:
 - The context does more, and it can be subclassed, and the server can be
   told which context class to use for some path. The new 'StaticContext'
   class serves files from the filesystem.
+- Allow to define access control by request method: "access_POST"
+- Print the remote IP in the access log (not the one from the proxy).
 
 itools.database:
 - Some stuff moved from ikaaro: metadata, resources, etc. While still work
   in progress, the itools.database package is more complete.
+
+itools.csv:
+- Add support for headers with the 'has_header' variable.
+
+itools.office:
+- Add handlers for OOXML files
 
 
 [1] http://www.darwinsys.com/file/

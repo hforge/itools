@@ -8,7 +8,14 @@ find.
 New Dependencies
 ================
 
-XXX
+itools.database requires the magic module from libmagic, there are two
+options:
+
+- Use File (with the Python bindings), version 5.05 or later
+  http://www.darwinsys.com/file/
+
+- Use python-magic from Pypi
+  http://pypi.python.org/pypi/python-magic
 
 
 Imports
@@ -18,7 +25,57 @@ See the table below for the imports to update.
 
   Before (alphabetical order)         Now
   ---------------------------------   ---------------------------------
+  itools.core.thingy_type             itools.core.prototype_type
+  itools.core.thingy                  itools.core.prototype
+  itools.core.thingy_property         itools.core.proto_property
+  itools.core.thingy_lazy_property    itools.core.proto_lazy_property
   itools.core.is_thingy               itools.core.is_prototype
+  itools.database.ROGitDatabase       itools.database.RODatabase
+  itools.database.GitDatabase         itools.database.RWDatabase
+  itools.http.SoupMessage             itools.web.SoupMessage
+  itools.http.BadGateway              itools.web.BadGateway
+  itools.http.BadRequest              itools.web.BadRequest
+  itools.http.ClientError             itools.web.ClientError
+  itools.http.Conflict                itools.web.Conflict
+  itools.http.Forbidden               itools.web.Forbidden
+  itools.http.HTTPError               itools.web.HTTPError
+  itools.http.InternalServerError     itools.web.InternalServerError
+  itools.http.MethodNotAllowed        itools.web.MethodNotAllowed
+  itools.http.NotFound                itools.web.NotFound
+  itools.http.NotImplemented          itools.web.NotImplemented
+  itools.http.NotModified             itools.web.NotModified
+  itools.http.ServerError             itools.web.ServerError
+  itools.http.ServiceUnavailable      itools.web.ServiceUnavailable
+  itools.http.Unauthorized            itools.web.Unauthorized
+  itools.web.BaseForm                 itools.web.BaseView
+  itools.web.STLForm                  itools.web.STLView
+
+
+itools.csv
+================
+
+(1) Remove the 'row_class' variable, don't allow anymore to override it.
+
+(2) Replace class variable 'skip_header' by 'has_header':
+
+  # Before
+  skip_header = True
+
+  # Now
+  has_header = True
+
+
+itools.database
+================
+
+(1) Rename class variable to define whether unknown fields are allowed or
+not:
+
+  # Before
+  class_schema_extensible = True
+
+  # Now
+  fields_soft = True
 
 
 itools.web
@@ -44,3 +101,12 @@ itools.web
   # Now
   from itools.web import STLView
   class MyView(STLView):
+
+(3) The resources 'get_abspath' method has been removed, use 'abspath'
+instead:
+
+  # Before
+  resource.get_abspath()
+
+  # Now
+  resource.abspath

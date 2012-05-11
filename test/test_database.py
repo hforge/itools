@@ -370,148 +370,145 @@ class FieldsTestCase(TestCase):
 class CatalogTestCase(TestCase):
 
     def setUp(self):
-        # Make the catalog
-        catalog = make_catalog('tests/catalog', Document.fields)
+        # Make database
+        self.database = make_git_database('fables', 20, 20, Document.fields)
+        self.database.worktree.git_add('.')
+        self.database.worktree.git_commit('Initial commit')
+        self.root = self.database.get_handler('.')
         # Index
+        catalog = self.database.catalog
         fables = lfs.open('fables/database')
         for name in fables.get_names():
-            abspath = fables.get_absolute_path(name)
-            document = Document(abspath)
-            catalog.index_document(document)
+            if name != '.git':
+                abspath = fables.get_absolute_path(name)
+                document = Document(abspath)
+                catalog.index_document(document)
         # Save
         catalog.save_changes()
 
 
     def tearDown(self):
-        lfs.remove('tests/catalog')
+        paths = ['fables/catalog', 'fables/database/.git']
+        for path in paths:
+            if lfs.exists(path):
+                lfs.remove(path)
 
 
     def test_everything(self):
-        catalog = Catalog('tests/catalog', Document.fields)
+        database = self.database
         # Simple Search, hit
-        results = catalog.search(data=u'lion')
+        results = database.search(data=u'lion')
         self.assertEqual(len(results), 4)
         documents = [ x.abspath
                       for x in results.get_documents(sort_by='abspath') ]
         self.assertEqual(documents, ['03.txt', '08.txt', '10.txt', '23.txt'])
         # Simple Search, miss
-        self.assertEqual(len(catalog.search(data=u'tiger')), 0)
+        self.assertEqual(len(database.search(data=u'tiger')), 0)
         # Unindex, Search, Abort, Search
-        catalog.unindex_document('03.txt')
-        results = catalog.search(data=u'lion')
-        self.assertEqual(len(catalog.search(data=u'lion')), 3)
-        catalog.abort_changes()
-        self.assertEqual(len(catalog.search(data=u'lion')), 4)
+        database.catalog.unindex_document('03.txt')
+        results = database.search(data=u'lion')
+        self.assertEqual(len(database.search(data=u'lion')), 3)
+        database.catalog.abort_changes()
+        self.assertEqual(len(database.search(data=u'lion')), 4)
         # Query on indexed boolean
-        self.assertEqual(len(catalog.search(about_wolf=True)), 5)
+        self.assertEqual(len(database.search(about_wolf=True)), 5)
         # Query on stored boolean
-        results = catalog.search(about_wolf=True)
+        results = database.search(about_wolf=True)
         longer_stories = 0
         for result in results.get_documents():
             if result.is_long:
                 longer_stories += 1
         self.assertEqual(longer_stories, 0)
         # Phrase Query
-        results = catalog.search(data=u'this is a double death')
+        results = database.search(data=u'this is a double death')
         self.assertEqual(len(results), 1)
         # Range Query
         query = RangeQuery('abspath', '03.txt', '06.txt')
-        results = catalog.search(query)
+        results = database.search(query)
         self.assertEqual(len(results), 4)
         # Not Query (1/2)
         query = NotQuery(PhraseQuery('data', u'lion'))
-        results = catalog.search(query)
+        results = database.search(query)
         self.assertEqual(len(results), 27)
         # Not Query (2/2)
         query1 = PhraseQuery('data', u'mouse')
         query2 = NotQuery(PhraseQuery('data', u'lion'))
         query = AndQuery(query1, query2)
-        results = catalog.search(query)
+        results = database.search(query)
         self.assertEqual(len(results), 2)
 
 
     def test_AndQuery_empty(self):
-        catalog = Catalog('tests/catalog', Document.fields)
-
         query = AndQuery()
         query.append(PhraseQuery('data', u'mouse'))
         query.append(NotQuery(PhraseQuery('data', u'lion')))
-        results = catalog.search(query)
+        results = self.database.search(query)
         self.assertEqual(len(results), 2)
 
 
     def test_AndQuery_single(self):
-        catalog = Catalog('tests/catalog', Document.fields)
-
         query = AndQuery(PhraseQuery('data', u'mouse'))
         query.append(NotQuery(PhraseQuery('data', u'lion')))
-        results = catalog.search(query)
+        results = self.database.search(query)
         self.assertEqual(len(results), 2)
 
 
     def test_AndQuery_multiple(self):
-        catalog = Catalog('tests/catalog', Document.fields)
-
         query = AndQuery(
                 PhraseQuery('data', u'mouse'),
                 NotQuery(PhraseQuery('data', u'lion')))
-        results = catalog.search(query)
+        results = self.database.search(query)
         self.assertEqual(len(results), 2)
 
 
     def test_AndQuery_with_AllQuery(self):
-        catalog = Catalog('tests/catalog', Document.fields)
-
         query1 = AndQuery(
                 PhraseQuery('data', u'lion'),
                 AllQuery())
-        results1 = catalog.search(query1)
+        results1 = self.database.search(query1)
         # Must be equal to the same query without AllQuery
         query2 = PhraseQuery('data', u'lion')
-        results2 = catalog.search(query2)
+        results2 = self.database.search(query2)
         self.assertEqual(len(results1), len(results2))
 
 
     def test_OrQuery_with_AllQuery(self):
-        catalog = Catalog('tests/catalog', Document.fields)
-
         query1 = OrQuery(
                 PhraseQuery('data', u'lion'),
                 AllQuery())
-        results1 = catalog.search(query1)
+        results1 = self.database.search(query1)
         # Must be equal to AllQuery
         query2 = AllQuery()
-        results2 = catalog.search(query2)
+        results2 = self.database.search(query2)
         self.assertEqual(len(results1), len(results2))
 
 
     def test_TextQuery(self):
-        catalog = Catalog('tests/catalog', Document.fields)
+        database = self.database
 
         # Test +/-
         query = TextQuery('title', u'Wolf')
-        self.assertEqual(len(catalog.search(query)), 4)
+        self.assertEqual(len(database.search(query)), 4)
         query = TextQuery('title', u'Wolf -Dog')
-        self.assertEqual(len(catalog.search(query)), 3)
+        self.assertEqual(len(database.search(query)), 3)
         query = TextQuery('title', u'Wolf -Dog +Lamb')
-        self.assertEqual(len(catalog.search(query)), 1)
+        self.assertEqual(len(database.search(query)), 1)
 
         # Test ""
         query = TextQuery('title', u'Wolf and')
-        self.assertEqual(len(catalog.search(query)), 24)
+        self.assertEqual(len(database.search(query)), 24)
         query = TextQuery('title', u'"Wolf and"')
-        self.assertEqual(len(catalog.search(query)), 3)
+        self.assertEqual(len(database.search(query)), 3)
 
         # Test *
         query = TextQuery('title', u'Wol*')
-        self.assertEqual(len(catalog.search(query)), 4)
+        self.assertEqual(len(database.search(query)), 4)
         query = TextQuery('title', u'Wo*')
-        self.assertEqual(len(catalog.search(query)), 6)
+        self.assertEqual(len(database.search(query)), 6)
 
 
     def test_unique_values(self):
-        catalog = Catalog('tests/catalog', Document.fields)
-        values = catalog.get_unique_values('title')
+        values = self.database.catalog.get_unique_values('title')
         self.assert_('pearl' in values)
         self.assert_('motorola' not in values)
 
@@ -636,15 +633,13 @@ class Document(Resource):
 
     def get_catalog_values(self):
         data = unicode(lfs.open(self.abspath).read())
-
         return {
             'abspath': basename(self.abspath),
             'title': data.splitlines()[0],
             'data': data,
             'size': len(data),
             'about_wolf': re.search('wolf', data, re.I) is not None,
-            'is_long': len(data) > 1024,
-        }
+            'is_long': len(data) > 1024}
 
 
 

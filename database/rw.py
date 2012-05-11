@@ -517,7 +517,7 @@ class RWDatabase(RODatabase):
 
 
 
-def make_git_database(path, size_min, size_max):
+def make_git_database(path, size_min, size_max, fields=None):
     """Create a new empty Git database if the given path does not exists or
     is a folder.
 
@@ -529,9 +529,13 @@ def make_git_database(path, size_min, size_max):
     # Git init
     open_worktree('%s/database' % path, init=True)
     # The catalog
-    make_catalog('%s/catalog' % path, get_register_fields())
+    if fields is None:
+        fields = get_register_fields()
+    catalog = make_catalog('%s/catalog' % path, fields)
     # Ok
-    return RWDatabase(path, size_min, size_max)
+    database = RWDatabase(path, size_min, size_max)
+    database.catalog = catalog
+    return database
 
 
 

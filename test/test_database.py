@@ -30,6 +30,7 @@ from itools.database.catalog import _index, _decode
 from itools.datatypes import String, Unicode, Boolean, Integer
 from itools.fs import lfs
 from itools.handlers import TextFile
+from itools.log.log import register_logger, Logger, FATAL
 
 # Import from xapian
 from xapian import Document as XapianDocument
@@ -46,6 +47,10 @@ class BrokenHandler(TextFile):
 class RWDatabaseTestCase(TestCase):
 
     def setUp(self):
+        # Silence the log system
+        logger = Logger(min_level=FATAL)
+        register_logger(logger, 'itools.database')
+        # Make database
         self.database = make_git_database('fables', 20, 20)
         self.database.worktree.git_add('.')
         self.database.worktree.git_commit('Initial commit')
@@ -53,12 +58,14 @@ class RWDatabaseTestCase(TestCase):
 
 
     def tearDown(self):
-        paths = [
-            'fables/catalog',
-            'fables/database/.git',
-            'fables/database/31.txt',
-            'fables/database/agenda',
-            'fables/database/broken.txt']
+        # Restore logging
+        register_logger(None, 'itools.database')
+        # Clean file-system
+        paths = ['fables/catalog',
+                 'fables/database/.git',
+                 'fables/database/31.txt',
+                 'fables/database/agenda',
+                 'fables/database/broken.txt']
         for path in paths:
             if lfs.exists(path):
                 lfs.remove(path)

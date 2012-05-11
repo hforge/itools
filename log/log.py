@@ -55,10 +55,11 @@ LOG_FILES_NUMBER = 4
 # Log functions
 ###########################################################################
 def log(domain, level, message):
-    if domain in registry:
-        registry[domain].log(domain, level, message)
-    else:
-        registry[None].log(domain, level, message)
+    logger = registry.get(domain)
+    if logger is None:
+        logger = registry[None]
+
+    logger.log(domain, level, message)
 
 
 

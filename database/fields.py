@@ -28,3 +28,8 @@ class Field(prototype):
 
     def get_datatype(self):
         return self.datatype
+
+
+    def access(self, mode, resource):
+        # mode may be "read" or "write"
+        return True

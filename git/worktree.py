@@ -96,7 +96,7 @@ class Worktree(object):
 
 
     def _resolve_reference(self, reference):
-        """This method returns the SHA the given reference points to. For now 
+        """This method returns the SHA the given reference points to. For now
         only HEAD is supported.
 
         FIXME This is quick & dirty. TODO Implement references in pygit2 and

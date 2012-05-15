@@ -28,7 +28,7 @@ from itools.database import make_catalog, Catalog, Resource, StartQuery
 from itools.database import make_git_database
 from itools.database.catalog import _index, _decode
 from itools.datatypes import String, Unicode, Boolean, Integer
-from itools.fs import lfs
+from itools.fs import lfs, FileName
 from itools.handlers import TextFile
 from itools.log.log import register_logger, Logger, FATAL
 
@@ -379,7 +379,8 @@ class CatalogTestCase(TestCase):
         catalog = self.database.catalog
         fables = lfs.open('fables/database')
         for name in fables.get_names():
-            if name != '.git':
+            _, ext, _ = FileName.decode(name)
+            if ext == 'txt':
                 abspath = fables.get_absolute_path(name)
                 document = Document(abspath)
                 catalog.index_document(document)
@@ -398,18 +399,19 @@ class CatalogTestCase(TestCase):
         database = self.database
         # Simple Search, hit
         results = database.search(data=u'lion')
-        self.assertEqual(len(results), 4)
+        self.assertEqual(len(results), 5)
         documents = [ x.abspath
                       for x in results.get_documents(sort_by='abspath') ]
-        self.assertEqual(documents, ['03.txt', '08.txt', '10.txt', '23.txt'])
+        self.assertEqual(
+            documents, ['03.txt', '08.txt', '10.txt', '23.txt', '99.txt.fr'])
         # Simple Search, miss
         self.assertEqual(len(database.search(data=u'tiger')), 0)
         # Unindex, Search, Abort, Search
         database.catalog.unindex_document('03.txt')
         results = database.search(data=u'lion')
-        self.assertEqual(len(database.search(data=u'lion')), 3)
-        database.catalog.abort_changes()
         self.assertEqual(len(database.search(data=u'lion')), 4)
+        database.catalog.abort_changes()
+        self.assertEqual(len(database.search(data=u'lion')), 5)
         # Query on indexed boolean
         self.assertEqual(len(database.search(about_wolf=True)), 5)
         # Query on stored boolean
@@ -429,7 +431,7 @@ class CatalogTestCase(TestCase):
         # Not Query (1/2)
         query = NotQuery(PhraseQuery('data', u'lion'))
         results = database.search(query)
-        self.assertEqual(len(results), 27)
+        self.assertEqual(len(results), 31)
         # Not Query (2/2)
         query1 = PhraseQuery('data', u'mouse')
         query2 = NotQuery(PhraseQuery('data', u'lion'))
@@ -504,7 +506,7 @@ class CatalogTestCase(TestCase):
         query = TextQuery('title', u'Wol*')
         self.assertEqual(len(database.search(query)), 4)
         query = TextQuery('title', u'Wo*')
-        self.assertEqual(len(database.search(query)), 6)
+        self.assertEqual(len(database.search(query)), 7)
 
 
     def test_unique_values(self):
@@ -513,87 +515,41 @@ class CatalogTestCase(TestCase):
         self.assert_('motorola' not in values)
 
 
-
-class UnicodeTestCase(TestCase):
-
-    def setUp(self):
-        make_catalog('tests/catalog', Document_2.fields)
-
-
-    def tearDown(self):
-        lfs.remove('tests/catalog')
+    def test_start(self):
+        data = [(u'The F', 5), (u'The Fox', 3)]
+        for start, n in data:
+            query = StartQuery('title', start)
+            search = self.database.search(query)
+            self.assertEqual(len(search), n)
 
 
     def test_unicode(self):
-        cat = Catalog('tests/catalog', Document_2.fields)
-        # Some data
-        cat.index_document(Document_2('1', u'foo à €'))
-        cat.index_document(Document_2('2', u'aabà'))
-        cat.index_document(Document_2('3', u'aabàà'))
-        cat.index_document(Document_2('4', u'aac'))
+        search = self.database.search(data=u'où')
+        self.assertEqual(len(search), 1)
 
-        # A simple search
-        self.assertEqual(len(cat.search(data=u'à')), 1)
-
-        # Start
-        q = StartQuery('data', u'aabà')
-        r = [ doc.abspath for doc in cat.search(q).get_documents() ]
-        self.assertEqual(r, ['2', '3'])
+        search = self.database.search(data=u'ou')
+        self.assertEqual(len(search), 1)
 
 
     def test_multilingual(self):
-        cat = Catalog('tests/catalog', Document_2.fields)
-
-        # Some data
-        cat.index_document(Document_2('1', {'en': u'Hello world',
-                                            'fr': u'Bonjour le monde',
-                                            'de': u'Hallo Welt',
-                                            'es': u'Hola mundo'}))
-        cat.index_document(Document_2('2', {'fr': u'Albert et le monde',
-                                            'en': u'Albert and the world'}))
-        cat.index_document(Document_2('3', u'world'))
-
+        database = self.database
         # A simple search
-        self.assertEqual(len(cat.search(data=u'world')), 3)
-        self.assertEqual(len(cat.search(data=u'monde')), 2)
-        self.assertEqual(len(cat.search(data_de=u'welt')), 1)
-        self.assertEqual(len(cat.search(data_en=u'welt')), 0)
-
+        self.assertEqual(len(database.search(title=u'mundo')), 1)
+        self.assertEqual(len(database.search(title_en=u'mundo')), 0)
+        self.assertEqual(len(database.search(title_es=u'mundo')), 1)
 
         # Sort & Value
-        result = cat.search(data=u'monde')
-        doc1, doc2 = result.get_documents(sort_by='data_fr')
-        self.assertEqual(doc1.data_en, u'Albert and the world')
-        self.assertEqual(doc2.data_es, u'Hola mundo')
+        result = database.search(name='hello')
+        de, en, es, fr = result.get_documents(sort_by='lang')
+        self.assertEqual(de.title_de, u'Hallo welt')
+        self.assertEqual(en.title_en, u'Hello world')
+        self.assertEqual(es.title_es, u'Hola mundo')
+        self.assertEqual(fr.title_fr, u'Bonjour le monde')
 
 
-
-class MultipleTestCase(TestCase):
-
-    def setUp(self):
-        make_catalog('tests/catalog', Document_3.fields)
-
-
-    def tearDown(self):
-        lfs.remove('tests/catalog')
-
-
-    def test_everything(self):
-        cat = Catalog('tests/catalog', Document_3.fields)
-
-        # Some data
-        cat.index_document(Document_3('1', [1, 2, 3]))
-        cat.index_document(Document_3('2', []))
-        cat.index_document(Document_3('3', [42]))
-
-        docs = cat.search().get_documents(sort_by='abspath')
-
-        # Test the values
-        self.assertEqual(len(docs), 3)
-        doc1, doc2, doc3 = docs
-        self.assertEqual(doc1.data, [1, 2, 3])
-        self.assertEqual(doc2.data, [])
-        self.assertEqual(doc3.data, [42])
+    def test_multiple(self):
+        doc = self.database.search(lang='es').get_documents()[0]
+        self.assertEqual(doc.count, [1, 2, 11])
 
 
 
@@ -619,12 +575,16 @@ class BugXapianTestCase(TestCase):
 
 class Document(Resource):
 
-    fields = {'abspath': String(stored=True, indexed=True),
-              'title': Unicode(stored=True, indexed=True),
-              'data': Unicode(indexed=True),
-              'size': Integer(indexed=True),
-              'about_wolf': Boolean(indexed=True),
-              'is_long': Boolean(indexed=False, stored=True)}
+    fields = {
+        'abspath': String(indexed=True, stored=True),
+        'name': String(indexed=True),
+        'lang': String(indexed=True, stored=True),
+        'title': Unicode(stored=True, indexed=True),
+        'data': Unicode(indexed=True),
+        'about_wolf': Boolean(indexed=True),
+        'is_long': Boolean(indexed=False, stored=True),
+        'count': Integer(stored=True, multiple=True),
+        }
 
 
     def __init__(self, abspath):
@@ -632,46 +592,33 @@ class Document(Resource):
 
 
     def get_catalog_values(self):
-        data = unicode(lfs.open(self.abspath).read())
-        return {
-            'abspath': basename(self.abspath),
-            'title': data.splitlines()[0],
-            'data': data,
-            'size': len(data),
-            'about_wolf': re.search('wolf', data, re.I) is not None,
-            'is_long': len(data) > 1024}
+        # Filename
+        filename = basename(self.abspath)
+        name, ext, lang = FileName.decode(filename)
+        # Content
+        with open(self.abspath) as f:
+            data = f.read()
+            data = unicode(data, 'utf-8')
+        title = data.splitlines()[0]
+        wolf = re.search('wolf', data, re.I) is not None
+        count = [
+            len(data.splitlines()), # lines
+            len(data.split()),      # words
+            len(data)]              # chars
+        # Multilingual
+        if lang:
+            data = {lang: data}
+            title = {lang: title}
 
-
-
-class Document_2(Resource):
-
-    fields = {'abspath': String(stored=True, indexed=True),
-              'data': Unicode(stored=True, indexed=True)}
-
-
-    def __init__(self, abspath, data):
-        self.abspath = abspath
-        self.data = data
-
-
-    def get_catalog_values(self):
-        return {'abspath': self.abspath, 'data': self.data}
-
-
-
-class Document_3(Resource):
-
-    fields = {'abspath': String(stored=True, indexed=True),
-              'data': Integer(stored=True, multiple=True)}
-
-
-    def __init__(self, abspath, data):
-        self.abspath = abspath
-        self.data = data
-
-
-    def get_catalog_values(self):
-        return {'abspath': self.abspath, 'data': self.data}
+        # Ok
+        return {'abspath': filename, # oid
+                'name': name,
+                'lang': lang,
+                'title': title,
+                'data': data,
+                'count': count,
+                'about_wolf': wolf,
+                'is_long': count[2] > 1024}
 
 
 

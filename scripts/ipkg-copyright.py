@@ -40,11 +40,16 @@ def parse_copyright(line):
         c = line[i]
         if not c.isdigit() and c not in (' ', ',', '-'):
             break
-    name, email = line[i:].split('<')
-    line = line[:i]
-    # The email
-    email = email[:-1]
+
+    name = line[i:]
+    if '<' in name:
+        name, email = name.split('<')
+        email = email[:-1]
+    else:
+        email = None
+
     # The years
+    line = line[:i]
     years = set()
     for year in line.split(','):
         year = year.strip()
@@ -141,12 +146,11 @@ if __name__ == '__main__':
             while i < n_lines and lines[i].startswith('# Copyright (C) '):
                 line = lines[i]
                 email, name, years = parse_copyright(line)
-                if email in credits_mails:
-                    email = credits_mails[email]
-                if email in credits_names:
-                    name = credits_names[email]
-                authors.setdefault(email, (name, set()))
-                authors[email][1].update(years)
+                email = credits_mails.get(email, email)
+                name = credits_names.get(email, name)
+                key = email or name
+                authors.setdefault(key, (name, set()))
+                authors[key][1].update(years)
                 i += 1
 
         # Format the lines
@@ -177,8 +181,10 @@ if __name__ == '__main__':
                 else:
                     years.append('%s-%s' % x)
             years = ', '.join(years)
-            copyright.append('# Copyright (C) %s %s <%s>\n' % (years, name,
-                email))
+            line = '# Copyright (C) %s %s' % (years, name)
+            if email != name:
+                line = line + ' <%s>' % email
+            copyright.append(line + '\n')
         copyright.sort()
 
         # Replace the old copyright by the new one

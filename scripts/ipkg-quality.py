@@ -27,26 +27,10 @@ ipkg-quality.py is a small tool to do some measurements on Python files
 # Import from the Standard Library
 import ast
 from ast import parse, NodeVisitor
-from datetime import date
 from glob import glob
 from optparse import OptionParser
-from os import getcwd, chdir
 from os.path import basename, relpath
-from subprocess import call
-from sys import stdout
-from tempfile import mkdtemp
-from time import time
 from tokenize import generate_tokens, TokenError, DEDENT, INDENT
-
-# Import from Matplotlib
-create_graph_is_available = True
-try:
-    from matplotlib.figure import Figure
-    from matplotlib.backends.backend_agg import FigureCanvasAgg
-    from matplotlib.dates import DateFormatter
-    from matplotlib.ticker import FormatStrFormatter
-except ImportError:
-    create_graph_is_available = False
 
 # Import from itools
 import itools
@@ -352,7 +336,6 @@ def analyse(filenames, ignore_errors=False):
 # - show_stats
 # - show_lines
 # - fix
-# - create_graph
 #
 ###########################################################################
 
@@ -451,91 +434,6 @@ def show_stats(filenames, worse):
     print_worses(files_db, worse, ['bad_import'])
 
 
-
-def create_graph():
-    """Create graph of code quality evolution
-    """
-    t0 = time()
-    cwd = getcwd()
-    project_name = cwd.split('/')[-1]
-    # We copy project to tmp (for security)
-    tmp_directory = '%s/ipkg_quality.git' % mkdtemp()
-    call(['git', 'clone',  cwd, tmp_directory])
-    chdir(tmp_directory)
-    worktree = open_worktree(tmp_directory)
-    # First step: we create a list of statistics
-    statistics = {}
-    commits = worktree.git_log(reverse=True)
-    print 'Script will analyse %s commits.' % len(commits)
-    for commit in commits:
-        # We move to a given commit
-        call(['git', 'reset', '--hard', commit['sha']])
-        # Print script evolution
-        stdout.write('.')
-        stdout.flush()
-        # We list files
-        filenames = worktree.get_filenames()
-        filenames = [ x for x in filenames if x.endswith('.py') ]
-        # We get code quality for this files
-        stats, files_db = analyse(filenames, ignore_errors=True)
-        metadata = worktree.get_metadata()
-        date_time = metadata['committer_date']
-        commit_date = date(date_time.year, date_time.month, date_time.day)
-        if commit_date not in statistics:
-            statistics[commit_date] = stats
-        else:
-            # Same day => Avg
-            for key in statistics[commit_date]:
-                avg = (statistics[commit_date][key] + stats[key])/2
-                statistics[commit_date][key] = avg
-    print
-    # Get dates
-    values = []
-    dates = statistics.keys()
-    dates.sort()
-    for a_date in dates:
-        values.append(statistics[a_date])
-    # Base graph informations
-    base_title = '[%s %s]' % (project_name, worktree.get_branch_name())
-    # We generate graphs
-    chdir(cwd)
-    for problem_dict in ['code_length', 'aesthetics_problems',
-                         'exception_problems', 'import_problems']:
-        current_problems = eval(problem_dict)
-        graph_title = '%s %s' % (base_title, current_problems['title'])
-        lines = []
-        labels = []
-        fig = Figure()
-        graph = fig.add_subplot(111)
-        for key in current_problems['keys']:
-            if current_problems['pourcent']:
-                problem_values = [((x[key]*100.0)/x['lines']) for x in values]
-            else:
-                problem_values = [x[key] for x in values]
-            lines.append(graph.plot_date(dates, problem_values, '-'))
-            labels.append(current_problems['keys'][key])
-        graph.set_title(graph_title)
-        graph.xaxis.set_major_formatter(DateFormatter("%b '%y'"))
-        if current_problems['pourcent']:
-            graph.set_ylabel('Pourcent')
-            graph.yaxis.set_major_formatter(FormatStrFormatter("%5.02f %%"))
-        else:
-            graph.set_ylabel('Quantity')
-        graph.set_xlabel('')
-        graph.autoscale_view()
-        graph.grid(True)
-        fig.autofmt_xdate()
-        fig.set_figheight(fig.get_figheight()+5)
-        legend = fig.legend(lines, labels, loc=8, axespad=0.0)
-        legend.get_frame().set_linewidth(0)
-        canvas = FigureCanvasAgg(fig)
-        destination = 'graph_%s.png' % problem_dict
-        canvas.print_figure(destination, dpi=80)
-        print '%s -> %s ' % (graph_title, destination)
-    t1 = time()
-    print 'Generation time: %d minutes.' % ((t1 - t0)/60)
-
-
 def fix(filenames):
     """Clean files: We remove trailing spaces & tabulators
     """
@@ -591,11 +489,6 @@ if __name__ == '__main__':
                       dest='show_lines', default=False,
                       help='give the line of each problem found')
 
-    # Show graph
-    parser.add_option('-g', '--graph', action="store_true", dest='graph',
-                      default=False,
-                      help='create graphs of code quality evolution.')
-
     options, args = parser.parse_args()
 
     # Filenames
@@ -624,21 +517,11 @@ if __name__ == '__main__':
         parser.error(
             u'The option --show-lines takes one file in parameter.')
 
-    # (1) Export graph
-    if options.graph:
-        # Check if GIT is available
-        if not worktree:
-            parser.error(u'Error, your project must be versioned with GIT.')
-        # Check if create_graph is available
-        if not create_graph_is_available:
-            parser.error(u'Please install matplotlib.')
-        create_graph()
-
-    # (2) Show Lines
-    elif options.show_lines:
+    # (1) Show Lines
+    if options.show_lines:
         show_lines(filenames)
 
-    # (3) Fix
+    # (2) Fix
     elif options.fix is True:
         show_stats(filenames, options.worse)
         print 'FIXING...'
@@ -646,7 +529,7 @@ if __name__ == '__main__':
         print 'DONE'
         show_stats(filenames, options.worse)
 
-    # (4) Analyse
+    # (3) Analyse
     else:
         show_stats(filenames, options.worse)
 

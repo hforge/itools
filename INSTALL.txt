@@ -27,7 +27,6 @@ reportlab       2.3  itools.pdf       http://www.reportlab.org/
 libmagic       5.05  itools.database  http://www.darwinsys.com/file/ [1]
 xapian        1.0.8  itools.database  http://www.xapian.org/
 pywin32         212  (Windows)        http://sf.net/projects/pywin32/
-matplotlib     0.91  ipkg-quality.py  http://matplotlib.sourceforge.net/
 gettext        0.17  ipkg-build.py    http://www.gnu.org/software/gettext/
 sphinx               ipkg-doc.py      http://pypi.python.org/pypi/Sphinx
 

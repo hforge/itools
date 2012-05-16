@@ -494,39 +494,6 @@ class Worktree(object):
         return self._call(cmd)
 
 
-    def git_describe(self):
-        """Equivalent to 'git describe', returns a unique but short
-        identifier for the current commit based on tags.
-
-        TODO Implement using libgit2
-        """
-        # Call
-        command = ['git', 'describe', '--tags', '--long']
-        try:
-            data = self._call(command)
-        except EnvironmentError:
-            return None
-
-        # Parse
-        tag, n, commit = data.rsplit('-', 2)
-        return tag, int(n), commit
-
-
-    def get_branch_name(self):
-        """Returns the name of the current branch.
-        """
-        ref = open('%s/.git/HEAD' % self.path).read().rstrip()
-        ref = ref.rsplit('/', 1)
-        return ref[1] if len(ref) == 2 else None
-
-
-    def get_filenames(self):
-        """Returns the list of filenames tracked by git.
-        """
-        index = self.index
-        return [ index[i].path for i in range(len(index)) ]
-
-
     def get_files_changed(self, since, until):
         """Return the files that have been changed between two commits.
 

@@ -36,7 +36,7 @@ from tokenize import generate_tokens, TokenError, DEDENT, INDENT
 import itools
 from itools.core import merge_dicts
 from itools.fs import lfs
-from itools.git import open_worktree
+from itools.pkg import open_worktree
 
 
 # Define list of problems

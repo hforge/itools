@@ -25,10 +25,10 @@ from os.path import dirname
 # Import from itools
 from itools.core import get_pipe, lazy
 from itools.fs import lfs
-from itools.git import open_worktree
 from itools.handlers import Folder
 from itools.log import log_error
 from catalog import Catalog, make_catalog
+from git import open_worktree
 from registry import get_register_fields
 from ro import RODatabase
 

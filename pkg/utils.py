@@ -29,8 +29,8 @@ from sys import _getframe, argv
 
 # Import from itools
 from itools.core import freeze, get_pipe, get_version
-from itools.git import open_worktree
 from itools.handlers import ro_database
+from git import open_worktree
 from handlers import SetupConf
 
 

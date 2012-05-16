@@ -29,14 +29,14 @@ from traceback import print_exception
 
 # Import from itools
 import itools
+from itools.fs import lfs
 import itools.gettext
-from itools.git import open_worktree
 from itools.handlers import ro_database
 from itools.html import XHTMLFile
 import itools.pdf
 from itools.pkg import get_config, get_files, get_manifest, make_version
+from itools.pkg import open_worktree
 import itools.stl
-from itools.fs import lfs
 
 
 def build():

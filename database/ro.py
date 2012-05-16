@@ -27,11 +27,11 @@ from xapian import DatabaseError, DatabaseOpeningError
 # Import from itools
 from itools.core import LRUCache, lazy
 from itools.fs import lfs
-from itools.git import open_worktree
 from itools.handlers import Folder, get_handler_class_by_mimetype
 from itools.log import log_warning
 from itools.uri import Path
 from catalog import Catalog, _get_xquery, SearchResults
+from git import open_worktree
 from magic_ import magic_from_file
 from metadata import Metadata
 from registry import get_register_fields

@@ -40,7 +40,7 @@ from image import Image, SVGFile
 from js import JSFile
 from registry import register_handler_class, get_handler_class_by_mimetype
 from text import TextFile, guess_encoding
-from database import RODatabase, RWDatabase
+from database import RODatabase
 from database import ro_database
 from utils import checkid
 
@@ -65,7 +65,6 @@ __all__ = [
     'TBZ2File',
     # The database
     'RODatabase',
-    'RWDatabase',
     'ro_database',
     # Registry
     'get_handler_class_by_mimetype',

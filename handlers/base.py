@@ -19,9 +19,8 @@
 handler class hierarchy.
 """
 
-# Import from itools
-from messages import MSG_NOT_ATTACHED
 
+MSG_NOT_ATTACHED = 'Method only available when attached to a database.'
 
 
 class Handler(object):

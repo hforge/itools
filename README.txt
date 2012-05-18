@@ -56,7 +56,7 @@ http://bugs.hforge.org
 3. Legal notice
 ===============
 
-This program is copyrighted by the people who wrote it.  Check the CREDITS
+This program is copyrighted by the people who wrote it.  Check the CREDITS.txt
 file to know them.
 
 ----

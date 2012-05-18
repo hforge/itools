@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2007 Hervé Cauwelier <herve@itaapy.com>
-# Copyright (C) 2007-2008 Juan David Ibáñez Palomar <jdavid@itaapy.com>
-# Copyright (C) 2008 Henry Obein <henry@itaapy.com>
+# Copyright (C) 2007, 2010 Hervé Cauwelier <herve@oursours.net>
+# Copyright (C) 2007-2009, 2012 J. David Ibáñez <jdavid.ibp@gmail.com>
+# Copyright (C) 2008 Henry Obein <henry.obein@gmail.com>
+# Copyright (C) 2009 David Versmisse <versmisse@lil.univ-littoral.fr>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -40,11 +41,16 @@ def parse_copyright(line):
         c = line[i]
         if not c.isdigit() and c not in (' ', ',', '-'):
             break
-    name, email = line[i:].split('<')
-    line = line[:i]
-    # The email
-    email = email[:-1]
+
+    name = line[i:]
+    if '<' in name:
+        name, email = name.split('<')
+        email = email[:-1]
+    else:
+        email = None
+
     # The years
+    line = line[:i]
     years = set()
     for year in line.split(','):
         year = year.strip()
@@ -103,20 +109,29 @@ if __name__ == '__main__':
         command = ['git', 'blame', '-p', filename]
         output = get_pipe(command)
 
+        state = 0
         header = True
         authors = {}
+        cache = {}
         for line in output.splitlines():
+            if state == 0:
+                commit = line[:40]
+                state = 1
+                continue
+
             if line.startswith('author '):
                 name = line[7:]
             elif line.startswith('author-mail '):
                 email = line[13:-1]
-                if email in credits_mails:
-                    email = credits_mails[email]
-                if email in credits_names:
-                    name = credits_names[email]
+                email = credits_mails.get(email, email)
+                name = credits_names.get(email, name)
             elif line.startswith('author-time '):
                 year = datetime.fromtimestamp(int(line[12:])).year
-            elif line.startswith('\t'):
+            elif line[0] == '\t':
+                if commit in cache:
+                    name, email, year = cache[commit]
+                else:
+                    cache[commit] = (name, email, year)
                 # Don't consider the file header (copyright, license) as code
                 data = line.lstrip()
                 if not data.startswith('#'):
@@ -124,6 +139,7 @@ if __name__ == '__main__':
                 if header is False:
                     authors.setdefault(email, (name, set()))
                     authors[email][1].add(year)
+                state = 0
 
         # Don't consider the email 'not.committed.yet' as a valid author email
         if 'not.committed.yet' in authors:
@@ -141,12 +157,11 @@ if __name__ == '__main__':
             while i < n_lines and lines[i].startswith('# Copyright (C) '):
                 line = lines[i]
                 email, name, years = parse_copyright(line)
-                if email in credits_mails:
-                    email = credits_mails[email]
-                if email in credits_names:
-                    name = credits_names[email]
-                authors.setdefault(email, (name, set()))
-                authors[email][1].update(years)
+                email = credits_mails.get(email, email)
+                name = credits_names.get(email, name)
+                key = email or name
+                authors.setdefault(key, (name, set()))
+                authors[key][1].update(years)
                 i += 1
 
         # Format the lines
@@ -177,8 +192,10 @@ if __name__ == '__main__':
                 else:
                     years.append('%s-%s' % x)
             years = ', '.join(years)
-            copyright.append('# Copyright (C) %s %s <%s>\n' % (years, name,
-                email))
+            line = '# Copyright (C) %s %s' % (years, name)
+            if email != name:
+                line = line + ' <%s>' % email
+            copyright.append(line + '\n')
         copyright.sort()
 
         # Replace the old copyright by the new one

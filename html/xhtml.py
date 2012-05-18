@@ -1,7 +1,9 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2003-2008 Juan David Ibáñez Palomar <jdavid@itaapy.com>
-# Copyright (C) 2006 Hervé Cauwelier <herve@itaapy.com>
-# Copyright (C) 2007 Sylvain Taverne <sylvain@itaapy.com>
+# Copyright (C) 2003-2011 J. David Ibáñez <jdavid.ibp@gmail.com>
+# Copyright (C) 2006 Hervé Cauwelier <herve@oursours.net>
+# Copyright (C) 2007 Sylvain Taverne <taverne.sylvain@gmail.com>
+# Copyright (C) 2008 David Versmisse <versmisse@lil.univ-littoral.fr>
+# Copyright (C) 2008, 2010 Henry Obein <henry.obein@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

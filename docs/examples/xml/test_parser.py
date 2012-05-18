@@ -1,3 +1,4 @@
+# Copyright (C) 2010 J. David Ibáñez <jdavid.ibp@gmail.com>
 
 from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, TEXT
 

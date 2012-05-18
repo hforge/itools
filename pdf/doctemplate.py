@@ -1,10 +1,10 @@
 # -*- coding: UTF-8 -*-
 
-# Copyright (C) 2007 Henry Obein <henry@itaapy.com>
-# Copyright (C) 2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2007 J. David Ibáñez <jdavid.ibp@gmail.com>
+# Copyright (C) 2007-2008 Henry Obein <henry.obein@gmail.com>
+# Copyright (C) 2008 Dumont Sébastien <sebastien.dumont@itaapy.com>
 # Copyright (C) 2008 Fabrice Decroix <fabrice.decroix@gmail.com>
 # Copyright (C) 2008 Yannick Martel <yannick.martel@gmail.com>
-# Copyright (C) 2008 Dumont Sébastien <sebastien.dumont@itaapy.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

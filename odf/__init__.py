@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2007 Sylvain Taverne <taverne.sylvain@gmail.com>
+# Copyright (C) 2007, 2009 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2008 Romain Gauthier <romain.gauthier@itaapy.com>
 #
 # This program is free software: you can redistribute it and/or modify

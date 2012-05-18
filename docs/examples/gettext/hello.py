@@ -1,3 +1,4 @@
+# Copyright (C) 2010 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Import from the Standard Library
 from os import listdir
 

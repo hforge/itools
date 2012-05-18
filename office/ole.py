@@ -1,7 +1,8 @@
 # -*- coding: UTF-8 -*-
 # Copyright (C) 1996-2003 Victor B Wagner
 # Copyright (C) 2003 Alex Ott <alexott@gmail.com>
-# Copyright (C) 2009 Hervé Cauwelier <herve@itaapy.com>
+# Copyright (C) 2009 Hervé Cauwelier <herve@oursours.net>
+# Copyright (C) 2010 J. David Ibáñez <jdavid.ibp@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

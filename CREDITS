@@ -3,19 +3,20 @@
 # itools project.  The fields are: name (N), email (E) and description (D).
 # Thanks,
 #
+# TODO Use "git shortlog -sne" instead?
 
 N: Luis Arturo Belmar-Letelier
 E: luis@itaapy.com
 
 N: Hervé Cauwelier
+E: herve@oursours.net
 E: herve@itaapy.com
 E: herver@itaapy.com
-E: herve@oursours.net
 
 N: Nicolas Deram
+E: nderam@gmail.com
 E: nicolas@itaapy.com
 E: nderam@itaapy.com
-E: nderam@gmail.com
 E: nderam@musashi.localdomain
 
 N: Thilo Ernst
@@ -25,7 +26,8 @@ D: Worked on itools.workflow
 N: Thierry Fromon
 E: from.t@free.fr
 
-N: Juan David Ibáñez Palomar
+N: J. David Ibáñez
+E: jdavid.ibp@gmail.com
 E: jdavid@itaapy.com
 
 N: Piotr Macuk
@@ -35,17 +37,18 @@ N: Rob McMullen
 E: rob.mcmullen@gmail.com
 
 N: Henry Obein
+E: henry.obein@gmail.com
 E: henry@itaapy.com
 E: kiwamu@kisai-laptop.(none)
-E: henryd@itaapy.com
 
 N: Nicolas Oyez
 E: nicoyez@gmail.com
 E: noyez@itaapy.com
 
 N: Sylvain Taverne
-E: sylvain@itaapy.com
 E: taverne.sylvain@gmail.com
+E: sylvain@itaapy.com
 
 N: David Versmisse
+E: versmisse@lil.univ-littoral.fr
 E: david.versmisse@itaapy.com

@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2004-2008 Juan David Ibáñez Palomar <jdavid@itaapy.com>
-# Copyright (C) 2006 Nicolas Deram <nicolas@itaapy.com>
+# Copyright (C) 2004-2009 J. David Ibáñez <jdavid.ibp@gmail.com>
+# Copyright (C) 2006 Nicolas Deram <nderam@gmail.com>
+# Copyright (C) 2009 Aurélien Ansel <camumus@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

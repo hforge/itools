@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2008 David Versmisse <david.versmisse@itaapy.com>
 # Copyright (C) 2008 Romain Gauthier <romain.gauthier@itaapy.com>
+# Copyright (C) 2008-2009 David Versmisse <versmisse@lil.univ-littoral.fr>
+# Copyright (C) 2009-2010 J. David Ibáñez <jdavid.ibp@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

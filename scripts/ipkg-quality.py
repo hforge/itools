@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Copyright (C) 2007 David Versmisse <david.versmisse@itaapy.com>
-# Copyright (C) 2007-2008 Juan David Ibáñez Palomar <jdavid@itaapy.com>
-# Copyright (C) 2008 Henry Obein <henry@itaapy.com>
-# Copyright (C) 2008 Sylvain Taverne <sylvain@itaapy.com>
+# Copyright (C) 2007 David Versmisse <versmisse@lil.univ-littoral.fr>
+# Copyright (C) 2007-2009, 2011 J. David Ibáñez <jdavid.ibp@gmail.com>
+# Copyright (C) 2008 Gautier Hayoun <gautier.hayoun@supinfo.com>
+# Copyright (C) 2008 Sylvain Taverne <taverne.sylvain@gmail.com>
+# Copyright (C) 2008-2009 Henry Obein <henry.obein@gmail.com>
+# Copyright (C) 2010 Hervé Cauwelier <herve@oursours.net>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

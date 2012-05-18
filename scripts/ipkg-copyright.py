@@ -108,20 +108,29 @@ if __name__ == '__main__':
         command = ['git', 'blame', '-p', filename]
         output = get_pipe(command)
 
+        state = 0
         header = True
         authors = {}
+        cache = {}
         for line in output.splitlines():
+            if state == 0:
+                commit = line[:40]
+                state = 1
+                continue
+
             if line.startswith('author '):
                 name = line[7:]
             elif line.startswith('author-mail '):
                 email = line[13:-1]
-                if email in credits_mails:
-                    email = credits_mails[email]
-                if email in credits_names:
-                    name = credits_names[email]
+                email = credits_mails.get(email, email)
+                name = credits_names.get(email, name)
             elif line.startswith('author-time '):
                 year = datetime.fromtimestamp(int(line[12:])).year
-            elif line.startswith('\t'):
+            elif line[0] == '\t':
+                if commit in cache:
+                    name, email, year = cache[commit]
+                else:
+                    cache[commit] = (name, email, year)
                 # Don't consider the file header (copyright, license) as code
                 data = line.lstrip()
                 if not data.startswith('#'):
@@ -129,6 +138,7 @@ if __name__ == '__main__':
                 if header is False:
                     authors.setdefault(email, (name, set()))
                     authors[email][1].add(year)
+                state = 0
 
         # Don't consider the email 'not.committed.yet' as a valid author email
         if 'not.committed.yet' in authors:

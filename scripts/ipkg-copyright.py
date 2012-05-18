@@ -80,12 +80,12 @@ if __name__ == '__main__':
     if len(args) == 0:
         parser.error('incorrect number of arguments')
 
-    # Load CREDITS
+    # Load CREDITS.txt
     credits_names = {}  # Mapping from canonical email to real full name
     credits_mails = {}  # Mapping from secondary email to canonical email
     emails = []
-    if lfs.exists('CREDITS'):
-        for line in lfs.open('CREDITS').readlines():
+    if lfs.exists('CREDITS.txt'):
+        for line in lfs.open('CREDITS.txt').readlines():
             line = line.strip()
             if line.startswith('#'):
                 continue

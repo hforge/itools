@@ -1,3 +1,4 @@
+# Copyright (C) 2010 J. David Ibáñez <jdavid.ibp@gmail.com>
 
 # Import from itools
 from itools.workflow import Workflow, WorkflowAware

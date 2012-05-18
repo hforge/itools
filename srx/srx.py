@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+# Copyright (C) 2008 David Versmisse <versmisse@lil.univ-littoral.fr>
 # Copyright (C) 2008 Romain Gauthier <romain.gauthier@itaapy.com>
 #
 # This program is free software: you can redistribute it and/or modify

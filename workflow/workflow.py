@@ -1,7 +1,8 @@
 # -*- coding: UTF-8 -*-
 # Copyright (C) 2002 Thilo Ernst <Thilo.Ernst@dlr.de>
-# Copyright (C) 2002-2004, 2006-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
-# Copyright (C) 2007 David Versmisse <david.versmisse@itaapy.com>
+# Copyright (C) 2002-2004, 2006-2008 J. David Ibáñez <jdavid.ibp@gmail.com>
+# Copyright (C) 2007 David Versmisse <versmisse@lil.univ-littoral.fr>
+# Copyright (C) 2009 Aurélien Ansel <camumus@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

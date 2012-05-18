@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2008 Henry Obein <henry@itaapy.com>
-# Copyright (C) 2008 Juan David Ibáñez Palomar <jdavid@itaapy.com>
+# Copyright (C) 2008 Henry Obein <henry.obein@gmail.com>
+# Copyright (C) 2008-2009 J. David Ibáñez <jdavid.ibp@gmail.com>
+# Copyright (C) 2009 Aurélien Ansel <camumus@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

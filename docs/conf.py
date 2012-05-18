@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# Copyright (C) 2010 David Versmisse <versmisse@lil.univ-littoral.fr>
+# Copyright (C) 2010 J. David Ibáñez <jdavid.ibp@gmail.com>
 #
 # itools documentation build configuration file, created by
 # sphinx-quickstart on Fri Nov 19 11:23:59 2010.

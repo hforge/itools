@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 # Copyright (C) 2005 Nicolas Oyez <nicoyez@gmail.com>
-# Copyright (C) 2005-2007 Juan David Ibáñez Palomar <jdavid@itaapy.com>
-# Copyright (C) 2008 David Versmisse <david.versmisse@itaapy.com>
+# Copyright (C) 2005-2009 J. David Ibáñez <jdavid.ibp@gmail.com>
+# Copyright (C) 2008 David Versmisse <versmisse@lil.univ-littoral.fr>
 # Copyright (C) 2008 Wynand Winterbach <wynand.winterbach@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify

@@ -1,8 +1,8 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2006 Nicolas Deram <nderam@gmail.com>
+# Copyright (C) 2006, 2012 Nicolas Deram <nderam@gmail.com>
 # Copyright (C) 2007 David Versmisse <versmisse@lil.univ-littoral.fr>
 # Copyright (C) 2007-2008 Hervé Cauwelier <herve@oursours.net>
-# Copyright (C) 2007-2009, 2011 J. David Ibáñez <jdavid.ibp@gmail.com>
+# Copyright (C) 2007-2009, 2011-2012 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2009 Aurélien Ansel <camumus@gmail.com>
 # Copyright (C) 2010 Alexis Huet <alexis@itaapy.com>
 #

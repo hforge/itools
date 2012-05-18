@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2003-2008, 2010-2011 J. David Ibáñez <jdavid.ibp@gmail.com>
+# Copyright (C) 2003-2008, 2010-2012 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2007 Henry Obein <henry.obein@gmail.com>
 # Copyright (C) 2008 Hervé Cauwelier <herve@oursours.net>
 # Copyright (C) 2011 David Versmisse <versmisse@lil.univ-littoral.fr>

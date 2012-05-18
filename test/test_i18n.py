@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2002, 2006-2010 J. David Ibáñez <jdavid.ibp@gmail.com>
+# Copyright (C) 2002, 2006-2011 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2004 Thierry Fromon <from.t@free.fr>
 # Copyright (C) 2008 Romain Gauthier <romain.gauthier@itaapy.com>
 # Copyright (C) 2010 Hervé Cauwelier <herve@oursours.net>

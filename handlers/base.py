@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2003-2007, 2009-2010 J. David Ibáñez <jdavid.ibp@gmail.com>
+# Copyright (C) 2003-2007, 2009-2011 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2006-2007, 2010 Hervé Cauwelier <herve@oursours.net>
 #
 # This program is free software: you can redistribute it and/or modify

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2008 Gautier Hayoun <gautier.hayoun@itaapy.com>
+# Copyright (C) 2008 Gautier Hayoun <gautier.hayoun@supinfo.com>
 # Copyright (C) 2008-2009 J. David Ibáñez <jdavid.ibp@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify

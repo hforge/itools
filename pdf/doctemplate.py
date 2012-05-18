@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 
-# Copyright (C) 2007 J. David Ibáñez <jdavid.ibp@gmail.com>
+# Copyright (C) 2007, 2012 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2007-2008 Henry Obein <henry.obein@gmail.com>
 # Copyright (C) 2008 Dumont Sébastien <sebastien.dumont@itaapy.com>
 # Copyright (C) 2008 Fabrice Decroix <fabrice.decroix@gmail.com>

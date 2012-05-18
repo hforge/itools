@@ -2,7 +2,7 @@
 # Copyright (C) 2005-2008 Nicolas Deram <nderam@gmail.com>
 # Copyright (C) 2007-2008 Sylvain Taverne <taverne.sylvain@gmail.com>
 # Copyright (C) 2007-2008, 2010 Henry Obein <henry.obein@gmail.com>
-# Copyright (C) 2007-2010 J. David Ibáñez <jdavid.ibp@gmail.com>
+# Copyright (C) 2007-2012 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2008-2011 Hervé Cauwelier <herve@oursours.net>
 # Copyright (C) 2009 David Versmisse <versmisse@lil.univ-littoral.fr>
 # Copyright (C) 2010 Alexis Huet <alexis@itaapy.com>

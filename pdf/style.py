@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 
 # Copyright (C) 2007-2009 Henry Obein <henry.obein@gmail.com>
-# Copyright (C) 2007-2009 J. David Ibáñez <jdavid.ibp@gmail.com>
+# Copyright (C) 2007-2009, 2012 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2008 David Versmisse <versmisse@lil.univ-littoral.fr>
 # Copyright (C) 2008 Fabrice Decroix <fabrice.decroix@gmail.com>
 # Copyright (C) 2008 Yannick Martel <yannick.martel@gmail.com>

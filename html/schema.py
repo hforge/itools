@@ -168,6 +168,8 @@ html_attributes = {
     'quality': String, # <embed>
     'autoplay': Boolean, # <embed>
     'wrap': String,
+    # HTML5
+    'controls': String,
     }
 
 
@@ -394,6 +396,9 @@ html_elements = [
     # TODO Complete and check against an official description or schema (there
     # is not a DTD in HTML5)
     EmptyBlockElement('canvas', common_attrs + ['width', 'height']),
+    EmptyBlockElement('source', common_attrs + ['src', 'type']),
+    BlockElement('video', common_attrs + ['controls', 'src', 'height',
+        'width']),
     # Vendor specific, not approved by W3C
     # for a talk about <embed> see:
     #   http://alistapart.com/articles/byebyeembed

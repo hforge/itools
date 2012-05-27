@@ -115,14 +115,36 @@ Step by step:
   # layman -S
   # emerge itools
 
+5. Install on FreeBSD
+=====================
 
-5. Install on Windows
+iTools has been ported[1] by wen@FreeBSD.org. This has been tested on FreeBSD 8 and 9.
+
+	# cd /usr/ports/devel/py-itools
+	# make all install clean
+	
+Verify it works, by:
+	
+	[khine@awakwe:~] python
+	Python 2.7.3 (default, May 18 2012, 11:54:56) 
+	[GCC 4.2.1 20070831 patched [FreeBSD]] on freebsd9
+	Type "help", "copyright", "credits" or "license" for more information.
+	>>> import itools
+	>>> itools.__version__
+	'0.62.8'
+	>>>
+	
+Note: When building pynumy do not use ATLAS use optimized blas library as this breaks the install.
+
+[1] http://www.freshports.org/devel/py-itools
+
+6. Install on Windows
 ========================
 
 Today itools does not work on Windows.
 
 
-6. Run the unit tests
+7. Run the unit tests
 ========================
 
 To run the unit tests first you must download and unpack the source as
@@ -140,7 +162,7 @@ mailing list:
   - http://www.hforge.org/community
 
 
-7. Checkout from the Git repository
+8. Checkout from the Git repository
 ===================================
 
 If you desire to install the latest and hottest revision of itools, you need

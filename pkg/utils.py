@@ -21,10 +21,9 @@
 from distutils import core
 from distutils.core import Extension
 from distutils.command.build_ext import build_ext
-from distutils.command.sdist import sdist
 from distutils.errors import LinkError
 from os import listdir
-from os.path import exists, isfile, isdir, join as join_path
+from os.path import exists, isdir, join as join_path
 from re import compile
 from sys import _getframe, argv
 
@@ -120,48 +119,6 @@ class OptionalBuildExt(build_ext):
             print ", ".join(ext.libraries)
             print "  This error is not fatal, continuing build..."
             print ""
-
-
-
-class FixedSdist(sdist):
-    """Fixing sdist not reading the MANIFEST
-    http://bugs.python.org/issue11104
-    FIXME Remove this once issue 11104 is resolved, hopefully by Python 2.7.2
-    """
-
-    def get_file_list(self):
-        """Figure out the list of files to include in the source
-        distribution, and put it in 'self.filelist'.  This might involve
-        reading the manifest template (and writing the manifest), or just
-        reading the manifest, or just using the default file set -- it all
-        depends on the user's options.
-        """
-        # new behavior when using a template:
-        # the file list is recalculated everytime because
-        # even if MANIFEST.in or setup.py are not changed
-        # the user might have added some files in the tree that
-        # need to be included.
-        #
-        #  This makes --force the default and only behavior with templates
-        template_exists = isfile(self.template)
-        manifest_exists = isfile(self.manifest)
-        if not template_exists and manifest_exists:
-                self.read_manifest()
-                return
-        if not template_exists:
-            self.warn(("manifest template '%s' does not exist " +
-                       "(using default file list)") %
-                      self.template)
-        self.filelist.findall()
-        if self.use_defaults:
-            self.add_defaults()
-        if template_exists:
-            self.read_template()
-        if self.prune:
-            self.prune_file_list()
-        self.filelist.sort()
-        self.filelist.remove_duplicates()
-        self.write_manifest()
 
 
 
@@ -289,8 +246,6 @@ def setup(ext_modules=freeze([])):
                provides = config.get_value('provides'),
                # Scripts
                scripts = scripts,
-               cmdclass = {
-                   'build_ext': OptionalBuildExt,
-                   'sdist': FixedSdist},
+               cmdclass = {'build_ext': OptionalBuildExt},
                # C extensions
                ext_modules=ext_modules)

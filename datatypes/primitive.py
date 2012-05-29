@@ -155,13 +155,23 @@ class PathDataType(DataType):
 
 
 
+# We consider the local part in emails is case-insensitive. This is against
+# the standard, but corresponds to common usage.
 email_expr = "^[0-9a-z]+[_\.0-9a-z-'+]*@([0-9a-z-]+\.)+[a-z]{2,6}$"
 email_expr = compile(email_expr)
 class Email(String):
 
     @staticmethod
+    def encode(value):
+        return value.lower() if value else value
+
+    @staticmethod
+    def decode(value):
+        return value.lower()
+
+    @staticmethod
     def is_valid(value):
-        return email_expr.match(value.lower()) is not None
+        return email_expr.match(value) is not None
 
 
 

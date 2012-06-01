@@ -239,12 +239,7 @@ class RODatabase(object):
 
     def get_handler_names(self, key):
         key = self.normalize_key(key)
-
-        if self.fs.exists(key):
-            names = self.fs.get_names(key)
-            return list(names)
-
-        return []
+        return self.fs.get_names(key)
 
 
     def get_mimetype(self, key):

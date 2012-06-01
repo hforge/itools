@@ -165,7 +165,13 @@ class LocalFolder(object):
 
     def get_names(self, path='.'):
         path = self._resolve_path(path)
-        return listdir(path)
+        try:
+            return listdir(path)
+        except OSError, e:
+            # Path does not exist or is not a directory
+            if e.errno == 2 or e.errno == 20:
+                return []
+            raise
 
 
     def traverse(self, path='.'):

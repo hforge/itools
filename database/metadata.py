@@ -16,11 +16,24 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.core import add_type
+from itools.core import add_type, freeze
 from itools.csv import parse_table, Property, property_to_str
 from itools.csv import deserialize_parameters
+from itools.datatypes import String
 from itools.handlers import File, register_handler_class
 from itools.log import log_warning
+from fields import Field
+
+
+
+class DefaultField(Field):
+
+    datatype = String
+    multiple = True
+    parameters_schema = freeze({})
+    parameters_schema_default = None
+    multilingual = False
+
 
 
 class Metadata(File):
@@ -71,8 +84,9 @@ class Metadata(File):
                 msg = 'unexpected field "%s"' % name
                 if resource_class.fields_soft:
                     log_warning(msg, domain='itools.database')
-                    continue
-                raise ValueError, msg
+                    field = DefaultField
+                else:
+                    raise ValueError, msg
 
             # 2. Deserialize the parameters
             params_schema = field.parameters_schema

@@ -747,6 +747,11 @@ class Table(File):
         return record
 
 
+    def reindex_record(self, record):
+        self.catalog.unindex_document(record.id)
+        self.catalog.index_document(record)
+
+
     def update_record(self, id, **kw):
         record = self.records[id]
         if record is None:

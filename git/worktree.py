@@ -257,8 +257,7 @@ class Worktree(object):
                 for name in files:
                     del index['%s/%s' % (root[n:], name)]
                     remove('%s/%s' % (root, name))
-                for name in dirs:
-                    rmdir('%s/%s' % (root, name))
+                rmdir(root)
 
 
     def git_mv(self, source, target, add=True):

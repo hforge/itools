@@ -18,11 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.core import add_type
 from git import open_worktree
 from handlers import SetupConf
-from metadata import PKGINFOFile
-from packages import packages_infos
 from utils import get_compile_flags, get_files, get_manifest, make_version
 from utils import setup, get_config, OptionalExtension
 
@@ -33,12 +30,8 @@ __all__ = [
     'get_files',
     'get_manifest',
     'make_version',
-    'packages_infos',
     'OptionalExtension',
-    'PKGINFOFile',
     'setup',
     'SetupConf',
     # Git
     'open_worktree']
-
-add_type('text/x-egg-info', '.egg-info')

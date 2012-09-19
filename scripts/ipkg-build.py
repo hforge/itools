@@ -20,12 +20,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from re import compile
 from optparse import OptionParser
 from os.path import islink
-from subprocess import call
-from sys import exc_info, stdout
-from traceback import print_exception
+from subprocess import Popen
+from sys import stdout
 
 # Import from itools
 import itools
@@ -34,115 +32,115 @@ import itools.gettext
 from itools.handlers import ro_database
 from itools.html import XHTMLFile
 import itools.pdf
-from itools.pkg import get_config, get_files, get_manifest, make_version
-from itools.pkg import open_worktree
+from itools.pkg import get_config, get_manifest, open_worktree
 import itools.stl
 
 
+def make_version(worktree):
+    """This function finds out the version number from the source, this will
+    be written to the 'version.txt' file, which will be read once the software
+    is installed to get the version number.
+    """
+    # The name of the active branch
+    branch = worktree.get_branch_name()
+    if branch is None:
+        return None
+
+    # The tag
+    description = worktree.git_describe()
+
+    # The version name
+    if description:
+        tag, n, commit = description
+        if tag.startswith(branch):
+            version = tag
+        else:
+            version = '%s-%s' % (branch, tag)
+        # Exact match
+        if n == 0:
+            return version
+    else:
+        version = branch
+
+    # Get the timestamp
+    head = worktree.get_metadata()
+    timestamp = head['committer_date']
+    timestamp = timestamp.strftime('%Y%m%d%H%M')
+    return '%s-%s' % (version, timestamp)
+
+
+
+def make(worktree, rules, manifest):
+    for source in worktree.get_filenames():
+        # Exclude
+        if 'docs/' in source:
+            continue
+        # Apply rules
+        for source_ext, target_ext, f in rules:
+            if source.endswith(source_ext):
+                target = source[:-len(source_ext)] + target_ext
+                if not lfs.exists(target) or \
+                   lfs.get_mtime(source) > lfs.get_mtime(target):
+                    f(source, target)     # 1. Compile
+                    manifest.add(target)  # 2. Update manifest
+                    print target          # 3. Print
+
+
+# PO => MO
+def po2mo(source, target):
+    Popen(['msgfmt', source, '-o', target])
+
+
+# Translate templates
+def make_template(source, target):
+    source_handler = ro_database.get_handler(source, XHTMLFile)
+
+    language = target.rsplit('.', 1)[1]
+    po = ro_database.get_handler('locale/%s.po' % language)
+    data = source_handler.translate(po)
+    with open(target, 'w') as f:
+        f.write(data)
+
+
+
+# SASS: CSS preprocessor
+def scss2css(source, target):
+    Popen(['scss', source, target])
+
+
+
 def build():
-    worktree = open_worktree('.', soft=True)
-    # Try using git facilities
-    if not worktree:
-        print "Warning: not using git."
-
-    # Read configuration for languages
-    config = get_config()
-    source_language = config.get_value('source_language', default='en')
-    target_languages = config.get_value('target_languages')
-
     # (1) Initialize the manifest file
-    manifest = [ x for x in get_manifest() if not islink(x) ]
-    manifest.append('MANIFEST')
-    # Find out the version string
-    if worktree:
-        version = make_version()
-        open('version.txt', 'w').write(version)
-        print '* Version:', version
-        manifest.append('version.txt')
+    manifest = set([ x for x in get_manifest() if not islink(x) ])
+    manifest.add('MANIFEST')
 
-    # (2) Internationalization
-    bad_templates = []
-    if lfs.exists('locale'):
-        # Build MO files
-        print '* Compile message catalogs:',
-        stdout.flush()
-        for lang in (source_language,) + target_languages:
-            print lang,
-            stdout.flush()
-            call([
-                'msgfmt', 'locale/%s.po' % lang, '-o', 'locale/%s.mo' % lang])
-            # Add to the manifest
-            manifest.append('locale/%s.mo' % lang)
-        print
+    # (2) Find out the version string
+    worktree = open_worktree('.', soft=True)
+    version = make_version(worktree)
+    open('version.txt', 'w').write(version)
+    print '* Version:', version
+    manifest.add('version.txt')
 
-        # Load message catalogs
-        message_catalogs = {}
-        for lang in target_languages:
-            path = 'locale/%s.po' % lang
-            handler = ro_database.get_handler(path)
-            message_catalogs[lang] = (handler, lfs.get_mtime(path))
+    # (3) Rules
+    rules = [
+        ('.po', '.mo', po2mo),
+        ('.scss', '.css', scss2css)]
+    # Templates
+    config = get_config()
+    src_lang = config.get_value('source_language', default='en')
+    for dst_lang in config.get_value('target_languages'):
+        rules.append(
+            ('.xml.%s' % src_lang, '.xml.%s' % dst_lang, make_template))
+        rules.append(
+            ('.xhtml.%s' % src_lang, '.xhtml.%s' % dst_lang, make_template))
 
-        # Build the templates in the target languages
-        good_files = compile('.*\\.x.*ml.%s$' % source_language)
-        exclude = frozenset(['.git', 'build', 'docs', 'dist'])
-        lines = get_files(exclude, filter=lambda x: good_files.match(x))
-        lines = list(lines)
-        if lines:
-            print '* Build XHTML files',
-            stdout.flush()
-            for path in lines:
-                # Load the handler
-                src_mtime = lfs.get_mtime(path)
-                src = ro_database.get_handler(path, XHTMLFile)
-                done = False
-                # Build the translation
-                n = path.rfind('.')
-                error = False
-                for language in target_languages:
-                    po, po_mtime = message_catalogs[language]
-                    dst = '%s.%s' % (path[:n], language)
-                    # Add to the manifest
-                    manifest.append(dst)
-                    # Skip the file if it is already up-to-date
-                    if lfs.exists(dst):
-                        dst_mtime = lfs.get_mtime(dst)
-                        if dst_mtime > src_mtime and dst_mtime > po_mtime:
-                            continue
-                    try:
-                        data = src.translate(po)
-                    except StandardError:
-                        error = True
-                        bad_templates.append((path, exc_info()))
-                    else:
-                        open(dst, 'w').write(data)
-                        done = True
-                # Done
-                if error is True:
-                    stdout.write('E')
-                elif done is True:
-                    stdout.write('*')
-                else:
-                    stdout.write('.')
-                stdout.flush()
-            print
+    # (4) Make
+    make(worktree, rules, manifest)
 
-    # (3) Build the manifest file
-    manifest.sort()
-    lines = [ x + '\n' for x in manifest ]
+    # (5) Write the manifest
+    lines = [ x + '\n' for x in sorted(manifest) ]
     open('MANIFEST', 'w').write(''.join(lines))
     print '* Build MANIFEST file (list of files to install)'
-
-    # (4) Show errors
-    if bad_templates:
-        print
-        print '***********************************************************'
-        print 'The following templates could not be translated'
-        print '***********************************************************'
-        for (path, (type, value, traceback)) in bad_templates:
-            print
-            print path
-            print_exception(type, value, traceback)
-
 
 
 

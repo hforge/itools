@@ -20,7 +20,7 @@
 # Import from itools
 from git import open_worktree
 from handlers import SetupConf
-from utils import get_compile_flags, get_files, get_manifest, make_version
+from utils import get_compile_flags, get_files, get_manifest
 from utils import setup, get_config, OptionalExtension
 
 
@@ -29,7 +29,6 @@ __all__ = [
     'get_config',
     'get_files',
     'get_manifest',
-    'make_version',
     'OptionalExtension',
     'setup',
     'SetupConf',

@@ -35,41 +35,6 @@ from handlers import SetupConf
 
 
 
-def make_version(cwd='.'):
-    """This function finds out the version number from the source, this will
-    be written to the 'version.txt' file, which will be read once the software
-    is installed to get the version number.
-    """
-    worktree = open_worktree(cwd)
-    # The name of the active branch
-    branch = worktree.get_branch_name()
-    if branch is None:
-        return None
-
-    # The tag
-    description = worktree.git_describe()
-
-    # The version name
-    if description:
-        tag, n, commit = description
-        if tag.startswith(branch):
-            version = tag
-        else:
-            version = '%s-%s' % (branch, tag)
-        # Exact match
-        if n == 0:
-            return version
-    else:
-        version = branch
-
-    # Get the timestamp
-    head = worktree.get_metadata()
-    timestamp = head['committer_date']
-    timestamp = timestamp.strftime('%Y%m%d%H%M')
-    return '%s-%s' % (version, timestamp)
-
-
-
 def get_files(excluded_paths, filter=lambda x: True):
     for name in listdir('.'):
         if name in excluded_paths:

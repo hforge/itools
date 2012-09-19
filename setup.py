@@ -50,9 +50,10 @@ if __name__ == '__main__':
 
     # PDF indexation
     try:
-        flags = get_compile_flags('pkg-config --cflags --libs poppler fontconfig')
+        flags = get_compile_flags(
+            'pkg-config --cflags --libs poppler fontconfig')
     except EnvironmentError:
-        err = '[WARNING] poppler headers not found, PDF indexation will not work'
+        err = "[WARNING] poppler headers not found, PDF indexation won't work"
         print >> stderr, err
     else:
         sources = ['pdf/pdftotext.cc']
@@ -63,7 +64,7 @@ if __name__ == '__main__':
     try:
         flags = get_compile_flags('wv2-config --cflags --libs')
     except EnvironmentError:
-        err = '[WARNING] wv2 not found, DOC indexation will not work'
+        err = "[WARNING] wv2 not found, DOC indexation won't work"
         print >> stderr, err
     else:
         sources = ['office/doctotext.cc']
@@ -75,7 +76,7 @@ if __name__ == '__main__':
     try:
         flags = get_compile_flags(line)
     except EnvironmentError:
-        err = '[WARNING] libsoup not found, itools.web will not work'
+        err = "[WARNING] libsoup not found, itools.web won't work"
         print >> stderr, err
     else:
         for include in flags['include_dirs']:

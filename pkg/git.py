@@ -170,7 +170,7 @@ class Worktree(object):
 
 
 
-def open_worktree(path, init=False, soft=False):
+def open_worktree(path, soft=False):
     try:
         repo = Repository('%s/.git' % path)
     except GitError:

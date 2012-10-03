@@ -22,36 +22,13 @@ from distutils import core
 from distutils.core import Extension
 from distutils.command.build_ext import build_ext
 from distutils.errors import LinkError
-from os import listdir
-from os.path import exists, isdir, join as join_path
-from re import compile
+from os.path import exists, join as join_path
 from sys import _getframe, argv
 
 # Import from itools
 from itools.core import freeze, get_pipe, get_version
 from itools.handlers import ro_database
-from git import open_worktree
 from handlers import SetupConf
-
-
-
-def get_files(excluded_paths, filter=lambda x: True):
-    for name in listdir('.'):
-        if name in excluded_paths:
-            continue
-
-        if isdir(name):
-            stack = [name]
-            while stack:
-                base = stack.pop()
-                for name in listdir(base):
-                    path = join_path(base, name)
-                    if isdir(path):
-                        stack.append(path)
-                    elif filter(name):
-                        yield path
-        elif filter(name):
-            yield name
 
 
 
@@ -122,18 +99,11 @@ def get_config():
 
 
 def get_manifest():
-    worktree = open_worktree('.', soft=True)
-    if worktree:
-        exclude = frozenset(['.gitignore'])
-        return [ x for x in worktree.get_filenames() if x not in exclude ]
+    from git import open_worktree
 
-    # No git: find out source files
-    config = get_config()
-    target_languages = config.get_value('target_languages')
-
-    exclude = frozenset(['.git', 'build', 'dist'])
-    bad_files = compile('.*(~|pyc|%s)$' % '|'.join(target_languages))
-    return get_files(exclude, filter=lambda x: not bad_files.match(x))
+    worktree = open_worktree('.')
+    exclude = frozenset(['.gitignore'])
+    return [ x for x in worktree.get_filenames() if x not in exclude ]
 
 
 

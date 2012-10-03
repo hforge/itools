@@ -115,7 +115,7 @@ def build():
     manifest.add('MANIFEST')
 
     # (2) Find out the version string
-    worktree = open_worktree('.', soft=True)
+    worktree = open_worktree('.')
     version = make_version(worktree)
     open('version.txt', 'w').write(version)
     print '* Version:', version

@@ -18,19 +18,22 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from git import open_worktree
 from handlers import SetupConf
-from utils import get_compile_flags, get_files, get_manifest
+from utils import get_compile_flags, get_manifest
 from utils import setup, get_config, OptionalExtension
 
 
 __all__ = [
     'get_compile_flags',
     'get_config',
-    'get_files',
     'get_manifest',
     'OptionalExtension',
     'setup',
-    'SetupConf',
-    # Git
-    'open_worktree']
+    'SetupConf']
+
+# Git: optional
+try:
+    from git import open_worktree
+    __all__.append('open_worktree')
+except ImportError:
+    pass

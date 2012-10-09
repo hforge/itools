@@ -33,7 +33,7 @@ from urllib import quote, unquote
 from pytz import timezone
 
 # Import from itools
-from itools.core import fixed_offset, local_tz
+from itools.core import fixed_offset, is_prototype, local_tz
 from itools.core import freeze, prototype, proto_lazy_property
 from itools.datatypes import String, HTTPDate
 from itools.i18n import AcceptLanguageType, format_number
@@ -305,7 +305,7 @@ class Context(prototype):
         # Translate the source message
         if message:
             text = message.gettext(**kw)
-            if isinstance(message, ERROR):
+            if is_prototype(message, ERROR):
                 return goto.replace(error=text)
             else:
                 return goto.replace(info=text)

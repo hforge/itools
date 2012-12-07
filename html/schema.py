@@ -168,6 +168,21 @@ html_attributes = {
     'quality': String, # <embed>
     'autoplay': Boolean, # <embed>
     'wrap': String,
+    'index': Integer,
+    'min': String, # <input>
+    'max': String, # <input>
+    'data-icon': String, # <input>
+    'data-icon1': String, # <input>
+    'data-icon2': String, # <input>
+    'mp': String, # <a>
+    'm4v': String, # <a>
+    'm4a': String, # <a>
+    'oga': String, # <a>
+    'ogg': String, # <a>
+    'ogv': String, # <a>
+    'webmv': String, # <a>
+    'poster': String, # <a>
+    'allowTransparency': String, # <iframe>
     # HTML5
     'controls': String,
     }
@@ -268,7 +283,8 @@ html_elements = [
     # XHTML 1.0 strict
     Element('a', common_attrs + ['charset', 'type', 'name', 'href',
         'hreflang', 'rel', 'rev', 'accesskey', 'shape', 'coords', 'tabindex',
-        'target', 'onfocus', 'onblur'], context='link'),
+        'target', 'onfocus', 'onblur', 'mp', 'm4a', 'm4v', 'oga', 'ogg', 'ogv',
+        'index', 'poster', 'webmv'], context='link'),
     Element('abbr', common_attrs),
     Element('acronym', common_attrs),
     BlockElement('address', common_attrs),
@@ -290,7 +306,7 @@ html_elements = [
         cellvalign_attrs + ['span', 'width']),
     Element('dfn', common_attrs),
     BlockElement('dd', common_attrs),
-    BlockElement('div', common_attrs + ['align']),
+    BlockElement('div', common_attrs + ['align', 'index']),
     BlockElement('dl', common_attrs + ['compact']),
     BlockElement('dt', common_attrs),
     Element('em', common_attrs, context="emphasis"),

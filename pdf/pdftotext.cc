@@ -68,7 +68,7 @@ PyObject *MemStreamPython::get_text(void) {
 
 
 
-static void text_output_func(void *stream, char *text, int len) {
+static void text_output_func(void *stream, const char *text, int len) {
     MemStreamPython *stream_out;
     std::string *words;
 
@@ -116,10 +116,9 @@ static PyObject *pdf_to_text(PyObject *self, PyObject *args) {
     stream_out = new MemStreamPython(stream_buffer, 0, STREAM_BUFFER_SIZE,
                                      &obj_out);
     text_out = new TextOutputDev(text_output_func, stream_out,
-                                 // maintain original physical layout
-                                 gFalse,
-                                 // keep strings in content stream order
-                                 gFalse);
+                                 gFalse,  // maintain original physical layout
+                                 0,
+                                 gFalse); // keep strings in content stream order
     if (!text_out->isOk()) {
         PyErr_SetString(PyExc_ValueError, "unable to convert to text");
         goto err2;

@@ -52,7 +52,7 @@ and Python packages.  They are not mandatory for installing itools.
 Software    Version  Format           Home
 ----------  -------  ---------------  ----------------------------------------
 xlrd          0.6.1  XLS              http://www.lexicon.net/sjmachin/xlrd.htm
-poppler      0.10.4  PDF              http://poppler.freedesktop.org/
+poppler        0.20  PDF              http://poppler.freedesktop.org/
 wv2           0.2.3  DOC              https://sourceforge.net/projects/wvware
 
 

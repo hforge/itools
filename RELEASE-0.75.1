@@ -1,0 +1,73 @@
+itools 0.75.1 (2012/12/19)
+==========================
+
+itools is a Python library, it groups a number of packages into a single
+meta-package for easier development and deployment:
+
+  itools.abnf             itools.ical             itools.srx
+  itools.core             itools.log              itools.stl
+  itools.csv              itools.loop             itools.tmx
+  itools.database         itools.odf              itools.uri
+  itools.datatypes        itools.office           itools.web
+  itools.fs               itools.pdf              itools.workflow
+  itools.gettext          itools.pkg              itools.xliff
+  itools.handlers         itools.python           itools.xml
+  itools.html             itools.relaxng          itools.xmlfile
+  itools.i18n             itools.rss
+
+Dependencies:
+
+- Now pygit2 is not required to install itools from a release (for instance
+  with "pip install itools").
+
+  It is only required if you use itools.database or ipkg-build.py or
+  ipkg-quality.py
+
+- For those using the PDF-to-text feature (itools.pdf), this release requires
+  poppler 0.20 (it won't compile with older versions).
+
+Clean up:
+
+- The itools.git package has been removed: the relevant code has been moved
+  where it is used (itools.database and itools.pkg)
+
+- itools.handlers: RWDatabase has been removed
+
+- The ipkg.info.py script has been removed
+
+- The --graph option from the ipkg-quality.py script has been removed
+
+Improvements and fixes:
+
+- The implementation and output of ipkg-build.py has changed a little. Now it
+  is able to compile .scss files (requires scss [1])
+
+- Now itools.html understands UmbrUI [2] and jPlayer [3] attributes.
+  Contributed by Norman Khine.
+
+- itools.web: fix returned message in Context.come_back
+  Contributed by Nicolas Deram
+
+
+[1] http://sass-lang.com/
+[2] https://github.com/n3b/umbrUI
+[3] http://www.jplayer.org/
+
+
+Resources
+---------
+
+Download
+http://download.hforge.org/itools/0.75/itools-0.75.1.tar.gz
+
+Home
+http://www.hforge.org/itools/
+
+Documentation
+http://www.hforge.org/itools/docs
+
+Mailing list
+http://lists.hforge.org/mailman/listinfo/itools
+
+Bug Tracker
+http://bugs.hforge.org/

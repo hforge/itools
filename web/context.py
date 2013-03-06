@@ -427,6 +427,8 @@ class Context(prototype):
             ]
 
         user_agent = self.get_header('User-Agent')
+        if not user_agent:
+            return True
         for footprint in footprints:
             if footprint in user_agent:
                 return True

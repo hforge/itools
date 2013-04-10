@@ -80,10 +80,6 @@ class BaseView(prototype):
         return process_form(get_value, schema)
 
 
-    def on_query_error(self, resource, context):
-        return 'The query could not be processed.'
-
-
     #######################################################################
     # Caching
     def get_mtime(self, resource):

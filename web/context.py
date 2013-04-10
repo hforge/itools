@@ -802,8 +802,15 @@ class RequestMethod(object):
         try:
             context.query = view.get_query(context)
         except FormError, error:
-            method = view.on_query_error
-            context.query_error = error
+            # If the query is invalid we consider that URL do not exist.
+            # Otherwise anybody can create many empty webpages,
+            # which is very bad for SEO.
+            status = 404
+            context.status = status
+            context.view_name = status2name[status]
+            context.view = root.get_view(context.view_name)
+            view = context.view
+            method = getattr(view, cls.method_name)
         except Exception:
             cls.internal_server_error(context)
             method = None

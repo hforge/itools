@@ -588,7 +588,7 @@ class RWDatabase(RODatabase):
                 tb.insert(name, value[0], value[1])
 
         # 5. Git commit
-        worktree.git_commit(git_tree, git_msg, git_author, git_date, debug=True)
+        worktree.git_commit(git_msg, git_author, git_date, tree=git_tree)
 
         # 6. Clear state
         changed.clear()

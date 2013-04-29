@@ -316,7 +316,7 @@ class Worktree(object):
         return self._call(cmd).rstrip()
 
 
-    def git_commit(self, tree, message, author=None, date=None, debug=False):
+    def git_commit(self, message, author=None, date=None, tree=None):
         """Equivalent to 'git commit', we must give the message and we can
         also give the author and date.
         """
@@ -327,7 +327,9 @@ class Worktree(object):
         self.index_mtime = getmtime(self.index_path)
 
         # Tree
-        if debug is True:
+        if tree is None:
+            tree = self.index.write_tree()
+        else: # XXX Remove this once the new code is tested
             assert tree == self.index.write_tree()
 
         # Parent

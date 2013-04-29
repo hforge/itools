@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from calendar import timegm
 from datetime import datetime
 from os import listdir, makedirs, remove, rmdir, walk
 from os.path import abspath, dirname, exists, getmtime, isabs, isdir, isfile
@@ -315,12 +316,10 @@ class Worktree(object):
         return self._call(cmd).rstrip()
 
 
-    def git_commit(self, message, author=None, date=None):
+    def git_commit(self, tree, message, author=None, date=None, debug=False):
         """Equivalent to 'git commit', we must give the message and we can
         also give the author and date.
         """
-        from calendar import timegm
-
         # TODO Check the 'nothing to commit' case
 
         # Write index
@@ -328,7 +327,8 @@ class Worktree(object):
         self.index_mtime = getmtime(self.index_path)
 
         # Tree
-        tree = self.index.write_tree()
+        if debug is True:
+            assert tree == self.index.write_tree()
 
         # Parent
         parent = self._resolve_reference('HEAD')

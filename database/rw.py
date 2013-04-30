@@ -541,51 +541,56 @@ class RWDatabase(RODatabase):
         # 4. Create the tree
         repo = worktree.repo
         index = repo.index
-        root = repo.revparse_single('HEAD').tree
-        # Initialize the heap
-        heap = Heap()
-        heap[''] = repo.TreeBuilder(root)
-        for key in git_add:
-            entry = index[key]
-            heap[key] = (entry.oid, entry.mode)
-        for key in self.removed:
-            heap[key] = None
+        try:
+            head = repo.revparse_single('HEAD')
+        except KeyError:
+            git_tree = None
+        else:
+            root = head.tree
+            # Initialize the heap
+            heap = Heap()
+            heap[''] = repo.TreeBuilder(root)
+            for key in git_add:
+                entry = index[key]
+                heap[key] = (entry.oid, entry.mode)
+            for key in self.removed:
+                heap[key] = None
 
-        while heap:
-            path, value = heap.popitem()
-            # Stop condition
-            if path == '':
-                git_tree = value.write()
-                break
+            while heap:
+                path, value = heap.popitem()
+                # Stop condition
+                if path == '':
+                    git_tree = value.write()
+                    break
 
-            if type(value) is TreeBuilder:
-                oid = value.write()
-                value = (oid, GIT_FILEMODE_TREE)
+                if type(value) is TreeBuilder:
+                    oid = value.write()
+                    value = (oid, GIT_FILEMODE_TREE)
 
-            # Split the path
-            if '/' in path:
-                parent, name = path.rsplit('/', 1)
-            else:
-                parent = ''
-                name = path
-
-            # Get the tree builder
-            tb = heap.get(parent)
-            if tb is None:
-                try:
-                    tentry = root[parent]
-                except KeyError:
-                    tb = repo.TreeBuilder()
+                # Split the path
+                if '/' in path:
+                    parent, name = path.rsplit('/', 1)
                 else:
-                    tree = repo[tentry.oid]
-                    tb = repo.TreeBuilder(tree)
-                heap[parent] = tb
+                    parent = ''
+                    name = path
 
-            # Modify
-            if value is None:
-                tb.remove(name)
-            else:
-                tb.insert(name, value[0], value[1])
+                # Get the tree builder
+                tb = heap.get(parent)
+                if tb is None:
+                    try:
+                        tentry = root[parent]
+                    except KeyError:
+                        tb = repo.TreeBuilder()
+                    else:
+                        tree = repo[tentry.oid]
+                        tb = repo.TreeBuilder(tree)
+                    heap[parent] = tb
+
+                # Modify
+                if value is None:
+                    tb.remove(name)
+                else:
+                    tb.insert(name, value[0], value[1])
 
         # 5. Git commit
         worktree.git_commit(git_msg, git_author, git_date, tree=git_tree)

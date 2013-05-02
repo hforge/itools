@@ -250,13 +250,13 @@ class Worktree(object):
             abspath = self._get_abspath(path)
             # 1. File
             if isfile(abspath):
-                del index[path]
+                index.remove(path)
                 remove(abspath)
                 continue
             # 2. Folder
             for root, dirs, files in walk(abspath, topdown=False):
                 for name in files:
-                    del index['%s/%s' % (root[n:], name)]
+                    index.remove('%s/%s' % (root[n:], name))
                     remove('%s/%s' % (root, name))
                 rmdir(root)
 

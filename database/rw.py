@@ -25,6 +25,7 @@ from heapq import heappush, heappop
 from os.path import dirname
 
 # Import from pygit2
+from pygit2 import GitError
 from pygit2 import TreeBuilder, GIT_FILEMODE_TREE
 
 # Import from itools
@@ -596,7 +597,16 @@ class RWDatabase(RODatabase):
 
                 # Modify
                 if value is None:
-                    tb.remove(name)
+                    # Sometimes there are empty folders left in the
+                    # filesystem, but not in the tree, then we get a
+                    # "Failed to remove entry" error.  Be robust.
+                    # XXX We may catch too much here, once pygit2 wraps
+                    # git_treebuilder_get we will be able to write more
+                    # reliable code.
+                    try:
+                        tb.remove(name)
+                    except GitError:
+                        pass
                 else:
                     tb.insert(name, value[0], value[1])
 

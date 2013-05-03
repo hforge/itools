@@ -329,8 +329,6 @@ class Worktree(object):
         # Tree
         if tree is None:
             tree = self.index.write_tree()
-        else: # XXX Remove this once the new code is tested
-            assert tree == self.index.write_tree()
 
         # Parent
         parent = self._resolve_reference('HEAD')

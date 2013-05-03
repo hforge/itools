@@ -28,7 +28,6 @@ import time
 # Import from pygit2
 from pygit2 import Repository, Signature, GitError, init_repository
 from pygit2 import GIT_SORT_REVERSE, GIT_SORT_TIME, GIT_OBJ_TREE
-from pygit2 import GIT_STATUS_WT_MODIFIED, GIT_STATUS_WT_DELETED
 
 # Import from itools
 from itools.core import lazy
@@ -288,22 +287,6 @@ class Worktree(object):
             self.git_add(target)
 
 
-    def git_clean(self):
-        """Equivalent to 'git clean -fxd', removes all files from the working
-        tree that are not in the files, and removes the empty folders too.
-        """
-        index = self.index
-
-        walk = self.walk()
-        for path in sorted(walk, reverse=True):
-            abspath = '%s%s' % (self.path, path)
-            if path[-1] == '/':
-                if not listdir(abspath):
-                    rmdir(abspath)
-            elif path not in index:
-                remove(abspath)
-
-
     @lazy
     def username(self):
         cmd = ['git', 'config', '--get', 'user.name']
@@ -430,32 +413,6 @@ class Worktree(object):
 
         # Ok
         return commits
-
-
-    def git_reset(self):
-        """Equivalent to 'git reset --hard -q', this method restores the
-        state of the working tree and index file to match the state of the
-        latest commit.
-        """
-        # (1) Read tree
-        head = self._resolve_reference('HEAD')
-        tree_oid = self.lookup(head).tree.oid
-        index = self.index
-        index.read_tree(tree_oid)
-        index.write()
-
-        # (2) Checkout tree
-        repo = self.repo
-        for entry in index:
-            path = entry.path
-            status = repo.status_file(path)
-            if status & (GIT_STATUS_WT_MODIFIED | GIT_STATUS_WT_DELETED):
-                # Checkout
-                data = self.lookup(index[path].oid).data
-                path = self._get_abspath(path)
-                make_parent_dirs(path)
-                with open(path, 'w') as f:
-                    f.write(data)
 
 
     def git_diff(self, since, until=None, paths=None):

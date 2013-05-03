@@ -25,6 +25,7 @@ from os.path import dirname
 
 # Import from pygit2
 from pygit2 import TreeBuilder, GIT_FILEMODE_TREE
+from pygit2 import GIT_CHECKOUT_FORCE, GIT_CHECKOUT_REMOVE_UNTRACKED
 
 # Import from itools
 from itools.core import get_pipe, lazy
@@ -477,9 +478,8 @@ class RWDatabase(RODatabase):
             cache[key].abort_changes()
 
         # 2. Git
-        self.worktree.git_reset()
-        if self.added:
-            self.worktree.git_clean()
+        strategy = GIT_CHECKOUT_FORCE | GIT_CHECKOUT_REMOVE_UNTRACKED
+        self.worktree.repo.checkout_head(strategy)
 
         # Reset state
         self.added.clear()

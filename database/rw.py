@@ -19,6 +19,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from binascii import unhexlify
 from datetime import datetime
 from heapq import heappush, heappop
 from os.path import dirname
@@ -40,6 +41,8 @@ from ro import RODatabase
 
 MSG_URI_IS_BUSY = 'The "%s" URI is busy.'
 
+
+EMPTY_TREE = unhexlify('4b825dc642cb6eb9a060e54bf8d69288fbee4904')
 
 class Heap(object):
     """
@@ -512,7 +515,7 @@ class RWDatabase(RODatabase):
         return None, None, None, [], []
 
 
-    def _save_changes(self, data):
+    def _save_changes(self, data, EMPTY_TREE=EMPTY_TREE):
         worktree = self.worktree
 
         # 1. Synchronize the handlers and the filesystem
@@ -565,7 +568,12 @@ class RWDatabase(RODatabase):
 
                 if type(value) is TreeBuilder:
                     oid = value.write()
-                    value = (oid, GIT_FILEMODE_TREE)
+                    # TODO Once pygit2 wraps the git_treebuilder_entrycount
+                    # call, we will be able to be more efficient here.
+                    if oid == EMPTY_TREE:
+                        value = None
+                    else:
+                        value = (oid, GIT_FILEMODE_TREE)
 
                 # Split the path
                 if '/' in path:

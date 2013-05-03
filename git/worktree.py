@@ -249,13 +249,13 @@ class Worktree(object):
             abspath = self._get_abspath(path)
             # 1. File
             if isfile(abspath):
-                del index[path]
+                index.remove(path)
                 remove(abspath)
                 continue
             # 2. Folder
             for root, dirs, files in walk(abspath, topdown=False):
                 for name in files:
-                    del index['%s/%s' % (root[n:], name)]
+                    index.remove('%s/%s' % (root[n:], name))
                     remove('%s/%s' % (root, name))
                 rmdir(root)
 
@@ -315,7 +315,7 @@ class Worktree(object):
         return self._call(cmd).rstrip()
 
 
-    def git_commit(self, message, author=None, date=None):
+    def git_commit(self, message, author=None, date=None, tree=None):
         """Equivalent to 'git commit', we must give the message and we can
         also give the author and date.
         """
@@ -328,7 +328,8 @@ class Worktree(object):
         self.index_mtime = getmtime(self.index_path)
 
         # Tree
-        tree = self.index.write_tree()
+        if tree is None:
+            tree = self.index.write_tree()
 
         # Parent
         parent = self._resolve_reference('HEAD')
@@ -437,6 +438,9 @@ class Worktree(object):
         state of the working tree and index file to match the state of the
         latest commit.
         """
+        from pygit2 import GIT_CHECKOUT_FORCE
+        self.repo.checkout(GIT_CHECKOUT_FORCE, head=True)
+        return
         # (1) Read tree
         head = self._resolve_reference('HEAD')
         tree_oid = self.lookup(head).tree.oid

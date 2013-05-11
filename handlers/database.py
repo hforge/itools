@@ -26,6 +26,7 @@ from sys import getrefcount
 
 # Import from pygit2
 from pygit2 import TreeBuilder, GIT_FILEMODE_TREE
+from pygit2 import GitError
 
 # Import from itools
 from itools.core import LRUCache, send_subprocess, freeze
@@ -1159,7 +1160,10 @@ class GitDatabase(ROGitDatabase):
 
                 # Modify
                 if value is None:
-                    tb.remove(name)
+                    try:
+                        tb.remove(name)
+                    except GitError:
+                        pass
                 else:
                     tb.insert(name, value[0], value[1])
 

@@ -438,6 +438,7 @@ class Worktree(object):
         state of the working tree and index file to match the state of the
         latest commit.
         """
+        return
         from pygit2 import GIT_CHECKOUT_FORCE
         self.repo.checkout(GIT_CHECKOUT_FORCE, head=True)
         return

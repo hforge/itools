@@ -20,7 +20,7 @@ pkg-config     0.23                   http://pkg-config.freedesktop.org/
 pytz                 core             http://pytz.sourceforge.net/
 glib           2.20  fs               http://www.gtk.org/
 pygobject      2.20  fs               http://www.pygtk.org/
-pygit2       0.17.2  pkg, database    https://github.com/libgit2/pygit2
+pygit2       0.19.0  pkg, database    https://github.com/libgit2/pygit2
 Git             1.7  pkg, database    http://git-scm.com/
 libsoup        2.28  web              http://live.gnome.org/LibSoup
 reportlab       2.3  pdf              http://www.reportlab.org/

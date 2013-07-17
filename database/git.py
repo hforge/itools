@@ -114,7 +114,7 @@ class Worktree(object):
         except KeyError:
             return None
 
-        return reference.oid
+        return reference.target
 
 
     #######################################################################

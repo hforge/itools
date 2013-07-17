@@ -19,13 +19,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from binascii import unhexlify
 from datetime import datetime
 from heapq import heappush, heappop
 from os.path import dirname
 
 # Import from pygit2
-from pygit2 import GitError
 from pygit2 import TreeBuilder, GIT_FILEMODE_TREE
 
 # Import from itools
@@ -43,7 +41,6 @@ from ro import RODatabase
 MSG_URI_IS_BUSY = 'The "%s" URI is busy.'
 
 
-EMPTY_TREE = unhexlify('4b825dc642cb6eb9a060e54bf8d69288fbee4904')
 
 class Heap(object):
     """
@@ -516,7 +513,7 @@ class RWDatabase(RODatabase):
         return None, None, None, [], []
 
 
-    def _save_changes(self, data, EMPTY_TREE=EMPTY_TREE):
+    def _save_changes(self, data):
         worktree = self.worktree
 
         # 1. Synchronize the handlers and the filesystem
@@ -568,12 +565,10 @@ class RWDatabase(RODatabase):
                     break
 
                 if type(value) is TreeBuilder:
-                    oid = value.write()
-                    # TODO Once pygit2 wraps the git_treebuilder_entrycount
-                    # call, we will be able to be more efficient here.
-                    if oid == EMPTY_TREE:
+                    if len(value) == 0:
                         value = None
                     else:
+                        oid = value.write()
                         value = (oid, GIT_FILEMODE_TREE)
 
                 # Split the path
@@ -600,13 +595,8 @@ class RWDatabase(RODatabase):
                     # Sometimes there are empty folders left in the
                     # filesystem, but not in the tree, then we get a
                     # "Failed to remove entry" error.  Be robust.
-                    # XXX We may catch too much here, once pygit2 wraps
-                    # git_treebuilder_get we will be able to write more
-                    # reliable code.
-                    try:
+                    if tb.get(name) is not None:
                         tb.remove(name)
-                    except GitError:
-                        pass
                 else:
                     tb.insert(name, value[0], value[1])
 

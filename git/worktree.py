@@ -113,7 +113,7 @@ class Worktree(object):
         except KeyError:
             return None
 
-        return reference.oid
+        return reference.target
 
 
     #######################################################################
@@ -249,7 +249,7 @@ class Worktree(object):
             abspath = self._get_abspath(path)
             # 1. File
             if isfile(abspath):
-                del index[path]
+                index.remove(path)
                 remove(abspath)
                 continue
             # 2. Folder

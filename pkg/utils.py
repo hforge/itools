@@ -18,6 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+import codecs
 from distutils import core
 from distutils.core import Extension
 from distutils.command.build_ext import build_ext
@@ -156,6 +157,13 @@ def setup(ext_modules=freeze([])):
     else:
         scripts = []
 
+    # Long description
+    if exists('README.rst'):
+        with codecs.open('README.rst', 'r', 'utf-8') as readme:
+            long_description = readme.read()
+    else:
+        long_description = config.get_value('description')
+
     author_name = config.get_value('author_name')
     # XXX Workaround buggy distutils ("sdist" don't likes unicode strings,
     # and "register" don't likes normal strings).
@@ -170,7 +178,7 @@ def setup(ext_modules=freeze([])):
                license = config.get_value('license'),
                url = config.get_value('url'),
                description = config.get_value('title'),
-               long_description = config.get_value('description'),
+               long_description = long_description,
                classifiers = classifiers,
                # Packages
                package_dir = {package_name: '.'},

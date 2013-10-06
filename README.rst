@@ -6,7 +6,7 @@ Table of contents:
   3. Legal notice
 
 
-1. About itools
+About itools
 ===============
 
 itools is a Python library, it groups a number of packages into a single
@@ -27,14 +27,14 @@ The packages included are:
 
 The scripts included are:
 
-  idb-inspect.py          igettext-merge.py       ipkg-copyright.py
-  igettext-build.py       iodf-greek.py           ipkg-quality.py
-  igettext-extract.py     ipkg-build.py           ipkg-update-locate.py
+  idb-inspect.py          igettext-merge.py       ipkg-quality.py
+  igettext-build.py       iodf-greek.py           ipkg-update-locate.py
+  igettext-extract.py     ipkg-build.py
 
 To learn how to install itools check the INSTALL.txt file.
 
 
-2. Resources
+Resources
 ===============
 
 Home
@@ -51,7 +51,33 @@ Bug Tracker
 http://bugs.hforge.org
 
 
-3. Legal notice
+Authors
+===============
+
+- J. David Ibáñez
+- Hervé Cauwelier
+- David Versmisse
+- Henry Obein
+- Dumont Sébastien
+- Nicolas Deram
+- Sylvain Taverne
+- Gautier Hayoun
+- Alexis Huet
+- Aurélien Ansel
+- Romain Gauthier
+- Luis Belmar-Letelier
+- Rob McMullen
+- Fabrice Decroix
+- Norman Khine
+- Yannick Martel
+- Matthieu France
+- Romanczyk Guillaume
+- Wynand Winterbach
+- David Bambouché
+- Piotr Macuk
+
+
+Legal notice
 ===============
 
 This program is copyrighted by the people who wrote it.  Check the CREDITS.txt

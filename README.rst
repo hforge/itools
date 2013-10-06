@@ -1,18 +1,10 @@
-
-Table of contents:
-
-  1. About itools
-  2. Resources
-  3. Legal notice
-
-
 About itools
 ===============
 
 itools is a Python library, it groups a number of packages into a single
 meta-package for easier development and deployment.
 
-The packages included are:
+The packages included are::
 
   itools.abnf             itools.ical             itools.srx
   itools.core             itools.log              itools.stl
@@ -25,7 +17,7 @@ The packages included are:
   itools.html             itools.relaxng          itools.xmlfile
   itools.i18n             itools.rss
 
-The scripts included are:
+The scripts included are::
 
   idb-inspect.py          igettext-merge.py       ipkg-quality.py
   igettext-build.py       iodf-greek.py           ipkg-update-locate.py
@@ -37,24 +29,26 @@ To learn how to install itools check the INSTALL.txt file.
 Resources
 ===============
 
-Home
-http://www.hforge.org/itools
+- Home,
+  http://www.hforge.org/itools
 
-Documentation
-http://docs.hforge.org/itools
+- Documentation,
+  http://docs.hforge.org/itools
 
-Mailing list
-http://www.hforge.org/community/
-http://archives.hforge.org/index.cgi?list=itools
+- Mailing list,
+  http://www.hforge.org/community/
 
-Bug Tracker
-http://bugs.hforge.org
+- Mailing list archives,
+  http://archives.hforge.org/index.cgi?list=itools
+
+- Bug Tracker,
+  http://bugs.hforge.org
 
 
 Authors
 ===============
 
-- J. David Ibáñez
+- J David Ibáñez
 - Hervé Cauwelier
 - David Versmisse
 - Henry Obein
@@ -77,13 +71,8 @@ Authors
 - Piotr Macuk
 
 
-Legal notice
+License
 ===============
-
-This program is copyrighted by the people who wrote it.  Check the CREDITS.txt
-file to know them.
-
-----
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

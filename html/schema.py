@@ -76,6 +76,7 @@ html_attributes = {
     'content': String,
     'coords': String,
     'data': URI,
+    'data-bind': String,
     'datetime': String,
     'declare': Boolean,
     'defer': Boolean,
@@ -188,7 +189,7 @@ html_attributes = {
 
 # Predefined sets of attributes
 core_attrs = [
-    'id', 'class', 'style', 'title']
+    'id', 'class', 'style', 'title', 'data-bind']
 
 i18n_attrs = [
     'lang', 'dir']

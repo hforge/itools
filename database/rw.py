@@ -479,7 +479,7 @@ class RWDatabase(RODatabase):
 
         # 2. Git
         strategy = GIT_CHECKOUT_FORCE | GIT_CHECKOUT_REMOVE_UNTRACKED
-        self.worktree.repo.checkout_head(strategy)
+        self.worktree.repo.checkout_head(strategy=strategy)
 
         # Reset state
         self.added.clear()

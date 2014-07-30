@@ -24,6 +24,7 @@ from heapq import heappush, heappop
 from os.path import dirname
 
 # Import from pygit2
+import pygit2
 from pygit2 import TreeBuilder, GIT_FILEMODE_TREE
 from pygit2 import GIT_CHECKOUT_FORCE, GIT_CHECKOUT_REMOVE_UNTRACKED
 
@@ -479,7 +480,10 @@ class RWDatabase(RODatabase):
 
         # 2. Git
         strategy = GIT_CHECKOUT_FORCE | GIT_CHECKOUT_REMOVE_UNTRACKED
-        self.worktree.repo.checkout_head(strategy=strategy)
+        if pygit2.__version__ >= '0.21.1':
+            self.worktree.repo.checkout_head(strategy=strategy)
+        else:
+            self.worktree.repo.checkout_head(strategy)
 
         # Reset state
         self.added.clear()

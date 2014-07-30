@@ -191,7 +191,7 @@ class Worktree(object):
             if name not in obj:
                 return None
             entry = obj[name]
-            obj = self.lookup(entry.id)
+            obj = self.lookup(entry.oid)
         return obj
 
 

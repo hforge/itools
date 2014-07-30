@@ -553,7 +553,7 @@ class RWDatabase(RODatabase):
             heap[''] = repo.TreeBuilder(root)
             for key in git_add:
                 entry = index[key]
-                heap[key] = (entry.id, entry.mode)
+                heap[key] = (entry.oid, entry.mode)
             for key in self.removed:
                 heap[key] = None
 
@@ -586,7 +586,7 @@ class RWDatabase(RODatabase):
                     except KeyError:
                         tb = repo.TreeBuilder()
                     else:
-                        tree = repo[tentry.id]
+                        tree = repo[tentry.oid]
                         tb = repo.TreeBuilder(tree)
                     heap[parent] = tb
 

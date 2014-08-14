@@ -1,9 +1,9 @@
 *~
+*.mo
 *.pyc
 *.swp
 build
 dist
 MANIFEST
 version.txt
-locale/*.mo
 test/pdf/*.pdf

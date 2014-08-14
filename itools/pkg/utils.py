@@ -107,12 +107,15 @@ def get_manifest():
     return [ x for x in worktree.get_filenames() if x not in exclude ]
 
 
-
 def setup(ext_modules=freeze([])):
-    mname = _getframe(1).f_globals.get('__name__')
-    version = get_version(mname)
-
     config = get_config()
+    package_root = config.get_value('package_root')
+
+    version_txt = package_root + '/version.txt'
+    if exists(version_txt):
+        version = open(version_txt).read().strip()
+    else:
+        version = None
 
     # Initialize variables
     package_name = config.get_value('package_name')
@@ -141,7 +144,13 @@ def setup(ext_modules=freeze([])):
     filenames = [ x for x in filenames if not x.endswith('.py') ]
 
     # The data files
+    prefix = '' if package_root == '.' else package_root + '/'
+    prefix_n = len(prefix)
     for line in filenames:
+        if not line.startswith(prefix):
+            continue
+        line = line[prefix_n:]
+
         path = line.split('/')
         if path[0] in subpackages:
             subpackage = '%s.%s' % (package_name, path[0])
@@ -181,7 +190,7 @@ def setup(ext_modules=freeze([])):
                long_description = long_description,
                classifiers = classifiers,
                # Packages
-               package_dir = {package_name: '.'},
+               package_dir = {package_name: package_root},
                packages = packages,
                package_data = package_data,
                # Requires / Provides

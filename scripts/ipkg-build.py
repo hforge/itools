@@ -110,6 +110,9 @@ def scss2css(source, target):
 
 
 def build():
+    config = get_config()
+    package_root = config.get_value('package_root')
+
     # (1) Initialize the manifest file
     manifest = set([ x for x in get_manifest() if not islink(x) ])
     manifest.add('MANIFEST')
@@ -117,16 +120,17 @@ def build():
     # (2) Find out the version string
     worktree = open_worktree('.')
     version = make_version(worktree)
-    open('version.txt', 'w').write(version)
+    version_txt = 'version.txt' if package_root == '.' \
+                  else package_root + '/version.txt'
+    open(version_txt, 'w').write(version)
     print '* Version:', version
-    manifest.add('version.txt')
+    manifest.add(version_txt)
 
     # (3) Rules
     rules = [
         ('.po', '.mo', po2mo),
         ('.scss', '.css', scss2css)]
     # Templates
-    config = get_config()
     src_lang = config.get_value('source_language', default='en')
     for dst_lang in config.get_value('target_languages'):
         rules.append(

@@ -18,15 +18,10 @@
 
 # Import from the Standard Library
 from distutils.core import Extension
-from imp import load_module, PKG_DIRECTORY
-from os import getcwd
 from sys import stderr
 
-# Import local itools first, otherwise installing the first time won't work.
-load_module('itools', None, getcwd(), ('', '', PKG_DIRECTORY))
-
 # Import from itools
-from pkg import setup, get_compile_flags
+from itools.pkg import setup, get_compile_flags
 
 
 if __name__ == '__main__':
@@ -43,8 +38,9 @@ if __name__ == '__main__':
         print >> stderr, err
         raise
     else:
-        sources = ['xml/parser.c', 'xml/doctype.c', 'xml/arp.c',
-                   'xml/pyparser.c']
+        sources = [
+            'itools/xml/parser.c', 'itools/xml/doctype.c', 'itools/xml/arp.c',
+            'itools/xml/pyparser.c']
         extension = Extension('itools.xml.parser', sources, **flags)
         ext_modules.append(extension)
 
@@ -56,7 +52,7 @@ if __name__ == '__main__':
         err = "[WARNING] poppler headers not found, PDF indexation won't work"
         print >> stderr, err
     else:
-        sources = ['pdf/pdftotext.cc']
+        sources = ['itools/pdf/pdftotext.cc']
         extension = Extension('itools.pdf.pdftotext', sources, **flags)
         ext_modules.append(extension)
 
@@ -67,7 +63,7 @@ if __name__ == '__main__':
         err = "[WARNING] wv2 not found, DOC indexation won't work"
         print >> stderr, err
     else:
-        sources = ['office/doctotext.cc']
+        sources = ['itools/office/doctotext.cc']
         extension = Extension('itools.office.doctotext', sources, **flags)
         ext_modules.append(extension)
 
@@ -83,7 +79,7 @@ if __name__ == '__main__':
             if include.endswith('/libsoup-2.4'):
                 flags['include_dirs'].append('%s/libsoup' % include)
                 break
-        sources = ['web/soup.c']
+        sources = ['itools/web/soup.c']
         extension = Extension('itools.web.soup', sources, **flags)
         ext_modules.append(extension)
 

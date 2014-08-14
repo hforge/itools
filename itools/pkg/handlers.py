@@ -27,6 +27,7 @@ class SetupConf(ConfigFile):
     schema = {
         'name': String,
         'package_name': String,
+        'package_root': String(default='.'),
         'title': String,
         'url': String,
         'author_name': String,

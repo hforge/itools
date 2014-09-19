@@ -1004,6 +1004,12 @@ class PUT(RequestMethod):
 
 
     @classmethod
+    def find_view(cls, context):
+        # Look for the "put" view
+        return find_view_by_method(context)
+
+
+    @classmethod
     def check_conditions(cls, context):
         """The resource is not locked, the request must have a correct
            "If-Unmodified-Since" header.

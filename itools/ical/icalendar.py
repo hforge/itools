@@ -267,7 +267,7 @@ class iCalendar(TextFile):
     def new(self):
         properties = (
             ('VERSION', u'2.0'),
-            ('PRODID', u'-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN'))
+            ('PRODID', u'-//hforge.org/NONSGML ikaaro icalendar V1.0//EN'))
         for name, value in properties:
             self.properties[name] = Property(value)
 

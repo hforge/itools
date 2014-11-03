@@ -269,7 +269,10 @@ class Context(object):
 
     def init_base_style_sheet(self):
         self.stylesheet = getSampleStyleSheet()
-        if float(reportlab.Version) < 2.4:
+        # Check Reportlab version (troncate version 3.1.8 to 3.1)
+        version = reportlab.Version
+        version = version.rsplit('.', version.count('.')-1)[0]
+        if float(version) < 2.4:
             # Add heading level 4, 5 and 6 like in html
             self.stylesheet.add(ParagraphStyle(name='Heading4',
                 parent=self.stylesheet['h3'], fontSize=11), alias='h4')

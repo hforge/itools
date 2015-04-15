@@ -18,6 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the standard library
+from decimal import Decimal as decimal
 from datetime import datetime
 from marshal import dumps, loads
 from hashlib import sha1
@@ -29,7 +30,7 @@ from xapian import sortable_serialise, sortable_unserialise, TermGenerator
 
 # Import from itools
 from itools.core import fixed_offset, lazy
-from itools.datatypes import Integer, Unicode, String
+from itools.datatypes import Decimal, Integer, Unicode, String
 from itools.fs import lfs
 from itools.i18n import is_punctuation
 from itools.log import log_warning
@@ -668,6 +669,8 @@ def _decode_simple_value(field_cls, data):
     # Overload the Integer type, cf _encode_simple_value
     if issubclass(field_cls, Integer):
         return int(sortable_unserialise(data))
+    elif issubclass(field_cls, Decimal):
+        return decimal(sortable_unserialise(data))
     # A common field or a new field
     return field_cls.decode(data)
 
@@ -692,6 +695,9 @@ def _encode_simple_value(field_cls, value):
     # Integers (FIXME this doesn't work with the big integers)
     if issubclass(field_cls, Integer):
         return sortable_serialise(value)
+    elif issubclass(field_cls, Decimal):
+        # FIXME: We convert decimal->float so we lost precision
+        return sortable_serialise(float(value))
 
     # Datetimes: normalize to UTC, so searching works
     if type(value) is datetime:

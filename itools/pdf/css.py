@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 # Copyright (C) 2008 Dumont Sébastien <sebastien.dumont@itaapy.com>
 # Copyright (C) 2008-2009 J. David Ibáñez <jdavid.ibp@gmail.com>
 """

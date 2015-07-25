@@ -126,6 +126,18 @@ class ISOCalendarDate(DataType):
         return value.strftime(cls.format_date)
 
 
+    @classmethod
+    def is_valid(cls, value):
+        # Only consider the value is valid if we are able to encode it.
+        # Specifically this covers dates before 1900, which are not supported
+        # by strftime (in Python 2, because Python 3 does support them).
+        try:
+            cls.encode(value)
+        except Exception:
+            return False
+        return True
+
+
 # TODO ISOWeekDate
 # TODO ISOOrdinalDate
 

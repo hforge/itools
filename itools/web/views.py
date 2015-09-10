@@ -260,7 +260,11 @@ class STLView(BaseView):
         # Case 1: a path to a file somewhere
         template_type = type(template)
         if template_type is str:
-            return context.get_template(template)
+            template = context.get_template(template)
+            if template is None:
+                msg = 'Template "{0}" was not found'
+                raise ValueError(msg.format(self.template))
+            return template
 
         # Case 2: the stream ready to use
         if template_type is list:

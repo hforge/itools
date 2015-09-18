@@ -81,7 +81,8 @@ class Metadata(File):
             # 1. Get the field
             field = resource_class.get_field(name)
             if field is None:
-                msg = 'unexpected field "%s"' % name
+                msg = 'unexpected field "{0}" in resource {1}, cls {2}'
+                msg = msg.format(name, self.key, resource_class)
                 if resource_class.fields_soft:
                     log_warning(msg, domain='itools.database')
                     field = DefaultField
@@ -95,8 +96,8 @@ class Metadata(File):
                 deserialize_parameters(parameters, params_schema,
                                        params_default)
             except ValueError, e:
-                msg = 'in class "{0}" property "{1}": {2}'
-                raise ValueError, msg.format(resource_class, name, e)
+                msg = 'in class "{0}", resource {1} property "{2}": {3}'
+                raise ValueError, msg.format(resource_class, self.key, name, e)
 
             # 3. Get the datatype properties
             if field.multiple and field.multilingual:

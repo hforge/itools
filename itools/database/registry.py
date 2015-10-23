@@ -41,7 +41,7 @@ def register_field(name, field_cls):
             old_value = old_value.im_func
         if type(new_value) is MethodType:
             new_value = new_value.im_func
-        if old_value is not new_value:
+        if old_value != new_value:
             raise ValueError, 'register conflict over the "%s" field' % name
 
 

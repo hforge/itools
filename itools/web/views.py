@@ -42,8 +42,11 @@ def process_form(get_value, schema):
         datatype = schema[name]
         try:
             values[name] = get_value(name, type=datatype)
-        except FormError:
-            raise FormError, ERROR(u'There are errors, check below.')
+        except FormError, e:
+            raise FormError(
+                message=ERROR(u'There are errors, check below.'),
+                missing=e.missing,
+                invalid=e.invalid)
     return values
 
 

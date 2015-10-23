@@ -54,11 +54,13 @@ from views import BaseView
 
 class Context(prototype):
 
+    method = None
+    mtime = None # Last-Modified
+    uri = None
     user = None
     resource = None
     server = None
     status = None # response status
-    mtime = None # Last-Modified
 
 
     def init_context(self):

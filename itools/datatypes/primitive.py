@@ -22,11 +22,15 @@
 # Import from the Standard Library
 from copy import deepcopy
 from decimal import Decimal as decimal
+from json import loads, dumps
 from re import compile
 
 # Import from itools
 from itools.core import freeze
 from itools.uri import Path, get_reference
+#from itools.web.utils import NewJSONEncoder, fix_json
+
+# Import from here
 from base import DataType
 
 
@@ -315,3 +319,45 @@ class XMLAttribute(object):
     def decode(value):
         value = value.replace('&amp;', '&').replace('&lt;', '<')
         return value.replace('&quot;', '"')
+
+
+###########################################################################
+# JSON
+###########################################################################
+class JSONObject(DataType):
+    """A JSON object, which is a Python dict serialized as a JSON string.
+
+    See also JSONArray
+    """
+
+    default = {}
+
+    @staticmethod
+    def is_valid(value):
+        return isinstance(value, dict)
+
+
+    @staticmethod
+    def decode(value):
+        value = loads(value)
+        return fix_json(value)
+
+
+    @staticmethod
+    def encode(value):
+        return dumps(value, cls=NewJSONEncoder)
+
+
+
+class JSONArray(JSONObject):
+    """A JSON array, which is a Python list serialized as a JSON string
+
+    See also JSONObject
+    """
+
+    default = []
+
+
+    @staticmethod
+    def is_valid(value):
+        return isinstance(value, list)

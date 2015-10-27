@@ -95,10 +95,13 @@ class FormError(StandardError):
     """Raised when a form is invalid (missing or invalid fields).
     """
 
-    def __init__(self, message=None, missing=False, invalid=False):
+    def __init__(self, message=None, missing=False, invalid=False,
+            missings=[], invalids=[]):
         self.msg = message
         self.missing = missing
         self.invalid = invalid
+        self.missings = missings
+        self.invalids = invalids
 
 
     def get_message(self):

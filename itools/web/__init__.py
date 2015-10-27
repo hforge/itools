@@ -32,6 +32,7 @@ from messages import INFO, ERROR, MSG_MISSING_OR_INVALID
 from server import WebServer
 from soup import SoupMessage
 from static import StaticContext
+from utils import NewJSONEncoder
 from views import BaseView, STLView
 
 __all__ = [
@@ -56,6 +57,7 @@ __all__ = [
     'HTTPError',
     'InternalServerError',
     'MethodNotAllowed',
+    'NewJSONEncoder',
     'NotFound',
     'NotImplemented',
     'NotModified',

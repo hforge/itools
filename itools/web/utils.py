@@ -14,6 +14,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from standard library
+from datetime import datetime, date, time
+from decimal import Decimal
+from json import JSONEncoder
+
+# Import from itools
+from itools.core import is_prototype
+from itools.gettext import MSG
+from itools.html import stream_to_str_as_html
+from itools.xml import XMLParser
+
 
 reason_phrases = {
     # Informational (HTTP 1.1)
@@ -75,3 +86,40 @@ def set_response(soup_message, status):
     body = '{0} {1}'.format(status, reason_phrases[status])
     soup_message.set_response('text/plain', body)
 
+
+def fix_json(obj):
+    """Utility function, given a json object as returned by json.loads
+    transform the unicode strings to strings.
+
+    TODO Use a custom JSONDecoder instead.
+    """
+    obj_type = type(obj)
+    if obj_type is unicode:
+        return obj.encode('utf-8')
+    if obj_type is list:
+        return [ fix_json(x) for x in obj ]
+    if obj_type is dict:
+        aux = {}
+        for x, y in obj.items():
+            aux[fix_json(x)] = fix_json(y)
+        return aux
+    return obj
+
+
+
+class NewJSONEncoder(JSONEncoder):
+
+    def default(self, o):
+        if isinstance(o, Decimal):
+            return str(o)
+        elif isinstance(o, datetime):
+            return o.isoformat()
+        elif isinstance(o, date):
+            return o.isoformat()
+        elif isinstance(o, time):
+            return o.isoformat()
+        elif is_prototype(o, MSG):
+            return o.gettext()
+        elif isinstance(o, XMLParser):
+            return stream_to_str_as_html(o)
+        return JSONEncoder.default(self, o)

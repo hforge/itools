@@ -22,6 +22,7 @@
 
 # Import from the Standard Library
 from copy import deepcopy
+from json import dumps
 
 # Import from itools
 from itools.core import freeze, prototype
@@ -31,22 +32,34 @@ from itools.gettext import MSG
 from itools.handlers import File
 from itools.stl import stl
 from itools.uri import decode_query, Reference
+
+# Import from here
 from exceptions import FormError
 from messages import ERROR
+from utils import NewJSONEncoder
 
 
 
 def process_form(get_value, schema):
+    missings = []
+    invalids = []
     values = {}
     for name in schema:
         datatype = schema[name]
         try:
             values[name] = get_value(name, type=datatype)
         except FormError, e:
-            raise FormError(
-                message=ERROR(u'There are errors, check below.'),
-                missing=e.missing,
-                invalid=e.invalid)
+            if e.missing:
+                missings.append(name)
+            elif e.invalid:
+                invalids.append(name)
+    if missings or invalids:
+        raise FormError(
+            message=ERROR(u'There are errors, check below.'),
+            missing=len(missings)>0,
+            invalid=len(invalids)>0,
+            missings=missings,
+            invalids=invalids)
     return values
 
 
@@ -197,8 +210,31 @@ class BaseView(prototype):
 
 
     def on_form_error(self, resource, context):
-        context.message = context.form_error.get_message()
+        content_type, type_parameters = context.get_header('content-type')
+        if content_type == 'application/json':
+            return self.on_form_error_json(resource, context)
+        return self.on_form_error_default(resource, context)
+
+
+    def on_form_error_default(self, resource, context):
+        # Return to GET view on error
         return self.GET
+
+
+    def on_form_error_json(self, resource, context):
+        error = context.form_error
+        error_json = {
+            'msg': error.get_message(),
+            'missing': error.missing,
+            'invalid': error.invalid,
+            'missings': error.missings,
+            'invalids': error.invalids}
+        return self.return_json(error_json, context)
+
+
+    def return_json(self, data, context):
+        context.set_content_type('application/json')
+        return dumps(data, cls=NewJSONEncoder)
 
 
     def POST(self, resource, context):

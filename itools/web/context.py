@@ -21,6 +21,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+import json
 from base64 import decodestring, encodestring
 from copy import copy
 from datetime import datetime, timedelta
@@ -48,7 +49,7 @@ from exceptions import NotImplemented, MethodNotAllowed, Unauthorized
 from exceptions import FormError
 from headers import get_type, Cookie, SetCookieDataType
 from messages import ERROR
-from utils import set_response
+from utils import fix_json, set_response
 from views import BaseView
 
 
@@ -135,51 +136,66 @@ class Context(prototype):
         body = self.soup_message.get_body()
         if not body:
             return {}
-
-        # Case 2: urlencoded
+        # Get content type
         content_type, type_parameters = self.get_header('content-type')
         if content_type == 'application/x-www-form-urlencoded':
-            return decode_query(body)
-
-        # Case 3: multipart
-        if content_type.startswith('multipart/'):
-            boundary = type_parameters.get('boundary')
-            boundary = '--%s' % boundary
-            form = {}
-            for part in body.split(boundary)[1:-1]:
-                # Parse the entity
-                entity = Entity(string=part)
-                # Find out the parameter name
-                header = entity.get_header('Content-Disposition')
-                value, header_parameters = header
-                name = header_parameters['name']
-                # Load the value
-                body = entity.get_body()
-                if 'filename' in header_parameters:
-                    filename = header_parameters['filename']
-                    if filename:
-                        # Strip the path (for IE).
-                        filename = filename.split('\\')[-1]
-                        # Default content-type, see
-                        # http://tools.ietf.org/html/rfc2045#section-5.2
-                        if entity.has_header('content-type'):
-                            mimetype = entity.get_header('content-type')[0]
-                        else:
-                            mimetype = 'text/plain'
-                        form[name] = filename, mimetype, body
-                else:
-                    if name not in form:
-                        form[name] = body
-                    else:
-                        if isinstance(form[name], list):
-                            form[name].append(body)
-                        else:
-                            form[name] = [form[name], body]
-            return form
-
+            # Case 1: urlencoded
+            return self.get_form_body(body)
+        elif content_type == 'application/json':
+            # Case 2: json
+            return self.get_json_body(body)
+        elif content_type.startswith('multipart/'):
+            # Case 3: multipart
+            return self.get_multipart_body(body)
         # Case 4: This is useful for REST services
         # XXX Should just return the body as a string? deserialized?
         return {'body': body}
+
+
+    def get_form_body(self, body):
+        return decode_query(body)
+
+
+    def get_json_body(self, body):
+        data = json.loads(body)
+        return fix_json(data)
+
+
+    def get_multipart_body(self, body):
+        content_type, type_parameters = self.get_header('content-type')
+        boundary = type_parameters.get('boundary')
+        boundary = '--%s' % boundary
+        form = {}
+        for part in body.split(boundary)[1:-1]:
+            # Parse the entity
+            entity = Entity(string=part)
+            # Find out the parameter name
+            header = entity.get_header('Content-Disposition')
+            value, header_parameters = header
+            name = header_parameters['name']
+            # Load the value
+            body = entity.get_body()
+            if 'filename' in header_parameters:
+                filename = header_parameters['filename']
+                if filename:
+                    # Strip the path (for IE).
+                    filename = filename.split('\\')[-1]
+                    # Default content-type, see
+                    # http://tools.ietf.org/html/rfc2045#section-5.2
+                    if entity.has_header('content-type'):
+                        mimetype = entity.get_header('content-type')[0]
+                    else:
+                        mimetype = 'text/plain'
+                    form[name] = filename, mimetype, body
+            else:
+                if name not in form:
+                    form[name] = body
+                else:
+                    if isinstance(form[name], list):
+                        form[name].append(body)
+                    else:
+                        form[name] = [form[name], body]
+        return form
 
 
     def add_style(self, *args):
@@ -736,8 +752,7 @@ class RequestMethod(object):
         try:
             database.save_changes()
         except Exception:
-            context.status = 500
-            context.entity = context.root.internal_server_error(context)
+            context.entity = cls.internal_server_error(context)
 
 
     @classmethod

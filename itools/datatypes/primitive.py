@@ -28,7 +28,7 @@ from re import compile
 # Import from itools
 from itools.core import freeze
 from itools.uri import Path, get_reference
-#from itools.web.utils import NewJSONEncoder, fix_json
+from itools.web.utils import NewJSONEncoder, fix_json
 
 # Import from here
 from base import DataType

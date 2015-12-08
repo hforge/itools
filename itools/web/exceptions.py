@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.core import is_prototype
+from itools.core import is_prototype, freeze
 from itools.gettext import MSG
 from messages import ERROR
 
@@ -96,7 +96,7 @@ class FormError(StandardError):
     """
 
     def __init__(self, message=None, missing=False, invalid=False,
-            missings=[], invalids=[]):
+            missings=freeze([]), invalids=freeze([])):
         self.msg = message
         self.missing = missing
         self.invalid = invalid

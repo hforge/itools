@@ -217,6 +217,7 @@ class BaseView(prototype):
 
 
     def on_form_error_default(self, resource, context):
+        context.message = context.form_error.get_message()
         # Return to GET view on error
         return self.GET
 

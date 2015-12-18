@@ -143,7 +143,8 @@ class Metadata(File):
             # Get the field
             field = resource_class.get_field(name)
             if field is None:
-                msg = 'unexpected field "%s"' % name
+                msg = 'unexpected field "{0}" in resource "{1}" (format "{2}")'
+                msg = msg.format(name, self.key, self.format)
                 if resource_class.fields_soft:
                     log_warning(msg, domain='itools.database')
                     continue

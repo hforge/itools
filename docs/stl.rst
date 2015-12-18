@@ -179,6 +179,8 @@ or
 This is the syntax of the ``stl:if`` and ``stl:omit-tag`` attributes:
 
     ``stl:if="[not] expression"``
+    ``stl:if="[not] expression1 and [not] expression2"``
+    ``stl:if="[not] expression1 or [not] expression2"``
 
     ``stl:omit-tag="[not] expression"``
 

@@ -99,9 +99,29 @@ def evaluate(expression, stack, repeat_stack):
 
 
 def evaluate_if(expression, stack, repeat_stack):
-    if expression[:3] == 'not' and expression[3].isspace():
-        expression = expression[3:].lstrip()
-        return not evaluate(expression, stack, repeat_stack)
+    # stl:if="expression1 and expression2"
+    # stl:if="expression1 or expression2"
+    # stl:if="not expression1 and not expression2"
+    for text_operator in [' and ', ' or ']:
+        if text_operator in expression:
+            ex1, ex2 = expression.split(text_operator)
+            if ex1[:4] == 'not ':
+                ex1 = ex1[4:]
+                condition1 = not evaluate(ex1, stack, repeat_stack)
+            else:
+                condition1 = evaluate(ex1, stack, repeat_stack)
+            if ex2[:4] == 'not ':
+                ex2 = ex2[4:]
+                condition2 = not evaluate(ex2, stack, repeat_stack)
+            else:
+                condition2 = evaluate(ex2, stack, repeat_stack)
+            if text_operator == ' or ':
+                return condition1 or condition2
+            return condition1 and condition2
+    # stl:if="not expression"
+    if expression[:4] == 'not ':
+        return not evaluate(expression[4:], stack, repeat_stack)
+    # stl:if="expression"
     return evaluate(expression, stack, repeat_stack)
 
 

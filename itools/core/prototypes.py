@@ -19,6 +19,9 @@ from sys import _getframe
 from types import FunctionType
 
 # Import from itools
+from itools.log import log_error
+
+# Import from here
 from lazy import lazy
 
 
@@ -146,7 +149,13 @@ class prototype(object):
 class proto_property(lazy):
 
     def __get__(self, instance, owner):
-        return self.meth(owner)
+        try:
+            value = self.meth(owner)
+        except Exception as e:
+            msg = 'Error on proto property:\n'
+            log_error(msg + str(e), domain='itools.core')
+            raise
+        return value
 
 
 
@@ -157,7 +166,12 @@ class proto_lazy_property(lazy):
         for cls in owner.__mro__:
             if name in cls.__dict__:
                 name = self.meth.func_name
-                value = self.meth(owner)
+                try:
+                    value = self.meth(owner)
+                except Exception as e:
+                    msg = 'Error on proto lazy property:\n'
+                    log_error(msg + str(e), domain='itools.core')
+                    raise
                 setattr(owner, name, value)
                 return value
 

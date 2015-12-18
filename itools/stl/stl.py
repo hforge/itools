@@ -278,16 +278,22 @@ def stl(document=None, namespace=freeze({}), prefix=None, events=None,
     stream = process(events, 0, len(events), stack, repeat, encoding, skip)
 
     # Return
-    if mode == 'events':
-        return stream
-    elif mode == 'xml':
-        return stream_to_str(stream, encoding)
-    elif mode == 'xhtml':
-        return stream_to_str_as_xhtml(stream, encoding)
-    elif mode == 'html':
-        return stream_to_str_as_html(stream, encoding)
-
-    raise ValueError, 'unexpected mode "%s"' % mode
+    try:
+        if mode == 'events':
+            return stream
+        elif mode == 'xml':
+            return stream_to_str(stream, encoding)
+        elif mode == 'xhtml':
+            return stream_to_str_as_xhtml(stream, encoding)
+        elif mode == 'html':
+            return stream_to_str_as_html(stream, encoding)
+    except STLError, e:
+        error = 'Error in generation of {0}\n'.format(mode)
+        if document:
+            error += 'Template {0}\n'.format(document.key)
+        raise STLError(error + e.message)
+    # Unknow mode
+    raise ValueError('unexpected mode "{0}"'.format(mode))
 
 
 

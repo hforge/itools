@@ -55,6 +55,7 @@ from views import BaseView
 
 class Context(prototype):
 
+    cookies = {}
     method = None
     mtime = None # Last-Modified
     uri = None
@@ -62,6 +63,8 @@ class Context(prototype):
     resource = None
     server = None
     status = None # response status
+    styles = []
+    scripts = []
 
 
     def init_context(self):

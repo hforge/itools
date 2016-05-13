@@ -331,6 +331,7 @@ html_elements = [
         'value', 'checked', 'disabled', 'readonly', 'size', 'maxlength',
         'src', 'alt', 'usemap', 'onselect', 'onchange', 'accept', 'align',
         'autocomplete']),
+    Element('ins', common_attrs),
     Element('kbd', common_attrs),
     Element('label', common_attrs + ['for', 'accesskey', 'onfocus',
                                      'onblur']),

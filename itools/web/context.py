@@ -65,6 +65,7 @@ class Context(prototype):
     status = None # response status
     styles = []
     scripts = []
+    view = None
 
 
     def init_context(self):

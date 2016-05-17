@@ -652,6 +652,28 @@ class RWDatabase(RODatabase):
             self._cleanup()
 
 
+    def create_tag(self, tag_name, message=None):
+        worktree = self.worktree
+        if message is None:
+            message = tag_name
+        worktree.git_tag(tag_name, message)
+
+
+    def reset_to_tag(self, tag_name):
+        worktree = self.worktree
+        try:
+            # Reset the tree to the given tag name
+            worktree.git_reset(tag_name)
+            # Remove the tag
+            worktree.git_remove_tag(tag_name)
+        except Exception:
+            log_error('Transaction failed', domain='itools.database')
+            try:
+                self._abort_changes()
+            except Exception:
+                log_error('Aborting failed', domain='itools.database')
+            raise
+
 
 def make_git_database(path, size_min, size_max, fields=None):
     """Create a new empty Git database if the given path does not exists or

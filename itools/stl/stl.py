@@ -140,7 +140,8 @@ def lookup(namespace, name):
     # Case 1: dict
     if type(namespace) is dict:
         if name not in namespace:
-            raise STLError
+            err = u"name '{}' not found in the namespace"
+            raise STLError(err.format(name))
         return namespace[name]
 
     # Case 2: instance
@@ -148,7 +149,8 @@ def lookup(namespace, name):
         value = getattr(namespace, name)
     except AttributeError:
         log_error('lookup failed', domain='itools.stl')
-        raise STLError
+        err = "name '{}' not found in the namespace"
+        raise STLError, err.format(name)
     if type(value) is MethodType:
         value = value()
     return value

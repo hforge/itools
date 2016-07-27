@@ -19,7 +19,8 @@
 
 # Import from itools
 from handlers import SetupConf
-from utils import get_compile_flags, get_manifest
+from build import get_manifest
+from utils import get_compile_flags
 from utils import setup, get_config, OptionalExtension
 
 

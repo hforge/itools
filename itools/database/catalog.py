@@ -159,8 +159,9 @@ class SearchResults(object):
     @lazy
     def _max(self):
         enquire = self._enquire
-        max = enquire.get_mset(0, 0).get_matches_upper_bound()
-        return enquire.get_mset(0, max).size()
+        db = self._database.catalog._db
+        doccount = db.get_doccount()
+        return enquire.get_mset(0, doccount).size()
 
 
     def __len__(self):
@@ -230,7 +231,7 @@ class SearchResults(object):
 
         # start/size
         if size == 0:
-            size = self._max
+            size = self._database.catalog._db.get_doccount()
 
         # Construction of the results
         fields = catalog._fields

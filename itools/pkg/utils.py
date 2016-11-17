@@ -24,11 +24,14 @@ from distutils.core import Extension
 from distutils.command.build_ext import build_ext
 from distutils.errors import LinkError
 from os.path import exists, join as join_path
-from sys import _getframe, argv
+from sys import argv
 
 # Import from itools
-from itools.core import freeze, get_pipe, get_version
+from itools.core import freeze, get_pipe
 from itools.handlers import ro_database
+
+# Import from itools.pkg
+from build import build
 from handlers import SetupConf
 
 
@@ -99,23 +102,12 @@ def get_config():
 
 
 
-def get_manifest():
-    from git import open_worktree
-
-    worktree = open_worktree('.')
-    exclude = frozenset(['.gitignore'])
-    return [ x for x in worktree.get_filenames() if x not in exclude ]
-
-
 def setup(ext_modules=freeze([])):
     config = get_config()
     package_root = config.get_value('package_root')
 
-    version_txt = package_root + '/version.txt'
-    if exists(version_txt):
-        version = open(version_txt).read().strip()
-    else:
-        version = None
+    # Version
+    version = build(config)
 
     # Initialize variables
     package_name = config.get_value('package_name')
@@ -132,15 +124,8 @@ def setup(ext_modules=freeze([])):
     else:
         subpackages = []
 
-    # Write the manifest file if it does not exist
-    if exists('MANIFEST'):
-        filenames = [ x.strip() for x in open('MANIFEST').readlines() ]
-    else:
-        filenames = get_manifest()
-        lines = [ x + '\n' for x in filenames ]
-        open('MANIFEST', 'w').write(''.join(lines))
-
     # Python files are included by default
+    filenames = [ x.strip() for x in open('MANIFEST').readlines() ]
     filenames = [ x for x in filenames if not x.endswith('.py') ]
 
     # The data files

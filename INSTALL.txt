@@ -27,7 +27,7 @@ reportlab       2.3  pdf              http://www.reportlab.org/
 libmagic       5.05  database         http://www.darwinsys.com/file/ [1]
 xapian        1.0.8  database         http://www.xapian.org/
 pywin32         212  (Windows)        http://sf.net/projects/pywin32/
-gettext        0.17  ipkg-build.py    http://www.gnu.org/software/gettext/
+gettext        0.17                   http://www.gnu.org/software/gettext/
 sphinx               ipkg-doc.py      http://pypi.python.org/pypi/Sphinx
 
 [1] Or, alternatively, http://pypi.python.org/pypi/python-magic
@@ -176,6 +176,4 @@ Then checkout the latest stable branch:
 
 Then installing itools properly is a three steps process:
 
-  $ python setup.py install   # This makes the ipkg-build.py script available
-  $ ipkg-build.py             # This compiles the MO files, etc.
-  $ python setup.py install   # This re-installs itools with everything in
+  $ python setup.py install

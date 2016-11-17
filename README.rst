@@ -21,7 +21,7 @@ The scripts included are::
 
   idb-inspect.py          igettext-merge.py       ipkg-quality.py
   igettext-build.py       iodf-greek.py           ipkg-update-locate.py
-  igettext-extract.py     ipkg-build.py
+  igettext-extract.py
 
 To learn how to install itools check the INSTALL.txt file.
 

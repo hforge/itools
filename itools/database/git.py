@@ -299,6 +299,32 @@ class Worktree(object):
         return self._call(cmd).rstrip()
 
 
+    def git_tag(self, tag_name, message):
+        """Equivalent to 'git tag', we must give the name of the tag and the message
+        TODO Implement using libgit2
+        """
+        if not tag_name or not message:
+            raise ValueError('excepted tag name and message')
+        cmd = ['git', 'tag', '-a', tag_name, '-m', message]
+        return self._call(cmd)
+
+
+    def git_remove_tag(self, tag_name):
+        if not tag_name:
+            raise ValueError('excepted tag name')
+        cmd = ['git', 'tag', '-d', tag_name]
+        return self._call(cmd)
+
+
+    def git_reset(self, reference):
+        """Equivalent to 'git reset --hard', we must provide the reference to reset to
+        """
+        if not reference:
+            raise ValueError('excepted reference to reset')
+        cmd = ['git', 'reset', '--hard', '-q', reference]
+        return self._call(cmd)
+
+
     def git_commit(self, message, author=None, date=None, tree=None):
         """Equivalent to 'git commit', we must give the message and we can
         also give the author and date.

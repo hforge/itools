@@ -452,6 +452,14 @@ class RODatabase(object):
         return
 
 
+    def create_tag(self, tag_name, message=None):
+        raise ReadonlyError
+
+
+    def reset_to_tag(self, tag_name):
+        raise ReadonlyError
+
+
     def abort_changes(self):
         return
 

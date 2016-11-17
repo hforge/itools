@@ -131,7 +131,8 @@ class XMLNamespace(object):
         self.uri = uri
         self.prefix = prefix
         self.default_element = default_element
-        self.default_datatype = default_datatype
+        # Default_datatatype String for HTML5
+        self.default_datatype = default_datatype or String
         # Elements
         self.elements = {}
         if elements is not None:

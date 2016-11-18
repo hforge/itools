@@ -31,7 +31,7 @@ from itools.core import freeze, get_pipe
 from itools.handlers import ro_database
 
 # Import from itools.pkg
-from build import build
+from build import build, get_package_version
 from handlers import SetupConf
 
 
@@ -105,9 +105,11 @@ def get_config():
 def setup(ext_modules=freeze([])):
     config = get_config()
     package_root = config.get_value('package_root')
-
-    # Version
-    version = build(config)
+    # Build
+    if any(x in argv for x in ('build', 'install', 'sdist')):
+        version = build(config)
+    else:
+        version = get_package_version(package_root)
 
     # Initialize variables
     package_name = config.get_value('package_name')

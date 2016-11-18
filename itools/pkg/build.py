@@ -21,7 +21,7 @@
 
 
 # Import from standard library
-from os.path import islink
+from os.path import islink, exists
 from subprocess import Popen
 
 # Import from itools
@@ -77,8 +77,28 @@ def make_template(source, target):
 
 # SASS: CSS preprocessor
 def scss2css(source, target):
-    Popen(['scss', source, target])
+    try:
+        Popen(['scss', source, target])
+    except (OSError, EnvironmentError):
+        print '[Warning] please install scss package to compile CSS'
 
+
+
+def get_package_version_path(package_root):
+    if package_root == '.':
+        version_txt = 'version.txt'
+    else:
+        version_txt = package_root + '/version.txt'
+    return version_txt
+
+
+def get_package_version(package_root):
+    path = get_package_version_path(package_root)
+    if exists(path):
+        version = open(path).read().strip()
+    else:
+        version = None
+    return version
 
 
 def make_version(worktree):
@@ -86,48 +106,47 @@ def make_version(worktree):
     be written to the 'version.txt' file, which will be read once the software
     is installed to get the version number.
     """
-    # The name of the active branch
-    branch = worktree.get_branch_name()
-    if branch is None:
-        return None
-
-    # The tag
+    # Get the git description
+    tag = None
     description = worktree.git_describe()
 
     # The version name
     if description:
+        # n represent the number of commit between the tag and the ref
         tag, n, commit = description
-        if tag.startswith(branch):
-            version = tag
-        else:
-            version = '%s-%s' % (branch, tag)
-        # Exact match
         if n == 0:
-            return version
-    else:
-        version = branch
+            # Exact match
+            return tag
+
+    # Try to get the branch
+    branch = worktree.get_branch_name()
+    branch = branch or 'nobranch'
 
     # Get the timestamp
     head = worktree.get_metadata()
     timestamp = head['committer_date']
     timestamp = timestamp.strftime('%Y%m%d%H%M')
-    return '%s-%s' % (version, timestamp)
+
+    # Build a version from the branch and the timestamp
+    return '{}-{}'.format(branch, timestamp)
 
 
 def build(config):
+    # Get version path
     package_root = config.get_value('package_root')
-    # Get git worktree
-    worktree = open_worktree('.')
+    version_txt = get_package_version_path(package_root)
+    try:
+        # Get git worktree
+        worktree = open_worktree('.')
+    except KeyError:
+        # Not in a git repostory
+        return get_package_version(package_root)
+    # Find out the version string
+    version = make_version(worktree)
     # Initialize the manifest file
     manifest = set([ x for x in get_manifest() if not islink(x) ])
     manifest.add('MANIFEST')
-    # Find out the version string
-    version = make_version(worktree)
     # Write version
-    if package_root == '.':
-        version_txt = 'version.txt'
-    else:
-        version_txt = package_root + '/version.txt'
     open(version_txt, 'w').write(version)
     print '* Version:', version
     manifest.add(version_txt)

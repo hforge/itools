@@ -324,7 +324,7 @@ class RODatabase(object):
         raise ReadonlyError, 'cannot del handler'
 
 
-    def copy_handler(self, source, target):
+    def copy_handler(self, source, target, exclude_patterns=None):
         raise ReadonlyError, 'cannot copy handler'
 
 

@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.core import prototype
+from itools.core import is_prototype, prototype
 
 
 class Field(prototype):
@@ -33,3 +33,16 @@ class Field(prototype):
     def access(self, mode, resource):
         # mode may be "read" or "write"
         return True
+
+
+
+def get_field_and_datatype(elt):
+    """ Now schema can be Datatype or Field.
+    To be compatible:
+      - we return datatype if a field is given
+      - we build a field if a datatype is given
+
+    """
+    if is_prototype(elt, Field):
+        return elt, elt.get_datatype()
+    return Field(datatype=elt), elt

@@ -26,7 +26,7 @@ from json import dumps
 
 # Import from itools
 from itools.core import freeze, prototype
-from itools.database import ReadonlyError
+from itools.database import ReadonlyError, get_field_and_datatype
 from itools.datatypes import Enumerate, String
 from itools.gettext import MSG
 from itools.handlers import File
@@ -354,14 +354,15 @@ class STLView(BaseView):
         # Build the namespace
         namespace = {}
         for name in schema:
-            datatype = schema[name]
+            elt = schema[name]
+            field, datatype = get_field_and_datatype(elt)
             is_readonly = getattr(datatype, 'readonly', False)
             is_multilingual = getattr(datatype, 'multilingual', False)
 
             error = None
             if submit and not is_readonly:
                 try:
-                    value = context.get_form_value(name, type=datatype)
+                    value = context.get_form_value(name, type=field)
                 except FormError, err:
                     if err.missing:
                         error = MSG(u'This field is required.')

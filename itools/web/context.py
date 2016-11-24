@@ -36,6 +36,7 @@ from pytz import timezone
 # Import from itools
 from itools.core import fixed_offset, is_prototype, local_tz
 from itools.core import freeze, prototype, proto_lazy_property
+from itools.database import get_field_and_datatype
 from itools.datatypes import String, HTTPDate
 from itools.i18n import AcceptLanguageType, format_number
 from itools.i18n import format_datetime, format_date, format_time
@@ -1104,12 +1105,13 @@ def select_language(languages):
 # Get from the form or query
 #######################################################################
 def _get_form_value(form, name, type=String, default=None):
+    field, datatype = get_field_and_datatype(type)
     # Figure out the default value
     if default is None:
-        default = type.get_default()
+        default = datatype.get_default()
 
     # Missing
-    is_mandatory = getattr(type, 'mandatory', False)
+    is_mandatory = getattr(datatype, 'mandatory', False)
     is_missing = form.get(name) is None
     if is_missing:
         # Mandatory: raise an error
@@ -1119,17 +1121,17 @@ def _get_form_value(form, name, type=String, default=None):
         return default
 
     # Multiple values
-    if type.multiple:
+    if datatype.multiple:
         value = form.get(name)
         if not isinstance(value, list):
             value = [value]
         try:
-            values = [ type.decode(x) for x in value ]
+            values = [ datatype.decode(x) for x in value ]
         except Exception:
             raise FormError(invalid=True)
         # Check the values are valid
         for value in values:
-            if not type.is_valid(value):
+            if not datatype.is_valid(value):
                 raise FormError(invalid=True)
         return values
 
@@ -1138,7 +1140,7 @@ def _get_form_value(form, name, type=String, default=None):
     if isinstance(value, list):
         value = value[0]
     try:
-        value = type.decode(value)
+        value = datatype.decode(value)
     except Exception:
         raise FormError(invalid=True)
 
@@ -1154,7 +1156,7 @@ def _get_form_value(form, name, type=String, default=None):
     if is_blank:
         if is_mandatory:
             raise FormError(missing=True)
-    elif not type.is_valid(value):
+    elif not datatype.is_valid(value):
         raise FormError(invalid=True)
     return value
 

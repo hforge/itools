@@ -18,7 +18,7 @@
 
 # Import from itools
 from catalog import Catalog, make_catalog
-from fields import Field
+from fields import Field, get_field_and_datatype
 from queries import AllQuery, NotQuery, StartQuery, TextQuery
 from queries import RangeQuery, PhraseQuery, AndQuery, OrQuery, pprint_query
 from magic_ import magic_from_buffer, magic_from_file
@@ -44,6 +44,7 @@ __all__ = [
     'Metadata',
     # Resources
     'Field',
+    'get_field_and_datatype',
     'Resource',
     # Xapian
     'make_catalog',

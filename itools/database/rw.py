@@ -20,6 +20,7 @@
 
 # Import from the Standard Library
 from datetime import datetime
+import fnmatch
 from heapq import heappush, heappop
 from os.path import dirname
 
@@ -291,12 +292,16 @@ class RWDatabase(RODatabase):
         return list(names)
 
 
-    def copy_handler(self, source, target):
+    def copy_handler(self, source, target, exclude_patterns=None):
         source = self.normalize_key(source)
         target = self.normalize_key(target)
 
         # The trivial case
         if source == target:
+            return
+
+        # Ignore copy of some handlers
+        if exclude_patterns and fnmatch.filter((source,), exclude_patterns):
             return
 
         # Check the target is free
@@ -310,7 +315,8 @@ class RWDatabase(RODatabase):
             fs = self.fs
             for name in handler.get_handler_names():
                 self.copy_handler(fs.resolve2(source, name),
-                                  fs.resolve2(target, name))
+                                  fs.resolve2(target, name),
+                                  exclude_patterns)
         # File
         else:
             handler = handler.clone()

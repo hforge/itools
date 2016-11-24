@@ -298,7 +298,7 @@ class RODatabase(object):
         raise NotImplementedError, 'cannot del handler'
 
 
-    def copy_handler(self, source, target):
+    def copy_handler(self, source, target, exclude_patterns=None):
         raise NotImplementedError, 'cannot copy handler'
 
 

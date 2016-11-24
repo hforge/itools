@@ -94,14 +94,14 @@ class Handler(object):
         database.del_handler(key)
 
 
-    def copy_handler(self, source, target):
+    def copy_handler(self, source, target, exclude_patterns=None):
         database = self.database
         if database is None:
             raise NotImplementedError, MSG_NOT_ATTACHED
 
         source = database.fs.resolve2(self.key, source)
         target = database.fs.resolve2(self.key, target)
-        database.copy_handler(source, target)
+        database.copy_handler(source, target, exclude_patterns)
 
 
     def move_handler(self, source, target):

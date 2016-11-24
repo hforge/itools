@@ -43,7 +43,6 @@ class DBResourceMetaclass(type):
                 if field.indexed or field.stored:
                     datatype = field.get_datatype()
                     register_field(name, datatype)
-
         # Ok
         return cls
 
@@ -67,6 +66,7 @@ class Resource(object):
     def get_field(self, name):
         field = getattr(self, name, None)
         if is_prototype(field, Field):
+            field = field(name=name)
             return field
 
         return None

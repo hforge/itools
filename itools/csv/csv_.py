@@ -48,7 +48,9 @@ class Row(list):
 
 class CSVFile(TextFile):
 
-    class_mimetypes = ['text/comma-separated-values', 'text/csv']
+    class_mimetypes = ['text/comma-separated-values', 'text/x-comma-separated-values',
+                       'text/csv', 'text/x-csv',
+                       'application/csv', 'application/x-csv']
     class_extension = 'csv'
 
     # Hash with column names and its types

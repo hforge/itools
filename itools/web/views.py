@@ -224,13 +224,26 @@ class BaseView(prototype):
 
     def on_form_error_json(self, resource, context):
         error = context.form_error
-        error_json = {
-            'msg': error.get_message(),
-            'missing': error.missing,
-            'invalid': error.invalid,
-            'missings': error.missings,
-            'invalids': error.invalids}
-        return self.return_json(error_json, context)
+        error_kw = error.to_dict()
+        return self.return_json(error_kw, context)
+
+
+    def on_query_error(self, resource, context):
+        accept = context.get_header('accept')
+        if accept == 'application/json':
+            return self.on_query_error_json(resource, context)
+        return self.on_query_error_default(resource, context)
+
+
+    def on_query_error_default(self, resource, context):
+        message = MSG(u'The query could not be processed.').gettext()
+        return message.encode('utf-8')
+
+
+    def on_query_error_json(self, resource, context):
+        error = context.form_error
+        error_kw = error.to_dict()
+        return self.return_json(error_kw, context)
 
 
     def return_json(self, data, context):

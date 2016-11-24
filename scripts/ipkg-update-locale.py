@@ -114,22 +114,28 @@ if __name__ == '__main__':
             po.add_unit(relative_path, source, context, line)
     print
 
-    # Update locale.pot
-    if not lfs.exists('locale/locale.pot'):
-        lfs.make_file('locale/locale.pot')
+    # Check if package is pip compatible or non
+    package_root = config.get_value('package_root')
+    if lfs.exists(package_root):
+        locale_folder = lfs.open('{0}/locale'.format(package_root))
+    else:
+        locale_folder = lfs.open('locale/')
 
     write('* Update PO template ')
     data = po.to_str()
-    file = lfs.open('locale/locale.pot', WRITE)
+
+    # Write the po into the locale.pot
     try:
-        file.write(data)
-    finally:
-        file.close()
-    print
+        locale_pot = locale_folder.open('locale.pot', WRITE)
+    except IOError:
+        # The locale.pot file does not exist create and open
+        locale_pot = locale_folder.make_file('locale.pot')
+    else:
+        with locale_pot:
+            locale_pot.write(data)
 
     # Update PO files
-    folder = lfs.open('locale')
-    filenames = set([ x for x in folder.get_names() if x[-3:] == '.po' ])
+    filenames = set([ x for x in locale_folder.get_names() if x[-3:] == '.po' ])
     filenames.add('%s.po' % src_language)
     for language in config.get_value('target_languages'):
         filenames.add('%s.po' % language)
@@ -137,12 +143,13 @@ if __name__ == '__main__':
     filenames.sort()
 
     print '* Update PO files:'
+    locale_pot_path = locale_folder.get_absolute_path('locale.pot')
     for filename in filenames:
-        if folder.exists(filename):
+        if locale_folder.exists(filename):
             write('  %s ' % filename)
-            call(['msgmerge', '-U', '-s', 'locale/%s' % filename,
-                  'locale/locale.pot'])
+            file_path = locale_folder.get_absolute_path(filename)
+            call(['msgmerge', '-U', '-s', file_path, locale_pot_path])
         else:
             print '  %s (new)' % filename
-            folder.copy('locale.pot', filename)
+            lfs.copy(locale_pot_path, filename)
     print

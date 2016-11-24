@@ -96,12 +96,14 @@ class FormError(StandardError):
     """
 
     def __init__(self, message=None, missing=False, invalid=False,
-            missings=freeze([]), invalids=freeze([])):
+            missings=freeze([]), invalids=freeze([]),
+            messages=freeze([])):
         self.msg = message
         self.missing = missing
         self.invalid = invalid
         self.missings = missings
         self.invalids = invalids
+        self.messages = messages
 
 
     def get_message(self):
@@ -118,3 +120,13 @@ class FormError(StandardError):
 
     def __str__(self):
         return self.get_message().gettext()
+
+
+    def to_dict(self):
+        return {
+            'msg': self.get_message(),
+            'messages': self.messages,
+            'missing': self.missing,
+            'invalid': self.invalid,
+            'missings': self.missings,
+            'invalids': self.invalids}

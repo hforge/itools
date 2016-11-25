@@ -36,7 +36,7 @@ from pytz import timezone
 # Import from itools
 from itools.core import fixed_offset, is_prototype, local_tz
 from itools.core import freeze, prototype, proto_lazy_property
-from itools.database import get_field_and_datatype
+from itools.database.fields import get_field_and_datatype
 from itools.datatypes import String, HTTPDate
 from itools.i18n import AcceptLanguageType, format_number
 from itools.i18n import format_datetime, format_date, format_time
@@ -1107,13 +1107,17 @@ def _get_form_value(form, name, type=String, default=None):
     if default is None:
         default = datatype.get_default()
 
+    # Errors
+    required_msg = field.error_messages['required']
+    invalid_msg = field.error_messages['invalid']
+
     # Missing
     is_mandatory = getattr(datatype, 'mandatory', False)
     is_missing = form.get(name) is None
     if is_missing:
         # Mandatory: raise an error
         if is_mandatory and is_missing:
-            raise FormError(missing=True)
+            raise FormError(required_msg, missing=True)
         # Optional: return the default value
         return default
 
@@ -1125,11 +1129,11 @@ def _get_form_value(form, name, type=String, default=None):
         try:
             values = [ datatype.decode(x) for x in value ]
         except Exception:
-            raise FormError(invalid=True)
+            raise FormError(invalid_msg, invalid=True)
         # Check the values are valid
         for value in values:
             if not datatype.is_valid(value):
-                raise FormError(invalid=True)
+                raise FormError(invalid_msg, invalid=True)
         return values
 
     # Single value
@@ -1139,22 +1143,22 @@ def _get_form_value(form, name, type=String, default=None):
     try:
         value = datatype.decode(value)
     except Exception:
-        raise FormError(invalid=True)
+        raise FormError(invalid_msg, invalid=True)
 
     # We consider that if the type deserializes the value to None, then we
     # must use the default.
     if value is None:
         if is_mandatory:
-            raise FormError(missing=True)
+            raise FormError(required_msg, missing=True)
         return default
 
     # We consider a blank string to be a missing value (FIXME not reliable).
     is_blank = isinstance(value, (str, unicode)) and not value.strip()
     if is_blank:
         if is_mandatory:
-            raise FormError(missing=True)
+            raise FormError(required_msg, missing=True)
     elif not datatype.is_valid(value):
-        raise FormError(invalid=True)
+        raise FormError(invalid_msg, invalid=True)
     return value
 
 

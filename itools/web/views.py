@@ -377,11 +377,7 @@ class STLView(BaseView):
                 try:
                     value = context.get_form_value(name, type=field)
                 except FormError, err:
-                    if err.missing:
-                        error = MSG(u'This field is required.')
-                    else:
-                        error = MSG(u'Invalid value.')
-
+                    error = err.get_message()
                     if issubclass(datatype, Enumerate):
                         value = datatype.get_namespace(None)
                     else:
@@ -400,11 +396,7 @@ class STLView(BaseView):
                 try:
                     value = self.get_value(resource, context, name, datatype)
                 except FormError, err:
-                    if err.missing:
-                        error = MSG(u'This field is required.')
-                    else:
-                        error = MSG(u'Invalid value.')
-
+                    error = err.get_message()
                     if issubclass(datatype, Enumerate):
                         value = datatype.get_namespace(None)
                     else:

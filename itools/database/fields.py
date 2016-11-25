@@ -16,15 +16,21 @@
 
 # Import from itools
 from itools.core import is_prototype, prototype
+from itools.gettext import MSG
 
 
 class Field(prototype):
 
+    name = None
+    title = None
     datatype = None
     indexed = False
     stored = False
     multiple = False
-
+    error_messages = {
+        'invalid': MSG(u'Invalid value.'),
+        'required': MSG(u'This field is required.'),
+    }
 
     def get_datatype(self):
         return self.datatype

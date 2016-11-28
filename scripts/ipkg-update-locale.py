@@ -71,6 +71,14 @@ if __name__ == '__main__':
     config = get_config()
     src_language = config.get_value('source_language', default='en')
 
+    # Get local folder
+    package_root = config.get_value('package_root')
+    if lfs.exists(package_root):
+        locale_folder_path = Path('{0}/locale'.format(package_root))
+    else:
+        locale_folder_path = Path('locale/')
+    locale_folder = lfs.open(locale_folder_path)
+
     # The SRX file
     if options.srx is not None:
         srx_handler = ro_database.get_handler(options.srx)
@@ -109,17 +117,10 @@ if __name__ == '__main__':
             print '*'
             raise
 
-        relative_path = Path('..').resolve2(path)
+        relative_path = locale_folder_path.get_pathto(path)
         for source, context, line in units:
             po.add_unit(relative_path, source, context, line)
     print
-
-    # Check if package is pip compatible or non
-    package_root = config.get_value('package_root')
-    if lfs.exists(package_root):
-        locale_folder = lfs.open('{0}/locale'.format(package_root))
-    else:
-        locale_folder = lfs.open('locale/')
 
     write('* Update PO template ')
     data = po.to_str()

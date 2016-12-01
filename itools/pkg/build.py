@@ -29,6 +29,7 @@ from itools.fs import lfs
 from itools.handlers import ro_database
 
 # Import from here
+from build_gulp import GulpBuilder
 from git import open_worktree
 
 
@@ -163,7 +164,10 @@ def build(config):
             ('.xhtml.%s' % src_lang, '.xhtml.%s' % dst_lang, make_template))
     # (4) Make
     make(worktree, rules, manifest)
-    # (5) Write the manifest
+    # (5) Run gulp
+    gulp_builder = GulpBuilder(worktree, manifest)
+    gulp_builder.run()
+    # (6) Write the manifest
     lines = [ x + '\n' for x in sorted(manifest) ]
     open('MANIFEST', 'w').write(''.join(lines))
     print '* Build MANIFEST file (list of files to install)'

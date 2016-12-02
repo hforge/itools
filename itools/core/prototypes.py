@@ -178,4 +178,4 @@ class proto_lazy_property(lazy):
 
 
 def is_prototype(value, cls):
-    return type(value) is prototype_type and issubclass(value, cls)
+    return issubclass(type(value), prototype_type) and issubclass(value, cls)

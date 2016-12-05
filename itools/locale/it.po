@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: it\n"
-"POT-Creation-Date: 2011-11-22 10:11+CET\n"
+"POT-Creation-Date: 2016-11-28 17:11+CET\n"
 "PO-Revision-Date: 2004-11-26 14:39+0100\n"
 "Last-Translator: Paolo Dina <paolo@php3.it>\n"
 "Language-Team: Italian <paolo@php3.it>\n"
@@ -17,15 +17,15 @@ msgstr ""
 "X-Poedit-Language: Italian\n"
 "X-Poedit-Country: ITALY\n"
 
-#: ../xmlfile/i18n.py:64
+#: ../xmlfile/i18n.py:65
 msgid " %s=\""
 msgstr ""
 
-#: ../xmlfile/i18n.py:69
+#: ../xmlfile/i18n.py:70
 msgid " %s=\"%s\""
 msgstr ""
 
-#: ../xmlfile/i18n.py:67
+#: ../xmlfile/i18n.py:68
 msgid "\""
 msgstr ""
 
@@ -33,85 +33,85 @@ msgstr ""
 msgid "%s"
 msgstr ""
 
-#: ../database/catalog.py:748
+#: ../database/catalog.py:771
 msgid "%s%s"
 msgstr ""
 
-#: ../database/catalog.py:68
+#: ../database/catalog.py:72
 msgid "'"
 msgstr ""
 
-#: ../pdf/pml.py:332
+#: ../pdf/pml.py:340
 #, fuzzy
 msgid "(WW) CSS filename \"%s\" does not exist"
 msgstr "L'utente \"%s\" non esiste"
 
-#: ../pdf/pml.py:1147
+#: ../pdf/pml.py:1155
 msgid "(WW) Cannot add an image inside a td without predefined size"
 msgstr ""
 
-#: ../pdf/pml.py:1143
+#: ../pdf/pml.py:1151
 msgid "(WW) Filename is None"
 msgstr ""
 
-#: ../pdf/utils.py:233
+#: ../pdf/utils.py:235
 #, fuzzy
 msgid "(WW) The filename '%s' doesn't exist"
 msgstr "L'utente \"%s\" non esiste"
 
-#: ../i18n/locale_.py:70 ../i18n/locale_.py:153 ../i18n/locale_.py:154
-#: ../i18n/locale_.py:155
+#: ../i18n/locale_.py:71 ../i18n/locale_.py:154 ../i18n/locale_.py:155
+#: ../i18n/locale_.py:156
 msgid ","
 msgstr ""
 
-#: ../i18n/locale_.py:71 ../i18n/locale_.py:121 ../handlers/utils.py:55
-#: ../handlers/utils.py:56 ../handlers/utils.py:60 ../handlers/utils.py:61
-#: ../web/context.py:405
+#: ../i18n/locale_.py:72 ../i18n/locale_.py:122 ../handlers/utils.py:58
+#: ../handlers/utils.py:59 ../handlers/utils.py:64 ../handlers/utils.py:65
+#: ../web/context.py:436
 msgid "-"
 msgstr ""
 
-#: ../ical/icalendar.py:268
-msgid "-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN"
+#: ../ical/icalendar.py:270
+msgid "-//hforge.org/NONSGML ikaaro icalendar V1.0//EN"
 msgstr ""
 
-#: ../i18n/locale_.py:70 ../i18n/locale_.py:153 ../i18n/locale_.py:154
-#: ../handlers/utils.py:55
+#: ../i18n/locale_.py:71 ../i18n/locale_.py:154 ../i18n/locale_.py:155
+#: ../handlers/utils.py:58
 msgid "."
 msgstr ""
 
-#: ../xmlfile/i18n.py:72
+#: ../xmlfile/i18n.py:73
 msgid "/>"
 msgstr ""
 
-#: ../i18n/locale_.py:106 ../i18n/locale_.py:109
+#: ../i18n/locale_.py:107 ../i18n/locale_.py:110
 msgid "0"
 msgstr ""
 
-#: ../ical/icalendar.py:267
+#: ../ical/icalendar.py:269
 msgid "2.0"
 msgstr ""
 
-#: ../xmlfile/i18n.py:177
+#: ../xmlfile/i18n.py:178
 msgid "<!--%s-->"
 msgstr ""
 
-#: ../xmlfile/i18n.py:52
+#: ../xmlfile/i18n.py:53
 msgid "<%s"
 msgstr ""
 
-#: ../gettext/po.py:141
+#: ../gettext/po.py:143
 msgid "</g>"
 msgstr ""
 
-#: ../gettext/po.py:137
+#: ../gettext/po.py:139
 msgid "<g id='%d'>"
 msgstr ""
 
-#: ../gettext/po.py:135
+#: ../gettext/po.py:137
 msgid "<x id='%d'/>"
 msgstr ""
 
-#: ../xmlfile/i18n.py:74
+#: ../xmlfile/i18n.py:75
 msgid ">"
 msgstr ""
 
@@ -119,19 +119,19 @@ msgstr ""
 msgid "???"
 msgstr ""
 
-#: ../handlers/utils.py:55
+#: ../handlers/utils.py:58
 msgid "@"
 msgstr ""
 
-#: ../database/catalog.py:49 ../database/catalog.py:50
+#: ../database/catalog.py:53 ../database/catalog.py:54
 msgid "A"
 msgstr ""
 
-#: ../handlers/utils.py:25
-msgid "AAAAAAAaaaaaaaaCcEEEEEeeeeegIIIIIiiiiiilNnOOOOOOOooooooooUUUUUuuuuuSstYYYyyyZz"
+#: ../handlers/utils.py:27
+msgid "AAAAAAAaaaaaaaaCcEEEEEeeeeegIIIIIiiiiiilNnOOOOOOOooooooooUUUUUuuuuuSstYYYyyyZz----"
 msgstr ""
 
-#: ../handlers/utils.py:33
+#: ../handlers/utils.py:35
 msgid "AE"
 msgstr ""
 
@@ -240,7 +240,7 @@ msgstr "Ungherese"
 msgid "Burmese"
 msgstr "Naviga"
 
-#: ../database/catalog.py:53
+#: ../database/catalog.py:57
 msgid "C"
 msgstr ""
 
@@ -281,7 +281,7 @@ msgstr ""
 msgid "Chuvash"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:58
+#: ../../scripts/ipkg-quality.py:44
 msgid "Code length"
 msgstr ""
 
@@ -328,7 +328,7 @@ msgstr ""
 msgid "Dzongkha"
 msgstr ""
 
-#: ../database/catalog.py:55 ../database/catalog.py:56
+#: ../database/catalog.py:59 ../database/catalog.py:60
 msgid "E"
 msgstr ""
 
@@ -344,10 +344,6 @@ msgstr ""
 msgid "English/United States"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:629
-msgid "Error, your project must be versioned with GIT."
-msgstr ""
-
 #: ../i18n/languages.py:65
 msgid "Esperanto"
 msgstr ""
@@ -360,7 +356,7 @@ msgstr ""
 msgid "Ewe"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:71
+#: ../../scripts/ipkg-quality.py:57
 #, fuzzy
 msgid "Exception handling"
 msgstr "(Exception:"
@@ -484,7 +480,7 @@ msgstr ""
 msgid "Hungarian"
 msgstr "Ungherese"
 
-#: ../database/catalog.py:61
+#: ../database/catalog.py:65
 msgid "I"
 msgstr ""
 
@@ -500,7 +496,7 @@ msgstr ""
 msgid "Igbo"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:78
+#: ../../scripts/ipkg-quality.py:64
 msgid "Import problems"
 msgstr ""
 
@@ -527,7 +523,7 @@ msgstr ""
 msgid "Inupiak"
 msgstr "Decomprimi"
 
-#: ../web/views.py:310 ../web/views.py:333
+#: ../database/fields.py:31
 msgid "Invalid value."
 msgstr ""
 
@@ -722,15 +718,15 @@ msgstr ""
 msgid "Norwegian Nyrnosk"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:59
+#: ../../scripts/ipkg-quality.py:45
 msgid "Number of lines"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:59
+#: ../../scripts/ipkg-quality.py:45
 msgid "Number of tokens"
 msgstr ""
 
-#: ../handlers/utils.py:35
+#: ../handlers/utils.py:37
 msgid "OE"
 msgstr ""
 
@@ -742,7 +738,7 @@ msgstr ""
 msgid "Ojibwa"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:620
+#: ../../scripts/ipkg-quality.py:515
 msgid "Options --worse and --show-lines are mutually exclusive."
 msgstr ""
 
@@ -757,6 +753,10 @@ msgstr "Da"
 
 #: ../i18n/languages.py:161
 msgid "Ossetian; Ossetic"
+msgstr ""
+
+#: ../web/views.py:293
+msgid "PUT only allowed on files"
 msgstr ""
 
 #: ../i18n/languages.py:163
@@ -774,14 +774,10 @@ msgstr "pubblicato"
 msgid "Persian"
 msgstr "Personale"
 
-#: ../scripts/ipkg-quality.py:617
+#: ../../scripts/ipkg-quality.py:512
 #, fuzzy
 msgid "Please give at least one file to analyse."
 msgstr "Devi scegliere un collaboratore da rimuovere."
-
-#: ../scripts/ipkg-quality.py:632
-msgid "Please install matplotlib."
-msgstr ""
 
 #: ../i18n/languages.py:164
 #, fuzzy
@@ -880,7 +876,7 @@ msgstr ""
 msgid "Somali"
 msgstr "Formato"
 
-#: ../web/messages.py:45
+#: ../web/messages.py:47
 msgid ""
 "Some required fields are missing, or some values are not valid. Please "
 "correct them and continue."
@@ -912,7 +908,7 @@ msgstr "Spagnolo"
 msgid "Spanish/Spain"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:63
+#: ../../scripts/ipkg-quality.py:49
 #, fuzzy
 msgid "Style"
 msgstr "Stato"
@@ -968,24 +964,28 @@ msgstr ""
 msgid "Thai"
 msgstr "leggi"
 
-#: ../scripts/ipkg-quality.py:623
+#: ../../scripts/ipkg-quality.py:518
 msgid "The option --show-lines takes one file in parameter."
 msgstr ""
 
-#: ../web/views.py:41
+#: ../web/views.py:239
+msgid "The query could not be processed."
+msgstr ""
+
+#: ../web/views.py:58
 msgid "There are errors, check below."
 msgstr ""
 
-#: ../web/exceptions.py:112
+#: ../web/exceptions.py:117
 msgid "There are errors... XXX"
 msgstr ""
 
-#: ../web/views.py:308 ../web/views.py:331
+#: ../database/fields.py:32
 #, fuzzy
 msgid "This field is required."
 msgstr "Questa cartella è vuota."
 
-#: ../scripts/ipkg-quality.py:407
+#: ../../scripts/ipkg-quality.py:392
 #, fuzzy
 msgid "This file is perfect !"
 msgstr "Questa cartella è vuota."
@@ -1084,16 +1084,16 @@ msgstr "OK"
 msgid "Zulu"
 msgstr ""
 
-#: ../handlers/utils.py:55
+#: ../handlers/utils.py:58
 msgid "_"
 msgstr ""
 
-#: ../database/catalog.py:51 ../database/catalog.py:52
+#: ../database/catalog.py:55 ../database/catalog.py:56
 #, fuzzy
 msgid "a"
 msgstr "Confronta"
 
-#: ../handlers/utils.py:32
+#: ../handlers/utils.py:34
 #, fuzzy
 msgid "ae"
 msgstr "Confronta"
@@ -1102,7 +1102,7 @@ msgstr "Confronta"
 msgid "al"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:74
+#: ../../scripts/ipkg-quality.py:60
 msgid "all exceptions are catched"
 msgstr ""
 
@@ -1128,7 +1128,7 @@ msgstr "Email"
 msgid "aux"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:65
+#: ../../scripts/ipkg-quality.py:51
 msgid "bad indented"
 msgstr ""
 
@@ -1137,7 +1137,7 @@ msgstr ""
 msgid "but"
 msgstr "A proposito di"
 
-#: ../database/catalog.py:54
+#: ../database/catalog.py:58
 msgid "c"
 msgstr ""
 
@@ -1171,8 +1171,8 @@ msgstr ""
 msgid "du"
 msgstr ""
 
-#: ../database/catalog.py:57 ../database/catalog.py:58
-#: ../database/catalog.py:59 ../database/catalog.py:60
+#: ../database/catalog.py:61 ../database/catalog.py:62
+#: ../database/catalog.py:63 ../database/catalog.py:64
 #, fuzzy
 msgid "e"
 msgstr "Confronta"
@@ -1220,7 +1220,7 @@ msgstr ""
 msgid "he"
 msgstr ""
 
-#: ../i18n/oracle.py:286 ../database/catalog.py:62 ../database/catalog.py:63
+#: ../i18n/oracle.py:286 ../database/catalog.py:66 ../database/catalog.py:67
 msgid "i"
 msgstr ""
 
@@ -1234,7 +1234,7 @@ msgstr "Dettagli"
 msgid "ils"
 msgstr "Dettagli"
 
-#: ../pdf/utils.py:251
+#: ../pdf/utils.py:253
 msgid "image not valid : %s"
 msgstr ""
 
@@ -1274,7 +1274,7 @@ msgstr ""
 msgid "lo"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:66
+#: ../../scripts/ipkg-quality.py:52
 msgid "longer than 79 characters"
 msgstr ""
 
@@ -1286,6 +1286,10 @@ msgstr ""
 #, fuzzy
 msgid "mais"
 msgstr "Email"
+
+#: ../stl/stl.py:143
+msgid "name '{}' not found in the namespace"
+msgstr ""
 
 #: ../i18n/oracle.py:299
 #, fuzzy
@@ -1301,12 +1305,12 @@ msgstr "Gruppi"
 msgid "nueva"
 msgstr ""
 
-#: ../i18n/oracle.py:302 ../database/catalog.py:64
+#: ../i18n/oracle.py:302 ../database/catalog.py:68
 #, fuzzy
 msgid "o"
 msgstr "A"
 
-#: ../handlers/utils.py:34
+#: ../handlers/utils.py:36
 #, fuzzy
 msgid "oe"
 msgstr "Codice"
@@ -1355,11 +1359,11 @@ msgstr ""
 msgid "she"
 msgstr ""
 
-#: ../handlers/utils.py:36
+#: ../handlers/utils.py:38
 msgid "ss"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:73
+#: ../../scripts/ipkg-quality.py:59
 msgid "string exceptions are used"
 msgstr ""
 
@@ -1380,7 +1384,7 @@ msgstr "Stato"
 msgid "the"
 msgstr ""
 
-#: ../csv/table.py:310
+#: ../csv/table.py:329
 msgid ""
 "the \"{field}\" field must be unique, the \"{value}\" value is  already used."
 msgstr ""
@@ -1401,8 +1405,8 @@ msgstr ""
 msgid "tu"
 msgstr ""
 
-#: ../database/catalog.py:65 ../database/catalog.py:66
-#: ../database/catalog.py:67
+#: ../database/catalog.py:69 ../database/catalog.py:70
+#: ../database/catalog.py:71
 msgid "u"
 msgstr ""
 
@@ -1432,11 +1436,11 @@ msgstr ""
 msgid "where"
 msgstr "Tema"
 
-#: ../scripts/ipkg-quality.py:64
+#: ../../scripts/ipkg-quality.py:50
 msgid "with tabulators"
 msgstr ""
 
-#: ../scripts/ipkg-quality.py:67
+#: ../../scripts/ipkg-quality.py:53
 msgid "with trailing whitespaces"
 msgstr ""
 
@@ -1461,47 +1465,49 @@ msgstr ""
 msgid "¿"
 msgstr ""
 
-#: ../database/catalog.py:49
+#: ../database/catalog.py:53
 msgid "À"
 msgstr ""
 
-#: ../database/catalog.py:50
+#: ../database/catalog.py:54
 msgid "Â"
 msgstr ""
 
-#: ../handlers/utils.py:23
-msgid "ÄÅÁÀÂÃĀäåáàâãāăÇçÉÈÊËĒéèêëēğÍÌÎÏĪíìîïīıļÑñÖÓÒÔÕØŌöóòôõøōőÜÚÙÛŪüúùûūŞşţÝŸȲýÿȳŽž"
+#: ../handlers/utils.py:25
+msgid ""
+"ÄÅÁÀÂÃĀäåáàâãāăÇçÉÈÊËĒéèêëēğÍÌÎÏĪíìîïīıļÑñÖÓÒÔÕØŌöóòôõøōőÜÚÙÛŪüúùûūŞşţÝŸȲýÿȳŽž"
+"°«»’"
 msgstr ""
 
-#: ../handlers/utils.py:33
+#: ../handlers/utils.py:35
 msgid "Æ"
 msgstr ""
 
-#: ../database/catalog.py:53
+#: ../database/catalog.py:57
 msgid "Ç"
 msgstr ""
 
-#: ../database/catalog.py:55
+#: ../database/catalog.py:59
 msgid "É"
 msgstr ""
 
-#: ../database/catalog.py:56
+#: ../database/catalog.py:60
 msgid "Ê"
 msgstr ""
 
-#: ../database/catalog.py:61
+#: ../database/catalog.py:65
 msgid "Î"
 msgstr ""
 
-#: ../handlers/utils.py:36 ../i18n/oracle.py:232
+#: ../handlers/utils.py:38 ../i18n/oracle.py:232
 msgid "ß"
 msgstr ""
 
-#: ../i18n/oracle.py:261 ../database/catalog.py:52
+#: ../i18n/oracle.py:261 ../database/catalog.py:56
 msgid "à"
 msgstr ""
 
-#: ../database/catalog.py:51
+#: ../database/catalog.py:55
 msgid "â"
 msgstr ""
 
@@ -1509,27 +1515,27 @@ msgstr ""
 msgid "ä"
 msgstr ""
 
-#: ../handlers/utils.py:32
+#: ../handlers/utils.py:34
 msgid "æ"
 msgstr ""
 
-#: ../i18n/oracle.py:233 ../database/catalog.py:54
+#: ../i18n/oracle.py:233 ../database/catalog.py:58
 msgid "ç"
 msgstr ""
 
-#: ../database/catalog.py:59
+#: ../database/catalog.py:63
 msgid "è"
 msgstr ""
 
-#: ../database/catalog.py:57
+#: ../database/catalog.py:61
 msgid "é"
 msgstr ""
 
-#: ../i18n/oracle.py:234 ../database/catalog.py:58
+#: ../i18n/oracle.py:234 ../database/catalog.py:62
 msgid "ê"
 msgstr ""
 
-#: ../database/catalog.py:60
+#: ../database/catalog.py:64
 msgid "ë"
 msgstr ""
 
@@ -1537,11 +1543,11 @@ msgstr ""
 msgid "í"
 msgstr ""
 
-#: ../database/catalog.py:62
+#: ../database/catalog.py:66
 msgid "î"
 msgstr ""
 
-#: ../database/catalog.py:63
+#: ../database/catalog.py:67
 msgid "ï"
 msgstr ""
 
@@ -1553,7 +1559,7 @@ msgstr ""
 msgid "ó"
 msgstr ""
 
-#: ../database/catalog.py:64
+#: ../database/catalog.py:68
 msgid "ô"
 msgstr ""
 
@@ -1561,7 +1567,7 @@ msgstr ""
 msgid "ö"
 msgstr ""
 
-#: ../database/catalog.py:66
+#: ../database/catalog.py:70
 msgid "ù"
 msgstr ""
 
@@ -1569,19 +1575,19 @@ msgstr ""
 msgid "ú"
 msgstr ""
 
-#: ../database/catalog.py:65
+#: ../database/catalog.py:69
 msgid "û"
 msgstr ""
 
-#: ../i18n/oracle.py:239 ../database/catalog.py:67
+#: ../i18n/oracle.py:239 ../database/catalog.py:71
 msgid "ü"
 msgstr ""
 
-#: ../handlers/utils.py:35
+#: ../handlers/utils.py:37
 msgid "Œ"
 msgstr ""
 
-#: ../handlers/utils.py:34
+#: ../handlers/utils.py:36
 msgid "œ"
 msgstr ""
 

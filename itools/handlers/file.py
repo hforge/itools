@@ -21,6 +21,7 @@
 from copy import deepcopy
 from cStringIO import StringIO
 from datetime import datetime
+from sys import exc_info
 
 # Import from itools
 from itools.fs import vfs
@@ -103,9 +104,11 @@ class File(Handler):
         self.reset()
         try:
             self._load_state_from_file(file)
-        except Exception:
+        except Exception as e:
+            # Update message to add the problematic file
+            message = '{0} on "{1}"'.format(e.message, self.key)
             self._clean_state()
-            raise
+            raise type(e), type(e)(message), exc_info()[2]
         finally:
             file.close()
 

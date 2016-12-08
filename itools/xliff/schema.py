@@ -22,47 +22,47 @@ from itools.xml import ElementSchema
 
 xliff_elements = [
     # Top Level and Header
-    ElementSchema('xliff'),
-    ElementSchema('file'),
-    ElementSchema('header'),
-    ElementSchema('skl'),
-    ElementSchema('external-file'),
-    ElementSchema('internal-file'),
-    ElementSchema('glossary'),
-    ElementSchema('reference'),
-    ElementSchema('phase-group'),
-    ElementSchema('phase'),
-    ElementSchema('tool'),  # 1.2
-    ElementSchema('note'),
+    ElementSchema(name='xliff'),
+    ElementSchema(name='file'),
+    ElementSchema(name='header'),
+    ElementSchema(name='skl'),
+    ElementSchema(name='external-file'),
+    ElementSchema(name='internal-file'),
+    ElementSchema(name='glossary'),
+    ElementSchema(name='reference'),
+    ElementSchema(name='phase-group'),
+    ElementSchema(name='phase'),
+    ElementSchema(name='tool'),  # 1.2
+    ElementSchema(name='note'),
     # Named Group
-    ElementSchema('context-group'),
-    ElementSchema('context'),
-    ElementSchema('count-group'),
-    ElementSchema('count'),
-    ElementSchema('prop-group'),
-    ElementSchema('prop'),
+    ElementSchema(name='context-group'),
+    ElementSchema(name='context'),
+    ElementSchema(name='count-group'),
+    ElementSchema(name='count'),
+    ElementSchema(name='prop-group'),
+    ElementSchema(name='prop'),
     # Structural
-    ElementSchema('body'),
-    ElementSchema('group'),
-    ElementSchema('trans-unit'),
-    ElementSchema('source'),
-    ElementSchema('target'),
-    ElementSchema('bin-unit'),
-    ElementSchema('bin-source'),
-    ElementSchema('bin-target'),
-    ElementSchema('alt-trans'),
+    ElementSchema(name='body'),
+    ElementSchema(name='group'),
+    ElementSchema(name='trans-unit'),
+    ElementSchema(name='source'),
+    ElementSchema(name='target'),
+    ElementSchema(name='bin-unit'),
+    ElementSchema(name='bin-source'),
+    ElementSchema(name='bin-target'),
+    ElementSchema(name='alt-trans'),
     # Inline
-    ElementSchema('g'),
-    ElementSchema('x'),
-    ElementSchema('bx'),
-    ElementSchema('ex'),
-    ElementSchema('bpt'),
-    ElementSchema('ept'),
-    ElementSchema('sub'),
-    ElementSchema('it'),
-    ElementSchema('ph'),
+    ElementSchema(name='g'),
+    ElementSchema(name='x'),
+    ElementSchema(name='bx'),
+    ElementSchema(name='ex'),
+    ElementSchema(name='bpt'),
+    ElementSchema(name='ept'),
+    ElementSchema(name='sub'),
+    ElementSchema(name='it'),
+    ElementSchema(name='ph'),
     # Delimiter
-    ElementSchema('mrk'),
+    ElementSchema(name='mrk'),
 ]
 
 
@@ -71,7 +71,9 @@ xliff_elements = [
 
 #'urn:oasis:names:tc:xliff:document:1.1'
 xliff_namespace = XMLNamespace(
-    'urn:oasis:names:tc:xliff:document:1.2', None, xliff_elements)
+    uri='urn:oasis:names:tc:xliff:document:1.2',
+    prefix=None,
+    elements=xliff_elements)
 
 
 ###########################################################################

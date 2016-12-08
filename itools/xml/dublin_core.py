@@ -40,24 +40,24 @@ dc_attributes = {
 
 
 dc_elements = [
-    ElementSchema('creator', context='creator', skip_content=True),
-    ElementSchema('description'),
-    ElementSchema('date', skip_content=True),
-    ElementSchema('format'),
-    ElementSchema('language', skip_content=True),
-    ElementSchema('publisher'),
-    ElementSchema('rights'),
-    ElementSchema('subject'),
-    ElementSchema('title', context='title'),
-    ElementSchema('type'),
+    ElementSchema(name='creator', context='creator', skip_content=True),
+    ElementSchema(name='description'),
+    ElementSchema(name='date', skip_content=True),
+    ElementSchema(name='format'),
+    ElementSchema(name='language', skip_content=True),
+    ElementSchema(name='publisher'),
+    ElementSchema(name='rights'),
+    ElementSchema(name='subject'),
+    ElementSchema(name='title', context='title'),
+    ElementSchema(name='type'),
     ]
 
 
 dc_namespace = XMLNamespace(
-    'http://purl.org/dc/elements/1.1/', 'dc',
-    dc_elements,
-    dc_attributes)
-
+    uri='http://purl.org/dc/elements/1.1/',
+    prefix='dc',
+    elements=dc_elements,
+    attributes=dc_attributes)
 
 
 ###########################################################################

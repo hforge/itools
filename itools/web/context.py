@@ -756,7 +756,7 @@ class RequestMethod(object):
         try:
             database.save_changes()
         except Exception:
-            context.entity = cls.internal_server_error(context)
+            cls.internal_server_error(context)
 
 
     @classmethod

@@ -152,9 +152,8 @@ class Context(prototype):
         elif content_type.startswith('multipart/'):
             # Case 3: multipart
             return self.get_multipart_body(body)
-        # Case 4: This is useful for REST services
-        # XXX Should just return the body as a string? deserialized?
-        return {'body': body}
+        # Case 4: Not managed content type
+        raise ValueError('Invalid content type "{0}"'.format(content_type))
 
 
     def get_form_body(self, body):

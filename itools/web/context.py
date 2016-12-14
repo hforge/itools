@@ -152,9 +152,8 @@ class Context(prototype):
         elif content_type.startswith('multipart/'):
             # Case 3: multipart
             return self.get_multipart_body(body)
-        # Case 4: This is useful for REST services
-        # XXX Should just return the body as a string? deserialized?
-        return {'body': body}
+        # Case 4: Not managed content type
+        raise ValueError('Invalid content type "{0}"'.format(content_type))
 
 
     def get_form_body(self, body):
@@ -757,7 +756,7 @@ class RequestMethod(object):
         try:
             database.save_changes()
         except Exception:
-            context.entity = cls.internal_server_error(context)
+            cls.internal_server_error(context)
 
 
     @classmethod
@@ -845,24 +844,20 @@ class RequestMethod(object):
                 cls.internal_server_error(context)
             else:
                 # Ok: set status
-                if context.status is not None:
-                    pass
-                elif isinstance(context.entity, Reference):
-                    context.status = 302
-                elif context.entity is None:
-                    context.status = 204
-                else:
-                    context.status = 200
+                cls.set_status_from_entity(context)
 
         # (4) Commit the transaction
         cls.commit_transaction(context)
 
         # (5) Build response, when postponed (useful for POST methods)
         if isinstance(context.entity, (FunctionType, MethodType)):
+            context.status = None
             try:
                 context.entity = context.entity(context.resource, context)
             except Exception:
                 cls.internal_server_error(context)
+            else:
+                cls.set_status_from_entity(context)
             context.database.abort_changes()
 
         # (6) After Traverse hook
@@ -874,6 +869,18 @@ class RequestMethod(object):
 
         # (7) Build and return the response
         cls.set_body(context)
+
+
+    @classmethod
+    def set_status_from_entity(cls, context):
+        if context.status is not None:
+            pass
+        elif isinstance(context.entity, Reference):
+            context.status = 302
+        elif context.entity is None:
+            context.status = 204
+        else:
+            context.status = 200
 
 
 

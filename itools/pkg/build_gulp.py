@@ -38,27 +38,31 @@ class GulpBuilder(object):
         if self.vfs.is_folder('ui/'):
             self.dist_folders = tuple(['ui/{0}/dist'.format(x)
               for x in Folder('ui/').get_names()])
-        self.all_files = self.vfs.traverse('.')
+        self.all_files = list(self.vfs.traverse('.'))
 
 
     def run(self):
         if not 'gulpfile.js' in self.manifest:
             return
+        # Launch gulp
+        self.launch_gulp_if_needed()
+        # Add DIST files into manifest
+        for path in self.vfs.traverse('ui/'):
+            relative_path = self.vfs.get_relative_path(path)
+            if (relative_path and
+                relative_path.startswith(self.dist_folders) and self.vfs.is_file(path)):
+                self.manifest.add(relative_path)
+
+
+    def launch_gulp_if_needed(self):
         dist_min_mtime = self.get_dist_min_mtime()
         if dist_min_mtime:
             has_to_run_gulp = self.has_to_run_gulp(dist_min_mtime)
             if not has_to_run_gulp:
                 # Don't need to build gulp. All JS files are up to date
                 return
-        # Run gulp
         call(['npm', 'install'])
         call(['gulp', 'build'])
-        # Add DIST files into manifest
-        for path in self.all_files:
-            relative_path = self.vfs.get_relative_path(path)
-            if (relative_path and
-                relative_path.startswith(self.dist_folders) and self.vfs.is_file(path)):
-                self.manifest.add(relative_path)
 
 
     def get_dist_min_mtime(self):

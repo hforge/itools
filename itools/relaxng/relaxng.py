@@ -404,7 +404,7 @@ def make_namespaces(context):
                 # Element + its attributes
                 namespace = namespaces.setdefault(uri, {'elements': {},
                                                   'free_attributes': {}})
-                element = ElementSchema(name,
+                element = ElementSchema(name=name,
                                         default_datatype=String,
                                         is_empty=is_empty,
                                         attributes=own)
@@ -422,9 +422,12 @@ def make_namespaces(context):
         # Find the prefix
         for prefix, uri in prefix2uri.iteritems():
             if uri == namespace:
-                result[uri] = XMLNamespace(uri, prefix,
-                                           data['elements'].values(),
-                                           data['free_attributes'], String)
+                result[uri] = XMLNamespace(
+                    uri=uri,
+                    prefix=prefix,
+                    elements=data['elements'].values(),
+                    free_attributes=data['free_attributes'],
+                    default_datatype=String)
                 break
         else:
             log_warning('relaxng: namespace "%s" not found' % namespace)
@@ -442,6 +445,10 @@ class RelaxNGFile(TextFile):
     class_mimetypes = ['text/x-rng']
     class_extension = 'rng'
 
+    inline_elements = []
+    skip_content_elements = []
+    contexts = []
+
     def _load_state_from_file(self, file):
         # A new context
         context = {'encoding' : 'utf-8',
@@ -453,9 +460,18 @@ class RelaxNGFile(TextFile):
 
         # Parse the file
         read_file(context, self.key, file)
-
         # And make the namespaces
         self.namespaces = make_namespaces(context)
+        # Apply the metadata
+        for uri, element_name in self.inline_elements:
+            element = self.namespaces[uri].elements_kw[element_name]
+            element.is_inline = True
+        for uri, element_name in self.skip_content_elements:
+            element = self.namespaces[uri].elements_kw[element_name]
+            element.skip_content = True
+        for uri, element_name, context in self.contexts:
+            element = self.namespaces[uri].elements_kw[element_name]
+            element.context = context
 
 
 

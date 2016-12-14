@@ -20,6 +20,7 @@
 from warnings import warn
 
 # Import from itools
+from itools.core import proto_lazy_property, prototype
 from itools.datatypes import String
 from parser import XMLError
 
@@ -77,6 +78,10 @@ def has_namespace(namespace_uri):
     return namespace_uri in namespaces
 
 
+###########################################################################
+# API
+###########################################################################
+
 def get_element_schema(namespace, name):
     return get_namespace(namespace).get_element_schema(name)
 
@@ -86,13 +91,36 @@ def is_empty(namespace, name):
     return getattr(schema, 'is_empty', False)
 
 
+def get_attr_datatype(tag_uri, tag_name, attr_uri, attr_name,
+                      attributes=None):
+    # Namespace declaration
+    if (attr_uri == xmlns_uri) or (attr_uri is None and attr_name == 'xmlns'):
+        return String
+
+    # Attached attribute
+    if attr_uri is None or attr_uri == tag_uri:
+        element_schema = get_element_schema(tag_uri, tag_name)
+        datatype = element_schema.get_attr_datatype(attr_name, attributes)
+    else:
+        # Free attribute
+        datatype = get_namespace(attr_uri).get_attr_datatype(attr_name)
+    # No datatype
+    if datatype is None:
+        message = 'unexpected "%s" attribute for "%s" element'
+        raise XMLError(message % (attr_name, tag_name))
+    # Ok
+    return datatype
+
+
+
 ###########################################################################
 # Namespaces
 ###########################################################################
 
-class ElementSchema(object):
+class ElementSchema(prototype):
 
     # Default values
+    name = None
     attributes = {}
     is_empty = False
     is_inline = False
@@ -103,61 +131,47 @@ class ElementSchema(object):
     keep_spaces = False
     context = None
 
-
-    def __init__(self, name, **kw):
-        self.name = name
-        for key in kw:
-            setattr(self, key, kw[key])
-
-
     def get_attr_datatype(self, name, attributes):
         datatype = self.attributes.get(name)
         if datatype is not None:
             return datatype
-
         if self.default_datatype is not None:
             return self.default_datatype
-
-        message = 'unexpected "%s" attribute for "%s" element'
-        raise XMLError, message % (name, self.name)
+        return None
 
 
 
 
-class XMLNamespace(object):
+class XMLNamespace(prototype):
 
-    def __init__(self, uri, prefix, elements=None, free_attributes=None,
-                 default_datatype=None, default_element=None):
-        self.uri = uri
-        self.prefix = prefix
-        self.default_element = default_element
-        # Default_datatatype String for HTML5
-        self.default_datatype = default_datatype or String
-        # Elements
-        self.elements = {}
-        if elements is not None:
-            for element in elements:
-                name = element.name
-                if name in self.elements:
-                    raise ValueError, 'element "%s" is defined twice' % name
-                self.elements[name] = element
-        # Free Attributes
-        if free_attributes is None:
-            self.free_attributes = {}
-        else:
-            self.free_attributes = free_attributes
+    uri = None
+    prefix = None
+    elements = []
+    free_attributes = {}
+    default_datatype = String
+    default_element = None
+
+
+    @proto_lazy_property
+    def elements_kw(self):
+        kw = {}
+        for element in self.elements:
+            name = element.name
+            if name in self.elements:
+                raise ValueError('element "%s" is defined twice' % name)
+            kw[name] = element
+        return kw
 
 
     def get_element_schema(self, name):
         """Returns a dictionary that defines the schema for the given element.
         """
-        element = self.elements.get(name)
+        element = self.elements_kw.get(name)
         if element is not None:
             return element
         if self.default_element is not None:
-            return self.default_element(name)
-
-        raise XMLError, 'unexpected element "%s"' % name
+            return self.default_element(name=name)
+        raise XMLError('unexpected element "%s"' % name)
 
 
     def get_attr_datatype(self, name):
@@ -166,13 +180,12 @@ class XMLNamespace(object):
             return datatype
         if self.default_datatype is not None:
             return self.default_datatype
-
-        raise XMLError, 'unexpected attribute "%s"' % name
+        return None
 
 
 
 # The default namespace is used for free elements.
-default_namespace = XMLNamespace(None, None, default_element=ElementSchema)
+default_namespace = XMLNamespace(uri=None, prefix=None, default_element=ElementSchema)
 
 
 
@@ -193,25 +206,7 @@ class XMLNSNamespace(XMLNamespace):
         return String
 
 
-xmlns_namespace = XMLNSNamespace(xmlns_uri, 'xmlns')
-
-
-
-
-def get_attr_datatype(tag_uri, tag_name, attr_uri, attr_name,
-                      attributes=None):
-    # Namespace declaration
-    if (attr_uri == xmlns_uri) or (attr_uri is None and attr_name == 'xmlns'):
-        return String
-
-    # Attached attribute
-    if attr_uri is None or attr_uri == tag_uri:
-        element_schema = get_namespace(tag_uri).get_element_schema(tag_name)
-        return element_schema.get_attr_datatype(attr_name, attributes)
-
-    # Free attribute
-    return get_namespace(attr_uri).get_attr_datatype(attr_name)
-
+xmlns_namespace = XMLNSNamespace(uri=xmlns_uri, prefix='xmlns')
 
 
 ###########################################################################
@@ -220,4 +215,3 @@ def get_attr_datatype(tag_uri, tag_name, attr_uri, attr_name,
 register_namespace(xml_namespace)
 register_namespace(xmlns_namespace)
 register_namespace(default_namespace)
-

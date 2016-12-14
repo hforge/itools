@@ -36,11 +36,15 @@ class STLElement(ElementSchema):
 
 
 stl_elements = [
-    STLElement('block', is_inline=False),
-    STLElement('inline', is_inline=True)]
+    STLElement(name='block', is_inline=False),
+    STLElement(name='inline', is_inline=True)]
 
 
-stl_namespace = XMLNamespace(stl_uri, 'stl', stl_elements, stl_attributes)
+stl_namespace = XMLNamespace(
+    uri=stl_uri,
+    prefix='stl',
+    elements=stl_elements,
+    attributes=stl_attributes)
 
 
 # Register

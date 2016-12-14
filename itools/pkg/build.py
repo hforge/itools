@@ -76,15 +76,6 @@ def make_template(source, target):
 
 
 
-# SASS: CSS preprocessor
-def scss2css(source, target):
-    try:
-        Popen(['scss', source, target])
-    except (OSError, EnvironmentError):
-        print '[Warning] please install scss package to compile CSS'
-
-
-
 def get_package_version_path(package_root):
     if package_root == '.':
         version_txt = 'version.txt'
@@ -152,9 +143,7 @@ def build(config):
     print '* Version:', version
     manifest.add(version_txt)
     # (3) Rules
-    rules = [
-        ('.po', '.mo', po2mo),
-        ('.scss', '.css', scss2css)]
+    rules = [('.po', '.mo', po2mo)]
     # Templates
     src_lang = config.get_value('source_language', default='en')
     for dst_lang in config.get_value('target_languages'):

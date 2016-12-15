@@ -235,6 +235,23 @@ PyMessage_init (PyMessage * self, PyObject * args, PyObject * kwdict)
   return 0;
 }
 
+static PyObject *
+PyMessage_set_message(PyMessage * self, PyObject * args, PyObject *kwdict)
+{
+
+  const char *method, *uri_string, *mycontent;
+
+  if (!PyArg_ParseTuple (args, "sss", &method, &uri_string, &mycontent))
+      Py_RETURN_NONE;
+
+  self->s_msg->method = method;
+  SoupURI *uri = soup_uri_new(uri_string);
+  soup_message_set_uri(self->s_msg, uri);
+  self->s_msg->request_body->data = mycontent;
+  self->s_msg->request_body->length = strlen(mycontent);
+  Py_RETURN_NONE;
+
+}
 
 static PyObject *
 PyMessage_get_request_line (PyMessage * self, PyObject * args,
@@ -380,6 +397,20 @@ PyMessage_set_header (PyMessage * self, PyObject * args, PyObject * kwdict)
 
 
 static PyObject *
+PyMessage_set_request_header (PyMessage * self, PyObject * args, PyObject * kwdict)
+{
+  char *name, *value;
+
+  if (!PyArg_ParseTuple (args, "ss", &name, &value))
+    return NULL;
+
+  soup_message_headers_replace (self->s_msg->request_headers, name, value);
+
+  Py_RETURN_NONE;
+}
+
+
+static PyObject *
 PyMessage_set_response (PyMessage * self, PyObject * args, PyObject * kwdict)
 {
   char *content_type, *body;
@@ -410,6 +441,8 @@ PyMessage_set_status (PyMessage * self, PyObject * args, PyObject * kwdict)
 
 
 static PyMethodDef PyMessage_methods[] = {
+  {"set_message", (PyCFunction) PyMessage_set_message, METH_VARARGS,
+   "Set message"},
   {"append_header", (PyCFunction) PyMessage_append_header, METH_VARARGS,
    "Append the given response header"},
   {"get_request_line", (PyCFunction) PyMessage_get_request_line, METH_NOARGS,
@@ -428,6 +461,8 @@ static PyMethodDef PyMessage_methods[] = {
    "Get the query from the request uri"},
   {"set_header", (PyCFunction) PyMessage_set_header, METH_VARARGS,
    "Set the given response header"},
+  {"set_request_header", (PyCFunction) PyMessage_set_request_header, METH_VARARGS,
+   "Set the given request header"},
   {"set_response", (PyCFunction) PyMessage_set_response, METH_VARARGS,
    "Set the response body"},
   {"set_status", (PyCFunction) PyMessage_set_status, METH_VARARGS,
@@ -457,7 +492,7 @@ static PyTypeObject PyMessageType = {
   0,                            /* tp_getattro */
   0,                            /* tp_setattro */
   0,                            /* tp_as_buffer */
-  Py_TPFLAGS_DEFAULT,           /* tp_flags */
+  Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,           /* tp_flags */
   "Wrapper of SoupMessage",     /* tp_doc */
   0,                            /* tp_traverse */
   0,                            /* tp_clear */

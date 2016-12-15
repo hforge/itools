@@ -67,6 +67,7 @@ class Context(prototype):
     styles = []
     scripts = []
     view = None
+    entity = None
 
 
     def init_context(self):
@@ -574,15 +575,16 @@ class Context(prototype):
 
 
     def handle_request(self, soup_message, path):
-        # (1) If path is null => 400 Bad Request
-        if path is None:
-            log_warning('Unexpected HTTP path (null)', domain='itools.web')
-            return set_response(soup_message, 400)
-
-        # (2) Attach to the soup message and path
+        # (1) Attach to the soup message and path
         context = self()
         context.soup_message = soup_message
         context.path = path
+
+        # (2) If path is null => 400 Bad Request
+        if path is None:
+            log_warning('Unexpected HTTP path (null)', domain='itools.web')
+            set_response(soup_message, 400)
+            return context
 
         # (3) Get the method that will handle the request
         method_name = soup_message.get_method()
@@ -591,7 +593,8 @@ class Context(prototype):
         if method is None:
             log_warning('Unexpected "%s" HTTP method' % method_name,
                         domain='itools.web')
-            return set_response(soup_message, 501)
+            set_response(soup_message, 501)
+            return context
 
         # (4) Go
         set_context(context)
@@ -599,9 +602,11 @@ class Context(prototype):
             method()
         except StandardError:
             log_error('Internal error', domain='itools.web')
-            return set_response(soup_message, 500)
+            set_response(soup_message, 500)
+            return context
         finally:
             set_context(None)
+            return context
 
 
     def http_get(self):
@@ -800,12 +805,13 @@ class RequestMethod(object):
             cls.check_conditions(context)
         except ClientError, error:
             status = error.code
+            context.status = status
             if context.agent_is_a_robot():
+                context.entity = error.title
                 soup_message = context.soup_message
                 soup_message.set_status(status)
                 soup_message.set_response('text/plain', error.title)
                 return
-            context.status = status
             context.view_name = status2name[status]
             context.view = root.get_view(context.view_name)
         except NotModified:

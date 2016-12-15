@@ -27,9 +27,8 @@ from time import strftime
 from itools.i18n import init_language_selector
 from itools.log import Logger, register_logger, log_info
 from context import select_language
-from context import WebLogger
-from soup import SoupServer
-
+from context import WebLogger, get_context, set_context
+from soup import SoupServer, SoupMessage
 
 class WebServer(SoupServer):
 
@@ -73,6 +72,32 @@ class WebServer(SoupServer):
         # Say hello
         address = address if address is not None else '*'
         print 'Listen %s:%d' % (address, port)
+
+
+    def do_request(self, method='GET', path='/', headers={}, body=None, context=None):
+        """Experimental method to do a request on the server"""
+        message = SoupMessage()
+        if body:
+            headers.setdefault('content-type', 'application/x-www-form-urlencoded')
+        message.set_message(method, 'http://localhost' + path, body or '')
+        for name, value in headers.items():
+            message.set_request_header(name, value)
+        context = context or get_context() or self.get_fake_context()
+        context = context.handle_request(message, path)
+        return {'status': context.status,
+                'method': context.method,
+                'entity': context.entity,
+                'context': context}
+
+
+    def get_fake_context(self):
+        context = self.root.context_cls()
+        context.soup_message = SoupMessage()
+        context.path = '/'
+        context.database = self.database
+        context.server = self
+        set_context(context)
+        return context
 
 
     def set_upload_stats(self, upload_id, uploaded_size, total_size):

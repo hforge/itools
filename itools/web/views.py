@@ -375,7 +375,7 @@ class STLView(BaseView):
             error = None
             if submit and not is_readonly:
                 try:
-                    value = context.get_form_value(name, type=field)
+                    value = context.get_form_value(name, type=datatype)
                 except FormError, err:
                     error = err.get_message()
                     if issubclass(datatype, Enumerate):

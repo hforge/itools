@@ -38,6 +38,8 @@ class WebServer(SoupServer):
     database = None
     session_timeout = timedelta(0)
 
+    accept_cors = False
+
 
     def __init__(self, root, access_log=None, event_log=None):
         super(WebServer, self).__init__()

@@ -32,9 +32,8 @@ class DBResourceMetaclass(type):
             RODatabase.register_resource_class(cls)
 
         # Lookup fields
-        if 'fields' not in dict:
-            cls.fields = [ x for x in dir(cls)
-                           if is_prototype(getattr(cls, x), Field) ]
+        cls.fields = [ x for x in dir(cls)
+                       if is_prototype(getattr(cls, x), Field) ]
 
         # Register new fields in the catalog
         for name in cls.fields:
@@ -74,8 +73,7 @@ class Resource(object):
     def get_fields(self):
         for name in self.fields:
             field = self.get_field(name)
-            if field:
-                yield name, field
+            yield name, field
 
 
     def get_catalog_values(self):

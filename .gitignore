@@ -4,6 +4,5 @@
 *.swp
 build
 dist
-MANIFEST
 version.txt
 test/pdf/*.pdf

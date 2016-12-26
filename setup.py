@@ -200,4 +200,6 @@ if __name__ == '__main__':
           # Packages
           packages=packages,
           # Scripts
-          scripts=scripts)
+          scripts=scripts,
+          # C extensions
+          ext_modules=ext_modules)

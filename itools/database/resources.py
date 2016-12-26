@@ -63,10 +63,14 @@ class Resource(object):
 
 
     @classmethod
-    def get_field(self, name):
-        if name in self.fields:
-            return getattr(self, name, None)
-        raise ValueError('Undefined field %s'.format(name))
+    def get_field(cls, name, soft=True):
+        if name in cls.fields:
+            return getattr(cls, name, None)
+        msg = 'Undefined field %s on %s' % (name, cls)
+        if soft is True:
+            print('Warning: '+ msg)
+            return None
+        raise ValueError(msg)
 
 
     @classmethod

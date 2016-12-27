@@ -19,6 +19,7 @@
 # Import from the Standard Library
 from distutils.core import Extension
 from distutils.core import setup
+from os.path import join as join_path
 from pip.download import PipSession
 from pip.req import parse_requirements
 from sys import stderr
@@ -186,6 +187,19 @@ if __name__ == '__main__':
     install_requires = parse_requirements(
         'requirements.txt', session=PipSession())
     install_requires = [str(ir.req) for ir in install_requires]
+    # The data files
+    package_data = {}
+    filenames = [ x.strip() for x in open('MANIFEST').readlines() ]
+    filenames = [ x for x in filenames if not x.endswith('.py') ]
+    for line in filenames:
+        if not line.startswith('itools/'):
+            continue
+        path = line.split('/')
+        subpackage = 'itools.%s' % (path[1])
+        if subpackage not in packages:
+            continue
+        files = package_data.setdefault(subpackage, [])
+        files.append(join_path(*path[2:]))
     setup(name="itools",
           version="0.75",
           # Metadata
@@ -199,6 +213,7 @@ if __name__ == '__main__':
           install_requires=install_requires,
           # Packages
           packages=packages,
+          package_data=package_data,
           # Scripts
           scripts=scripts,
           # C extensions

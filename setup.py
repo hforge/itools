@@ -188,7 +188,7 @@ if __name__ == '__main__':
         'requirements.txt', session=PipSession())
     install_requires = [str(ir.req) for ir in install_requires]
     # The data files
-    package_data = {}
+    package_data = {'itools': []}
     filenames = [ x.strip() for x in open('MANIFEST').readlines() ]
     filenames = [ x for x in filenames if not x.endswith('.py') ]
     for line in filenames:
@@ -196,10 +196,11 @@ if __name__ == '__main__':
             continue
         path = line.split('/')
         subpackage = 'itools.%s' % (path[1])
-        if subpackage not in packages:
-            continue
-        files = package_data.setdefault(subpackage, [])
-        files.append(join_path(*path[2:]))
+        if subpackage in packages:
+            files = package_data.setdefault(subpackage, [])
+            files.append(join_path(*path[2:]))
+        else:
+            package_data['itools'].append(join_path(*path[1:]))
     setup(name="itools",
           version="0.75",
           # Metadata

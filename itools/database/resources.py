@@ -32,14 +32,14 @@ class DBResourceMetaclass(type):
             RODatabase.register_resource_class(cls)
 
         # Lookup fields
-        if 'fields' not in dict:
-            cls.fields = [ x for x in dir(cls)
-                           if is_prototype(getattr(cls, x), Field) ]
+        cls.fields = [ x for x in dir(cls)
+                       if is_prototype(getattr(cls, x), Field) ]
 
         # Register new fields in the catalog
         for name in cls.fields:
             if name in dict:
                 field = dict[name]
+                field.name = name
                 if field.indexed or field.stored:
                     datatype = field.get_datatype()
                     register_field(name, datatype)
@@ -63,21 +63,21 @@ class Resource(object):
 
 
     @classmethod
-    def get_field(self, name):
-        field = getattr(self, name, None)
-        if is_prototype(field, Field):
-            field = field(name=name)
-            return field
-
-        return None
+    def get_field(cls, name, soft=True):
+        if name in cls.fields:
+            return getattr(cls, name, None)
+        msg = 'Undefined field %s on %s' % (name, cls)
+        if soft is True:
+            print('Warning: '+ msg)
+            return None
+        raise ValueError(msg)
 
 
     @classmethod
     def get_fields(self):
         for name in self.fields:
             field = self.get_field(name)
-            if field:
-                yield name, field
+            yield name, field
 
 
     def get_catalog_values(self):

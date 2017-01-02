@@ -18,10 +18,50 @@
 
 # Import from the Standard Library
 from distutils.core import Extension
+from distutils.core import setup
+from os.path import join as join_path
+from pip.download import PipSession
+from pip.req import parse_requirements
 from sys import stderr
+from subprocess import Popen, PIPE
 
-# Import from itools
-from itools.pkg import setup, get_compile_flags
+
+def get_pipe(command, cwd=None):
+    """Wrapper around 'subprocess.Popen'
+    """
+    popen = Popen(command, stdout=PIPE, stderr=PIPE, cwd=cwd)
+    stdoutdata, stderrdata = popen.communicate()
+    if popen.returncode != 0:
+        raise EnvironmentError, (popen.returncode, stderrdata)
+    return stdoutdata
+
+
+def get_compile_flags(command):
+    include_dirs = []
+    extra_compile_args = []
+    library_dirs = []
+    libraries = []
+
+    if isinstance(command, str):
+        command = command.split()
+    data = get_pipe(command)
+
+    for line in data.splitlines():
+        for token in line.split():
+            flag, value = token[:2], token[2:]
+            if flag == '-I':
+                include_dirs.append(value)
+            elif flag == '-f':
+                extra_compile_args.append(token)
+            elif flag == '-L':
+                library_dirs.append(value)
+            elif flag == '-l':
+                libraries.append(value)
+
+    return {'include_dirs': include_dirs,
+            'extra_compile_args': extra_compile_args,
+            'library_dirs': library_dirs,
+            'libraries': libraries}
 
 
 if __name__ == '__main__':
@@ -84,4 +124,98 @@ if __name__ == '__main__':
         ext_modules.append(extension)
 
     # Ok
-    setup(ext_modules=ext_modules)
+    description = """The itools library offers a collection of packages covering a wide
+     range of capabilities.  Including support for many file formats (XML,
+     CSV, HTML, etc.), a virtual file system (itools.fs), the simple
+     template language (STL), an index and search engine, and much more."""
+    classifiers = [
+      'Development Status :: 4 - Beta',
+      'Intended Audience :: Developers',
+      'License :: OSI Approved :: GNU General Public License (GPL)',
+      'Programming Language :: Python',
+      'Topic :: Internet',
+      'Topic :: Internet :: WWW/HTTP',
+      'Topic :: Software Development',
+      'Topic :: Software Development :: Internationalization',
+      'Topic :: Software Development :: Libraries',
+      'Topic :: Software Development :: Libraries :: Python Modules',
+      'Topic :: Software Development :: Localization',
+      'Topic :: Text Processing',
+      'Topic :: Text Processing :: Markup',
+      'Topic :: Text Processing :: Markup :: XML"',
+    ]
+    packages = [
+        "itools",
+        "itools.abnf",
+        "itools.core",
+        "itools.csv",
+        "itools.database",
+        "itools.datatypes",
+        "itools.fs",
+        "itools.gettext",
+        "itools.handlers",
+        "itools.html",
+        "itools.i18n",
+        "itools.ical",
+        "itools.log",
+        "itools.loop",
+        "itools.odf",
+        "itools.office",
+        "itools.pdf",
+        "itools.pkg",
+        "itools.python",
+        "itools.relaxng",
+        "itools.rss",
+        "itools.srx",
+        "itools.stl",
+        "itools.tmx",
+        "itools.uri",
+        "itools.web",
+        "itools.workflow",
+        "itools.xliff",
+        "itools.xml",
+        "itools.xmlfile"]
+    scripts =  [
+      "scripts/idb-inspect.py",
+      "scripts/igettext-build.py",
+      "scripts/igettext-extract.py",
+      "scripts/igettext-merge.py",
+      "scripts/iodf-greek.py",
+      "scripts/ipkg-docs.py",
+      "scripts/ipkg-quality.py",
+      "scripts/ipkg-update-locale.py"]
+    install_requires = parse_requirements(
+        'requirements.txt', session=PipSession())
+    install_requires = [str(ir.req) for ir in install_requires]
+    # The data files
+    package_data = {'itools': []}
+    filenames = [ x.strip() for x in open('MANIFEST').readlines() ]
+    filenames = [ x for x in filenames if not x.endswith('.py') ]
+    for line in filenames:
+        if not line.startswith('itools/'):
+            continue
+        path = line.split('/')
+        subpackage = 'itools.%s' % (path[1])
+        if subpackage in packages:
+            files = package_data.setdefault(subpackage, [])
+            files.append(join_path(*path[2:]))
+        else:
+            package_data['itools'].append(join_path(*path[1:]))
+    setup(name="itools",
+          version="0.75",
+          # Metadata
+          author="J. David Ibáñez",
+          author_email="jdavid.ibp@gmail.com" ,
+          license="GNU General Public License (GPL)",
+          url="http://www.hforge.org/itools",
+          description=description,
+          long_description=None,
+          classifiers = classifiers,
+          install_requires=install_requires,
+          # Packages
+          packages=packages,
+          package_data=package_data,
+          # Scripts
+          scripts=scripts,
+          # C extensions
+          ext_modules=ext_modules)

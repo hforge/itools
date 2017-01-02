@@ -1011,7 +1011,6 @@ class OPTIONS(SafeMethod):
                 allowed.remove('DELETE')
 
         # (3) Render
-        context.set_header('allow', ','.join(allowed))
         context.entity = None
         context.status = 200
 
@@ -1024,6 +1023,19 @@ class OPTIONS(SafeMethod):
         # (6) Build and return the response
         context.soup_message.set_status(context.status)
         cls.set_body(context)
+        # (7)  Accept CORS ?
+        if context.server.accept_cors:
+            for request_key, response_key in [
+                ('Origin', 'Access-Control-Allow-Origin'),
+                ('Access-Control-Request-Headers',
+                 'Access-Control-Allow-Headers'),
+                ('Access-Control-Request-Methods',
+                 'Access-Control-Allow-Methods'),
+                ('Access-Control-Request-Credentials',
+                 'Access-Control-Allow-Credentials')]:
+                request_value =  context.get_header(request_key)
+                context.set_header(response_key, request_value)
+
 
 
 

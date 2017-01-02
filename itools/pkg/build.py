@@ -66,6 +66,7 @@ def make_template(source, target):
     from itools.html import XHTMLFile
     import itools.gettext
     import itools.stl
+    import itools.pdf
     # Get file
     source_handler = ro_database.get_handler(source, XHTMLFile)
     language = target.rsplit('.', 1)[1]

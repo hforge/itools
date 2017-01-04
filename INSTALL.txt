@@ -3,11 +3,12 @@ Table of contents:
 
   1. Software requirements
   2. Install manually
-  3. Install on Debian
+  3. Install on Debian Stable (squeeze)
   4. Install on Gentoo
-  5. Install on Windows
-  6. Run the unit tests
-  7. Checkout from the Git repository
+  5. Install on FreeBSD
+  6. Install on Windows
+  7. Run the unit tests
+  8. Checkout from the Git repository
 
 
 1. Software requirements

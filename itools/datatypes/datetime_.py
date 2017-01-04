@@ -47,7 +47,7 @@ class HTTPDate(DataType):
         # Parse the date into a tuple, including the timezone
         parts = parsedate_tz(data)
         if parts is None:
-            raise ValueError, 'date "%s" is not supported' % data
+            raise ValueError('date "%s" is not supported' % data)
         parts, tz = parts[:9], parts[9]
 
         # Get a naive datetime
@@ -83,11 +83,11 @@ class HTTPDate(DataType):
 ###########################################################################
 
 # XXX Python dates (the datetime.date module) require the month and day,
-# they are not able to represent lower precission dates as ISO 8601 does.
+# they are not able to represent lower precision dates as ISO 8601 does.
 # In the long run we will need to replace Python dates by something else.
 
 class ISOCalendarDate(DataType):
-    """Extended formats (from max. to min. precission): %Y-%m-%d, %Y-%m, %Y
+    """Extended formats (from max. to min. precision): %Y-%m-%d, %Y-%m, %Y
 
     Basic formats: %Y%m%d, %Y%m, %Y
     """
@@ -142,9 +142,9 @@ class ISOCalendarDate(DataType):
 # TODO ISOOrdinalDate
 
 class ISOTime(DataType):
-    """Extended formats (from max. to min. precission): %H:%M:%S, %H:%M
+    """Extended formats (from max. to min. precision): %H:%M:%S.%f, %H:%M:%S, %H:%M
 
-    Basic formats: %H%M%S, %H%M, %H
+    Basic formats: %H%M%S%f, %H%M%S, %H%M, %H
     """
 
 

@@ -184,13 +184,22 @@ class ISOTime(DataType):
             parts = data.split(':')
             n = len(parts)
             if n > 3:
-                raise ValueError, 'unexpected time value "%s"' % data
+                raise ValueError('unexpected time value "%s"' % data)
             hour = int(parts[0])
             minute = int(parts[1])
             if n == 2:
                 return time(hour, minute, tzinfo=tzinfo)
-            second = int(parts[2])
-            return time(hour, minute, second, tzinfo=tzinfo)
+            data = parts[2]
+            if '.' not in data:
+                second = int(data)
+                return time(hour, minute, second, tzinfo=tzinfo)
+            parts = data.split('.')
+            n = len(parts)
+            if n > 2:
+                raise ValueError('unexpected time value "%s"' % data)
+            second = int(parts[0])
+            microsecond = int(parts[1])
+            return time(hour, minute, second, microsecond, tzinfo=tzinfo)
 
         # Basic formats
         hour = int(data[:2])
@@ -203,8 +212,13 @@ class ISOTime(DataType):
         if not data:
             return time(hour, minute, tzinfo=tzinfo)
         # Second
-        second = int(data)
-        return time(hour, minute, second, tzinfo=tzinfo)
+        second = int(data[:2])
+        data = data[2:]
+        if not data:
+            return time(hour, minute, second, tzinfo=tzinfo)
+        # Microsecond
+        microsecond = int(data)
+        return time(hour, minute, second, microsecond, tzinfo=tzinfo)
 
 
     @staticmethod
@@ -212,12 +226,10 @@ class ISOTime(DataType):
         # We choose the extended format as the canonical representation
         if value is None:
             return ''
-        fmt = '%H:%M:%S'
+        fmt = '%H:%M:%S.%f'
         if value.tzinfo is not None:
-            suffixe = '%Z'
-        else:
-            suffixe = ''
-        return value.strftime(fmt + suffixe)
+            fmt += '%Z'
+        return value.strftime(fmt)
 
 
 
@@ -239,7 +251,7 @@ class ISODateTime(DataType):
             return datetime.combine(date, time)
 
         if self.time_is_required:
-            raise ValueError, 'expected time field not found'
+            raise ValueError('expected time field not found')
 
         return date
 
@@ -251,7 +263,7 @@ class ISODateTime(DataType):
         value_type = type(value)
         if value_type is datetime:
             # Datetime
-            fmt = fmt_date + 'T%H:%M:%S'
+            fmt = fmt_date + 'T%H:%M:%S.%f'
             if value.tzinfo is not None:
                 fmt += '%z'
         elif value_type is date and not self.time_is_required:
@@ -259,6 +271,6 @@ class ISODateTime(DataType):
             fmt = fmt_date
         else:
             # Error
-            raise TypeError, "unexpected value of type '%s'" % value_type
+            raise TypeError("unexpected value of type '%s'" % value_type)
 
         return value.strftime(fmt)

@@ -314,12 +314,12 @@ class TableTestCase(TestCase):
 
     def test_de_serialize(self):
         data = ('id:0/0\n'
-                'ts:2007-07-13T17:19:21\n'
+                'ts:2007-07-13T17:19:21.000000\n'
                 '\n'
                 'id:1/0\n'
                 'title;language=en:hello\n'
                 'title;language=es:hola\n'
-                'ts:2007-07-14T16:43:49\n'
+                'ts:2007-07-14T16:43:49.000000\n'
                 '\n')
         table = Table(string=data)
         self.assertEqual(table.to_str(), data)

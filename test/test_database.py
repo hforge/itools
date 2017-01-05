@@ -565,7 +565,8 @@ class BugXapianTestCase(TestCase):
 
 
     def tearDown(self):
-        lfs.remove('tests/catalog')
+        if lfs.exists('tests/catalog'):
+            lfs.remove('tests/catalog')
 
 
     def test_everything(self):

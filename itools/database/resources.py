@@ -32,8 +32,9 @@ class DBResourceMetaclass(type):
             RODatabase.register_resource_class(cls)
 
         # Lookup fields
-        cls.fields = [ x for x in dir(cls)
-                       if is_prototype(getattr(cls, x), Field) ]
+        if 'fields' not in dict:
+            cls.fields = [ x for x in dir(cls)
+                           if is_prototype(getattr(cls, x), Field) ]
 
         # Register new fields in the catalog
         for name in cls.fields:

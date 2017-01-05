@@ -16,32 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.core import get_abspath
-from itools.handlers import ro_database
-from itools.relaxng import RelaxNGFile
 from pdf import PDFFile
 
-# There are imports from ReportLab in these imports, so, ...
-try:
-    from pml import pmltopdf, stl_pmltopdf
-except ImportError:
-    print 'You need to install the package "reportlab" to get PML working.'
 
-    # Not implemented, ...
-    def not_implemented(*args, **kw):
-        raise NotImplementedError, 'the package "reportlab" must be installed'
-    pmltopdf = not_implemented
-    stl_pmltopdf = not_implemented
-
-
-__all__ = [
-    'PDFFile',
-    'pmltopdf',
-    'stl_pmltopdf']
-
-
-# Read the Relax NG schema of PML and register its namespace
-rng_file = get_abspath('PML-schema.rng')
-rng_file = ro_database.get_handler(rng_file, RelaxNGFile)
-rng_file.auto_register()
-
+__all__ = ['PDFFile']

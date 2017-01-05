@@ -31,7 +31,6 @@ import test_html
 import test_i18n
 import test_ical
 import test_odf
-import test_pdf
 import test_rss
 import test_srx
 import test_stl
@@ -46,7 +45,7 @@ import test_xmlfile
 
 test_modules = [test_abnf, test_core, test_csv, test_database, test_datatypes,
     test_gettext, test_handlers, test_html, test_i18n, test_ical, test_odf,
-    test_pdf, test_rss, test_srx, test_stl, test_tmx, test_uri, test_fs,
+    test_rss, test_srx, test_stl, test_tmx, test_uri, test_fs,
     test_web, test_workflow, test_xliff, test_xml, test_xmlfile]
 
 

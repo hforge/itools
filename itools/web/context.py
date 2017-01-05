@@ -875,6 +875,9 @@ class RequestMethod(object):
 
         # (7) Build and return the response
         cls.set_body(context)
+        # (8)  Accept CORS ?
+        if context.server.accept_cors:
+            cls.accept_cors()
 
 
     @classmethod
@@ -887,6 +890,21 @@ class RequestMethod(object):
             context.status = 204
         else:
             context.status = 200
+
+
+    @classmethod
+    def accept_cors(cls):
+        context.set_header('Access-Control-Request-Credentials', 'true')
+        for request_key, response_key in [
+            ('Origin', 'Access-Control-Allow-Origin'),
+            ('Access-Control-Request-Headers',
+             'Access-Control-Allow-Headers'),
+            ('Access-Control-Request-Methods',
+             'Access-Control-Allow-Methods'),
+            ('Access-Control-Request-Credentials',
+             'Access-Control-Allow-Credentials')]:
+            request_value =  context.get_header(request_key)
+            context.set_header(response_key, request_value)
 
 
 
@@ -1025,17 +1043,7 @@ class OPTIONS(SafeMethod):
         cls.set_body(context)
         # (7)  Accept CORS ?
         if context.server.accept_cors:
-            for request_key, response_key in [
-                ('Origin', 'Access-Control-Allow-Origin'),
-                ('Access-Control-Request-Headers',
-                 'Access-Control-Allow-Headers'),
-                ('Access-Control-Request-Methods',
-                 'Access-Control-Allow-Methods'),
-                ('Access-Control-Request-Credentials',
-                 'Access-Control-Allow-Credentials')]:
-                request_value =  context.get_header(request_key)
-                context.set_header(response_key, request_value)
-
+            cls.accept_cors()
 
 
 

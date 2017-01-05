@@ -145,7 +145,7 @@ class icalTestCase(TestCase):
         # Test properties
         expected_properties = [
             u'VERSION;None:2.0',
-            u'PRODID;None:-//itaapy.com/NONSGML ikaaro icalendar V1.0//EN']
+            u'PRODID;None:-//hforge.org/NONSGML ikaaro icalendar V1.0//EN']
         self.assertEqual(properties, expected_properties)
 
         # Test components

@@ -68,13 +68,13 @@ class STLTestCase(TestCase):
 
     def test_attribute(self):
         handler = XMLFile(string=
-            '<img xmlns="http://www.w3.org/1999/xhtml" border="${border}" />')
-        namespace = {'border': 5}
+            '<img xmlns="http://www.w3.org/1999/xhtml" alt="${alt}" />')
+        namespace = {'alt': 'My title'}
         stream = stl(handler, namespace)
         # Assert
         events = list(stream)
-        value = events[0][1][2][(None, 'border')]
-        self.assertEqual(value, '5')
+        value = events[0][1][2][(None, 'alt')]
+        self.assertEqual(value, 'My title')
 
 
     def test_attribute_accent(self):

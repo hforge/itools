@@ -49,6 +49,7 @@ class BrokenHandler(TextFile):
 class RWDatabaseTestCase(TestCase):
 
     def setUp(self):
+        self.tearDown()
         # Silence the log system
         logger = Logger(min_level=FATAL)
         register_logger(logger, 'itools.database')
@@ -372,6 +373,7 @@ class FieldsTestCase(TestCase):
 class CatalogTestCase(TestCase):
 
     def setUp(self):
+        self.tearDown()
         # Make database
         self.database = make_git_database('fables', 20, 20, Document.fields)
         self.database.worktree.git_add('.')
@@ -558,6 +560,7 @@ class CatalogTestCase(TestCase):
 class BugXapianTestCase(TestCase):
 
     def setUp(self):
+        self.tearDown()
         make_catalog('tests/catalog', Document_4.fields)
 
 

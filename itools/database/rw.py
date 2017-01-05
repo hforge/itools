@@ -681,6 +681,34 @@ class RWDatabase(RODatabase):
             raise
 
 
+    def reindex_catalog(self, base_abspath, recursif=True):
+        """Reindex the catalog & return nb resources re-indexed
+        """
+        catalog = self.catalog
+        base_resource = self.get_resource(base_abspath, soft=True)
+        if base_resource is None:
+            return 0
+        n = 0
+        # Recursif ?
+        if recursif:
+            for item in base_resource.traverse_resources():
+                catalog.unindex_document(str(item.abspath))
+                values = item.get_catalog_values()
+                catalog.index_document(values)
+                n += 1
+        else:
+            # Reindex resource
+            catalog.unindex_document(base_abspath)
+            values = base_resource.get_catalog_values()
+            catalog.index_document(values)
+            n = 1
+        # Save catalog if has changes
+        if n > 0:
+            catalog.save_changes()
+        # Ok
+        return n
+
+
 def make_git_database(path, size_min, size_max, fields=None):
     """Create a new empty Git database if the given path does not exists or
     is a folder.

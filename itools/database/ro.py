@@ -514,3 +514,7 @@ class RODatabase(object):
         """
         xquery = _get_xquery(self.catalog, query, **kw)
         return SearchResults(self, xquery)
+
+
+    def reindex_catalog(self, base_abspath, recursif=True):
+        raise ReadonlyError

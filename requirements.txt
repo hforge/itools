@@ -2,3 +2,4 @@ psutil==5.0.1
 pytz==2010h
 xlrd==0.6.1
 pygit2==0.24.0
+python-magic==0.4.10

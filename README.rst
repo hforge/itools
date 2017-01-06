@@ -6,7 +6,7 @@ meta-package for easier development and deployment.
 
 The packages included are::
 
-  itools.abnf             itools.ical             itools.srx
+  itools                  itools.ical             itools.srx
   itools.core             itools.log              itools.stl
   itools.csv              itools.loop             itools.tmx
   itools.database         itools.odf              itools.uri

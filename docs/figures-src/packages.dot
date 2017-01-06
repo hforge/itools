@@ -1,6 +1,4 @@
 digraph G {
-  "itools.abnf";
-
   "itools.core";
 
   //"itools.csv" -> "itools.core";
@@ -120,7 +118,6 @@ digraph G {
   "itools.tmx" -> "itools.handlers";
   "itools.tmx" -> "itools.xml";
 
-  "itools.uri" -> "itools.abnf";
   "itools.uri" -> "itools.core";
 
   //"itools.web" -> "itools.core";

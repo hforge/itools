@@ -146,7 +146,6 @@ if __name__ == '__main__':
     ]
     packages = [
         "itools",
-        "itools.abnf",
         "itools.core",
         "itools.csv",
         "itools.database",

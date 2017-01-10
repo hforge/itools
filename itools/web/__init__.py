@@ -29,9 +29,10 @@ from exceptions import ServiceUnavailable, MethodNotAllowed, Conflict
 from exceptions import FormError
 from headers import Cookie, SetCookieDataType
 from messages import INFO, ERROR, MSG_MISSING_OR_INVALID
+from router import DatabaseRouter
 from server import WebServer
+from static import StaticRouter
 from soup import SoupMessage
-from static import StaticContext
 from utils import NewJSONEncoder
 from views import BaseView, STLView
 
@@ -41,10 +42,12 @@ __all__ = [
     'WebLogger',
     # Context
     'Context',
-    'StaticContext',
     'set_context',
     'get_context',
     'select_language',
+    # Routers
+    'DatabaseRouter',
+    'StaticRouter',
     # View-Controller
     'BaseView',
     'STLView',

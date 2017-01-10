@@ -22,34 +22,41 @@ from os.path import basename, getmtime, isfile
 from itools.core import fixed_offset
 from itools.fs.common import get_mimetype
 from itools.uri import Path
-from context import Context
 from utils import set_response
+from router import BaseRouter, RequestMethod
 
 
-class StaticContext(Context):
+class GET_STATIC(RequestMethod):
 
-    def http_get(self):
-        n = len(Path(self.mount_path))
-        path = Path(self.path)[n:]
-        path = '%s%s' % (self.local_path, path)
+    @classmethod
+    def handle_request(cls, context):
+        n = len(Path(context.mount_path))
+        path = Path(context.path)[n:]
+        path = '%s%s' % (context.router.local_path, path)
 
         # 404 Not Found
         if not isfile(path):
-            return set_response(self.soup_message, 404)
+            return set_response(context.soup_message, 404)
 
         # 304 Not Modified
         mtime = getmtime(path)
         mtime = datetime.utcfromtimestamp(mtime)
         mtime = mtime.replace(microsecond=0)
         mtime = fixed_offset(0).localize(mtime)
-        since = self.get_header('If-Modified-Since')
+        since = context.get_header('If-Modified-Since')
         if since and since >= mtime:
-            return set_response(self.soup_message, 304)
+            return set_response(context.soup_message, 304)
 
         # 200 Ok
         # FIXME Check we set the encoding for text files
         mimetype = get_mimetype(basename(path))
         data = open(path).read()
-        self.soup_message.set_status(200)
-        self.soup_message.set_response(mimetype, data)
-        self.set_header('Last-Modified', mtime)
+        context.soup_message.set_status(200)
+        context.soup_message.set_response(mimetype, data)
+        context.set_header('Last-Modified', mtime)
+
+
+
+class StaticRouter(BaseRouter):
+
+    methods = {'GET': GET_STATIC}

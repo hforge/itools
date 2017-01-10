@@ -117,10 +117,12 @@ class WebServer(SoupServer):
             self.access_log_file.close()
 
 
-    def set_context(self, path, context):
-        context = context(server=self, mount_path=path)
+    def set_router(self, path, router):
+        context = self.root.context_cls(
+            database=self.database,
+            server=self, mount_path=path,
+            router=router)
         self.add_handler(path, context.handle_request)
-        return context
 
 
     def star_callback(self, soup_message, path):

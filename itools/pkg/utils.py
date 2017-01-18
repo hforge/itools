@@ -104,12 +104,12 @@ def get_config():
 
 
 
-def setup(ext_modules=freeze([])):
+def setup(path, ext_modules=freeze([])):
     config = get_config()
     package_root = config.get_value('package_root')
     # Build
     if any(x in argv for x in ('build', 'install', 'sdist')):
-        version = build(config)
+        version = build(path, config)
     else:
         version = get_package_version(package_root)
 
@@ -129,7 +129,7 @@ def setup(ext_modules=freeze([])):
         subpackages = []
 
     # Python files are included by default
-    filenames = [ x.strip() for x in open('MANIFEST').readlines() ]
+    filenames = [ x.strip() for x in open(path + 'MANIFEST').readlines() ]
     filenames = [ x for x in filenames if not x.endswith('.py') ]
 
     # The data files

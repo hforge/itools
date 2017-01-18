@@ -39,7 +39,7 @@ def get_manifest():
     return [ x for x in worktree.get_filenames() if x not in exclude ]
 
 
-def make(worktree, rules, manifest):
+def make(worktree, rules, manifest, package_root):
     for source in worktree.get_filenames():
         # Exclude
         if 'docs/' in source:
@@ -50,18 +50,18 @@ def make(worktree, rules, manifest):
                 target = source[:-len(source_ext)] + target_ext
                 if not lfs.exists(target) or \
                    lfs.get_mtime(source) > lfs.get_mtime(target):
-                    f(source, target)     # 1. Compile
+                    f(package_root, source, target)     # 1. Compile
                     manifest.add(target)  # 2. Update manifest
                     print target          # 3. Print
 
 
 # PO => MO
-def po2mo(source, target):
+def po2mo(package_root, source, target):
     Popen(['msgfmt', source, '-o', target])
 
 
 # Translate templates
-def make_template(source, target):
+def make_template(package_root, source, target):
     # Import some packages so we can compile templates
     from itools.html import XHTMLFile
     import itools.gettext
@@ -70,7 +70,7 @@ def make_template(source, target):
     # Get file
     source_handler = ro_database.get_handler(source, XHTMLFile)
     language = target.rsplit('.', 1)[1]
-    po = ro_database.get_handler('locale/%s.po' % language)
+    po = ro_database.get_handler('%s/locale/%s.po' % (package_root, language))
     data = source_handler.translate(po)
     with open(target, 'w') as f:
         f.write(data)
@@ -124,13 +124,13 @@ def make_version(worktree):
     return '{}-{}'.format(branch, timestamp)
 
 
-def build(config):
+def build(path, config):
     # Get version path
     package_root = config.get_value('package_root')
     version_txt = get_package_version_path(package_root)
     try:
         # Get git worktree
-        worktree = open_worktree('.')
+        worktree = open_worktree(path)
     except KeyError:
         # Not in a git repostory
         return get_package_version(package_root)
@@ -140,7 +140,7 @@ def build(config):
     manifest = set([ x for x in get_manifest() if not islink(x) ])
     manifest.add('MANIFEST')
     # Write version
-    open(version_txt, 'w').write(version)
+    open(path + version_txt, 'w').write(version)
     print '* Version:', version
     manifest.add(version_txt)
     # (3) Rules
@@ -153,12 +153,12 @@ def build(config):
         rules.append(
             ('.xhtml.%s' % src_lang, '.xhtml.%s' % dst_lang, make_template))
     # (4) Make
-    make(worktree, rules, manifest)
+    make(worktree, rules, manifest, package_root)
     # (5) Run gulp
     gulp_builder = GulpBuilder(worktree, manifest)
     gulp_builder.run()
     # (6) Write the manifest
     lines = [ x + '\n' for x in sorted(manifest) ]
-    open('MANIFEST', 'w').write(''.join(lines))
+    open(path + 'MANIFEST', 'w').write(''.join(lines))
     print '* Build MANIFEST file (list of files to install)'
     return version

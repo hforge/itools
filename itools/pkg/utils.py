@@ -108,7 +108,7 @@ def setup(path, ext_modules=freeze([])):
     config = get_config()
     package_root = config.get_value('package_root')
     # Build
-    if any(x in argv for x in ('build', 'install', 'sdist')):
+    if any(x in argv for x in ('build', 'install', 'sdist', 'egg_info')):
         version = build(path, config)
     else:
         version = get_package_version(package_root)

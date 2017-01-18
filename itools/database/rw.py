@@ -301,8 +301,11 @@ class RWDatabase(RODatabase):
             return
 
         # Ignore copy of some handlers
-        if exclude_patterns and fnmatch.filter((source,), exclude_patterns):
-            return
+        if exclude_patterns is None:
+            exclude_patterns = []
+        for exclude_pattern in exclude_patterns:
+            if fnmatch.fnmatch(source, exclude_pattern):
+                return
 
         # Check the target is free
         if self._get_handler(target, soft=True) is not None:

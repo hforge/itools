@@ -83,14 +83,14 @@ class BasicTypeTest(TestCase):
             'toto.titi@libre.fr': True,
             'toto@a.com': True,
             'toto@': False}
-        for name, result in emails.iteritems():
+        for name, result in emails.items():
             self.assertEqual(Email.is_valid(name), result)
 
 
     def test_QName(self):
         for name, result in {'pithiviers':(None, 'pithiviers'),
                              'gateau:framboisier': ('gateau', 'framboisier')
-                             }.iteritems():
+                             }.items():
             self.assertEqual(QName.decode(name), result)
             self.assertEqual(QName.encode(result), name)
 
@@ -156,7 +156,7 @@ class ISOTimeTestCase(TestCase):
             '020305+02': (2, 3, 5, 0, gmt2),
         }
 
-        for data, result in test_times.iteritems():
+        for data, result in test_times.items():
             value = ISOTime.decode(data)
             expected = time(*result)
             self.assertEqual(value, expected)
@@ -165,17 +165,20 @@ class ISOTimeTestCase(TestCase):
     def test_time_encode(self):
         gmt2 = fixed_offset(120)
         test_times = {
-            (13, 45, 30): '13:45:30',
-            (13, 45): '13:45:00',
-            (13, ): '13:00:00',
-            (12, 34, 56): '12:34:56',
-            (12, 34): '12:34:00',
-            (9, 42, 17, 0, utc): '09:42:17Z',
-            (17, 23, 27, 0, gmt2): '17:23:27+02:00',
-            (2, 3, 5, 42, gmt2): '02:03:05+02:00',
+            (13, 45, 30, 486316):   '13:45:30.486316',
+            (13, 45, 30):           '13:45:30.000000',
+            (13, 45):               '13:45:00.000000',
+            (13, ):                 '13:00:00.000000',
+            (12, 34, 56, 168):      '12:34:56.000168',
+            (12, 34, 56):           '12:34:56.000000',
+            (12, 34):               '12:34:00.000000',
+            (12, ):                 '12:00:00.000000',
+            (9,  42, 17,  0, utc):  '09:42:17.000000Z',
+            (17, 23, 27,  0, gmt2): '17:23:27.000000+02:00',
+            (2,  3,  5, 42, gmt2):  '02:03:05.000042+02:00',
         }
 
-        for data, result in test_times.iteritems():
+        for data, result in test_times.items():
             value = ISOTime.encode(time(*data))
             expected = result
             self.assertEqual(value, expected)
@@ -187,12 +190,12 @@ class ISOCalendarDateTestCase(TestCase):
     def test_date_decode(self):
         data = '1975-05-07'
         value = ISOCalendarDate.decode(data)
-        expected = date(1975, 05, 07)
+        expected = date(1975, 5, 7)
         self.assertEqual(value, expected)
 
 
     def test_date_encode(self):
-        data = date(1975, 05, 07)
+        data = date(1975, 5, 7)
         value = ISOCalendarDate.encode(data)
         expected = '1975-05-07'
         self.assertEqual(value, expected)
@@ -219,7 +222,7 @@ class ISOCalendarDateTestCase(TestCase):
 
         data = '07/05/1975'
         value = ISOCalendarDateFR.decode(data)
-        expected = date(1975, 05, 07)
+        expected = date(1975, 5, 7)
         self.assertEqual(value, expected)
 
 
@@ -228,7 +231,7 @@ class ISOCalendarDateTestCase(TestCase):
             format_date = '%d/%m/%Y'
             sep_date = '/'
 
-        data = date(1975, 05, 07)
+        data = date(1975, 5, 7)
         value = ISOCalendarDateFR.encode(data)
         expected = '07/05/1975'
         self.assertEqual(value, expected)
@@ -238,62 +241,112 @@ class ISODateTimeTestCase(TestCase):
 
     def test_datetime_decode(self):
         test_dates = {
-            '1975-05-07T00:15':    (1975, 5, 7, 0,15),
-            '1969-07-21T02:56:15': (1969, 7, 21, 2, 56, 15)}
+            '1975-05-07T00:15': datetime(
+                1975,  5,  7,  0, 15),
+            '1969-07-21T02:56:15.000000': datetime(
+                1969,  7, 21,  2, 56, 15),
+            '2021-11-12T13:03:08.147687': datetime(
+                2021, 11, 12, 13,  3,  8, 147687),
+        }
+        test_cls_list = [ISODateTime, ISODateTime(time_is_required=False)]
+        for cls in test_cls_list:
+            for data, expected in test_dates.items():
+                value = cls.decode(data)
+                self.assertEqual(value, expected)
 
-        for data, result in test_dates.iteritems():
-            value =  ISODateTime.decode(data)
-            expected = datetime(*result)
+
+    def test_date_decode(self):
+        test_dates = {
+            '1975-05-07': date(1975,  5,  7),
+            '1969-07-21': date(1969,  7, 21),
+            '2021-11-12': date(2021, 11, 12),
+        }
+        for data, expected in test_dates.items():
+            value = ISODateTime(time_is_required=False).decode(data)
             self.assertEqual(value, expected)
 
 
     def test_datetime_encode(self):
         test_dates = {
-            (1975, 5, 7, 0,15):       '1975-05-07T00:15:00',
-            (1969, 7, 21, 2, 56, 15): '1969-07-21T02:56:15'}
+            datetime(1975,  5,  7,  0, 15):
+                '1975-05-07T00:15:00.000000',
+            datetime(1969,  7, 21,  2, 56, 15):
+                '1969-07-21T02:56:15.000000',
+            datetime(2021, 11, 12, 13,  3,  8, 147687):
+                '2021-11-12T13:03:08.147687',
+        }
 
-        for data, expected in test_dates.iteritems():
-            data = datetime(*data)
-            value =  ISODateTime.encode(data)
+        test_cls_list = [ISODateTime, ISODateTime(time_is_required=False)]
+        for cls in test_cls_list:
+            for data, expected in test_dates.items():
+                value = cls.encode(data)
+                self.assertEqual(value, expected)
+
+
+    def test_date_encode(self):
+        test_dates = {
+            date(1975,  5,  7): '1975-05-07',
+            date(1969,  7, 21): '1969-07-21',
+            date(2021, 11, 12): '2021-11-12',
+        }
+
+        for data, expected in test_dates.items():
+            value = ISODateTime(time_is_required=False).encode(data)
             self.assertEqual(value, expected)
 
 
     def test_datetime_decode_fr(self):
         test_dates = {
-            '07/05/1975T00:15:00':    (1975, 5, 7, 0,15),
-            '21/07/1969T02:56:15': (1969, 7, 21, 2, 56, 15)}
+            '07/05/1975T00:15:00': datetime(
+                1975,  5,  7,  0, 15),
+            '21/07/1969T02:56:15.000000': datetime(
+                1969,  7, 21,  2, 56, 15),
+            '12/11/2021T13:03:08.147687': datetime(
+                2021, 11, 12, 13,  3,  8, 147687),
+        }
 
         class ISOCalendarDateFR(ISOCalendarDate):
             format_date = '%d/%m/%Y'
             sep_date = '/'
 
-        for data, result in test_dates.iteritems():
-            value =  ISODateTime(cls_date=ISOCalendarDateFR).decode(data)
-            expected = datetime(*result)
-            self.assertEqual(value, expected)
+        test_cls_list = [ISODateTime(cls_date=ISOCalendarDateFR),
+                         ISODateTime(cls_date=ISOCalendarDateFR,
+                                     time_is_required=False)]
+        for cls in test_cls_list:
+            for data, expected in test_dates.items():
+                value = cls.decode(data)
+                self.assertEqual(value, expected)
 
 
     def test_datetime_encode_fr(self):
         test_dates = {
-            (1975, 5, 7, 0,15):       '07/05/1975T00:15:00',
-            (1969, 7, 21, 2, 56, 15): '21/07/1969T02:56:15'}
+            datetime(1975,  5,  7,  0, 15):
+                '07/05/1975T00:15:00.000000',
+            datetime(1969,  7, 21,  2, 56, 15):
+                '21/07/1969T02:56:15.000000',
+            datetime(2021, 11, 12, 13,  3,  8, 147687):
+                '12/11/2021T13:03:08.147687',
+        }
 
         class ISOCalendarDateFR(ISOCalendarDate):
             format_date = '%d/%m/%Y'
             sep_date = '/'
 
-        for data, expected in test_dates.iteritems():
-            data = datetime(*data)
-            value =  ISODateTime(cls_date=ISOCalendarDateFR).encode(data)
-            self.assertEqual(value, expected)
+        test_cls_list = [ISODateTime(cls_date=ISOCalendarDateFR),
+                         ISODateTime(cls_date=ISOCalendarDateFR,
+                                     time_is_required=False)]
+        for cls in test_cls_list:
+            for data, expected in test_dates.items():
+                value = cls.encode(data)
+                self.assertEqual(value, expected)
 
 
 
 class XMLTestCase(TestCase):
-    data  = """<dc:title xmlns:dc="http://purl.org/dc/elements/1.1/">""" \
-            """Astérix le Gaulois</dc:title>"""
+    data = """<dc:title xmlns:dc="http://purl.org/dc/elements/1.1/">""" \
+           """Astérix le Gaulois</dc:title>"""
     result1 = """&lt;dc:title xmlns:dc="http://purl.org/dc/elements/1.1/">""" \
-            """Astérix le Gaulois&lt;/dc:title>"""
+              """Astérix le Gaulois&lt;/dc:title>"""
     result2 = """&lt;dc:title xmlns:dc=&quot;http://purl.org/dc/elements/""" \
               """1.1/&quot;>Astérix le Gaulois&lt;/dc:title>"""
 

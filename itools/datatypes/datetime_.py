@@ -47,7 +47,7 @@ class HTTPDate(DataType):
         # Parse the date into a tuple, including the timezone
         parts = parsedate_tz(data)
         if parts is None:
-            raise ValueError, 'date "%s" is not supported' % data
+            raise ValueError('date "%s" is not supported' % data)
         parts, tz = parts[:9], parts[9]
 
         # Get a naive datetime
@@ -83,11 +83,11 @@ class HTTPDate(DataType):
 ###########################################################################
 
 # XXX Python dates (the datetime.date module) require the month and day,
-# they are not able to represent lower precission dates as ISO 8601 does.
+# they are not able to represent lower precision dates as ISO 8601 does.
 # In the long run we will need to replace Python dates by something else.
 
 class ISOCalendarDate(DataType):
-    """Extended formats (from max. to min. precission): %Y-%m-%d, %Y-%m, %Y
+    """Extended formats (from max. to min. precision): %Y-%m-%d, %Y-%m, %Y
 
     Basic formats: %Y%m%d, %Y%m, %Y
     """
@@ -142,9 +142,9 @@ class ISOCalendarDate(DataType):
 # TODO ISOOrdinalDate
 
 class ISOTime(DataType):
-    """Extended formats (from max. to min. precission): %H:%M:%S, %H:%M
+    """Extended formats (from max. to min. precision): %H:%M:%S.%f, %H:%M:%S, %H:%M
 
-    Basic formats: %H%M%S, %H%M, %H
+    Basic formats: %H%M%S%f, %H%M%S, %H%M, %H
     """
 
 
@@ -184,13 +184,22 @@ class ISOTime(DataType):
             parts = data.split(':')
             n = len(parts)
             if n > 3:
-                raise ValueError, 'unexpected time value "%s"' % data
+                raise ValueError('unexpected time value "%s"' % data)
             hour = int(parts[0])
             minute = int(parts[1])
             if n == 2:
                 return time(hour, minute, tzinfo=tzinfo)
-            second = int(parts[2])
-            return time(hour, minute, second, tzinfo=tzinfo)
+            data = parts[2]
+            if '.' not in data:
+                second = int(data)
+                return time(hour, minute, second, tzinfo=tzinfo)
+            parts = data.split('.')
+            n = len(parts)
+            if n > 2:
+                raise ValueError('unexpected time value "%s"' % data)
+            second = int(parts[0])
+            microsecond = int(parts[1])
+            return time(hour, minute, second, microsecond, tzinfo=tzinfo)
 
         # Basic formats
         hour = int(data[:2])
@@ -203,8 +212,13 @@ class ISOTime(DataType):
         if not data:
             return time(hour, minute, tzinfo=tzinfo)
         # Second
-        second = int(data)
-        return time(hour, minute, second, tzinfo=tzinfo)
+        second = int(data[:2])
+        data = data[2:]
+        if not data:
+            return time(hour, minute, second, tzinfo=tzinfo)
+        # Microsecond
+        microsecond = int(data)
+        return time(hour, minute, second, microsecond, tzinfo=tzinfo)
 
 
     @staticmethod
@@ -212,12 +226,10 @@ class ISOTime(DataType):
         # We choose the extended format as the canonical representation
         if value is None:
             return ''
-        fmt = '%H:%M:%S'
+        fmt = '%H:%M:%S.%f'
         if value.tzinfo is not None:
-            suffixe = '%Z'
-        else:
-            suffixe = ''
-        return value.strftime(fmt + suffixe)
+            fmt += '%Z'
+        return value.strftime(fmt)
 
 
 
@@ -239,7 +251,7 @@ class ISODateTime(DataType):
             return datetime.combine(date, time)
 
         if self.time_is_required:
-            raise ValueError, 'expected time field not found'
+            raise ValueError('expected time field not found')
 
         return date
 
@@ -251,7 +263,7 @@ class ISODateTime(DataType):
         value_type = type(value)
         if value_type is datetime:
             # Datetime
-            fmt = fmt_date + 'T%H:%M:%S'
+            fmt = fmt_date + 'T%H:%M:%S.%f'
             if value.tzinfo is not None:
                 fmt += '%z'
         elif value_type is date and not self.time_is_required:
@@ -259,6 +271,6 @@ class ISODateTime(DataType):
             fmt = fmt_date
         else:
             # Error
-            raise TypeError, "unexpected value of type '%s'" % value_type
+            raise TypeError("unexpected value of type '%s'" % value_type)
 
         return value.strftime(fmt)

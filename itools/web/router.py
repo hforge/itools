@@ -382,7 +382,7 @@ class HEAD(GET):
 
 
 
-class POST(RequestMethod):
+class POST(DatabaseRequestMethod):
 
     method_name = 'POST'
 
@@ -394,7 +394,7 @@ class POST(RequestMethod):
             method_name = 'POST'
         else:
             method_name = 'GET'
-        RequestMethod.check_method(context, method_name=method_name)
+        DatabaseRequestMethod.check_method(context, method_name=method_name)
 
 
 
@@ -458,7 +458,7 @@ class OPTIONS(SafeMethod):
 
 
 
-class PUT(RequestMethod):
+class PUT(DatabaseRequestMethod):
     """The client must send a correct "If-Unmodified-Since" header to be
        authorized to PUT.
     """

@@ -69,9 +69,9 @@ class Resource(object):
             return getattr(cls, name, None)
         msg = 'Undefined field %s on %s' % (name, cls)
         if soft is True:
-            print('Warning: '+ msg)
             return None
-        raise ValueError(msg)
+        print('Warning: '+ msg)
+        return None
 
 
     @classmethod

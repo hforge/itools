@@ -125,6 +125,7 @@ class WebServer(SoupServer):
             server=self, mount_path=path,
             router=router)
         self.add_handler(path, context.handle_request)
+        return context
 
 
     def star_callback(self, soup_message, path):

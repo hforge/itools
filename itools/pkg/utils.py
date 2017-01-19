@@ -29,7 +29,7 @@ from os.path import exists, join as join_path
 from sys import argv
 
 # Import from itools
-from itools.core import freeze, get_pipe
+from itools.core import get_pipe
 from itools.handlers import ro_database
 
 # Import from itools.pkg
@@ -104,7 +104,8 @@ def get_config():
 
 
 
-def setup(path, ext_modules=freeze([])):
+def setup(path, ext_modules=None):
+    ext_modules = ext_modules or []
     config = get_config()
     package_root = config.get_value('package_root')
     # Build

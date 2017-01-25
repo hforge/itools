@@ -38,7 +38,6 @@ class URIPatternsParser(prototype):
                 'digits': r'\d+',
                 'number': r'\d*.?\d+',
                 'chunk': r'[^/^.]+',
-                'segment': r'[^/]+',
                 'any': r'.+'}
     default_pattern = 'chunk'
 
@@ -58,53 +57,18 @@ class URIPatternsParser(prototype):
 
     def _lastly(self, regex):
         """Process the result of __call__ right before it returns.
-
         Adds the ^ and the $ to the beginning and the end, respectively.
         """
         return "^%s$" % regex
 
 
-    def _outermost_optionals_split(self, text):
-        """Split out optional portions by outermost matching delims."""
-        parts = []
-        buffer = ""
-        starts = ends = 0
-        for c in text:
-            if c == self.ostart:
-                if starts == 0:
-                    parts.append(buffer)
-                    buffer = ""
-                else:
-                    buffer += c
-                starts += 1
-            elif c == self.oend:
-                ends += 1
-                if starts == ends:
-                    parts.append(buffer)
-                    buffer = ""
-                    starts = ends = 0
-                else:
-                    buffer += c
-            else:
-                buffer += c
-        if not starts == ends == 0:
-            raise ValueError("Mismatch of optional portion delimiters.")
-        parts.append(buffer)
-        return parts
-
-
     def _parse(self, text):
         """Turn a path expression into regex."""
-        if self.ostart in text:
-            parts = self._outermost_optionals_split(text)
-            parts = list(map(self._parse, parts))
-            parts[1::2] = ["(%s)?" % p for p in parts[1::2]]
-        else:
-            parts = [part.split(self.end)
-                     for part in text.split(self.start)]
-            parts = [y for x in parts for y in x]
-            parts[::2] = list(map(re.escape, parts[::2]))
-            parts[1::2] = list(map(self._lookup, parts[1::2]))
+        parts = [part.split(self.end)
+                 for part in text.split(self.start)]
+        parts = [y for x in parts for y in x]
+        parts[::2] = list(map(re.escape, parts[::2]))
+        parts[1::2] = list(map(self._lookup, parts[1::2]))
         return ''.join(parts)
 
 
@@ -112,7 +76,6 @@ class URIPatternsParser(prototype):
         """Turn a path expression into a regex."""
         self._pos = 0
         return self._lastly(self._parse(url_pattern))
-
 
 
 
@@ -134,3 +97,4 @@ class URIDispatcher(object):
             if match:
                 return data, match.groupdict()
         return None
+

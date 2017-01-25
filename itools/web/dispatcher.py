@@ -134,15 +134,3 @@ class URIDispatcher(object):
             if match:
                 return data, match.groupdict()
         return None
-
-
-router = URIDispatcher()
-router.add('/hello/{name}', 'ROUTE1')
-router.add('/hello/{name}/world', 'ROUTE2')
-router.add('/hello/{name}/worldismine', 'ROUTE3')
-print router.select('/hello/sylvain')
-print router.select('/hello/chat')
-print router.select('/hello/sylvain/world')
-print router.select('/hello/sylvain/worldismine')
-print router.select('/hello/sylvain/worldismine/')
-print router.select('/error')

@@ -54,6 +54,9 @@ class GET_STATIC(RequestMethod):
         context.soup_message.set_status(200)
         context.soup_message.set_response(mimetype, data)
         context.set_header('Last-Modified', mtime)
+        # FIXME context API should do that
+        context.status = 200
+        context.entity = data
 
 
 

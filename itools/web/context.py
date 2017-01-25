@@ -38,14 +38,14 @@ from itools.datatypes import String, HTTPDate
 from itools.i18n import AcceptLanguageType, format_number
 from itools.i18n import format_datetime, format_date, format_time
 from itools.log import Logger, log_error, log_warning
-from itools.uri import decode_query, get_reference, Path
+from itools.uri import decode_query, get_reference, Reference, Path
 
 # Local imports
 from entities import Entity
 from exceptions import FormError
 from headers import get_type, Cookie, SetCookieDataType
 from messages import ERROR
-from utils import NewJSONEncoder, fix_json, set_response
+from utils import fix_json, reason_phrases
 
 
 class Context(prototype):
@@ -276,6 +276,47 @@ class Context(prototype):
 
         self.soup_message.set_header('Content-Disposition', disposition)
 
+
+    def set_default_response(self, status):
+        # Build repsonse
+        self.status = status
+        self.entity = '{0} {1}'.format(status, reason_phrases[status])
+        self.set_content_type('text/plain')
+        # Set resonse
+        self.set_response_from_context()
+
+
+    def set_response_from_context(self):
+        # Accept cors
+        if self.server.accept_cors:
+            self.accept_cors()
+        # Set response status
+        self.soup_message.set_status(self.status)
+        # Set response body
+        if self.entity is None:
+            self.status = 204
+            self.soup_message.set_response(self.content_type, self.entity)
+        elif isinstance(self.entity, Reference):
+            location = context.uri.resolve(self.entity)
+            location = str(location)
+            self.status = 302
+            self.soup_message.set_header('Location', location)
+        else:
+            self.soup_message.set_response(self.content_type, self.entity)
+
+
+    def accept_cors(self):
+        self.set_header('Access-Control-Request-Credentials', 'true')
+        for request_key, response_key in [
+            ('Origin', 'Access-Control-Allow-Origin'),
+            ('Access-Control-Request-Headers',
+             'Access-Control-Allow-Headers'),
+            ('Access-Control-Request-Methods',
+             'Access-Control-Allow-Methods'),
+            ('Access-Control-Request-Credentials',
+             'Access-Control-Allow-Credentials')]:
+            request_value =  self.get_header(request_key)
+            self.set_header(response_key, request_value)
 
     #######################################################################
     # API / Status
@@ -578,7 +619,7 @@ class Context(prototype):
         # (2) If path is null => 400 Bad Request
         if path is None:
             log_warning('Unexpected HTTP path (null)', domain='itools.web')
-            set_response(soup_message, 400)
+            self.set_default_response(400)
             return context
 
         # (3) Get the method that will handle the request
@@ -588,7 +629,7 @@ class Context(prototype):
         if method is None:
             log_warning('Unexpected "%s" HTTP method' % method_name,
                         domain='itools.web')
-            set_response(soup_message, 501)
+            self.set_default_response(501)
             return context
 
         # (4) Go
@@ -597,7 +638,7 @@ class Context(prototype):
             method()
         except StandardError:
             log_error('Internal error', domain='itools.web')
-            set_response(soup_message, 500)
+            self.set_default_response(500)
             return context
         finally:
             set_context(None)

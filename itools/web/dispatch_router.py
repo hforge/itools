@@ -33,14 +33,14 @@ class DispatchRouter(BaseRouter):
         response = self.dispatcher.select(str(context.path))
         if response:
             view, query = response
-            entity = view.GET(query)
-            status = 200
+            context.entity = view.GET(query)
+            context.status = 200
         else:
-            status = 404
-            entity = 'error'
-        context.status = status
-        context.entity = entity
-        context.soup_message.set_status(status)
-        context.soup_message.set_response('text/plain', entity)
+            context.status = 404
+            context.entity = 'error'
+        # Set response contenet type
         context.set_content_type('text/plain', charset='UTF-8')
+        # Set response
+        context.set_response_from_context()
+        # Return context for unit tests
         return context

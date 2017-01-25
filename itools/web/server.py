@@ -86,6 +86,7 @@ class WebServer(SoupServer):
         for name, value in headers.items():
             message.set_request_header(name, value)
         context = context or get_context() or self.get_fake_context()
+        context.server = self
         context = context.handle_request(message, path)
         return {'status': context.status,
                 'method': context.method,

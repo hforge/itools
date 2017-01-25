@@ -87,17 +87,8 @@ class BaseDatabaseRequestMethod(RequestMethod):
 
     @classmethod
     def set_body(cls, context):
-        context.soup_message.set_status(context.status)
+        context.set_response_from_context()
 
-        body = context.entity
-        if body is None:
-            pass
-        elif isinstance(body, Reference):
-            location = context.uri.resolve(body)
-            location = str(location)
-            context.soup_message.set_header('Location', location)
-        else:
-            context.soup_message.set_response(context.content_type, body)
 
 
     @classmethod
@@ -219,9 +210,8 @@ class DatabaseRequestMethod(BaseDatabaseRequestMethod):
             context.status = status
             if context.agent_is_a_robot():
                 context.entity = error.title
-                soup_message = context.soup_message
-                soup_message.set_status(status)
-                soup_message.set_response('text/plain', error.title)
+                context.set_content_type('text/plain')
+                context.set_response_from_context()
                 return
             context.view_name = status2name[status]
             context.view = root.get_view(context.view_name)
@@ -286,9 +276,6 @@ class DatabaseRequestMethod(BaseDatabaseRequestMethod):
 
         # (7) Build and return the response
         cls.set_body(context)
-        # (8)  Accept CORS ?
-        if context.server.accept_cors:
-            cls.accept_cors(context)
 
 
     @classmethod
@@ -303,28 +290,12 @@ class DatabaseRequestMethod(BaseDatabaseRequestMethod):
             context.status = 200
 
 
-    @classmethod
-    def accept_cors(cls, context):
-        context.set_header('Access-Control-Request-Credentials', 'true')
-        for request_key, response_key in [
-            ('Origin', 'Access-Control-Allow-Origin'),
-            ('Access-Control-Request-Headers',
-             'Access-Control-Allow-Headers'),
-            ('Access-Control-Request-Methods',
-             'Access-Control-Allow-Methods'),
-            ('Access-Control-Request-Credentials',
-             'Access-Control-Allow-Credentials')]:
-            request_value =  context.get_header(request_key)
-            context.set_header(response_key, request_value)
-
-
 
 class SafeMethod(DatabaseRequestMethod):
 
     @classmethod
     def check_transaction(cls, context):
         return False
-
 
 
 class GET(SafeMethod):
@@ -450,11 +421,7 @@ class OPTIONS(SafeMethod):
             cls.internal_server_error(context)
 
         # (6) Build and return the response
-        context.soup_message.set_status(context.status)
         cls.set_body(context)
-        # (7)  Accept CORS ?
-        if context.server.accept_cors:
-            cls.accept_cors(context)
 
 
 

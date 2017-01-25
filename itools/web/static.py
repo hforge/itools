@@ -22,7 +22,6 @@ from os.path import basename, getmtime, isfile
 from itools.core import fixed_offset
 from itools.fs.common import get_mimetype
 from itools.uri import Path
-from utils import set_response
 from router import BaseRouter, RequestMethod
 
 
@@ -36,7 +35,7 @@ class GET_STATIC(RequestMethod):
 
         # 404 Not Found
         if not isfile(path):
-            return set_response(context.soup_message, 404)
+            return context.set_default_response(404)
 
         # 304 Not Modified
         mtime = getmtime(path)
@@ -45,18 +44,19 @@ class GET_STATIC(RequestMethod):
         mtime = fixed_offset(0).localize(mtime)
         since = context.get_header('If-Modified-Since')
         if since and since >= mtime:
-            return set_response(context.soup_message, 304)
+            return context.set_default_response(304)
 
         # 200 Ok
         # FIXME Check we set the encoding for text files
         mimetype = get_mimetype(basename(path))
+        # XXX Close file
         data = open(path).read()
-        context.soup_message.set_status(200)
-        context.soup_message.set_response(mimetype, data)
+        # Response
+        context.set_content_type(mimetype)
         context.set_header('Last-Modified', mtime)
-        # FIXME context API should do that
         context.status = 200
         context.entity = data
+        context.set_response_from_context()
 
 
 

@@ -21,6 +21,7 @@
 from context import Context, get_context, set_context
 from context import select_language
 from context import WebLogger
+from dispatcher_router import DispatchRouter
 from exceptions import HTTPError, ClientError, ServerError
 from exceptions import NotModified
 from exceptions import BadRequest, Unauthorized, Forbidden, NotFound
@@ -40,6 +41,7 @@ __all__ = [
     'SoupMessage',
     'WebServer',
     'WebLogger',
+    'DispatchRouter',
     # Context
     'Context',
     'set_context',

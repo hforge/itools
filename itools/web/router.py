@@ -59,7 +59,77 @@ def find_view_by_method(context):
 
 class RequestMethod(object):
 
-    pass
+
+    @classmethod
+    def check_cache(cls, context):
+        """Implement cache if your method supports it.
+        Most methods don't, hence the default implementation.
+        """
+
+
+    @classmethod
+    def check_conditions(cls, context):
+        """Check conditions to match before the response can be processed:
+        resource, state, request headers...
+        """
+
+    @classmethod
+    def is_access_allowed(cls, context):
+        return False
+
+
+    @classmethod
+    def check_access(cls, context):
+        """Tell whether the user is allowed to access the view on the
+        resource.
+        """
+        # Get the check-point
+        if cls.is_access_allowed(context):
+            return
+
+        # Unauthorized (401)
+        if context.user is None:
+            raise Unauthorized
+
+        # Forbidden (403)
+        raise Forbidden
+
+
+    @classmethod
+    def set_body(cls, context):
+        context.set_response_from_context()
+
+
+    @classmethod
+    def internal_server_error(cls, context):
+        log_error('Internal Server Error', domain='itools.web')
+        context.status = 500
+        context.entity = context.root.internal_server_error(context)
+
+
+    @classmethod
+    def check_method(cls, context, method_name=None):
+        if method_name is None:
+            method_name = context.method
+        # Get the method
+        view = context.view
+        method = getattr(view, method_name, None)
+        if method is None:
+            message = '%s has no "%s" method' % (view, method_name)
+            raise NotImplemented, message
+        context.view_method = method
+
+
+    @classmethod
+    def set_status_from_entity(cls, context):
+        if context.status is not None:
+            pass
+        elif isinstance(context.entity, Reference):
+            context.status = 302
+        elif context.entity is None:
+            context.status = 204
+        else:
+            context.status = 200
 
 
 
@@ -82,25 +152,15 @@ class BaseDatabaseRequestMethod(RequestMethod):
 
     @classmethod
     def check_transaction(cls, context):
-        return False
-
-
-    @classmethod
-    def set_body(cls, context):
-        context.set_response_from_context()
-
-
-
-    @classmethod
-    def internal_server_error(cls, context):
-        log_error('Internal Server Error', domain='itools.web')
-        context.status = 500
-        context.entity = context.root.internal_server_error(context)
+        """Return True if your method is supposed to change the state.
+        """
+        return getattr(context, 'commit', True) and context.status < 400
 
 
 
 
 class DatabaseRequestMethod(BaseDatabaseRequestMethod):
+
 
     @classmethod
     def find_resource(cls, context):
@@ -137,55 +197,8 @@ class DatabaseRequestMethod(BaseDatabaseRequestMethod):
 
 
     @classmethod
-    def check_access(cls, context):
-        """Tell whether the user is allowed to access the view on the
-        resource.
-        """
-        # Get the check-point
-        if context.is_access_allowed(context.resource, context.view):
-            return
-
-        # Unauthorized (401)
-        if context.user is None:
-            raise Unauthorized
-
-        # Forbidden (403)
-        raise Forbidden
-
-
-    @classmethod
-    def check_method(cls, context, method_name=None):
-        if method_name is None:
-            method_name = context.method
-        # Get the method
-        view = context.view
-        method = getattr(view, method_name, None)
-        if method is None:
-            message = '%s has no "%s" method' % (view, method_name)
-            raise NotImplemented, message
-        context.view_method = method
-
-
-    @classmethod
-    def check_cache(cls, context):
-        """Implement cache if your method supports it.
-        Most methods don't, hence the default implementation.
-        """
-
-
-    @classmethod
-    def check_conditions(cls, context):
-        """Check conditions to match before the response can be processed:
-        resource, state, request headers...
-        """
-
-
-    @classmethod
-    def check_transaction(cls, context):
-        """Return True if your method is supposed to change the state.
-        """
-        return getattr(context, 'commit', True) and context.status < 400
-
+    def is_access_allowed(cls, context):
+        return context.is_access_allowed(context.resource, context.view)
 
 
     @classmethod
@@ -277,17 +290,6 @@ class DatabaseRequestMethod(BaseDatabaseRequestMethod):
         # (7) Build and return the response
         cls.set_body(context)
 
-
-    @classmethod
-    def set_status_from_entity(cls, context):
-        if context.status is not None:
-            pass
-        elif isinstance(context.entity, Reference):
-            context.status = 302
-        elif context.entity is None:
-            context.status = 204
-        else:
-            context.status = 200
 
 
 

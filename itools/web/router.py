@@ -154,6 +154,10 @@ class RequestMethod(object):
     def handle_request(cls, context):
         root = context.site_root
         server = context.server
+        content_type = context.get_header('content-type')
+        if content_type:
+            content_type, type_parameters = content_type
+        is_json_request = content_type == 'application/json'
 
         # (1) Find out the requested view
         try:
@@ -178,15 +182,16 @@ class RequestMethod(object):
         except ClientError, error:
             status = error.code
             context.status = status
-            if context.agent_is_a_robot():
-                context.entity = error.title
-                context.set_content_type('text/plain')
+            if is_json_request or context.agent_is_a_robot():
+                kw = {'status': status, 'error': error.title}
+                context.return_json(kw)
                 context.set_response_from_context()
                 return
-            context.resource = root
-            params = {'context': context, 'resource': context.resource}
-            context.view_name = status2name[status]
-            context.view = root.get_view(context.view_name)
+            else:
+                context.resource = root
+                params = {'context': context, 'resource': context.resource}
+                context.view_name = status2name[status]
+                context.view = root.get_view(context.view_name)
         except NotModified:
             context.http_not_modified()
             return

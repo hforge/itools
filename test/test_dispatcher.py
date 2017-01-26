@@ -49,7 +49,8 @@ class DispatcherTestCase(TestCase):
             ('/one/{name}/two',   'ROUTE2'),
             ('/two/three',        'ROUTE3'),
             ('/two/three/{name}', 'ROUTE33'),
-            ('/ui/{name:any}', 'ROUTEALL'),
+            ('/ui/{name:chunk}.{extension:chunk}', 'ROUTEICON'),
+            ('/ui/skin/{name:any}', 'ROUTEALL'),
         ]
         match_urls = [
             ('/one',            'ROUTE1'),
@@ -57,8 +58,9 @@ class DispatcherTestCase(TestCase):
             ('/one/hello/two',  'ROUTE2'),
             ('/two/three',      'ROUTE3'),
             ('/two/three/test', 'ROUTE33'),
-            ('/ui/favicon.ico', 'ROUTEALL'),
-            ('/ui/images/image.png', 'ROUTEALL'),
+            ('/ui/favicon.ico', 'ROUTEICON'),
+            ('/ui/skin/favicon.ico', 'ROUTEALL'),
+            ('/ui/skin/images/image.png', 'ROUTEALL'),
         ]
         bad_urls = [
             '/one/',

@@ -30,6 +30,7 @@ class DispatcherTestCase(TestCase):
             ('/one/{name}/two',   'ROUTE2'),
             ('/two/three',        'ROUTE3'),
             ('/two/three/{name}', 'ROUTE33'),
+            ('/ui/{name}', 'ROUTEALL'),
         ]
         match_urls = [
             ('/one',            'ROUTE1'),
@@ -37,6 +38,8 @@ class DispatcherTestCase(TestCase):
             ('/one/hello/two',  'ROUTE2'),
             ('/two/three',      'ROUTE3'),
             ('/two/three/test', 'ROUTE33'),
+            ('/ui/favicon.ico', 'ROUTEALL'),
+            ('/ui/images/image.png', 'ROUTEALL'),
         ]
         bad_urls = [
             '/one/',
@@ -71,6 +74,7 @@ class DispatcherTestCase(TestCase):
             ('/one/Hello',    'ALPHA'),
             ('/one/Hello1',   'WORD'),
             ('/one/Hello@1_', 'ANY'),
+            ('/ui/favicon.ico', 'ALL'),
         ]
         dispatcher = URIDispatcher()
         # clear dispatcher

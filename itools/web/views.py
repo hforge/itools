@@ -79,15 +79,14 @@ class ItoolsView(prototype):
 
 
     def return_json(self, data, context):
-        context.set_content_type('application/json')
-        return dumps(data, cls=NewJSONEncoder)
+        return context.return_json(data)
 
 
     def GET(self, context):
         raise NotImplementedError
 
 
-    def POST(self, context):
+    def POST(self, resource,  context):
         raise NotImplementedError
 
 
@@ -111,6 +110,57 @@ class ItoolsView(prototype):
         raise NotImplementedError
 
 
+    def get_canonical_uri(self, context):
+        return context.uri
+
+    #######################################################################
+    # Query
+    query_schema = {}
+
+
+    def get_query_schema(self):
+        return self.query_schema
+
+
+    def get_query(self, context):
+        get_value = context.get_query_value
+        schema = self.get_query_schema()
+        return process_form(get_value, schema)
+
+
+    #######################################################################
+    # POST
+    #######################################################################
+    schema = {}
+
+
+    def get_schema(self, resource, context):
+        # Check for specific schema
+        action = getattr(context, 'form_action', None)
+        if action is not None:
+            schema = getattr(self, '%s_schema' % action, None)
+            if schema is not None:
+                return schema
+
+        # Default
+        return self.schema
+
+
+    def _get_form(self, resource, context):
+        """Form checks the request form and collect inputs consider the
+        schema.  This method also checks the request form and raise an
+        FormError if there is something wrong (a mandatory field is missing,
+        or a value is not valid) or None if everything is ok.
+
+        Its input data is a list (fields) that defines the form variables to
+          {'toto': Unicode(mandatory=True, multiple=False, default=u'toto'),
+           'tata': Unicode(mandatory=True, multiple=False, default=u'tata')}
+        """
+        get_value = context.get_form_value
+        schema = self.get_schema(resource, context)
+        return process_form(get_value, schema)
+
+
 
 class BaseView(ItoolsView):
 
@@ -128,20 +178,6 @@ class BaseView(ItoolsView):
 
     def OPTIONS(self, resource, context):
         raise NotImplementedError
-
-    #######################################################################
-    # Query
-    query_schema = {}
-
-
-    def get_query_schema(self):
-        return self.query_schema
-
-
-    def get_query(self, context):
-        get_value = context.get_query_value
-        schema = self.get_query_schema()
-        return process_form(get_value, schema)
 
 
     #######################################################################
@@ -191,38 +227,6 @@ class BaseView(ItoolsView):
         # Ok
         return uri
 
-
-    #######################################################################
-    # POST
-    #######################################################################
-    schema = {}
-
-
-    def get_schema(self, resource, context):
-        # Check for specific schema
-        action = getattr(context, 'form_action', None)
-        if action is not None:
-            schema = getattr(self, '%s_schema' % action, None)
-            if schema is not None:
-                return schema
-
-        # Default
-        return self.schema
-
-
-    def _get_form(self, resource, context):
-        """Form checks the request form and collect inputs consider the
-        schema.  This method also checks the request form and raise an
-        FormError if there is something wrong (a mandatory field is missing,
-        or a value is not valid) or None if everything is ok.
-
-        Its input data is a list (fields) that defines the form variables to
-          {'toto': Unicode(mandatory=True, multiple=False, default=u'toto'),
-           'tata': Unicode(mandatory=True, multiple=False, default=u'tata')}
-        """
-        get_value = context.get_form_value
-        schema = self.get_schema(resource, context)
-        return process_form(get_value, schema)
 
 
     def get_value(self, resource, context, name, datatype):

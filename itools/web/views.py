@@ -68,7 +68,7 @@ class ItoolsView(prototype):
     access = False
 
     def is_access_allowed(self, context):
-        return self.access
+        return context.is_access_allowed(context.resource, self)
 
 
     def get_mtime(self, context):
@@ -256,9 +256,6 @@ class ItoolsView(prototype):
 
 
 class BaseView(ItoolsView):
-
-    def is_access_allowed(self, context):
-        return context.is_access_allowed(context.resource, self)
 
 
     def GET(self, resource, context):

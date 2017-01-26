@@ -18,8 +18,10 @@
 from unittest import TestCase, main
 
 # Import from itools
+from itools.core import get_abspath
 from itools.web import BaseView, WebServer, DispatchRouter, Context
 from itools.web import StaticRouter
+
 
 class View(BaseView):
 
@@ -29,45 +31,47 @@ class View(BaseView):
 
 
 class Root(object):
+
     context_cls = Context
+
     def before_traverse(self, context):
         pass
+
+SERVER = None
 
 class RouterTestCase(TestCase):
 
     def setUp(self):
-        # Init context and server
+        global SERVER
+        # Init context
         self.context = Context(root=Root())
-        self.server = WebServer(root=Root())
+        if SERVER is None:
+            SERVER = WebServer(root=Root())
+            SERVER.listen('127.0.0.1', 8080)
 
 
     def test_dispatch_router(self):
+        global SERVER
         self.rest_router = DispatchRouter()
         self.rest_router.add_route('/rest/welcome/{name}', View)
-        self.server.set_router('/rest', self.rest_router)
-        self.server.listen('127.0.0.1', 8080)
-        response = self.server.do_request(method='GET',
+        SERVER.set_router('/rest', self.rest_router)
+        response = SERVER.do_request(method='GET',
                                      path='/rest/welcome/test',
                                      context=self.context(router=self.rest_router))
         assert response.get('status') == 200
         assert response.get('entity') == 'Welcome test'
-        self.server.stop()
 
 
-    """
-    # TODO : Uncomment when stop server is working
     def test_static_router(self):
+        global SERVER
         self.static_router = StaticRouter(local_path=get_abspath('tests/'))
-        self.server.set_router('/static', self.static_router)
+        SERVER.set_router('/static', self.static_router)
         # Launch server
-        self.server.listen('127.0.0.1', 8080)
-        response = self.server.do_request(method='GET',
+        response = SERVER.do_request(method='GET',
                                      path='/static/hello.txt',
                                      context=self.context(router=self.static_router, mount_path='/static'))
         assert response.get('status') == 200
         assert response.get('entity') == 'hello world'
-        self.server.stop()
-    """
 
 
 

@@ -82,11 +82,15 @@ class ItoolsView(prototype):
 
 
     def HEAD(self, context):
-        raise NotImplementedError
+        return self.GET(context)
 
 
     def OPTIONS(self, context):
-        raise NotImplementedError
+        """Return list of HTTP methods allowed"""
+        known_methods = ['GET', 'HEAD', 'POST', 'OPTIONS', 'PUT', 'DELETE']
+        context.set_header('Allow', ','.join(known_methods))
+        context.entity = None
+        context.status = 200
 
 
     def DELETE(self, context):

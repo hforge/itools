@@ -31,7 +31,7 @@ class DispatchRouter(BaseRouter):
 
     def handle_request(self, method_name, context):
         # TODO: Write code
-        response = self.dispatcher.select(str(context.path))
+        response = self.dispatcher.resolve(str(context.path))
         if response:
             view, query = response
             context.entity = view.GET(query)

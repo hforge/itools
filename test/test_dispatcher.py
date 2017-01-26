@@ -19,6 +19,7 @@ from unittest import TestCase, main
 
 # Import from itools
 from itools.web.dispatcher import URIDispatcher
+from itools.core import OrderedDict
 
 
 class DispatcherTestCase(TestCase):
@@ -29,13 +30,13 @@ class DispatcherTestCase(TestCase):
 
     def _check_matching_method(self, urls):
         for url, method in urls:
-            method_selected, _ = self.dispatcher.select(url)
+            method_selected, _ = self.dispatcher.resolve(url)
             assert method_selected == method
 
 
     def _register_routes(self, patterns):
         # Clear patterns
-        self.dispatcher.patterns = []
+        self.dispatcher.patterns = OrderedDict()
         # Register in dispatcher
         for route, method in patterns:
             self.dispatcher.add(route, method)
@@ -71,7 +72,7 @@ class DispatcherTestCase(TestCase):
         self._check_matching_method(match_urls)
         # Check bad urls
         for url in bad_urls:
-            assert self.dispatcher.select(url) is None
+            assert self.dispatcher.resolve(url) is None
 
 
     def test_patterns_params(self):
@@ -95,7 +96,7 @@ class DispatcherTestCase(TestCase):
         self._register_routes(patterns)
         # Check dispatcher route resolution with params
         for url, method in urls:
-            method_selected, params = self.dispatcher.select(url)
+            method_selected, params = self.dispatcher.resolve(url)
             assert method_selected == method
             assert params.get('param') == url.replace('/one/', '')
 
@@ -153,6 +154,23 @@ class DispatcherTestCase(TestCase):
             ('/one/15',  'DIGITS'),
             ('/one/180', 'DIGITS'),
             ('/one/14',  'DIGITS'),
+        ]
+        # Register route patterns
+        self._register_routes(patterns)
+        # Check dispatcher route resolution
+        self._check_matching_method(urls)
+
+
+    def test_patterns_override(self):
+        patterns = [
+            ('/one/{param}', 'FIRST'),
+            ('/one/{param}', 'SECOND'),
+            ('/one/{param}', 'THIRD'),
+        ]
+        # Last override method will be called
+        urls = [
+            ('/one/two',   'THIRD'),
+            ('/one/three', 'THIRD'),
         ]
         # Register route patterns
         self._register_routes(patterns)

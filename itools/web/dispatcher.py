@@ -18,7 +18,7 @@
 import re
 
 # Import from itools
-from itools.core import prototype
+from itools.core import prototype, OrderedDict
 
 
 class URIPatternsParser(prototype):
@@ -32,7 +32,6 @@ class URIPatternsParser(prototype):
     """
 
     start, end = '{}'
-    ostart, oend = '[]'
     patterns = {'word': r'\w+',
                 'alpha': r'[a-zA-Z]+',
                 'digits': r'\d+',
@@ -81,18 +80,24 @@ class URIPatternsParser(prototype):
 
 class URIDispatcher(object):
 
-    patterns = []
+    patterns = OrderedDict()
     parser = URIPatternsParser
 
     def add(self, pattern, data):
+        """Register a route pattern paired with some data"""
         parser = self.parser()
         regex = parser.get_regex(pattern)
         compiled_regex = re.compile(regex)
-        self.patterns.append((pattern, compiled_regex, data))
+        self.patterns[pattern] = (compiled_regex, data)
 
 
-    def select(self, path):
-        for pattern, compiled_regex, data in self.patterns:
+    def resolve(self, path):
+        """
+        Path resolution, look for a corresponding registered pattern
+        and return associated data along with the extracted parameters.
+        """
+        for pattern, values in self.patterns.iteritems():
+            compiled_regex, data = values
             match = compiled_regex.search(path)
             if match:
                 return data, match.groupdict()

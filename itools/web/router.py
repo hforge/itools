@@ -165,14 +165,14 @@ class RequestMethod(object):
             if response:
                 # Find a match in the dispatcher
                 view, query = response
-                params = {'context': context, 'query': query}
                 context.resource = root
                 context.view = view
+                context.path_query = query
             else:
                 # The requested resource and view
                 cls.find_resource(context)
                 cls.find_view(context)
-                params = {'context': context, 'resource': context.resource}
+                context.path_query = None
             # Access Control
             cls.check_access(context)
             # Check the request method is supported
@@ -189,7 +189,6 @@ class RequestMethod(object):
                 return
             else:
                 context.resource = root
-                params = {'context': context, 'resource': context.resource}
                 context.view_name = status2name[status]
                 context.view = root.get_view(context.view_name)
         except NotModified:
@@ -222,7 +221,7 @@ class RequestMethod(object):
         # (3) Render
         if method is not None:
             try:
-                context.entity = method(**params)
+                context.entity = method(context.resource, context)
             except Exception:
                 cls.internal_server_error(context)
             else:
@@ -236,7 +235,7 @@ class RequestMethod(object):
         if isinstance(context.entity, (FunctionType, MethodType)):
             context.status = None
             try:
-                context.entity = context.entity(**params)
+                context.entity = context.entity(context.resource, context)
             except Exception:
                 cls.internal_server_error(context)
             else:

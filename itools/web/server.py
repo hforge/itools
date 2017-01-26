@@ -82,17 +82,20 @@ class WebServer(SoupServer):
         print 'Listen %s:%d' % (address, port)
 
 
-    def do_request(self, method='GET', path='/', headers={}, body='',
+    def do_request(self, method='GET', path='/', headers=None, body='',
             context=None, as_json=False, user=None):
         """Experimental method to do a request on the server"""
+        headers = headers or {}
+        # I'm not a robot
+        headers['User-Agent'] = 'Firefox'
         # Build headers
         if body and not as_json:
             headers['content-type'] = 'application/x-www-form-urlencoded'
-        elif body and as_json:
+        elif body and as_json is True:
             body = dumps(body)
             headers['content-type'] = 'application/json'
         # XXX accept ?
-        if as_json:
+        if as_json is True:
             headers['content-type'] = 'application/json'
         # Build soup message
         message = SoupMessage()

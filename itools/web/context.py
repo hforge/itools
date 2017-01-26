@@ -45,7 +45,7 @@ from entities import Entity
 from exceptions import FormError
 from headers import get_type, Cookie, SetCookieDataType
 from messages import ERROR
-from utils import fix_json, reason_phrases
+from utils import NewJSONEncoder, fix_json, reason_phrases
 from router import RequestMethod
 
 
@@ -650,6 +650,12 @@ class Context(prototype):
         finally:
             set_context(None)
             return context
+
+
+    def return_json(self, data):
+        self.entity = json.dumps(data, cls=NewJSONEncoder)
+        self.set_content_type('application/json')
+        return self.entity
 
 
 ###########################################################################

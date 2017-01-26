@@ -19,9 +19,28 @@ from unittest import TestCase, main
 
 # Import from itools
 from itools.web.dispatcher import URIDispatcher
+from itools.core import OrderedDict
 
 
 class DispatcherTestCase(TestCase):
+
+    def setUp(self):
+        self.dispatcher = URIDispatcher()
+
+
+    def _check_matching_method(self, urls):
+        for url, method in urls:
+            method_selected, _ = self.dispatcher.resolve(url)
+            assert method_selected == method
+
+
+    def _register_routes(self, patterns):
+        # Clear patterns
+        self.dispatcher.patterns = OrderedDict()
+        # Register in dispatcher
+        for route, method in patterns:
+            self.dispatcher.add(route, method)
+
 
     def test_pattern_matching(self):
         patterns = [
@@ -30,7 +49,7 @@ class DispatcherTestCase(TestCase):
             ('/one/{name}/two',   'ROUTE2'),
             ('/two/three',        'ROUTE3'),
             ('/two/three/{name}', 'ROUTE33'),
-            ('/ui/{name}', 'ROUTEALL'),
+            ('/ui/{name:any}', 'ROUTEALL'),
         ]
         match_urls = [
             ('/one',            'ROUTE1'),
@@ -47,17 +66,13 @@ class DispatcherTestCase(TestCase):
             '/one/hello/test',
             '/hello/two',
         ]
-        dispatcher = URIDispatcher()
         # Register route patterns
-        for route, method in patterns:
-            dispatcher.add(route, method)
+        self._register_routes(patterns)
         # Check dispatcher route resolution
-        for url, method in match_urls:
-            method_selected, _ = dispatcher.select(url)
-            assert method_selected == method
+        self._check_matching_method(match_urls)
         # Check bad urls
         for url in bad_urls:
-            assert dispatcher.select(url) is None
+            assert self.dispatcher.resolve(url) is None
 
 
     def test_patterns_params(self):
@@ -66,29 +81,104 @@ class DispatcherTestCase(TestCase):
             ('/one/{param:number}', 'NUMBER'),
             ('/one/{param:alpha}',  'ALPHA'),
             ('/one/{param:word}',   'WORD'),
+            ('/one/{param:chunk}',  'CHUNK'),
             ('/one/{param:any}',    'ANY'),
         ]
         urls = [
-            ('/one/14',       'DIGIT'),
-            ('/one/14.3',     'NUMBER'),
-            ('/one/Hello',    'ALPHA'),
-            ('/one/Hello1',   'WORD'),
-            ('/one/Hello@1_', 'ANY'),
-            ('/ui/favicon.ico', 'ALL'),
+            ('/one/14',            'DIGIT'),
+            ('/one/14.3',          'NUMBER'),
+            ('/one/Hello',         'ALPHA'),
+            ('/one/Hello1',        'WORD'),
+            ('/one/Hello@1_8',     'CHUNK'),
+            ('/one/Hello@1_8/any', 'ANY'),
         ]
-        dispatcher = URIDispatcher()
-        # clear dispatcher
-        dispatcher.patterns = []
         # Register route patterns
-        for route, method in patterns:
-            dispatcher.add(route, method)
+        self._register_routes(patterns)
         # Check dispatcher route resolution with params
         for url, method in urls:
-            method_selected, params = dispatcher.select(url)
+            method_selected, params = self.dispatcher.resolve(url)
             assert method_selected == method
-            assert params.get('param') == url.split('/')[-1]
+            assert params.get('param') == url.replace('/one/', '')
+
+
+    def test_patterns_ordering(self):
+        patterns = [
+            ('/one/{param}',     'FIRST'),
+            ('/one/{param}/two', 'SECOND'),
+            ('/one/{param:any}', 'THIRD'),
+        ]
+        urls = [
+            ('/one/test',           'FIRST'),
+            ('/one/test/two',       'SECOND'),
+            ('/one/test/two/three', 'THIRD'),
+        ]
+        # Register route patterns
+        self._register_routes(patterns)
+        # Check dispatcher route resolution
+        self._check_matching_method(urls)
+        # Change ordering to verify catch all effect
+        patterns = [
+            ('/one/{param:any}', 'FIRST'),
+            ('/one/{param}',     'SECOND'),
+            ('/one/{param}/two', 'THIRD'),
+        ]
+        urls = [
+            ('/one/test',           'FIRST'),
+            ('/one/test/two',       'FIRST'),
+            ('/one/test/two/three', 'FIRST'),
+        ]
+        # Register route patterns
+        self._register_routes(patterns)
+        # Check dispatcher route resolution
+        self._check_matching_method(urls)
+        # Add special case taking advantage of ordering
+        patterns = [
+            ('/one/14',             'SPECIAL'),
+            ('/one/{param:digits}', 'DIGITS'),
+        ]
+        urls = [
+            ('/one/15',  'DIGITS'),
+            ('/one/180', 'DIGITS'),
+            ('/one/14',  'SPECIAL'),
+        ]
+        # Register route patterns
+        self._register_routes(patterns)
+        # Check dispatcher route resolution
+        self._check_matching_method(urls)
+        # Other way around, special case never caught
+        patterns = [
+            ('/one/{param:digits}', 'DIGITS'),
+            ('/one/14',             'SPECIAL'),
+        ]
+        urls = [
+            ('/one/15',  'DIGITS'),
+            ('/one/180', 'DIGITS'),
+            ('/one/14',  'DIGITS'),
+        ]
+        # Register route patterns
+        self._register_routes(patterns)
+        # Check dispatcher route resolution
+        self._check_matching_method(urls)
+
+
+    def test_patterns_override(self):
+        patterns = [
+            ('/one/{param}', 'FIRST'),
+            ('/one/{param}', 'SECOND'),
+            ('/one/{param}', 'THIRD'),
+        ]
+        # Last override method will be called
+        urls = [
+            ('/one/two',   'THIRD'),
+            ('/one/three', 'THIRD'),
+        ]
+        # Register route patterns
+        self._register_routes(patterns)
+        # Check dispatcher route resolution
+        self._check_matching_method(urls)
 
 
 
 if __name__ == '__main__':
     main()
+

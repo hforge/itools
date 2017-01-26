@@ -290,6 +290,9 @@ class Context(prototype):
         # Accept cors
         if self.server.accept_cors:
             self.accept_cors()
+        # Set default content type XXX ?
+        if self.content_type is None:
+            self.content_type = 'text/plain'
         # Set response status
         self.soup_message.set_status(self.status)
         # Set response body
@@ -653,8 +656,6 @@ class Context(prototype):
             view, query = response
             context.entity = view.GET(query, context)
             context.status = 200
-            # Set response contenet type
-            context.set_content_type('text/plain', charset='UTF-8')
             # Set response
             context.set_response_from_context()
             # Return context for unit tests

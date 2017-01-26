@@ -73,6 +73,9 @@ class WebServer(SoupServer):
         # Add handlers
         super(WebServer, self).listen(address, port)
         self.add_handler('*', self.star_callback)
+        context = self.root.context_cls(
+            database=self.database, server=self)
+        self.add_handler('/', context.handle_request)
         # Say hello
         address = address if address is not None else '*'
         print 'Listen %s:%d' % (address, port)
@@ -118,15 +121,6 @@ class WebServer(SoupServer):
         super(WebServer, self).stop()
         if self.access_log:
             self.access_log_file.close()
-
-
-    def set_router(self, path, router):
-        context = self.root.context_cls(
-            database=self.database,
-            server=self, mount_path=path,
-            router=router)
-        self.add_handler(path, context.handle_request)
-        return context
 
 
     def star_callback(self, soup_message, path):

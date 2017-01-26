@@ -323,9 +323,7 @@ class GET(SafeMethod):
 
 class HEAD(GET):
 
-    @classmethod
-    def check_method(cls, context):
-        GET.check_method(context, method_name='GET')
+    method_name = 'HEAD'
 
 
 
@@ -334,62 +332,10 @@ class POST(DatabaseRequestMethod):
     method_name = 'POST'
 
 
-    @classmethod
-    def check_method(cls, context):
-        # If there was an error, the method name always will be 'GET'
-        if context.status is None:
-            method_name = 'POST'
-        else:
-            method_name = 'GET'
-        DatabaseRequestMethod.check_method(context, method_name=method_name)
-
-
 
 class OPTIONS(SafeMethod):
 
-    @classmethod
-    def handle_request(cls, context):
-        root = context.site_root
-
-        known_methods = ['GET', 'HEAD', 'POST', 'OPTIONS', 'PUT', 'DELETE']
-        allowed = []
-
-        # (1) Find out the requested resource and view
-        try:
-            cls.find_resource(context)
-            cls.find_view(context)
-        except ClientError, error:
-            status = error.code
-            context.status = status
-            context.view_name = status2name[status]
-            context.view = root.get_view(context.view_name)
-        else:
-            # (2b) Check methods supported by the view
-            view = context.view
-            for method_name in known_methods:
-                # Search on the resource's view
-                method = getattr(view, method_name, None)
-                if method is not None:
-                    allowed.append(method_name)
-                    continue
-            # OPTIONS is built-in
-            allowed.append('OPTIONS')
-            # DELETE is unsupported at the root
-            if context.path == '/':
-                allowed.remove('DELETE')
-
-        # (3) Render
-        context.entity = None
-        context.status = 200
-
-        # (5) After Traverse hook
-        try:
-            context.site_root.after_traverse(context)
-        except Exception:
-            cls.internal_server_error(context)
-
-        # (6) Build and return the response
-        cls.set_body(context)
+    method_name = 'OPTIONS'
 
 
 

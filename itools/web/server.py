@@ -30,6 +30,7 @@ from context import select_language
 from context import WebLogger, get_context, set_context
 from router import DatabaseRouter
 from soup import SoupServer, SoupMessage
+from dispatcher import URIDispatcher
 
 class WebServer(SoupServer):
 
@@ -40,6 +41,7 @@ class WebServer(SoupServer):
     session_timeout = timedelta(0)
 
     accept_cors = False
+    dispatcher = URIDispatcher()
 
 
     def __init__(self, root, access_log=None, event_log=None):

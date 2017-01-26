@@ -22,7 +22,6 @@
 
 # Import from the Standard Library
 from copy import deepcopy
-from json import dumps
 
 # Import from itools
 from itools.core import freeze, prototype
@@ -36,7 +35,6 @@ from itools.uri import decode_query, Reference
 # Import from here
 from exceptions import FormError, Conflict, MethodNotAllowed
 from messages import ERROR
-from utils import NewJSONEncoder
 
 
 
@@ -82,23 +80,19 @@ class ItoolsView(prototype):
         return context.return_json(data)
 
 
-    def GET(self, context):
+    def GET(self, resource, context):
         raise NotImplementedError
 
 
-    def POST(self, resource,  context):
+    def PUT(self, resource, context):
         raise NotImplementedError
 
 
-    def PUT(self, context):
-        raise NotImplementedError
+    def HEAD(self, resource, context):
+        return self.GET(resource, context)
 
 
-    def HEAD(self, context):
-        return self.GET(context)
-
-
-    def OPTIONS(self, context):
+    def OPTIONS(self, resource, context):
         """Return list of HTTP methods allowed"""
         known_methods = ['GET', 'HEAD', 'POST', 'OPTIONS', 'PUT', 'DELETE']
         context.set_header('Allow', ','.join(known_methods))
@@ -106,12 +100,20 @@ class ItoolsView(prototype):
         context.status = 200
 
 
-    def DELETE(self, context):
+    def DELETE(self, resource, context):
         raise NotImplementedError
 
 
     def get_canonical_uri(self, context):
         return context.uri
+
+
+    #######################################################################
+    # View's metadata
+    title = None
+
+    def get_title(self, context):
+        return self.title
 
     #######################################################################
     # Query
@@ -159,74 +161,6 @@ class ItoolsView(prototype):
         get_value = context.get_form_value
         schema = self.get_schema(resource, context)
         return process_form(get_value, schema)
-
-
-
-class BaseView(ItoolsView):
-
-    def is_access_allowed(self, context):
-        return context.is_access_allowed(context.resource, self)
-
-
-    def GET(self, resource, context):
-        raise NotImplementedError
-
-
-    def HEAD(self, resource, context):
-        raise NotImplementedError
-
-
-    def OPTIONS(self, resource, context):
-        raise NotImplementedError
-
-
-    #######################################################################
-    # View's metadata
-    title = None
-
-    def get_title(self, context):
-        return self.title
-
-
-    #######################################################################
-    # Canonical URI for search engines
-    # "language" is by default because too widespreaded
-    canonical_query_parameters = freeze(['language'])
-
-
-    def get_canonical_uri(self, context):
-        """Return the same URI stripped from redundant view name, if already
-        the default, and query parameters not affecting the resource
-        representation.
-        Search engines will keep this sole URI when crawling different
-        combinations of this view.
-        """
-        uri = deepcopy(context.uri)
-        query = uri.query
-
-        # Remove the view name if default
-        name = uri.path.get_name()
-        view_name = name[1:] if name and name[0] == ';' else None
-        if view_name:
-            resource = context.resource
-            if view_name == resource.get_default_view_name():
-                uri = uri.resolve2('..')
-                view_name = None
-
-        # Be sure the canonical URL either has a view or ends by an slash
-        if not view_name and uri.path != '/':
-            uri.path.endswith_slash = True
-
-        # Remove noise from query parameters
-        canonical_query_parameters = self.canonical_query_parameters
-        for parameter in query.keys():
-            if parameter not in canonical_query_parameters:
-                del query[parameter]
-        uri.query = query
-
-        # Ok
-        return uri
-
 
 
     def get_value(self, resource, context, name, datatype):
@@ -319,6 +253,64 @@ class BaseView(ItoolsView):
             return self.GET
         return goto
 
+
+
+class BaseView(ItoolsView):
+
+    def is_access_allowed(self, context):
+        return context.is_access_allowed(context.resource, self)
+
+
+    def GET(self, resource, context):
+        raise NotImplementedError
+
+
+    def HEAD(self, resource, context):
+        raise NotImplementedError
+
+
+    def OPTIONS(self, resource, context):
+        raise NotImplementedError
+
+
+    #######################################################################
+    # Canonical URI for search engines
+    # "language" is by default because too widespreaded
+    canonical_query_parameters = freeze(['language'])
+
+
+    def get_canonical_uri(self, context):
+        """Return the same URI stripped from redundant view name, if already
+        the default, and query parameters not affecting the resource
+        representation.
+        Search engines will keep this sole URI when crawling different
+        combinations of this view.
+        """
+        uri = deepcopy(context.uri)
+        query = uri.query
+
+        # Remove the view name if default
+        name = uri.path.get_name()
+        view_name = name[1:] if name and name[0] == ';' else None
+        if view_name:
+            resource = context.resource
+            if view_name == resource.get_default_view_name():
+                uri = uri.resolve2('..')
+                view_name = None
+
+        # Be sure the canonical URL either has a view or ends by an slash
+        if not view_name and uri.path != '/':
+            uri.path.endswith_slash = True
+
+        # Remove noise from query parameters
+        canonical_query_parameters = self.canonical_query_parameters
+        for parameter in query.keys():
+            if parameter not in canonical_query_parameters:
+                del query[parameter]
+        uri.query = query
+
+        # Ok
+        return uri
 
     #######################################################################
     # PUT

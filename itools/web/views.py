@@ -69,6 +69,20 @@ class ItoolsView(prototype):
     # Access Control
     access = False
 
+    def is_access_allowed(self, context):
+        return self.access
+
+
+    def get_mtime(self, context):
+        """Caching the view"""
+        return None
+
+
+    def return_json(self, data, context):
+        context.set_content_type('application/json')
+        return dumps(data, cls=NewJSONEncoder)
+
+
     def GET(self, context):
         raise NotImplementedError
 
@@ -100,6 +114,9 @@ class ItoolsView(prototype):
 
 class BaseView(ItoolsView):
 
+    def is_access_allowed(self, context):
+        return context.is_access_allowed(context.resource, self)
+
 
     def GET(self, resource, context):
         raise NotImplementedError
@@ -125,12 +142,6 @@ class BaseView(ItoolsView):
         get_value = context.get_query_value
         schema = self.get_query_schema()
         return process_form(get_value, schema)
-
-
-    #######################################################################
-    # Caching
-    def get_mtime(self, resource):
-        return None
 
 
     #######################################################################
@@ -275,11 +286,6 @@ class BaseView(ItoolsView):
         error = context.form_error
         error_kw = error.to_dict()
         return self.return_json(error_kw, context)
-
-
-    def return_json(self, data, context):
-        context.set_content_type('application/json')
-        return dumps(data, cls=NewJSONEncoder)
 
 
     def POST(self, resource, context):

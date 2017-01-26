@@ -27,8 +27,7 @@ from itools.uri import Reference
 
 # Local imports
 from exceptions import ClientError, NotModified, Forbidden, NotFound
-from exceptions import NotImplemented, Unauthorized
-from exceptions import FormError
+from exceptions import Unauthorized, FormError
 
 
 
@@ -44,7 +43,25 @@ status2name = {
 }
 
 
+
 class RequestMethod(object):
+
+
+    @classmethod
+    def check_access(cls, context):
+        """Tell whether the user is allowed to access the view
+        """
+        # Get the check-point
+        if context.view.is_access_allowed(context):
+            return
+
+        # Unauthorized (401)
+        if context.user is None:
+            raise Unauthorized
+
+        # Forbidden (403)
+        raise Forbidden
+
 
 
     @classmethod
@@ -52,10 +69,9 @@ class RequestMethod(object):
         """Implement cache if your method supports it.
         Most methods don't, hence the default implementation.
         """
-        if cls.method_name == 'GET':
-            # 1. Get the resource's modification time
-            resource = context.resource
-            mtime = context.view.get_mtime(resource)
+        if context.method == 'GET':
+            # 1. Get the view's modification time
+            mtime = context.view.get_mtime(context)
             if mtime is None:
                 return
             mtime = mtime.replace(microsecond=0)
@@ -77,74 +93,6 @@ class RequestMethod(object):
 
 
     @classmethod
-    def check_conditions(cls, context):
-        """Check conditions to match before the response can be processed:
-        resource, state, request headers...
-        """
-
-    @classmethod
-    def is_access_allowed(cls, context):
-        return False
-
-
-    @classmethod
-    def check_access(cls, context):
-        """Tell whether the user is allowed to access the view on the
-        resource.
-        """
-        # Get the check-point
-        if cls.is_access_allowed(context):
-            return
-
-        # Unauthorized (401)
-        if context.user is None:
-            raise Unauthorized
-
-        # Forbidden (403)
-        raise Forbidden
-
-
-    @classmethod
-    def set_body(cls, context):
-        context.set_response_from_context()
-
-
-    @classmethod
-    def internal_server_error(cls, context):
-        log_error('Internal Server Error', domain='itools.web')
-        context.status = 500
-        context.entity = context.root.internal_server_error(context)
-
-
-    @classmethod
-    def check_method(cls, context, method_name=None):
-        if method_name is None:
-            method_name = context.method
-        # Get the method
-        view = context.view
-        method = getattr(view, method_name, None)
-        if method is None:
-            message = '%s has no "%s" method' % (view, method_name)
-            raise NotImplemented, message
-        context.view_method = method
-
-
-    @classmethod
-    def set_status_from_entity(cls, context):
-        if context.status is not None:
-            pass
-        elif isinstance(context.entity, Reference):
-            context.status = 302
-        elif context.entity is None:
-            context.status = 204
-        else:
-            context.status = 200
-
-
-
-class BaseDatabaseRequestMethod(RequestMethod):
-
-    @classmethod
     def commit_transaction(cls, context):
         database = context.database
         # Check conditions are met
@@ -163,12 +111,9 @@ class BaseDatabaseRequestMethod(RequestMethod):
     def check_transaction(cls, context):
         """Return True if your method is supposed to change the state.
         """
+        if context.method in ('POST', 'PUT'):
+            return True
         return getattr(context, 'commit', True) and context.status < 400
-
-
-
-
-class DatabaseRequestMethod(BaseDatabaseRequestMethod):
 
 
     @classmethod
@@ -206,27 +151,30 @@ class DatabaseRequestMethod(BaseDatabaseRequestMethod):
 
 
     @classmethod
-    def is_access_allowed(cls, context):
-        return context.is_access_allowed(context.resource, context.view)
-
-
-    @classmethod
     def handle_request(cls, context):
         root = context.site_root
+        server = context.server
 
-        # (1) Find out the requested resource and view
+        # (1) Find out the requested view
         try:
-            # The requested resource and view
-            cls.find_resource(context)
-            cls.find_view(context)
+            response = server.dispatcher.resolve(str(context.path))
+            if response:
+                # Find a match in the dispatcher
+                view, query = response
+                params = {'context': context, 'query': query}
+                context.resource = root
+                context.view = view
+            else:
+                # The requested resource and view
+                cls.find_resource(context)
+                cls.find_view(context)
+                params = {'context': context, 'resource': context.resource}
             # Access Control
             cls.check_access(context)
             # Check the request method is supported
-            cls.check_method(context)
+            context.view_method = getattr(context.view, context.method, None)
             # Check the client's cache
             cls.check_cache(context)
-            # Check pre-conditions
-            cls.check_conditions(context)
         except ClientError, error:
             status = error.code
             context.status = status
@@ -235,6 +183,8 @@ class DatabaseRequestMethod(BaseDatabaseRequestMethod):
                 context.set_content_type('text/plain')
                 context.set_response_from_context()
                 return
+            context.resource = root
+            params = {'context': context, 'resource': context.resource}
             context.view_name = status2name[status]
             context.view = root.get_view(context.view_name)
         except NotModified:
@@ -247,7 +197,6 @@ class DatabaseRequestMethod(BaseDatabaseRequestMethod):
             exc_clear()
 
         # (2) Always deserialize the query
-        resource = context.resource
         view = context.view
         try:
             context.query = view.get_query(context)
@@ -263,12 +212,12 @@ class DatabaseRequestMethod(BaseDatabaseRequestMethod):
             method = None
         else:
             # GET, POST...
-            method = getattr(view, cls.method_name)
+            method = getattr(view, context.method)
 
         # (3) Render
         if method is not None:
             try:
-                context.entity = method(resource, context)
+                context.entity = method(**params)
             except Exception:
                 cls.internal_server_error(context)
             else:
@@ -282,7 +231,7 @@ class DatabaseRequestMethod(BaseDatabaseRequestMethod):
         if isinstance(context.entity, (FunctionType, MethodType)):
             context.status = None
             try:
-                context.entity = context.entity(context.resource, context)
+                context.entity = context.entity(**params)
             except Exception:
                 cls.internal_server_error(context)
             else:
@@ -302,48 +251,26 @@ class DatabaseRequestMethod(BaseDatabaseRequestMethod):
             context._set_auth_cookie(cookie)
 
         # (7) Build and return the response
-        cls.set_body(context)
+        context.set_response_from_context()
 
-
-
-
-class SafeMethod(DatabaseRequestMethod):
 
     @classmethod
-    def check_transaction(cls, context):
-        return False
+    def set_status_from_entity(cls, context):
+        if context.status is not None:
+            pass
+        elif isinstance(context.entity, Reference):
+            context.status = 302
+        elif context.entity is None:
+            context.status = 204
+        else:
+            context.status = 200
 
 
 
-class GET(SafeMethod):
-
-    method_name = 'GET'
-
-
-
-class HEAD(GET):
-
-    method_name = 'HEAD'
+    @classmethod
+    def internal_server_error(cls, context):
+        log_error('Internal Server Error', domain='itools.web')
+        context.status = 500
+        context.entity = context.root.internal_server_error(context)
 
 
-
-class POST(DatabaseRequestMethod):
-
-    method_name = 'POST'
-
-
-
-class OPTIONS(SafeMethod):
-
-    method_name = 'OPTIONS'
-
-
-
-class PUT(DatabaseRequestMethod):
-
-    method_name = 'PUT'
-
-
-class DELETE(RequestMethod):
-
-    method_name = 'DELETE'

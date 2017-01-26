@@ -46,7 +46,7 @@ from exceptions import FormError
 from headers import get_type, Cookie, SetCookieDataType
 from messages import ERROR
 from utils import fix_json, reason_phrases
-from router import DELETE, GET, HEAD, OPTIONS, POST, PUT
+from router import RequestMethod
 
 
 class Context(prototype):
@@ -63,6 +63,7 @@ class Context(prototype):
     scripts = []
     view = None
     entity = None
+    soup_message = None
 
 
     def init_context(self):
@@ -630,9 +631,8 @@ class Context(prototype):
 
         # (3) Get the method that will handle the request
         method_name = soup_message.get_method()
-        method = getattr(context, 'http_%s' % method_name.lower(), None)
         # 501 Not Implemented
-        if method is None:
+        if method_name not in ('GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD'):
             log_warning('Unexpected "%s" HTTP method' % method_name,
                         domain='itools.web')
             self.set_default_response(501)
@@ -640,8 +640,9 @@ class Context(prototype):
 
         # (4) Go
         set_context(context)
+        context.init_context()
         try:
-            method()
+            RequestMethod.handle_request(context)
         except StandardError:
             log_error('Internal error', domain='itools.web')
             self.set_default_response(500)
@@ -649,49 +650,6 @@ class Context(prototype):
         finally:
             set_context(None)
             return context
-
-
-    def http_get(self):
-        self.init_context()
-        """
-        # TODO: Move to handleRequest
-        server = self.server
-        response = server.dispatcher.resolve(str(context.path))
-        if response:
-            view, query = response
-            context.entity = view.GET(query, context)
-            context.status = 200
-            # Set response
-            context.set_response_from_context()
-            # Return context for unit tests
-            return context
-        """
-        return GET.handle_request(context)
-
-
-    def http_head(self):
-        self.init_context()
-        return HEAD.handle_request(context)
-
-
-    def http_post(self):
-        self.init_context()
-        return POST.handle_request(context)
-
-
-    def http_options(self):
-        self.init_context()
-        return OPTIONS.handle_request(context)
-
-
-    def http_put(self):
-        self.init_context()
-        return PUT.handle_request(context)
-
-
-    def http_delete(self):
-        self.init_context()
-        return DELETE.handle_request(context)
 
 
 ###########################################################################

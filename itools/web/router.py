@@ -21,15 +21,14 @@ from sys import exc_clear
 from types import FunctionType, MethodType
 
 # Import from itools
-from itools.core import prototype, local_tz
+from itools.core import local_tz
 from itools.log import log_error
 from itools.uri import Reference
 
 # Local imports
-from exceptions import ClientError, NotModified, Forbidden, NotFound, Conflict
-from exceptions import NotImplemented, MethodNotAllowed, Unauthorized
+from exceptions import ClientError, NotModified, Forbidden, NotFound
+from exceptions import NotImplemented, Unauthorized
 from exceptions import FormError
-from views import BaseView
 
 
 
@@ -43,18 +42,6 @@ status2name = {
     405: 'method_not_allowed',
     409: 'conflict',
 }
-
-
-def find_view_by_method(context):
-    """Associating an uncommon HTTP or WebDAV method to a special view.
-    method "PUT" -> view "http_put" <instance of BaseView>
-    """
-    method_name = context.method
-    view_name = "http_%s" % method_name.lower()
-    context.view = context.resource.get_view(view_name)
-    if context.view is None:
-        raise NotImplemented, 'method "%s" is not implemented' % method_name
-
 
 
 class RequestMethod(object):
@@ -391,7 +378,6 @@ class OPTIONS(SafeMethod):
             context.view = root.get_view(context.view_name)
         else:
             # (2b) Check methods supported by the view
-            resource = context.resource
             view = context.view
             for method_name in known_methods:
                 # Search on the resource's view
@@ -399,13 +385,6 @@ class OPTIONS(SafeMethod):
                 if method is not None:
                     allowed.append(method_name)
                     continue
-                # Search on the resource itself
-                # PUT -> "put" view instance
-                view_name = "http_%s" % method_name.lower()
-                http_view = getattr(resource, view_name, None)
-                if isinstance(http_view, BaseView):
-                    if getattr(http_view, method_name, None) is not None:
-                        allowed.append(method_name)
             # OPTIONS is built-in
             allowed.append('OPTIONS')
             # DELETE is unsupported at the root
@@ -428,60 +407,10 @@ class OPTIONS(SafeMethod):
 
 
 class PUT(DatabaseRequestMethod):
-    """The client must send a correct "If-Unmodified-Since" header to be
-       authorized to PUT.
-    """
 
     method_name = 'PUT'
-
-
-    @classmethod
-    def find_view(cls, context):
-        # Look for the "put" view
-        return find_view_by_method(context)
-
-
-    @classmethod
-    def check_conditions(cls, context):
-        """The resource is not locked, the request must have a correct
-           "If-Unmodified-Since" header.
-        """
-        if_unmodified_since = context.get_header('If-Unmodified-Since')
-        if if_unmodified_since is None:
-            raise Conflict
-        mtime = context.resource.get_value('mtime').replace(microsecond=0)
-        if mtime > if_unmodified_since:
-            raise Conflict
-
-
-    @classmethod
-    def set_body(cls, context):
-        super(PUT, cls).set_body(context)
-
-        # Set the Last-Modified header (if possible)
-        mtime = context.resource.get_value('mtime')
-        if mtime is None:
-            return
-        mtime = mtime.replace(microsecond=0)
-        context.set_header('Last-Modified', mtime)
-
 
 
 class DELETE(RequestMethod):
 
     method_name = 'DELETE'
-
-
-    @classmethod
-    def find_view(cls, context):
-        # Look for the "delete" view
-        return find_view_by_method(context)
-
-
-    @classmethod
-    def check_conditions(cls, context):
-        resource = context.resource
-        parent = resource.parent
-        # The root cannot delete itself
-        if parent is None:
-            raise MethodNotAllowed

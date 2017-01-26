@@ -34,7 +34,7 @@ from itools.stl import stl
 from itools.uri import decode_query, Reference
 
 # Import from here
-from exceptions import FormError
+from exceptions import FormError, Conflict, MethodNotAllowed
 from messages import ERROR
 from utils import NewJSONEncoder
 
@@ -64,22 +64,49 @@ def process_form(get_value, schema):
 
 
 
-class BaseView(prototype):
+class ItoolsView(prototype):
 
     # Access Control
     access = False
 
-    def __init__(self, **kw):
-        for key in kw:
-            setattr(self, key, kw[key])
+    def GET(self, context):
+        raise NotImplementedError
 
 
-    #######################################################################
-    # GET
-    #######################################################################
+    def POST(self, context):
+        raise NotImplementedError
+
+
+    def PUT(self, context):
+        raise NotImplementedError
+
+
+    def HEAD(self, context):
+        raise NotImplementedError
+
+
+    def OPTIONS(self, context):
+        raise NotImplementedError
+
+
+    def DELETE(self, context):
+        raise NotImplementedError
+
+
+
+class BaseView(ItoolsView):
+
+
     def GET(self, resource, context):
         raise NotImplementedError
 
+
+    def HEAD(self, resource, context):
+        raise NotImplementedError
+
+
+    def OPTIONS(self, resource, context):
+        raise NotImplementedError
 
     #######################################################################
     # Query
@@ -282,19 +309,48 @@ class BaseView(prototype):
     #######################################################################
     # PUT
     #######################################################################
+    access_PUT = False # 'is_allowed_to_put'
     def PUT(self, resource, context):
+        # The resource is not locked, the request must have a correct
+        #   "If-Unmodified-Since" header.
+        if_unmodified_since = context.get_header('If-Unmodified-Since')
+        if if_unmodified_since is None:
+            raise Conflict
+        mtime = resource.get_value('mtime').replace(microsecond=0)
+        if mtime > if_unmodified_since:
+            raise Conflict
         # Check content-range
-        range = context.get_header('content-range')
-        if range:
+        content_range = context.get_header('content-range')
+        if content_range:
             raise NotImplemented
         # Check if handler is a File
         handler = resource.get_value('data')
         if not isinstance(handler, File):
-            raise ValueError, u"PUT only allowed on files"
+            raise ValueError(u"PUT only allowed on files")
         # Save the data
         body = context.get_form_value('body')
         handler.load_state_from_string(body)
         context.database.change_resource(resource)
+        # Set the Last-Modified header (if possible)
+        mtime = resource.get_value('mtime')
+        if mtime is not None:
+            mtime = mtime.replace(microsecond=0)
+            context.set_header('Last-Modified', mtime)
+
+
+    access_DELETE = False #'is_allowed_to_remove'
+    def DELETE(self, resource, context):
+        name = resource.name
+        parent = resource.parent
+        if parent is None:
+            raise MethodNotAllowed
+        try:
+            parent.del_resource(name)
+        except Exception:
+            # XXX should be ConsistencyError
+            raise Conflict
+
+
 
 
 

@@ -308,6 +308,10 @@ class Catalog(object):
         db.begin_transaction(False)
 
 
+    def close(self):
+        self._db.close()
+
+
     #######################################################################
     # API / Public / (Un)Index
     #######################################################################

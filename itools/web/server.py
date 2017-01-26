@@ -28,7 +28,6 @@ from itools.i18n import init_language_selector
 from itools.log import Logger, register_logger, log_info
 from context import select_language
 from context import WebLogger, get_context, set_context
-from router import DatabaseRouter
 from soup import SoupServer, SoupMessage
 from dispatcher import URIDispatcher
 
@@ -102,7 +101,6 @@ class WebServer(SoupServer):
         context.path = '/'
         context.database = self.database
         context.server = self
-        context.router = DatabaseRouter
         set_context(context)
         return context
 

@@ -295,7 +295,6 @@ class Context(prototype):
         # Set response body
         if self.entity is None:
             self.status = 204
-            self.soup_message.set_response(self.content_type, self.entity)
         elif isinstance(self.entity, Reference):
             location = context.uri.resolve(self.entity)
             location = str(location)
@@ -647,6 +646,19 @@ class Context(prototype):
 
     def http_get(self):
         self.init_context()
+        # Router
+        server = self.server
+        response = server.dispatcher.resolve(str(context.path))
+        if response:
+            view, query = response
+            context.entity = view.GET(query, context)
+            context.status = 200
+            # Set response contenet type
+            context.set_content_type('text/plain', charset='UTF-8')
+            # Set response
+            context.set_response_from_context()
+            # Return context for unit tests
+            return context
         return self.router.handle_request('GET', self)
 
 

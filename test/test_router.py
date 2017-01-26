@@ -55,23 +55,29 @@ class RouterTestCase(TestCase):
         self.rest_router = DispatchRouter()
         self.rest_router.add_route('/rest/welcome/{name}', View)
         SERVER.set_router('/rest', self.rest_router)
+        # Check good request
         response = SERVER.do_request(method='GET',
                                      path='/rest/welcome/test',
                                      context=self.context(router=self.rest_router))
         assert response.get('status') == 200
         assert response.get('entity') == 'Welcome test'
+        # Check bad request
+        response = SERVER.do_request(method='GET',
+                                     path='/rest/welcome1/test',
+                                     context=self.context(router=self.rest_router))
+        assert response.get('status') == 404
 
 
     def test_static_router(self):
         global SERVER
-        self.static_router = StaticRouter(local_path=get_abspath('tests/'))
+        self.static_router = StaticRouter(local_path=get_abspath('test/tests'))
         SERVER.set_router('/static', self.static_router)
         # Launch server
         response = SERVER.do_request(method='GET',
                                      path='/static/hello.txt',
-                                     context=self.context(router=self.static_router, mount_path='/static'))
-        assert response.get('status') == 200
-        assert response.get('entity') == 'hello world'
+                                     context=self.context(router=self.static_router,
+                                                          mount_path='/static/'))
+        assert response.get('entity') == 'hello world\n'
 
 
 

@@ -46,6 +46,7 @@ from exceptions import FormError
 from headers import get_type, Cookie, SetCookieDataType
 from messages import ERROR
 from utils import fix_json, reason_phrases
+from router import DELETE, GET, HEAD, OPTIONS, POST, PUT
 
 
 class Context(prototype):
@@ -62,7 +63,6 @@ class Context(prototype):
     scripts = []
     view = None
     entity = None
-    router = None
 
 
     def init_context(self):
@@ -646,7 +646,8 @@ class Context(prototype):
 
     def http_get(self):
         self.init_context()
-        # Router
+        """"
+        # TODO: Move to handleRequest
         server = self.server
         response = server.dispatcher.resolve(str(context.path))
         if response:
@@ -660,31 +661,33 @@ class Context(prototype):
             # Return context for unit tests
             return context
         return self.router.handle_request('GET', self)
+        """
+        return GET.handle_request(context)
 
 
     def http_head(self):
         self.init_context()
-        return self.router.handle_request('HEAD', self)
+        return HEAD.handle_request(context)
 
 
     def http_post(self):
         self.init_context()
-        return self.router.handle_request('POST', self)
+        return POST.handle_request(context)
 
 
     def http_options(self):
         self.init_context()
-        return self.router.handle_request('OPTIONS', self)
+        return OPTIONS.handle_request(context)
 
 
     def http_put(self):
         self.init_context()
-        return self.router.handle_request('PUT', self)
+        return PUT.handle_request(context)
 
 
     def http_delete(self):
         self.init_context()
-        return self.router.handle_request('DELETE', self)
+        return DELETE.handle_request(context)
 
 
 ###########################################################################

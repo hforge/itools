@@ -18,10 +18,9 @@
 
 # Local imports
 from dispatcher import URIDispatcher
-from router import BaseRouter
 
 
-class DispatchRouter(BaseRouter):
+class DispatchRouter():
 
     dispatcher = URIDispatcher()
 

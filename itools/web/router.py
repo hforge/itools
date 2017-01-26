@@ -485,23 +485,3 @@ class DELETE(RequestMethod):
         # The root cannot delete itself
         if parent is None:
             raise MethodNotAllowed
-
-
-
-
-class BaseRouter(prototype):
-
-    def handle_request(self, method_name, context):
-        request_method = self.methods[method_name]
-        return request_method.handle_request(context)
-
-
-
-class DatabaseRouter(BaseRouter):
-
-    methods = {'GET': GET,
-               'POST': POST,
-               'PUT': PUT,
-               'HEAD': HEAD,
-               'OPTIONS': OPTIONS,
-               'DELETE': DELETE}

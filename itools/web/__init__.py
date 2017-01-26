@@ -30,7 +30,6 @@ from exceptions import ServiceUnavailable, MethodNotAllowed, Conflict
 from exceptions import FormError
 from headers import Cookie, SetCookieDataType
 from messages import INFO, ERROR, MSG_MISSING_OR_INVALID
-from router import DatabaseRouter
 from server import WebServer
 from soup import SoupMessage
 from utils import NewJSONEncoder
@@ -46,8 +45,6 @@ __all__ = [
     'set_context',
     'get_context',
     'select_language',
-    # Routers
-    'DatabaseRouter',
     # View-Controller
     'BaseView',
     'STLView',

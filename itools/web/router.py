@@ -52,6 +52,28 @@ class RequestMethod(object):
         """Implement cache if your method supports it.
         Most methods don't, hence the default implementation.
         """
+        if cls.method_name == 'GET':
+            # 1. Get the resource's modification time
+            resource = context.resource
+            mtime = context.view.get_mtime(resource)
+            if mtime is None:
+                return
+            mtime = mtime.replace(microsecond=0)
+            # If naive, assume local time
+            if mtime.tzinfo is None:
+                mtime = local_tz.localize(mtime)
+
+            # 2. Set Last-Modified
+            context.mtime = mtime
+
+            # 3. Check for If-Modified-Since
+            if_modified_since = context.get_header('if-modified-since')
+            if if_modified_since and if_modified_since >= mtime:
+                context.set_header('Last-Modified', mtime)
+                # Cache-Control: max-age=1
+                # (because Apache does not cache pages with a query by default)
+                context.set_header('Cache-Control', 'max-age=1')
+                raise NotModified
 
 
     @classmethod
@@ -274,6 +296,11 @@ class DatabaseRequestMethod(BaseDatabaseRequestMethod):
             cls.internal_server_error(context)
             context.set_content_type('text/html', charset='UTF-8')
 
+        # Cookies for authentification
+        if context.user and context.server.session_timeout != timedelta(0):
+            cookie = context.get_cookie('iauth')
+            context._set_auth_cookie(cookie)
+
         # (7) Build and return the response
         cls.set_body(context)
 
@@ -287,50 +314,10 @@ class SafeMethod(DatabaseRequestMethod):
         return False
 
 
+
 class GET(SafeMethod):
 
     method_name = 'GET'
-
-
-    @classmethod
-    def check_cache(cls, context):
-        # 1. Get the resource's modification time
-        resource = context.resource
-        mtime = context.view.get_mtime(resource)
-        if mtime is None:
-            return
-        mtime = mtime.replace(microsecond=0)
-        # If naive, assume local time
-        if mtime.tzinfo is None:
-            mtime = local_tz.localize(mtime)
-
-        # 2. Set Last-Modified
-        context.mtime = mtime
-
-        # 3. Check for If-Modified-Since
-        if_modified_since = context.get_header('if-modified-since')
-        if if_modified_since and if_modified_since >= mtime:
-            context.set_header('Last-Modified', mtime)
-            # Cache-Control: max-age=1
-            # (because Apache does not cache pages with a query by default)
-            context.set_header('Cache-Control', 'max-age=1')
-            raise NotModified
-
-
-    @classmethod
-    def set_body(cls, context):
-        super(GET, cls).set_body(context)
-        if context.status != 200:
-            return
-
-        if context.mtime:
-            context.set_header('Last-Modified', context.mtime)
-            # Cache-Control: max-age=1
-            # (because Apache does not cache pages with a query by default)
-            context.set_header('Cache-Control', 'max-age=1')
-        elif context.user and context.server.session_timeout != timedelta(0):
-            cookie = context.get_cookie('iauth')
-            context._set_auth_cookie(cookie)
 
 
 

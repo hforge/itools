@@ -295,6 +295,10 @@ class Context(prototype):
             self.content_type = 'text/plain'
         # Set response status
         self.soup_message.set_status(self.status)
+        # Never cache if status != 200
+        if context.mtime and context.status != 200:
+            self.set_header('Last-Modified', context.mtime)
+            self.set_header('Cache-Control', 'max-age=1')
         # Set response body
         if self.entity is None:
             self.status = 204
@@ -649,7 +653,7 @@ class Context(prototype):
 
     def http_get(self):
         self.init_context()
-        """"
+        """
         # TODO: Move to handleRequest
         server = self.server
         response = server.dispatcher.resolve(str(context.path))
@@ -661,7 +665,6 @@ class Context(prototype):
             context.set_response_from_context()
             # Return context for unit tests
             return context
-        return self.router.handle_request('GET', self)
         """
         return GET.handle_request(context)
 

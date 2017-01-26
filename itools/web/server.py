@@ -20,6 +20,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from json import dumps, loads
 from datetime import timedelta
 from time import strftime
 
@@ -81,20 +82,41 @@ class WebServer(SoupServer):
         print 'Listen %s:%d' % (address, port)
 
 
-    def do_request(self, method='GET', path='/', headers={}, body=None, context=None):
+    def do_request(self, method='GET', path='/', headers={}, body='',
+            context=None, as_json=False, user=None):
         """Experimental method to do a request on the server"""
+        # Build headers
+        if body and not as_json:
+            headers['content-type'] = 'application/x-www-form-urlencoded'
+        elif body and as_json:
+            body = dumps(body)
+            headers['content-type'] = 'application/json'
+        # XXX accept ?
+        if as_json:
+            headers['content-type'] = 'application/json'
+        # Build soup message
         message = SoupMessage()
-        if body:
-            headers.setdefault('content-type', 'application/x-www-form-urlencoded')
-        message.set_message(method, 'http://localhost' + path, body or '')
+        message.set_message(method, 'http://localhost' + path, body)
         for name, value in headers.items():
             message.set_request_header(name, value)
+        # Get context
         context = context or get_context() or self.get_fake_context()
         context.server = self
+        # Login user: XXX do not works
+        if user:
+            context.login(user)
+            context.user = user
+        # Do request
         context = context.handle_request(message, path)
+        # Transform result
+        if as_json:
+            response = loads(context.entity)
+        else:
+            response = context.entity
+        # Return result
         return {'status': context.status,
                 'method': context.method,
-                'entity': context.entity,
+                'entity': response,
                 'context': context}
 
 

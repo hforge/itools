@@ -22,21 +22,23 @@ from os.path import basename, getmtime, isfile
 from itools.core import fixed_offset
 from itools.fs.common import get_mimetype
 from itools.uri import Path
-from router import BaseRouter, RequestMethod
+from itools.web import BaseView
 
 
-class GET_STATIC(RequestMethod):
+class StaticView(BaseView):
 
-    @classmethod
-    def handle_request(cls, context):
-        n = len(Path(context.mount_path))
+    access = True
+
+    mount_path = None
+    local_path = None
+
+    def GET(self, query, context):
+        n = len(Path(self.mount_path))
         path = Path(context.path)[n:]
-        path = '%s%s' % (context.router.local_path, path)
-
+        path = '%s%s' % (self.local_path, path)
         # 404 Not Found
         if not isfile(path):
             return context.set_default_response(404)
-
         # 304 Not Modified
         mtime = getmtime(path)
         mtime = datetime.utcfromtimestamp(mtime)
@@ -45,7 +47,6 @@ class GET_STATIC(RequestMethod):
         since = context.get_header('If-Modified-Since')
         if since and since >= mtime:
             return context.set_default_response(304)
-
         # 200 Ok
         # FIXME Check we set the encoding for text files
         mimetype = get_mimetype(basename(path))
@@ -54,12 +55,4 @@ class GET_STATIC(RequestMethod):
         # Response
         context.set_content_type(mimetype)
         context.set_header('Last-Modified', mtime)
-        context.status = 200
-        context.entity = data
-        context.set_response_from_context()
-
-
-
-class StaticRouter(BaseRouter):
-
-    methods = {'GET': GET_STATIC}
+        return data

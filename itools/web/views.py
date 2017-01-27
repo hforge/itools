@@ -81,11 +81,11 @@ class ItoolsView(prototype):
 
 
     def GET(self, resource, context):
-        raise NotImplementedError
+        raise MethodNotAllowed
 
 
     def PUT(self, resource, context):
-        raise NotImplementedError
+        raise MethodNotAllowed
 
 
     def HEAD(self, resource, context):
@@ -101,7 +101,7 @@ class ItoolsView(prototype):
 
 
     def DELETE(self, resource, context):
-        raise NotImplementedError
+        raise MethodNotAllowed
 
 
     def get_canonical_uri(self, context):

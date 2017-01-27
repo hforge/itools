@@ -92,7 +92,6 @@ log_access (PyObject * p_server, SoupMessage * s_msg,
   p_result = PyObject_CallMethod (p_server, "log_access", "ssii",
                                   host, request_line2, s_msg->status_code,
                                   (int) s_msg->response_body->length);
-
   /* Free request_line */
   if (request_line)
     free (request_line);
@@ -600,20 +599,6 @@ s_server_callback (SoupServer * s_server, SoupMessage * s_msg,
 }
 
 
-static int
-PyServerType_init (PyServer * self, PyObject * args, PyObject * kwdict)
-{
-  /* Initialization of the Glib interface */
-  /* http://bugzilla.gnome.org/show_bug.cgi?id=532778 */
-  if (!g_thread_supported ())
-    g_thread_init (NULL);
-  g_type_init ();
-
-  /* Ok */
-  return 0;
-}
-
-
 static PyObject *
 PyServerType_listen (PyServer * self, PyObject * args, PyObject * kwdict)
 {
@@ -621,7 +606,9 @@ PyServerType_listen (PyServer * self, PyObject * args, PyObject * kwdict)
   char *address = NULL;
   guint port = 8080;
   SoupServer *s_server;
-  SoupAddress *s_address = NULL;
+  GInetAddress *s_address = NULL;
+  GSocketAddress *s_socket_address = NULL;
+  gboolean success;
 
   /* Arguments */
   if (!PyArg_ParseTuple (args, "zI", &address, &port))
@@ -629,20 +616,18 @@ PyServerType_listen (PyServer * self, PyObject * args, PyObject * kwdict)
 
   /* s_address */
   if ((address != NULL) && (strcmp (address, "") != 0))
-    s_address = soup_address_new (address, port);
+    s_address = g_inet_address_new_from_string(address);
   else
-    s_address = soup_address_new_any (SOUP_ADDRESS_FAMILY_IPV4, port);
+    s_address= g_inet_address_new_any(G_SOCKET_FAMILY_IPV4);
 
   if (!s_address)
     {
       PyErr_Format (PyExc_RuntimeError, "Bad address/port arguments");
       return NULL;
     }
-  soup_address_resolve_sync (s_address, NULL);
 
   /* s_server */
-  s_server = soup_server_new (SOUP_SERVER_SERVER_HEADER, "itools.web",
-                              SOUP_SERVER_INTERFACE, s_address, NULL);
+  s_server = soup_server_new (SOUP_SERVER_SERVER_HEADER, "itools.web", NULL);
   if (!s_server)
     {
       PyErr_Format (PyExc_RuntimeError, "could not make the SoupServer");
@@ -659,7 +644,15 @@ PyServerType_listen (PyServer * self, PyObject * args, PyObject * kwdict)
                     G_CALLBACK (request_end_callback), (gpointer) self);
 
   /* Go */
-  soup_server_run_async (self->s_server);
+  //soup_server_run_async (self->s_server);
+  GError *error = NULL;
+  s_socket_address = g_inet_socket_address_new (s_address, port);
+  success = soup_server_listen (self->s_server, s_socket_address, 0, NULL);
+  if (!success)
+    {
+      PyErr_Format (PyExc_RuntimeError, "Cannot listen server");
+      return NULL;
+    }
 
   Py_RETURN_NONE;
 }
@@ -668,8 +661,7 @@ PyServerType_listen (PyServer * self, PyObject * args, PyObject * kwdict)
 static PyObject *
 PyServerType_stop (PyServer * self, PyObject * args, PyObject * kwdict)
 {
-  soup_server_quit (self->s_server);
-
+  // To stop server. Just stop main loop
   Py_RETURN_NONE;
 }
 
@@ -738,7 +730,7 @@ static PyTypeObject PyServerType = {
   0,                            /* tp_descr_get */
   0,                            /* tp_descr_set */
   0,                            /* tp_dictoffset */
-  (initproc) PyServerType_init, /* tp_init */
+  0,                            /* tp_init */
   0,                            /* tp_alloc */
   0,                            /* tp_new */
 };

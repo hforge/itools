@@ -23,6 +23,7 @@
 # Import from standard library
 from os.path import islink, exists
 from subprocess import Popen
+from json import dumps
 
 # Import from itools
 from itools.fs import lfs
@@ -77,16 +78,14 @@ def make_template(package_root, source, target):
 
 
 
-def get_package_version_path(package_root):
+def get_file_path(package_root, filename):
     if package_root == '.':
-        version_txt = 'version.txt'
-    else:
-        version_txt = package_root + '/version.txt'
-    return version_txt
+        return filename
+    return package_root + '/' + filename
 
 
 def get_package_version(package_root):
-    path = get_package_version_path(package_root)
+    path = get_file_path(package_root, 'version.txt')
     if exists(path):
         version = open(path).read().strip()
     else:
@@ -124,10 +123,10 @@ def make_version(worktree):
     return '{}-{}'.format(branch, timestamp)
 
 
-def build(path, config):
+def build(path, config, environment):
     # Get version path
     package_root = config.get_value('package_root')
-    version_txt = get_package_version_path(package_root)
+    version_txt = get_file_path(package_root, 'version.txt')
     try:
         # Get git worktree
         worktree = open_worktree(path)
@@ -143,6 +142,12 @@ def build(path, config):
     open(path + version_txt, 'w').write(version)
     print '* Version:', version
     manifest.add(version_txt)
+    # Write environment.json file
+    environment_json = get_file_path(package_root, 'environment.json')
+    environment_kw = {'build_path': path, 'environment': environment}
+    open(path + environment_json, 'w').write(dumps(environment_kw))
+    manifest.add(environment_json)
+    print '* Build environment.json'
     # (3) Rules
     rules = [('.po', '.mo', po2mo)]
     # Templates

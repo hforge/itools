@@ -108,9 +108,15 @@ def setup(path, ext_modules=None):
     ext_modules = ext_modules or []
     config = get_config()
     package_root = config.get_value('package_root')
+    # Guess environment
+    if "--development" in argv:
+        environment = 'development'
+        argv.remove("--development")
+    else:
+        environment = 'production'
     # Build
     if any(x in argv for x in ('build', 'install', 'sdist', 'egg_info')):
-        version = build(path, config)
+        version = build(path, config, environment)
     else:
         version = get_package_version(package_root)
 

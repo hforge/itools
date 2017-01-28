@@ -16,10 +16,11 @@
 
 
 # Import from standard library
-from subprocess import call
+from subprocess import call, Popen
 
 # Import from itools
 from itools.fs.vfs import Folder
+from itools.uri import get_uri_name, Path
 
 
 class GulpBuilder(object):
@@ -38,59 +39,45 @@ class GulpBuilder(object):
         if self.vfs.is_folder('ui/'):
             self.dist_folders = tuple(['ui/{0}/dist'.format(x)
               for x in Folder('ui/').get_names()])
-        self.all_files = list(self.vfs.traverse('.'))
 
 
     def run(self):
-        if not 'gulpfile.js' in self.manifest:
-            return
-        # Launch gulp
-        self.launch_gulp_if_needed()
+        npm_done = self.launch_npm_install()
+        gulp_done = self.launch_gulp_build()
         # Add DIST files into manifest
-        for path in self.vfs.traverse('ui/'):
-            relative_path = self.vfs.get_relative_path(path)
-            if (relative_path and
-                relative_path.startswith(self.dist_folders) and self.vfs.is_file(path)):
-                self.manifest.add(relative_path)
+        if npm_done or gulp_done:
+            for path in self.vfs.traverse('ui/'):
+                relative_path = self.vfs.get_relative_path(path)
+                if (relative_path and
+                    relative_path.startswith(self.dist_folders) and self.vfs.is_file(path)):
+                    self.manifest.add(relative_path)
 
 
-    def launch_gulp_if_needed(self):
-        dist_min_mtime = self.get_dist_min_mtime()
-        if dist_min_mtime:
-            has_to_run_gulp = self.has_to_run_gulp(dist_min_mtime)
-            if not has_to_run_gulp:
-                # Don't need to build gulp. All JS files are up to date
-                return
-        call(['npm', 'install'])
-        call(['gulp', 'build'])
+    def launch_npm_install(self):
+        done = False
+        for path in self.manifest:
+            filename = get_uri_name(path)
+            if filename == 'package.json':
+                print '***'*25
+                print '*** Run $ npm install on ', path
+                print '***'*25
+                path = str(Path(path)[:-1]) + '/'
+                p = Popen(['npm', 'install'], cwd=path)
+                p.wait()
+                done = True
+        return done
 
 
-    def get_dist_min_mtime(self):
-        min_mtime = None
-        for path in self.all_files:
-            relative_path = self.vfs.get_relative_path(path)
-            if not relative_path:
-                continue
-            if (relative_path.startswith(self.dist_folders) and
-                self.vfs.is_file(path)):
-                mtime = self.vfs.get_mtime(path)
-                if not min_mtime or mtime < min_mtime:
-                    min_mtime = mtime
-        return min_mtime
-
-
-    compiled_extensions = ('.js', '.css', '.less', '.scss', '.json')
-    def has_to_run_gulp(self, dist_min_mtime):
-        ignore_folders = ('build/', 'gulpfile.js',) + self.dist_folders
-        for path in self.all_files:
-            relative_path = self.vfs.get_relative_path(path)
-            if not relative_path:
-                continue
-            if relative_path.startswith(ignore_folders):
-                continue
-            if path.endswith(self.compiled_extensions):
-                mtime = self.vfs.get_mtime(path)
-                if mtime > dist_min_mtime:
-                    print '* {} has changed'.format(relative_path)
-                    return True
-        return False
+    def launch_gulp_build(self):
+        done = False
+        for path in self.manifest:
+            filename = get_uri_name(path)
+            if filename == 'package.json':
+                print '***'*25
+                print '*** RUn $ gulp build on ', path
+                print '***'*25
+                path = str(Path(path)[:-1]) + '/'
+                p = Popen(['gulp', 'build'], cwd=path)
+                p.wait()
+                done = True
+        return done

@@ -89,7 +89,8 @@ class ItoolsView(prototype):
 
 
     def HEAD(self, resource, context):
-        return self.GET(resource, context)
+        context.entity = None
+        context.status = 200
 
 
     def OPTIONS(self, resource, context):

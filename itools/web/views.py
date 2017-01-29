@@ -71,7 +71,7 @@ class ItoolsView(prototype):
         return context.is_access_allowed(context.resource, self)
 
 
-    def get_mtime(self, context):
+    def get_mtime(self, resource):
         """Caching the view"""
         return None
 

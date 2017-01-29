@@ -71,7 +71,7 @@ class RequestMethod(object):
         """
         if context.method == 'GET':
             # 1. Get the view's modification time
-            mtime = context.view.get_mtime(context)
+            mtime = context.view.get_mtime(context.resource)
             if mtime is None:
                 return
             mtime = mtime.replace(microsecond=0)

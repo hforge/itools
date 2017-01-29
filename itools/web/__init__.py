@@ -21,6 +21,7 @@
 from context import Context, get_context, set_context
 from context import select_language
 from context import WebLogger
+from dispatch_router import DispatchRouter
 from exceptions import HTTPError, ClientError, ServerError
 from exceptions import NotModified
 from exceptions import BadRequest, Unauthorized, Forbidden, NotFound
@@ -29,9 +30,7 @@ from exceptions import ServiceUnavailable, MethodNotAllowed, Conflict
 from exceptions import FormError
 from headers import Cookie, SetCookieDataType
 from messages import INFO, ERROR, MSG_MISSING_OR_INVALID
-from router import DatabaseRouter
 from server import WebServer
-from static import StaticRouter
 from soup import SoupMessage
 from utils import NewJSONEncoder
 from views import BaseView, STLView
@@ -40,14 +39,12 @@ __all__ = [
     'SoupMessage',
     'WebServer',
     'WebLogger',
+    'DispatchRouter',
     # Context
     'Context',
     'set_context',
     'get_context',
     'select_language',
-    # Routers
-    'DatabaseRouter',
-    'StaticRouter',
     # View-Controller
     'BaseView',
     'STLView',

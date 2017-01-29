@@ -22,6 +22,7 @@ from unittest import TestLoader, TestSuite, TextTestRunner
 # Import tests
 import test_core
 import test_csv
+import test_dispatcher
 import test_database
 import test_datatypes
 import test_gettext
@@ -31,6 +32,7 @@ import test_i18n
 import test_ical
 import test_odf
 import test_rss
+import test_router
 import test_srx
 import test_stl
 import test_tmx
@@ -42,9 +44,9 @@ import test_xliff
 import test_xml
 import test_xmlfile
 
-test_modules = [test_core, test_csv, test_database, test_datatypes,
+test_modules = [test_core, test_csv, test_database, test_datatypes, test_dispatcher,
     test_gettext, test_handlers, test_html, test_i18n, test_ical, test_odf,
-    test_rss, test_srx, test_stl, test_tmx, test_uri, test_fs,
+    test_rss, test_router, test_srx, test_stl, test_tmx, test_uri, test_fs,
     test_web, test_workflow, test_xliff, test_xml, test_xmlfile]
 
 

@@ -20,6 +20,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from json import dumps, loads
 from datetime import timedelta
 from time import strftime
 
@@ -28,8 +29,8 @@ from itools.i18n import init_language_selector
 from itools.log import Logger, register_logger, log_info
 from context import select_language
 from context import WebLogger, get_context, set_context
-from router import DatabaseRouter
 from soup import SoupServer, SoupMessage
+from dispatcher import URIDispatcher
 
 class WebServer(SoupServer):
 
@@ -40,6 +41,7 @@ class WebServer(SoupServer):
     session_timeout = timedelta(0)
 
     accept_cors = False
+    dispatcher = URIDispatcher()
 
 
     def __init__(self, root, access_log=None, event_log=None):
@@ -72,24 +74,52 @@ class WebServer(SoupServer):
         # Add handlers
         super(WebServer, self).listen(address, port)
         self.add_handler('*', self.star_callback)
+        context = self.root.context_cls(
+            database=self.database, server=self)
+        self.add_handler('/', context.handle_request)
         # Say hello
         address = address if address is not None else '*'
         print 'Listen %s:%d' % (address, port)
 
 
-    def do_request(self, method='GET', path='/', headers={}, body=None, context=None):
+    def do_request(self, method='GET', path='/', headers=None, body='',
+            context=None, as_json=False, user=None):
         """Experimental method to do a request on the server"""
+        headers = headers or {}
+        # I'm not a robot
+        headers['User-Agent'] = 'Firefox'
+        # Build headers
+        if body and not as_json:
+            headers['content-type'] = 'application/x-www-form-urlencoded'
+        elif body and as_json is True:
+            body = dumps(body)
+            headers['content-type'] = 'application/json'
+        # XXX accept ?
+        if as_json is True:
+            headers['content-type'] = 'application/json'
+        # Build soup message
         message = SoupMessage()
-        if body:
-            headers.setdefault('content-type', 'application/x-www-form-urlencoded')
-        message.set_message(method, 'http://localhost' + path, body or '')
+        message.set_message(method, 'http://localhost' + path, body)
         for name, value in headers.items():
             message.set_request_header(name, value)
+        # Get context
         context = context or get_context() or self.get_fake_context()
+        context.server = self
+        # Login user: XXX do not works
+        if user:
+            context.login(user)
+            context.user = user
+        # Do request
         context = context.handle_request(message, path)
+        # Transform result
+        if as_json:
+            response = loads(context.entity)
+        else:
+            response = context.entity
+        # Return result
         return {'status': context.status,
                 'method': context.method,
-                'entity': context.entity,
+                'entity': response,
                 'context': context}
 
 
@@ -99,7 +129,6 @@ class WebServer(SoupServer):
         context.path = '/'
         context.database = self.database
         context.server = self
-        context.router = DatabaseRouter
         set_context(context)
         return context
 
@@ -117,15 +146,6 @@ class WebServer(SoupServer):
         super(WebServer, self).stop()
         if self.access_log:
             self.access_log_file.close()
-
-
-    def set_router(self, path, router):
-        context = self.root.context_cls(
-            database=self.database,
-            server=self, mount_path=path,
-            router=router)
-        self.add_handler(path, context.handle_request)
-        return context
 
 
     def star_callback(self, soup_message, path):

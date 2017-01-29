@@ -21,15 +21,13 @@ from sys import exc_clear
 from types import FunctionType, MethodType
 
 # Import from itools
-from itools.core import prototype, local_tz
+from itools.core import local_tz
 from itools.log import log_error
 from itools.uri import Reference
 
 # Local imports
-from exceptions import ClientError, NotModified, Forbidden, NotFound, Conflict
-from exceptions import NotImplemented, MethodNotAllowed, Unauthorized
-from exceptions import FormError
-from views import BaseView
+from exceptions import ClientError, NotModified, Forbidden, NotFound
+from exceptions import Unauthorized, FormError
 
 
 
@@ -45,25 +43,54 @@ status2name = {
 }
 
 
-def find_view_by_method(context):
-    """Associating an uncommon HTTP or WebDAV method to a special view.
-    method "PUT" -> view "http_put" <instance of BaseView>
-    """
-    method_name = context.method
-    view_name = "http_%s" % method_name.lower()
-    context.view = context.resource.get_view(view_name)
-    if context.view is None:
-        raise NotImplemented, 'method "%s" is not implemented' % method_name
-
-
 
 class RequestMethod(object):
 
-    pass
+
+    @classmethod
+    def check_access(cls, context):
+        """Tell whether the user is allowed to access the view
+        """
+        # Get the check-point
+        if context.view.is_access_allowed(context):
+            return
+
+        # Unauthorized (401)
+        if context.user is None:
+            raise Unauthorized
+
+        # Forbidden (403)
+        raise Forbidden
 
 
 
-class BaseDatabaseRequestMethod(RequestMethod):
+    @classmethod
+    def check_cache(cls, context):
+        """Implement cache if your method supports it.
+        Most methods don't, hence the default implementation.
+        """
+        if context.method == 'GET':
+            # 1. Get the view's modification time
+            mtime = context.view.get_mtime(context)
+            if mtime is None:
+                return
+            mtime = mtime.replace(microsecond=0)
+            # If naive, assume local time
+            if mtime.tzinfo is None:
+                mtime = local_tz.localize(mtime)
+
+            # 2. Set Last-Modified
+            context.mtime = mtime
+
+            # 3. Check for If-Modified-Since
+            if_modified_since = context.get_header('if-modified-since')
+            if if_modified_since and if_modified_since >= mtime:
+                context.set_header('Last-Modified', mtime)
+                # Cache-Control: max-age=1
+                # (because Apache does not cache pages with a query by default)
+                context.set_header('Cache-Control', 'max-age=1')
+                raise NotModified
+
 
     @classmethod
     def commit_transaction(cls, context):
@@ -82,34 +109,12 @@ class BaseDatabaseRequestMethod(RequestMethod):
 
     @classmethod
     def check_transaction(cls, context):
-        return False
+        """Return True if your method is supposed to change the state.
+        """
+        if context.method in ('POST', 'PUT'):
+            return True
+        return getattr(context, 'commit', True) and context.status < 400
 
-
-    @classmethod
-    def set_body(cls, context):
-        context.soup_message.set_status(context.status)
-
-        body = context.entity
-        if body is None:
-            pass
-        elif isinstance(body, Reference):
-            location = context.uri.resolve(body)
-            location = str(location)
-            context.soup_message.set_header('Location', location)
-        else:
-            context.soup_message.set_response(context.content_type, body)
-
-
-    @classmethod
-    def internal_server_error(cls, context):
-        log_error('Internal Server Error', domain='itools.web')
-        context.status = 500
-        context.entity = context.root.internal_server_error(context)
-
-
-
-
-class DatabaseRequestMethod(BaseDatabaseRequestMethod):
 
     @classmethod
     def find_resource(cls, context):
@@ -146,85 +151,46 @@ class DatabaseRequestMethod(BaseDatabaseRequestMethod):
 
 
     @classmethod
-    def check_access(cls, context):
-        """Tell whether the user is allowed to access the view on the
-        resource.
-        """
-        # Get the check-point
-        if context.is_access_allowed(context.resource, context.view):
-            return
-
-        # Unauthorized (401)
-        if context.user is None:
-            raise Unauthorized
-
-        # Forbidden (403)
-        raise Forbidden
-
-
-    @classmethod
-    def check_method(cls, context, method_name=None):
-        if method_name is None:
-            method_name = context.method
-        # Get the method
-        view = context.view
-        method = getattr(view, method_name, None)
-        if method is None:
-            message = '%s has no "%s" method' % (view, method_name)
-            raise NotImplemented, message
-        context.view_method = method
-
-
-    @classmethod
-    def check_cache(cls, context):
-        """Implement cache if your method supports it.
-        Most methods don't, hence the default implementation.
-        """
-
-
-    @classmethod
-    def check_conditions(cls, context):
-        """Check conditions to match before the response can be processed:
-        resource, state, request headers...
-        """
-
-
-    @classmethod
-    def check_transaction(cls, context):
-        """Return True if your method is supposed to change the state.
-        """
-        return getattr(context, 'commit', True) and context.status < 400
-
-
-
-    @classmethod
     def handle_request(cls, context):
         root = context.site_root
+        server = context.server
+        content_type = context.get_header('content-type')
+        if content_type:
+            content_type, type_parameters = content_type
+        is_json_request = content_type == 'application/json'
 
-        # (1) Find out the requested resource and view
+        # (1) Find out the requested view
         try:
-            # The requested resource and view
-            cls.find_resource(context)
-            cls.find_view(context)
+            response = server.dispatcher.resolve(str(context.path))
+            if response:
+                # Find a match in the dispatcher
+                view, query = response
+                context.resource = root
+                context.view = view
+                context.path_query = query
+            else:
+                # The requested resource and view
+                cls.find_resource(context)
+                cls.find_view(context)
+                context.path_query = None
             # Access Control
             cls.check_access(context)
             # Check the request method is supported
-            cls.check_method(context)
+            context.view_method = getattr(context.view, context.method, None)
             # Check the client's cache
             cls.check_cache(context)
-            # Check pre-conditions
-            cls.check_conditions(context)
         except ClientError, error:
             status = error.code
             context.status = status
-            if context.agent_is_a_robot():
-                context.entity = error.title
-                soup_message = context.soup_message
-                soup_message.set_status(status)
-                soup_message.set_response('text/plain', error.title)
+            if is_json_request or context.agent_is_a_robot():
+                kw = {'status': status, 'error': error.title}
+                context.return_json(kw)
+                context.set_response_from_context()
                 return
-            context.view_name = status2name[status]
-            context.view = root.get_view(context.view_name)
+            else:
+                context.resource = root
+                context.view_name = status2name[status]
+                context.view = root.get_view(context.view_name)
         except NotModified:
             context.http_not_modified()
             return
@@ -235,7 +201,6 @@ class DatabaseRequestMethod(BaseDatabaseRequestMethod):
             exc_clear()
 
         # (2) Always deserialize the query
-        resource = context.resource
         view = context.view
         try:
             context.query = view.get_query(context)
@@ -251,12 +216,12 @@ class DatabaseRequestMethod(BaseDatabaseRequestMethod):
             method = None
         else:
             # GET, POST...
-            method = getattr(view, cls.method_name)
+            method = getattr(view, context.method)
 
         # (3) Render
         if method is not None:
             try:
-                context.entity = method(resource, context)
+                context.entity = method(context.resource, context)
             except Exception:
                 cls.internal_server_error(context)
             else:
@@ -284,11 +249,13 @@ class DatabaseRequestMethod(BaseDatabaseRequestMethod):
             cls.internal_server_error(context)
             context.set_content_type('text/html', charset='UTF-8')
 
+        # Cookies for authentification
+        if context.user and context.server.session_timeout != timedelta(0):
+            cookie = context.get_cookie('iauth')
+            context._set_auth_cookie(cookie)
+
         # (7) Build and return the response
-        cls.set_body(context)
-        # (8)  Accept CORS ?
-        if context.server.accept_cors:
-            cls.accept_cors(context)
+        context.set_response_from_context()
 
 
     @classmethod
@@ -303,236 +270,11 @@ class DatabaseRequestMethod(BaseDatabaseRequestMethod):
             context.status = 200
 
 
-    @classmethod
-    def accept_cors(cls, context):
-        context.set_header('Access-Control-Request-Credentials', 'true')
-        for request_key, response_key in [
-            ('Origin', 'Access-Control-Allow-Origin'),
-            ('Access-Control-Request-Headers',
-             'Access-Control-Allow-Headers'),
-            ('Access-Control-Request-Methods',
-             'Access-Control-Allow-Methods'),
-            ('Access-Control-Request-Credentials',
-             'Access-Control-Allow-Credentials')]:
-            request_value =  context.get_header(request_key)
-            context.set_header(response_key, request_value)
-
-
-
-class SafeMethod(DatabaseRequestMethod):
 
     @classmethod
-    def check_transaction(cls, context):
-        return False
+    def internal_server_error(cls, context):
+        log_error('Internal Server Error', domain='itools.web')
+        context.status = 500
+        context.entity = context.root.internal_server_error(context)
 
 
-
-class GET(SafeMethod):
-
-    method_name = 'GET'
-
-
-    @classmethod
-    def check_cache(cls, context):
-        # 1. Get the resource's modification time
-        resource = context.resource
-        mtime = context.view.get_mtime(resource)
-        if mtime is None:
-            return
-        mtime = mtime.replace(microsecond=0)
-        # If naive, assume local time
-        if mtime.tzinfo is None:
-            mtime = local_tz.localize(mtime)
-
-        # 2. Set Last-Modified
-        context.mtime = mtime
-
-        # 3. Check for If-Modified-Since
-        if_modified_since = context.get_header('if-modified-since')
-        if if_modified_since and if_modified_since >= mtime:
-            context.set_header('Last-Modified', mtime)
-            # Cache-Control: max-age=1
-            # (because Apache does not cache pages with a query by default)
-            context.set_header('Cache-Control', 'max-age=1')
-            raise NotModified
-
-
-    @classmethod
-    def set_body(cls, context):
-        super(GET, cls).set_body(context)
-        if context.status != 200:
-            return
-
-        if context.mtime:
-            context.set_header('Last-Modified', context.mtime)
-            # Cache-Control: max-age=1
-            # (because Apache does not cache pages with a query by default)
-            context.set_header('Cache-Control', 'max-age=1')
-        elif context.user and context.server.session_timeout != timedelta(0):
-            cookie = context.get_cookie('iauth')
-            context._set_auth_cookie(cookie)
-
-
-
-class HEAD(GET):
-
-    @classmethod
-    def check_method(cls, context):
-        GET.check_method(context, method_name='GET')
-
-
-
-class POST(DatabaseRequestMethod):
-
-    method_name = 'POST'
-
-
-    @classmethod
-    def check_method(cls, context):
-        # If there was an error, the method name always will be 'GET'
-        if context.status is None:
-            method_name = 'POST'
-        else:
-            method_name = 'GET'
-        DatabaseRequestMethod.check_method(context, method_name=method_name)
-
-
-
-class OPTIONS(SafeMethod):
-
-    @classmethod
-    def handle_request(cls, context):
-        root = context.site_root
-
-        known_methods = ['GET', 'HEAD', 'POST', 'OPTIONS', 'PUT', 'DELETE']
-        allowed = []
-
-        # (1) Find out the requested resource and view
-        try:
-            cls.find_resource(context)
-            cls.find_view(context)
-        except ClientError, error:
-            status = error.code
-            context.status = status
-            context.view_name = status2name[status]
-            context.view = root.get_view(context.view_name)
-        else:
-            # (2b) Check methods supported by the view
-            resource = context.resource
-            view = context.view
-            for method_name in known_methods:
-                # Search on the resource's view
-                method = getattr(view, method_name, None)
-                if method is not None:
-                    allowed.append(method_name)
-                    continue
-                # Search on the resource itself
-                # PUT -> "put" view instance
-                view_name = "http_%s" % method_name.lower()
-                http_view = getattr(resource, view_name, None)
-                if isinstance(http_view, BaseView):
-                    if getattr(http_view, method_name, None) is not None:
-                        allowed.append(method_name)
-            # OPTIONS is built-in
-            allowed.append('OPTIONS')
-            # DELETE is unsupported at the root
-            if context.path == '/':
-                allowed.remove('DELETE')
-
-        # (3) Render
-        context.entity = None
-        context.status = 200
-
-        # (5) After Traverse hook
-        try:
-            context.site_root.after_traverse(context)
-        except Exception:
-            cls.internal_server_error(context)
-
-        # (6) Build and return the response
-        context.soup_message.set_status(context.status)
-        cls.set_body(context)
-        # (7)  Accept CORS ?
-        if context.server.accept_cors:
-            cls.accept_cors(context)
-
-
-
-class PUT(DatabaseRequestMethod):
-    """The client must send a correct "If-Unmodified-Since" header to be
-       authorized to PUT.
-    """
-
-    method_name = 'PUT'
-
-
-    @classmethod
-    def find_view(cls, context):
-        # Look for the "put" view
-        return find_view_by_method(context)
-
-
-    @classmethod
-    def check_conditions(cls, context):
-        """The resource is not locked, the request must have a correct
-           "If-Unmodified-Since" header.
-        """
-        if_unmodified_since = context.get_header('If-Unmodified-Since')
-        if if_unmodified_since is None:
-            raise Conflict
-        mtime = context.resource.get_value('mtime').replace(microsecond=0)
-        if mtime > if_unmodified_since:
-            raise Conflict
-
-
-    @classmethod
-    def set_body(cls, context):
-        super(PUT, cls).set_body(context)
-
-        # Set the Last-Modified header (if possible)
-        mtime = context.resource.get_value('mtime')
-        if mtime is None:
-            return
-        mtime = mtime.replace(microsecond=0)
-        context.set_header('Last-Modified', mtime)
-
-
-
-class DELETE(RequestMethod):
-
-    method_name = 'DELETE'
-
-
-    @classmethod
-    def find_view(cls, context):
-        # Look for the "delete" view
-        return find_view_by_method(context)
-
-
-    @classmethod
-    def check_conditions(cls, context):
-        resource = context.resource
-        parent = resource.parent
-        # The root cannot delete itself
-        if parent is None:
-            raise MethodNotAllowed
-
-
-
-
-class BaseRouter(prototype):
-
-    def handle_request(self, method_name, context):
-        request_method = self.methods[method_name]
-        return request_method.handle_request(context)
-
-
-
-class DatabaseRouter(BaseRouter):
-
-    methods = {'GET': GET,
-               'POST': POST,
-               'PUT': PUT,
-               'HEAD': HEAD,
-               'OPTIONS': OPTIONS,
-               'DELETE': DELETE}

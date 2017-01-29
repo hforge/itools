@@ -81,12 +81,6 @@ reason_phrases = {
     }
 
 
-def set_response(soup_message, status):
-    soup_message.set_status(status)
-    body = '{0} {1}'.format(status, reason_phrases[status])
-    soup_message.set_response('text/plain', body)
-
-
 def fix_json(obj):
     """Utility function, given a json object as returned by json.loads
     transform the unicode strings to strings.

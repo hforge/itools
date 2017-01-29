@@ -16,7 +16,7 @@
 
 
 # Import from standard library
-from subprocess import call, Popen
+from subprocess import Popen
 
 # Import from itools
 from itools.fs.vfs import Folder
@@ -26,7 +26,7 @@ from itools.uri import get_uri_name, Path
 class GulpBuilder(object):
     """
     Run "gulp build" in project's repository & add generated files
-     $ ui/{SKINS}/dist/*
+     $ ui/{SKINS}/*
     into the project MANIFEST file.
     That allow to avoid commit compiled JS/CSS files into GIT.
     """
@@ -37,7 +37,7 @@ class GulpBuilder(object):
         self.manifest = manifest
         self.vfs = Folder('.')
         if self.vfs.is_folder('ui/'):
-            self.dist_folders = tuple(['ui/{0}/dist'.format(x)
+            self.dist_folders = tuple(['ui/{0}'.format(x)
               for x in Folder('ui/').get_names()])
 
 
@@ -74,7 +74,7 @@ class GulpBuilder(object):
             filename = get_uri_name(path)
             if filename == 'package.json':
                 print '***'*25
-                print '*** RUn $ gulp build on ', path
+                print '*** Run $ gulp build on ', path
                 print '***'*25
                 path = str(Path(path)[:-1]) + '/'
                 p = Popen(['gulp', 'build'], cwd=path)

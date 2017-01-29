@@ -160,8 +160,9 @@ def build(path, config, environment):
     # (4) Make
     make(worktree, rules, manifest, package_root)
     # (5) Run gulp
-    gulp_builder = GulpBuilder(worktree, manifest)
-    gulp_builder.run()
+    if environment == 'production':
+        gulp_builder = GulpBuilder(worktree, manifest)
+        gulp_builder.run()
     # (6) Write the manifest
     lines = [ x + '\n' for x in sorted(manifest) ]
     open(path + 'MANIFEST', 'w').write(''.join(lines))

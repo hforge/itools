@@ -50,9 +50,11 @@ class StaticView(BaseView):
         # 200 Ok
         # FIXME Check we set the encoding for text files
         mimetype = get_mimetype(basename(path))
-        # XXX Close file
-        data = open(path).read()
+        # Get data
+        with open(path, 'r') as f:
+            data = f.read()
         # Response
+        context.status = 200
         context.set_content_type(mimetype)
         context.set_header('Last-Modified', mtime)
         return data

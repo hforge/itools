@@ -6,6 +6,7 @@ README.rst
 RELEASE-0.75.0
 RELEASE-0.75.1
 RELEASE-0.75.2
+RELEASE-0.76.0.md
 UPGRADE-0.75.0
 archive/CHANGES.txt
 archive/RELEASE-0.12.0
@@ -285,6 +286,7 @@ itools/web/entities.py
 itools/web/exceptions.py
 itools/web/headers.py
 itools/web/messages.py
+itools/web/router.py
 itools/web/server.py
 itools/web/soup.c
 itools/web/static.py

@@ -89,8 +89,7 @@ class ItoolsView(prototype):
 
 
     def HEAD(self, resource, context):
-        context.entity = None
-        context.status = 200
+        return self.GET(resource, context)
 
 
     def OPTIONS(self, resource, context):
@@ -260,14 +259,6 @@ class BaseView(ItoolsView):
 
 
     def GET(self, resource, context):
-        raise NotImplementedError
-
-
-    def HEAD(self, resource, context):
-        raise NotImplementedError
-
-
-    def OPTIONS(self, resource, context):
         raise NotImplementedError
 
 

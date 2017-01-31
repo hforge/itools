@@ -638,9 +638,16 @@ class Context(prototype):
             self.set_default_response(501)
             return context
 
-        # (4) Go
+        # (4) Init context
         set_context(context)
-        context.init_context()
+        try:
+            context.init_context()
+        except Exception:
+            # Init context can fail (before_traverse, get_form...)
+            log_error('Internal error', domain='itools.web')
+            self.set_default_response(500)
+            return context
+        # (5) Go
         try:
             RequestMethod.handle_request(context)
         except StandardError:

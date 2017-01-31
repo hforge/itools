@@ -247,7 +247,6 @@ class RequestMethod(object):
             context.site_root.after_traverse(context)
         except Exception:
             cls.internal_server_error(context)
-            context.set_content_type('text/html', charset='UTF-8')
 
         # Cookies for authentification
         if context.user and context.server.session_timeout != timedelta(0):
@@ -275,6 +274,5 @@ class RequestMethod(object):
     def internal_server_error(cls, context):
         log_error('Internal Server Error', domain='itools.web')
         context.status = 500
+        context.set_content_type('text/html', charset='UTF-8')
         context.entity = context.root.internal_server_error(context)
-
-

@@ -112,7 +112,9 @@ class WebServer(SoupServer):
         # Do request
         context = context.handle_request(message, path)
         # Transform result
-        if as_json:
+        if context.entity is None:
+            response = None
+        elif as_json:
             response = loads(context.entity)
         else:
             response = context.entity

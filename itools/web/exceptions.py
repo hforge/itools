@@ -25,6 +25,14 @@ class HTTPError(StandardError):
     """Base class for all errors, client or server side.
     """
 
+    def to_dict(self):
+        return {'code': self.code, 'title': self.title}
+
+
+    def __str__(self):
+        return '[{}] {}'.format(self.code, self.title)
+
+
 
 class NotModified(HTTPError):
     code = 304

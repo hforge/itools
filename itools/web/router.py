@@ -153,6 +153,7 @@ class RequestMethod(object):
     @classmethod
     def handle_request(cls, context):
         root = context.site_root
+        has_error = False
         server = context.server
         method = None
 
@@ -177,6 +178,7 @@ class RequestMethod(object):
             # Check the client's cache
             cls.check_cache(context)
         except ClientError, error:
+            has_error = True
             cls.handle_client_error(error, context)
         except NotModified:
             context.http_not_modified()
@@ -189,7 +191,7 @@ class RequestMethod(object):
 
         # (2) Always deserialize the query
         view = context.view
-        if view:
+        if not has_error and view:
             try:
                 context.query = view.get_query(context)
             except FormError, error:
@@ -207,7 +209,7 @@ class RequestMethod(object):
                 method = getattr(view, context.method)
 
         # (3) Render
-        if method is not None:
+        if not has_error and method:
             try:
                 context.entity = method(context.resource, context)
             except ClientError, error:
@@ -219,7 +221,7 @@ class RequestMethod(object):
                 cls.set_status_from_entity(context)
 
         # (4) Commit the transaction
-        if method is not None:
+        if not has_error:
             cls.commit_transaction(context)
 
         # (5) Build response, when postponed (useful for POST methods)
@@ -258,7 +260,7 @@ class RequestMethod(object):
         status = error.code
         context.status = status
         if is_json_request or context.agent_is_a_robot():
-            kw = {'status': status, 'error': error.title}
+            kw = error.to_dict()
             context.return_json(kw)
         else:
             context.resource = root

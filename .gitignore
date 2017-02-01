@@ -7,3 +7,4 @@ dist
 version.txt
 test/pdf/*.pdf
 .idea
+itools/environment.json

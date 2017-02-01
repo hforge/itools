@@ -65,8 +65,18 @@ def get_compile_flags(command):
 
 
 if __name__ == '__main__':
-    ext_modules = []
+    itools_is_available = False
+    try:
+        from itools.core import get_abspath
+        from itools.pkg import setup as itools_setup
+        itools_is_available = True
+    except:
+        pass
+    if itools_is_available:
+        itools_setup(get_abspath(''))
+        exit(0)
 
+    ext_modules = []
     # XML Parser
     try:
         flags = get_compile_flags('pkg-config --cflags --libs glib-2.0')

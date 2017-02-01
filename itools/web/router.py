@@ -154,10 +154,6 @@ class RequestMethod(object):
     def handle_request(cls, context):
         root = context.site_root
         server = context.server
-        content_type = context.get_header('content-type')
-        if content_type:
-            content_type, type_parameters = content_type
-        is_json_request = content_type == 'application/json'
 
         # (1) Find out the requested view
         try:
@@ -180,17 +176,7 @@ class RequestMethod(object):
             # Check the client's cache
             cls.check_cache(context)
         except ClientError, error:
-            status = error.code
-            context.status = status
-            if is_json_request or context.agent_is_a_robot():
-                kw = {'status': status, 'error': error.title}
-                context.return_json(kw)
-                context.set_response_from_context()
-                return
-            else:
-                context.resource = root
-                context.view_name = status2name[status]
-                context.view = root.get_view(context.view_name)
+            cls.handle_client_error(error, context)
         except NotModified:
             context.http_not_modified()
             return
@@ -222,6 +208,8 @@ class RequestMethod(object):
         if method is not None:
             try:
                 context.entity = method(context.resource, context)
+            except ClientError, error:
+                cls.handle_client_error(error, context)
             except Exception:
                 cls.internal_server_error(context)
             else:
@@ -255,6 +243,26 @@ class RequestMethod(object):
 
         # (7) Build and return the response
         context.set_response_from_context()
+
+
+    @classmethod
+    def handle_client_error(cls, error, context):
+        root = context.site_root
+        content_type = context.get_header('content-type')
+        if content_type:
+            content_type, type_parameters = content_type
+        is_json_request = content_type == 'application/json'
+        status = error.code
+        context.status = status
+        if is_json_request or context.agent_is_a_robot():
+            kw = {'status': status, 'error': error.title}
+            context.return_json(kw)
+            context.set_response_from_context()
+            return
+        else:
+            context.resource = root
+            context.view_name = status2name[status]
+            context.view = root.get_view(context.view_name)
 
 
     @classmethod

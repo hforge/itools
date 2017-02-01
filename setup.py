@@ -72,10 +72,6 @@ if __name__ == '__main__':
         itools_is_available = True
     except:
         pass
-    if itools_is_available:
-        itools_setup(get_abspath(''))
-        exit(0)
-
     ext_modules = []
     # XML Parser
     try:
@@ -132,6 +128,11 @@ if __name__ == '__main__':
         sources = ['itools/web/soup.c']
         extension = Extension('itools.web.soup', sources, **flags)
         ext_modules.append(extension)
+
+    # Ok
+    if itools_is_available:
+        itools_setup(get_abspath(''), ext_modules=ext_modules)
+        exit(0)
 
     # Ok
     description = """The itools library offers a collection of packages covering a wide

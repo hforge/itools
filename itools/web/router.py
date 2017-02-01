@@ -498,7 +498,7 @@ class PUT(DatabaseRequestMethod):
 
 
 
-class DELETE(RequestMethod):
+class DELETE(DatabaseRequestMethod):
 
     method_name = 'DELETE'
 

@@ -154,6 +154,7 @@ class RequestMethod(object):
     def handle_request(cls, context):
         root = context.site_root
         server = context.server
+        method = None
 
         # (1) Find out the requested view
         try:
@@ -188,21 +189,22 @@ class RequestMethod(object):
 
         # (2) Always deserialize the query
         view = context.view
-        try:
-            context.query = view.get_query(context)
-        except FormError, error:
-            # If the query is invalid we consider that URL do not exist.
-            # Otherwise anybody can create many empty webpages,
-            # which is very bad for SEO.
-            context.status = 404
-            context.form_error = error
-            method = view.on_query_error
-        except Exception:
-            cls.internal_server_error(context)
-            method = None
-        else:
-            # GET, POST...
-            method = getattr(view, context.method)
+        if view:
+            try:
+                context.query = view.get_query(context)
+            except FormError, error:
+                # If the query is invalid we consider that URL do not exist.
+                # Otherwise anybody can create many empty webpages,
+                # which is very bad for SEO.
+                context.status = 404
+                context.form_error = error
+                method = view.on_query_error
+            except Exception:
+                cls.internal_server_error(context)
+                method = None
+            else:
+                # GET, POST...
+                method = getattr(view, context.method)
 
         # (3) Render
         if method is not None:
@@ -217,7 +219,8 @@ class RequestMethod(object):
                 cls.set_status_from_entity(context)
 
         # (4) Commit the transaction
-        cls.commit_transaction(context)
+        if method is not None:
+            cls.commit_transaction(context)
 
         # (5) Build response, when postponed (useful for POST methods)
         if isinstance(context.entity, (FunctionType, MethodType)):

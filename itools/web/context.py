@@ -746,10 +746,6 @@ def _get_form_value(form, name, type=String, default=None):
 
 
 def get_form_value(form, name, type=String, default=None):
-    # Check if form is a dict
-    if type(form) is not dict:
-        # It could be list (if json)
-        return None
     # Not multilingual
     is_multilingual = getattr(type, 'multilingual', False)
     if is_multilingual is False:

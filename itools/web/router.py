@@ -257,12 +257,12 @@ class RequestMethod(object):
         if is_json_request or context.agent_is_a_robot():
             kw = {'status': status, 'error': error.title}
             context.return_json(kw)
-            context.set_response_from_context()
-            return
         else:
             context.resource = root
             context.view_name = status2name[status]
             context.view = root.get_view(context.view_name)
+            method = getattr(context.view, 'GET')
+            context.entity = method(context.resource, context)
 
 
     @classmethod

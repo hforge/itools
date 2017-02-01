@@ -15,8 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.core import is_prototype, prototype
+from itools.core import is_prototype, merge_dicts, prototype
 from itools.gettext import MSG
+from itools.validators import validator
 
 
 class Field(prototype):
@@ -27,10 +28,14 @@ class Field(prototype):
     indexed = False
     stored = False
     multiple = False
-    error_messages = {
+    empty_values = (None, '', [], (), {})
+    base_error_messages = {
         'invalid': MSG(u'Invalid value.'),
         'required': MSG(u'This field is required.'),
     }
+    error_messages = {}
+    validators = []
+
 
     def get_datatype(self):
         return self.datatype
@@ -39,6 +44,22 @@ class Field(prototype):
     def access(self, mode, resource):
         # mode may be "read" or "write"
         return True
+
+
+    def get_validators(self):
+        validators = []
+        for v in self.validators:
+              if type(v) is str:
+                  v = validator(v)()
+              validators.append(v)
+        return validators
+
+
+    def get_error_message(self, code):
+        messages = merge_dicts(
+            self.base_error_messages,
+            self.error_messages)
+        return messages.get(code)
 
 
 

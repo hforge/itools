@@ -105,21 +105,33 @@ class FormError(StandardError):
         self.invalids = invalids
         self.messages = messages
 
-
-    def get_message(self):
+    def get_messages(self):
         # Custom message
-        value = self.msg
-        if value is not None:
-            if is_prototype(value, MSG):
-                return value
-            return ERROR(value)
-        # Default message
-        msg = u'There are errors... XXX'
-        return ERROR(msg)
+        final_messages = []
+        messages = []
+        if self.messages:
+            messages = self.messages
+        elif self.msg:
+            messages = [self.msg]
+        else:
+            messages = MSG(u'There are errors... XXX')
+        for value in messages:
+            if not is_prototype(value, MSG):
+                value = ERROR(value)
+            final_messages.append(value(format='replace').gettext())
+        return final_messages
+
+
+    def get_message(self, mode='html'):
+        messages = self.get_messages()
+        if mode == 'html':
+            msg = '<br/>'.join(messages)
+            return ERROR(msg, format='html')
+        return '\n'.join(messages)
 
 
     def __str__(self):
-        return self.get_message().gettext()
+        return self.get_message(mode='text').gettext()
 
 
     def to_dict(self):

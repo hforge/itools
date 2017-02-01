@@ -38,9 +38,10 @@ from messages import ERROR
 
 
 
-def process_form(get_value, schema):
+def process_form(get_value, schema, error_msg=None):
     missings = []
     invalids = []
+    unknow = []
     values = {}
     for name in schema:
         datatype = schema[name]
@@ -51,9 +52,12 @@ def process_form(get_value, schema):
                 missings.append(name)
             elif e.invalid:
                 invalids.append(name)
-    if missings or invalids:
+            else:
+                unknow.append(name)
+    if missings or invalids or unknow:
+        error_msg = error_msg or ERROR(u'Form values are invalid')
         raise FormError(
-            message=ERROR(u'There are errors, check below.'),
+            message=error_msg,
             missing=len(missings)>0,
             invalid=len(invalids)>0,
             missings=missings,
@@ -148,6 +152,7 @@ class ItoolsView(prototype):
         return self.schema
 
 
+    form_error_message = ERROR(u'There are errors, check below')
     def _get_form(self, resource, context):
         """Form checks the request form and collect inputs consider the
         schema.  This method also checks the request form and raise an
@@ -160,7 +165,7 @@ class ItoolsView(prototype):
         """
         get_value = context.get_form_value
         schema = self.get_schema(resource, context)
-        return process_form(get_value, schema)
+        return process_form(get_value, schema, self.form_error_message)
 
 
     def get_value(self, resource, context, name, datatype):

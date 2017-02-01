@@ -38,6 +38,7 @@ import test_stl
 import test_tmx
 import test_uri
 import test_fs
+import test_validators
 import test_web
 import test_workflow
 import test_xliff
@@ -47,7 +48,7 @@ import test_xmlfile
 test_modules = [test_core, test_csv, test_database, test_datatypes, test_dispatcher,
     test_gettext, test_handlers, test_html, test_i18n, test_ical, test_odf,
     test_rss, test_router, test_srx, test_stl, test_tmx, test_uri, test_fs,
-    test_web, test_workflow, test_xliff, test_xml, test_xmlfile]
+    test_validators, test_web, test_workflow, test_xliff, test_xml, test_xmlfile]
 
 
 loader = TestLoader()

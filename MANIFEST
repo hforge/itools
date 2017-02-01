@@ -175,6 +175,7 @@ itools/datatypes/base.py
 itools/datatypes/datetime_.py
 itools/datatypes/languages.py
 itools/datatypes/primitive.py
+itools/environment.json
 itools/fs/__init__.py
 itools/fs/common.py
 itools/fs/lfs.py
@@ -284,6 +285,14 @@ itools/uri/generic.py
 itools/uri/mailto.py
 itools/uri/registry.py
 itools/uri/uri.py
+itools/validators/__init__.py
+itools/validators/base.py
+itools/validators/database.py
+itools/validators/exceptions.py
+itools/validators/files.py
+itools/validators/password.py
+itools/validators/registry.py
+itools/validators/test_view.py
 itools/version.txt
 itools/web/TODO
 itools/web/__init__.py
@@ -395,6 +404,7 @@ test/test_srx.py
 test/test_stl.py
 test/test_tmx.py
 test/test_uri.py
+test/test_validators.py
 test/test_web.py
 test/test_workflow.py
 test/test_xliff.py

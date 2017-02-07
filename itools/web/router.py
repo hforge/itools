@@ -266,6 +266,7 @@ class RequestMethod(object):
             context.resource = root
             context.view_name = status2name[status]
             context.view = root.get_view(context.view_name)
+            context.query = context.view.get_query(context)
             method = getattr(context.view, 'GET')
             context.entity = method(context.resource, context)
 

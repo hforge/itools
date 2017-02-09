@@ -183,6 +183,9 @@ class RequestMethod(object):
         except NotModified:
             context.http_not_modified()
             return
+        except Exception:
+            has_error = True
+            cls.internal_server_error(context)
         finally:
             # Fucking Python. Clear the exception, otherwise a later call
             # to the logging system will print an exception that has been

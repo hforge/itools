@@ -139,7 +139,10 @@ class FormError(StandardError):
 
 
     def __str__(self):
-        return self.get_message(mode='text').gettext()
+        msg = self.get_message(mode='text')
+        if is_prototype(msg, MSG):
+            return msg.gettext()
+        return msg
 
 
     def to_dict(self):

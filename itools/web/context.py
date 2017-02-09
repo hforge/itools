@@ -314,17 +314,10 @@ class Context(prototype):
 
 
     def accept_cors(self):
-        self.set_header('Access-Control-Request-Credentials', 'true')
-        for request_key, response_key in [
-            ('Origin', 'Access-Control-Allow-Origin'),
-            ('Access-Control-Request-Headers',
-             'Access-Control-Allow-Headers'),
-            ('Access-Control-Request-Methods',
-             'Access-Control-Allow-Methods'),
-            ('Access-Control-Request-Credentials',
-             'Access-Control-Allow-Credentials')]:
-            request_value =  self.get_header(request_key)
-            self.set_header(response_key, request_value)
+        origin = context.get_header('Origin')
+        self.set_header('Access-Control-Allow-Credentials', 'true')
+        self.set_header('Access-Control-Allow-Origin', origin)
+
 
     #######################################################################
     # API / Status

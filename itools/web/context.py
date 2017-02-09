@@ -187,6 +187,8 @@ class Context(prototype):
                     else:
                         mimetype = 'text/plain'
                     form[name] = filename, mimetype, body
+                else:
+                    form[name] = None
             else:
                 if name not in form:
                     form[name] = body

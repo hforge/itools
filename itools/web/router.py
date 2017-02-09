@@ -162,10 +162,10 @@ class RequestMethod(object):
             response = server.dispatcher.resolve(str(context.path))
             if response:
                 # Find a match in the dispatcher
-                view, query = response
+                view, path_query = response
                 context.resource = root
                 context.view = view
-                context.path_query = query
+                context.path_query_base = path_query
             else:
                 # The requested resource and view
                 cls.find_resource(context)
@@ -196,6 +196,10 @@ class RequestMethod(object):
         view = context.view
         if not has_error and view:
             try:
+                # 1) path query
+                if context.path_query_base:
+                    context.path_query = view.get_path_query(context)
+                # 2) uri query
                 context.query = view.get_query(context)
             except FormError, error:
                 # If the query is invalid we consider that URL do not exist.

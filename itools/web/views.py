@@ -135,6 +135,18 @@ class ItoolsView(prototype):
 
 
     #######################################################################
+    # Path query
+    path_query_schema = {}
+    def get_path_query_schema(self):
+        return self.path_query_schema
+
+
+    def get_path_query(self, context):
+        get_value = context.get_path_query_value
+        schema = self.get_path_query_schema()
+        return process_form(get_value, schema)
+
+    #######################################################################
     # POST
     #######################################################################
     schema = {}

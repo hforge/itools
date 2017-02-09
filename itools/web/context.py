@@ -65,6 +65,7 @@ class Context(prototype):
     view = None
     entity = None
     soup_message = None
+    path_query_base = None
 
 
     def init_context(self):
@@ -377,6 +378,13 @@ class Context(prototype):
     #######################################################################
     # API / Forms
     #######################################################################
+    def get_path_query_value(self, name, type=String, default=None):
+        """Returns the value for the given name from the path query.
+        """
+        form = self.path_query_base
+        return get_form_value(form, name, type, default)
+
+
     def get_query_value(self, name, type=String, default=None):
         """Returns the value for the given name from the query.  Useful for
         POST requests.

@@ -25,12 +25,12 @@ from copy import deepcopy
 
 # Import from itools
 from itools.core import freeze, prototype
-from itools.database import ReadonlyError, get_field_and_datatype
+from itools.database import get_field_and_datatype
 from itools.datatypes import Enumerate, String
 from itools.gettext import MSG
 from itools.handlers import File
 from itools.stl import stl
-from itools.uri import decode_query, Reference
+from itools.uri import Reference
 
 # Import from here
 from exceptions import FormError, Conflict, MethodNotAllowed
@@ -70,6 +70,7 @@ class ItoolsView(prototype):
 
     # Access Control
     access = False
+    known_methods = []
 
     def is_access_allowed(self, context):
         return context.is_access_allowed(context.resource, self)
@@ -98,13 +99,17 @@ class ItoolsView(prototype):
 
     def OPTIONS(self, resource, context):
         """Return list of HTTP methods allowed"""
-        known_methods = ['GET', 'HEAD', 'POST', 'OPTIONS', 'PUT', 'DELETE']
+        known_methods = self.known_methods
         context.set_header('Allow', ','.join(known_methods))
         context.entity = None
         context.status = 200
 
 
     def DELETE(self, resource, context):
+        raise MethodNotAllowed
+
+
+    def POST(self, resource, context):
         raise MethodNotAllowed
 
 
@@ -184,27 +189,6 @@ class ItoolsView(prototype):
         return datatype.get_default()
 
 
-    def get_action(self, resource, context):
-        """Default function to retrieve the name of the action from a form
-        """
-        # 1. Get the action name
-        form = context.get_form()
-        action = form.get('action')
-        action = ('action_%s' % action) if action else 'action'
-
-        # 2. Check whether the action has a query
-        if '?' in action:
-            action, query = action.split('?')
-            # Deserialize query using action specific schema
-            schema = getattr(self, '%s_query_schema' % action, None)
-            context.form_query = decode_query(query, schema)
-
-        # 3. Save the action name (used by get_schema)
-        context.form_action = action
-
-        # 4. Return the method
-        return getattr(self, action, None)
-
 
     def on_form_error(self, resource, context):
         content_type, type_parameters = context.get_header('content-type')
@@ -243,41 +227,11 @@ class ItoolsView(prototype):
         return self.return_json(error_kw, context)
 
 
-    def POST(self, resource, context):
-        # (1) Find out which button has been pressed, if more than one
-        method = self.get_action(resource, context)
-        if method is None:
-            msg = "POST method not supported because no '%s' defined"
-            raise NotImplementedError, msg % context.form_action
-
-        # (2) Automatically validate and get the form input (from the schema).
-        try:
-            form = self._get_form(resource, context)
-        except FormError, error:
-            context.form_error = error
-            return self.on_form_error(resource, context)
-
-        # (3) Action
-        try:
-            goto = method(resource, context, form)
-        except ReadonlyError:
-            context.message = ERROR('This website is under maintenance. '
-                                    'Please try again later.')
-            return self.GET
-
-        # (4) Return
-        if goto is None:
-            return self.GET
-        return goto
-
 
 
 class BaseView(ItoolsView):
 
-
-    def GET(self, resource, context):
-        raise NotImplementedError
-
+    known_methods = ['GET', 'HEAD', 'POST', 'OPTIONS', 'PUT', 'DELETE']
 
     #######################################################################
     # Canonical URI for search engines
@@ -317,6 +271,21 @@ class BaseView(ItoolsView):
 
         # Ok
         return uri
+
+
+    def POST(self, resource, context):
+        # Get the method
+        method = getattr(self, context.form_action, None)
+        if method is None:
+            msg = "POST method not supported because no '%s' defined"
+            raise NotImplementedError(msg % context.form_action)
+        # Call method
+        goto = method(resource, context, context.form)
+        # Return
+        if goto is None:
+            return self.GET
+        return goto
+
 
     #######################################################################
     # PUT

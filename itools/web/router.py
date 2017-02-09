@@ -22,12 +22,13 @@ from types import FunctionType, MethodType
 
 # Import from itools
 from itools.core import local_tz
+from itools.database import ReadonlyError
 from itools.log import log_error
-from itools.uri import Reference
+from itools.uri import decode_query, Reference
 
 # Local imports
 from exceptions import ClientError, NotModified, Forbidden, NotFound
-from exceptions import Unauthorized, FormError
+from exceptions import Unauthorized, FormError, ServiceUnavailable
 
 
 
@@ -40,6 +41,7 @@ status2name = {
     404: 'not_found',
     405: 'method_not_allowed',
     409: 'conflict',
+    503: 'unavailable',
 }
 
 
@@ -192,14 +194,15 @@ class RequestMethod(object):
             # handled already.
             exc_clear()
 
-        # (2) Always deserialize the query
+        # Deserialize the query and the form
         view = context.view
-        if not has_error and view:
+        if view:
+            # 1) The path query & uri query
             try:
-                # 1) path query
+                # Path query
                 if context.path_query_base:
                     context.path_query = view.get_path_query(context)
-                # 2) uri query
+                # Uri query
                 context.query = view.get_query(context)
             except FormError, error:
                 # If the query is invalid we consider that URL do not exist.
@@ -214,12 +217,23 @@ class RequestMethod(object):
             else:
                 # GET, POST...
                 method = getattr(view, context.method)
-
+            # 2) The form
+            if context.body:
+                try:
+                    cls.get_form(context)
+                except FormError, error:
+                    print 'ERRROR FORM', error
+                    context.form_error = error
+                    method = context.view.on_form_error(
+                          context.resource, context)
         # (3) Render
         if not has_error and method:
             try:
                 context.entity = method(context.resource, context)
             except ClientError, error:
+                cls.handle_client_error(error, context)
+            except ReadonlyError:
+                error = ServiceUnavailable
                 cls.handle_client_error(error, context)
             except Exception:
                 cls.internal_server_error(context)
@@ -297,3 +311,26 @@ class RequestMethod(object):
         context.status = 500
         context.set_content_type('text/html', charset='UTF-8')
         context.entity = context.root.internal_server_error(context)
+
+
+    @classmethod
+    def get_form(cls, context):
+        """Default function to retrieve the name of the action from a form
+        """
+        # 1. Get the action name
+        form = context.get_form()
+        action = form.get('action')
+        action = ('action_%s' % action) if action else 'action'
+
+        # 2. Check whether the action has a query
+        if '?' in action:
+            action, query = action.split('?')
+            # Deserialize query using action specific schema
+            schema = getattr(context.view, '%s_query_schema' % action, None)
+            context.form_query = decode_query(query, schema)
+
+        # 3. Save the action name (used by get_schema)
+        context.form_action = action
+
+        # (2) Automatically validate and get the form input (from the schema).
+        context.form = context.view._get_form(context.resource, context)

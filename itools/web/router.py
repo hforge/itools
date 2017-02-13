@@ -222,7 +222,6 @@ class RequestMethod(object):
                 try:
                     cls.get_form(context)
                 except FormError, error:
-                    print 'ERRROR FORM', error
                     context.form_error = error
                     method = context.view.on_form_error(
                           context.resource, context)

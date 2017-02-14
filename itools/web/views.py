@@ -41,6 +41,7 @@ from messages import ERROR
 def process_form(get_value, schema, error_msg=None):
     missings = []
     invalids = []
+    messages = []
     unknow = []
     values = {}
     for name in schema:
@@ -54,12 +55,14 @@ def process_form(get_value, schema, error_msg=None):
                 invalids.append(name)
             else:
                 unknow.append(name)
+            messages.extend(e.messages)
     if missings or invalids or unknow:
         error_msg = error_msg or ERROR(u'Form values are invalid')
         raise FormError(
             message=error_msg,
             missing=len(missings)>0,
             invalid=len(invalids)>0,
+            messages=messages,
             missings=missings,
             invalids=invalids)
     return values

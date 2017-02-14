@@ -113,6 +113,7 @@ class FormError(StandardError):
         self.invalids = invalids
         self.messages = messages
 
+
     def get_messages(self):
         # Custom message
         final_messages = []

@@ -113,9 +113,13 @@ class RequestMethod(object):
     def check_transaction(cls, context):
         """Return True if your method is supposed to change the state.
         """
+        # Commit on POST/PUT...
         if context.method in ('POST', 'PUT'):
             return True
-        return getattr(context, 'commit', True) and context.status < 400
+        # IF context.commit = True & context.status < 4000
+        if context.commit:
+            print('WARNING: context.commit=True is not recommended')
+        return context.commit is True and context.status < 400
 
 
     @classmethod
@@ -240,7 +244,7 @@ class RequestMethod(object):
                 cls.set_status_from_entity(context)
 
         # (4) Commit the transaction
-        if not has_error:
+        if method:
             cls.commit_transaction(context)
 
         # (5) Build response, when postponed (useful for POST methods)

@@ -67,6 +67,8 @@ class Context(prototype):
     soup_message = None
     path_query_base = None
     form = {}
+    form_error = None
+    commit = False
 
 
     def init_context(self):

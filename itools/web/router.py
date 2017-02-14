@@ -223,8 +223,7 @@ class RequestMethod(object):
                     cls.get_form(context)
                 except FormError, error:
                     context.form_error = error
-                    method = context.view.on_form_error(
-                          context.resource, context)
+                    method = context.view.on_form_error
         # (3) Render
         if not has_error and method:
             try:

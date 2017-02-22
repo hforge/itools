@@ -171,7 +171,10 @@ class ItoolsView(prototype):
             schema = getattr(self, '%s_schema' % action, None)
             if schema is not None:
                 return schema
-
+        # Check for method schema
+        schema = getattr(self, '%s_schema' % context.method, None)
+        if schema is not None:
+            return schema
         # Default
         return self.schema
 

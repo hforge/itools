@@ -114,7 +114,7 @@ class RequestMethod(object):
         """Return True if your method is supposed to change the state.
         """
         # Commit on POST/PUT...
-        if context.method in ('POST', 'PUT'):
+        if context.method in ('POST', 'PUT', 'PATCH'):
             return True
         # IF context.commit = True & context.status < 4000
         if context.commit:
@@ -222,7 +222,7 @@ class RequestMethod(object):
                 # GET, POST...
                 method = getattr(view, context.method)
             # 2) The form
-            if context.body:
+            if context.method in ['POST', 'PUT', 'PATCH']:
                 try:
                     cls.get_form(context)
                 except FormError, error:

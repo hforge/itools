@@ -116,6 +116,10 @@ class ItoolsView(prototype):
         raise MethodNotAllowed
 
 
+    def PATCH(self, resource, context):
+        raise MethodNotAllowed
+
+
     def get_canonical_uri(self, context):
         return context.uri
 

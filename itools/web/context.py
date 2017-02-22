@@ -639,7 +639,7 @@ class Context(prototype):
         # (3) Get the method that will handle the request
         method_name = soup_message.get_method()
         # 501 Not Implemented
-        if method_name not in ('GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD'):
+        if method_name not in ('GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'):
             log_warning('Unexpected "%s" HTTP method' % method_name,
                         domain='itools.web')
             self.set_default_response(501)

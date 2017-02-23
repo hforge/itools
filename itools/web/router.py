@@ -282,9 +282,12 @@ class RequestMethod(object):
         is_json_request = content_type == 'application/json'
         status = error.code
         context.status = status
-        if is_json_request or context.agent_is_a_robot():
+        is_ui = str(context.path).startswith('/ui/')
+        if is_json_request:
             kw = error.to_dict()
             context.return_json(kw)
+        elif context.agent_is_a_robot() or is_ui:
+            context.set_default_response(status)
         else:
             context.resource = root
             context.view_name = status2name[status]

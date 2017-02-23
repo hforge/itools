@@ -223,9 +223,7 @@ class Context(prototype):
     def get_link(self, resource):
         """Return a link to the given resource, from the given context.
         """
-        # FIXME This method should give an error if the given resource is
-        # not within the site root.
-        return '/%s' % self.site_root.get_pathto(resource)
+        return str(resource.abspath)
 
 
     #######################################################################

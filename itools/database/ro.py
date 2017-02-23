@@ -250,18 +250,16 @@ class RODatabase(object):
 
     def get_handler_class(self, key):
         mimetype = self.get_mimetype(key)
-
         try:
             return get_handler_class_by_mimetype(mimetype)
         except ValueError:
             log_warning('unknown handler class "{0}"'.format(mimetype))
-            if fs.is_file(key):
+            if self.fs.is_file(key):
                 from itools.handlers import File
                 return File
-            elif fs.is_folder(key):
+            elif self.fs.is_folder(key):
                 from itools.handlers import Folder
                 return Folder
-
         raise ValueError
 
 

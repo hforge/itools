@@ -77,68 +77,6 @@ class RODatabase(object):
     #######################################################################
     # Private API
     #######################################################################
-    def _sync_filesystem(self, key):
-        """This method checks the state of the key in the cache against the
-        filesystem. Synchronizes the state if needed by discarding the
-        handler, or raises an error if there is a conflict.
-
-        Returns the handler for the given key if it is still in the cache
-        after all the tests, or None otherwise.
-        """
-        # If the key is not in the cache nothing can be wrong
-        handler = self.cache.get(key)
-        if handler is None:
-            return None
-
-        # (1) Not yet loaded
-        if handler.timestamp is None and handler.dirty is None:
-            # Removed from the filesystem
-            if not self.fs.exists(key):
-                self._discard_handler(key)
-                return None
-            # Everything looks fine
-            # FIXME There will be a bug if the file in the filesystem has
-            # changed to a different type, so the handler class may not match.
-            return handler
-
-        # (2) New handler
-        if handler.timestamp is None and handler.dirty is not None:
-            # Everything looks fine
-            if not self.fs.exists(key):
-                return handler
-            # Conflict
-            error = 'new file in the filesystem and new handler in the cache'
-            raise RuntimeError, error
-
-        # (3) Loaded but not changed
-        if handler.timestamp is not None and handler.dirty is None:
-            # Removed from the filesystem
-            if not self.fs.exists(key):
-                self._discard_handler(key)
-                return None
-            # Modified in the filesystem
-            mtime = self.fs.get_mtime(key)
-            if mtime > handler.timestamp:
-                self._discard_handler(key)
-                return None
-            # Everything looks fine
-            return handler
-
-        # (4) Loaded and changed
-        if handler.timestamp is not None and handler.dirty is not None:
-            # Removed from the filesystem
-            if not self.fs.exists(key):
-                error = 'a modified handler was removed from the filesystem'
-                raise RuntimeError, error
-            # Modified in the filesystem
-            mtime = self.fs.get_mtime(key)
-            if mtime > handler.timestamp:
-                error = 'modified in the cache and in the filesystem'
-                raise RuntimeError, error
-            # Everything looks fine
-            return handler
-
-
     def _discard_handler(self, key):
         """Unconditionally remove the handler identified by the given key from
         the cache, and invalidate it (and free memory at the same time).
@@ -229,7 +167,7 @@ class RODatabase(object):
         key = self.normalize_key(key)
 
         # Synchronize
-        handler = self._sync_filesystem(key)
+        handler = self.cache.get(key)
         if handler is not None:
             return True
 
@@ -265,7 +203,7 @@ class RODatabase(object):
 
     def _get_handler(self, key, cls=None, soft=False):
         # Synchronize
-        handler = self._sync_filesystem(key)
+        handler = self.cache.get(key)
         if handler is not None:
             # Check the class matches
             if cls is not None and not isinstance(handler, cls):

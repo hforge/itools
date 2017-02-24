@@ -108,8 +108,7 @@ class Metadata(File):
 
             # 4. Build the property
             datatype = field.datatype
-            value = datatype.decode(value)
-            property = MetadataProperty(value, **parameters)
+            property = MetadataProperty(value, datatype, **parameters)
 
             # Case 1: Multilingual
             if field.multilingual:
@@ -242,7 +241,7 @@ class Metadata(File):
         p_type = type(value)
         if p_type is list:
             properties[name] = [
-                x if type(x) is MetadataProperty else MetadataProperty(x) for x in value ]
+                x if type(x) is MetadataProperty else MetadataProperty(x, None) for x in value ]
             return
 
         # Case 3: Multilingual
@@ -252,11 +251,13 @@ class Metadata(File):
                 properties.setdefault(name, {})[language] = value
                 return
         else:
-            value = MetadataProperty(value)
+            value = MetadataProperty(value, None)
 
-        # Case 4: Simple
+        # Get cls/field/datatype
         cls = self.database.get_resource_class(self.format)
         field = cls.get_field(name)
+
+        # Case 4: Simple
         if field is None or field.multiple is False:
             properties[name] = value
             return

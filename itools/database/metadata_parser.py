@@ -24,6 +24,7 @@
 from copy import deepcopy
 
 # Import from itools
+from itools.core import lazy
 from itools.datatypes import String, Unicode
 
 
@@ -316,11 +317,17 @@ class MetadataProperty(object):
         {param1_name: [param_values], ...}
     """
 
-    __slots__ = ['value', 'parameters']
-
-    def __init__(self, value, **kw):
-        self.value = value
+    def __init__(self, raw_value, datatype, **kw):
+        self.raw_value = raw_value
+        self.datatype = datatype
         self.parameters = kw or None
+
+
+    @lazy
+    def value(self):
+        if self.datatype:
+            return self.datatype.decode(self.raw_value)
+        return self.raw_value
 
 
     def clone(self):
@@ -330,8 +337,7 @@ class MetadataProperty(object):
         for p_key, p_value in self.parameters.iteritems():
             c_value = deepcopy(p_value)
             parameters[p_key] = c_value
-
-        return Property(value, **parameters)
+        return MetadataProperty(value, self.datatype, **parameters)
 
 
     def get_parameter(self, name, default=None):
@@ -347,7 +353,7 @@ class MetadataProperty(object):
 
 
     def __eq__(self, other):
-        if type(other) is not Property:
+        if type(other) is not MetadataProperty:
             return False
         if self.value != other.value:
             return False
@@ -356,6 +362,8 @@ class MetadataProperty(object):
 
     def __ne__(self, other):
         return not self.__eq__(other)
+
+
 
 
 

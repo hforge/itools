@@ -23,6 +23,7 @@ from queries import AllQuery, NotQuery, StartQuery, TextQuery
 from queries import RangeQuery, PhraseQuery, AndQuery, OrQuery, pprint_query
 from magic_ import magic_from_buffer, magic_from_file
 from metadata import Metadata
+from metadata_parser import MetadataProperty
 from registry import get_register_fields, register_field
 from resources import Resource
 from ro import RODatabase, ReadonlyError
@@ -42,6 +43,7 @@ __all__ = [
     'register_field',
     # Metadata
     'Metadata',
+    'MetadataProperty',
     # Resources
     'Field',
     'get_field_and_datatype',

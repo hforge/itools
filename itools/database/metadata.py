@@ -17,12 +17,14 @@
 
 # Import from itools
 from itools.core import add_type, freeze
-from itools.csv import parse_table, Property, property_to_str
-from itools.csv import deserialize_parameters
 from itools.datatypes import String
 from itools.handlers import File, register_handler_class
 from itools.log import log_warning
+
+# Import from here
 from fields import Field
+from metadata_parser import parse_table, MetadataProperty, property_to_str
+from metadata_parser import deserialize_parameters
 
 
 
@@ -107,7 +109,7 @@ class Metadata(File):
             # 4. Build the property
             datatype = field.datatype
             value = datatype.decode(value)
-            property = Property(value, **parameters)
+            property = MetadataProperty(value, **parameters)
 
             # Case 1: Multilingual
             if field.multilingual:
@@ -240,17 +242,17 @@ class Metadata(File):
         p_type = type(value)
         if p_type is list:
             properties[name] = [
-                x if type(x) is Property else Property(x) for x in value ]
+                x if type(x) is MetadataProperty else MetadataProperty(x) for x in value ]
             return
 
         # Case 3: Multilingual
-        if p_type is Property:
+        if p_type is MetadataProperty:
             if value.parameters and 'lang' in value.parameters:
                 language = value.parameters['lang']
                 properties.setdefault(name, {})[language] = value
                 return
         else:
-            value = Property(value)
+            value = MetadataProperty(value)
 
         # Case 4: Simple
         cls = self.database.get_resource_class(self.format)
@@ -281,4 +283,3 @@ class Metadata(File):
 register_handler_class(Metadata)
 for mimetype in Metadata.class_mimetypes:
     add_type(mimetype, '.%s' % Metadata.class_extension)
-

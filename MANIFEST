@@ -165,6 +165,7 @@ itools/database/fields.py
 itools/database/git.py
 itools/database/magic_.py
 itools/database/metadata.py
+itools/database/metadata_parser.py
 itools/database/queries.py
 itools/database/registry.py
 itools/database/resources.py

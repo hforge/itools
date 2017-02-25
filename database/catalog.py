@@ -23,7 +23,7 @@ from hashlib import sha1
 
 # Import from xapian
 from xapian import Database, WritableDatabase, DB_CREATE, DB_OPEN
-from xapian import Document, Query, QueryParser, Enquire, MultiValueSorter
+from xapian import Document, Query, QueryParser, Enquire
 from xapian import sortable_serialise, sortable_unserialise, TermGenerator
 
 # Import from itools
@@ -33,6 +33,13 @@ from itools.i18n import is_punctuation
 from itools.log import log_warning
 from queries import AllQuery, AndQuery, NotQuery, OrQuery, PhraseQuery
 from queries import RangeQuery, StartQuery, TextQuery, _MultipleQuery
+
+try:
+    from xapian import MultiValueSorter
+    XAPIAN_VERSION = '1.2'
+except:
+    from xapian import MultiValueKeyMaker
+    XAPIAN_VERSION = '1.4'
 
 
 
@@ -214,13 +221,22 @@ class SearchResults(object):
         # sort_by != None
         if sort_by is not None:
             if isinstance(sort_by, list):
-                sorter = MultiValueSorter()
-                for name in sort_by:
-                    # If there is a problem, ignore this field
-                    if name not in metadata:
-                        warn_not_stored(name)
-                        continue
-                    sorter.add(metadata[name]['value'])
+                if XAPIAN_VERSION == '1.4':
+                    sorter = MultiValueKeyMaker()
+                    for name in sort_by:
+                        # If there is a problem, ignore this field
+                        if name not in metadata:
+                            warn_not_stored(name)
+                            continue
+                        sorter.add_value(metadata[name]['value'], reverse)
+                else:
+                    sorter = MultiValueSorter()
+                    for name in sort_by:
+                        # If there is a problem, ignore this field
+                        if name not in metadata:
+                            warn_not_stored(name)
+                            continue
+                        sorter.add(metadata[name]['value'])
                 enquire.set_sort_by_key_then_relevance(sorter, reverse)
             else:
                 # If there is a problem, ignore the sort

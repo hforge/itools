@@ -142,6 +142,48 @@ class Doc(object):
         return value
 
 
+    def get_value(self, name, language=None):
+        # Check if stored
+        info = self._metadata.get(name)
+        if info is None:
+            raise AttributeError(MSG_NOT_INDEXED_NOR_STORED.format(name=name))
+        stored = info.get('value')
+        if stored is None:
+            raise AttributeError(MSG_NOT_STORED.format(name=name))
+        # Get the raw value
+        raw_value = self._xdoc.get_value(stored)
+        # Decode
+        field_cls = _get_field_cls(name, self._fields, info)
+        if raw_value:
+            return _decode(field_cls, raw_value)
+        # Special Case: multilingual field
+        if issubclass(field_cls, Unicode) and 'from' not in info:
+            if language:
+                name = '%s_%s' % (name, language)
+                if self._metadata.get(name):
+                    return getattr(self, name)
+            else:
+                prefix = '%s_' % name
+                n = len(prefix)
+                # Language negotiation
+                languages = []
+                values = {}
+                for k in self._metadata:
+                    if k[:n] == prefix:
+                        language = k[n:]
+                        value = getattr(self, '%s_%s' % (name, language))
+                        if not field_cls.is_empty(value):
+                            languages.append(language)
+                            values[language] = value
+                if languages:
+                    language = select_language(languages)
+                    if language is None:
+                        language = languages[0]
+                    return values[language]
+        # Default
+        return field_cls.get_default()
+
+
 
 class SearchResults(object):
 

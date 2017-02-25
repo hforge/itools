@@ -335,37 +335,37 @@ class RODatabase(object):
             yield cls
 
 
-    def get_resource(self, abspath, soft=False):
+    def get_metadata(self, abspath, soft=False):
         if type(abspath) is str:
             path = abspath[1:]
             abspath = Path(abspath)
         else:
             path = str(abspath)[1:]
-
         path_to_metadata = '%s.metadata' % path
-        metadata = self.get_handler(path_to_metadata, Metadata, soft=soft)
+        return self.get_handler(path_to_metadata, Metadata, soft=soft)
+
+
+    def get_cls(self, class_id):
+        cls = self.get_resource_class(class_id)
+        return cls or self.get_resource_class('application/octet-stream')
+
+
+    def get_resource(self, abspath, soft=False):
+        abspath = Path(abspath)
+        # Get metadata
+        metadata = self.get_metadata(abspath, soft)
         if metadata is None:
             return None
-
-        # 2. Class
+        # Get associated class
         class_id = metadata.format
-        cls = self.get_resource_class(class_id)
-        if cls is None:
-            if self.fs.exists(path):
-                is_file = self.fs.is_file(path)
-            else:
-                # FIXME This is just a guess, it may fail.
-                is_file = '/' in format
-
-            if is_file:
-                cls = self.get_resource_class('application/octet-stream')
-            else:
-                cls = self.get_resource_class('application/x-not-regular-file')
-
+        cls = self.get_cls(class_id)
         # Ok
-        resource = cls(metadata)
-        resource.abspath = abspath
-        return resource
+        return cls(abspath=abspath, database=self, metadata=metadata)
+
+
+    def get_resource_from_brain(self, brain):
+        cls = self.get_cls(brain.format)
+        return cls(abspath=Path(brain.abspath), database=self, brain=brain)
 
 
     def remove_resource(self, resource):

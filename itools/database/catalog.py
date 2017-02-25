@@ -290,10 +290,9 @@ class SearchResults(object):
 
     def get_resources(self, sort_by=None, reverse=False, start=0, size=0):
         database = self._database
-        abspaths = [x.abspath for x in self.get_documents(
-            sort_by, reverse, start, size)]
-        for abspath in abspaths:
-            yield database.get_resource(abspath)
+        brains = list(self.get_documents(sort_by, reverse, start, size))
+        for brain in brains:
+            yield database.get_resource_from_brain(brain)
 
 
 

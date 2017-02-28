@@ -234,6 +234,12 @@ class RWDatabase(RODatabase):
                 self._discard_handler(k)
                 self.changed.discard(k)
 
+        # Remove me & childs from cache
+        for _handler in handler.traverse():
+            _handler_key = _handler.key
+            if self.cache.get(_handler_key):
+                self._discard_handler(_handler_key)
+
         if self.fs.exists(key):
             self.worktree.git_rm(key)
 

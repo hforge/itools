@@ -19,6 +19,7 @@
 # Import from itools
 from itools.core import get_abspath
 from itools.handlers import ro_database
+from itools.xmlfile.errors import TranslationError
 from srx import SRXFile
 
 # Constants
@@ -275,8 +276,10 @@ def _translate_message(message, catalog):
             # The line parameter is not good
             result.append_text(value)
         else:
-            result.append(id2tags[type, value])
-
+            try:
+                result.append(id2tags[type, value])
+            except KeyError:
+                raise TranslationError
     return result
 
 

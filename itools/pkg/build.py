@@ -28,6 +28,7 @@ from json import dumps
 # Import from itools
 from itools.fs import lfs
 from itools.handlers import ro_database
+from itools.xmlfile.errors import TranslationError
 
 # Import from here
 from build_gulp import GulpBuilder
@@ -52,8 +53,8 @@ def make(worktree, rules, manifest, package_root):
                 if not lfs.exists(target) or \
                    lfs.get_mtime(source) > lfs.get_mtime(target):
                     f(package_root, source, target)     # 1. Compile
-                    manifest.add(target)  # 2. Update manifest
-                    print target          # 3. Print
+                    manifest.add(target)                # 2. Update manifest
+                    print target                        # 3. Print
 
 
 # PO => MO
@@ -72,10 +73,13 @@ def make_template(package_root, source, target):
     source_handler = ro_database.get_handler(source, XHTMLFile)
     language = target.rsplit('.', 1)[1]
     po = ro_database.get_handler('%s/locale/%s.po' % (package_root, language))
-    data = source_handler.translate(po)
+    try:
+        data = source_handler.translate(po)
+    except TranslationError as e:
+        # Override source and language
+        raise TranslationError(line=e.line, source_file=source, language=language)
     with open(target, 'w') as f:
         f.write(data)
-
 
 
 def get_file_path(package_root, filename):

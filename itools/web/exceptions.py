@@ -105,13 +105,14 @@ class FormError(StandardError):
 
     def __init__(self, message=None, missing=False, invalid=False,
             missings=freeze([]), invalids=freeze([]),
-            messages=freeze([])):
+            messages=freeze([]), code=400):
         self.msg = message
         self.missing = missing
         self.invalid = invalid
         self.missings = missings
         self.invalids = invalids
         self.messages = messages
+        self.code = code
 
 
     def get_messages(self):

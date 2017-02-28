@@ -299,7 +299,8 @@ def translate(events, catalog, srx_handler=None):
             try:
                 translation = translate_message(value, catalog, keep_spaces,
                                                 srx_handler)
-            except TranslationError:
+            except KeyError:
+                # translate_message can raise an KeyError in case of translations mistake
                 raise TranslationError(line=line)
             try:
                 for event in XMLParser(translation.encode(encoding),

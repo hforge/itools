@@ -180,6 +180,7 @@ if __name__ == '__main__':
         "itools.stl",
         "itools.tmx",
         "itools.uri",
+        "itools.validators",
         "itools.web",
         "itools.workflow",
         "itools.xliff",

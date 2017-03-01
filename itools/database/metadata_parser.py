@@ -317,7 +317,7 @@ class MetadataProperty(object):
         {param1_name: [param_values], ...}
     """
 
-    def __init__(self, raw_value, datatype, **kw):
+    def __init__(self, raw_value, datatype=None, **kw):
         self.raw_value = raw_value
         self.datatype = datatype
         self.parameters = kw or None

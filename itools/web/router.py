@@ -114,7 +114,7 @@ class RequestMethod(object):
         """Return True if your method is supposed to change the state.
         """
         # Commit on POST/PUT...
-        if context.method in ('POST', 'PUT', 'PATCH'):
+        if context.method in ('DELETE', 'POST', 'PUT', 'PATCH'):
             return True
         # IF context.commit = True & context.status < 4000
         if context.commit:

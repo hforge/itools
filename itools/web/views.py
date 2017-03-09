@@ -104,7 +104,7 @@ class ItoolsView(prototype):
 
     def OPTIONS(self, resource, context):
         """Return list of HTTP methods allowed"""
-        known_methods = self.known_methods
+        known_methods = self.get_known_methods()
         context.set_header('Allow', ','.join(known_methods))
         context.entity = None
         context.status = 200
@@ -120,6 +120,10 @@ class ItoolsView(prototype):
 
     def PATCH(self, resource, context):
         raise MethodNotAllowed
+
+
+    def get_known_methods(self):
+        return ['OPTIONS'] + self.known_methods
 
 
     def get_canonical_uri(self, context):
@@ -244,7 +248,7 @@ class ItoolsView(prototype):
 
 class BaseView(ItoolsView):
 
-    known_methods = ['GET', 'HEAD', 'POST', 'OPTIONS', 'PUT', 'DELETE']
+    known_methods = ['GET', 'HEAD', 'POST', 'PUT', 'DELETE']
 
     #######################################################################
     # Canonical URI for search engines

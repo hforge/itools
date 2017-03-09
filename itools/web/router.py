@@ -180,7 +180,7 @@ class RequestMethod(object):
                 cls.find_view(context)
                 context.path_query = None
             # Check the view is authorized
-            if context.method not in context.view.known_methods:
+            if context.method not in context.view.get_known_methods():
                 raise MethodNotAllowed
             # Access Control
             cls.check_access(context)

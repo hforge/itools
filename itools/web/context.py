@@ -22,6 +22,7 @@
 
 # Import from the Standard Library
 import json
+from copy import deepcopy
 from base64 import decodestring, encodestring
 from datetime import datetime, timedelta
 from hashlib import sha224
@@ -223,7 +224,9 @@ class Context(prototype):
     def get_link(self, resource):
         """Return a link to the given resource, from the given context.
         """
-        return str(resource.abspath)
+        abspath = deepcopy(resource.abspath)
+        abspath.endswith_slash = False
+        return str(abspath)
 
 
     #######################################################################

@@ -32,7 +32,7 @@ from messages import INFO, ERROR, MSG_MISSING_OR_INVALID
 from server import WebServer
 from soup import SoupMessage
 from utils import NewJSONEncoder
-from views import BaseView, STLView
+from views import ItoolsView, BaseView, STLView
 
 __all__ = [
     'SoupMessage',
@@ -45,6 +45,7 @@ __all__ = [
     'select_language',
     # View-Controller
     'BaseView',
+    'ItoolsView',
     'STLView',
     # Exceptions
     'BadGateway',

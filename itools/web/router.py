@@ -114,7 +114,7 @@ class RequestMethod(object):
         """Return True if your method is supposed to change the state.
         """
         # Commit on POST/PUT...
-        if context.method in ('POST', 'PUT', 'PATCH'):
+        if context.method in ('DELETE', 'POST', 'PUT', 'PATCH'):
             return True
         # IF context.commit = True & context.status < 4000
         if context.commit:
@@ -237,6 +237,9 @@ class RequestMethod(object):
             except ReadonlyError:
                 error = ServiceUnavailable
                 cls.handle_client_error(error, context)
+            except FormError, error:
+                context.form_error = error
+                cls.handle_client_error(error, context)
             except Exception:
                 cls.internal_server_error(context)
             else:
@@ -277,13 +280,15 @@ class RequestMethod(object):
     def handle_client_error(cls, error, context):
         root = context.site_root
         content_type = context.get_header('content-type')
+        accept = context.get_header('accept')
         if content_type:
             content_type, type_parameters = content_type
         is_json_request = content_type == 'application/json'
+        accept_json = accept == 'application/json'
         status = error.code
         context.status = status
         is_ui = str(context.path).startswith('/ui/')
-        if is_json_request:
+        if is_json_request or accept_json:
             kw = error.to_dict()
             context.return_json(kw)
         elif context.agent_is_a_robot() or is_ui:

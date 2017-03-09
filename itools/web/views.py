@@ -84,7 +84,9 @@ class ItoolsView(prototype):
         return None
 
 
-    def return_json(self, data, context):
+    def return_json(self, data, context, status=None):
+        if status:
+            context.status = status
         return context.return_json(data)
 
 
@@ -216,6 +218,7 @@ class ItoolsView(prototype):
     def on_form_error_json(self, resource, context):
         error = context.form_error
         error_kw = error.to_dict()
+        context.status = error.code
         return self.return_json(error_kw, context)
 
 

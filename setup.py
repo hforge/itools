@@ -93,7 +93,7 @@ if __name__ == '__main__':
     # PDF indexation
     try:
         flags = get_compile_flags(
-            'pkg-config --cflags --atleast-version=0.20.0 --libs poppler fontconfig')
+            'pkg-config --cflags --libs "poppler >= 0.20.0" fontconfig')
     except EnvironmentError:
         err = "[WARNING] poppler headers not found, PDF indexation won't work"
         print >> stderr, err
@@ -213,7 +213,7 @@ if __name__ == '__main__':
         else:
             package_data['itools'].append(join_path(*path[1:]))
     setup(name="itools",
-          version="0.76",
+          version="0.76.1",
           # Metadata
           author="J. David Ibáñez",
           author_email="jdavid.ibp@gmail.com" ,

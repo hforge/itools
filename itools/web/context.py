@@ -302,23 +302,25 @@ class Context(prototype):
         # Set default content type XXX ?
         if self.content_type is None:
             self.content_type = 'text/plain'
-        # Never cache if status != 200
-        if context.mtime and context.status != 200:
-            self.set_header('Last-Modified', context.mtime)
-            self.set_header('Cache-Control', 'max-age=1')
         # Set response body
         if self.entity is None:
             self.status = 204
             self.soup_message.set_status(self.status)
+            return
         elif isinstance(self.entity, Reference):
             location = context.uri.resolve(self.entity)
             location = str(location)
             self.status = 302
             self.soup_message.set_status(self.status)
             self.soup_message.set_header('Location', location)
-        else:
-            self.soup_message.set_status(self.status)
-            self.soup_message.set_response(self.content_type, self.entity)
+            return
+        # Never cache if status != 200
+        if context.mtime and context.status != 200:
+            self.set_header('Last-Modified', context.mtime)
+            self.set_header('Cache-Control', 'max-age=1')
+        # Set status response
+        self.soup_message.set_status(self.status)
+        self.soup_message.set_response(self.content_type, self.entity)
 
 
     def accept_cors(self):

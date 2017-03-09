@@ -29,6 +29,7 @@ from itools.uri import decode_query, Reference
 # Local imports
 from exceptions import ClientError, NotModified, Forbidden, NotFound
 from exceptions import Unauthorized, FormError, ServiceUnavailable
+from exceptions import MethodNotAllowed
 
 
 
@@ -165,6 +166,7 @@ class RequestMethod(object):
 
         # (1) Find out the requested view
         try:
+            # Get views / resource
             response = server.dispatcher.resolve(str(context.path))
             if response:
                 # Find a match in the dispatcher
@@ -177,6 +179,9 @@ class RequestMethod(object):
                 cls.find_resource(context)
                 cls.find_view(context)
                 context.path_query = None
+            # Check the view is authorized
+            if context.method not in context.view.known_methods:
+                raise MethodNotAllowed
             # Access Control
             cls.check_access(context)
             # Check the request method is supported

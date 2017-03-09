@@ -16,6 +16,7 @@
 
 
 # Import from standard library
+import sys
 from subprocess import Popen
 
 # Import from itools
@@ -79,5 +80,10 @@ class GulpBuilder(object):
                 path = str(Path(path)[:-1]) + '/'
                 p = Popen(['gulp', 'build'], cwd=path)
                 p.wait()
+                if p.returncode == 1:
+                    print '***'*25
+                    print '*** Error running gulp ', path
+                    print '***'*25
+                    sys.exit(1)
                 done = True
         return done

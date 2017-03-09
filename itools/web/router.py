@@ -283,12 +283,11 @@ class RequestMethod(object):
         accept = context.get_header('accept')
         if content_type:
             content_type, type_parameters = content_type
-        is_json_request = content_type == 'application/json'
         accept_json = accept == 'application/json'
         status = error.code
         context.status = status
         is_ui = str(context.path).startswith('/ui/')
-        if is_json_request or accept_json:
+        if accept_json:
             kw = error.to_dict()
             context.return_json(kw)
         elif context.agent_is_a_robot() or is_ui:

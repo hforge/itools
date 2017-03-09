@@ -62,7 +62,7 @@ class WebServer(SoupServer):
     def log_access(self, host, request_line, status_code, body_length):
         if host:
             host = host.split(',', 1)[0].strip()
-        now = strftime('%d/%b/%Y:%H:%M:%S')
+        now = strftime('%d/%b/%Y:%H:%M:%S %z')
         message = '%s - - [%s] "%s" %d %d\n' % (host, now, request_line,
                                                 status_code, body_length)
         log_info(message, domain='itools.web_access')

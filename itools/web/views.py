@@ -85,9 +85,7 @@ class ItoolsView(prototype):
 
 
     def return_json(self, data, context, status=None):
-        if status:
-            context.status = status
-        return context.return_json(data)
+        return context.return_json(data, status)
 
 
     def GET(self, resource, context):

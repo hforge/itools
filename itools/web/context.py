@@ -663,7 +663,9 @@ class Context(prototype):
             return context
 
 
-    def return_json(self, data):
+    def return_json(self, data, status=None):
+        if status:
+            context.status = status
         self.entity = json.dumps(data, cls=NewJSONEncoder)
         self.set_content_type('application/json')
         return self.entity

@@ -20,6 +20,7 @@
 - Web: Check "accept" header for sending json results
 - Web: improve support of 'DELETE', 'PATCH' methods
 - Gulp: Intercept errors
+- `search.get_resources()` load resources from brain for better performances
 
 ### Changed
 

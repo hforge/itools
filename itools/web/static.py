@@ -22,7 +22,7 @@ from os.path import basename, getmtime, isfile
 from itools.core import fixed_offset
 from itools.fs.common import get_mimetype
 from itools.uri import Path
-from itools.web import BaseView
+from itools.web import BaseView, NotModified
 
 
 class StaticView(BaseView):
@@ -46,7 +46,7 @@ class StaticView(BaseView):
         mtime = fixed_offset(0).localize(mtime)
         since = context.get_header('If-Modified-Since')
         if since and since >= mtime:
-            return context.set_default_response(304)
+            raise NotModified
         # 200 Ok
         # FIXME Check we set the encoding for text files
         mimetype = get_mimetype(basename(path))

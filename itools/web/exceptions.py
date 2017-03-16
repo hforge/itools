@@ -137,7 +137,7 @@ class FormError(StandardError):
         if mode == 'html':
             msg = '<br/>'.join(messages)
             return ERROR(msg, format='html')
-        return '\n'.join(messages)
+        return ERROR('\n'.join(messages))
 
 
     def __str__(self):

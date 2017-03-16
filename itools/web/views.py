@@ -212,7 +212,7 @@ class ItoolsView(prototype):
 
 
     def on_form_error_default(self, resource, context):
-        context.message = context.form_error.get_message()
+        context.message = context.form_error.get_message(mode='text')
         # Return to GET view on error
         return self.GET
 
@@ -429,7 +429,7 @@ class STLView(BaseView):
                 try:
                     value = context.get_form_value(name, type=datatype)
                 except FormError, err:
-                    error = err.get_message()
+                    error = err.get_message(mode='text')
                     if issubclass(datatype, Enumerate):
                         value = datatype.get_namespace(None)
                     else:
@@ -448,7 +448,7 @@ class STLView(BaseView):
                 try:
                     value = self.get_value(resource, context, name, datatype)
                 except FormError, err:
-                    error = err.get_message()
+                    error = err.get_message(mode='text')
                     if issubclass(datatype, Enumerate):
                         value = datatype.get_namespace(None)
                     else:

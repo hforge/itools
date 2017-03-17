@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.3.0\n"
-"POT-Creation-Date: 2017-03-17 14:03+CET\n"
+"POT-Creation-Date: 2017-03-17 15:03+CET\n"
 "PO-Revision-Date: 2016-11-24 10:22+0000\n"
 "Last-Translator: Florent Chenebault <florent.chenebault@bepatient.com>\n"
 "Language-Team: ??\n"
@@ -12,27 +12,43 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 2.7\n"
 
-#: ../xmlfile/i18n.py:65
+#: ../xmlfile/i18n.py:66
 msgid " %s=\""
 msgstr " %s=\""
 
-#: ../xmlfile/i18n.py:70
+#: ../xmlfile/i18n.py:71
 msgid " %s=\"%s\""
 msgstr " %s=\"%s\""
 
-#: ../xmlfile/i18n.py:68
+#: ../xmlfile/i18n.py:69
 msgid "\""
 msgstr "\""
+
+#: ../validators/files.py:108
+msgid "%.01f Bytes"
+msgstr ""
+
+#: ../validators/files.py:113
+msgid "%.01f GB"
+msgstr ""
+
+#: ../validators/files.py:110
+msgid "%.01f KB"
+msgstr ""
+
+#: ../validators/files.py:112
+msgid "%.01f MB"
+msgstr ""
 
 #: ../tmx/tmx.py:229
 msgid "%s"
 msgstr "%s"
 
-#: ../database/catalog.py:771
+#: ../database/catalog.py:832
 msgid "%s%s"
 msgstr "%s%s"
 
-#: ../database/catalog.py:72
+#: ../database/catalog.py:79
 msgid "'"
 msgstr "'"
 
@@ -43,7 +59,7 @@ msgstr ","
 
 #: ../i18n/locale_.py:72 ../i18n/locale_.py:122 ../handlers/utils.py:58
 #: ../handlers/utils.py:59 ../handlers/utils.py:64 ../handlers/utils.py:65
-#: ../web/context.py:433
+#: ../web/context.py:495
 msgid "-"
 msgstr "-"
 
@@ -56,7 +72,7 @@ msgstr "-//hforge.org/NONSGML ikaaro icalendar V1.0//EN"
 msgid "."
 msgstr "."
 
-#: ../xmlfile/i18n.py:73
+#: ../xmlfile/i18n.py:74
 msgid "/>"
 msgstr "/>"
 
@@ -68,11 +84,15 @@ msgstr "0"
 msgid "2.0"
 msgstr "2.0"
 
-#: ../xmlfile/i18n.py:178
+#: ../validators/test_view.py:36
+msgid "5+5 equals to ?"
+msgstr ""
+
+#: ../xmlfile/i18n.py:179
 msgid "<!--%s-->"
 msgstr "<!--%s-->"
 
-#: ../xmlfile/i18n.py:53
+#: ../xmlfile/i18n.py:54
 msgid "<%s"
 msgstr "<%s"
 
@@ -88,7 +108,7 @@ msgstr "<g id='%d'>"
 msgid "<x id='%d'/>"
 msgstr "<x id='%d'/>"
 
-#: ../xmlfile/i18n.py:75
+#: ../xmlfile/i18n.py:76
 msgid ">"
 msgstr ">"
 
@@ -100,7 +120,7 @@ msgstr "???"
 msgid "@"
 msgstr "@"
 
-#: ../database/catalog.py:53 ../database/catalog.py:54
+#: ../database/catalog.py:60 ../database/catalog.py:61
 msgid "A"
 msgstr "A"
 
@@ -212,7 +232,7 @@ msgstr "Bulgaars"
 msgid "Burmese"
 msgstr "Birmaans"
 
-#: ../database/catalog.py:57
+#: ../database/catalog.py:64
 msgid "C"
 msgstr "C"
 
@@ -296,7 +316,7 @@ msgstr "Nederlands/België"
 msgid "Dzongkha"
 msgstr "Dzongkha"
 
-#: ../database/catalog.py:59 ../database/catalog.py:60
+#: ../database/catalog.py:66 ../database/catalog.py:67
 msgid "E"
 msgstr "E"
 
@@ -311,6 +331,46 @@ msgstr "Engels/Verenigd Koninkrijk"
 #: ../i18n/languages.py:64
 msgid "English/United States"
 msgstr "Engels/Verenigde Staten"
+
+#: ../validators/base.py:189
+msgid "Ensure this value has at least {min_length} characters."
+msgstr ""
+
+#: ../validators/base.py:204
+msgid "Ensure this value has at most {max_length} characters."
+msgstr ""
+
+#: ../validators/base.py:132
+msgid "Ensure this value is greater than 0."
+msgstr ""
+
+#: ../validators/base.py:171
+msgid ""
+"Ensure this value is greater than or equal to {min_value} and value is less "
+"than or equal to {max_value}."
+msgstr ""
+
+#: ../validators/base.py:157
+msgid "Ensure this value is greater than or equal to {min_value}."
+msgstr ""
+
+#: ../validators/base.py:144
+msgid "Ensure this value is less than or equal to {max_value}."
+msgstr ""
+
+#: ../validators/base.py:120
+msgid "Ensure this value is positive."
+msgstr ""
+
+#: ../validators/base.py:46
+#, fuzzy
+msgid "Enter a valid value"
+msgstr "Ongeldige waarde."
+
+#: ../validators/base.py:113
+#, fuzzy
+msgid "Enter a valid value."
+msgstr "Ongeldige waarde."
 
 #: ../i18n/languages.py:65
 msgid "Esperanto"
@@ -336,9 +396,33 @@ msgstr "Faeröers"
 msgid "Fijian"
 msgstr "Fijisch"
 
+#: ../validators/files.py:37
+msgid ""
+"File extension '{extension}' is not allowed. Allowed extensions are: "
+"'{allowed_extensions}'."
+msgstr ""
+
+#: ../validators/test_view.py:70
+msgid "File extension (png)"
+msgstr ""
+
+#: ../validators/files.py:67
+msgid ""
+"File mimetype '{mimetype}' is not allowed. Allowed mimetypes are: "
+"'{allowed_mimetypes}'."
+msgstr ""
+
+#: ../validators/test_view.py:73
+msgid "File mimetypes (image/png)"
+msgstr ""
+
 #: ../i18n/languages.py:75
 msgid "Finnish"
 msgstr "Fins"
+
+#: ../web/views.py:60
+msgid "Form values are invalid"
+msgstr ""
 
 #: ../i18n/languages.py:78
 msgid "French"
@@ -400,6 +484,46 @@ msgstr "Duits/Duitsland"
 msgid "German/Switzerland"
 msgstr "Duits/Zwitserland"
 
+#: ../validators/test_view.py:56
+msgid "Give a number (>=10 and <=20)"
+msgstr ""
+
+#: ../validators/test_view.py:50
+msgid "Give a number (max value 10)"
+msgstr ""
+
+#: ../validators/test_view.py:53
+msgid "Give a number (min value 10)"
+msgstr ""
+
+#: ../validators/test_view.py:44
+msgid "Give a positive number"
+msgstr ""
+
+#: ../validators/test_view.py:47
+msgid "Give a strict positive number"
+msgstr ""
+
+#: ../validators/test_view.py:65
+msgid "Give an email (unique in DB)"
+msgstr ""
+
+#: ../validators/test_view.py:67
+msgid "Give be an email address !!!"
+msgstr ""
+
+#: ../validators/test_view.py:38
+msgid "Give me a 10 ;)"
+msgstr ""
+
+#: ../validators/test_view.py:62
+msgid "Give text (max length: 5 characters)"
+msgstr ""
+
+#: ../validators/test_view.py:59
+msgid "Give text (min length: 3 characters)"
+msgstr ""
+
 #: ../i18n/languages.py:61
 msgid "Greek"
 msgstr "Grieks"
@@ -428,6 +552,10 @@ msgstr "Hebreeuws"
 msgid "Herero"
 msgstr "Herero"
 
+#: ../validators/test_view.py:41
+msgid "Hexadecimal color"
+msgstr ""
+
 #: ../i18n/languages.py:92
 msgid "Hindi"
 msgstr "Hindi"
@@ -440,7 +568,7 @@ msgstr "Hiri Motu"
 msgid "Hungarian"
 msgstr "Hongaars"
 
-#: ../database/catalog.py:65
+#: ../database/catalog.py:72
 msgid "I"
 msgstr "I"
 
@@ -455,6 +583,18 @@ msgstr "Ido"
 #: ../i18n/languages.py:102
 msgid "Igbo"
 msgstr "Igbo"
+
+#: ../validators/files.py:123
+msgid "Image contains errors."
+msgstr ""
+
+#: ../validators/files.py:122
+msgid "Image is too big."
+msgstr ""
+
+#: ../validators/test_view.py:76
+msgid "Image max pixels"
+msgstr ""
 
 #: ../../scripts/ipkg-quality.py:64
 msgid "Import problems"
@@ -480,7 +620,7 @@ msgstr "Inuktitut"
 msgid "Inupiak"
 msgstr "Inupiak"
 
-#: ../database/fields.py:31
+#: ../database/fields.py:33
 msgid "Invalid value."
 msgstr "Ongeldige waarde."
 
@@ -664,6 +804,10 @@ msgstr "Noors Bokmal"
 msgid "Norwegian Nyrnosk"
 msgstr "Noors Nyrnosk"
 
+#: ../validators/test_view.py:82
+msgid "Number >=5 and equals to 10"
+msgstr ""
+
 #: ../../scripts/ipkg-quality.py:45
 msgid "Number of lines"
 msgstr "Aantal rijen"
@@ -700,7 +844,7 @@ msgstr "Oromo"
 msgid "Ossetian; Ossetic"
 msgstr "Osseets; Ossetisch"
 
-#: ../web/views.py:293
+#: ../web/views.py:325
 msgid "PUT only allowed on files"
 msgstr "PUT alleen toegestaan voor bestanden"
 
@@ -840,6 +984,10 @@ msgstr "Spaans/Mexico"
 msgid "Spanish/Spain"
 msgstr "Spaans/Spanje"
 
+#: ../validators/test_view.py:79
+msgid "Strong password"
+msgstr ""
+
 #: ../../scripts/ipkg-quality.py:49
 msgid "Style"
 msgstr "Stijl"
@@ -884,33 +1032,69 @@ msgstr "Tataars"
 msgid "Telugu"
 msgstr "Telugu"
 
+#: ../validators/test_view.py:29
+#, fuzzy
+msgid "Test validators"
+msgstr "met tabulators"
+
 #: ../i18n/languages.py:195
 msgid "Thai"
 msgstr "Thais"
+
+#: ../validators/database.py:27
+#, fuzzy
+msgid "The field should be unique."
+msgstr "Dit is een verplicht veld."
 
 #: ../../scripts/ipkg-quality.py:518
 msgid "The option --show-lines takes one file in parameter."
 msgstr "De optie --show-lines beslaat één bestand in parameter."
 
-#: ../web/views.py:239
+#: ../web/views.py:235
 msgid "The query could not be processed."
 msgstr ""
 
-#: ../web/views.py:58
-msgid "There are errors, check below."
+#: ../validators/base.py:86
+msgid "The value should be equals to {base_value}"
+msgstr ""
+
+#: ../web/views.py:186
+#, fuzzy
+msgid "There are errors, check below"
 msgstr "Er is iets fout gegaan, controleer hieronder."
 
-#: ../web/exceptions.py:117
+#: ../web/exceptions.py:127
 msgid "There are errors... XXX"
 msgstr "Er is iets fout gegaan... XXX"
 
-#: ../database/fields.py:32
+#: ../validators/test_view.py:68
+msgid "This address is already used"
+msgstr ""
+
+#: ../database/fields.py:34
 msgid "This field is required."
 msgstr "Dit is een verplicht veld."
 
 #: ../../scripts/ipkg-quality.py:392
 msgid "This file is perfect !"
 msgstr "Dit bestand is perfect!"
+
+#: ../validators/password.py:39
+msgid ""
+"This password is too short. It must contain at least {min_length} characters."
+msgstr ""
+
+#: ../validators/password.py:40
+msgid "This password should contains at least one character."
+msgstr ""
+
+#: ../validators/password.py:41
+msgid "This password should contains at least one number."
+msgstr ""
+
+#: ../validators/password.py:42
+msgid "This password should contains at least one special character."
+msgstr ""
 
 #: ../i18n/languages.py:41
 msgid "Tibetan"
@@ -996,6 +1180,10 @@ msgstr "Jiddish"
 msgid "Yoruba"
 msgstr "Yoruba"
 
+#: ../validators/files.py:91
+msgid "Your file is too big. ({size})"
+msgstr ""
+
 #: ../i18n/languages.py:218
 msgid "Zhuang; Chuang"
 msgstr "Zhuang; Chuang"
@@ -1008,7 +1196,7 @@ msgstr "Zoeloe"
 msgid "_"
 msgstr "_"
 
-#: ../database/catalog.py:55 ../database/catalog.py:56
+#: ../database/catalog.py:62 ../database/catalog.py:63
 msgid "a"
 msgstr "een"
 
@@ -1052,7 +1240,7 @@ msgstr "niet goed ingesprongen"
 msgid "but"
 msgstr "maar"
 
-#: ../database/catalog.py:58
+#: ../database/catalog.py:65
 msgid "c"
 msgstr "c"
 
@@ -1084,8 +1272,8 @@ msgstr "dus"
 msgid "du"
 msgstr "van de"
 
-#: ../database/catalog.py:61 ../database/catalog.py:62
-#: ../database/catalog.py:63 ../database/catalog.py:64
+#: ../database/catalog.py:68 ../database/catalog.py:69
+#: ../database/catalog.py:70 ../database/catalog.py:71
 msgid "e"
 msgstr "e"
 
@@ -1129,7 +1317,7 @@ msgstr "is"
 msgid "he"
 msgstr "hij"
 
-#: ../i18n/oracle.py:286 ../database/catalog.py:66 ../database/catalog.py:67
+#: ../i18n/oracle.py:286 ../database/catalog.py:73 ../database/catalog.py:74
 msgid "i"
 msgstr "ik"
 
@@ -1201,7 +1389,7 @@ msgstr "we"
 msgid "nueva"
 msgstr "nieuw"
 
-#: ../i18n/oracle.py:302 ../database/catalog.py:68
+#: ../i18n/oracle.py:302 ../database/catalog.py:75
 msgid "o"
 msgstr "o"
 
@@ -1295,8 +1483,8 @@ msgstr "om"
 msgid "tu"
 msgstr "je"
 
-#: ../database/catalog.py:69 ../database/catalog.py:70
-#: ../database/catalog.py:71
+#: ../database/catalog.py:76 ../database/catalog.py:77
+#: ../database/catalog.py:78
 msgid "u"
 msgstr "u"
 
@@ -1352,11 +1540,11 @@ msgstr "!"
 msgid "¿"
 msgstr "?"
 
-#: ../database/catalog.py:53
+#: ../database/catalog.py:60
 msgid "À"
 msgstr "À"
 
-#: ../database/catalog.py:54
+#: ../database/catalog.py:61
 msgid "Â"
 msgstr "Â"
 
@@ -1372,19 +1560,19 @@ msgstr ""
 msgid "Æ"
 msgstr "Æ"
 
-#: ../database/catalog.py:57
+#: ../database/catalog.py:64
 msgid "Ç"
 msgstr "Ç"
 
-#: ../database/catalog.py:59
+#: ../database/catalog.py:66
 msgid "É"
 msgstr "É"
 
-#: ../database/catalog.py:60
+#: ../database/catalog.py:67
 msgid "Ê"
 msgstr "Ê"
 
-#: ../database/catalog.py:65
+#: ../database/catalog.py:72
 msgid "Î"
 msgstr "Î"
 
@@ -1392,11 +1580,11 @@ msgstr "Î"
 msgid "ß"
 msgstr "ß"
 
-#: ../i18n/oracle.py:261 ../database/catalog.py:56
+#: ../i18n/oracle.py:261 ../database/catalog.py:63
 msgid "à"
 msgstr "à"
 
-#: ../database/catalog.py:55
+#: ../database/catalog.py:62
 msgid "â"
 msgstr "â"
 
@@ -1408,23 +1596,23 @@ msgstr "ä"
 msgid "æ"
 msgstr "æ"
 
-#: ../i18n/oracle.py:233 ../database/catalog.py:58
+#: ../i18n/oracle.py:233 ../database/catalog.py:65
 msgid "ç"
 msgstr "ç"
 
-#: ../database/catalog.py:63
+#: ../database/catalog.py:70
 msgid "è"
 msgstr "è"
 
-#: ../database/catalog.py:61
+#: ../database/catalog.py:68
 msgid "é"
 msgstr "é"
 
-#: ../i18n/oracle.py:234 ../database/catalog.py:62
+#: ../i18n/oracle.py:234 ../database/catalog.py:69
 msgid "ê"
 msgstr "ê"
 
-#: ../database/catalog.py:64
+#: ../database/catalog.py:71
 msgid "ë"
 msgstr "ë"
 
@@ -1432,11 +1620,11 @@ msgstr "ë"
 msgid "í"
 msgstr "í"
 
-#: ../database/catalog.py:66
+#: ../database/catalog.py:73
 msgid "î"
 msgstr "î"
 
-#: ../database/catalog.py:67
+#: ../database/catalog.py:74
 msgid "ï"
 msgstr "ï"
 
@@ -1448,7 +1636,7 @@ msgstr "ñ"
 msgid "ó"
 msgstr "ó"
 
-#: ../database/catalog.py:68
+#: ../database/catalog.py:75
 msgid "ô"
 msgstr "ô"
 
@@ -1456,7 +1644,7 @@ msgstr "ô"
 msgid "ö"
 msgstr "ö"
 
-#: ../database/catalog.py:70
+#: ../database/catalog.py:77
 msgid "ù"
 msgstr "ù"
 
@@ -1464,11 +1652,11 @@ msgstr "ù"
 msgid "ú"
 msgstr "ú"
 
-#: ../database/catalog.py:69
+#: ../database/catalog.py:76
 msgid "û"
 msgstr "û"
 
-#: ../i18n/oracle.py:239 ../database/catalog.py:71
+#: ../i18n/oracle.py:239 ../database/catalog.py:78
 msgid "ü"
 msgstr "ü"
 

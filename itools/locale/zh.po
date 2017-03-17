@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: zh\n"
-"POT-Creation-Date: 2016-11-28 17:11+CET\n"
+"POT-Creation-Date: 2017-03-17 14:03+CET\n"
 "PO-Revision-Date: 2007-10-30 17:58+0100\n"
 "Last-Translator: Zhouli <zhouli@in-girum.net>\n"
 "Language-Team:  <zh@li.org>\n"
@@ -36,22 +36,6 @@ msgstr ""
 msgid "'"
 msgstr ""
 
-#: ../pdf/pml.py:340
-msgid "(WW) CSS filename \"%s\" does not exist"
-msgstr ""
-
-#: ../pdf/pml.py:1155
-msgid "(WW) Cannot add an image inside a td without predefined size"
-msgstr ""
-
-#: ../pdf/pml.py:1151
-msgid "(WW) Filename is None"
-msgstr ""
-
-#: ../pdf/utils.py:235
-msgid "(WW) The filename '%s' doesn't exist"
-msgstr ""
-
 #: ../i18n/locale_.py:71 ../i18n/locale_.py:154 ../i18n/locale_.py:155
 #: ../i18n/locale_.py:156
 msgid ","
@@ -59,7 +43,7 @@ msgstr ""
 
 #: ../i18n/locale_.py:72 ../i18n/locale_.py:122 ../handlers/utils.py:58
 #: ../handlers/utils.py:59 ../handlers/utils.py:64 ../handlers/utils.py:65
-#: ../web/context.py:436
+#: ../web/context.py:433
 msgid "-"
 msgstr ""
 
@@ -1215,10 +1199,6 @@ msgstr ""
 
 #: ../i18n/oracle.py:288
 msgid "ils"
-msgstr ""
-
-#: ../pdf/utils.py:253
-msgid "image not valid : %s"
 msgstr ""
 
 #: ../i18n/oracle.py:289

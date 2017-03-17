@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.3.0\n"
-"POT-Creation-Date: 2016-11-28 17:11+CET\n"
+"POT-Creation-Date: 2017-03-17 14:03+CET\n"
 "PO-Revision-Date: 2016-11-24 10:22+0000\n"
 "Last-Translator: Florent Chenebault <florent.chenebault@bepatient.com>\n"
 "Language-Team: ??\n"
@@ -36,24 +36,6 @@ msgstr "%s%s"
 msgid "'"
 msgstr "'"
 
-#: ../pdf/pml.py:340
-msgid "(WW) CSS filename \"%s\" does not exist"
-msgstr "(WW) CSS filename \"%s\" does not exist"
-
-#: ../pdf/pml.py:1155
-msgid "(WW) Cannot add an image inside a td without predefined size"
-msgstr ""
-"(WW) Kan een afbeelding niet toevoegen in een td zonder vooraf bepaalde "
-"grootte"
-
-#: ../pdf/pml.py:1151
-msgid "(WW) Filename is None"
-msgstr "(WW) Geen bestandsnaam"
-
-#: ../pdf/utils.py:235
-msgid "(WW) The filename '%s' doesn't exist"
-msgstr "(WW) Bestandsnaam '%s' bestaat niet"
-
 #: ../i18n/locale_.py:71 ../i18n/locale_.py:154 ../i18n/locale_.py:155
 #: ../i18n/locale_.py:156
 msgid ","
@@ -61,7 +43,7 @@ msgstr ","
 
 #: ../i18n/locale_.py:72 ../i18n/locale_.py:122 ../handlers/utils.py:58
 #: ../handlers/utils.py:59 ../handlers/utils.py:64 ../handlers/utils.py:65
-#: ../web/context.py:436
+#: ../web/context.py:433
 msgid "-"
 msgstr "-"
 
@@ -1159,10 +1141,6 @@ msgstr "hij"
 msgid "ils"
 msgstr "ze"
 
-#: ../pdf/utils.py:253
-msgid "image not valid : %s"
-msgstr "afbeelding ongeldig: %s"
-
 #: ../i18n/oracle.py:289
 msgid "in"
 msgstr "in"
@@ -1546,5 +1524,22 @@ msgstr "や"
 msgid "を"
 msgstr "を"
 
+#~ msgid "(WW) CSS filename \"%s\" does not exist"
+#~ msgstr "(WW) CSS filename \"%s\" does not exist"
+
+#~ msgid "(WW) Cannot add an image inside a td without predefined size"
+#~ msgstr ""
+#~ "(WW) Kan een afbeelding niet toevoegen in een td zonder vooraf bepaalde "
+#~ "grootte"
+
+#~ msgid "(WW) Filename is None"
+#~ msgstr "(WW) Geen bestandsnaam"
+
+#~ msgid "(WW) The filename '%s' doesn't exist"
+#~ msgstr "(WW) Bestandsnaam '%s' bestaat niet"
+
 #~ msgid "Error, no action available"
 #~ msgstr "Error, geen actie beschikbaar"
+
+#~ msgid "image not valid : %s"
+#~ msgstr "afbeelding ongeldig: %s"

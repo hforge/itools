@@ -642,7 +642,7 @@ class Context(prototype):
         # (2) If path is null => 400 Bad Request
         if path is None:
             log_warning('Unexpected HTTP path (null)', domain='itools.web')
-            self.set_default_response(400)
+            context.set_default_response(400)
             return context
 
         # (3) Get the method that will handle the request
@@ -651,7 +651,7 @@ class Context(prototype):
         if method_name not in ('GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'):
             log_warning('Unexpected "%s" HTTP method' % method_name,
                         domain='itools.web')
-            self.set_default_response(501)
+            context.set_default_response(501)
             return context
 
         # (4) Go
@@ -661,7 +661,7 @@ class Context(prototype):
             RequestMethod.handle_request(context)
         except StandardError:
             log_error('Internal error', domain='itools.web')
-            self.set_default_response(500)
+            context.set_default_response(500)
             return context
         finally:
             set_context(None)

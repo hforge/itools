@@ -170,7 +170,7 @@ class Path(list):
     ##########################################################################
     # API
     def __repr__(self):
-        return '<itools.uri.Path at %s>' % hex(id(self))
+        return 'Path({path!r})'.format(path=str(self))
 
 
     def __str__(self):

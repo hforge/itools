@@ -233,6 +233,9 @@ class RequestMethod(object):
                 except FormError, error:
                     context.form_error = error
                     method = context.view.on_form_error
+                except Exception:
+                    has_error = True
+                    cls.internal_server_error(context)
         # (3) Render
         if not has_error and method:
             try:
@@ -245,6 +248,9 @@ class RequestMethod(object):
             except FormError, error:
                 context.form_error = error
                 cls.handle_client_error(error, context)
+            except NotModified:
+                context.http_not_modified()
+                return
             except Exception:
                 cls.internal_server_error(context)
             else:
@@ -260,6 +266,9 @@ class RequestMethod(object):
             context.status = None
             try:
                 context.entity = context.entity(context.resource, context)
+            except NotModified:
+                context.http_not_modified()
+                return
             except Exception:
                 cls.internal_server_error(context)
             else:

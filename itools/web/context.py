@@ -287,11 +287,11 @@ class Context(prototype):
 
 
     def set_default_response(self, status):
-        # Build repsonse
+        # Build response
         self.status = status
         self.entity = '{0} {1}'.format(status, reason_phrases[status])
         self.set_content_type('text/plain')
-        # Set resonse
+        # Set response
         self.set_response_from_context()
 
 
@@ -300,6 +300,11 @@ class Context(prototype):
         if self.server.accept_cors:
             self.accept_cors()
         # Set default content type XXX ?
+        if self.status == 304:
+            # "NotModified" request
+            # No status, content-type or other header should be added
+            self.soup_message.set_status(self.status)
+            return
         if self.content_type is None:
             self.content_type = 'text/plain'
         # Set response body

@@ -288,7 +288,13 @@ class BaseView(ItoolsView):
         return uri
 
 
-    def POST(self, resource, context):
+    def handle_post_action(self, resource, context):
+        """
+        This method handle the form action. Its implementation outside
+        the POST method itself allow to override POST method to add
+        low level try/except or modification of the context.form or
+        of the returned goto value
+        """
         # Get the method
         method = getattr(self, context.form_action, None)
         if method is None:
@@ -300,6 +306,10 @@ class BaseView(ItoolsView):
         if goto is None:
             return self.GET
         return goto
+
+
+    def POST(self, resource, context):
+        return self.handle_post_action(resource, context)
 
 
     #######################################################################

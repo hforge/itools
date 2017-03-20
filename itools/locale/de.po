@@ -1,118 +1,137 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: 0.3.0\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: 2017-03-17 14:03+CET\n"
-"PO-Revision-Date: 2001-07-08 17:07+CET\n"
-"Last-Translator: jdavid\n"
-"Language-Team: ??\n"
-"Language: \n"
+"PO-Revision-Date: 2017-03-17 14:40+0000\n"
+"Last-Translator: Florent Chenebault <florent.chenebault@bepatient.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8-bit\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 2.9\n"
 
 #: ../xmlfile/i18n.py:65
 msgid " %s=\""
-msgstr ""
+msgstr " %s=\""
 
 #: ../xmlfile/i18n.py:70
 msgid " %s=\"%s\""
-msgstr ""
+msgstr " %s=\"%s\""
 
 #: ../xmlfile/i18n.py:68
 msgid "\""
-msgstr ""
+msgstr "\""
 
 #: ../tmx/tmx.py:229
 msgid "%s"
-msgstr ""
+msgstr "%s"
 
 #: ../database/catalog.py:771
 msgid "%s%s"
-msgstr ""
+msgstr "%s%s"
 
 #: ../database/catalog.py:72
 msgid "'"
-msgstr ""
+msgstr "'"
 
-#: ../i18n/locale_.py:71 ../i18n/locale_.py:154 ../i18n/locale_.py:155
+#: ../i18n/locale_.py:71
+#: ../i18n/locale_.py:154
+#: ../i18n/locale_.py:155
 #: ../i18n/locale_.py:156
 msgid ","
-msgstr ""
+msgstr ","
 
-#: ../i18n/locale_.py:72 ../i18n/locale_.py:122 ../handlers/utils.py:58
-#: ../handlers/utils.py:59 ../handlers/utils.py:64 ../handlers/utils.py:65
+#: ../i18n/locale_.py:72
+#: ../i18n/locale_.py:122
+#: ../handlers/utils.py:58
+#: ../handlers/utils.py:59
+#: ../handlers/utils.py:64
+#: ../handlers/utils.py:65
 #: ../web/context.py:433
 msgid "-"
-msgstr ""
+msgstr "-"
 
 #: ../ical/icalendar.py:270
 msgid "-//hforge.org/NONSGML ikaaro icalendar V1.0//EN"
-msgstr ""
+msgstr "-//hforge.org/NONSGML ikaaro icalendar V1.0//EN"
 
-#: ../i18n/locale_.py:71 ../i18n/locale_.py:154 ../i18n/locale_.py:155
+#: ../i18n/locale_.py:71
+#: ../i18n/locale_.py:154
+#: ../i18n/locale_.py:155
 #: ../handlers/utils.py:58
 msgid "."
-msgstr ""
+msgstr "."
 
 #: ../xmlfile/i18n.py:73
 msgid "/>"
-msgstr ""
+msgstr "/>"
 
-#: ../i18n/locale_.py:107 ../i18n/locale_.py:110
+#: ../i18n/locale_.py:107
+#: ../i18n/locale_.py:110
 msgid "0"
-msgstr ""
+msgstr "0"
 
 #: ../ical/icalendar.py:269
 msgid "2.0"
-msgstr ""
+msgstr "2.0"
 
 #: ../xmlfile/i18n.py:178
 msgid "<!--%s-->"
-msgstr ""
+msgstr "<!--%s-->"
 
 #: ../xmlfile/i18n.py:53
 msgid "<%s"
-msgstr ""
+msgstr "<%s"
 
 #: ../gettext/po.py:143
 msgid "</g>"
-msgstr ""
+msgstr "</g>"
 
 #: ../gettext/po.py:139
 msgid "<g id='%d'>"
-msgstr ""
+msgstr "<g id='%d'>"
 
 #: ../gettext/po.py:137
 msgid "<x id='%d'/>"
-msgstr ""
+msgstr "<x id='%d'/>"
 
 #: ../xmlfile/i18n.py:75
 msgid ">"
-msgstr ""
+msgstr ">"
 
 #: ../i18n/languages.py:250
 msgid "???"
-msgstr ""
+msgstr "???"
 
 #: ../handlers/utils.py:58
 msgid "@"
-msgstr ""
+msgstr "@"
 
-#: ../database/catalog.py:53 ../database/catalog.py:54
+#: ../database/catalog.py:53
+#: ../database/catalog.py:54
 msgid "A"
-msgstr ""
+msgstr "A"
 
 #: ../handlers/utils.py:27
 msgid "AAAAAAAaaaaaaaaCcEEEEEeeeeegIIIIIiiiiiilNnOOOOOOOooooooooUUUUUuuuuuSstYYYyyyZz----"
 msgstr ""
+"AAAAAAAaaaaaaaaCcEEEEEeeeeegIIIIIiiiiiilNnOOOOOOOooooooooUUUUUuuuuuSstYYYyyyZ"
+"z----"
 
 #: ../handlers/utils.py:35
 msgid "AE"
-msgstr ""
+msgstr "AE"
 
 #: ../i18n/languages.py:23
 msgid "Abkhazian"
-msgstr ""
+msgstr "Abkhazian"
 
 #: ../i18n/languages.py:22
 msgid "Afar"
@@ -212,7 +231,7 @@ msgstr ""
 
 #: ../database/catalog.py:57
 msgid "C"
-msgstr ""
+msgstr "C"
 
 #: ../i18n/languages.py:44
 msgid "Catalan"
@@ -294,9 +313,10 @@ msgstr ""
 msgid "Dzongkha"
 msgstr ""
 
-#: ../database/catalog.py:59 ../database/catalog.py:60
+#: ../database/catalog.py:59
+#: ../database/catalog.py:60
 msgid "E"
-msgstr ""
+msgstr "E"
 
 #: ../i18n/languages.py:62
 msgid "English"
@@ -440,7 +460,7 @@ msgstr ""
 
 #: ../database/catalog.py:65
 msgid "I"
-msgstr ""
+msgstr "I"
 
 #: ../i18n/languages.py:106
 msgid "Icelandic"
@@ -480,7 +500,7 @@ msgstr ""
 
 #: ../database/fields.py:31
 msgid "Invalid value."
-msgstr ""
+msgstr "Ungültiger Wert."
 
 #: ../i18n/languages.py:84
 msgid "Irish"
@@ -672,7 +692,7 @@ msgstr ""
 
 #: ../handlers/utils.py:37
 msgid "OE"
-msgstr ""
+msgstr "OE"
 
 #: ../i18n/languages.py:157
 msgid "Occitan"
@@ -807,9 +827,7 @@ msgid "Somali"
 msgstr ""
 
 #: ../web/messages.py:47
-msgid ""
-"Some required fields are missing, or some values are not valid. Please "
-"correct them and continue."
+msgid "Some required fields are missing, or some values are not valid. Please correct them and continue."
 msgstr ""
 
 #: ../i18n/languages.py:188
@@ -894,15 +912,15 @@ msgstr ""
 
 #: ../web/views.py:58
 msgid "There are errors, check below."
-msgstr ""
+msgstr "Es gibt Fehler, überprüfen Sie unten."
 
 #: ../web/exceptions.py:117
 msgid "There are errors... XXX"
-msgstr ""
+msgstr "Es gibt Fehler... XXX"
 
 #: ../database/fields.py:32
 msgid "This field is required."
-msgstr ""
+msgstr "Dieses Feld wird benötigt."
 
 #: ../../scripts/ipkg-quality.py:392
 msgid "This file is perfect !"
@@ -1002,19 +1020,20 @@ msgstr ""
 
 #: ../handlers/utils.py:58
 msgid "_"
-msgstr ""
+msgstr "_"
 
-#: ../database/catalog.py:55 ../database/catalog.py:56
+#: ../database/catalog.py:55
+#: ../database/catalog.py:56
 msgid "a"
-msgstr ""
+msgstr "a"
 
 #: ../handlers/utils.py:34
 msgid "ae"
-msgstr ""
+msgstr "ae"
 
 #: ../i18n/oracle.py:262
 msgid "al"
-msgstr ""
+msgstr "al"
 
 #: ../../scripts/ipkg-quality.py:60
 msgid "all exceptions are catched"
@@ -1022,11 +1041,11 @@ msgstr ""
 
 #: ../i18n/oracle.py:263
 msgid "an"
-msgstr ""
+msgstr "ein"
 
 #: ../i18n/oracle.py:264
 msgid "and"
-msgstr ""
+msgstr "und"
 
 #: ../i18n/oracle.py:265
 msgid "are"
@@ -1050,7 +1069,7 @@ msgstr ""
 
 #: ../database/catalog.py:58
 msgid "c"
-msgstr ""
+msgstr "c"
 
 #: ../i18n/oracle.py:269
 msgid "como"
@@ -1076,14 +1095,17 @@ msgstr ""
 msgid "donc"
 msgstr ""
 
-#: ../i18n/oracle.py:275 ../i18n/oracle.py:334
+#: ../i18n/oracle.py:275
+#: ../i18n/oracle.py:334
 msgid "du"
 msgstr ""
 
-#: ../database/catalog.py:61 ../database/catalog.py:62
-#: ../database/catalog.py:63 ../database/catalog.py:64
+#: ../database/catalog.py:61
+#: ../database/catalog.py:62
+#: ../database/catalog.py:63
+#: ../database/catalog.py:64
 msgid "e"
-msgstr ""
+msgstr "e"
 
 #: ../i18n/oracle.py:276
 msgid "el"
@@ -1125,9 +1147,11 @@ msgstr ""
 msgid "he"
 msgstr ""
 
-#: ../i18n/oracle.py:286 ../database/catalog.py:66 ../database/catalog.py:67
+#: ../i18n/oracle.py:286
+#: ../database/catalog.py:66
+#: ../database/catalog.py:67
 msgid "i"
-msgstr ""
+msgstr "i"
 
 #: ../i18n/oracle.py:287
 msgid "il"
@@ -1197,13 +1221,14 @@ msgstr ""
 msgid "nueva"
 msgstr ""
 
-#: ../i18n/oracle.py:302 ../database/catalog.py:68
+#: ../i18n/oracle.py:302
+#: ../database/catalog.py:68
 msgid "o"
-msgstr ""
+msgstr "o"
 
 #: ../handlers/utils.py:36
 msgid "oe"
-msgstr ""
+msgstr "oe"
 
 #: ../i18n/oracle.py:303
 msgid "of"
@@ -1247,7 +1272,7 @@ msgstr ""
 
 #: ../handlers/utils.py:38
 msgid "ss"
-msgstr ""
+msgstr "ss"
 
 #: ../../scripts/ipkg-quality.py:59
 msgid "string exceptions are used"
@@ -1270,8 +1295,7 @@ msgid "the"
 msgstr ""
 
 #: ../csv/table.py:329
-msgid ""
-"the \"{field}\" field must be unique, the \"{value}\" value is  already used."
+msgid "the \"{field}\" field must be unique, the \"{value}\" value is  already used."
 msgstr ""
 
 #: ../i18n/oracle.py:317
@@ -1290,10 +1314,11 @@ msgstr ""
 msgid "tu"
 msgstr ""
 
-#: ../database/catalog.py:69 ../database/catalog.py:70
+#: ../database/catalog.py:69
+#: ../database/catalog.py:70
 #: ../database/catalog.py:71
 msgid "u"
-msgstr ""
+msgstr "u"
 
 #: ../i18n/oracle.py:321
 msgid "un"
@@ -1356,163 +1381,168 @@ msgid "Â"
 msgstr ""
 
 #: ../handlers/utils.py:25
-msgid ""
-"ÄÅÁÀÂÃĀäåáàâãāăÇçÉÈÊËĒéèêëēğÍÌÎÏĪíìîïīıļÑñÖÓÒÔÕØŌöóòôõøōőÜÚÙÛŪüúùûūŞşţÝŸȲýÿȳŽž"
-"°«»’"
+msgid "ÄÅÁÀÂÃĀäåáàâãāăÇçÉÈÊËĒéèêëēğÍÌÎÏĪíìîïīıļÑñÖÓÒÔÕØŌöóòôõøōőÜÚÙÛŪüúùûūŞşţÝŸȲýÿȳŽž°«»’"
 msgstr ""
+"ÄÅÁÀÂÃĀäåáàâãāăÇçÉÈÊËĒéèêëēğÍÌÎÏĪíìîïīıļÑñÖÓÒÔÕØŌöóòôõøōőÜÚÙÛŪüúùûūŞşţÝŸȲýÿȳŽ"
+"ž°«»’"
 
 #: ../handlers/utils.py:35
 msgid "Æ"
-msgstr ""
+msgstr "Æ"
 
 #: ../database/catalog.py:57
 msgid "Ç"
-msgstr ""
+msgstr "Ç"
 
 #: ../database/catalog.py:59
 msgid "É"
-msgstr ""
+msgstr "É"
 
 #: ../database/catalog.py:60
 msgid "Ê"
-msgstr ""
+msgstr "Ê"
 
 #: ../database/catalog.py:65
 msgid "Î"
-msgstr ""
+msgstr "Î"
 
-#: ../handlers/utils.py:38 ../i18n/oracle.py:232
+#: ../handlers/utils.py:38
+#: ../i18n/oracle.py:232
 msgid "ß"
-msgstr ""
+msgstr "ß"
 
-#: ../i18n/oracle.py:261 ../database/catalog.py:56
+#: ../i18n/oracle.py:261
+#: ../database/catalog.py:56
 msgid "à"
-msgstr ""
+msgstr "à"
 
 #: ../database/catalog.py:55
 msgid "â"
-msgstr ""
+msgstr "â"
 
 #: ../i18n/oracle.py:231
 msgid "ä"
-msgstr ""
+msgstr "ä"
 
 #: ../handlers/utils.py:34
 msgid "æ"
-msgstr ""
+msgstr "æ"
 
-#: ../i18n/oracle.py:233 ../database/catalog.py:58
+#: ../i18n/oracle.py:233
+#: ../database/catalog.py:58
 msgid "ç"
-msgstr ""
+msgstr "ç"
 
 #: ../database/catalog.py:63
 msgid "è"
-msgstr ""
+msgstr "è"
 
 #: ../database/catalog.py:61
 msgid "é"
-msgstr ""
+msgstr "é"
 
-#: ../i18n/oracle.py:234 ../database/catalog.py:62
+#: ../i18n/oracle.py:234
+#: ../database/catalog.py:62
 msgid "ê"
-msgstr ""
+msgstr "ê"
 
 #: ../database/catalog.py:64
 msgid "ë"
-msgstr ""
+msgstr "ë"
 
 #: ../i18n/oracle.py:235
 msgid "í"
-msgstr ""
+msgstr "í"
 
 #: ../database/catalog.py:66
 msgid "î"
-msgstr ""
+msgstr "î"
 
 #: ../database/catalog.py:67
 msgid "ï"
-msgstr ""
+msgstr "ï"
 
 #: ../i18n/oracle.py:236
 msgid "ñ"
-msgstr ""
+msgstr "ñ"
 
 #: ../i18n/oracle.py:238
 msgid "ó"
-msgstr ""
+msgstr "ó"
 
 #: ../database/catalog.py:68
 msgid "ô"
-msgstr ""
+msgstr "ô"
 
 #: ../i18n/oracle.py:237
 msgid "ö"
-msgstr ""
+msgstr "ö"
 
 #: ../database/catalog.py:70
 msgid "ù"
-msgstr ""
+msgstr "ù"
 
 #: ../i18n/oracle.py:240
 msgid "ú"
-msgstr ""
+msgstr "ú"
 
 #: ../database/catalog.py:69
 msgid "û"
-msgstr ""
+msgstr "û"
 
-#: ../i18n/oracle.py:239 ../database/catalog.py:71
+#: ../i18n/oracle.py:239
+#: ../database/catalog.py:71
 msgid "ü"
-msgstr ""
+msgstr "ü"
 
 #: ../handlers/utils.py:37
 msgid "Œ"
-msgstr ""
+msgstr "Œ"
 
 #: ../handlers/utils.py:36
 msgid "œ"
-msgstr ""
+msgstr "œ"
 
 #: ../i18n/oracle.py:253
 msgid "、"
-msgstr ""
+msgstr "、"
 
 #: ../i18n/oracle.py:254
 msgid "。"
-msgstr ""
+msgstr "。"
 
 #: ../i18n/oracle.py:247
 msgid "が"
-msgstr ""
+msgstr "が"
 
 #: ../i18n/oracle.py:245
 msgid "で"
-msgstr ""
+msgstr "で"
 
 #: ../i18n/oracle.py:251
 msgid "と"
-msgstr ""
+msgstr "と"
 
 #: ../i18n/oracle.py:246
 msgid "に"
-msgstr ""
+msgstr "に"
 
 #: ../i18n/oracle.py:243
 msgid "の"
-msgstr ""
+msgstr "の"
 
 #: ../i18n/oracle.py:244
 msgid "は"
-msgstr ""
+msgstr "は"
 
 #: ../i18n/oracle.py:248
 msgid "へ"
-msgstr ""
+msgstr "へ"
 
 #: ../i18n/oracle.py:250
 msgid "や"
-msgstr ""
+msgstr "や"
 
 #: ../i18n/oracle.py:249
 msgid "を"
-msgstr ""
+msgstr "を"

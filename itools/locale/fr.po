@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-28 17:11+CET\n"
+"POT-Creation-Date: 2017-03-17 14:03+CET\n"
 "PO-Revision-Date: 2010-10-27 17:02+0100\n"
 "Last-Translator: David Versmisse <david.versmisse@itaapy.com>\n"
 "Language-Team: Français <fr@li.org>\n"
@@ -45,22 +45,6 @@ msgstr "%s%s"
 msgid "'"
 msgstr ""
 
-#: ../pdf/pml.py:340
-msgid "(WW) CSS filename \"%s\" does not exist"
-msgstr "(WW) Fichier \"%s\" CSS inexistant"
-
-#: ../pdf/pml.py:1155
-msgid "(WW) Cannot add an image inside a td without predefined size"
-msgstr "(WW) Ne peut insérer une image au sein d'un td sans taille prédéfinie"
-
-#: ../pdf/pml.py:1151
-msgid "(WW) Filename is None"
-msgstr "(WW) Le nom du fichier est None"
-
-#: ../pdf/utils.py:235
-msgid "(WW) The filename '%s' doesn't exist"
-msgstr "(WW) Le fichier \"%s\" n'existe pas"
-
 #: ../i18n/locale_.py:71 ../i18n/locale_.py:154 ../i18n/locale_.py:155
 #: ../i18n/locale_.py:156
 msgid ","
@@ -68,7 +52,7 @@ msgstr ","
 
 #: ../i18n/locale_.py:72 ../i18n/locale_.py:122 ../handlers/utils.py:58
 #: ../handlers/utils.py:59 ../handlers/utils.py:64 ../handlers/utils.py:65
-#: ../web/context.py:436
+#: ../web/context.py:433
 msgid "-"
 msgstr "-"
 
@@ -1168,10 +1152,6 @@ msgstr ""
 msgid "ils"
 msgstr ""
 
-#: ../pdf/utils.py:253
-msgid "image not valid : %s"
-msgstr "image %s non valide"
-
 #: ../i18n/oracle.py:289
 msgid "in"
 msgstr ""
@@ -1558,6 +1538,19 @@ msgstr ""
 #~ msgid "#"
 #~ msgstr "#"
 
+#~ msgid "(WW) CSS filename \"%s\" does not exist"
+#~ msgstr "(WW) Fichier \"%s\" CSS inexistant"
+
+#~ msgid "(WW) Cannot add an image inside a td without predefined size"
+#~ msgstr ""
+#~ "(WW) Ne peut insérer une image au sein d'un td sans taille prédéfinie"
+
+#~ msgid "(WW) Filename is None"
+#~ msgstr "(WW) Le nom du fichier est None"
+
+#~ msgid "(WW) The filename '%s' doesn't exist"
+#~ msgstr "(WW) Le fichier \"%s\" n'existe pas"
+
 #~ msgid "*"
 #~ msgstr "*"
 
@@ -1611,6 +1604,9 @@ msgstr ""
 
 #~ msgid "`"
 #~ msgstr "`"
+
+#~ msgid "image not valid : %s"
+#~ msgstr "image %s non valide"
 
 #~ msgid "no title"
 #~ msgstr "pas de titre"

@@ -338,6 +338,7 @@ class Context(prototype):
     # API / Status
     #######################################################################
     def http_not_modified(self):
+        self.status = 304
         self.soup_message.set_status(304)
 
 

@@ -45,7 +45,7 @@ class ValidationError(Exception):
         if mode == 'html':
             msg = '<br/>'.join(messages)
             return MSG(msg, format='html')
-        return '\n'.join(messages)
+        return MSG('\n'.join(messages))
 
 
     def __str__(self):

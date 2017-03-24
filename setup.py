@@ -64,8 +64,38 @@ def get_compile_flags(command):
             'libraries': libraries}
 
 
+def generate_mo_files(po_file_names):
+    """
+    Generate mo files from po files located on /itools/locale/
+    :param po_file_names: An array of po files location
+    :return: An array of mo files location
+    """
+    # Check msgfmt is properly installed
+    try:
+        Popen(['msgfmt'])
+    except OSError:
+        print >> stderr, "[ERROR] 'msgfmt' not found, aborting..."
+    mo_files = []
+    for po_file in po_file_names:
+        # Compute mo file name
+        mo_file = po_file.replace('.po', '.mo')
+        # Generate mo file
+        Popen(['msgfmt', po_file, '-o', mo_file])
+        mo_files.append(mo_file)
+    return mo_files
+
+
 if __name__ == '__main__':
     ext_modules = []
+
+    # MO File generator
+    # Parse po files from MANIFEST
+    filenames = [x.strip() for x in open('MANIFEST').readlines() ]
+    po_files = [x for x in filenames if x.endswith('.po') and not x.startswith('docs/')]
+    # Generate mo files
+    mo_files = generate_mo_files(po_files)
+    # Append mo_files to filenames
+    filenames.extend(mo_files)
 
     # XML Parser
     try:
@@ -188,7 +218,6 @@ if __name__ == '__main__':
     install_requires = [str(ir.req) for ir in install_requires]
     # The data files
     package_data = {'itools': []}
-    filenames = [ x.strip() for x in open('MANIFEST').readlines() ]
     filenames = [ x for x in filenames if not x.endswith('.py') ]
     for line in filenames:
         if not line.startswith('itools/'):

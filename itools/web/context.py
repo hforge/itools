@@ -69,7 +69,7 @@ class Context(prototype):
     path_query_base = None
     form = {}
     form_error = None
-    commit = False
+    commit = True
 
 
     def init_context(self):

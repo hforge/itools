@@ -356,6 +356,7 @@ class RWDatabase(RODatabase):
         # Case 1: file
         handler = self._get_handler(source)
         if type(handler) is not Folder:
+            self._discard_handler(source)
             if fs.exists(source):
                 self.worktree.git_mv(source, target, add=False)
 
@@ -372,6 +373,12 @@ class RWDatabase(RODatabase):
             self.removed.discard(target)
             self.has_changed = True
             return
+
+        # Remove me & childs from cache
+        for _handler in handler.traverse():
+            _handler_key = _handler.key
+            if self.cache.get(_handler_key):
+                self._discard_handler(_handler_key)
 
         # Case 2: Folder
         n = len(source)

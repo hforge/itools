@@ -356,6 +356,7 @@ class RWDatabase(RODatabase):
         # Case 1: file
         handler = self._get_handler(source)
         if type(handler) is not Folder:
+            self._discard_handler(source)
             if fs.exists(source):
                 self.worktree.git_mv(source, target, add=False)
 

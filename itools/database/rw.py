@@ -356,14 +356,13 @@ class RWDatabase(RODatabase):
         # Case 1: file
         handler = self._get_handler(source)
         if type(handler) is not Folder:
-            self._discard_handler(source)
             if fs.exists(source):
                 self.worktree.git_mv(source, target, add=False)
 
             # Remove source
             self.added.discard(source)
             self.changed.discard(source)
-            del cache[source]
+            self._discard_handler(source)
             # Add target
             self.push_handler(target, handler)
             self.added.add(target)

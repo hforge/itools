@@ -146,13 +146,14 @@ class Context(prototype):
             return {}
         # Get content type
         content_type, type_parameters = self.get_header('content-type')
-        if content_type == 'application/x-www-form-urlencoded':
+        media_type = content_type.split(';')[0]
+        if media_type == 'application/x-www-form-urlencoded':
             # Case 1: urlencoded
             return self.get_form_body(body)
-        elif content_type == 'application/json':
+        elif media_type == 'application/json':
             # Case 2: json
             return self.get_json_body(body)
-        elif content_type.startswith('multipart/'):
+        elif media_type.startswith('multipart/'):
             # Case 3: multipart
             return self.get_multipart_body(body)
         # Case 4: Not managed content type

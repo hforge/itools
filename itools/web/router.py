@@ -98,16 +98,17 @@ class RequestMethod(object):
     @classmethod
     def commit_transaction(cls, context):
         database = context.database
+        # If not changes, ignore
+        if not database.has_changed:
+            return
         # Check conditions are met
         if cls.check_transaction(context) is False:
             database.abort_changes()
             return
-
         # Warning: Context.commit on GET is not recommended
         if context.method not in ('POST', 'DELETE', 'PUT', 'PATCH'):
             # Warning in case of commiting on a GET
             print('WARNING: context.commit=True is not recommended')
-
         # Save changes
         try:
             database.save_changes()

@@ -230,6 +230,7 @@ class RequestMethod(object):
             if context.method in ['POST', 'PUT', 'PATCH']:
                 try:
                     cls.get_form(context)
+                    method = cls.check_subview_method(context, method)
                 except FormError, error:
                     context.form_error = error
                     method = context.view.on_form_error
@@ -357,3 +358,16 @@ class RequestMethod(object):
 
         # (2) Automatically validate and get the form input (from the schema).
         context.form = context.view._get_form(context.resource, context)
+
+
+    @classmethod
+    def check_subview_method(cls, context, method):
+        """Check for subviews and return appropriate method
+        """
+        if not hasattr(context.view, 'get_action_view'):
+            # No subviews
+            return method
+        # Return subview method
+        view = context.view.get_action_view(context, context.form_action)
+        return getattr(view, context.method)
+

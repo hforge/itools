@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.3.0\n"
 "POT-Creation-Date: 2017-03-24 09:03+CET\n"
-"PO-Revision-Date: 2017-03-30 13:52+0000\n"
+"PO-Revision-Date: 2017-03-30 14:11+0000\n"
 "Last-Translator: Florent Chenebault <florent.chenebault@bepatient.com>\n"
 "Language-Team: ??\n"
 "Language: en\n"
@@ -14,7 +14,7 @@ msgstr ""
 
 #: ../xmlfile/i18n.py:66
 msgid " %s=\""
-msgstr " %s=\""
+msgstr ""
 
 #: ../xmlfile/i18n.py:71
 msgid " %s=\"%s\""
@@ -1054,11 +1054,11 @@ msgstr ""
 
 #: ../web/views.py:186
 msgid "There are errors, check below"
-msgstr "An error occured, please check"
+msgstr ""
 
 #: ../web/exceptions.py:127
 msgid "There are errors... XXX"
-msgstr "Please check"
+msgstr ""
 
 #: ../validators/test_view.py:68
 msgid "This address is already used"

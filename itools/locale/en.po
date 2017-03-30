@@ -2,17 +2,19 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.3.0\n"
 "POT-Creation-Date: 2017-03-24 09:03+CET\n"
-"PO-Revision-Date: 2001-07-08 17:07+CET\n"
-"Last-Translator: jdavid\n"
+"PO-Revision-Date: 2017-03-30 13:50+0000\n"
+"Last-Translator: Florent Chenebault <florent.chenebault@bepatient.com>\n"
 "Language-Team: ??\n"
-"Language: \n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8-bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 2.9\n"
 
 #: ../xmlfile/i18n.py:66
 msgid " %s=\""
-msgstr ""
+msgstr " %s=\""
 
 #: ../xmlfile/i18n.py:71
 msgid " %s=\"%s\""

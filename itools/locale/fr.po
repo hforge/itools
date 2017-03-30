@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: fr\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-03-24 09:03+CET\n"
-"PO-Revision-Date: 2017-03-17 15:27+0000\n"
+"PO-Revision-Date: 2017-03-30 13:57+0000\n"
 "Last-Translator: Florent Chenebault <florent.chenebault@bepatient.com>\n"
 "Language-Team: Français <fr@li.org>\n"
 "Language: fr\n"
@@ -1074,9 +1074,8 @@ msgid "The value should be equals to {base_value}"
 msgstr ""
 
 #: ../web/views.py:186
-#, fuzzy
 msgid "There are errors, check below"
-msgstr "Il y a des erreurs, vérifiez ci-dessous."
+msgstr "Il y a des erreurs, vérifiez ci-dessous"
 
 #: ../web/exceptions.py:127
 msgid "There are errors... XXX"

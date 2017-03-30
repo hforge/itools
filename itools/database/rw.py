@@ -362,7 +362,7 @@ class RWDatabase(RODatabase):
             # Remove source
             self.added.discard(source)
             self.changed.discard(source)
-            del cache[source]
+            self._discard_handler(source)
             # Add target
             self.push_handler(target, handler)
             self.added.add(target)
@@ -372,6 +372,12 @@ class RWDatabase(RODatabase):
             self.removed.discard(target)
             self.has_changed = True
             return
+
+        # Remove me & childs from cache
+        for _handler in handler.traverse():
+            _handler_key = _handler.key
+            if self.cache.get(_handler_key):
+                self._discard_handler(_handler_key)
 
         # Case 2: Folder
         n = len(source)

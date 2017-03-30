@@ -98,11 +98,17 @@ class RequestMethod(object):
     @classmethod
     def commit_transaction(cls, context):
         database = context.database
+        # If not changes, ignore
+        if not database.has_changed:
+            return
         # Check conditions are met
         if cls.check_transaction(context) is False:
             database.abort_changes()
             return
-
+        # Warning: Context.commit on GET is not recommended
+        if context.method not in ('POST', 'DELETE', 'PUT', 'PATCH'):
+            # Warning in case of commiting on a GET
+            print('WARNING: context.commit=True is not recommended')
         # Save changes
         try:
             database.save_changes()
@@ -112,15 +118,13 @@ class RequestMethod(object):
 
     @classmethod
     def check_transaction(cls, context):
-        """Return True if your method is supposed to change the state.
+        """Return True if context.commit is True and context.status < 400
         """
-        # Commit on POST/PUT...
-        if context.method in ('DELETE', 'POST', 'PUT', 'PATCH'):
-            return True
-        # IF context.commit = True & context.status < 4000
-        if context.commit:
-            print('WARNING: context.commit=True is not recommended')
-        return context.commit is True and context.status < 400
+        # Whatever the verb, in case context.commit is false, return False
+        if not context.commit:
+            return False
+        # Return True only if status is < 400
+        return context.status < 400
 
 
     @classmethod

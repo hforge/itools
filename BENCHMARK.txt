@@ -36,7 +36,17 @@ You can use the tool you want.
 The most important think is the log format that of course can be overrided in every tool
 
 
-2.1 Using the GOACCESS tool
+2.2 Using command line
+----------------------------
+
+List the 20 slowest requests:
+$ awk '{print $11 , $6 , $7}' access   | sort -r  | head -n 20
+
+List the 20 slowest POST requests:
+$ awk '{print $11 , $6 , $7}' access   | grep POST | sort -r  | head -n 20
+
+
+2.2 Using the GOACCESS tool
 ----------------------------
 
 Goaccess is an open source real-time web log analyzer and interactive viewer that runs in a terminal in *nix systems or through your browser.
@@ -49,7 +59,7 @@ Generate an HTML report :
 $ goaccess FILE --log-format '%h %^[%d:%t %^] "%r" %s %b %T' --time-format '%H:%M:%S' --date-format '%d/%b/%Y' -a -o report.html
 
 
-2.2 Using the InfluxDATA TICK STACK
+2.3 Using the InfluxDATA TICK STACK
 ------------------------------------
 
 TICK Stack is composed of 4 tools :

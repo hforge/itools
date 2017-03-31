@@ -26,6 +26,7 @@ from copy import deepcopy
 from base64 import decodestring, encodestring
 from datetime import datetime, timedelta
 from hashlib import sha224
+from time import time
 from urllib import quote, unquote
 
 # Import from pytz
@@ -637,6 +638,7 @@ class Context(prototype):
 
     def handle_request(self, soup_message, path):
         # (1) Attach to the soup message and path
+        start_time = time()  # Set start time
         context = self()
         context.soup_message = soup_message
         context.path = path
@@ -664,8 +666,10 @@ class Context(prototype):
         except StandardError:
             log_error('Internal error', domain='itools.web')
             context.set_default_response(500)
-            return context
         finally:
+            # Set request_time to the server to log in access
+            request_time = time() - start_time
+            self.server.request_time = request_time
             set_context(None)
             return context
 

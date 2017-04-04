@@ -563,34 +563,54 @@ class Context(prototype):
         self.user = user
 
 
+    def get_authentication_credentials(self):
+        """Try to get credentials from Authorization header or Cookies"""
+
+        # Check for credential in headers
+        auth_header = self.get_header('Authorization')
+        if auth_header:
+            # Parse the header credentials
+            auth_type, b64_credentials = auth_header
+        else:
+            # No Authorization header, get credentials in cookies
+            b64_credentials = self.get_cookie('iauth')
+
+        if not b64_credentials:
+            # No credentials found
+            return None, None
+
+        # Try to return the decoded credentials
+        try:
+            credentials = decodestring(unquote(b64_credentials))
+        except Exception:
+            raise ValueError, 'bad credentials "%s"' % b64_credentials
+
+        return credentials.split(':', 1)
+
+
     def authenticate(self):
-        """Checks the authentication cookie and sets the context user if all
+        """Checks the authentication credentials and sets the context user if all
         checks are ok.
         """
         self.user = None
 
-        # 1. Get the cookie
-        cookie = self.get_cookie('iauth')
-        if not cookie:
-            return
-
-        # 2. Parse the cookie
+        # 1. Get credentials with username and token
         try:
-            username, token = decodestring(unquote(cookie)).split(':', 1)
-        except Exception:
-            msg = 'bad authentication cookie "%s"' % cookie
+            username, token = self.get_authentication_credentials()
+        except ValueError as error:
+            msg = "Authentication error : %s " % error.message
             log_warning(msg, domain='itools.web')
             return
 
         if not username or not token:
             return
 
-        # 3. Get the user
+        # 2. Get the user
         user = self.root.get_user(username)
         if not user:
             return
 
-        # 4. Check the token
+        # 3. Check the token
         user_token = user.get_auth_token()
         if token == self._get_auth_token(user_token):
             self.user = user

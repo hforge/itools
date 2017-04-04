@@ -373,18 +373,29 @@ class Catalog(object):
     # API / Public / (Un)Index
     #######################################################################
     def index_document(self, document):
-        """Add a new document.
-        """
-        db = self._db
-        metadata = self._metadata
-        fields = self._fields
+        term, xdoc = self.get_xdoc_from_document(document)
+        self._db.replace_document(term, xdoc)
 
+
+    def unindex_document(self, abspath):
+        """Remove the document that has value stored in its abspath.
+           If the document does not exist => no error
+        """
+        data = _reduce_size(_encode(self._fields['abspath'], abspath))
+        self._db.delete_document('Q' + data)
+
+
+    def get_xdoc_from_document(self, document):
+        """Return (term, xdoc) from the document (resource or values as dict)
+        """
+        term = None
+        metadata = self._metadata
         # Check the input
         if type(document) is dict:
             doc_values = document
         else:
             doc_values = document.get_catalog_values()
-
+        fields = self._fields
         # Make the xapian document
         metadata_modified = False
         xdoc = Document()
@@ -409,7 +420,8 @@ class Catalog(object):
             #          the problem is that "_encode != _index"
             if name == 'abspath':
                 key_value = _reduce_size(_encode(field_cls, value))
-                xdoc.add_term('Q' + key_value)
+                term = 'Q' + key_value
+                xdoc.add_term(term)
 
             # A multilingual value?
             if isinstance(value, dict):
@@ -447,24 +459,12 @@ class Catalog(object):
                 if 'prefix' in info:
                     # By default language='en'
                     _index(xdoc, field_cls, value, info['prefix'], 'en')
-
-        # TODO: Don't store two documents with the same key field!
-
-        # Save the doc
-        db.add_document(xdoc)
-
         # Store metadata ?
         if metadata_modified:
-            db.set_metadata('metadata', dumps(metadata))
-
-
-    def unindex_document(self, abspath):
-        """Remove the document that has value stored in its abspath.
-           If the document does not exist => no error
-        """
-        data = _reduce_size(_encode(self._fields['abspath'], abspath))
-        self._db.delete_document('Q' + data)
-
+            metadata = self._metadata
+            self._db.set_metadata('metadata', dumps(metadata))
+        # Ok
+        return term, xdoc
 
     #######################################################################
     # API / Public / Search

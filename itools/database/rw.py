@@ -707,15 +707,11 @@ class RWDatabase(RODatabase):
         # Recursif ?
         if recursif:
             for item in base_resource.traverse_resources():
-                catalog.unindex_document(str(item.abspath))
-                values = item.get_catalog_values()
-                catalog.index_document(values)
+                catalog.index_document(item)
                 n += 1
         else:
             # Reindex resource
-            catalog.unindex_document(base_abspath)
-            values = base_resource.get_catalog_values()
-            catalog.index_document(values)
+            catalog.index_document(base_resource)
             n = 1
         # Save catalog if has changes
         if n > 0:

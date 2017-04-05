@@ -176,5 +176,6 @@ class WebServer(SoupServer):
 
 
 class AccessLogger(Logger):
+
     def format(self, domain, level, message):
         return message

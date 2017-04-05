@@ -46,32 +46,37 @@ class ReadonlyError(StandardError):
 
 class RODatabase(object):
 
-    def __init__(self, path, size_min=4800, size_max=5200):
+    def __init__(self, path, size_min=4800, size_max=5200, catalog=None):
         # 1. Keep the path
         if not lfs.is_folder(path):
             error = '"%s" should be a folder, but it is not' % path
             raise ValueError, error
-
         folder = lfs.open(path)
         self.path = str(folder.path)
-
         # 2. Keep the path to the data
         self.path_data = '%s/database/' % self.path
         if not lfs.is_folder(self.path_data):
             error = '"%s" should be a folder, but it is not' % self.path_data
             raise ValueError, error
-
         # 3. Initialize the database, but chrooted
         self.fs = lfs.open(self.path_data)
-
         # 4. New interface to Git
         self.worktree = open_worktree(self.path_data)
-
         # 5. A mapping from key to handler
         self.cache = LRUCache(size_min, size_max, automatic=False)
-
         # 6. The git cache
         self.git_cache = LRUCache(900, 1100)
+        # 7. Get the catalog
+        if catalog:
+            self.catalog = catalog
+        else:
+            self.catalog = self.get_catalog()
+
+
+    def check_catalog(self):
+        lines = self.catalog.logger.get_lines()
+        if lines:
+            raise ValueError('Catalog should be reindexed')
 
 
     def close(self):
@@ -438,14 +443,10 @@ class RODatabase(object):
     #######################################################################
     # Search
     #######################################################################
-    @lazy
-    def catalog(self):
+    def get_catalog(self):
         path = '%s/catalog' % self.path
         fields = get_register_fields()
-        try:
-            return Catalog(path, fields, read_only=True)
-        except (DatabaseError, DatabaseOpeningError):
-            return None
+        return Catalog(path, fields, read_only=True)
 
 
     def search(self, query=None, **kw):

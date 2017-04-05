@@ -804,6 +804,7 @@ def get_form_value(form, name, type=String, default=None):
     return values
 
 
+
 class WebLogger(Logger):
 
     def get_body(self):

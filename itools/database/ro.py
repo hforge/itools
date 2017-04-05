@@ -74,6 +74,9 @@ class RODatabase(object):
         self.git_cache = LRUCache(900, 1100)
 
 
+    def close(self):
+        self.catalog.close()
+
     #######################################################################
     # Private API
     #######################################################################

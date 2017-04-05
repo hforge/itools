@@ -276,7 +276,7 @@ class Context(prototype):
 
     def set_content_type(self, content_type, **kw):
         if type(content_type) is not str:
-            raise TypeError, 'expected string, got %s' % repr(content_type)
+            raise TypeError('expected string, got %s' % repr(content_type))
 
         parameters = [ '; %s=%s' % x for x in kw.items() ]
         parameters = ''.join(parameters)
@@ -443,7 +443,7 @@ class Context(prototype):
             return datatype.get_default()
         value = datatype.decode(value)
         if not datatype.is_valid(value):
-            raise ValueError, "Invalid cookie value"
+            raise ValueError("Invalid cookie value")
         return value
 
 
@@ -583,7 +583,7 @@ class Context(prototype):
         try:
             credentials = decodestring(unquote(b64_credentials))
         except Exception:
-            raise ValueError, 'bad credentials "%s"' % b64_credentials
+            raise ValueError('bad credentials "%s"' % b64_credentials)
 
         return credentials.split(':', 1)
 
@@ -639,12 +639,12 @@ class Context(prototype):
 
         # Only booleans and strings are allowed
         if type(access) is not str:
-            raise TypeError, 'unexpected value "%s"' % access
+            raise TypeError('unexpected value "%s"' % access)
 
         # Access Control through a method
         method = getattr(self.root, access, None)
         if method is None:
-            raise ValueError, 'access control "%s" not defined' % access
+            raise ValueError('access control "%s" not defined' % access)
 
         return method(user, resource)
 

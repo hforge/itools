@@ -65,6 +65,16 @@ class Worktree(object):
         # expose them through pygit2 and use them here.
         self.index_path = '%s/.git/index' % path
         self.index_mtime = None
+        # Check git commiter
+        try:
+            _, _ = self.username, self.useremail
+        except:
+            print '========================================='
+            print 'ERROR: Please configure GIT commiter via'
+            print ' $ git config --global user.name'
+            print ' $ git config --global user.email'
+            print '========================================='
+            raise
 
 
     #######################################################################
@@ -290,13 +300,21 @@ class Worktree(object):
     @lazy
     def username(self):
         cmd = ['git', 'config', '--get', 'user.name']
-        return self._call(cmd).rstrip()
+        try:
+            username = self._call(cmd).rstrip()
+        except EnvironmentError:
+            raise ValueError("Please configure 'git config --global user.name'")
+        return username
 
 
     @lazy
     def useremail(self):
         cmd = ['git', 'config', '--get', 'user.email']
-        return self._call(cmd).rstrip()
+        try:
+            useremail = self._call(cmd).rstrip()
+        except EnvironmentError:
+            raise ValueError("Please configure 'git config --global user.email'")
+        return useremail
 
 
     def git_tag(self, tag_name, message):

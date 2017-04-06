@@ -341,7 +341,7 @@ class Catalog(object):
 
         # Asynchronous mode
         if not read_only and asynchronous_mode:
-            db.begin_transaction(False)
+            db.begin_transaction()
         # Set XAPIAN_FLUSH_THRESHOLD
         os.environ["XAPIAN_FLUSH_THRESHOLD"] = "2000"
         # Load the xfields from the database
@@ -367,10 +367,13 @@ class Catalog(object):
         db = self._db
         db.commit_transaction()
         if self.nb_changes > 200:
-            db.flush()
+            # XXX Not working since cancel_transaction()
+            # cancel all transactions not commited to disk
+            # We have to use new strategy to abort transaction
+            db.commit()
             self.logger.clear()
             self.nb_changes = 0
-        db.begin_transaction(False)
+        db.begin_transaction()
 
 
     def abort_changes(self):
@@ -381,7 +384,7 @@ class Catalog(object):
         db = self._db
         db.cancel_transaction()
         self._load_all_internal()
-        db.begin_transaction(False)
+        db.begin_transaction()
 
 
     def close(self):
@@ -398,8 +401,9 @@ class Catalog(object):
     def index_document(self, document):
         self.nb_changes += 1
         abspath, term, xdoc = self.get_xdoc_from_document(document)
-        log_info(abspath, domain='itools.catalog')
         self._db.replace_document(term, xdoc)
+        if self.logger:
+            log_info(abspath, domain='itools.catalog')
 
 
     def unindex_document(self, abspath):
@@ -409,6 +413,8 @@ class Catalog(object):
         self.nb_changes += 1
         data = _reduce_size(_encode(self._fields['abspath'], abspath))
         self._db.delete_document('Q' + data)
+        if self.logger:
+            log_info(abspath, domain='itools.catalog')
 
 
     def get_xdoc_from_document(self, document):

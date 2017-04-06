@@ -570,7 +570,7 @@ class Context(prototype):
         auth_header = self.get_header('Authorization')
         if auth_header:
             # Parse the header credentials
-            type, b64_credentials = auth_header
+            auth_type, b64_credentials = auth_header
         else:
             # No Authorization header, get credentials in cookies
             b64_credentials = self.get_cookie('iauth')

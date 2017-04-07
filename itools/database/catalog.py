@@ -371,7 +371,8 @@ class Catalog(object):
             # cancel all transactions not commited to disk
             # We have to use new strategy to abort transaction
             db.commit()
-            self.logger.clear()
+            if self.logger:
+                self.logger.clear()
             self.nb_changes = 0
         db.begin_transaction()
 

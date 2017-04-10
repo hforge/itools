@@ -114,6 +114,17 @@ stream_to_str_map = (
     lambda x: '<![CDATA[%s]]>' % x)    # CDATA
 
 
+stream_to_raw_str_map = (
+    stream_to_str_xmldecl,             # XML_DECL
+    lambda x: get_doctype(x[0], x[1]), # DOCUMENT_TYPE
+    get_start_tag,                     # START_ELEMENT
+    get_end_tag,                       # END_ELEMENT
+    lambda x: x,                       # TEXT
+    lambda x: '<!--%s-->' % x,         # COMMENT
+    lambda x: '',                      # PI
+    lambda x: '<![CDATA[%s]]>' % x)    # CDATA
+
+
 # XXX encoding is not used
 def stream_to_str(stream, encoding='UTF-8', map=stream_to_str_map):
     return ''.join( map[x](y) for x, y, z in stream )

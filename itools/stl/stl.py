@@ -38,6 +38,7 @@ from itools.xml import XMLParser, find_end, get_attr_datatype, stream_to_str
 from itools.xml import DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, TEXT
 from itools.xml import xmlns_uri
 from itools.xml import is_xml_stream
+from itools.xml.xml import stream_to_raw_str_map
 from itools.xmlfile import XMLFile, get_units
 from itools.html import xhtml_uri
 from itools.html import stream_to_str_as_html, stream_to_str_as_xhtml
@@ -309,6 +310,8 @@ def stl(document=None, namespace=freeze({}), prefix=None, events=None,
             return stream_to_str_as_xhtml(stream, encoding)
         elif mode == 'html':
             return stream_to_str_as_html(stream, encoding)
+        elif mode == 'str':
+            return stream_to_str(stream, encoding, map=stream_to_raw_str_map)
     except STLError, e:
         error = 'Error in generation of {0}\n'.format(mode)
         if document:

@@ -96,9 +96,8 @@ class WebServer(SoupServer):
         elif body and as_json is True:
             body = dumps(body)
             headers['content-type'] = 'application/json'
-        # XXX accept ?
         if as_json is True:
-            headers['content-type'] = 'application/json'
+            headers['accept'] = 'application/json'
         # Build soup message
         message = SoupMessage()
         message.set_message(method, 'http://localhost' + path, body)

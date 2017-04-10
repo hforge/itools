@@ -2,15 +2,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.3.0\n"
 "POT-Creation-Date: 2017-03-24 09:03+CET\n"
-"PO-Revision-Date: 2016-11-24 10:22+0000\n"
-"Last-Translator: Florent Chenebault <florent.chenebault@bepatient.com>\n"
+"PO-Revision-Date: 2017-04-10 11:34+0000\n"
+"Last-Translator: Verba-Translations <translators@bepatient.com>\n"
 "Language-Team: ??\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.7\n"
+"X-Generator: Weblate 2.9\n"
 
 #: ../xmlfile/i18n.py:66
 msgid " %s=\""
@@ -26,19 +26,19 @@ msgstr "\""
 
 #: ../validators/files.py:108
 msgid "%.01f Bytes"
-msgstr ""
+msgstr "%.01f Bytes"
 
 #: ../validators/files.py:113
 msgid "%.01f GB"
-msgstr ""
+msgstr "%.01f GB"
 
 #: ../validators/files.py:110
 msgid "%.01f KB"
-msgstr ""
+msgstr "%.01f KB"
 
 #: ../validators/files.py:112
 msgid "%.01f MB"
-msgstr ""
+msgstr "%.01f MB"
 
 #: ../tmx/tmx.py:229
 msgid "%s"
@@ -86,7 +86,7 @@ msgstr "2.0"
 
 #: ../validators/test_view.py:36
 msgid "5+5 equals to ?"
-msgstr ""
+msgstr "5+5 is gelijk aan ?"
 
 #: ../xmlfile/i18n.py:179
 msgid "<!--%s-->"
@@ -334,43 +334,43 @@ msgstr "Engels/Verenigde Staten"
 
 #: ../validators/base.py:189
 msgid "Ensure this value has at least {min_length} characters."
-msgstr ""
+msgstr "Deze waarde moet minstens {min_length} karakters tellen."
 
 #: ../validators/base.py:204
 msgid "Ensure this value has at most {max_length} characters."
-msgstr ""
+msgstr "Deze waarde mag hoogstens {max_length} karakters tellen."
 
 #: ../validators/base.py:132
 msgid "Ensure this value is greater than 0."
-msgstr ""
+msgstr "Deze waarde moet hoger zijn 0."
 
 #: ../validators/base.py:171
 msgid ""
 "Ensure this value is greater than or equal to {min_value} and value is less "
 "than or equal to {max_value}."
 msgstr ""
+"Deze waarde moet hoger dan of gelijk zijn aan {min_value} en lager dan of "
+"gelijk aan {max_value}."
 
 #: ../validators/base.py:157
 msgid "Ensure this value is greater than or equal to {min_value}."
-msgstr ""
+msgstr "Deze waarde moet hoger dan of gelijk zijn aan {min_value}."
 
 #: ../validators/base.py:144
 msgid "Ensure this value is less than or equal to {max_value}."
-msgstr ""
+msgstr "Deze waarde moet lager dan of gelijk zijn aan {max_value}."
 
 #: ../validators/base.py:120
 msgid "Ensure this value is positive."
-msgstr ""
+msgstr "Deze waarde moet positief zijn."
 
 #: ../validators/base.py:46
-#, fuzzy
 msgid "Enter a valid value"
-msgstr "Ongeldige waarde."
+msgstr "Voer een geldige waarde in."
 
 #: ../validators/base.py:113
-#, fuzzy
 msgid "Enter a valid value."
-msgstr "Ongeldige waarde."
+msgstr "Voer een geldige waarde in."
 
 #: ../i18n/languages.py:65
 msgid "Esperanto"
@@ -401,20 +401,24 @@ msgid ""
 "File extension '{extension}' is not allowed. Allowed extensions are: "
 "'{allowed_extensions}'."
 msgstr ""
+"Bestandsextensie '{extension}' wordt niet aanvaard. De aanvaarde "
+"bestandsextensies zijn: '{allowed_extensions}'."
 
 #: ../validators/test_view.py:70
 msgid "File extension (png)"
-msgstr ""
+msgstr "Bestandsextensie (png)"
 
 #: ../validators/files.py:67
 msgid ""
 "File mimetype '{mimetype}' is not allowed. Allowed mimetypes are: "
 "'{allowed_mimetypes}'."
 msgstr ""
+"Bestand mimetype '{mimetype}' wordt niet aanvaard. De aanvaarde mimetypes "
+"zijn: '{allowed_mimetypes}'."
 
 #: ../validators/test_view.py:73
 msgid "File mimetypes (image/png)"
-msgstr ""
+msgstr "Bestand mimetypes (afbeelding/png)"
 
 #: ../i18n/languages.py:75
 msgid "Finnish"
@@ -422,7 +426,7 @@ msgstr "Fins"
 
 #: ../web/views.py:60
 msgid "Form values are invalid"
-msgstr ""
+msgstr "Ongeldige waardevormen"
 
 #: ../i18n/languages.py:78
 msgid "French"
@@ -486,43 +490,43 @@ msgstr "Duits/Zwitserland"
 
 #: ../validators/test_view.py:56
 msgid "Give a number (>=10 and <=20)"
-msgstr ""
+msgstr "Voer een nummer in (>=10 en <=20)"
 
 #: ../validators/test_view.py:50
 msgid "Give a number (max value 10)"
-msgstr ""
+msgstr "Voer een nummer in (maximumwaarde 10)"
 
 #: ../validators/test_view.py:53
 msgid "Give a number (min value 10)"
-msgstr ""
+msgstr "Voer een nummer in (minimumwaarde 10)"
 
 #: ../validators/test_view.py:44
 msgid "Give a positive number"
-msgstr ""
+msgstr "Voer een positief nummer in"
 
 #: ../validators/test_view.py:47
 msgid "Give a strict positive number"
-msgstr ""
+msgstr "Voer een uitsluitend positief nummer in"
 
 #: ../validators/test_view.py:65
 msgid "Give an email (unique in DB)"
-msgstr ""
+msgstr "Voer een e-mail in (uniek in DB)"
 
 #: ../validators/test_view.py:67
 msgid "Give be an email address !!!"
-msgstr ""
+msgstr "Voer een e-mailadres in !!!"
 
 #: ../validators/test_view.py:38
 msgid "Give me a 10 ;)"
-msgstr ""
+msgstr "Geef me een 10 ;)"
 
 #: ../validators/test_view.py:62
 msgid "Give text (max length: 5 characters)"
-msgstr ""
+msgstr "Geef tekst (max. lengte: 5 karakters)"
 
 #: ../validators/test_view.py:59
 msgid "Give text (min length: 3 characters)"
-msgstr ""
+msgstr "Geef tekst (min. lengte: 3 karakters)"
 
 #: ../i18n/languages.py:61
 msgid "Greek"
@@ -554,7 +558,7 @@ msgstr "Herero"
 
 #: ../validators/test_view.py:41
 msgid "Hexadecimal color"
-msgstr ""
+msgstr "Hexadecimaal kleur"
 
 #: ../i18n/languages.py:92
 msgid "Hindi"
@@ -586,15 +590,15 @@ msgstr "Igbo"
 
 #: ../validators/files.py:123
 msgid "Image contains errors."
-msgstr ""
+msgstr "De afbeelding bevat fouten."
 
 #: ../validators/files.py:122
 msgid "Image is too big."
-msgstr ""
+msgstr "De afbeelding is te groot."
 
 #: ../validators/test_view.py:76
 msgid "Image max pixels"
-msgstr ""
+msgstr "Max. pixels afbeelding"
 
 #: ../../scripts/ipkg-quality.py:64
 msgid "Import problems"
@@ -806,7 +810,7 @@ msgstr "Noors Nyrnosk"
 
 #: ../validators/test_view.py:82
 msgid "Number >=5 and equals to 10"
-msgstr ""
+msgstr "Nummer >= 5 en gelijk aan 10"
 
 #: ../../scripts/ipkg-quality.py:45
 msgid "Number of lines"
@@ -986,7 +990,7 @@ msgstr "Spaans/Spanje"
 
 #: ../validators/test_view.py:79
 msgid "Strong password"
-msgstr ""
+msgstr "Sterk wachtwoord"
 
 #: ../../scripts/ipkg-quality.py:49
 msgid "Style"
@@ -1033,18 +1037,16 @@ msgid "Telugu"
 msgstr "Telugu"
 
 #: ../validators/test_view.py:29
-#, fuzzy
 msgid "Test validators"
-msgstr "met tabulators"
+msgstr "Test"
 
 #: ../i18n/languages.py:195
 msgid "Thai"
 msgstr "Thais"
 
 #: ../validators/database.py:27
-#, fuzzy
 msgid "The field should be unique."
-msgstr "Dit is een verplicht veld."
+msgstr "Dit veld moet uniek zijn."
 
 #: ../../scripts/ipkg-quality.py:518
 msgid "The option --show-lines takes one file in parameter."
@@ -1052,14 +1054,13 @@ msgstr "De optie --show-lines beslaat één bestand in parameter."
 
 #: ../web/views.py:235
 msgid "The query could not be processed."
-msgstr ""
+msgstr "Deze aanvraag kon niet worden verwerkt."
 
 #: ../validators/base.py:86
 msgid "The value should be equals to {base_value}"
-msgstr ""
+msgstr "De waarde moet gelijk zijn aan {base_value}"
 
 #: ../web/views.py:186
-#, fuzzy
 msgid "There are errors, check below"
 msgstr "Er is iets fout gegaan, controleer hieronder."
 
@@ -1069,7 +1070,7 @@ msgstr "Er is iets fout gegaan... XXX"
 
 #: ../validators/test_view.py:68
 msgid "This address is already used"
-msgstr ""
+msgstr "Dit adres is reeds in gebruik"
 
 #: ../database/fields.py:34
 msgid "This field is required."
@@ -1083,18 +1084,19 @@ msgstr "Dit bestand is perfect!"
 msgid ""
 "This password is too short. It must contain at least {min_length} characters."
 msgstr ""
+"Dit wachtwoord is te kort. Het moet minstens  {min_length} karakters tellen."
 
 #: ../validators/password.py:40
 msgid "This password should contains at least one character."
-msgstr ""
+msgstr "Dit wachtwoord moet minstens één karakterteken tellen."
 
 #: ../validators/password.py:41
 msgid "This password should contains at least one number."
-msgstr ""
+msgstr "Dit wachtwoord moet minstens één cijfer bevatten."
 
 #: ../validators/password.py:42
 msgid "This password should contains at least one special character."
-msgstr ""
+msgstr "Dit wachtwoord moet minstens één speciaal karakterteken bevatten."
 
 #: ../i18n/languages.py:41
 msgid "Tibetan"
@@ -1182,7 +1184,7 @@ msgstr "Yoruba"
 
 #: ../validators/files.py:91
 msgid "Your file is too big. ({size})"
-msgstr ""
+msgstr "Het bestand is te groot. ({grootte})"
 
 #: ../i18n/languages.py:218
 msgid "Zhuang; Chuang"
@@ -1375,7 +1377,7 @@ msgstr "maar"
 
 #: ../stl/stl.py:143
 msgid "name '{}' not found in the namespace"
-msgstr ""
+msgstr "Naam '{}' niet gevonden in het naamveld"
 
 #: ../i18n/oracle.py:299
 msgid "no"

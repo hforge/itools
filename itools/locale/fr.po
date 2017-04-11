@@ -12,8 +12,8 @@ msgstr ""
 "Project-Id-Version: fr\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-03-24 09:03+CET\n"
-"PO-Revision-Date: 2017-03-30 13:57+0000\n"
-"Last-Translator: Florent Chenebault <florent.chenebault@bepatient.com>\n"
+"PO-Revision-Date: 2017-04-11 13:29+0000\n"
+"Last-Translator: Verba-Translations <translators@bepatient.com>\n"
 "Language-Team: Français <fr@li.org>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -343,42 +343,40 @@ msgid "English/United States"
 msgstr "English/United States"
 
 #: ../validators/base.py:189
-#, fuzzy
 msgid "Ensure this value has at least {min_length} characters."
 msgstr ""
-"Veuillez vous assurer que cette valeur fait au moins {min_length} characters."
+"Assurez-vous que cette valeur comprend au moins {min_length} caractères."
 
 #: ../validators/base.py:204
-#, fuzzy
 msgid "Ensure this value has at most {max_length} characters."
 msgstr ""
-"Veuillez vous assurer que cette valeur a au plus {max_length} characters."
+"Assurez-vous que cette valeur comprend au moins {max_length} caractères."
 
 #: ../validators/base.py:132
-#, fuzzy
 msgid "Ensure this value is greater than 0."
-msgstr "Veuillez vous assurer que la valeur est supérieur à 0."
+msgstr "Veuillez vous assurer que la valeur est supérieure à 0."
 
 #: ../validators/base.py:171
 msgid ""
 "Ensure this value is greater than or equal to {min_value} and value is less "
 "than or equal to {max_value}."
 msgstr ""
+"Assurez-vous que la valeur est supérieure ou égale à {min_value}, et qu'elle "
+"est inférieure ou égale à {max_value}."
 
 #: ../validators/base.py:157
 msgid "Ensure this value is greater than or equal to {min_value}."
-msgstr ""
+msgstr "Assurez-vous que la valeur est supérieure ou égale à {min_value}."
 
 #: ../validators/base.py:144
 msgid "Ensure this value is less than or equal to {max_value}."
-msgstr ""
+msgstr "Assurez-vous que la valeur est inférieure ou égale à {max_value}."
 
 #: ../validators/base.py:120
 msgid "Ensure this value is positive."
-msgstr ""
+msgstr "Assurez-vous que la valeur est positive."
 
 #: ../validators/base.py:46
-#, fuzzy
 msgid "Enter a valid value"
 msgstr "Valeur invalide."
 
@@ -416,20 +414,24 @@ msgid ""
 "File extension '{extension}' is not allowed. Allowed extensions are: "
 "'{allowed_extensions}'."
 msgstr ""
+"L'extension de fichier '{extension}' non autorisée. Les extensions de "
+"fichier autorisées sont : '{allowed_extensions}'."
 
 #: ../validators/test_view.py:70
 msgid "File extension (png)"
-msgstr ""
+msgstr "Extension de fichier (png)"
 
 #: ../validators/files.py:67
 msgid ""
 "File mimetype '{mimetype}' is not allowed. Allowed mimetypes are: "
 "'{allowed_mimetypes}'."
 msgstr ""
+"Le type MIME '{mimetype}' associé au fichier n'est pas autorisé. Les types "
+"MIME autorisés sont : '{allowed_mimetypes}'."
 
 #: ../validators/test_view.py:73
 msgid "File mimetypes (image/png)"
-msgstr ""
+msgstr "Types MIME de fichier (image/png)"
 
 #: ../i18n/languages.py:75
 msgid "Finnish"
@@ -437,7 +439,7 @@ msgstr "Finnish"
 
 #: ../web/views.py:60
 msgid "Form values are invalid"
-msgstr ""
+msgstr "Valeurs de format non valides"
 
 #: ../i18n/languages.py:78
 msgid "French"
@@ -501,43 +503,43 @@ msgstr "German/Switzerland"
 
 #: ../validators/test_view.py:56
 msgid "Give a number (>=10 and <=20)"
-msgstr ""
+msgstr "Saisissez un nombre (>=10 et <=20)"
 
 #: ../validators/test_view.py:50
 msgid "Give a number (max value 10)"
-msgstr ""
+msgstr "Saisissez un nombre (valeur maximale 10)"
 
 #: ../validators/test_view.py:53
 msgid "Give a number (min value 10)"
-msgstr ""
+msgstr "Saisissez un nombre (valeur minimale 10)"
 
 #: ../validators/test_view.py:44
 msgid "Give a positive number"
-msgstr ""
+msgstr "Saisissez un nombre positif"
 
 #: ../validators/test_view.py:47
 msgid "Give a strict positive number"
-msgstr ""
+msgstr "Saisissez un nombre strictement positif"
 
 #: ../validators/test_view.py:65
 msgid "Give an email (unique in DB)"
-msgstr ""
+msgstr "Saisissez une adresse email (inexistante dans la base de données)"
 
 #: ../validators/test_view.py:67
 msgid "Give be an email address !!!"
-msgstr ""
+msgstr "Veuillez saisir une adresse email !!!"
 
 #: ../validators/test_view.py:38
 msgid "Give me a 10 ;)"
-msgstr ""
+msgstr "N'hésitez pas à me donner un 10 ;)"
 
 #: ../validators/test_view.py:62
 msgid "Give text (max length: 5 characters)"
-msgstr ""
+msgstr "Veuillez saisir du texte (longueur maximale : 5 caractères)"
 
 #: ../validators/test_view.py:59
 msgid "Give text (min length: 3 characters)"
-msgstr ""
+msgstr "Veuillez saisir du texte (longueur minimale : 3 caractères)"
 
 #: ../i18n/languages.py:61
 msgid "Greek"
@@ -569,7 +571,7 @@ msgstr "Herero"
 
 #: ../validators/test_view.py:41
 msgid "Hexadecimal color"
-msgstr ""
+msgstr "Couleur hexadécimale"
 
 #: ../i18n/languages.py:92
 msgid "Hindi"
@@ -601,15 +603,15 @@ msgstr "Igbo"
 
 #: ../validators/files.py:123
 msgid "Image contains errors."
-msgstr ""
+msgstr "L'image contient des erreurs."
 
 #: ../validators/files.py:122
 msgid "Image is too big."
-msgstr ""
+msgstr "L'image est trop lourde."
 
 #: ../validators/test_view.py:76
 msgid "Image max pixels"
-msgstr ""
+msgstr "Nombre maximum de pixels de l'image"
 
 #: ../../scripts/ipkg-quality.py:64
 msgid "Import problems"
@@ -821,7 +823,7 @@ msgstr "Norwegian Nyrnosk"
 
 #: ../validators/test_view.py:82
 msgid "Number >=5 and equals to 10"
-msgstr ""
+msgstr "Nombre >=5 et égal à 10"
 
 #: ../../scripts/ipkg-quality.py:45
 msgid "Number of lines"
@@ -861,7 +863,7 @@ msgstr "Ossetian; Ossetic"
 
 #: ../web/views.py:325
 msgid "PUT only allowed on files"
-msgstr ""
+msgstr "Seule la méthode PUT est autorisée pour le chargement des fichiers"
 
 #: ../i18n/languages.py:163
 msgid "Pali"
@@ -1001,7 +1003,7 @@ msgstr "Spanish/Spain"
 
 #: ../validators/test_view.py:79
 msgid "Strong password"
-msgstr ""
+msgstr "Mot de passe fort"
 
 #: ../../scripts/ipkg-quality.py:49
 msgid "Style"
@@ -1050,14 +1052,13 @@ msgstr "Telugu"
 #: ../validators/test_view.py:29
 #, fuzzy
 msgid "Test validators"
-msgstr "avec des tabulateurs"
+msgstr "Validateurs de test"
 
 #: ../i18n/languages.py:195
 msgid "Thai"
 msgstr "Thai"
 
 #: ../validators/database.py:27
-#, fuzzy
 msgid "The field should be unique."
 msgstr "Ce champ est obligatoire."
 
@@ -1067,11 +1068,11 @@ msgstr "L'option --show-lines prend un seul fichier en paramètre"
 
 #: ../web/views.py:235
 msgid "The query could not be processed."
-msgstr ""
+msgstr "La requête n'a pu être traitée."
 
 #: ../validators/base.py:86
 msgid "The value should be equals to {base_value}"
-msgstr ""
+msgstr "La valeur doit être égale à {base_value}"
 
 #: ../web/views.py:186
 msgid "There are errors, check below"
@@ -1083,7 +1084,7 @@ msgstr "Il y a des erreurs... XXX"
 
 #: ../validators/test_view.py:68
 msgid "This address is already used"
-msgstr ""
+msgstr "Cette adresse est déjà utilisée"
 
 #: ../database/fields.py:34
 msgid "This field is required."
@@ -1097,18 +1098,20 @@ msgstr "Ce fichier est parfait !"
 msgid ""
 "This password is too short. It must contain at least {min_length} characters."
 msgstr ""
+"Ce mot de passe est trop court. Le mot de passe doit comporter au moins "
+"{min_length} caractères."
 
 #: ../validators/password.py:40
 msgid "This password should contains at least one character."
-msgstr ""
+msgstr "Ce mot de passe doit comporter au moins un caractère."
 
 #: ../validators/password.py:41
 msgid "This password should contains at least one number."
-msgstr ""
+msgstr "Ce mot de passe doit comporter au moins un chiffre."
 
 #: ../validators/password.py:42
 msgid "This password should contains at least one special character."
-msgstr ""
+msgstr "Ce mot de passe doit comporter au moins un caractère spécial."
 
 #: ../i18n/languages.py:41
 msgid "Tibetan"
@@ -1196,7 +1199,7 @@ msgstr "Yoruba"
 
 #: ../validators/files.py:91
 msgid "Your file is too big. ({size})"
-msgstr ""
+msgstr "Votre fichier est trop volumineux. ({size})"
 
 #: ../i18n/languages.py:218
 msgid "Zhuang; Chuang"
@@ -1235,16 +1238,19 @@ msgid "and"
 msgstr "et"
 
 #: ../i18n/oracle.py:265
+#, fuzzy
 msgid "are"
-msgstr ""
+msgstr "sont"
 
 #: ../i18n/oracle.py:266
+#, fuzzy
 msgid "as"
-msgstr ""
+msgstr "comme"
 
 #: ../i18n/oracle.py:267
+#, fuzzy
 msgid "aux"
-msgstr ""
+msgstr "aux"
 
 #: ../../scripts/ipkg-quality.py:51
 msgid "bad indented"
@@ -1255,36 +1261,44 @@ msgid "but"
 msgstr "mais"
 
 #: ../database/catalog.py:65
+#, fuzzy
 msgid "c"
-msgstr ""
+msgstr "c"
 
 #: ../i18n/oracle.py:269
+#, fuzzy
 msgid "como"
-msgstr ""
+msgstr "comme"
 
 #: ../i18n/oracle.py:270
+#, fuzzy
 msgid "con"
-msgstr ""
+msgstr "avec"
 
 #: ../i18n/oracle.py:271
+#, fuzzy
 msgid "de"
-msgstr ""
+msgstr "de"
 
 #: ../i18n/oracle.py:272
+#, fuzzy
 msgid "del"
-msgstr ""
+msgstr "du"
 
 #: ../i18n/oracle.py:273
+#, fuzzy
 msgid "des"
-msgstr ""
+msgstr "des"
 
 #: ../i18n/oracle.py:274
+#, fuzzy
 msgid "donc"
-msgstr ""
+msgstr "donc"
 
 #: ../i18n/oracle.py:275 ../i18n/oracle.py:334
+#, fuzzy
 msgid "du"
-msgstr ""
+msgstr "du"
 
 #: ../database/catalog.py:68 ../database/catalog.py:69
 #: ../database/catalog.py:70 ../database/catalog.py:71
@@ -1292,164 +1306,200 @@ msgid "e"
 msgstr "e"
 
 #: ../i18n/oracle.py:276
+#, fuzzy
 msgid "el"
-msgstr ""
+msgstr "le"
 
 #: ../i18n/oracle.py:277
+#, fuzzy
 msgid "elle"
-msgstr ""
+msgstr "elle"
 
 #: ../i18n/oracle.py:278
+#, fuzzy
 msgid "elles"
-msgstr ""
+msgstr "elles"
 
 #: ../i18n/oracle.py:279
+#, fuzzy
 msgid "es"
-msgstr ""
+msgstr "est"
 
 #: ../i18n/oracle.py:280
+#, fuzzy
 msgid "est"
-msgstr ""
+msgstr "est"
 
 #: ../i18n/oracle.py:281
+#, fuzzy
 msgid "está"
-msgstr ""
+msgstr "est"
 
 #: ../i18n/oracle.py:282
+#, fuzzy
 msgid "et"
-msgstr ""
+msgstr "et"
 
 #: ../i18n/oracle.py:283
+#, fuzzy
 msgid "from"
-msgstr ""
+msgstr "de/d'"
 
 #: ../i18n/oracle.py:284
+#, fuzzy
 msgid "hay"
-msgstr ""
+msgstr "il y a"
 
 #: ../i18n/oracle.py:285
+#, fuzzy
 msgid "he"
-msgstr ""
+msgstr "ai"
 
 #: ../i18n/oracle.py:286 ../database/catalog.py:73 ../database/catalog.py:74
+#, fuzzy
 msgid "i"
-msgstr ""
+msgstr "i"
 
 #: ../i18n/oracle.py:287
+#, fuzzy
 msgid "il"
-msgstr ""
+msgstr "il"
 
 #: ../i18n/oracle.py:288
+#, fuzzy
 msgid "ils"
-msgstr ""
+msgstr "ils"
 
 #: ../i18n/oracle.py:289
+#, fuzzy
 msgid "in"
-msgstr ""
+msgstr "dans"
 
 #: ../i18n/oracle.py:290
+#, fuzzy
 msgid "is"
-msgstr ""
+msgstr "est"
 
 #: ../i18n/oracle.py:291
+#, fuzzy
 msgid "it"
-msgstr ""
+msgstr "il/elle"
 
 #: ../i18n/oracle.py:292
+#, fuzzy
 msgid "je"
-msgstr ""
+msgstr "je"
 
 #: ../i18n/oracle.py:293
+#, fuzzy
 msgid "las"
-msgstr ""
+msgstr "les"
 
 #: ../i18n/oracle.py:294
+#, fuzzy
 msgid "le"
-msgstr ""
+msgstr "le"
 
 #: ../i18n/oracle.py:296
+#, fuzzy
 msgid "les"
-msgstr ""
+msgstr "les"
 
 #: ../i18n/oracle.py:295
+#, fuzzy
 msgid "lo"
-msgstr ""
+msgstr "le"
 
 #: ../../scripts/ipkg-quality.py:52
 msgid "longer than 79 characters"
 msgstr "plus long que 79 caractères"
 
 #: ../i18n/oracle.py:297
+#, fuzzy
 msgid "los"
-msgstr ""
+msgstr "les"
 
 #: ../i18n/oracle.py:298
+#, fuzzy
 msgid "mais"
-msgstr ""
+msgstr "mais"
 
 #: ../stl/stl.py:143
 msgid "name '{}' not found in the namespace"
-msgstr ""
+msgstr "nom '{}' introuvable dans l'espace de noms"
 
 #: ../i18n/oracle.py:299
+#, fuzzy
 msgid "no"
-msgstr ""
+msgstr "non"
 
 #: ../i18n/oracle.py:300
+#, fuzzy
 msgid "nous"
-msgstr ""
+msgstr "nous"
 
 #: ../i18n/oracle.py:301
+#, fuzzy
 msgid "nueva"
-msgstr ""
+msgstr "nouvelle"
 
 #: ../i18n/oracle.py:302 ../database/catalog.py:75
+#, fuzzy
 msgid "o"
-msgstr ""
+msgstr "ou"
 
 #: ../handlers/utils.py:36
 msgid "oe"
 msgstr "oe"
 
 #: ../i18n/oracle.py:303
+#, fuzzy
 msgid "of"
-msgstr ""
+msgstr "de"
 
 #: ../i18n/oracle.py:304
+#, fuzzy
 msgid "on"
-msgstr ""
+msgstr "sur"
 
 #: ../i18n/oracle.py:305
+#, fuzzy
 msgid "or"
-msgstr ""
+msgstr "ou"
 
 #: ../i18n/oracle.py:306
 msgid "où"
-msgstr ""
+msgstr "où"
 
 #: ../i18n/oracle.py:307
+#, fuzzy
 msgid "para"
-msgstr ""
+msgstr "pour"
 
 #: ../i18n/oracle.py:308
+#, fuzzy
 msgid "pero"
-msgstr ""
+msgstr "mais"
 
 #: ../i18n/oracle.py:309
+#, fuzzy
 msgid "por"
-msgstr ""
+msgstr "par"
 
 #: ../i18n/oracle.py:310
+#, fuzzy
 msgid "que"
-msgstr ""
+msgstr "que"
 
 #: ../i18n/oracle.py:311
+#, fuzzy
 msgid "qué"
-msgstr ""
+msgstr "quel"
 
 #: ../i18n/oracle.py:312
+#, fuzzy
 msgid "she"
-msgstr ""
+msgstr "elle"
 
 #: ../handlers/utils.py:38
 msgid "ss"
@@ -1460,20 +1510,24 @@ msgid "string exceptions are used"
 msgstr "exception de type 'string' utilisée"
 
 #: ../i18n/oracle.py:313
+#, fuzzy
 msgid "su"
-msgstr ""
+msgstr "sa/son"
 
 #: ../i18n/oracle.py:314
+#, fuzzy
 msgid "sur"
-msgstr ""
+msgstr "sur"
 
 #: ../i18n/oracle.py:315
+#, fuzzy
 msgid "that"
-msgstr ""
+msgstr "ce/que"
 
 #: ../i18n/oracle.py:316
+#, fuzzy
 msgid "the"
-msgstr ""
+msgstr "le/la/les/l'"
 
 #: ../csv/table.py:329
 msgid ""
@@ -1483,49 +1537,59 @@ msgstr ""
 "utilisée"
 
 #: ../i18n/oracle.py:317
+#, fuzzy
 msgid "their"
-msgstr ""
+msgstr "leur"
 
 #: ../i18n/oracle.py:318
 msgid "this"
-msgstr ""
+msgstr "ce"
 
 #: ../i18n/oracle.py:319
+#, fuzzy
 msgid "to"
-msgstr ""
+msgstr "pour"
 
 #: ../i18n/oracle.py:320
+#, fuzzy
 msgid "tu"
-msgstr ""
+msgstr "tu"
 
 #: ../database/catalog.py:76 ../database/catalog.py:77
 #: ../database/catalog.py:78
+#, fuzzy
 msgid "u"
-msgstr ""
+msgstr "ou"
 
 #: ../i18n/oracle.py:321
+#, fuzzy
 msgid "un"
-msgstr ""
+msgstr "un"
 
 #: ../i18n/oracle.py:322
+#, fuzzy
 msgid "una"
-msgstr ""
+msgstr "une"
 
 #: ../i18n/oracle.py:323
+#, fuzzy
 msgid "une"
-msgstr ""
+msgstr "une"
 
 #: ../i18n/oracle.py:324
+#, fuzzy
 msgid "vous"
-msgstr ""
+msgstr "vous"
 
 #: ../i18n/oracle.py:325
+#, fuzzy
 msgid "when"
-msgstr ""
+msgstr "lorsque"
 
 #: ../i18n/oracle.py:326
+#, fuzzy
 msgid "where"
-msgstr ""
+msgstr "où"
 
 #: ../../scripts/ipkg-quality.py:50
 msgid "with tabulators"
@@ -1536,143 +1600,173 @@ msgid "with trailing whitespaces"
 msgstr "se terminant par des espaces"
 
 #: ../i18n/oracle.py:327
+#, fuzzy
 msgid "y"
-msgstr ""
+msgstr "et"
 
 #: ../i18n/oracle.py:328
+#, fuzzy
 msgid "you"
-msgstr ""
+msgstr "tu/vous"
 
 #: ../i18n/oracle.py:329
+#, fuzzy
 msgid "your"
-msgstr ""
+msgstr "ton/ta/tes/votre/vos"
 
 #: ../i18n/oracle.py:229
+#, fuzzy
 msgid "¡"
-msgstr ""
+msgstr "i"
 
 #: ../i18n/oracle.py:230
 msgid "¿"
-msgstr ""
+msgstr "¿"
 
 #: ../database/catalog.py:60
+#, fuzzy
 msgid "À"
-msgstr ""
+msgstr "À"
 
 #: ../database/catalog.py:61
+#, fuzzy
 msgid "Â"
-msgstr ""
+msgstr "Â"
 
 #: ../handlers/utils.py:25
-#, fuzzy
 msgid ""
 "ÄÅÁÀÂÃĀäåáàâãāăÇçÉÈÊËĒéèêëēğÍÌÎÏĪíìîïīıļÑñÖÓÒÔÕØŌöóòôõøōőÜÚÙÛŪüúùûūŞşţÝŸȲýÿȳŽž"
 "°«»’"
-msgstr "ÄÅÁÀÂÃĀäåáàâãāăÇçÉÈÊËĒéèêëēğÍÌÎÏĪíìîïīıļÑñÖÓÒÔÕØŌöóòôõøōőÜÚÙÛŪüúùûūŞşţÝŸȲýÿȳŽž"
+msgstr ""
+"ÄÅÁÀÂÃĀäåáàâãāăÇçÉÈÊËĒéèêëēğÍÌÎÏĪíìîïīıļÑñÖÓÒÔÕØŌöóòôõøōőÜÚÙÛŪüúùûūŞşţÝŸȲýÿȳŽ"
+"ž°«»’"
 
 #: ../handlers/utils.py:35
 msgid "Æ"
 msgstr "Æ"
 
 #: ../database/catalog.py:64
+#, fuzzy
 msgid "Ç"
-msgstr ""
+msgstr "Ç"
 
 #: ../database/catalog.py:66
+#, fuzzy
 msgid "É"
-msgstr ""
+msgstr "É"
 
 #: ../database/catalog.py:67
+#, fuzzy
 msgid "Ê"
-msgstr ""
+msgstr "Ê"
 
 #: ../database/catalog.py:72
+#, fuzzy
 msgid "Î"
-msgstr ""
+msgstr "Î"
 
 #: ../handlers/utils.py:38 ../i18n/oracle.py:232
 msgid "ß"
 msgstr "ß"
 
 #: ../i18n/oracle.py:261 ../database/catalog.py:63
+#, fuzzy
 msgid "à"
-msgstr ""
+msgstr "à"
 
 #: ../database/catalog.py:62
+#, fuzzy
 msgid "â"
-msgstr ""
+msgstr "â"
 
 #: ../i18n/oracle.py:231
+#, fuzzy
 msgid "ä"
-msgstr ""
+msgstr "ä"
 
 #: ../handlers/utils.py:34
 msgid "æ"
 msgstr "æ"
 
 #: ../i18n/oracle.py:233 ../database/catalog.py:65
+#, fuzzy
 msgid "ç"
-msgstr ""
+msgstr "ç"
 
 #: ../database/catalog.py:70
+#, fuzzy
 msgid "è"
-msgstr ""
+msgstr "è"
 
 #: ../database/catalog.py:68
+#, fuzzy
 msgid "é"
-msgstr ""
+msgstr "é"
 
 #: ../i18n/oracle.py:234 ../database/catalog.py:69
+#, fuzzy
 msgid "ê"
-msgstr ""
+msgstr "ê"
 
 #: ../database/catalog.py:71
+#, fuzzy
 msgid "ë"
-msgstr ""
+msgstr "ë"
 
 #: ../i18n/oracle.py:235
+#, fuzzy
 msgid "í"
-msgstr ""
+msgstr "í"
 
 #: ../database/catalog.py:73
+#, fuzzy
 msgid "î"
-msgstr ""
+msgstr "î"
 
 #: ../database/catalog.py:74
+#, fuzzy
 msgid "ï"
-msgstr ""
+msgstr "ï"
 
 #: ../i18n/oracle.py:236
+#, fuzzy
 msgid "ñ"
-msgstr ""
+msgstr "ñ"
 
 #: ../i18n/oracle.py:238
+#, fuzzy
 msgid "ó"
-msgstr ""
+msgstr "ó"
 
 #: ../database/catalog.py:75
+#, fuzzy
 msgid "ô"
-msgstr ""
+msgstr "ô"
 
 #: ../i18n/oracle.py:237
+#, fuzzy
 msgid "ö"
-msgstr ""
+msgstr "ö"
 
 #: ../database/catalog.py:77
+#, fuzzy
 msgid "ù"
-msgstr ""
+msgstr "ù"
 
 #: ../i18n/oracle.py:240
+#, fuzzy
 msgid "ú"
-msgstr ""
+msgstr "ú"
 
 #: ../database/catalog.py:76
+#, fuzzy
 msgid "û"
-msgstr ""
+msgstr "û"
 
 #: ../i18n/oracle.py:239 ../database/catalog.py:78
+#, fuzzy
 msgid "ü"
-msgstr ""
+msgstr "ü"
 
 #: ../handlers/utils.py:37
 msgid "Œ"
@@ -1683,48 +1777,59 @@ msgid "œ"
 msgstr "œ"
 
 #: ../i18n/oracle.py:253
+#, fuzzy
 msgid "、"
-msgstr ""
+msgstr "、"
 
 #: ../i18n/oracle.py:254
+#, fuzzy
 msgid "。"
-msgstr ""
+msgstr "。"
 
 #: ../i18n/oracle.py:247
+#, fuzzy
 msgid "が"
-msgstr ""
+msgstr "が"
 
 #: ../i18n/oracle.py:245
+#, fuzzy
 msgid "で"
-msgstr ""
+msgstr "で"
 
 #: ../i18n/oracle.py:251
+#, fuzzy
 msgid "と"
-msgstr ""
+msgstr "と"
 
 #: ../i18n/oracle.py:246
+#, fuzzy
 msgid "に"
-msgstr ""
+msgstr "に"
 
 #: ../i18n/oracle.py:243
+#, fuzzy
 msgid "の"
-msgstr ""
+msgstr "の"
 
 #: ../i18n/oracle.py:244
+#, fuzzy
 msgid "は"
-msgstr ""
+msgstr "は"
 
 #: ../i18n/oracle.py:248
+#, fuzzy
 msgid "へ"
-msgstr ""
+msgstr "へ"
 
 #: ../i18n/oracle.py:250
+#, fuzzy
 msgid "や"
-msgstr ""
+msgstr "や"
 
 #: ../i18n/oracle.py:249
+#, fuzzy
 msgid "を"
-msgstr ""
+msgstr "を"
 
 #~ msgid "#"
 #~ msgstr "#"

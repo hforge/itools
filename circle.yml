@@ -1,0 +1,48 @@
+machine:
+  services:
+    - docker
+
+
+dependencies:
+  pre:
+    # Global dependencies
+    - sudo apt-get install libxapian-dev ruby-sass python-gtk2 libsoup2.4-1 libsoup2.4-dev
+    # Install Xapian core 1.2.21
+    - wget http://oligarchy.co.uk/xapian/1.2.21/xapian-core-1.2.21.tar.xz
+    - tar Jxf xapian-core-1.2.21.tar.xz
+    - ./configure && make && sudo make install:
+        pwd:
+          xapian-core-1.2.21
+    # Install xapian bindings
+    - wget http://oligarchy.co.uk/xapian/1.2.21/xapian-bindings-1.2.21.tar.xz
+    - tar Jxf xapian-bindings-1.2.21.tar.xz
+    - ./configure PYTHON=/home/ubuntu/virtualenvs/venv-system/bin/python --with-python && make && sudo make install:
+        pwd:
+          xapian-bindings-1.2.21
+    # Install Pygobject 2.21.3
+    - wget http://ftp.gnome.org/pub/GNOME/sources/pygobject/2.21/pygobject-2.21.3.tar.gz
+    - tar -xf pygobject-2.21.3.tar.gz
+    - ./configure --prefix=/home/ubuntu/virtualenvs/venv-system && make && sudo make install:
+        pwd:
+          pygobject-2.21.3
+    # Install libgit2 0.24.2
+    - wget https://github.com/libgit2/libgit2/archive/v0.24.2.tar.gz
+    - tar xzf v0.24.2.tar.gz
+    - cmake . && make && sudo make install:
+        pwd: libgit2-0.24.2
+    # Install pygit2 0.24.2 (same version as libgit2)
+    - pip install pygit2==0.24.2
+    - sudo ldconfig # Bugfix ubuntu see http://www.pygit2.org/install.html#troubleshooting
+    # Pip install
+    - pip install --upgrade pip
+    # Install dependencies
+    - pip install --upgrade -r requirements.txt
+    # Install
+    - python setup.py install
+
+test:
+  pre:
+    - git config --global user.name hforge
+    - git config --global user.email test@hforge.org
+  override:
+    - python test/test.py

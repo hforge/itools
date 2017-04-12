@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: 2017-03-24 09:03+CET\n"
-"PO-Revision-Date: 2017-04-12 12:35+0000\n"
+"PO-Revision-Date: 2017-04-12 12:36+0000\n"
 "Last-Translator: Verba-Translations <translators@bepatient.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: de\n"
@@ -377,7 +377,7 @@ msgstr "Vergewissern Sie sich, dass der wert positiv ist."
 
 #: ../validators/base.py:46
 msgid "Enter a valid value"
-msgstr "Ungültiger Wert."
+msgstr "Ungültiger Wert"
 
 #: ../validators/base.py:113
 msgid "Enter a valid value."
@@ -1073,7 +1073,7 @@ msgstr "Der Wert sollte gleich {base_value} sein"
 
 #: ../web/views.py:186
 msgid "There are errors, check below"
-msgstr "Es sind Fehler aufgetreten, überprüfen Sie unten."
+msgstr "Es sind Fehler aufgetreten, überprüfen Sie unten"
 
 #: ../web/exceptions.py:127
 msgid "There are errors... XXX"

@@ -39,10 +39,12 @@ dependencies:
     - pip install --upgrade -r requirements.txt
     # Install
     - python setup.py install
+    - python setup.py install
 
 test:
   pre:
     - git config --global user.name hforge
     - git config --global user.email test@hforge.org
   override:
-    - python test/test.py
+    - cd test
+    - python test.py

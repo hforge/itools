@@ -73,6 +73,7 @@ class ItoolsView(prototype):
 
     # Access Control
     access = False
+    access_OPTIONS = True
     known_methods = []
 
     def is_access_allowed(self, context):

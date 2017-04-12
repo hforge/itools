@@ -46,5 +46,5 @@ test:
     - git config --global user.name hforge
     - git config --global user.email test@hforge.org
   override:
-    - cd test
-    - python test.py
+    - python test.py:
+        pwd: test

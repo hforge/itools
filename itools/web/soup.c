@@ -645,7 +645,6 @@ PyServerType_listen (PyServer * self, PyObject * args, PyObject * kwdict)
 
   /* Go */
   //soup_server_run_async (self->s_server);
-  GError *error = NULL;
   s_socket_address = g_inet_socket_address_new (s_address, port);
   success = soup_server_listen (self->s_server, s_socket_address, 0, NULL);
   if (!success)

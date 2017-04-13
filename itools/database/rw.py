@@ -770,6 +770,7 @@ def check_database(target):
 
     This is meant to be used by scripts, like 'icms-start.py'
     """
+    print('Checking database...')
     cwd = '%s/database' % target
 
     # Check modifications to the working tree not yet in the index.
@@ -785,11 +786,11 @@ def check_database(target):
         return True
 
     # Something went wrong
-    print 'The database is not in a consistent state.  Fix it manually with'
-    print 'the help of Git:'
-    print
-    print '  $ cd %s/database' % target
-    print '  $ git clean -fxd'
-    print '  $ git checkout -f'
-    print
+    print('The database is not in a consistent state.  Fix it manually with')
+    print('the help of Git:')
+    print('')
+    print('  $ cd %s/database' % target)
+    print('  $ git clean -fxd')
+    print('  $ git checkout -f')
+    print('')
     return False

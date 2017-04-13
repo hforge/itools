@@ -46,7 +46,14 @@ class ReadonlyError(StandardError):
 
 class RODatabase(object):
 
+    read_only = True
+
     def __init__(self, path, size_min=4800, size_max=5200, catalog=None):
+        # The "git add" arguments
+        self.added = set()
+        self.changed = set()
+        self.removed = set()
+        self.has_changed = False
         # 1. Keep the path
         if not lfs.is_folder(path):
             error = '"%s" should be a folder, but it is not' % path
@@ -446,7 +453,8 @@ class RODatabase(object):
     def get_catalog(self):
         path = '%s/catalog' % self.path
         fields = get_register_fields()
-        return Catalog(path, fields, read_only=True)
+        root = self.get_resource('/', soft=True)
+        return Catalog(path, fields, read_only=self.read_only, root=root)
 
 
     def search(self, query=None, **kw):

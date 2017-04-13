@@ -96,6 +96,9 @@ class Heap(object):
 
 class RWDatabase(RODatabase):
 
+
+    read_only = False
+
     def __init__(self, path, size_min, size_max, catalog=None):
         proxy = super(RWDatabase, self)
         proxy.__init__(path, size_min, size_max, catalog)
@@ -161,18 +164,13 @@ class RWDatabase(RODatabase):
                 self.catalog.unindex_document(abspath)
         self.catalog._db.commit_transaction()
         self.catalog._db.flush()
-        self.catalog._db.begin_transaction(False)
+        self.catalog._db.begin_transaction(self.catalog.commit_each_transaction)
         self.catalog.logger.clear()
 
 
     def close(self):
         self.abort_changes()
         self.catalog.close()
-
-
-    def get_catalog(self):
-        path = '%s/catalog' % self.path
-        return Catalog(path, get_register_fields())
 
 
     #######################################################################

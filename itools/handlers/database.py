@@ -37,6 +37,7 @@ class RODatabase(object):
     # Flag to know whether to commit or not.  This is to avoid superfluos
     # actions by the 'save' and 'abort' methods.
     has_changed = False
+    sync_filesystem = True
 
 
     def __init__(self, size_min=4800, size_max=5200, fs=None):
@@ -195,7 +196,10 @@ class RODatabase(object):
         key = self.normalize_key(key)
 
         # Synchronize
-        handler = self._sync_filesystem(key)
+        if self.sync_filesystem:
+            handler = self._sync_filesystem(key)
+        else:
+            handler = self.cache.get(key)
         if handler is not None:
             return True
 
@@ -236,7 +240,10 @@ class RODatabase(object):
 
     def _get_handler(self, key, cls=None, soft=False):
         # Synchronize
-        handler = self._sync_filesystem(key)
+        if self.sync_filesystem:
+            handler = self._sync_filesystem(key)
+        else:
+            handler = self.cache.get(key)
         if handler is not None:
             # Check the class matches
             if cls is not None and not isinstance(handler, cls):

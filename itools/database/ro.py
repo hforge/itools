@@ -21,11 +21,8 @@
 # Import from the Standard Library
 from sys import getrefcount
 
-# Import from other libraries
-from xapian import DatabaseError, DatabaseOpeningError
-
 # Import from itools
-from itools.core import LRUCache, lazy
+from itools.core import LRUCache
 from itools.fs import lfs
 from itools.handlers import Folder, get_handler_class_by_mimetype
 from itools.log import log_warning

@@ -336,6 +336,7 @@ class Context(prototype):
         origin = context.get_header('Origin')
         self.set_header('Access-Control-Allow-Credentials', 'true')
         self.set_header('Access-Control-Allow-Origin', origin)
+        self.set_header('Access-Control-Allow-Headers', 'Authorization')
 
 
     #######################################################################

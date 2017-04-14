@@ -402,10 +402,14 @@ class Catalog(object):
 
 
     def close(self):
-        self._db.cancel_transaction()
-        self._db.flush()
-        self._db.close()
-        if self.logger:
+        if self.commit_each_transaction:
+            self._db.cancel_transaction()
+            self._db.close()
+        else:
+            self.abort_changes()
+            self._db.commit_transaction()
+            self._db.flush()
+            self._db.close()
             self.logger.clear()
 
 

@@ -3,4 +3,4 @@ pytz==2010h
 xlrd==0.6.1
 pygit2==0.24.2
 python-magic==0.4.10
-pillow==3.0.0
+pillow==3.4.2

@@ -350,13 +350,25 @@ class Catalog(object):
         self._metadata = {}
         self._value_nb = 0
         self._prefix_nb = 0
-        self._load_all_internal()
         self.transaction_abspaths = []
+        self._load_all_internal()
+        self._init_all_metadata()
         # Catalog log
         if path:
             catalog_log = '{}/catalog.log'.format(path)
             self.logger = CatalogLogger(catalog_log)
             register_logger(self.logger, 'itools.catalog')
+
+
+
+    def _init_all_metadata(self):
+        """Init new metadata (to avoid 'field is not indexed' warning)
+        """
+        metadata = self._metadata
+        for name, field_cls in self._fields.items():
+            if name not in metadata:
+                metadata[name] = self._get_info(field_cls, name)
+        self._db.set_metadata('metadata', dumps(metadata))
 
 
     #######################################################################

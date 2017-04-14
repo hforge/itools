@@ -410,6 +410,7 @@ class Catalog(object):
             self._db.commit_transaction()
             self._db.flush()
             self._db.close()
+        if self.logger:
             self.logger.clear()
 
 

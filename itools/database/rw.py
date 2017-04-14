@@ -155,7 +155,6 @@ class RWDatabase(RODatabase):
         if not lines:
             return
         print("Catalog wasn't stopped gracefully. Reindexation in progress")
-        lines = self.catalog.logger.get_lines()
         for abspath in set(lines):
             r = self.get_resource(abspath, soft=True)
             if r:

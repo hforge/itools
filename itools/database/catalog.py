@@ -352,7 +352,8 @@ class Catalog(object):
         self._prefix_nb = 0
         self.transaction_abspaths = []
         self._load_all_internal()
-        self._init_all_metadata()
+        if not read_only:
+            self._init_all_metadata()
         # Catalog log
         if path:
             catalog_log = '{}/catalog.log'.format(path)
@@ -364,11 +365,16 @@ class Catalog(object):
     def _init_all_metadata(self):
         """Init new metadata (to avoid 'field is not indexed' warning)
         """
+        has_changes = False
         metadata = self._metadata
         for name, field_cls in self._fields.items():
             if name not in metadata:
+                has_changes = True
                 metadata[name] = self._get_info(field_cls, name)
-        self._db.set_metadata('metadata', dumps(metadata))
+        if has_changes:
+            self._db.set_metadata('metadata', dumps(metadata))
+            self._db.commit_transaction()
+            self._db.begin_transaction(self.commit_each_transaction)
 
 
     #######################################################################

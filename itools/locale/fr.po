@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: fr\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-03-24 09:03+CET\n"
-"PO-Revision-Date: 2017-04-19 09:13+0000\n"
+"PO-Revision-Date: 2017-04-19 09:15+0000\n"
 "Last-Translator: Florent Chenebault <florent.chenebault@bepatient.com>\n"
 "Language-Team: Français <fr@li.org>\n"
 "Language: fr\n"
@@ -378,7 +378,7 @@ msgstr "Assurez-vous que la valeur est positive."
 
 #: ../validators/base.py:46
 msgid "Enter a valid value"
-msgstr "Valeur invalide."
+msgstr "Entrez une valeur valide"
 
 #: ../validators/base.py:113
 msgid "Enter a valid value."
@@ -878,7 +878,7 @@ msgstr "Persian"
 
 #: ../../scripts/ipkg-quality.py:512
 msgid "Please give at least one file to analyse."
-msgstr "Svp, donnez au moins un fichier à analyser"
+msgstr "Merci de fournir au moins un fichier à analyser"
 
 #: ../i18n/languages.py:164
 msgid "Polish"

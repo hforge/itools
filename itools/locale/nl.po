@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.3.0\n"
-"POT-Creation-Date: 2017-03-24 09:03+CET\n"
+"POT-Creation-Date: 2017-04-19 10:04+CET\n"
 "PO-Revision-Date: 2017-04-19 09:54+0000\n"
 "Last-Translator: Florent Chenebault <florent.chenebault@bepatient.com>\n"
 "Language-Team: ??\n"
@@ -44,11 +44,11 @@ msgstr "%.01f MB"
 msgid "%s"
 msgstr "%s"
 
-#: ../database/catalog.py:832
+#: ../database/catalog.py:866
 msgid "%s%s"
 msgstr "%s%s"
 
-#: ../database/catalog.py:79
+#: ../database/catalog.py:80
 msgid "'"
 msgstr "'"
 
@@ -59,7 +59,7 @@ msgstr ","
 
 #: ../i18n/locale_.py:72 ../i18n/locale_.py:122 ../handlers/utils.py:58
 #: ../handlers/utils.py:59 ../handlers/utils.py:64 ../handlers/utils.py:65
-#: ../web/context.py:496
+#: ../web/context.py:501
 msgid "-"
 msgstr "-"
 
@@ -120,7 +120,7 @@ msgstr "???"
 msgid "@"
 msgstr "@"
 
-#: ../database/catalog.py:60 ../database/catalog.py:61
+#: ../database/catalog.py:61 ../database/catalog.py:62
 msgid "A"
 msgstr "A"
 
@@ -232,7 +232,7 @@ msgstr "Bulgaars"
 msgid "Burmese"
 msgstr "Birmaans"
 
-#: ../database/catalog.py:64
+#: ../database/catalog.py:65
 msgid "C"
 msgstr "C"
 
@@ -316,7 +316,7 @@ msgstr "Nederlands/België"
 msgid "Dzongkha"
 msgstr "Dzongkha"
 
-#: ../database/catalog.py:66 ../database/catalog.py:67
+#: ../database/catalog.py:67 ../database/catalog.py:68
 msgid "E"
 msgstr "E"
 
@@ -573,7 +573,7 @@ msgstr "Hiri Motu"
 msgid "Hungarian"
 msgstr "Hongaars"
 
-#: ../database/catalog.py:72
+#: ../database/catalog.py:73
 msgid "I"
 msgstr "I"
 
@@ -849,7 +849,7 @@ msgstr "Oromo"
 msgid "Ossetian; Ossetic"
 msgstr "Osseets; Ossetisch"
 
-#: ../web/views.py:325
+#: ../web/views.py:326
 msgid "PUT only allowed on files"
 msgstr "PUT alleen toegestaan voor bestanden"
 
@@ -1053,7 +1053,7 @@ msgstr "Dit veld moet uniek zijn."
 msgid "The option --show-lines takes one file in parameter."
 msgstr "De optie --show-lines beslaat één bestand in parameter."
 
-#: ../web/views.py:235
+#: ../web/views.py:236
 msgid "The query could not be processed."
 msgstr "Deze aanvraag kon niet worden verwerkt."
 
@@ -1061,7 +1061,7 @@ msgstr "Deze aanvraag kon niet worden verwerkt."
 msgid "The value should be equals to {base_value}"
 msgstr "De waarde moet gelijk zijn aan {base_value}"
 
-#: ../web/views.py:186
+#: ../web/views.py:187
 msgid "There are errors, check below"
 msgstr "Er is iets fout gegaan, controleer hieronder."
 
@@ -1199,7 +1199,7 @@ msgstr "Zoeloe"
 msgid "_"
 msgstr "_"
 
-#: ../database/catalog.py:62 ../database/catalog.py:63
+#: ../database/catalog.py:63 ../database/catalog.py:64
 msgid "a"
 msgstr "een"
 
@@ -1243,7 +1243,7 @@ msgstr "niet goed ingesprongen"
 msgid "but"
 msgstr "maar"
 
-#: ../database/catalog.py:65
+#: ../database/catalog.py:66
 msgid "c"
 msgstr "c"
 
@@ -1275,8 +1275,8 @@ msgstr "dus"
 msgid "du"
 msgstr "van de"
 
-#: ../database/catalog.py:68 ../database/catalog.py:69
-#: ../database/catalog.py:70 ../database/catalog.py:71
+#: ../database/catalog.py:69 ../database/catalog.py:70
+#: ../database/catalog.py:71 ../database/catalog.py:72
 msgid "e"
 msgstr "e"
 
@@ -1320,7 +1320,7 @@ msgstr "is"
 msgid "he"
 msgstr "hij"
 
-#: ../i18n/oracle.py:286 ../database/catalog.py:73 ../database/catalog.py:74
+#: ../i18n/oracle.py:286 ../database/catalog.py:74 ../database/catalog.py:75
 msgid "i"
 msgstr "ik"
 
@@ -1392,7 +1392,7 @@ msgstr "we"
 msgid "nueva"
 msgstr "nieuw"
 
-#: ../i18n/oracle.py:302 ../database/catalog.py:75
+#: ../i18n/oracle.py:302 ../database/catalog.py:76
 msgid "o"
 msgstr "o"
 
@@ -1486,8 +1486,8 @@ msgstr "om"
 msgid "tu"
 msgstr "je"
 
-#: ../database/catalog.py:76 ../database/catalog.py:77
-#: ../database/catalog.py:78
+#: ../database/catalog.py:77 ../database/catalog.py:78
+#: ../database/catalog.py:79
 msgid "u"
 msgstr "u"
 
@@ -1543,11 +1543,11 @@ msgstr "!"
 msgid "¿"
 msgstr "?"
 
-#: ../database/catalog.py:60
+#: ../database/catalog.py:61
 msgid "À"
 msgstr "À"
 
-#: ../database/catalog.py:61
+#: ../database/catalog.py:62
 msgid "Â"
 msgstr "Â"
 
@@ -1563,19 +1563,19 @@ msgstr ""
 msgid "Æ"
 msgstr "Æ"
 
-#: ../database/catalog.py:64
+#: ../database/catalog.py:65
 msgid "Ç"
 msgstr "Ç"
 
-#: ../database/catalog.py:66
+#: ../database/catalog.py:67
 msgid "É"
 msgstr "É"
 
-#: ../database/catalog.py:67
+#: ../database/catalog.py:68
 msgid "Ê"
 msgstr "Ê"
 
-#: ../database/catalog.py:72
+#: ../database/catalog.py:73
 msgid "Î"
 msgstr "Î"
 
@@ -1583,11 +1583,11 @@ msgstr "Î"
 msgid "ß"
 msgstr "ß"
 
-#: ../i18n/oracle.py:261 ../database/catalog.py:63
+#: ../i18n/oracle.py:261 ../database/catalog.py:64
 msgid "à"
 msgstr "à"
 
-#: ../database/catalog.py:62
+#: ../database/catalog.py:63
 msgid "â"
 msgstr "â"
 
@@ -1599,23 +1599,23 @@ msgstr "ä"
 msgid "æ"
 msgstr "æ"
 
-#: ../i18n/oracle.py:233 ../database/catalog.py:65
+#: ../i18n/oracle.py:233 ../database/catalog.py:66
 msgid "ç"
 msgstr "ç"
 
-#: ../database/catalog.py:70
+#: ../database/catalog.py:71
 msgid "è"
 msgstr "è"
 
-#: ../database/catalog.py:68
+#: ../database/catalog.py:69
 msgid "é"
 msgstr "é"
 
-#: ../i18n/oracle.py:234 ../database/catalog.py:69
+#: ../i18n/oracle.py:234 ../database/catalog.py:70
 msgid "ê"
 msgstr "ê"
 
-#: ../database/catalog.py:71
+#: ../database/catalog.py:72
 msgid "ë"
 msgstr "ë"
 
@@ -1623,11 +1623,11 @@ msgstr "ë"
 msgid "í"
 msgstr "í"
 
-#: ../database/catalog.py:73
+#: ../database/catalog.py:74
 msgid "î"
 msgstr "î"
 
-#: ../database/catalog.py:74
+#: ../database/catalog.py:75
 msgid "ï"
 msgstr "ï"
 
@@ -1639,7 +1639,7 @@ msgstr "ñ"
 msgid "ó"
 msgstr "ó"
 
-#: ../database/catalog.py:75
+#: ../database/catalog.py:76
 msgid "ô"
 msgstr "ô"
 
@@ -1647,7 +1647,7 @@ msgstr "ô"
 msgid "ö"
 msgstr "ö"
 
-#: ../database/catalog.py:77
+#: ../database/catalog.py:78
 msgid "ù"
 msgstr "ù"
 
@@ -1655,11 +1655,11 @@ msgstr "ù"
 msgid "ú"
 msgstr "ú"
 
-#: ../database/catalog.py:76
+#: ../database/catalog.py:77
 msgid "û"
 msgstr "û"
 
-#: ../i18n/oracle.py:239 ../database/catalog.py:78
+#: ../i18n/oracle.py:239 ../database/catalog.py:79
 msgid "ü"
 msgstr "ü"
 

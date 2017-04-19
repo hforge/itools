@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.3.0\n"
 "POT-Creation-Date: 2017-03-24 09:03+CET\n"
-"PO-Revision-Date: 2017-04-10 11:34+0000\n"
-"Last-Translator: Verba-Translations <translators@bepatient.com>\n"
+"PO-Revision-Date: 2017-04-19 09:54+0000\n"
+"Last-Translator: Florent Chenebault <florent.chenebault@bepatient.com>\n"
 "Language-Team: ??\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
@@ -385,6 +385,7 @@ msgid "Ewe"
 msgstr "Ewe"
 
 #: ../../scripts/ipkg-quality.py:57
+#, fuzzy
 msgid "Exception handling"
 msgstr "Exception handling"
 

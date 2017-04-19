@@ -26,6 +26,7 @@ from copy import deepcopy
 from base64 import decodestring, encodestring
 from datetime import datetime, timedelta
 from hashlib import sha224
+from time import time
 from urllib import quote, unquote
 
 # Import from pytz
@@ -146,13 +147,16 @@ class Context(prototype):
             return {}
         # Get content type
         content_type, type_parameters = self.get_header('content-type')
-        if content_type == 'application/x-www-form-urlencoded':
+        media_type = content_type.split(';')[0]
+        if media_type == 'application/x-www-form-urlencoded':
             # Case 1: urlencoded
             return self.get_form_body(body)
-        elif content_type == 'application/json':
+        elif media_type == 'application/json':
             # Case 2: json
             return self.get_json_body(body)
-        elif content_type.startswith('multipart/'):
+        elif media_type == 'application/octet-stream':
+            return {'body': body}
+        elif media_type.startswith('multipart/'):
             # Case 3: multipart
             return self.get_multipart_body(body)
         # Case 4: Not managed content type
@@ -272,7 +276,7 @@ class Context(prototype):
 
     def set_content_type(self, content_type, **kw):
         if type(content_type) is not str:
-            raise TypeError, 'expected string, got %s' % repr(content_type)
+            raise TypeError('expected string, got %s' % repr(content_type))
 
         parameters = [ '; %s=%s' % x for x in kw.items() ]
         parameters = ''.join(parameters)
@@ -332,6 +336,7 @@ class Context(prototype):
         origin = context.get_header('Origin')
         self.set_header('Access-Control-Allow-Credentials', 'true')
         self.set_header('Access-Control-Allow-Origin', origin)
+        self.set_header('Access-Control-Allow-Headers', 'Authorization')
 
 
     #######################################################################
@@ -439,7 +444,7 @@ class Context(prototype):
             return datatype.get_default()
         value = datatype.decode(value)
         if not datatype.is_valid(value):
-            raise ValueError, "Invalid cookie value"
+            raise ValueError("Invalid cookie value")
         return value
 
 
@@ -559,34 +564,54 @@ class Context(prototype):
         self.user = user
 
 
+    def get_authentication_credentials(self):
+        """Try to get credentials from Authorization header or Cookies"""
+
+        # Check for credential in headers
+        auth_header = self.get_header('Authorization')
+        if auth_header:
+            # Parse the header credentials
+            auth_type, b64_credentials = auth_header
+        else:
+            # No Authorization header, get credentials in cookies
+            b64_credentials = self.get_cookie('iauth')
+
+        if not b64_credentials:
+            # No credentials found
+            return None, None
+
+        # Try to return the decoded credentials
+        try:
+            credentials = decodestring(unquote(b64_credentials))
+        except Exception:
+            raise ValueError('bad credentials "%s"' % b64_credentials)
+
+        return credentials.split(':', 1)
+
+
     def authenticate(self):
-        """Checks the authentication cookie and sets the context user if all
+        """Checks the authentication credentials and sets the context user if all
         checks are ok.
         """
         self.user = None
 
-        # 1. Get the cookie
-        cookie = self.get_cookie('iauth')
-        if not cookie:
-            return
-
-        # 2. Parse the cookie
+        # 1. Get credentials with username and token
         try:
-            username, token = decodestring(unquote(cookie)).split(':', 1)
-        except Exception:
-            msg = 'bad authentication cookie "%s"' % cookie
+            username, token = self.get_authentication_credentials()
+        except ValueError as error:
+            msg = "Authentication error : %s " % error.message
             log_warning(msg, domain='itools.web')
             return
 
         if not username or not token:
             return
 
-        # 3. Get the user
+        # 2. Get the user
         user = self.root.get_user(username)
         if not user:
             return
 
-        # 4. Check the token
+        # 3. Check the token
         user_token = user.get_auth_token()
         if token == self._get_auth_token(user_token):
             self.user = user
@@ -615,12 +640,12 @@ class Context(prototype):
 
         # Only booleans and strings are allowed
         if type(access) is not str:
-            raise TypeError, 'unexpected value "%s"' % access
+            raise TypeError('unexpected value "%s"' % access)
 
         # Access Control through a method
         method = getattr(self.root, access, None)
         if method is None:
-            raise ValueError, 'access control "%s" not defined' % access
+            raise ValueError('access control "%s" not defined' % access)
 
         return method(user, resource)
 
@@ -636,6 +661,7 @@ class Context(prototype):
 
     def handle_request(self, soup_message, path):
         # (1) Attach to the soup message and path
+        start_time = time()  # Set start time
         context = self()
         context.soup_message = soup_message
         context.path = path
@@ -663,8 +689,10 @@ class Context(prototype):
         except StandardError:
             log_error('Internal error', domain='itools.web')
             context.set_default_response(500)
-            return context
         finally:
+            # Set request_time to the server to log in access
+            request_time = time() - start_time
+            self.server.request_time = request_time
             set_context(None)
             return context
 
@@ -795,6 +823,7 @@ def get_form_value(form, name, type=String, default=None):
             values[lang] = value
     check_form_value(field, values)
     return values
+
 
 
 class WebLogger(Logger):

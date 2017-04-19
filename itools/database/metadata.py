@@ -43,6 +43,7 @@ class Metadata(File):
     class_mimetypes = ['text/x-metadata']
     class_extension = 'metadata'
 
+    cls = None
 
     def reset(self):
         self.format = None
@@ -50,9 +51,23 @@ class Metadata(File):
         self.properties = {}
 
 
+    def __init__(self, key=None, string=None, database=None, cls=None, **kw):
+        self.cls = cls
+        kw['cls'] = cls
+        proxy = super(Metadata, self)
+        proxy.__init__(key=key, string=string, database=database, **kw)
+
+
     def new(self, cls=None, format=None, version=None):
+        self.cls = cls
         self.format = format or cls.class_id
         self.version = version or cls.class_version
+
+
+    def get_resource_class(self, class_id):
+        if self.cls:
+            return self.cls
+        return self.database.get_resource_class(class_id)
 
 
     def _load_state_from_file(self, file):
@@ -73,7 +88,7 @@ class Metadata(File):
             raise ValueError, 'unexpected parameters for the format property'
         self.format = value
         # Get the schema
-        resource_class = self.database.get_resource_class(value)
+        resource_class = self.get_resource_class(self.format)
 
         # Parse
         for name, value, parameters in parser:
@@ -126,7 +141,7 @@ class Metadata(File):
 
 
     def to_str(self):
-        resource_class = self.database.get_resource_class(self.format)
+        resource_class = self.get_resource_class(self.format)
 
         if self.version is None:
             lines = ['format:%s\n' % self.format]
@@ -200,7 +215,7 @@ class Metadata(File):
             return property.get(language)
 
         # Consider only the properties with a non empty value
-        cls = self.database.get_resource_class(self.format)
+        cls = self.get_resource_class(self.format)
         datatype = cls.get_field(name).datatype
         languages = [
             x for x in property if not datatype.is_empty(property[x].value) ]
@@ -254,7 +269,7 @@ class Metadata(File):
             value = MetadataProperty(value, None)
 
         # Get cls/field/datatype
-        cls = self.database.get_resource_class(self.format)
+        cls = self.get_resource_class(self.format)
         field = cls.get_field(name)
 
         # Case 4: Simple

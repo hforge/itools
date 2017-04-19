@@ -1,0 +1,122 @@
+
+Table of contents:
+
+  1. How to benchmark ?
+  2. How to analyze ?
+
+
+1. What can be benchmarked ?
+============================
+
+At every request Itools saved into a file (log/access) some infos :
+ - Request ip address
+ - Request date (HTTPDATE format)
+ - Request verb
+ - Request route
+ - Request HTTP version
+ - Request status
+ - Request processing time (in seconds with milliseconds resolution.)
+
+Generating a file containing many lines such as :
+
+localhost - - [23/Mar/2017:13:56:07 +0100] "GET / HTTP/1.1" 200 0.497
+
+
+2. How to analyze ?
+===================
+
+You can decide to analyze on the flow or after copying the file.
+
+There are many possible stack to analyze :
+
+ - Using small tools such as GOACCESS (https://goaccess.io)
+ - Using more complex stack such as the InfluxDATA TICK STACK
+
+You can use the tool you want.
+The most important think is the log format that of course can be overrided in every tool
+
+
+2.2 Using command line
+----------------------------
+
+List the 20 slowest requests:
+$ awk '{print $11 , $6 , $7}' access   | sort -r  | head -n 20
+
+List the 20 slowest POST requests:
+$ awk '{print $11 , $6 , $7}' access   | grep POST | sort -r  | head -n 20
+
+
+2.2 Using the GOACCESS tool
+----------------------------
+
+Goaccess is an open source real-time web log analyzer and interactive viewer that runs in a terminal in *nix systems or through your browser.
+
+
+In the terminal :
+$ goaccess FILE --log-format '%h %^[%d:%t %^] "%r" %s %b %T' --time-format '%H:%M:%S' --date-format '%d/%b/%Y'
+
+Generate an HTML report :
+$ goaccess FILE --log-format '%h %^[%d:%t %^] "%r" %s %b %T' --time-format '%H:%M:%S' --date-format '%d/%b/%Y' -a -o report.html
+
+
+2.3 Using the InfluxDATA TICK STACK
+------------------------------------
+
+TICK Stack is composed of 4 tools :
+
+- Telegraf (https://github.com/influxdata/telegraf)
+- InfluxDB (https://github.com/influxdata/influxdb)
+- Chronograf (https://github.com/influxdata/chonograf)
+- Kapacitor (https://github.com/influxdata/kapacitor)
+
+Only the first 2 are needed to benchmark.
+
+Telegraf is an agent written in Go for collecting, processing, aggregating, and writing metrics.
+It will automatically read the data from the file (as an input) and save them in an output (InfluxDB).
+
+Here is a telegraf configuration file :
+
+```
+# Telegraf Configuration
+
+# Configuration for telegraf agent
+[agent]
+  ## Default data collection interval for all inputs
+  interval = "10s"
+  round_interval = true
+  metric_batch_size = 1000
+  metric_buffer_limit = 10000
+  collection_jitter = "0s"
+  flush_interval = "10s"
+  flush_jitter = "0s"
+
+  ## Logging configuration:
+  debug = false
+  quiet = false
+
+###############################################################################
+#                            OUTPUT PLUGINS                                   #
+###############################################################################
+
+# Configuration for influxdb server to send metrics to
+[[outputs.influxdb]]
+  urls = ["http://influxdb:8086"] # InfluxDB HTTP API
+  database = "telegraf" # Database name where to store data
+  write_consistency = "any"
+  timeout = "5s"
+
+
+###############################################################################
+#                            SERVICE INPUT PLUGINS                            #
+###############################################################################
+
+# Stream and parse log file(s).
+[[inputs.logparser]]
+  files = ["/var/log/benchmark.log"]
+  from_beginning = false
+
+  [inputs.logparser.grok]
+    patterns = ["%{IPORHOST:client_ip} %{NOTSPACE:ident} %{NOTSPACE:auth} \\[%{HTTPDATE:ts:ts-httpd}\\] \"(?:%{WORD:verb:tag} %{NOTSPACE:request}(?: HTTP/%{NUMBER:http_version:float})?|%{DATA})\" %{NUMBER:resp_code:tag} (?:%{NUMBER:loading_time:float})"]
+    ## Name of the outputted measurement name.
+    measurement = "benchmark"
+```

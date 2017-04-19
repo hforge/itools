@@ -18,6 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the standard library
+import os
 from decimal import Decimal as decimal
 from datetime import datetime
 from marshal import dumps, loads
@@ -33,7 +34,7 @@ from itools.core import fixed_offset, lazy
 from itools.datatypes import Decimal, Integer, Unicode, String
 from itools.fs import lfs
 from itools.i18n import is_punctuation
-from itools.log import log_warning
+from itools.log import Logger, log_warning, log_info, register_logger
 from queries import AllQuery, _AndQuery, NotQuery, _OrQuery, PhraseQuery
 from queries import RangeQuery, StartQuery, TextQuery, _MultipleQuery
 
@@ -92,6 +93,11 @@ MSG_NOT_INDEXED_NOR_STORED = 'the "{name}" field is not indexed nor stored'
 def warn_not_indexed_nor_stored(name):
     log_warning(MSG_NOT_INDEXED_NOR_STORED.format(name=name))
 
+
+class CatalogLogger(Logger):
+
+    def format(self, domain, level, message):
+        return message + '\n'
 
 
 class Doc(object):
@@ -314,9 +320,13 @@ class SearchResults(object):
 
 class Catalog(object):
 
+    nb_changes = 0
+    logger = None
+
     def __init__(self, ref, fields, read_only=False, asynchronous_mode=True):
         # Load the database
         if isinstance(ref, (Database, WritableDatabase)):
+            path = None
             self._db = ref
         else:
             path = lfs.get_absolute_path(ref)
@@ -331,13 +341,19 @@ class Catalog(object):
 
         # Asynchronous mode
         if not read_only and asynchronous_mode:
-            db.begin_transaction(False)
-
+            db.begin_transaction()
+        # Set XAPIAN_FLUSH_THRESHOLD
+        os.environ["XAPIAN_FLUSH_THRESHOLD"] = "2000"
         # Load the xfields from the database
         self._metadata = {}
         self._value_nb = 0
         self._prefix_nb = 0
         self._load_all_internal()
+        # Catalog log
+        if path:
+            catalog_log = '{}/catalog.log'.format(path)
+            self.logger = CatalogLogger(catalog_log)
+            register_logger(self.logger, 'itools.catalog')
 
 
     #######################################################################
@@ -350,8 +366,15 @@ class Catalog(object):
             raise ValueError, "The transactions are synchronous"
         db = self._db
         db.commit_transaction()
-        db.flush()
-        db.begin_transaction(False)
+        if self.nb_changes > 200:
+            # XXX Not working since cancel_transaction()
+            # cancel all transactions not commited to disk
+            # We have to use new strategy to abort transaction
+            db.commit()
+            if self.logger:
+                self.logger.clear()
+            self.nb_changes = 0
+        db.begin_transaction()
 
 
     def abort_changes(self):
@@ -362,29 +385,51 @@ class Catalog(object):
         db = self._db
         db.cancel_transaction()
         self._load_all_internal()
-        db.begin_transaction(False)
+        db.begin_transaction()
 
 
     def close(self):
+        self._db.cancel_transaction()
+        self._db.flush()
         self._db.close()
+        if self.logger:
+            self.logger.clear()
 
 
     #######################################################################
     # API / Public / (Un)Index
     #######################################################################
     def index_document(self, document):
-        """Add a new document.
-        """
-        db = self._db
-        metadata = self._metadata
-        fields = self._fields
+        self.nb_changes += 1
+        abspath, term, xdoc = self.get_xdoc_from_document(document)
+        self._db.replace_document(term, xdoc)
+        if self.logger:
+            log_info(abspath, domain='itools.catalog')
 
+
+    def unindex_document(self, abspath):
+        """Remove the document that has value stored in its abspath.
+           If the document does not exist => no error
+        """
+        self.nb_changes += 1
+        data = _reduce_size(_encode(self._fields['abspath'], abspath))
+        self._db.delete_document('Q' + data)
+        if self.logger:
+            log_info(abspath, domain='itools.catalog')
+
+
+    def get_xdoc_from_document(self, document):
+        """Return (abspath, term, xdoc) from the document (resource or values as dict)
+        """
+        term = None
+        metadata = self._metadata
         # Check the input
         if type(document) is dict:
             doc_values = document
         else:
             doc_values = document.get_catalog_values()
-
+        fields = self._fields
+        abspath = doc_values['abspath']
         # Make the xapian document
         metadata_modified = False
         xdoc = Document()
@@ -409,7 +454,8 @@ class Catalog(object):
             #          the problem is that "_encode != _index"
             if name == 'abspath':
                 key_value = _reduce_size(_encode(field_cls, value))
-                xdoc.add_term('Q' + key_value)
+                term = 'Q' + key_value
+                xdoc.add_term(term)
 
             # A multilingual value?
             if isinstance(value, dict):
@@ -447,24 +493,12 @@ class Catalog(object):
                 if 'prefix' in info:
                     # By default language='en'
                     _index(xdoc, field_cls, value, info['prefix'], 'en')
-
-        # TODO: Don't store two documents with the same key field!
-
-        # Save the doc
-        db.add_document(xdoc)
-
         # Store metadata ?
         if metadata_modified:
-            db.set_metadata('metadata', dumps(metadata))
-
-
-    def unindex_document(self, abspath):
-        """Remove the document that has value stored in its abspath.
-           If the document does not exist => no error
-        """
-        data = _reduce_size(_encode(self._fields['abspath'], abspath))
-        self._db.delete_document('Q' + data)
-
+            metadata = self._metadata
+            self._db.set_metadata('metadata', dumps(metadata))
+        # Ok
+        return abspath, term, xdoc
 
     #######################################################################
     # API / Public / Search

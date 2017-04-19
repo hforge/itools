@@ -160,6 +160,20 @@ class Logger(object):
             exit()
 
 
+    def clear(self):
+        """Empty log file"""
+        with open(self.log_file, 'w', 0) as log_file:
+            log_file.close()
+
+
+    def get_lines(self):
+        try:
+            with open(self.log_file, 'r') as log_file:
+                return log_file.read().splitlines()
+        except IOError:
+            return []
+
+
     def launch_rotate(self):
         log_file = self.log_file
 

@@ -556,6 +556,33 @@ class CatalogTestCase(TestCase):
         self.assertEqual(doc.count, [1, 2, 11])
 
 
+    def test_index_document_keep_docid(self):
+        """ Test if changed xdoc keep the same docid
+        """
+        database = self.database
+        cat = database.catalog
+        # Create a document
+        document = Document_4('/a/b/c')
+        cat.index_document(document)
+        cat.save_changes()
+        # Get created document docid()
+        search = database.search(abspath='/a/b/c')
+        self.assertEqual(len(search), 1)
+        doc = search.get_documents()[0]
+        doc_id_1 = doc._xdoc.get_docid()
+        # Change doc
+        document = Document_4('/a/b/c')
+        cat.index_document(document)
+        cat.save_changes()
+        # Search changed doc
+        search = database.search(abspath='/a/b/c')
+        self.assertEqual(len(search), 1)
+        doc = search.get_documents()[0]
+        doc_id_2 = doc._xdoc.get_docid()
+        # Check id is the same
+        self.assertEqual(doc_id_1, doc_id_2)
+
+
 
 class BugXapianTestCase(TestCase):
 
@@ -576,6 +603,8 @@ class BugXapianTestCase(TestCase):
         # Visibly a bug in xapian. It counts twice the '\x00' character
         cat.index_document(Document_4('\x00' * 239))
         cat.save_changes()
+
+
 
 
 

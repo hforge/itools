@@ -46,9 +46,9 @@ def lookup_char(char, data):
 
 def read_char(char, data):
     if not data:
-        raise ValueError, 'unexpected end-of-data'
+        raise ValueError('unexpected end-of-data')
     if data[0] != char:
-        raise ValueError, UNEXPECTED_CHAR % data[0]
+        raise ValueError(UNEXPECTED_CHAR % data[0])
     return data[1:]
 
 
@@ -87,10 +87,10 @@ def read_white_space(data):
 def read_token(data):
     n = len(data)
     if n == 0:
-        raise ValueError, 'unexpected empty string'
+        raise ValueError('unexpected empty string')
 
     if data[0] in ctls_tspecials:
-        raise ValueError, UNEXPECTED_CHAR % data[0]
+        raise ValueError(UNEXPECTED_CHAR % data[0])
 
     index = 1
     while index < n:
@@ -127,7 +127,7 @@ def read_quoted_string(data):
         index += 1
 
     # End-Of-Data
-    raise ValueError, 'expected double-quote (") not found'
+    raise ValueError('expected double-quote (") not found')
 
 
 
@@ -360,7 +360,7 @@ class SetCookieDataType(DataType):
         # FIXME There may be more cookies (comma separated)
         cookies[name] = Cookie(value, **parameters)
         if data:
-            raise ValueError, 'unexpected string "%s"' % data
+            raise ValueError('unexpected string "%s"' % data)
 
         return cookies
 
@@ -425,10 +425,10 @@ class ContentType(DataType):
             return value, {}
         # Parameters
         if data[0] != ';':
-            raise ValueError, UNEXPECTED_CHAR % data[0]
+            raise ValueError(UNEXPECTED_CHAR % data[0])
         parameters, data = read_parameters(data)
         if data:
-            raise ValueError, 'unexpected string "%s"' % data
+            raise ValueError('unexpected string "%s"' % data)
 
         return value, parameters
 
@@ -456,10 +456,10 @@ class ContentDisposition(DataType):
             return value, {}
         # Parameters
         if data[0] != ';':
-            raise ValueError, UNEXPECTED_CHAR % data[0]
+            raise ValueError(UNEXPECTED_CHAR % data[0])
         parameters, data = read_parameters(data)
         if data:
-            raise ValueError, 'unexpected string "%s"' % data
+            raise ValueError('unexpected string "%s"' % data)
 
         return value, parameters
 
@@ -470,6 +470,26 @@ class ContentDisposition(DataType):
         parameters = [ '; %s="%s"' % x for x in parameters.items() ]
         parameters = ''.join(parameters)
         return '%s%s' % (value, parameters)
+
+
+
+class Authorization(DataType):
+    """RFC 7617 The 'Basic' HTTP Authentication Scheme"""
+
+    @staticmethod
+    def decode(data):
+        auth_type, credentials = read_token(data)
+        if not credentials or not auth_type:
+            raise ValueError('missing value')
+        if auth_type.lower() != 'basic':
+            raise ValueError('unexpected authorization type "%s"' % auth_type)
+        return auth_type, credentials
+
+
+    @staticmethod
+    def encode(value):
+        auth_type, credentials = value
+        return '%s %s' % (auth_type, credentials)
 
 
 
@@ -489,7 +509,7 @@ headers = {
     'via': String,
     'warning': String,
     # Request headers (HTTP 1.0)
-    'authorization': String,
+    'authorization': Authorization,
     'from': String,
     'if-modified-since': IfModifiedSince,
     'referer': URI,

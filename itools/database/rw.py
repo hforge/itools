@@ -96,8 +96,9 @@ class Heap(object):
 
 class RWDatabase(RODatabase):
 
-    def __init__(self, path, size_min, size_max):
-        super(RWDatabase, self).__init__(path, size_min, size_max)
+    def __init__(self, path, size_min, size_max, catalog=None):
+        proxy = super(RWDatabase, self)
+        proxy.__init__(path, size_min, size_max, catalog)
 
         # The "git add" arguments
         self.added = set()
@@ -145,8 +146,31 @@ class RWDatabase(RODatabase):
         self.resources_new2old = {}
 
 
-    @lazy
-    def catalog(self):
+    def check_catalog(self):
+        """Reindex resources if database wasn't stoped gracefully"""
+        lines = self.catalog.logger.get_lines()
+        if not lines:
+            return
+        print("Catalog wasn't stopped gracefully. Reindexation in progress")
+        lines = self.catalog.logger.get_lines()
+        for abspath in set(lines):
+            r = self.get_resource(abspath, soft=True)
+            if r:
+                self.catalog.index_document(r)
+            else:
+                self.catalog.unindex_document(abspath)
+        self.catalog._db.commit_transaction()
+        self.catalog._db.flush()
+        self.catalog._db.begin_transaction(False)
+        self.catalog.logger.clear()
+
+
+    def close(self):
+        self.abort_changes()
+        self.catalog.close()
+
+
+    def get_catalog(self):
         path = '%s/catalog' % self.path
         return Catalog(path, get_register_fields())
 
@@ -707,15 +731,11 @@ class RWDatabase(RODatabase):
         # Recursif ?
         if recursif:
             for item in base_resource.traverse_resources():
-                catalog.unindex_document(str(item.abspath))
-                values = item.get_catalog_values()
-                catalog.index_document(values)
+                catalog.index_document(item)
                 n += 1
         else:
             # Reindex resource
-            catalog.unindex_document(base_abspath)
-            values = base_resource.get_catalog_values()
-            catalog.index_document(values)
+            catalog.index_document(base_resource)
             n = 1
         # Save catalog if has changes
         if n > 0:
@@ -740,8 +760,7 @@ def make_git_database(path, size_min, size_max, fields=None):
         fields = get_register_fields()
     catalog = make_catalog('%s/catalog' % path, fields)
     # Ok
-    database = RWDatabase(path, size_min, size_max)
-    database.catalog = catalog
+    database = RWDatabase(path, size_min, size_max, catalog=catalog)
     return database
 
 

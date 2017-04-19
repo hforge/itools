@@ -19,14 +19,21 @@ from unittest import TestCase, main
 
 # Import from itools
 from itools.web import BaseView, WebServer, Context
-from itools.web.static import StaticView
 
 
 class View(BaseView):
 
-    def GET(self, kw):
-        return 'Welcome ' + kw.get('name')
+    access = True
 
+    def GET(self, resource, context):
+        context.set_content_type('text/plain')
+        return 'Welcome ' + context.path_query_base.get('name')
+
+
+
+class Database(object):
+
+    has_changed = False
 
 
 class Root(object):
@@ -36,6 +43,13 @@ class Root(object):
     def before_traverse(self, context):
         pass
 
+    def after_traverse(self, context):
+        pass
+
+    def get_resource(self, path, soft=False):
+        return self
+
+
 SERVER = None
 
 class RouterTestCase(TestCase):
@@ -43,7 +57,7 @@ class RouterTestCase(TestCase):
     def setUp(self):
         global SERVER
         # Init context
-        self.context = Context(root=Root())
+        self.context = Context(root=Root(), database=Database())
         if SERVER is None:
             SERVER = WebServer(root=Root())
             SERVER.listen('127.0.0.1', 8080)
@@ -51,29 +65,13 @@ class RouterTestCase(TestCase):
 
     def test_dispatch_router(self):
         global SERVER
-        SERVER.dispatcher.add_route('/rest/welcome/{name}', View)
+        SERVER.dispatcher.add('/rest/welcome/{name}', View)
         # Check good request
         response = SERVER.do_request(method='GET',
                                      path='/rest/welcome/test',
                                      context=self.context())
         assert response.get('status') == 200
         assert response.get('entity') == 'Welcome test'
-        # Check bad request
-        response = SERVER.do_request(method='GET',
-                                     path='/rest/welcome1/test',
-                                     context=self.context())
-        assert response.get('status') == 404
-
-
-    def test_static_router(self):
-        global SERVER
-        SERVER.dispatcher.add_route('/ui/{name:any}', StaticView)
-        # Launch server
-        response = SERVER.do_request(method='GET',
-                                     path='/static/hello.txt',
-                                     context=self.context(mount_path='/static/'))
-        assert response.get('entity') == 'hello world\n'
-
 
 
 if __name__ == '__main__':

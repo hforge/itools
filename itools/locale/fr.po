@@ -12,8 +12,8 @@ msgstr ""
 "Project-Id-Version: fr\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-03-24 09:03+CET\n"
-"PO-Revision-Date: 2017-04-11 13:29+0000\n"
-"Last-Translator: Verba-Translations <translators@bepatient.com>\n"
+"PO-Revision-Date: 2017-04-19 09:13+0000\n"
+"Last-Translator: Florent Chenebault <florent.chenebault@bepatient.com>\n"
 "Language-Team: Français <fr@li.org>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -381,9 +381,8 @@ msgid "Enter a valid value"
 msgstr "Valeur invalide."
 
 #: ../validators/base.py:113
-#, fuzzy
 msgid "Enter a valid value."
-msgstr "Valeur invalide."
+msgstr "Entrez une valeur valide."
 
 #: ../i18n/languages.py:65
 msgid "Esperanto"
@@ -1050,7 +1049,6 @@ msgid "Telugu"
 msgstr "Telugu"
 
 #: ../validators/test_view.py:29
-#, fuzzy
 msgid "Test validators"
 msgstr "Validateurs de test"
 
@@ -1238,17 +1236,14 @@ msgid "and"
 msgstr "et"
 
 #: ../i18n/oracle.py:265
-#, fuzzy
 msgid "are"
 msgstr "sont"
 
 #: ../i18n/oracle.py:266
-#, fuzzy
 msgid "as"
 msgstr "comme"
 
 #: ../i18n/oracle.py:267
-#, fuzzy
 msgid "aux"
 msgstr "aux"
 
@@ -1261,42 +1256,34 @@ msgid "but"
 msgstr "mais"
 
 #: ../database/catalog.py:65
-#, fuzzy
 msgid "c"
 msgstr "c"
 
 #: ../i18n/oracle.py:269
-#, fuzzy
 msgid "como"
 msgstr "comme"
 
 #: ../i18n/oracle.py:270
-#, fuzzy
 msgid "con"
 msgstr "avec"
 
 #: ../i18n/oracle.py:271
-#, fuzzy
 msgid "de"
 msgstr "de"
 
 #: ../i18n/oracle.py:272
-#, fuzzy
 msgid "del"
 msgstr "du"
 
 #: ../i18n/oracle.py:273
-#, fuzzy
 msgid "des"
 msgstr "des"
 
 #: ../i18n/oracle.py:274
-#, fuzzy
 msgid "donc"
 msgstr "donc"
 
 #: ../i18n/oracle.py:275 ../i18n/oracle.py:334
-#, fuzzy
 msgid "du"
 msgstr "du"
 
@@ -1306,107 +1293,86 @@ msgid "e"
 msgstr "e"
 
 #: ../i18n/oracle.py:276
-#, fuzzy
 msgid "el"
 msgstr "le"
 
 #: ../i18n/oracle.py:277
-#, fuzzy
 msgid "elle"
 msgstr "elle"
 
 #: ../i18n/oracle.py:278
-#, fuzzy
 msgid "elles"
 msgstr "elles"
 
 #: ../i18n/oracle.py:279
-#, fuzzy
 msgid "es"
 msgstr "est"
 
 #: ../i18n/oracle.py:280
-#, fuzzy
 msgid "est"
 msgstr "est"
 
 #: ../i18n/oracle.py:281
-#, fuzzy
 msgid "está"
 msgstr "est"
 
 #: ../i18n/oracle.py:282
-#, fuzzy
 msgid "et"
 msgstr "et"
 
 #: ../i18n/oracle.py:283
-#, fuzzy
 msgid "from"
 msgstr "de/d'"
 
 #: ../i18n/oracle.py:284
-#, fuzzy
 msgid "hay"
 msgstr "il y a"
 
 #: ../i18n/oracle.py:285
-#, fuzzy
 msgid "he"
 msgstr "ai"
 
 #: ../i18n/oracle.py:286 ../database/catalog.py:73 ../database/catalog.py:74
-#, fuzzy
 msgid "i"
 msgstr "i"
 
 #: ../i18n/oracle.py:287
-#, fuzzy
 msgid "il"
 msgstr "il"
 
 #: ../i18n/oracle.py:288
-#, fuzzy
 msgid "ils"
 msgstr "ils"
 
 #: ../i18n/oracle.py:289
-#, fuzzy
 msgid "in"
 msgstr "dans"
 
 #: ../i18n/oracle.py:290
-#, fuzzy
 msgid "is"
 msgstr "est"
 
 #: ../i18n/oracle.py:291
-#, fuzzy
 msgid "it"
 msgstr "il/elle"
 
 #: ../i18n/oracle.py:292
-#, fuzzy
 msgid "je"
 msgstr "je"
 
 #: ../i18n/oracle.py:293
-#, fuzzy
 msgid "las"
 msgstr "les"
 
 #: ../i18n/oracle.py:294
-#, fuzzy
 msgid "le"
 msgstr "le"
 
 #: ../i18n/oracle.py:296
-#, fuzzy
 msgid "les"
 msgstr "les"
 
 #: ../i18n/oracle.py:295
-#, fuzzy
 msgid "lo"
 msgstr "le"
 
@@ -1415,12 +1381,10 @@ msgid "longer than 79 characters"
 msgstr "plus long que 79 caractères"
 
 #: ../i18n/oracle.py:297
-#, fuzzy
 msgid "los"
 msgstr "les"
 
 #: ../i18n/oracle.py:298
-#, fuzzy
 msgid "mais"
 msgstr "mais"
 
@@ -1429,22 +1393,18 @@ msgid "name '{}' not found in the namespace"
 msgstr "nom '{}' introuvable dans l'espace de noms"
 
 #: ../i18n/oracle.py:299
-#, fuzzy
 msgid "no"
 msgstr "non"
 
 #: ../i18n/oracle.py:300
-#, fuzzy
 msgid "nous"
 msgstr "nous"
 
 #: ../i18n/oracle.py:301
-#, fuzzy
 msgid "nueva"
 msgstr "nouvelle"
 
 #: ../i18n/oracle.py:302 ../database/catalog.py:75
-#, fuzzy
 msgid "o"
 msgstr "ou"
 
@@ -1453,17 +1413,14 @@ msgid "oe"
 msgstr "oe"
 
 #: ../i18n/oracle.py:303
-#, fuzzy
 msgid "of"
 msgstr "de"
 
 #: ../i18n/oracle.py:304
-#, fuzzy
 msgid "on"
 msgstr "sur"
 
 #: ../i18n/oracle.py:305
-#, fuzzy
 msgid "or"
 msgstr "ou"
 
@@ -1472,32 +1429,26 @@ msgid "où"
 msgstr "où"
 
 #: ../i18n/oracle.py:307
-#, fuzzy
 msgid "para"
 msgstr "pour"
 
 #: ../i18n/oracle.py:308
-#, fuzzy
 msgid "pero"
 msgstr "mais"
 
 #: ../i18n/oracle.py:309
-#, fuzzy
 msgid "por"
 msgstr "par"
 
 #: ../i18n/oracle.py:310
-#, fuzzy
 msgid "que"
 msgstr "que"
 
 #: ../i18n/oracle.py:311
-#, fuzzy
 msgid "qué"
 msgstr "quel"
 
 #: ../i18n/oracle.py:312
-#, fuzzy
 msgid "she"
 msgstr "elle"
 
@@ -1510,22 +1461,18 @@ msgid "string exceptions are used"
 msgstr "exception de type 'string' utilisée"
 
 #: ../i18n/oracle.py:313
-#, fuzzy
 msgid "su"
 msgstr "sa/son"
 
 #: ../i18n/oracle.py:314
-#, fuzzy
 msgid "sur"
 msgstr "sur"
 
 #: ../i18n/oracle.py:315
-#, fuzzy
 msgid "that"
 msgstr "ce/que"
 
 #: ../i18n/oracle.py:316
-#, fuzzy
 msgid "the"
 msgstr "le/la/les/l'"
 
@@ -1537,7 +1484,6 @@ msgstr ""
 "utilisée"
 
 #: ../i18n/oracle.py:317
-#, fuzzy
 msgid "their"
 msgstr "leur"
 
@@ -1546,48 +1492,39 @@ msgid "this"
 msgstr "ce"
 
 #: ../i18n/oracle.py:319
-#, fuzzy
 msgid "to"
 msgstr "pour"
 
 #: ../i18n/oracle.py:320
-#, fuzzy
 msgid "tu"
 msgstr "tu"
 
 #: ../database/catalog.py:76 ../database/catalog.py:77
 #: ../database/catalog.py:78
-#, fuzzy
 msgid "u"
 msgstr "ou"
 
 #: ../i18n/oracle.py:321
-#, fuzzy
 msgid "un"
 msgstr "un"
 
 #: ../i18n/oracle.py:322
-#, fuzzy
 msgid "una"
 msgstr "une"
 
 #: ../i18n/oracle.py:323
-#, fuzzy
 msgid "une"
 msgstr "une"
 
 #: ../i18n/oracle.py:324
-#, fuzzy
 msgid "vous"
 msgstr "vous"
 
 #: ../i18n/oracle.py:325
-#, fuzzy
 msgid "when"
 msgstr "lorsque"
 
 #: ../i18n/oracle.py:326
-#, fuzzy
 msgid "where"
 msgstr "où"
 
@@ -1600,22 +1537,18 @@ msgid "with trailing whitespaces"
 msgstr "se terminant par des espaces"
 
 #: ../i18n/oracle.py:327
-#, fuzzy
 msgid "y"
 msgstr "et"
 
 #: ../i18n/oracle.py:328
-#, fuzzy
 msgid "you"
 msgstr "tu/vous"
 
 #: ../i18n/oracle.py:329
-#, fuzzy
 msgid "your"
 msgstr "ton/ta/tes/votre/vos"
 
 #: ../i18n/oracle.py:229
-#, fuzzy
 msgid "¡"
 msgstr "i"
 
@@ -1624,12 +1557,10 @@ msgid "¿"
 msgstr "¿"
 
 #: ../database/catalog.py:60
-#, fuzzy
 msgid "À"
 msgstr "À"
 
 #: ../database/catalog.py:61
-#, fuzzy
 msgid "Â"
 msgstr "Â"
 
@@ -1646,22 +1577,18 @@ msgid "Æ"
 msgstr "Æ"
 
 #: ../database/catalog.py:64
-#, fuzzy
 msgid "Ç"
 msgstr "Ç"
 
 #: ../database/catalog.py:66
-#, fuzzy
 msgid "É"
 msgstr "É"
 
 #: ../database/catalog.py:67
-#, fuzzy
 msgid "Ê"
 msgstr "Ê"
 
 #: ../database/catalog.py:72
-#, fuzzy
 msgid "Î"
 msgstr "Î"
 
@@ -1670,17 +1597,14 @@ msgid "ß"
 msgstr "ß"
 
 #: ../i18n/oracle.py:261 ../database/catalog.py:63
-#, fuzzy
 msgid "à"
 msgstr "à"
 
 #: ../database/catalog.py:62
-#, fuzzy
 msgid "â"
 msgstr "â"
 
 #: ../i18n/oracle.py:231
-#, fuzzy
 msgid "ä"
 msgstr "ä"
 
@@ -1689,82 +1613,66 @@ msgid "æ"
 msgstr "æ"
 
 #: ../i18n/oracle.py:233 ../database/catalog.py:65
-#, fuzzy
 msgid "ç"
 msgstr "ç"
 
 #: ../database/catalog.py:70
-#, fuzzy
 msgid "è"
 msgstr "è"
 
 #: ../database/catalog.py:68
-#, fuzzy
 msgid "é"
 msgstr "é"
 
 #: ../i18n/oracle.py:234 ../database/catalog.py:69
-#, fuzzy
 msgid "ê"
 msgstr "ê"
 
 #: ../database/catalog.py:71
-#, fuzzy
 msgid "ë"
 msgstr "ë"
 
 #: ../i18n/oracle.py:235
-#, fuzzy
 msgid "í"
 msgstr "í"
 
 #: ../database/catalog.py:73
-#, fuzzy
 msgid "î"
 msgstr "î"
 
 #: ../database/catalog.py:74
-#, fuzzy
 msgid "ï"
 msgstr "ï"
 
 #: ../i18n/oracle.py:236
-#, fuzzy
 msgid "ñ"
 msgstr "ñ"
 
 #: ../i18n/oracle.py:238
-#, fuzzy
 msgid "ó"
 msgstr "ó"
 
 #: ../database/catalog.py:75
-#, fuzzy
 msgid "ô"
 msgstr "ô"
 
 #: ../i18n/oracle.py:237
-#, fuzzy
 msgid "ö"
 msgstr "ö"
 
 #: ../database/catalog.py:77
-#, fuzzy
 msgid "ù"
 msgstr "ù"
 
 #: ../i18n/oracle.py:240
-#, fuzzy
 msgid "ú"
 msgstr "ú"
 
 #: ../database/catalog.py:76
-#, fuzzy
 msgid "û"
 msgstr "û"
 
 #: ../i18n/oracle.py:239 ../database/catalog.py:78
-#, fuzzy
 msgid "ü"
 msgstr "ü"
 
@@ -1777,57 +1685,46 @@ msgid "œ"
 msgstr "œ"
 
 #: ../i18n/oracle.py:253
-#, fuzzy
 msgid "、"
 msgstr "、"
 
 #: ../i18n/oracle.py:254
-#, fuzzy
 msgid "。"
 msgstr "。"
 
 #: ../i18n/oracle.py:247
-#, fuzzy
 msgid "が"
 msgstr "が"
 
 #: ../i18n/oracle.py:245
-#, fuzzy
 msgid "で"
 msgstr "で"
 
 #: ../i18n/oracle.py:251
-#, fuzzy
 msgid "と"
 msgstr "と"
 
 #: ../i18n/oracle.py:246
-#, fuzzy
 msgid "に"
 msgstr "に"
 
 #: ../i18n/oracle.py:243
-#, fuzzy
 msgid "の"
 msgstr "の"
 
 #: ../i18n/oracle.py:244
-#, fuzzy
 msgid "は"
 msgstr "は"
 
 #: ../i18n/oracle.py:248
-#, fuzzy
 msgid "へ"
 msgstr "へ"
 
 #: ../i18n/oracle.py:250
-#, fuzzy
 msgid "や"
 msgstr "や"
 
 #: ../i18n/oracle.py:249
-#, fuzzy
 msgid "を"
 msgstr "を"
 

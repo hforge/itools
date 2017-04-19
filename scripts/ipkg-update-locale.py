@@ -152,5 +152,6 @@ if __name__ == '__main__':
             call(['msgmerge', '-U', '-s', file_path, locale_pot_path])
         else:
             print '  %s (new)' % filename
-            lfs.copy(locale_pot_path, filename)
+            file_path = locale_folder.get_absolute_path(filename)
+            lfs.copy(locale_pot_path, file_path)
     print

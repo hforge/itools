@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: fr\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-03-24 09:03+CET\n"
-"PO-Revision-Date: 2017-04-19 09:15+0000\n"
+"PO-Revision-Date: 2017-04-19 09:53+0000\n"
 "Last-Translator: Florent Chenebault <florent.chenebault@bepatient.com>\n"
 "Language-Team: Français <fr@li.org>\n"
 "Language: fr\n"
@@ -1062,7 +1062,7 @@ msgstr "Ce champ est obligatoire."
 
 #: ../../scripts/ipkg-quality.py:518
 msgid "The option --show-lines takes one file in parameter."
-msgstr "L'option --show-lines prend un seul fichier en paramètre"
+msgstr "L'option --show-lines prend un seul fichier en paramètre."
 
 #: ../web/views.py:235
 msgid "The query could not be processed."
@@ -1481,7 +1481,7 @@ msgid ""
 "the \"{field}\" field must be unique, the \"{value}\" value is  already used."
 msgstr ""
 "le champ \"{field}\" doit être unique, la valeur \"{value}\" est déjà "
-"utilisée"
+"utilisée."
 
 #: ../i18n/oracle.py:317
 msgid "their"

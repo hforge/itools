@@ -36,7 +36,7 @@ class URIPatternsParser(prototype):
                 'alpha': r'[a-zA-Z]+',
                 'digits': r'\d+',
                 'number': r'\d*.?\d+',
-                'chunk': r'[^\^.]+',
+                'chunk': r'[^/^.]+',
                 'any': r'.+'}
     default_pattern = 'chunk'
 

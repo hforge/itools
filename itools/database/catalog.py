@@ -19,6 +19,7 @@
 
 # Import from the standard library
 import os
+from copy import deepcopy
 from decimal import Decimal as decimal
 from datetime import datetime
 from marshal import dumps, loads
@@ -323,7 +324,7 @@ class Catalog(object):
     nb_changes = 0
     logger = None
 
-    def __init__(self, ref, fields, read_only=False, asynchronous_mode=True):
+    def __init__(self, ref, fields, read_only=False, asynchronous_mode=True, root=None):
         # Load the database
         if isinstance(ref, (Database, WritableDatabase)):
             path = None
@@ -338,22 +339,36 @@ class Catalog(object):
         db = self._db
         self._asynchronous = asynchronous_mode
         self._fields = fields
-
+        self.root = root
+        self.commit_each_transaction = root is None
         # Asynchronous mode
         if not read_only and asynchronous_mode:
-            db.begin_transaction()
+            db.begin_transaction(self.commit_each_transaction)
         # Set XAPIAN_FLUSH_THRESHOLD
         os.environ["XAPIAN_FLUSH_THRESHOLD"] = "2000"
         # Load the xfields from the database
         self._metadata = {}
         self._value_nb = 0
         self._prefix_nb = 0
+        self.transaction_abspaths = []
         self._load_all_internal()
+        self._init_all_metadata()
         # Catalog log
         if path:
             catalog_log = '{}/catalog.log'.format(path)
             self.logger = CatalogLogger(catalog_log)
             register_logger(self.logger, 'itools.catalog')
+
+
+
+    def _init_all_metadata(self):
+        """Init new metadata (to avoid 'field is not indexed' warning)
+        """
+        metadata = self._metadata
+        for name, field_cls in self._fields.items():
+            if name not in metadata:
+                metadata[name] = self._get_info(field_cls, name)
+        self._db.set_metadata('metadata', dumps(metadata))
 
 
     #######################################################################
@@ -374,7 +389,8 @@ class Catalog(object):
             if self.logger:
                 self.logger.clear()
             self.nb_changes = 0
-        db.begin_transaction()
+        self.transaction_abspaths = []
+        db.begin_transaction(self.commit_each_transaction)
 
 
     def abort_changes(self):
@@ -383,15 +399,29 @@ class Catalog(object):
         if not self._asynchronous:
             raise ValueError, "The transactions are synchronous"
         db = self._db
-        db.cancel_transaction()
+        if self.commit_each_transaction:
+            db.cancel_transaction()
+            db.begin_transaction(self.commit_each_transaction)
+        else:
+            abspaths = deepcopy(self.transaction_abspaths)
+            for abspath in abspaths:
+                r_to_reindex = self.root.get_resource(abspath, soft=True)
+                if r_to_reindex:
+                    self.index_document(r_to_reindex)
+                else:
+                    self.unindex_document(abspath)
         self._load_all_internal()
-        db.begin_transaction()
 
 
     def close(self):
-        self._db.cancel_transaction()
-        self._db.flush()
-        self._db.close()
+        if self.commit_each_transaction:
+            self._db.cancel_transaction()
+            self._db.close()
+        else:
+            self.abort_changes()
+            self._db.commit_transaction()
+            self._db.flush()
+            self._db.close()
         if self.logger:
             self.logger.clear()
 
@@ -405,6 +435,8 @@ class Catalog(object):
         self._db.replace_document(term, xdoc)
         if self.logger:
             log_info(abspath, domain='itools.catalog')
+        if self.root:
+            self.transaction_abspaths.append(abspath)
 
 
     def unindex_document(self, abspath):
@@ -416,6 +448,8 @@ class Catalog(object):
         self._db.delete_document('Q' + data)
         if self.logger:
             log_info(abspath, domain='itools.catalog')
+        if self.root:
+            self.transaction_abspaths.append(abspath)
 
 
     def get_xdoc_from_document(self, document):

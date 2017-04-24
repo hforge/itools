@@ -50,7 +50,7 @@ class GulpBuilder(object):
             for path in self.vfs.traverse('ui/'):
                 relative_path = self.vfs.get_relative_path(path)
                 if (relative_path and
-                    relative_path.startswith(self.dist_folders) and self.vfs.is_file(path)):
+                    relative_path.startswith(self.dist_folders)):
                     self.manifest.add(relative_path)
 
 

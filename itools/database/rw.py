@@ -30,11 +30,11 @@ from pygit2 import TreeBuilder, GIT_FILEMODE_TREE
 from pygit2 import GIT_CHECKOUT_FORCE, GIT_CHECKOUT_REMOVE_UNTRACKED
 
 # Import from itools
-from itools.core import get_pipe, lazy
+from itools.core import get_pipe
 from itools.fs import lfs
 from itools.handlers import Folder
 from itools.log import log_error
-from catalog import Catalog, make_catalog
+from catalog import make_catalog
 from git import open_worktree
 from registry import get_register_fields
 from ro import RODatabase
@@ -96,6 +96,9 @@ class Heap(object):
 
 class RWDatabase(RODatabase):
 
+
+    read_only = False
+
     def __init__(self, path, size_min, size_max, catalog=None):
         proxy = super(RWDatabase, self)
         proxy.__init__(path, size_min, size_max, catalog)
@@ -152,7 +155,6 @@ class RWDatabase(RODatabase):
         if not lines:
             return
         print("Catalog wasn't stopped gracefully. Reindexation in progress")
-        lines = self.catalog.logger.get_lines()
         for abspath in set(lines):
             r = self.get_resource(abspath, soft=True)
             if r:
@@ -161,18 +163,13 @@ class RWDatabase(RODatabase):
                 self.catalog.unindex_document(abspath)
         self.catalog._db.commit_transaction()
         self.catalog._db.flush()
-        self.catalog._db.begin_transaction(False)
+        self.catalog._db.begin_transaction(self.catalog.commit_each_transaction)
         self.catalog.logger.clear()
 
 
     def close(self):
         self.abort_changes()
         self.catalog.close()
-
-
-    def get_catalog(self):
-        path = '%s/catalog' % self.path
-        return Catalog(path, get_register_fields())
 
 
     #######################################################################
@@ -772,6 +769,7 @@ def check_database(target):
 
     This is meant to be used by scripts, like 'icms-start.py'
     """
+    print('Checking database...')
     cwd = '%s/database' % target
 
     # Check modifications to the working tree not yet in the index.
@@ -787,11 +785,11 @@ def check_database(target):
         return True
 
     # Something went wrong
-    print 'The database is not in a consistent state.  Fix it manually with'
-    print 'the help of Git:'
-    print
-    print '  $ cd %s/database' % target
-    print '  $ git clean -fxd'
-    print '  $ git checkout -f'
-    print
+    print('The database is not in a consistent state.  Fix it manually with')
+    print('the help of Git:')
+    print('')
+    print('  $ cd %s/database' % target)
+    print('  $ git clean -fxd')
+    print('  $ git checkout -f')
+    print('')
     return False

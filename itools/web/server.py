@@ -27,6 +27,7 @@ from time import strftime
 # Import from itools
 from itools.i18n import init_language_selector
 from itools.log import Logger, register_logger, log_info
+from itools.uri import get_uri_path
 from context import select_language
 from context import WebLogger, get_context, set_context
 from soup import SoupServer, SoupMessage
@@ -87,6 +88,7 @@ class WebServer(SoupServer):
     def do_request(self, method='GET', path='/', headers=None, body='',
             context=None, as_json=False, user=None):
         """Experimental method to do a request on the server"""
+        # XXX uri query didn't works ?
         headers = headers or {}
         # I'm not a robot
         headers['User-Agent'] = 'Firefox'
@@ -111,6 +113,7 @@ class WebServer(SoupServer):
             context.login(user)
             context.user = user
         # Do request
+        path = get_uri_path(path)
         context = context.handle_request(message, path)
         # Transform result
         if context.entity is None:

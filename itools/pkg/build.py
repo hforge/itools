@@ -149,6 +149,7 @@ def build(path, config, environment):
     manifest.add('MANIFEST')
     # Write version
     open(path + version_txt, 'w').write(version)
+    print '**'*30
     print '* Version:', version
     manifest.add(version_txt)
     # Write environment.json file
@@ -176,4 +177,5 @@ def build(path, config, environment):
     lines = [ x + '\n' for x in sorted(manifest) ]
     open(path + 'MANIFEST', 'w').write(''.join(lines))
     print '* Build MANIFEST file (list of files to install)'
+    print '**'*30
     return version

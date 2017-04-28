@@ -118,6 +118,9 @@ def make_version(worktree):
     branch = worktree.get_branch_name()
     branch = branch or 'nobranch'
 
+    if tag and tag.startswith(branch):
+        branch = tag
+
     # Get the timestamp
     head = worktree.get_metadata()
     timestamp = head['committer_date']

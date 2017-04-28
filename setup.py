@@ -91,7 +91,9 @@ if __name__ == '__main__':
         from itools.core import get_abspath
         from itools.pkg import setup as itools_setup
         itools_is_available = True
+        print('[OK] itools is available')
     except ImportError:
+        print('[Warning] itools is not available')
         pass
     ext_modules = []
 

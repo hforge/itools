@@ -120,9 +120,13 @@ def make_version(worktree):
     if tag and tag.startswith(branch):
         branch = tag
     # Get the timestamp
-    head = worktree.get_metadata()
-    timestamp = head['committer_date']
-    timestamp = timestamp.strftime('%Y%m%d%H%M')
+    try:
+        head = worktree.get_metadata()
+        timestamp = head['committer_date']
+        timestamp = timestamp.strftime('%Y%m%d%H%M')
+    except KeyError:
+        # XXX bug in docker ?
+        timestamp = 'notimestamp'
 
     # Build a version from the branch and the timestamp
     return '{}.dev{}'.format(branch, timestamp)

@@ -70,17 +70,17 @@ def generate_mo_files(po_file_names):
     :param po_file_names: An array of po files location
     :return: An array of mo files location
     """
-    # Check msgfmt is properly installed
-    try:
-        Popen(['msgfmt'])
-    except OSError:
-        print >> stderr, "[ERROR] 'msgfmt' not found, aborting..."
     mo_files = []
     for po_file in po_file_names:
         # Compute mo file name
         mo_file = po_file.replace('.po', '.mo')
         # Generate mo file
-        Popen(['msgfmt', po_file, '-o', mo_file])
+        try:
+            Popen(['msgfmt', po_file, '-o', mo_file])
+        except OSError:
+            # Check msgfmt is properly installed
+            print >> stderr, "[ERROR] 'msgfmt' not found, aborting..."
+            return []
         mo_files.append(mo_file)
     return mo_files
 

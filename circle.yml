@@ -1,0 +1,14 @@
+machine:
+  services:
+    - docker
+
+dependencies:
+  override:
+    - docker pull hforge/itools:latest
+
+test:
+  override:
+    - docker run -v /home/ubuntu/itools/test/:/home/itools/test/ hforge/itools sh -c "cd /home/itools/test/ && python test.py --mode junitxml"
+  post:
+    - mkdir -p $CIRCLE_TEST_REPORTS/junit
+    - mv /home/ubuntu/itools/test/junit.xml  $CIRCLE_TEST_REPORTS/junit/junit.xml

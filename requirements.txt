@@ -4,3 +4,4 @@ xlrd==0.6.1
 pygit2==0.24.2
 python-magic==0.4.10
 pillow==3.4.2
+junitxml

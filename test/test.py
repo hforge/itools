@@ -17,7 +17,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from optparse import OptionParser
+from junitxml import JUnitXmlResult
+from sys import exit
 from unittest import TestLoader, TestSuite, TextTestRunner
+
+# Import from itools
+from itools.core import get_abspath
 
 # Import tests
 import test_core
@@ -54,8 +60,23 @@ test_modules = [test_core, test_csv, test_database, test_datatypes, test_dispatc
 loader = TestLoader()
 
 if __name__ == '__main__':
+    usage = '%prog [OPTIONS]'
+    description = 'Run ikaaro tests'
+    parser = OptionParser(usage, description=description)
+    parser.add_option('-m', '--mode', default='standard', help='tests mode')
+    options, args = parser.parse_args()
     suite = TestSuite()
     for module in test_modules:
         suite.addTest(loader.loadTestsFromModule(module))
-
-    TextTestRunner(verbosity=1).run(suite)
+    if options.mode == 'standard':
+        ret = TextTestRunner(verbosity=1).run(suite)
+    elif options.mode == 'junitxml':
+        path = get_abspath('./junit.xml')
+        print('Result is here: %s' % path)
+        f = file(path, 'wb')
+        result = JUnitXmlResult(f)
+        result.startTestRun()
+        ret = suite.run(result)
+        result.stopTestRun()
+    exit_code = not ret.wasSuccessful()
+    exit(exit_code)

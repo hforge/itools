@@ -29,7 +29,6 @@ from json import dumps
 # Import from itools
 from itools.fs import lfs
 from itools.handlers import ro_database
-from itools.xmlfile.errors import TranslationError
 
 # Import from here
 from build_gulp import GulpBuilder
@@ -67,6 +66,7 @@ def po2mo(package_root, source, target):
 def make_template(package_root, source, target):
     # Import some packages so we can compile templates
     from itools.html import XHTMLFile
+    from itools.xmlfile.errors import TranslationError
     import itools.gettext
     import itools.stl
     import itools.pdf

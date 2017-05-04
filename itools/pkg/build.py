@@ -117,17 +117,15 @@ def make_version(worktree):
     # Try to get the branch
     branch = worktree.get_branch_name()
     branch = branch or 'nobranch'
-
     if tag and tag.startswith(branch):
         branch = tag
-
     # Get the timestamp
     head = worktree.get_metadata()
     timestamp = head['committer_date']
     timestamp = timestamp.strftime('%Y%m%d%H%M')
 
     # Build a version from the branch and the timestamp
-    return '{}-{}'.format(branch, timestamp)
+    return '{}.dev{}'.format(branch, timestamp)
 
 
 def build(path, config, environment):

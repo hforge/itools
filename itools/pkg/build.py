@@ -118,10 +118,8 @@ def make_version(worktree):
     # Try to get the branch
     branch = worktree.get_branch_name()
     branch = branch or 'nobranch'
-
     if tag and tag.startswith(branch):
         branch = tag
-
     # Get the timestamp
     try:
         head = worktree.get_metadata()
@@ -132,7 +130,7 @@ def make_version(worktree):
         timestamp = 'notimestamp'
 
     # Build a version from the branch and the timestamp
-    return '{}-{}'.format(branch, timestamp)
+    return '{}.dev{}'.format(branch, timestamp)
 
 
 def build(path, config, environment):

@@ -65,6 +65,11 @@ class GulpBuilder(object):
                 path = str(Path(path)[:-1]) + '/'
                 p = Popen(['npm', 'install'], cwd=path)
                 p.wait()
+                if p.returncode == 1:
+                    print '***'*25
+                    print '*** Error running npm install ', path
+                    print '***'*25
+                    sys.exit(1)
                 done = True
         return done
 

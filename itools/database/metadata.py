@@ -70,6 +70,13 @@ class Metadata(File):
         return self.database.get_resource_class(class_id)
 
 
+    def change_class_id(self, new_class_id):
+        self.cls = None
+        self.set_changed()
+        self.format = new_class_id
+        self.get_resource_class(new_class_id)
+
+
     def _load_state_from_file(self, file):
         properties = self.properties
         data = file.read()

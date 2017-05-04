@@ -1,4 +1,5 @@
 .mailmap
+BENCHMARK.txt
 INSTALL.txt
 LICENSE.txt
 MANIFEST
@@ -7,6 +8,7 @@ RELEASE-0.75.0
 RELEASE-0.75.1
 RELEASE-0.75.2
 RELEASE-0.76.0.md
+RELEASE-0.77.0.md
 UPGRADE-0.75.0
 archive/CHANGES.txt
 archive/RELEASE-0.12.0
@@ -176,7 +178,6 @@ itools/datatypes/base.py
 itools/datatypes/datetime_.py
 itools/datatypes/languages.py
 itools/datatypes/primitive.py
-itools/environment.json
 itools/fs/__init__.py
 itools/fs/common.py
 itools/fs/lfs.py
@@ -222,6 +223,10 @@ itools/i18n/oracle.py
 itools/ical/__init__.py
 itools/ical/datatypes.py
 itools/ical/icalendar.py
+itools/locale/ca.mo
+itools/locale/ca.po
+itools/locale/de.mo
+itools/locale/de.po
 itools/locale/en.mo
 itools/locale/en.po
 itools/locale/es.mo
@@ -233,6 +238,8 @@ itools/locale/it.po
 itools/locale/locale.pot
 itools/locale/nl.mo
 itools/locale/nl.po
+itools/locale/nl_BE.mo
+itools/locale/nl_BE.po
 itools/locale/zh.mo
 itools/locale/zh.po
 itools/log/__init__.py
@@ -329,6 +336,7 @@ itools/xml/pyparser.c
 itools/xml/utils.py
 itools/xml/xml.py
 itools/xmlfile/__init__.py
+itools/xmlfile/errors.py
 itools/xmlfile/i18n.py
 itools/xmlfile/xmlfile.py
 requirements.txt

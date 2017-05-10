@@ -246,7 +246,7 @@ if __name__ == '__main__':
         else:
             package_data['itools'].append(join_path(*path[1:]))
     setup(name="itools",
-          version="0.77.2",
+          version="0.77.3",
           # Metadata
           author="J. David Ibáñez",
           author_email="jdavid.ibp@gmail.com" ,

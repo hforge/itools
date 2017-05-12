@@ -25,16 +25,17 @@ from urllib import quote, unquote
 from urlparse import urlsplit
 
 # Import from gio
-from glib import MainLoop
-from gio import File, Error, MountOperation, Cancellable
-from gio import FILE_ATTRIBUTE_TIME_CHANGED, FILE_ATTRIBUTE_TIME_MODIFIED
-from gio import FILE_ATTRIBUTE_TIME_ACCESS
-from gio import FILE_ATTRIBUTE_STANDARD_SIZE, FILE_ATTRIBUTE_STANDARD_NAME
-from gio import FILE_ATTRIBUTE_STANDARD_TYPE
-from gio import FILE_TYPE_DIRECTORY, FILE_TYPE_REGULAR
-from gio import FILE_TYPE_SYMBOLIC_LINK
-from gio import FILE_ATTRIBUTE_ACCESS_CAN_READ
-from gio import FILE_ATTRIBUTE_ACCESS_CAN_WRITE
+from gi.repository.GLib import MainLoop, GError
+from gi.repository.Gio import File, MountOperation, Cancellable
+from gi.repository.Gio import FILE_ATTRIBUTE_TIME_CHANGED, FILE_ATTRIBUTE_TIME_MODIFIED
+from gi.repository.Gio import FILE_ATTRIBUTE_TIME_ACCESS
+from gi.repository.Gio import FILE_ATTRIBUTE_STANDARD_SIZE, FILE_ATTRIBUTE_STANDARD_NAME
+from gi.repository.Gio import FILE_ATTRIBUTE_STANDARD_TYPE
+from gi.repository import Gio
+from gi.repository.Gio import FileCreateFlags, FileCopyFlags
+from gi.repository.Gio import FileType
+from gi.repository.Gio import FILE_ATTRIBUTE_ACCESS_CAN_READ
+from gi.repository.Gio import FILE_ATTRIBUTE_ACCESS_CAN_WRITE
 
 # Import from itools
 from itools.uri import resolve_uri, resolve_uri2, get_uri_name, get_uri_path
@@ -46,21 +47,21 @@ from common import READ, WRITE, READ_WRITE, APPEND, get_mimetype
 ######################################################################
 def _is_file(g_file):
     try:
-        info = g_file.query_info(FILE_ATTRIBUTE_STANDARD_TYPE)
+        info = g_file.query_info(FILE_ATTRIBUTE_STANDARD_TYPE, Gio.FileQueryInfoFlags.NONE)
         the_type = info.get_attribute_uint32(FILE_ATTRIBUTE_STANDARD_TYPE)
-    except Error:
+    except GError:
         return False
-    return (the_type == FILE_TYPE_REGULAR or
-            the_type == FILE_TYPE_SYMBOLIC_LINK)
+    return (the_type == FileType.REGULAR or
+            the_type == FileType.SYMBOLIC_LINK)
 
 
 def _is_folder(g_file):
     try:
-        info = g_file.query_info(FILE_ATTRIBUTE_STANDARD_TYPE)
+        info = g_file.query_info(FILE_ATTRIBUTE_STANDARD_TYPE, Gio.FileQueryInfoFlags.NONE)
         the_type = info.get_attribute_uint32(FILE_ATTRIBUTE_STANDARD_TYPE)
-    except Error:
+    except GError:
         return False
-    return the_type == FILE_TYPE_DIRECTORY
+    return the_type == FileType.DIRECTORY
 
 
 def _get_names(g_file):
@@ -105,7 +106,7 @@ def _copy(source, target):
             child_target = target.resolve_relative_path(child)
             _copy(child_source, child_target)
     else:
-        source.copy(target)
+        source.copy(target, FileCopyFlags.NONE)
 
 
 def _traverse(g_file):
@@ -126,9 +127,9 @@ class Folder(object):
 
     def __init__(self, obj=None):
         if obj is None:
-            self._folder = None
+            self._folder = File.new_for_path('.')
         elif type(obj) is str:
-            self._folder = File(obj)
+            self._folder = File.new_for_path(obj)
         elif isinstance(obj, File):
             self._folder = obj
         else:
@@ -144,7 +145,7 @@ class Folder(object):
 
         # Your folder is None => new File
         if self._folder is None:
-            return File(uri)
+            return File.new_for_uri(uri)
 
         # Your folder is not None, we must resolve the uri
         scheme, authority, path, query, fragment = urlsplit(uri)
@@ -153,7 +154,7 @@ class Folder(object):
         # XXX This is not truly exact:
         #     we can have a scheme and a relative path.
         if scheme or authority:
-            return File(uri)
+            return File.new_for_uri(uri)
 
         # Else we resolve the path
         return self._folder.resolve_relative_path(uri)
@@ -161,14 +162,14 @@ class Folder(object):
 
     def _get_xtime(self, uri, attribut):
         g_file = self._get_g_file(uri)
-        info = g_file.query_info(attribut)
+        info = g_file.query_info(attribut, Gio.FileQueryInfoFlags.NONE)
         uint64 = info.get_attribute_uint64(attribut)
         return datetime.fromtimestamp(uint64)
 
 
     def _can_x(self, uri, attribut):
         g_file = self._get_g_file(uri)
-        info = g_file.query_info(attribut)
+        info = g_file.query_info(attribut, Gio.FileQueryInfoFlags.NONE)
         return info.get_attribute_boolean(attribut)
 
 
@@ -204,7 +205,7 @@ class Folder(object):
         # Make the parent's directory
         _make_directory_with_parents(g_file.get_parent())
 
-        return g_file.create()
+        return g_file.create(FileCreateFlags.PRIVATE)
 
 
     def make_folder(self, uri):
@@ -247,7 +248,7 @@ class Folder(object):
 
     def get_size(self, uri):
         g_file = self._get_g_file(uri)
-        info = g_file.query_info(FILE_ATTRIBUTE_STANDARD_SIZE)
+        info = g_file.query_info(FILE_ATTRIBUTE_STANDARD_SIZE, Gio.FileQueryInfoFlags.NONE)
         return info.get_attribute_uint64(FILE_ATTRIBUTE_STANDARD_SIZE)
 
 
@@ -264,11 +265,13 @@ class Folder(object):
             # The problem is that a GFileInputStream object
             # doesn't implement all the usual functions of "file"
             # by example, there is no get_lines member.
-            return StringIO(g_file.read().read())
+            MAX_READ_FILE_SIZE = 4*1024*1024*1024
+            data = g_file.read().read_bytes(MAX_READ_FILE_SIZE).get_data()
+            return StringIO(data)
         elif mode is WRITE:
-            return g_file.replace('', False)
+            return g_file.replace('', False, FileCopyFlags.NONE)
         elif mode is APPEND:
-            return g_file.append_to()
+            return g_file.append_to(FileCreateFlags.PRIVATE)
         # XXX Finish me
         elif mode is READ_WRITE:
             raise NotImplementedError
@@ -296,7 +299,7 @@ class Folder(object):
         # Make the target's parent directory
         _make_directory_with_parents(target.get_parent())
 
-        source.move(target)
+        source.move(target, FileCopyFlags.NONE)
 
 
     def get_names(self, uri='.'):
@@ -365,7 +368,7 @@ class Archive(Folder):
         uri = 'archive://' + quote(uri, '')
 
         # Mount the archive if needed
-        g_file = File(uri)
+        g_file = File.new_for_path(uri)
         # Already mounted ?
         if g_file.query_exists():
             self._folder = g_file

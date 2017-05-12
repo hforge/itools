@@ -23,7 +23,7 @@ from lfs import lfs
 from vfs import vfs
 
 # Import from gio
-from gio import Error
+from gi.repository.GLib import GError
 
 
 
@@ -38,4 +38,5 @@ __all__ = [
     'READ_WRITE',
     'APPEND',
     # Exceptions
-    'Error']
+    'GError'
+    ]

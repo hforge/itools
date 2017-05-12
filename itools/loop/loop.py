@@ -22,7 +22,7 @@ from signal import signal, SIGINT, SIGTERM
 from sys import version_info
 
 # Import from pygobject
-from gobject import MainLoop, timeout_add_seconds
+from gi.repository.GLib import MainLoop, timeout_add_seconds
 
 
 class Loop(MainLoop):

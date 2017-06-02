@@ -324,8 +324,8 @@ class Context(prototype):
             self.soup_message.set_header('Location', location)
             return
         # Never cache if status != 200
-        if context.mtime and context.status != 200:
-            self.set_header('Last-Modified', context.mtime)
+        if self.mtime and self.status != 200:
+            self.set_header('Last-Modified', self.mtime)
             self.set_header('Cache-Control', 'max-age=1')
         # Set status response
         self.soup_message.set_status(self.status)

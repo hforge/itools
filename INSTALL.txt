@@ -129,7 +129,7 @@ Verify it works, by:
 	Type "help", "copyright", "credits" or "license" for more information.
 	>>> import itools
 	>>> itools.__version__
-	'0.77.3'
+	'0.77.4'
 	>>>
 	
 Note: When building pynumy do not use ATLAS use optimized blas library as this breaks the install.

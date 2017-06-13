@@ -303,6 +303,12 @@ class RequestMethod(object):
         if content_type:
             content_type, type_parameters = content_type
         accept_json = accept == 'application/json'
+        # Manage error code
+        if error.code == 405:
+            # Add allow methods in case of 405
+            # https://tools.ietf.org/html/rfc7231#section-6.5.5
+            known_methods = context.view.get_known_methods()
+            context.set_header('Allow', ', '.join(known_methods))
         status = error.code
         context.status = status
         is_ui = str(context.path).startswith('/ui/')

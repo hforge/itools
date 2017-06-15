@@ -104,7 +104,7 @@ class ItoolsView(prototype):
     def OPTIONS(self, resource, context):
         """Return list of HTTP methods allowed"""
         known_methods = self.get_known_methods()
-        context.set_header('Allow', ','.join(known_methods))
+        context.set_header('Access-Control-Allow-Methods', ', '.join(known_methods))
         context.entity = None
         context.status = 200
 

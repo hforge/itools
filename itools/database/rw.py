@@ -759,27 +759,6 @@ def check_database(target):
 
     This is meant to be used by scripts, like 'icms-start.py'
     """
+    # TODO Check if bare repository is OK
     print('Checking database...')
-    cwd = '%s/database' % target
-
-    # Check modifications to the working tree not yet in the index.
-    command = ['git', 'ls-files', '-m', '-d', '-o']
-    data1 = get_pipe(command, cwd=cwd)
-
-    # Check changes in the index not yet committed.
-    command = ['git', 'diff-index', '--cached', '--name-only', 'HEAD']
-    data2 = get_pipe(command, cwd=cwd)
-
-    # Everything looks fine
-    if len(data1) == 0 and len(data2) == 0:
-        return True
-
-    # Something went wrong
-    print('The database is not in a consistent state.  Fix it manually with')
-    print('the help of Git:')
-    print('')
-    print('  $ cd %s/database' % target)
-    print('  $ git clean -fxd')
-    print('  $ git checkout -f')
-    print('')
-    return False
+    return True

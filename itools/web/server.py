@@ -173,7 +173,7 @@ class WebServer(SoupServer):
         # XXX Hardcoded
         known_methods = ['GET', 'HEAD', 'POST', 'OPTIONS', 'PUT', 'PATCH', 'DELETE']
         soup_message.set_status(200)
-        soup_message.set_header('Allow', ','.join(known_methods))
+        soup_message.set_header('Access-Control-Allow-Methods', ', '.join(known_methods))
 
 
 

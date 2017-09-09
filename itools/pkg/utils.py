@@ -196,8 +196,6 @@ def setup(path, ext_modules=None):
                packages = packages,
                package_data = package_data,
                # Requires / Provides
-               requires = config.get_value('requires'),
-               provides = config.get_value('provides'),
                install_requires=install_requires,
                # Scripts
                scripts = scripts,

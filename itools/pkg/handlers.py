@@ -36,8 +36,6 @@ class SetupConf(ConfigFile):
         'description': String,
         'classifiers': MultiLinesTokens(default=()),
         'packages': Tokens,
-        'requires': Tokens,
-        'provides': Tokens,
         'scripts': Tokens,
         'source_language': String,
         'target_languages': Tokens,

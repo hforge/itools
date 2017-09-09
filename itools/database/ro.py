@@ -136,9 +136,6 @@ class RODatabase(object):
         """
         handler.database = self
         handler.key = key
-        # Folders are not stored in the cache
-        if type(handler) is Folder:
-            return
         # Store in the cache
         self.cache[key] = handler
 

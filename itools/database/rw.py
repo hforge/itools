@@ -255,12 +255,7 @@ class RWDatabase(RODatabase):
                 self._discard_handler(k)
                 self.changed.discard(k)
 
-        # Remove me & childs from cache
-        for _handler in handler.traverse():
-            _handler_key = _handler.key
-            if self.cache.get(_handler_key):
-                self._discard_handler(_handler_key)
-
+        # Remove file
         if self.fs.exists(key):
             self.worktree.git_rm(key)
 
@@ -383,7 +378,8 @@ class RWDatabase(RODatabase):
             # Remove source
             self.added.discard(source)
             self.changed.discard(source)
-            self._discard_handler(source)
+            del self.cache[source]
+
             # Add target
             self.push_handler(target, handler)
             self.added.add(target)
@@ -394,11 +390,9 @@ class RWDatabase(RODatabase):
             self.has_changed = True
             return
 
-        # Remove me & childs from cache
-        for _handler in handler.traverse():
-            _handler_key = _handler.key
-            if self.cache.get(_handler_key):
-                self._discard_handler(_handler_key)
+        # In target in cache
+        self.added.add(target)
+        self.push_handler(target, handler)
 
         # Case 2: Folder
         n = len(source)
@@ -420,10 +414,6 @@ class RWDatabase(RODatabase):
 
         if fs.exists(source):
             self.worktree.git_mv(source, target, add=False)
-        for path in fs.traverse(target):
-            if not fs.is_folder(path):
-                path = fs.get_relative_path(path)
-                self.added.add(path)
 
         # Changed
         self.removed.add(source)

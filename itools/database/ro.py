@@ -24,7 +24,7 @@ from sys import getrefcount
 # Import from itools
 from itools.core import LRUCache
 from itools.handlers import Folder, get_handler_class_by_mimetype
-from itools.log import log_warning
+from itools.log import log_warning, Logger, register_logger
 from itools.uri import Path
 
 # Import from itools.database
@@ -57,6 +57,10 @@ class RODatabase(object):
             self.catalog = catalog
         else:
             self.catalog = self.get_catalog()
+        # Log
+        catalog_log = '{}/database.log'.format(self.path)
+        self.logger = Logger(catalog_log)
+        register_logger(self.logger, 'itools.database')
 
 
     def check_catalog(self):
@@ -67,7 +71,6 @@ class RODatabase(object):
 
     def close(self):
         self.catalog.close()
-
 
 
     def check_database(self):

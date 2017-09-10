@@ -293,9 +293,7 @@ class RODatabase(object):
 
     def touch_handler(self, key, handler=None):
         key = self.normalize_key(key)
-        handler = self._get_handler(key)
-        if handler.dirty is None:
-            raise ValueError
+        self.has_changed = True
 
 
     def set_handler(self, key, handler):

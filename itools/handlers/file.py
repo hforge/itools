@@ -25,6 +25,8 @@ from sys import exc_info
 
 # Import from itools
 from itools.fs import vfs
+
+# Import from itools.handlers
 from base import Handler
 from registry import register_handler_class
 
@@ -149,12 +151,16 @@ class File(Handler):
 
 
     def save_state_to(self, key):
+        fs = self.database.fs if self.database else vfs
         # If there is an empty folder in the given key, remove it
-        if vfs.is_folder(key) and not vfs.get_names(key):
-            vfs.remove(key)
+        if fs.is_folder(key) and not fs.get_names(key):
+            fs.remove(key)
 
         # Save the file
-        file = vfs.make_file(key)
+        if not fs.exists(key):
+            file = fs.make_file(key)
+        else:
+            file = fs.open(key, 'w')
         try:
             self.save_state_to_file(file)
         finally:
@@ -199,21 +205,18 @@ class File(Handler):
     def set_changed(self):
         # Set as changed
         key = self.key
-
         # Invalid handler
         if key is None and self.dirty is None:
             raise RuntimeError, 'cannot change an orphaned file handler'
-
         # Ignore if not already loaded for the first time
         if not self.loaded:
             return
-
+        # Set as dirty
+        self.dirty = datetime.now()
         # Free handler (not attached to a database)
         database = self.database
         if database is None:
-            self.dirty = datetime.now()
             return
-
         # Attached
         database.touch_handler(key, self)
 

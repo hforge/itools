@@ -544,10 +544,6 @@ class GitBackend(object):
         git_msg = git_msg or 'no comment'
         # List of Changed
         added_and_changed = list(added) + list(changed)
-        # Print
-        print 'CHANGED', changed
-        print 'ADDED', added
-        print 'REMOVED', removed
         # Build the tree
         try:
             head = self.repo.revparse_single('HEAD')

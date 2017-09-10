@@ -20,6 +20,7 @@
 from datetime import datetime
 
 # Import from itools
+from itools.core import LRUCache
 from itools.datatypes import DataType, Integer, String, URI, HTTPDate
 
 """
@@ -286,10 +287,19 @@ class Cookie(object):
 
 
 
+CACHE_COOKIES = LRUCache(200)
+
 class CookieDataType(DataType):
+    """ TODO: Performances can be improved
+    For instant we use cache
+    """
 
     @staticmethod
     def decode(data):
+        base_data = data
+        if CACHE_COOKIES.get(base_data):
+            CACHE_COOKIES.touch(base_data)
+            return CACHE_COOKIES[base_data]
         # Parse the cookie string
         parameters = []
         while data:
@@ -328,7 +338,7 @@ class CookieDataType(DataType):
                 if name == '$domain':
                     cookie.domain = value
                     index += 1
-
+        CACHE_COOKIES[base_data] = cookies
         return cookies
 
 

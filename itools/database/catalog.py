@@ -84,15 +84,15 @@ TRANSLATE_MAP = { ord(u'À'): ord(u'A'),
 
 MSG_NOT_INDEXED = 'the "{name}" field is not indexed'
 def warn_not_indexed(name):
-    log_warning(MSG_NOT_INDEXED.format(name=name))
+    log_warning(MSG_NOT_INDEXED.format(name=name), 'itools.database')
 
 MSG_NOT_STORED = 'the "{name}" field is not stored'
 def warn_not_stored(name):
-    log_warning(MSG_NOT_STORED.format(name=name))
+    log_warning(MSG_NOT_STORED.format(name=name), 'itools.database')
 
 MSG_NOT_INDEXED_NOR_STORED = 'the "{name}" field is not indexed nor stored'
 def warn_not_indexed_nor_stored(name):
-    log_warning(MSG_NOT_INDEXED_NOR_STORED.format(name=name))
+    log_warning(MSG_NOT_INDEXED_NOR_STORED.format(name=name), 'itools.database')
 
 
 class CatalogLogger(Logger):

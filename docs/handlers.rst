@@ -216,49 +216,12 @@ changed after the file handler was loaded, what means that our file handler is
     >>> test.load_state()
     >>> print test.timestamp
     2007-11-19 20:14:57
-    >>> print test.is_outdated()
-    False
-
-Here we have learned how to explicitly load the state of a file handler, with
-the :meth:`load_state` method. And how to check whether the handler is
-up-to-date or not, with the :meth:`is_outdated` method.
-
-But what happens if from another console we modify the test file?
-::
-
-    # From another console...
-    $ echo "Bye" > test.txt
-    # Switch back to the first console
-    >>> print test.data
-    Hello
-
-    >>> print test.is_outdated()
-    True
-
-The handler still contains the old data and the method :meth:`is_outdated`
-correctly tells the file resource has been modified since the last time we
-loaded the file handler.
-
-To re-load the handler and get things back in order::
-
-    >>> test.load_state()
-    >>> print test.to_str()
-    Bye
-
-    >>> print test.is_outdated()
-    False
 
 
 Programming Interface
 ^^^^^^^^^^^^^^^^^^^^^
 
 This is the full collection of load related methods:
-
-.. method:: File.is_outdated()
-
-      Returns :obj:`True` if the file resource has been modified since the
-      handler was loaded (or saved) for the last time; :obj:`False`
-      otherwise.
 
 .. method:: File.load_state()
 

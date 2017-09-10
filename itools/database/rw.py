@@ -21,77 +21,18 @@
 # Import from the Standard Library
 from datetime import datetime
 import fnmatch
-from heapq import heappush, heappop
-from os.path import dirname
-
-# Import from pygit2
-import pygit2
-from pygit2 import TreeBuilder, GIT_FILEMODE_TREE
-from pygit2 import GIT_CHECKOUT_FORCE, GIT_CHECKOUT_REMOVE_UNTRACKED
 
 # Import from itools
-from itools.core import get_pipe
 from itools.fs import lfs
 from itools.handlers import Folder
 from itools.log import log_error
 from catalog import make_catalog
-from git import open_worktree
+from git import init_backend
 from registry import get_register_fields
 from ro import RODatabase
 
 
-
 MSG_URI_IS_BUSY = 'The "%s" URI is busy.'
-
-
-
-class Heap(object):
-    """
-    This object behaves very much like a sorted dict, but for security only a
-    subset of the dict API is exposed:
-
-       >>> len(heap)
-       >>> heap[path] = value
-       >>> value = heap.get(path)
-       >>> path, value = heap.popitem()
-
-    The keys are relative paths as used in Git trees, like 'a/b/c' (and '' for
-    the root).
-
-    The dictionary is sorted so deeper paths are considered smaller, and so
-    returned first by 'popitem'. The order relation between two paths of equal
-    depth is undefined.
-
-    This data structure is used by RWDatabase._save_changes to build the tree
-    objects before commit.
-    """
-
-    def __init__(self):
-        self._dict = {}
-        self._heap = []
-
-
-    def __len__(self):
-        return len(self._dict)
-
-
-    def get(self, path):
-        return self._dict.get(path)
-
-
-    def __setitem__(self, path, value):
-        if path not in self._dict:
-            n = -path.count('/') if path else 1
-            heappush(self._heap, (n, path))
-
-        self._dict[path] = value
-
-
-    def popitem(self):
-        key = heappop(self._heap)
-        path = key[1]
-        return path, self._dict.pop(path)
-
 
 
 class RWDatabase(RODatabase):
@@ -102,8 +43,7 @@ class RWDatabase(RODatabase):
     def __init__(self, path, size_min, size_max, catalog=None):
         proxy = super(RWDatabase, self)
         proxy.__init__(path, size_min, size_max, catalog)
-
-        # The "git add" arguments
+        # Changes on DB
         self.added = set()
         self.changed = set()
         self.removed = set()
@@ -175,14 +115,6 @@ class RWDatabase(RODatabase):
     #######################################################################
     # Layer 0: handlers
     #######################################################################
-    def is_phantom(self, handler):
-        # Phantom handlers are "new"
-        if handler.timestamp or not handler.dirty:
-            return False
-        # They are attached to this database, but they are not in the cache
-        return handler.database is self and handler.key not in self.cache
-
-
     def has_handler(self, key):
         key = self.normalize_key(key)
 
@@ -237,7 +169,6 @@ class RWDatabase(RODatabase):
                 self.added.remove(key)
             else:
                 self.changed.discard(key)
-                self.worktree.git_rm(key)
             # Changed
             self.removed.add(key)
             self.has_changed = True
@@ -254,11 +185,6 @@ class RWDatabase(RODatabase):
             if k.startswith(base):
                 self._discard_handler(k)
                 self.changed.discard(k)
-
-        # Remove file
-        if self.fs.exists(key):
-            self.worktree.git_rm(key)
-
         # Changed
         self.removed.add(key)
         self.has_changed = True
@@ -266,39 +192,24 @@ class RWDatabase(RODatabase):
 
     def touch_handler(self, key, handler=None):
         key = self.normalize_key(key)
-
-        # Useful for the phantoms
+        # Mark the handler as dirty
+        handler.dirty = datetime.now()
+        # Do some checks
         if handler is None:
-            handler = self._get_handler(key)
-
-        # The phantoms become real files
-        if self.is_phantom(handler):
-            self.cache[key] = handler
-            self.added.add(key)
-            self.removed.discard(key)
-            self.has_changed = True
-            return
-
-        if handler.dirty is None:
-            # Load the handler if needed
-            if handler.timestamp is None:
-                handler.load_state()
-            # Mark the handler as dirty
-            handler.dirty = datetime.now()
-            # Update database state (XXX Should we do this?)
-            self.changed.add(key)
-            # Changed
-            self.removed.discard(key)
-            self.has_changed = True
+            raise ValueError
+        if key in self.removed:
+            raise ValueError
+        # Set database has changed
+        self.has_changed = True
+        # Set in changed list
+        self.changed.add(key)
 
 
     def get_handler_names(self, key):
         key = self.normalize_key(key)
-
         # On the filesystem
         names = super(RWDatabase, self).get_handler_names(key)
         names = set(names)
-
         # In added
         base = key + '/'
         n = len(base)
@@ -306,11 +217,6 @@ class RWDatabase(RODatabase):
             if f_key[:n] == base:
                 name = f_key[n:].split('/', 1)[0]
                 names.add(name)
-
-        # Remove .git
-        if key == "":
-            names.discard('.git')
-
         return list(names)
 
 
@@ -334,19 +240,11 @@ class RWDatabase(RODatabase):
             raise RuntimeError, MSG_URI_IS_BUSY % target
 
         handler = self._get_handler(source)
-
-        # Folder
         if type(handler) is Folder:
-            fs = self.fs
-            for name in handler.get_handler_names():
-                self.copy_handler(fs.resolve2(source, name),
-                                  fs.resolve2(target, name),
-                                  exclude_patterns)
-        # File
-        else:
-            handler = handler.clone()
-            self.push_handler(target, handler)
-            self.added.add(target)
+            raise ValueError('Cannot copy folders')
+        handler = handler.clone()
+        self.push_handler(target, handler)
+        self.added.add(target)
 
         # Changed
         self.removed.discard(target)
@@ -366,19 +264,16 @@ class RWDatabase(RODatabase):
             raise RuntimeError, MSG_URI_IS_BUSY % target
 
         # Go
-        fs = self.fs
         cache = self.cache
 
         # Case 1: file
         handler = self._get_handler(source)
         if type(handler) is not Folder:
-            if fs.exists(source):
-                self.worktree.git_mv(source, target, add=False)
 
             # Remove source
             self.added.discard(source)
             self.changed.discard(source)
-            del self.cache[source]
+            self.cache.pop(source)
 
             # Add target
             self.push_handler(target, handler)
@@ -412,9 +307,6 @@ class RWDatabase(RODatabase):
                 self.push_handler(new_key, handler)
                 self.changed.remove(key)
 
-        if fs.exists(source):
-            self.worktree.git_mv(source, target, add=False)
-
         # Changed
         self.removed.add(source)
         self.removed.discard(target)
@@ -427,7 +319,6 @@ class RWDatabase(RODatabase):
     def remove_resource(self, resource):
         old2new = self.resources_old2new
         new2old = self.resources_new2old
-
         for x in resource.traverse_resources():
             path = str(x.abspath)
             old2new[path] = None
@@ -435,9 +326,7 @@ class RWDatabase(RODatabase):
 
 
     def add_resource(self, resource):
-        old2new = self.resources_old2new
         new2old = self.resources_new2old
-
         # Catalog
         for x in resource.traverse_resources():
             path = str(x.abspath)
@@ -447,16 +336,13 @@ class RWDatabase(RODatabase):
     def change_resource(self, resource):
         old2new = self.resources_old2new
         new2old = self.resources_new2old
-
         # Case 1: added, moved in-here or already changed
         path = str(resource.abspath)
         if path in new2old:
             return
-
         # Case 2: removed or moved away
         if path in old2new and not old2new[path]:
             raise ValueError, 'cannot change a resource that has been removed'
-
         # Case 3: not yet touched
         old2new[path] = path
         new2old[path] = path
@@ -465,10 +351,8 @@ class RWDatabase(RODatabase):
     def is_changed(self, resource):
         """We use for this function only the 2 dicts old2new and new2old.
         """
-
         old2new = self.resources_old2new
         new2old = self.resources_new2old
-
         path = str(resource.abspath)
         return path in old2new or path in new2old
 
@@ -510,12 +394,8 @@ class RWDatabase(RODatabase):
         for key in self.changed:
             cache[key].abort_changes()
 
-        # 2. Git
-        strategy = GIT_CHECKOUT_FORCE | GIT_CHECKOUT_REMOVE_UNTRACKED
-        if pygit2.__version__ >= '0.21.1':
-            self.worktree.repo.checkout_head(strategy=strategy)
-        else:
-            self.worktree.repo.checkout_head(strategy)
+        # 2. Abort in backend
+        self.backend.abort_transaction()
 
         # Reset state
         self.added.clear()
@@ -550,100 +430,18 @@ class RWDatabase(RODatabase):
 
 
     def _save_changes(self, data):
-        worktree = self.worktree
-
-        # 1. Synchronize the handlers and the filesystem
-        added = self.added
-        for key in added:
-            handler = self.cache.get(key)
-            if handler and handler.dirty:
-                parent_path = dirname(key)
-                if not self.fs.exists(parent_path):
-                    self.fs.make_folder(parent_path)
-                handler.save_state()
-
-        changed = self.changed
-        for key in changed:
-            handler = self.cache[key]
-            handler.save_state()
-
-        # 2. Build the 'git commit' command
-        git_author, git_date, git_msg, docs_to_index, docs_to_unindex = data
-        git_msg = git_msg or 'no comment'
-
-        # 3. Git add
-        git_add = list(added) + list(changed)
-        worktree.git_add(*git_add)
-
-        # 4. Create the tree
-        repo = worktree.repo
-        index = repo.index
-        try:
-            head = repo.revparse_single('HEAD')
-        except KeyError:
-            git_tree = None
-        else:
-            root = head.tree
-            # Initialize the heap
-            heap = Heap()
-            heap[''] = repo.TreeBuilder(root)
-            for key in git_add:
-                entry = index[key]
-                heap[key] = (entry.oid, entry.mode)
-            for key in self.removed:
-                heap[key] = None
-
-            while heap:
-                path, value = heap.popitem()
-                # Stop condition
-                if path == '':
-                    git_tree = value.write()
-                    break
-
-                if type(value) is TreeBuilder:
-                    if len(value) == 0:
-                        value = None
-                    else:
-                        oid = value.write()
-                        value = (oid, GIT_FILEMODE_TREE)
-
-                # Split the path
-                if '/' in path:
-                    parent, name = path.rsplit('/', 1)
-                else:
-                    parent = ''
-                    name = path
-
-                # Get the tree builder
-                tb = heap.get(parent)
-                if tb is None:
-                    try:
-                        tentry = root[parent]
-                    except KeyError:
-                        tb = repo.TreeBuilder()
-                    else:
-                        tree = repo[tentry.oid]
-                        tb = repo.TreeBuilder(tree)
-                    heap[parent] = tb
-
-                # Modify
-                if value is None:
-                    # Sometimes there are empty folders left in the
-                    # filesystem, but not in the tree, then we get a
-                    # "Failed to remove entry" error.  Be robust.
-                    if tb.get(name) is not None:
-                        tb.remove(name)
-                else:
-                    tb.insert(name, value[0], value[1])
-
-        # 5. Git commit
-        worktree.git_commit(git_msg, git_author, git_date, tree=git_tree)
-
+        # Check
+        if not self.added and not self.changed and not self.removed:
+            msg = 'No changes, should never happen'
+            raise ValueError(msg)
+        # Get data informations
+        the_author, the_date, the_msg, docs_to_index, docs_to_unindex = data
+        # Do transaction
+        self.backend.do_transaction(data, self.added, self.changed, self.removed, self.cache)
         # 6. Clear state
-        changed.clear()
-        added.clear()
+        self.changed.clear()
+        self.added.clear()
         self.removed.clear()
-
         # 7. Catalog
         catalog = self.catalog
         for path in docs_to_unindex:
@@ -684,28 +482,6 @@ class RWDatabase(RODatabase):
             self._cleanup()
 
 
-    def create_tag(self, tag_name, message=None):
-        worktree = self.worktree
-        if message is None:
-            message = tag_name
-        worktree.git_tag(tag_name, message)
-
-
-    def reset_to_tag(self, tag_name):
-        worktree = self.worktree
-        try:
-            # Reset the tree to the given tag name
-            worktree.git_reset(tag_name)
-            # Remove the tag
-            worktree.git_remove_tag(tag_name)
-        except Exception:
-            log_error('Transaction failed', domain='itools.database')
-            try:
-                self._abort_changes()
-            except Exception:
-                log_error('Aborting failed', domain='itools.database')
-            raise
-
 
     def reindex_catalog(self, base_abspath, recursif=True):
         """Reindex the catalog & return nb resources re-indexed
@@ -731,34 +507,16 @@ class RWDatabase(RODatabase):
         return n
 
 
-def make_git_database(path, size_min, size_max, fields=None):
-    """Create a new empty Git database if the given path does not exists or
+def make_database(path, size_min, size_max, fields=None):
+    """Create a new empty database if the given path does not exists or
     is a folder.
-
-    If the given path is a folder with content, the Git archive will be
-    initialized and the content of the folder will be added to it in a first
-    commit.
     """
     path = lfs.get_absolute_path(path)
-    # Git init
-    open_worktree('%s/database' % path, init=True)
+    # Init backend
+    init_backend('%s/database' % path)
     # The catalog
     if fields is None:
         fields = get_register_fields()
     catalog = make_catalog('%s/catalog' % path, fields)
     # Ok
-    database = RWDatabase(path, size_min, size_max, catalog=catalog)
-    return database
-
-
-
-def check_database(target):
-    """This function checks whether the database is in a consisitent state,
-    this is to say whether a transaction was not brutally aborted and left
-    the working directory with changes not committed.
-
-    This is meant to be used by scripts, like 'icms-start.py'
-    """
-    # TODO Check if bare repository is OK
-    print('Checking database...')
-    return True
+    return RWDatabase(path, size_min, size_max, catalog=catalog)

@@ -39,6 +39,8 @@ class Folder(Handler):
 
     class_mimetypes = ['application/x-not-regular-file']
 
+    dirty = False
+
 
     def __init__(self, key=None, database=None, **kw):
         if database is not None:
@@ -54,6 +56,7 @@ class Folder(Handler):
         if fs.exists(self.key):
             return fs.get_mtime(self.key)
         return None
+
 
 
     def traverse(self):

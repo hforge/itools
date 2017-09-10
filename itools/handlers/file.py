@@ -50,8 +50,10 @@ class File(Handler):
     """
 
     # By default handlers are not loaded
+    # XXX We should remove timestamp variable
     timestamp = None
     dirty = None
+    loaded = False
 
 
     def __init__(self, key=None, string=None, database=None, **kw):
@@ -99,20 +101,16 @@ class File(Handler):
 
 
     def load_state(self):
-        fs = self.database.fs
-        file = fs.open(self.key)
+        data = self.database.get_handler_data(self.key)
         self.reset()
         try:
-            self._load_state_from_file(file)
+            self.load_state_from_string(data)
         except Exception as e:
             # Update message to add the problematic file
             message = '{0} on "{1}"'.format(e.message, self.key)
             self._clean_state()
             raise type(e), type(e)(message), exc_info()[2]
-        finally:
-            file.close()
-
-        self.timestamp = fs.get_mtime(self.key)
+        self.timestamp = None
         self.dirty = None
 
 
@@ -132,6 +130,7 @@ class File(Handler):
         except Exception:
             self._clean_state()
             raise
+        self.loaded = True
 
 
     def load_state_from_string(self, string):
@@ -142,33 +141,20 @@ class File(Handler):
     def save_state(self):
         if not self.dirty:
             return
-
         # Save
-        file = self.database.fs.open(self.key, 'w')
-        try:
-            self.save_state_to_file(file)
-        finally:
-            file.close()
-
+        self.save_state_to(self.key)
         # Update timestamp/dirty
-        self.timestamp = self.database.fs.get_mtime(self.key)
+        self.timestamp = None
         self.dirty = None
 
 
     def save_state_to(self, key):
-        database = self.database
-
         # If there is an empty folder in the given key, remove it
-        fs = database.fs if database is not None else vfs
-        if fs.is_folder(key) and not fs.get_names(key):
-            fs.remove(key)
+        if vfs.is_folder(key) and not vfs.get_names(key):
+            vfs.remove(key)
 
         # Save the file
-        if database:
-            key = database.normalize_key(key)
-            file = database.fs.make_file(key)
-        else:
-            file = vfs.make_file(key)
+        file = vfs.make_file(key)
         try:
             self.save_state_to_file(file)
         finally:
@@ -210,29 +196,17 @@ class File(Handler):
         return copy
 
 
-    def is_outdated(self):
-        if self.key is None:
-            return False
-
-        timestamp = self.timestamp
-        # It cannot be out-of-date if it has not been loaded yet
-        if timestamp is None:
-            return False
-
-        mtime = self.database.fs.get_mtime(self.key)
-        # If the resource layer does not support mtime... we are...
-        if mtime is None:
-            return True
-
-        return mtime > timestamp
-
-
     def set_changed(self):
+        # Set as changed
         key = self.key
 
         # Invalid handler
         if key is None and self.dirty is None:
             raise RuntimeError, 'cannot change an orphaned file handler'
+
+        # Ignore if not already loaded for the first time
+        if not self.loaded:
+            return
 
         # Free handler (not attached to a database)
         database = self.database

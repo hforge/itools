@@ -27,7 +27,7 @@ from metadata_parser import MetadataProperty
 from registry import get_register_fields, register_field
 from resources import Resource
 from ro import RODatabase, ReadonlyError
-from rw import RWDatabase, make_git_database, check_database
+from rw import RWDatabase, make_database
 
 
 __all__ = [
@@ -37,8 +37,7 @@ __all__ = [
     'ReadonlyError',
     'RODatabase',
     'RWDatabase',
-    'make_git_database',
-    'check_database',
+    'make_database',
     'get_register_fields',
     'register_field',
     # Metadata

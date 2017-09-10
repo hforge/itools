@@ -17,54 +17,33 @@
 # Import from the Standard Library
 from calendar import timegm
 from datetime import datetime
-from os import listdir, makedirs, remove, rmdir, walk
-from os.path import abspath, dirname, exists, getmtime, isabs, isdir, isfile
-from os.path import normpath
+from os.path import abspath
 from re import search
-from shutil import copy2, copytree
 from subprocess import Popen, PIPE
 import time
 
 # Import from pygit2
-from pygit2 import Repository, Signature, GitError, init_repository
+from pygit2 import Repository, Signature, init_repository
 from pygit2 import GIT_SORT_REVERSE, GIT_SORT_TIME, GIT_OBJ_TREE
+from pygit2 import GIT_FILEMODE_TREE,GIT_FILEMODE_BLOB_EXECUTABLE
 
 # Import from itools
-from itools.core import lazy
+from itools.core import LRUCache, lazy
+from itools.fs import lfs
 
+class GitBackend(object):
 
-def message_short(commit):
-    """Helper function to get the subject line of the commit message.
-
-    XXX This code is based on the 'message_short' value that was once
-    available in libgit2 (and removed by 5ae2f0c0135). It should be removed
-    once libgit2 gets the feature back, see issue #250 for the discussion:
-
-      https://github.com/libgit2/libgit2/pull/250
-    """
-    message = commit.message
-    message = message.split('\n\n')[0]
-    message = message.replace('\n', ' ')
-    return message.rstrip()
-
-
-def make_parent_dirs(path):
-    folder = dirname(path)
-    if not exists(folder):
-        makedirs(folder)
-
-
-
-class Worktree(object):
-
-    def __init__(self, path, repo):
+    def __init__(self, path):
         self.path = abspath(path) + '/'
-        self.repo = repo
-        self.cache = {} # {sha: object}
-        # FIXME These two fields are already available by libgit2. TODO
-        # expose them through pygit2 and use them here.
-        self.index_path = '%s/.git/index' % path
-        self.index_mtime = None
+        # Open database
+        self.path_data = '%s/database/' % self.path
+        if not lfs.is_folder(self.path_data):
+            error = '"%s" should be a folder, but it is not' % path
+            raise ValueError, error
+        # Open repository
+        self.repo = Repository(self.path_data)
+        # 6.The git cache - {sha: object}
+        self.git_cache = LRUCache(900, 1100)
         # Check git commiter
         try:
             _, _ = self.username, self.useremail
@@ -80,20 +59,6 @@ class Worktree(object):
     #######################################################################
     # Internal utility functions
     #######################################################################
-    def _get_abspath(self, path):
-        """Return the absolute version of the given path. This will be used by
-        calls to the operating system, this way the code does not require the
-        working directory to be set to the working tree.
-        """
-        if isabs(path):
-            if path.startswith(self.path):
-                return path
-            raise ValueError, 'unexpected absolute path "%s"' % path
-        if path == '.':
-            return self.path
-        return '%s%s' % (self.path, path)
-
-
     def _call(self, command):
         """Interface to cal git.git for functions not yet implemented using
         libgit2.
@@ -129,51 +94,6 @@ class Worktree(object):
     #######################################################################
     # External API
     #######################################################################
-    def walk(self, path='.'):
-        """This utility method traverses the working tree starting at the
-        given path, it yields relative paths from the working tree, where
-        folders end by '/' to distigish them from files.  The '.git' folder
-        at the root is excluded from the traversal.
-
-        FIXME The '/' trick will not work on Windows.
-        TODO Idea: change the prototype to accept two callbacks, one for
-        folders and another for files, instead of yielding the values.  These
-        callbacks will be applied with a partial order: 'a' before 'b' if 'b'
-        is a directory that contains 'a'. This will work on Windows and would
-        allow us to rewrite 'git rm' (but will it work for 'git status'?).
-        """
-        # 1. Check and normalize path
-        if isabs(path):
-            raise ValueError, 'unexpected absolute path "%s"' % path
-
-        path = normpath(path)
-        if path == '.':
-            path = ''
-        elif path == '.git':
-            raise ValueError, 'cannot walk .git'
-        elif not isdir('%s%s' % (self.path, path)):
-            yield path
-            return
-        else:
-            path += '/'
-
-        # 2. Go
-        stack = [path]
-        while stack:
-            folder_rel = stack.pop()
-            folder_abs = '%s%s' % (self.path, folder_rel)
-            for name in listdir(folder_abs):
-                path_abs = '%s%s' % (folder_abs, name)
-                path_rel = '%s%s' % (folder_rel, name)
-                if path_rel == '.git':
-                    continue
-                if isdir(path_abs):
-                    path_rel += '/'
-                    stack.append(path_rel)
-
-                yield path_rel
-
-
     def lookup(self, sha):
         """Return the object by the given SHA. We use a cache to warrant that
         two calls with the same SHA will resolve to the same object, so the
@@ -217,84 +137,8 @@ class Worktree(object):
         # Bare repository
         if index is None:
             raise RuntimeError, 'expected standard repository, not bare'
-
-        path = self.index_path
-        if exists(path):
-            mtime = getmtime(path)
-            if not self.index_mtime or self.index_mtime < mtime:
-                index.read()
-                self.index_mtime = mtime
-
         return index
 
-
-    def update_tree_cache(self):
-        """libgit2 is able to read the tree cache, but not to write it.
-        To speed up 'git_commit' this method should be called from time to
-        time, it updates the tree cache by calling 'git write-tree'.
-        """
-        command = ['git', 'write-tree']
-        self._call(command)
-
-
-    def git_add(self, *args):
-        """Equivalent 'git add', adds the given paths to the index file.
-        If a path is a folder, adds all its content recursively.
-        """
-        index = self.index
-        for path in args:
-            for path in self.walk(path):
-                if path[-1] != '/':
-                    index.add(path)
-
-
-    def git_rm(self, *args):
-        """Equivalent to 'git rm', removes the given paths from the index
-        file and from the filesystem. If a path is a folder removes all
-        its content recursively, files and folders.
-        """
-        index = self.index
-        n = len(self.path)
-        for path in args:
-            abspath = self._get_abspath(path)
-            # 1. File
-            if isfile(abspath):
-                index.remove(path)
-                remove(abspath)
-                continue
-            # 2. Folder
-            for root, dirs, files in walk(abspath, topdown=False):
-                for name in files:
-                    index.remove('%s/%s' % (root[n:], name))
-                    remove('%s/%s' % (root, name))
-                rmdir(root)
-
-
-    def git_mv(self, source, target, add=True):
-        """Equivalent to 'git mv': moves the file or folder in the filesystem
-        from 'source' to 'target', removes the source from the index file,
-        and adds the target to the index file.
-
-        NOTE If the boolean parameter 'add' is set to False then the target
-        files will not be added to the index file (this feature is used by
-        itools.database). TODO Check whether we cannot change itools.database
-        so we can remove this parameter.
-        """
-        source_abs = self._get_abspath(source)
-        target = self._get_abspath(target)
-        # 1. Copy
-        if isfile(source_abs):
-            make_parent_dirs(target)
-            copy2(source_abs, target)
-        else:
-            copytree(source_abs, target)
-
-        # 2. Git rm
-        self.git_rm(source)
-
-        # 3. Git add
-        if add is True:
-            self.git_add(target)
 
 
     @lazy
@@ -347,15 +191,10 @@ class Worktree(object):
         """Equivalent to 'git commit', we must give the message and we can
         also give the author and date.
         """
-        # TODO Check the 'nothing to commit' case
-
-        # Write index
-        self.index.write()
-        self.index_mtime = getmtime(self.index_path)
-
         # Tree
         if tree is None:
-            tree = self.index.write_tree()
+            #tree = self.index.write_tree()
+            raise ValueError('Please give me a tree')
 
         # Parent
         parent = self._resolve_reference('HEAD')
@@ -449,7 +288,7 @@ class Worktree(object):
                 {'sha': commit.hex,
                  'author_name': commit.author.name,
                  'author_date': datetime.fromtimestamp(ts),
-                 'message_short': message_short(commit)})
+                 'message_short': self.message_short(commit)})
             if n is not None:
                 n -= 1
                 if n == 0:
@@ -528,20 +367,208 @@ class Worktree(object):
             'committer_email': committer.email,
             'committer_date': datetime.fromtimestamp(committer.time),
             'message': commit.message,
-            'message_short': message_short(commit),
+            'message_short': self.message_short(commit),
             }
 
 
+    def message_short(self, commit):
+        """Helper function to get the subject line of the commit message.
 
-def open_worktree(path, init=False, soft=False):
-    try:
-        if init:
-            repo = init_repository(path, False)
+        XXX This code is based on the 'message_short' value that was once
+        available in libgit2 (and removed by 5ae2f0c0135). It should be removed
+        once libgit2 gets the feature back, see issue #250 for the discussion:
+
+          https://github.com/libgit2/libgit2/pull/250
+        """
+        message = commit.message
+        message = message.split('\n\n')[0]
+        message = message.replace('\n', ' ')
+        return message.rstrip()
+
+    #######################################################################
+    # Data API
+    #######################################################################
+    def handler_exists(self, key):
+        tree = self.repo.head.peel(GIT_OBJ_TREE)
+        try:
+            tree[key]
+        except:
+            return False
+        return True
+
+
+    def get_handler_names(self, key):
+        try:
+            tree = self.repo.head.peel(GIT_OBJ_TREE)
+            if key:
+                tree_entry = tree[key]
+                if tree_entry.type == 'blob':
+                    raise ValueError
+                tree = self.repo[tree_entry.id]
+        except:
+            yield None
         else:
-            repo = Repository('%s/.git' % path)
-    except GitError:
-        if soft:
-            return None
-        raise
+            for item in tree:
+                yield item.name
 
-    return Worktree(path, repo)
+
+    def get_handler_data(self, key):
+        tree = self.repo.head.peel(GIT_OBJ_TREE)
+        tree_entry = tree[key]
+        blob = self.repo[tree_entry.id]
+        return blob.data
+
+
+    def handler_is_file(self, key):
+        return not self.handler_is_folder(key)
+
+
+    def handler_is_folder(self, key):
+        repository = self.repo
+        if key == '':
+            return True
+        else:
+            tree = repository.head.peel(GIT_OBJ_TREE)
+            tree_entry = tree[key]
+        return tree_entry.type == 'tree'
+
+
+    def get_handler_infos(self, key):
+        exists = is_folder = False
+        data = None
+        try:
+            tree = self.repo.head.peel(GIT_OBJ_TREE)
+            tree_entry = tree[key]
+        except:
+            pass
+        else:
+            exists = True
+            is_folder = tree_entry.type == 'tree'
+            if not is_folder:
+                data = self.repo[tree_entry.id].data
+        return exists, is_folder, data
+
+    #######################################################################
+    # Git
+    #######################################################################
+    def get_blob(self, sha, cls):
+        if sha in self.git_cache:
+            return self.git_cache[sha]
+
+        blob = self.worktree.lookup(sha)
+        blob = cls(string=blob.data)
+        self.git_cache[sha] = blob
+        return blob
+
+
+    def get_blob_by_revision_and_path(self, sha, path, cls):
+        """Get the file contents located at the given path after the given
+        commit revision has been committed.
+        """
+        worktree = self.worktree
+        commit = worktree.lookup(sha)
+        obj = worktree.lookup_from_commit_by_path(commit, path)
+        return self.get_blob(obj.sha, cls)
+
+
+    def traverse_resources(self):
+        tree = self.repo.head.peel(GIT_OBJ_TREE)
+        yield self.get_resource('/')
+        for name in self.get_names(tree):
+            if name[-9:] == '.metadata' and name != '.metadata':
+                yield self.get_resource('/' + name[:-9])
+
+
+    def get_names(self, tree, path=''):
+        for entry in tree:
+            base_path = '{0}/{1}'.format(path, entry.name)
+            yield base_path
+            if entry.filemode == GIT_FILEMODE_TREE:
+                sub_tree = self.repo.get(entry.hex)
+                for x in self.get_names(sub_tree, base_path):
+                    yield x
+
+    #######################################################################
+    # Tree API
+    #######################################################################
+    def auto_insert(self, repo, treebuilder, path, thing, mode):
+        """figure out and deal with the necessary subtree structure"""
+        path_parts = path.split('/', 1)
+        if len(path_parts) == 1:
+            treebuilder.insert(path, thing, mode)
+            return treebuilder.write()
+
+        subtree_name, sub_path = path_parts
+        tree_oid = treebuilder.write()
+        tree = repo.get(tree_oid)
+        try:
+            entry = tree[subtree_name]
+            assert entry.filemode == GIT_FILEMODE_TREE,\
+                '{} already exists as a blob, not a tree'.format(entry.name)
+            existing_subtree = repo.get(entry.hex)
+            sub_treebuilder = repo.TreeBuilder(existing_subtree)
+        except KeyError:
+            sub_treebuilder = repo.TreeBuilder()
+
+        subtree_oid = self.auto_insert(repo, sub_treebuilder, sub_path, thing, mode)
+        treebuilder.insert(subtree_name, subtree_oid, GIT_FILEMODE_TREE)
+        return treebuilder.write()
+
+
+    def auto_remove(self, repo, treebuilder, path):
+        path_parts = path.split('/', 1)
+        if len(path_parts) == 1:
+            treebuilder.remove(path)
+            return treebuilder.write()
+        subtree_name, sub_path = path_parts
+        tree_oid = treebuilder.write()
+        tree = repo.get(tree_oid)
+        try:
+            entry = tree[subtree_name]
+            assert entry.filemode == GIT_FILEMODE_TREE,\
+                '{} already exists as a blob, not a tree'.format(entry.name)
+            existing_subtree = repo.get(entry.hex)
+            sub_treebuilder = repo.TreeBuilder(existing_subtree)
+        except KeyError:
+            sub_treebuilder = repo.TreeBuilder()
+
+        subtree_oid = self.auto_remove(repo, sub_treebuilder, sub_path)
+        treebuilder.insert(subtree_name, subtree_oid, GIT_FILEMODE_TREE)
+        return treebuilder.write()
+
+    #######################################################################
+    # Git
+    #######################################################################
+    def do_transaction(self, data, added, changed, removed, handlers):
+        git_author, git_date, git_msg, docs_to_index, docs_to_unindex = data
+        git_msg = git_msg or 'no comment'
+        # List of Changed
+        added_and_changed = list(added) + list(changed)
+        # Print
+        print 'CHANGED', changed
+        print 'ADDED', added
+        print 'REMOVED', removed
+        # Build the tree
+        try:
+            head = self.repo.revparse_single('HEAD')
+            tree = self.repo.TreeBuilder(head.tree)
+        except:
+            tree = self.repo.TreeBuilder()
+        for key in added_and_changed:
+            handler = handlers.get(key)
+            blob_id = self.repo.create_blob(handler.to_str())
+            self.auto_insert(self.repo, tree, key, blob_id, GIT_FILEMODE_BLOB_EXECUTABLE)
+        for key in removed:
+            self.auto_remove(self.repo, tree, key)
+        git_tree = tree.write()
+        # Commit
+        self.git_commit(git_msg, git_author, git_date, tree=git_tree)
+
+
+    def abort_transaction(self):
+        # TODO: Remove created blobs
+        pass
+
+
+def init_backend(path, init=False, soft=False):
+    init_repository(path, bare=True)

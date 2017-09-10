@@ -25,6 +25,7 @@ from sys import getrefcount
 # Import from itools
 from itools.core import LRUCache
 from itools.fs import vfs
+from itools.uri import Path
 from folder import Folder
 from registry import get_handler_class_by_mimetype
 
@@ -44,6 +45,11 @@ class RODatabase(object):
         # A mapping from key to handler
         self.cache = LRUCache(size_min, size_max, automatic=False)
         self.fs = fs or vfs
+
+
+
+    def get_handler_data(self, key):
+        return self.fs.open(key).read()
 
 
     #######################################################################
@@ -288,13 +294,8 @@ class RODatabase(object):
     def touch_handler(self, key, handler=None):
         key = self.normalize_key(key)
         handler = self._get_handler(key)
-
         if handler.dirty is None:
-            # Load the handler if needed
-            if handler.timestamp is None:
-                handler.load_state()
-            # Mark the handler as dirty
-            handler.dirty = datetime.now()
+            raise ValueError
 
 
     def set_handler(self, key, handler):
@@ -324,6 +325,35 @@ class RODatabase(object):
         self._abort_changes()
         self._cleanup()
 
+
+    @staticmethod
+    def get_basename(path):
+        if type(path) is not Path:
+            path = Path(path)
+        return path.get_name()
+
+
+    @staticmethod
+    def get_path(path):
+        if type(path) is not Path:
+            path = Path(path)
+        return str(path)
+
+
+    @staticmethod
+    def resolve(base, path):
+        if type(base) is not Path:
+            base = Path(base)
+        path = base.resolve(path)
+        return str(path)
+
+
+    @staticmethod
+    def resolve2(base, path):
+        if type(base) is not Path:
+            base = Path(base)
+        path = base.resolve2(path)
+        return str(path)
 
 
 # A built-in database for handler operations

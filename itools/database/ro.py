@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 # Copyright (C) 2006, 2011 Hervé Cauwelier <herve@oursours.net>
 # Copyright (C) 2007 Henry Obein <henry.obein@gmail.com>
-# Copyright (C) 2007 Sylvain Taverne <taverne.sylvain@gmail.com>
+# Copyright (C) 2007-2017 Sylvain Taverne <taverne.sylvain@gmail.com>
 # Copyright (C) 2007-2008, 2010-2011 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2010-2011 David Versmisse <versmisse@lil.univ-littoral.fr>
 #
@@ -23,53 +23,35 @@ from sys import getrefcount
 
 # Import from itools
 from itools.core import LRUCache
-from itools.fs import lfs
 from itools.handlers import Folder, get_handler_class_by_mimetype
 from itools.log import log_warning
 from itools.uri import Path
+
+# Import from itools.database
 from catalog import Catalog, _get_xquery, SearchResults
-from git import open_worktree
-from magic_ import magic_from_file
+from exceptions import ReadonlyError
+from git import GitBackend
+from magic_ import magic_from_buffer
 from metadata import Metadata
 from registry import get_register_fields
-
-
-
-
-class ReadonlyError(StandardError):
-    pass
-
 
 
 class RODatabase(object):
 
     read_only = True
+    backend_cls = GitBackend
 
     def __init__(self, path, size_min=4800, size_max=5200, catalog=None):
+        self.path = path
         # The "git add" arguments
         self.added = set()
         self.changed = set()
         self.removed = set()
         self.has_changed = False
-        # 1. Keep the path
-        if not lfs.is_folder(path):
-            error = '"%s" should be a folder, but it is not' % path
-            raise ValueError, error
-        folder = lfs.open(path)
-        self.path = str(folder.path)
-        # 2. Keep the path to the data
-        self.path_data = '%s/database/' % self.path
-        if not lfs.is_folder(self.path_data):
-            error = '"%s" should be a folder, but it is not' % self.path_data
-            raise ValueError, error
-        # 3. Initialize the database, but chrooted
-        self.fs = lfs.open(self.path_data)
-        # 4. New interface to Git
-        self.worktree = open_worktree(self.path_data)
-        # 5. A mapping from key to handler
+        # init backend
+        self.backend = self.backend_cls(self.path)
+        # A mapping from key to handler
         self.cache = LRUCache(size_min, size_max, automatic=False)
-        # 6. The git cache
-        self.git_cache = LRUCache(900, 1100)
         # 7. Get the catalog
         if catalog:
             self.catalog = catalog
@@ -85,6 +67,19 @@ class RODatabase(object):
 
     def close(self):
         self.catalog.close()
+
+
+
+    def check_database(self):
+        """This function checks whether the database is in a consisitent state,
+        this is to say whether a transaction was not brutally aborted and left
+        the working directory with changes not committed.
+
+        This is meant to be used by scripts, like 'icms-start.py'
+        """
+        # TODO Check if bare repository is OK
+        print('Checking database...')
+        return True
 
     #######################################################################
     # Private API
@@ -136,6 +131,9 @@ class RODatabase(object):
         """
         handler.database = self
         handler.key = key
+        # Folders are not stored in the cache
+        if type(handler) is Folder:
+            return
         # Store in the cache
         self.cache[key] = handler
 
@@ -181,18 +179,21 @@ class RODatabase(object):
             return True
 
         # Ask vfs
-        return self.fs.exists(key)
+        return self.backend.handler_exists(key)
 
 
     def get_handler_names(self, key):
         key = self.normalize_key(key)
-        return self.fs.get_names(key)
+        return self.backend.get_handler_names(key)
+
+
+    def get_handler_data(self, key):
+        return self.backend.get_handler_data(key)
 
 
     def get_mimetype(self, key):
-        fs = self.fs
-        abspath = fs._resolve_path(key)
-        return magic_from_file(abspath)
+        data = self.backend.get_handler_data(key)
+        return magic_from_buffer(data)
 
 
     def get_handler_class(self, key):
@@ -201,16 +202,20 @@ class RODatabase(object):
             return get_handler_class_by_mimetype(mimetype)
         except ValueError:
             log_warning('unknown handler class "{0}"'.format(mimetype))
-            if self.fs.is_file(key):
+            if self.backend.handler_is_file(key):
                 from itools.handlers import File
                 return File
-            elif self.fs.is_folder(key):
+            elif self.backend.handler_is_folder(key):
                 from itools.handlers import Folder
                 return Folder
         raise ValueError
 
 
     def _get_handler(self, key, cls=None, soft=False):
+        # Get resource
+        if key in self.removed:
+            return None
+
         # Synchronize
         handler = self.cache.get(key)
         if handler is not None:
@@ -223,23 +228,33 @@ class RODatabase(object):
             return handler
 
         # Check the resource exists
-        if not self.fs.exists(key):
+        exists, is_folder, data = self.backend.get_handler_infos(key)
+        if not exists:
             if soft:
                 return None
             raise LookupError, 'the resource "%s" does not exist' % key
 
         # Folders are not cached
-        if self.fs.is_folder(key):
-            return Folder(key, database=self)
-
-        # Cache miss
-        if cls is None:
-            cls = self.get_handler_class(key)
-        # Build the handler and update the cache
-        handler = object.__new__(cls)
+        if is_folder:
+            handler = Folder(key, database=self)
+        else:
+            # Cache miss
+            if cls is None:
+                cls = self.get_handler_class(key)
+            # Build the handler and update the cache
+            handler = object.__new__(cls)
+        # Put handler in cache
         self.push_handler(key, handler)
+        if not is_folder:
+            # Load handler data
+            handler.load_state_from_string(data)
 
+        # Ok
         return handler
+
+
+    def traverse_resources(self):
+        return self.backend.traverse_resources()
 
 
     def get_handler(self, key, cls=None, soft=False):
@@ -250,13 +265,11 @@ class RODatabase(object):
     def get_handlers(self, key):
         base = self.normalize_key(key)
         for name in self.get_handler_names(base):
-            key = self.fs.resolve2(base, name)
-            yield self._get_handler(key)
+            yield self._get_handler(base + '/' + name)
 
 
     def touch_handler(self, key, handler=None):
-        """Report a modification of the key/handler to the database.  We must
-        pass the handler because of phantoms.
+        """Report a modification of the key/handler to the database.
         """
         raise ReadonlyError, 'cannot set handler'
 
@@ -409,36 +422,37 @@ class RODatabase(object):
         return
 
 
-    def push_phantom(self, key, handler):
-        handler.database = self
-        handler.key = key
-
-
-    def is_phantom(self, handler):
-        return handler.timestamp is None and handler.dirty is not None
-
-
     #######################################################################
-    # Git
+    # API for path
     #######################################################################
-    def get_blob(self, sha, cls):
-        if sha in self.git_cache:
-            return self.git_cache[sha]
-
-        blob = self.worktree.lookup(sha)
-        blob = cls(string=blob.data)
-        self.git_cache[sha] = blob
-        return blob
+    @staticmethod
+    def get_basename(path):
+        if type(path) is not Path:
+            path = Path(path)
+        return path.get_name()
 
 
-    def get_blob_by_revision_and_path(self, sha, path, cls):
-        """Get the file contents located at the given path after the given
-        commit revision has been committed.
-        """
-        worktree = self.worktree
-        commit = worktree.lookup(sha)
-        obj = worktree.lookup_from_commit_by_path(commit, path)
-        return self.get_blob(obj.sha, cls)
+    @staticmethod
+    def get_path(path):
+        if type(path) is not Path:
+            path = Path(path)
+        return str(path)
+
+
+    @staticmethod
+    def resolve(base, path):
+        if type(base) is not Path:
+            base = Path(base)
+        path = base.resolve(path)
+        return str(path)
+
+
+    @staticmethod
+    def resolve2(base, path):
+        if type(base) is not Path:
+            base = Path(base)
+        path = base.resolve2(path)
+        return str(path)
 
 
     #######################################################################

@@ -323,6 +323,7 @@ class Catalog(object):
 
     nb_changes = 0
     logger = None
+    _db = None
 
     def __init__(self, ref, fields, read_only=False, asynchronous_mode=True, root=None):
         # Load the database
@@ -420,14 +421,20 @@ class Catalog(object):
 
 
     def close(self):
+        if self._db is None:
+            msg = 'Catalog is already closed'
+            print(msg)
+            return
         if self.commit_each_transaction:
             self._db.cancel_transaction()
             self._db.close()
+            self._db = None
         else:
             self.abort_changes()
             self._db.commit_transaction()
             self._db.flush()
             self._db.close()
+            self._db = None
         if self.logger:
             self.logger.clear()
 

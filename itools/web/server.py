@@ -108,6 +108,8 @@ class WebServer(SoupServer):
         # Get context
         context = context or get_context() or self.get_fake_context()
         context.server = self
+        # Get user
+        user = user or context.user
         # Do request
         path = get_uri_path(path)
         context = context.handle_request(message, path, user)

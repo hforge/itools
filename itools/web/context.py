@@ -682,6 +682,7 @@ class Context(prototype):
             return context
 
         # (4) Go
+        set_context(None)
         set_context(context)
         try:
             context.init_context()
@@ -713,6 +714,11 @@ context = None
 
 def set_context(ctx):
     global context
+    if context and ctx:
+        # We cannot set context, if already set
+        # else, several databases can be attached
+        # to handlers
+        raise ValueError('Context already exists')
     context = ctx
 
 

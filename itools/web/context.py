@@ -73,7 +73,7 @@ class Context(prototype):
     commit = True
 
 
-    def init_context(self):
+    def init_context(self, user=None):
         soup_message = self.soup_message
         path = self.path
 
@@ -118,7 +118,9 @@ class Context(prototype):
         # attribute lets the interface to add those resources.
         self.styles = []
         self.scripts = []
-
+        # Log user if user is given
+        if user:
+            self.login(user)
         # The authenticated user
         self.authenticate()
         # The Site Root
@@ -659,7 +661,7 @@ class Context(prototype):
         self.site_root = self.root
 
 
-    def handle_request(self, soup_message, path):
+    def handle_request(self, soup_message, path, user=None):
         # (1) Attach to the soup message and path
         start_time = time()  # Set start time
         context = self()
@@ -685,7 +687,7 @@ class Context(prototype):
         set_context(None)
         set_context(context)
         try:
-            context.init_context()
+            context.init_context(user)
             RequestMethod.handle_request(context)
         except StandardError:
             log_error('Internal error', domain='itools.web')

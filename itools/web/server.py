@@ -108,13 +108,9 @@ class WebServer(SoupServer):
         # Get context
         context = context or get_context() or self.get_fake_context()
         context.server = self
-        # Login user: XXX do not works
-        if user:
-            context.login(user)
-            context.user = user
         # Do request
         path = get_uri_path(path)
-        context = context.handle_request(message, path)
+        context = context.handle_request(message, path, user)
         # Transform result
         if context.entity is None:
             response = None

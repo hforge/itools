@@ -539,9 +539,9 @@ class GitBackend(object):
     #######################################################################
     # Git
     #######################################################################
-    def do_transaction(self, data, added, changed, removed, handlers):
+    def do_transaction(self, commit_message, data, added, changed, removed, handlers):
         git_author, git_date, git_msg, docs_to_index, docs_to_unindex = data
-        git_msg = git_msg or 'no comment'
+        git_msg = commit_message or git_msg or 'no comment'
         # List of Changed
         added_and_changed = list(added) + list(changed)
         # Build the tree

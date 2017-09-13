@@ -429,7 +429,7 @@ class RWDatabase(RODatabase):
         return None, None, None, [], []
 
 
-    def _save_changes(self, data):
+    def _save_changes(self, data, commit_msg=None):
         # Check
         if not self.added and not self.changed and not self.removed:
             msg = 'No changes, should never happen'
@@ -437,7 +437,8 @@ class RWDatabase(RODatabase):
         # Get data informations
         the_author, the_date, the_msg, docs_to_index, docs_to_unindex = data
         # Do transaction
-        self.backend.do_transaction(data, self.added, self.changed, self.removed, self.cache)
+        self.backend.do_transaction(commit_msg,
+            data, self.added, self.changed, self.removed, self.cache)
         # 6. Clear state
         self.changed.clear()
         self.added.clear()
@@ -451,7 +452,7 @@ class RWDatabase(RODatabase):
         catalog.save_changes()
 
 
-    def save_changes(self):
+    def save_changes(self, commit_message=None):
         if not self.has_changed:
             return
 
@@ -470,7 +471,7 @@ class RWDatabase(RODatabase):
 
         # Commit
         try:
-            self._save_changes(data)
+            self._save_changes(data, commit_message)
         except Exception:
             log_error('Transaction failed', domain='itools.database')
             try:

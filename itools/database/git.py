@@ -23,7 +23,7 @@ from subprocess import Popen, PIPE
 import time
 
 # Import from pygit2
-from pygit2 import Repository, Signature, init_repository
+from pygit2 import Repository, Signature, IndexEntry, init_repository
 from pygit2 import GIT_SORT_REVERSE, GIT_SORT_TIME, GIT_OBJ_TREE
 from pygit2 import GIT_FILEMODE_TREE,GIT_FILEMODE_BLOB_EXECUTABLE
 
@@ -42,6 +42,12 @@ class GitBackend(object):
             raise ValueError, error
         # Open repository
         self.repo = Repository(self.path_data)
+        # Read index
+        try:
+            tree = self.repo.head.peel(GIT_OBJ_TREE)
+            self.repo.index.read_tree(tree.id)
+        except:
+            pass
         # 6.The git cache - {sha: object}
         self.git_cache = LRUCache(900, 1100)
         # Check git commiter
@@ -489,54 +495,6 @@ class GitBackend(object):
                     yield x
 
     #######################################################################
-    # Tree API
-    #######################################################################
-    def auto_insert(self, repo, treebuilder, path, thing, mode):
-        """figure out and deal with the necessary subtree structure"""
-        path_parts = path.split('/', 1)
-        if len(path_parts) == 1:
-            treebuilder.insert(path, thing, mode)
-            return treebuilder.write()
-
-        subtree_name, sub_path = path_parts
-        tree_oid = treebuilder.write()
-        tree = repo.get(tree_oid)
-        try:
-            entry = tree[subtree_name]
-            assert entry.filemode == GIT_FILEMODE_TREE,\
-                '{} already exists as a blob, not a tree'.format(entry.name)
-            existing_subtree = repo.get(entry.hex)
-            sub_treebuilder = repo.TreeBuilder(existing_subtree)
-        except KeyError:
-            sub_treebuilder = repo.TreeBuilder()
-
-        subtree_oid = self.auto_insert(repo, sub_treebuilder, sub_path, thing, mode)
-        treebuilder.insert(subtree_name, subtree_oid, GIT_FILEMODE_TREE)
-        return treebuilder.write()
-
-
-    def auto_remove(self, repo, treebuilder, path):
-        path_parts = path.split('/', 1)
-        if len(path_parts) == 1:
-            treebuilder.remove(path)
-            return treebuilder.write()
-        subtree_name, sub_path = path_parts
-        tree_oid = treebuilder.write()
-        tree = repo.get(tree_oid)
-        try:
-            entry = tree[subtree_name]
-            assert entry.filemode == GIT_FILEMODE_TREE,\
-                '{} already exists as a blob, not a tree'.format(entry.name)
-            existing_subtree = repo.get(entry.hex)
-            sub_treebuilder = repo.TreeBuilder(existing_subtree)
-        except KeyError:
-            sub_treebuilder = repo.TreeBuilder()
-
-        subtree_oid = self.auto_remove(repo, sub_treebuilder, sub_path)
-        treebuilder.insert(subtree_name, subtree_oid, GIT_FILEMODE_TREE)
-        return treebuilder.write()
-
-    #######################################################################
     # Git
     #######################################################################
     def do_transaction(self, commit_message, data, added, changed, removed, handlers):
@@ -545,18 +503,15 @@ class GitBackend(object):
         # List of Changed
         added_and_changed = list(added) + list(changed)
         # Build the tree
-        try:
-            head = self.repo.revparse_single('HEAD')
-            tree = self.repo.TreeBuilder(head.tree)
-        except:
-            tree = self.repo.TreeBuilder()
+        index = self.repo.index
         for key in added_and_changed:
             handler = handlers.get(key)
             blob_id = self.repo.create_blob(handler.to_str())
-            self.auto_insert(self.repo, tree, key, blob_id, GIT_FILEMODE_BLOB_EXECUTABLE)
+            entry = IndexEntry(key, blob_id, GIT_FILEMODE_BLOB_EXECUTABLE)
+            index.add(entry)
         for key in removed:
-            self.auto_remove(self.repo, tree, key)
-        git_tree = tree.write()
+            index.remove(key)
+        git_tree = index.write_tree()
         # Commit
         self.git_commit(git_msg, git_author, git_date, tree=git_tree)
 

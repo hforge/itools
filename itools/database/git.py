@@ -33,6 +33,8 @@ from itools.fs import lfs
 
 class GitBackend(object):
 
+    nb_transactions = 0
+
     def __init__(self, path):
         self.path = abspath(path) + '/'
         # Open database
@@ -48,6 +50,9 @@ class GitBackend(object):
             self.repo.index.read_tree(tree.id)
         except:
             pass
+        # Update tree cache to speedup tree writing
+        # (https://github.com/libgit2/libgit2/issues/75)
+        self.update_tree_cache()
         # 6.The git cache - {sha: object}
         self.git_cache = LRUCache(900, 1100)
         # Check git commiter
@@ -165,6 +170,15 @@ class GitBackend(object):
         except EnvironmentError:
             raise ValueError("Please configure 'git config --global user.email'")
         return useremail
+
+
+    def update_tree_cache(self):
+        """libgit2 is able to read the tree cache, but not to write it.
+        To speed up 'git_commit' this method should be called from time to
+        time, it updates the tree cache by calling 'git write-tree'.
+        """
+        command = ['git', 'write-tree']
+        self._call(command)
 
 
     def git_tag(self, tag_name, message):
@@ -498,11 +512,13 @@ class GitBackend(object):
     # Git
     #######################################################################
     def do_transaction(self, commit_message, data, added, changed, removed, handlers):
+        self.nb_transactions += 1
+        # Get informations
         git_author, git_date, git_msg, docs_to_index, docs_to_unindex = data
         git_msg = commit_message or git_msg or 'no comment'
         # List of Changed
         added_and_changed = list(added) + list(changed)
-        # Build the tree
+        # Build the tree from index
         index = self.repo.index
         for key in added_and_changed:
             handler = handlers.get(key)
@@ -514,6 +530,9 @@ class GitBackend(object):
         git_tree = index.write_tree()
         # Commit
         self.git_commit(git_msg, git_author, git_date, tree=git_tree)
+        # Update tree cache every 50 transactions
+        if self.nb_transactions % 50 == 0:
+            self.update_tree_cache()
 
 
     def abort_transaction(self):

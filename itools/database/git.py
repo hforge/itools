@@ -74,7 +74,7 @@ class GitBackend(object):
         """Interface to cal git.git for functions not yet implemented using
         libgit2.
         """
-        popen = Popen(command, stdout=PIPE, stderr=PIPE, cwd=self.path)
+        popen = Popen(command, stdout=PIPE, stderr=PIPE, cwd=self.path_data)
         stdoutdata, stderrdata = popen.communicate()
         if popen.returncode != 0:
             raise EnvironmentError, (popen.returncode, stderrdata)

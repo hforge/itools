@@ -32,6 +32,9 @@ from urllib import quote, unquote
 # Import from pytz
 from pytz import timezone
 
+# Import from gevent
+from gevent.local import local
+
 # Import from itools
 from itools.core import fixed_offset, is_prototype, local_tz
 from itools.core import freeze, prototype, proto_lazy_property
@@ -712,21 +715,15 @@ class Context(prototype):
 ###########################################################################
 # Keep the context globally
 ###########################################################################
-context = None
+g = local()
 
 
 def set_context(ctx):
-    global context
-    if context and ctx:
-        # We cannot set context, if already set
-        # else, several databases can be attached
-        # to handlers
-        raise ValueError('Context already exists')
-    context = ctx
+    g.context = ctx
 
 
 def get_context():
-    return context
+    return getattr(g, 'context', None)
 
 
 #######################################################################

@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from context import Context, get_context, set_context
+from context import get_context, set_context
 from context import select_language
 from context import WebLogger
 from exceptions import HTTPError, ClientError, ServerError
@@ -39,7 +39,6 @@ __all__ = [
     'WebServer',
     'WebLogger',
     # Context
-    'Context',
     'set_context',
     'get_context',
     'select_language',

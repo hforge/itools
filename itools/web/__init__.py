@@ -29,12 +29,10 @@ from exceptions import ServiceUnavailable, MethodNotAllowed, Conflict
 from exceptions import FormError
 from headers import Cookie, SetCookieDataType
 from messages import INFO, ERROR, MSG_MISSING_OR_INVALID
-from server import WebServer
 from utils import NewJSONEncoder
 from views import ItoolsView, BaseView, STLView
 
 __all__ = [
-    'WebServer',
     'WebLogger',
     # Context
     'set_context',

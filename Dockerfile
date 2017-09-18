@@ -12,7 +12,6 @@ RUN apk add --update \
     jpeg-dev \
     libffi-dev \
     libmagic \
-    libsoup-dev \
     linux-headers \
     nodejs \
     openssl \

@@ -1,5 +1,6 @@
 .mailmap
 BENCHMARK.txt
+Dockerfile
 INSTALL.txt
 LICENSE.txt
 MANIFEST
@@ -93,6 +94,7 @@ archive/UPGRADE-0.50.0
 archive/UPGRADE-0.60.0
 archive/UPGRADE-0.61.0
 archive/UPGRADE-0.62.0
+circle.yml
 docs/.gitignore
 docs/autodoc/index.rst
 docs/conf.py
@@ -163,6 +165,7 @@ itools/csv/parser.py
 itools/csv/table.py
 itools/database/__init__.py
 itools/database/catalog.py
+itools/database/exceptions.py
 itools/database/fields.py
 itools/database/git.py
 itools/database/magic_.py
@@ -223,24 +226,15 @@ itools/i18n/oracle.py
 itools/ical/__init__.py
 itools/ical/datatypes.py
 itools/ical/icalendar.py
-itools/locale/ca.mo
 itools/locale/ca.po
-itools/locale/de.mo
 itools/locale/de.po
-itools/locale/en.mo
 itools/locale/en.po
-itools/locale/es.mo
 itools/locale/es.po
-itools/locale/fr.mo
 itools/locale/fr.po
-itools/locale/it.mo
 itools/locale/it.po
 itools/locale/locale.pot
-itools/locale/nl.mo
 itools/locale/nl.po
-itools/locale/nl_BE.mo
 itools/locale/nl_BE.po
-itools/locale/zh.mo
 itools/locale/zh.po
 itools/log/__init__.py
 itools/log/log.py
@@ -302,7 +296,6 @@ itools/validators/password.py
 itools/validators/registry.py
 itools/validators/test_view.py
 itools/version.txt
-itools/web/TODO
 itools/web/__init__.py
 itools/web/context.py
 itools/web/dispatcher.py
@@ -312,7 +305,6 @@ itools/web/headers.py
 itools/web/messages.py
 itools/web/router.py
 itools/web/server.py
-itools/web/soup.c
 itools/web/static.py
 itools/web/utils.py
 itools/web/views.py
@@ -407,7 +399,6 @@ test/test_html.py
 test/test_i18n.py
 test/test_ical.py
 test/test_odf.py
-test/test_router.py
 test/test_rss.py
 test/test_srx.py
 test/test_stl.py

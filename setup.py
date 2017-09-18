@@ -147,22 +147,6 @@ if __name__ == '__main__':
         extension = Extension('itools.office.doctotext', sources, **flags)
         ext_modules.append(extension)
 
-    # libsoup wrapper
-    line = 'pkg-config --cflags --libs gthread-2.0 libsoup-2.4'
-    try:
-        flags = get_compile_flags(line)
-    except EnvironmentError:
-        err = "[WARNING] libsoup not found, itools.web won't work"
-        print >> stderr, err
-    else:
-        for include in flags['include_dirs']:
-            if include.endswith('/libsoup-2.4'):
-                flags['include_dirs'].append('%s/libsoup' % include)
-                break
-        sources = ['itools/web/soup.c']
-        extension = Extension('itools.web.soup', sources, **flags)
-        ext_modules.append(extension)
-
     # Ok
     if itools_is_available:
         itools_setup(get_abspath(''), ext_modules=ext_modules)

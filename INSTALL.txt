@@ -23,7 +23,6 @@ glib           2.20  fs               http://www.gtk.org/
 pygobject      2.20  fs               http://www.pygtk.org/
 pygit2       0.24.2  pkg, database    https://github.com/libgit2/pygit2
 Git            2.11  pkg, database    http://git-scm.com/
-libsoup        2.48  web              http://live.gnome.org/LibSoup
 libmagic       5.05  database         http://www.darwinsys.com/file/ [1]
 xapian        1.0.8  database         http://www.xapian.org/
 pywin32         212  (Windows)        http://sf.net/projects/pywin32/
@@ -70,7 +69,7 @@ And finally install itools with distutils:
 1. Most dependencies are packaged in Debian:
 
   # apt-get install gettext git python-gobject-dev python-tz
-  # apt-get install libsoup2.4-dev python-xapian
+  # apt-get install python-xapian
   # apt-get install python-imaging python-rsvg
   # apt-get install g++ libpoppler-dev libwv2-dev python-xlrd
 

@@ -86,7 +86,7 @@ class WebServer(SoupServer):
 
 
     def do_request(self, method='GET', path='/', headers=None, body='',
-            context=None, as_json=False, user=None):
+            context=None, as_json=False, user=None, is_cron=False):
         """Experimental method to do a request on the server"""
         # XXX uri query didn't works ?
         headers = headers or {}
@@ -112,7 +112,7 @@ class WebServer(SoupServer):
         user = user or context.user
         # Do request
         path = get_uri_path(path)
-        context = context.handle_request(message, path, user)
+        context = context.handle_request(message, path, user, is_cron)
         # Transform result
         if context.entity is None:
             response = None

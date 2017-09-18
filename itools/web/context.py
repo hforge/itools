@@ -661,7 +661,7 @@ class Context(prototype):
         self.site_root = self.root
 
 
-    def handle_request(self, soup_message, path, user=None):
+    def handle_request(self, soup_message, path, user=None, is_cron=False):
         # (1) Attach to the soup message and path
         start_time = time()  # Set start time
         context = self()
@@ -688,6 +688,7 @@ class Context(prototype):
         set_context(context)
         try:
             context.init_context(user)
+            context.is_cron = is_cron
             RequestMethod.handle_request(context)
         except StandardError:
             log_error('Internal error', domain='itools.web')

@@ -18,7 +18,6 @@
 from unittest import TestCase, main
 
 # Import from itools
-from itools.web import BaseView, WebServer
 from itools.web import Cookie, SetCookieDataType
 from itools.web.headers import ContentType, ContentDisposition, CookieDataType
 from itools.web.headers import read_token, read_quoted_string, read_parameter

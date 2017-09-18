@@ -324,8 +324,10 @@ class Catalog(object):
     nb_changes = 0
     logger = None
     _db = None
+    read_only = False
 
     def __init__(self, ref, fields, read_only=False, asynchronous_mode=True, root=None):
+        self.read_only = read_only
         # Load the database
         if isinstance(ref, (Database, WritableDatabase)):
             path = None
@@ -424,6 +426,10 @@ class Catalog(object):
         if self._db is None:
             msg = 'Catalog is already closed'
             print(msg)
+            return
+        if self.read_only:
+            self._db.close()
+            self._db = None
             return
         if self.commit_each_transaction:
             self._db.cancel_transaction()

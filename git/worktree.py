@@ -54,6 +54,13 @@ def make_parent_dirs(path):
         makedirs(folder)
 
 
+def get_pygit2_oid(v):
+    try:
+        # old pygit2 versions
+        return v.oid
+    except:
+        return v.target
+
 
 class Worktree(object):
 
@@ -113,7 +120,7 @@ class Worktree(object):
         except KeyError:
             return None
 
-        return reference.oid
+        return get_pygit2_oid(reference)
 
 
     #######################################################################

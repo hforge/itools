@@ -16,7 +16,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from xapian
-from xapian import Enquire, MultiValueSorter, Query
+from xapian import Enquire, Query
+try:
+    from xapian import MultiValueSorter
+    XAPIAN_VERSION = '1.2'
+except:
+    from xapian import MultiValueKeyMaker
+    XAPIAN_VERSION = '1.4'
+
 
 # Import from itools
 from itools.datatypes import Unicode
@@ -137,12 +144,20 @@ class SearchResults(object):
         # sort_by != None
         if sort_by is not None:
             if isinstance(sort_by, list):
-                sorter = MultiValueSorter()
-                for name in sort_by:
-                    # If there is a problem, ignore this field
-                    if name not in metadata:
-                        continue
-                    sorter.add(metadata[name]['value'])
+                if XAPIAN_VERSION == '1.4':
+                    sorter = MultiValueKeyMaker()
+                    for name in sort_by:
+                        # If there is a problem, ignore this field
+                        if name not in metadata:
+                            continue
+                        sorter.add_value(metadata[name]['value'], reverse)
+                else:
+                    sorter = MultiValueSorter()
+                    for name in sort_by:
+                        # If there is a problem, ignore this field
+                        if name not in metadata:
+                            continue
+                        sorter.add(metadata[name]['value'])
                 enquire.set_sort_by_key_then_relevance(sorter, reverse)
             else:
                 # If there is a problem, ignore the sort

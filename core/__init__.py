@@ -31,12 +31,11 @@ from utils import get_abspath, merge_dicts, get_pipe, get_version
 # Python 2.6 or 2.5
 if version_info[1] == 5:
     from py25 import get_sizeof
-    start_subprocess = stop_subprocess = None
-    read_subprocess = send_subprocess = None
 else:
     from py26 import get_sizeof
-    from subprocess_ import start_subprocess, stop_subprocess
-    from subprocess_ import read_subprocess, send_subprocess
+
+from subprocess_ import start_subprocess, stop_subprocess
+from subprocess_ import read_subprocess, send_subprocess
 
 # Posix or Windows
 if platform[:3] == 'win':

@@ -54,12 +54,12 @@ WORKDIR /tmp/xapian-bindings-1.4.2
 RUN ./configure --with-python && make && make install
 
 # Install libgit2
-ADD https://github.com/libgit2/libgit2/archive/v0.24.5.zip /tmp/
+ADD https://github.com/libgit2/libgit2/archive/v0.26.0.zip /tmp/
 WORKDIR /tmp/
-RUN unzip v0.24.5.zip
-WORKDIR /tmp/libgit2-0.24.5
+RUN unzip v0.26.0.zip
+WORKDIR /tmp/libgit2-0.26.0
 RUN mkdir build
-WORKDIR /tmp/libgit2-0.24.5/build
+WORKDIR /tmp/libgit2-0.26.0/build
 RUN cmake ..
 RUN cmake --build . --target install
 
@@ -67,10 +67,10 @@ RUN cmake --build . --target install
 ENV LIBRARY_PATH=/lib:/usr/lib
 
 # INSTALL libgit2 (https://github.com/python-pillow/Pillow/issues/1763)
-RUN pip install pygit2==0.24.2
+RUN pip install pygit2==0.26.0
 
 # Declare libgit2 (XXX We have to export lib direcory)
-RUN ln -s /usr/local/lib/libgit2.so.24 /usr/lib/libgit2.so.24
+RUN ln -s /usr/local/lib/libgit2.so.26 /usr/lib/libgit2.so.26
 
 # Install ikaaro dependencies
 RUN mkdir -p /tmp/itools

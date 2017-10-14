@@ -15,7 +15,7 @@ RUN apk add --update \
     linux-headers \
     nodejs \
     openssl \
-    py-gobject \
+    py-gobject3 \
     py-pip \
     python \
     python-dev \

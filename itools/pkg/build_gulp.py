@@ -20,7 +20,7 @@ import sys
 from subprocess import Popen
 
 # Import from itools
-from itools.fs.vfs import Folder
+from itools.fs.lfs import LocalFolder
 from itools.uri import get_uri_name, Path
 
 
@@ -36,10 +36,10 @@ class GulpBuilder(object):
     def __init__(self, worktree, manifest):
         self.worktree = worktree
         self.manifest = manifest
-        self.vfs = Folder('.')
-        if self.vfs.is_folder('ui/'):
+        self.fs = LocalFolder('.')
+        if self.fs.is_folder('ui/'):
             self.dist_folders = tuple(['ui/{0}'.format(x)
-              for x in Folder('ui/').get_names()])
+              for x in LocalFolder('ui/').get_names()])
 
 
     def run(self):
@@ -47,10 +47,10 @@ class GulpBuilder(object):
         gulp_done = self.launch_gulp_build()
         # Add DIST files into manifest
         if npm_done or gulp_done:
-            for path in self.vfs.traverse('ui/'):
-                relative_path = self.vfs.get_relative_path(path)
+            for path in self.fs.traverse('ui/'):
+                relative_path = self.fs.get_relative_path(path)
                 if (relative_path and
-                    relative_path.startswith(self.dist_folders) and self.vfs.is_file(path)):
+                    relative_path.startswith(self.dist_folders) and self.fs.is_file(path)):
                     self.manifest.add(relative_path)
 
 

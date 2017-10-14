@@ -19,7 +19,7 @@
 # Import from itools
 from itools.datatypes import Boolean, Date, DateTime, Decimal, Integer
 from itools.datatypes import QName, String, Time, URI
-from itools.fs import vfs
+from itools.fs import lfs
 from itools.handlers import TextFile, register_handler_class
 from itools.log import log_warning
 from itools.uri import get_reference
@@ -235,7 +235,7 @@ def read_file(context, uri, file):
                     href = attrs[None, 'href']
                     include_uri = uri.resolve(href)
                     include_uri = str(include_uri)
-                    include_file = vfs.open(include_uri)
+                    include_file = lfs.open(include_uri)
                     read_file(context, include_uri, include_file)
 
                 # Ignored tags

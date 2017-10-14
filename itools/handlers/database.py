@@ -24,7 +24,7 @@ from sys import getrefcount
 
 # Import from itools
 from itools.core import LRUCache
-from itools.fs import vfs
+from itools.fs import lfs
 from itools.uri import Path
 from folder import Folder
 from registry import get_handler_class_by_mimetype
@@ -44,7 +44,7 @@ class RODatabase(object):
     def __init__(self, size_min=4800, size_max=5200, fs=None):
         # A mapping from key to handler
         self.cache = LRUCache(size_min, size_max, automatic=False)
-        self.fs = fs or vfs
+        self.fs = fs or lfs
 
 
 

@@ -24,7 +24,7 @@ from datetime import datetime
 from sys import exc_info
 
 # Import from itools
-from itools.fs import vfs
+from itools.fs import lfs
 
 # Import from itools.handlers
 from base import Handler
@@ -117,7 +117,7 @@ class File(Handler):
 
 
     def load_state_from_uri(self, uri):
-        file = vfs.open(uri)
+        file = lfs.open(uri)
         try:
             self.load_state_from_file(file)
         finally:
@@ -151,7 +151,7 @@ class File(Handler):
 
 
     def save_state_to(self, key):
-        fs = self.database.fs if self.database else vfs
+        fs = self.database.fs if self.database else lfs
         # If there is an empty folder in the given key, remove it
         if fs.is_folder(key) and not fs.get_names(key):
             fs.remove(key)

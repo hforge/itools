@@ -141,6 +141,13 @@ class RWDatabase(RODatabase):
 
 
     def set_handler(self, key, handler):
+        # TODO: We have to refactor the set_changed()
+        # mechanism in handlers/database
+        # At first load we don't have to set handler as changed
+        # But if we set values without loading handler, the
+        # handler should be set as changed
+        handler.loaded = True
+        handler.set_changed()
         if type(handler) is Folder:
             raise ValueError, 'unexpected folder (only files can be "set")'
 

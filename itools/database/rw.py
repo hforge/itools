@@ -399,7 +399,12 @@ class RWDatabase(RODatabase):
         for key in self.added:
             self._discard_handler(key)
         for key in self.changed:
-            cache[key].abort_changes()
+            if cache.has_key(key):
+                # FIXME
+                # We check cache since an handler
+                # can be added & changed at one
+                # (Maybe we have to change this behaviour)
+                cache[key].abort_changes()
 
         # 2. Abort in backend
         self.backend.abort_transaction()

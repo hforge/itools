@@ -25,6 +25,8 @@ from os.path import islink, exists
 from subprocess import Popen
 from json import dumps
 
+from pygit2 import GitError
+
 # Import from itools
 from itools.fs import lfs
 from itools.handlers import ro_database
@@ -139,7 +141,7 @@ def build(path, config, environment):
     try:
         # Get git worktree
         worktree = open_worktree(path)
-    except KeyError:
+    except (GitError, KeyError):
         # Not in a git repostory
         return get_package_version(package_root)
     # Find out the version string

@@ -110,8 +110,8 @@ class GitBackend(object):
         two calls with the same SHA will resolve to the same object, so the
         'is' operator will work.
         """
-        cache = self.cache
-        if sha not in cache:
+        cache = self.git_cache
+        if sha not in self.git_cache:
             cache[sha] = self.repo[sha]
 
         return cache[sha]

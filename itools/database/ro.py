@@ -206,6 +206,10 @@ class RODatabase(object):
         return self.backend.get_handler_data(key)
 
 
+    def get_handler_mtime(self, key):
+        return self.backend.get_handler_mtime(key)
+
+
     def get_mimetype(self, key):
         data = self.backend.get_handler_data(key)
         return magic_from_buffer(data)

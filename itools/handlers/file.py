@@ -250,7 +250,7 @@ class File(Handler):
             return self.timestamp
 
         # Not yet loaded, check the FS
-        return self.database.fs.get_mtime(self.key)
+        return self.database.get_handler_mtime(self.key)
 
 
     def to_str(self):

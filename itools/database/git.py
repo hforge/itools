@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
 # Import from the Standard Library
 from calendar import timegm
 from datetime import datetime
@@ -28,7 +29,7 @@ from pygit2 import GIT_SORT_REVERSE, GIT_SORT_TIME, GIT_OBJ_TREE
 from pygit2 import GIT_FILEMODE_TREE,GIT_FILEMODE_BLOB_EXECUTABLE
 
 # Import from itools
-from itools.core import LRUCache, lazy
+from itools.core import LRUCache, lazy, fixed_offset
 from itools.fs import lfs
 
 class GitBackend(object):
@@ -451,6 +452,11 @@ class GitBackend(object):
             tree = repository.head.peel(GIT_OBJ_TREE)
             tree_entry = tree[key]
         return tree_entry.type == 'tree'
+
+
+    def get_handler_mtime(self, key):
+        # FIXME
+        return datetime.utcnow().replace(tzinfo=fixed_offset(0))
 
 
     def get_handler_infos(self, key):

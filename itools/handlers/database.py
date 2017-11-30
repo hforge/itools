@@ -52,6 +52,11 @@ class RODatabase(object):
         return self.fs.open(key).read()
 
 
+    def get_handler_mtime(self, key):
+        return self.fs.get_mtime(key)
+
+
+
     #######################################################################
     # Private API
     #######################################################################

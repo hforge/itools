@@ -22,7 +22,7 @@
 
 # Import from standard library
 from copy import deepcopy
-from os.path import islink, exists
+from os.path import islink, exists, isdir
 from subprocess import Popen
 from json import dumps
 
@@ -147,8 +147,8 @@ def build(path, config, environment):
         return get_package_version(package_root)
     # Find out the version string
     version = make_version(worktree)
-    # Initialize the manifest file
-    manifest = set([ x for x in get_manifest() if not islink(x) ])
+    # Initialize the manifest file (ignore links & submodules)
+    manifest = set([ x for x in get_manifest() if not islink(x) and not isdir(x)])
     manifest.add('MANIFEST')
     # Write version
     open(path + version_txt, 'w').write(version)

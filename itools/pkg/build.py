@@ -21,6 +21,7 @@
 
 
 # Import from standard library
+from copy import deepcopy
 from os.path import islink, exists
 from subprocess import Popen
 from json import dumps
@@ -43,7 +44,7 @@ def get_manifest():
 
 
 def make(worktree, rules, manifest, package_root):
-    for source in worktree.get_filenames():
+    for source in deepcopy(manifest):
         # Exclude
         if 'docs/' in source:
             continue
@@ -160,8 +161,12 @@ def build(path, config, environment):
     open(path + environment_json, 'w').write(dumps(environment_kw))
     manifest.add(environment_json)
     print '* Build environment.json'
-    # (3) Rules
+    # Rules
     rules = [('.po', '.mo', po2mo)]
+    # Run gulp
+    if environment == 'production':
+        gulp_builder = GulpBuilder(worktree, manifest)
+        gulp_builder.run()
     # Templates
     src_lang = config.get_value('source_language', default='en')
     for dst_lang in config.get_value('target_languages'):
@@ -169,13 +174,9 @@ def build(path, config, environment):
             ('.xml.%s' % src_lang, '.xml.%s' % dst_lang, make_template))
         rules.append(
             ('.xhtml.%s' % src_lang, '.xhtml.%s' % dst_lang, make_template))
-    # (4) Make
+    # Make
     make(worktree, rules, manifest, package_root)
-    # (5) Run gulp
-    if environment == 'production':
-        gulp_builder = GulpBuilder(worktree, manifest)
-        gulp_builder.run()
-    # (6) Write the manifest
+    # Write the manifest
     lines = [ x + '\n' for x in sorted(manifest) ]
     open(path + 'MANIFEST', 'w').write(''.join(lines))
     print '* Build MANIFEST file (list of files to install)'

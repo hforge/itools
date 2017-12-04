@@ -53,6 +53,7 @@ class Metadata(File):
 
     def __init__(self, key=None, string=None, database=None, cls=None, **kw):
         self.cls = cls
+        self.database = database
         kw['cls'] = cls
         proxy = super(Metadata, self)
         proxy.__init__(key=key, string=string, database=database, **kw)
@@ -136,8 +137,9 @@ class Metadata(File):
             if field.multilingual:
                 language = parameters.get('lang')
                 if language is None:
-                    err = 'multilingual property "%s" is missing the language'
-                    raise ValueError, err % name
+                    # If the field became multilingual, We use the default language
+                    root = self.database.get_resource('/')
+                    language = root.get_value('website_languages')[0]
                 properties.setdefault(name, {})[language] = property
             # Case 2: multiple
             elif field.multiple:

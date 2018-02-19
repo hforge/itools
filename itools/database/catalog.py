@@ -341,7 +341,7 @@ class Catalog(object):
 
         # Asynchronous mode
         if not read_only and asynchronous_mode:
-            db.begin_transaction()
+            db.begin_transaction(True)
         # Set XAPIAN_FLUSH_THRESHOLD
         os.environ["XAPIAN_FLUSH_THRESHOLD"] = "2000"
         # Load the xfields from the database
@@ -366,15 +366,8 @@ class Catalog(object):
             raise ValueError, "The transactions are synchronous"
         db = self._db
         db.commit_transaction()
-        if self.nb_changes > 200:
-            # XXX Not working since cancel_transaction()
-            # cancel all transactions not commited to disk
-            # We have to use new strategy to abort transaction
-            db.commit()
-            if self.logger:
-                self.logger.clear()
-            self.nb_changes = 0
-        db.begin_transaction()
+        db.commit()
+        db.begin_transaction(True)
 
 
     def abort_changes(self):
@@ -385,7 +378,7 @@ class Catalog(object):
         db = self._db
         db.cancel_transaction()
         self._load_all_internal()
-        db.begin_transaction()
+        db.begin_transaction(True)
 
 
     def close(self):

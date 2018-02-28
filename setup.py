@@ -70,12 +70,12 @@ if __name__ == '__main__':
         ext_modules.append(extension)
 
     # libsoup wrapper
-    line = 'pkg-config --cflags --libs pygobject-2.0 libsoup-2.4'
+    line = 'pkg-config --cflags --libs gthread-2.0 libsoup-2.4'
     try:
         flags = get_compile_flags(line)
     except EnvironmentError:
-        print >> stderr, 'Error: libsoup library or headers not found.'
-        raise
+        err = "[WARNING] libsoup not found, itools.web won't work"
+        print >> stderr, err
     else:
         for include in flags['include_dirs']:
             if include.endswith('/libsoup-2.4'):

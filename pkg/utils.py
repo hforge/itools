@@ -15,18 +15,21 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from copy import deepcopy
 from distutils import core
 from distutils.core import Extension
 from distutils.command.build_ext import build_ext
 from distutils.errors import LinkError
 from os import listdir
-from os.path import exists, isdir, join as join_path
+from os.path import exists, isdir, islink, join as join_path
 from re import compile
+from subprocess import Popen
 from sys import _getframe, argv
 
 # Import from itools
 from itools.core import freeze, get_pipe, get_version
 from itools import git
+from itools.fs import lfs
 from itools.handlers import ro_database
 from handlers import SetupConf
 
@@ -152,6 +155,38 @@ def get_config():
 
 
 
+def make(rules, manifest, package_root):
+    for source in deepcopy(manifest):
+        # Exclude
+        if 'docs/' in source:
+            continue
+        # Apply rules
+        for source_ext, target_ext, f in rules:
+            if source.endswith(source_ext):
+                target = source[:-len(source_ext)] + target_ext
+                if not lfs.exists(target) or \
+                   lfs.get_mtime(source) > lfs.get_mtime(target):
+                    f(package_root, source, target)     # 1. Compile
+                    manifest.add(target)                # 2. Update manifest
+                    print target                        # 3. Print
+
+
+# Translate templates
+def make_template(package_root, source, target):
+    # Import some packages so we can compile templates
+    from itools.html import XHTMLFile
+    import itools.gettext
+    import itools.stl
+    import itools.pdf
+    # Get file
+    source_handler = ro_database.get_handler(source, XHTMLFile)
+    language = target.rsplit('.', 1)[1]
+    po = ro_database.get_handler('locale/%s.po' % (language))
+    data = source_handler.translate(po)
+    with open(target, 'w') as f:
+        f.write(data)
+
+
 def get_manifest():
     if git.is_available():
         exclude = frozenset(['.gitignore'])
@@ -167,6 +202,10 @@ def get_manifest():
 
 
 
+def po2mo(package_root, source, target):
+    Popen(['msgfmt', source, '-o', target])
+
+
 def setup(ext_modules=freeze([])):
     mname = _getframe(1).f_globals.get('__name__')
     version = get_version(mname)
@@ -177,6 +216,7 @@ def setup(ext_modules=freeze([])):
     package_name = config.get_value('name')
     packages = [package_name]
     package_data = {package_name: []}
+    package_root = config.get_value('package_root')
 
     # The sub-packages
     if config.has_value('packages'):
@@ -186,15 +226,30 @@ def setup(ext_modules=freeze([])):
     else:
         subpackages = []
 
-    # Write the manifest file if it does not exist
-    if exists('MANIFEST'):
-        filenames = [ x.strip() for x in open('MANIFEST').readlines() ]
-    else:
-        filenames = get_manifest()
-        lines = [ x + '\n' for x in filenames ]
-        open('MANIFEST', 'w').write(''.join(lines))
+		# Initialize the manifest file (ignore links & submodules)
+    manifest = set([ x for x in get_manifest() if not islink(x) and not isdir(x)])
+    manifest.add('MANIFEST')
+
+    # Build
+    rules = [('.po', '.mo', po2mo)]
+    # Templates
+    src_lang = config.get_value('source_language', default='en')
+    for dst_lang in config.get_value('target_languages'):
+        rules.append(
+            ('.xml.%s' % src_lang, '.xml.%s' % dst_lang, make_template))
+        rules.append(
+            ('.xhtml.%s' % src_lang, '.xhtml.%s' % dst_lang, make_template))
+    # Make
+    make(rules, manifest, package_root)
+
+		# Write the manifest
+    lines = [ x + '\n' for x in sorted(manifest) ]
+    open('MANIFEST', 'w').write(''.join(lines))
+    print '* Build MANIFEST file (list of files to install)'
+    print '**'*30
 
     # Python files are included by default
+    filenames = [ x.strip() for x in open('MANIFEST').readlines() ]
     filenames = [ x for x in filenames if not x.endswith('.py') ]
 
     # The data files

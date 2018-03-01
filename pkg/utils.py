@@ -194,10 +194,8 @@ def get_manifest():
 
     # No git: find out source files
     config = get_config()
-    target_languages = config.get_value('target_languages')
-
     exclude = frozenset(['.git', 'build', 'dist'])
-    bad_files = compile('.*(~|pyc|%s)$' % '|'.join(target_languages))
+    bad_files = compile('.*(~|pyc)$')
     return get_files(exclude, filter=lambda x: not bad_files.match(x))
 
 

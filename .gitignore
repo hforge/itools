@@ -3,7 +3,6 @@
 *.swp
 build
 dist
-MANIFEST
 version.txt
 locale/*.mo
 test/fables/catalog

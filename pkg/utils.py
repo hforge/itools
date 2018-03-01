@@ -155,7 +155,7 @@ def get_config():
 
 
 
-def make(rules, manifest, package_root):
+def make(rules, manifest):
     for source in deepcopy(manifest):
         # Exclude
         if 'docs/' in source:
@@ -166,13 +166,13 @@ def make(rules, manifest, package_root):
                 target = source[:-len(source_ext)] + target_ext
                 if not lfs.exists(target) or \
                    lfs.get_mtime(source) > lfs.get_mtime(target):
-                    f(package_root, source, target)     # 1. Compile
+                    f(source, target)     # 1. Compile
                     manifest.add(target)                # 2. Update manifest
                     print target                        # 3. Print
 
 
 # Translate templates
-def make_template(package_root, source, target):
+def make_template(source, target):
     # Import some packages so we can compile templates
     from itools.html import XHTMLFile
     import itools.gettext
@@ -200,30 +200,11 @@ def get_manifest():
 
 
 
-def po2mo(package_root, source, target):
+def po2mo(source, target):
     Popen(['msgfmt', source, '-o', target])
 
 
-def setup(ext_modules=freeze([])):
-    mname = _getframe(1).f_globals.get('__name__')
-    version = get_version(mname)
-
-    config = get_config()
-
-    # Initialize variables
-    package_name = config.get_value('name')
-    packages = [package_name]
-    package_data = {package_name: []}
-    package_root = config.get_value('package_root')
-
-    # The sub-packages
-    if config.has_value('packages'):
-        subpackages = config.get_value('packages')
-        for subpackage_name in subpackages:
-            packages.append('%s.%s' % (package_name, subpackage_name))
-    else:
-        subpackages = []
-
+def build(config):
 		# Initialize the manifest file (ignore links & submodules)
     manifest = set([ x for x in get_manifest() if not islink(x) and not isdir(x)])
     manifest.add('MANIFEST')
@@ -238,7 +219,7 @@ def setup(ext_modules=freeze([])):
         rules.append(
             ('.xhtml.%s' % src_lang, '.xhtml.%s' % dst_lang, make_template))
     # Make
-    make(rules, manifest, package_root)
+    make(rules, manifest)
 
 		# Write the manifest
     lines = [ x + '\n' for x in sorted(manifest) ]
@@ -246,8 +227,39 @@ def setup(ext_modules=freeze([])):
     print '* Build MANIFEST file (list of files to install)'
     print '**'*30
 
+
+
+def setup(ext_modules=freeze([])):
+    mname = _getframe(1).f_globals.get('__name__')
+    config = get_config()
+    # Build
+    print argv
+    if any(x in argv for x in ('build', 'install', 'sdist', 'egg_info')):
+        build(config)
+    version = get_version(mname)
+
+    # Initialize variables
+    package_name = config.get_value('name')
+    packages = [package_name]
+    package_data = {package_name: []}
+
+    # The sub-packages
+    if config.has_value('packages'):
+        subpackages = config.get_value('packages')
+        for subpackage_name in subpackages:
+            packages.append('%s.%s' % (package_name, subpackage_name))
+    else:
+        subpackages = []
+
+    # Write the manifest file if it does not exist
+    if exists('MANIFEST'):
+        filenames = [ x.strip() for x in open('MANIFEST').readlines() ]
+    else:
+        filenames = get_manifest()
+        lines = [ x + '\n' for x in filenames ]
+        open('MANIFEST', 'w').write(''.join(lines))
+
     # Python files are included by default
-    filenames = [ x.strip() for x in open('MANIFEST').readlines() ]
     filenames = [ x for x in filenames if not x.endswith('.py') ]
 
     # The data files
@@ -267,7 +279,6 @@ def setup(ext_modules=freeze([])):
         scripts = [ join_path(*['scripts', x]) for x in scripts ]
     else:
         scripts = []
-
     author_name = config.get_value('author_name')
     # XXX Workaround buggy distutils ("sdist" don't likes unicode strings,
     # and "register" don't likes normal strings).

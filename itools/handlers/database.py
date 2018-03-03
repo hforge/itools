@@ -115,8 +115,14 @@ class RODatabase(object):
         the cache, and invalidate it (and free memory at the same time).
         """
         handler = self.cache.pop(key)
+        database = handler.database
         # Invalidate the handler
         handler.__dict__.clear()
+        # Keep key and database
+        # (else, we'll not be able to reload handler if it's loaded
+        #  twice and modified between the 2 loads)
+        handler.key = key
+        handler.database = database
 
 
     def _abort_changes(self):

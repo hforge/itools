@@ -349,11 +349,6 @@ class Catalog(object):
         self._value_nb = 0
         self._prefix_nb = 0
         self._load_all_internal()
-        # Catalog log
-        if path:
-            catalog_log = '{}/catalog.log'.format(path)
-            self.logger = CatalogLogger(catalog_log)
-            register_logger(self.logger, 'itools.catalog')
 
 
     #######################################################################
@@ -385,8 +380,6 @@ class Catalog(object):
         self._db.cancel_transaction()
         self._db.flush()
         self._db.close()
-        if self.logger:
-            self.logger.clear()
 
 
     #######################################################################
@@ -396,8 +389,6 @@ class Catalog(object):
         self.nb_changes += 1
         abspath, term, xdoc = self.get_xdoc_from_document(document)
         self._db.replace_document(term, xdoc)
-        if self.logger:
-            log_info(abspath, domain='itools.catalog')
 
 
     def unindex_document(self, abspath):
@@ -407,8 +398,6 @@ class Catalog(object):
         self.nb_changes += 1
         data = _reduce_size(_encode(self._fields['abspath'], abspath))
         self._db.delete_document('Q' + data)
-        if self.logger:
-            log_info(abspath, domain='itools.catalog')
 
 
     def get_xdoc_from_document(self, document):

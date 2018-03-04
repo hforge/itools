@@ -146,11 +146,6 @@ class RWDatabase(RODatabase):
         self.resources_new2old = {}
 
 
-    def check_catalog(self):
-        """Reindex resources if database wasn't stoped gracefully"""
-        pass
-
-
     def close(self):
         self.abort_changes()
         self.catalog.close()

@@ -73,12 +73,6 @@ class RODatabase(object):
             self.catalog = self.get_catalog()
 
 
-    def check_catalog(self):
-        lines = self.catalog.logger.get_lines()
-        if lines:
-            print('Warning: Maybe catalog should be reindexed')
-
-
     def close(self):
         self.catalog.close()
 

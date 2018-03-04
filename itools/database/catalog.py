@@ -320,7 +320,6 @@ class SearchResults(object):
 
 class Catalog(object):
 
-    nb_changes = 0
     logger = None
 
     def __init__(self, ref, fields, read_only=False, asynchronous_mode=True):
@@ -343,7 +342,6 @@ class Catalog(object):
         if not read_only and asynchronous_mode:
             db.begin_transaction(True)
         # Set XAPIAN_FLUSH_THRESHOLD
-        os.environ["XAPIAN_FLUSH_THRESHOLD"] = "2000"
         # Load the xfields from the database
         self._metadata = {}
         self._value_nb = 0
@@ -386,7 +384,6 @@ class Catalog(object):
     # API / Public / (Un)Index
     #######################################################################
     def index_document(self, document):
-        self.nb_changes += 1
         abspath, term, xdoc = self.get_xdoc_from_document(document)
         self._db.replace_document(term, xdoc)
 
@@ -395,7 +392,6 @@ class Catalog(object):
         """Remove the document that has value stored in its abspath.
            If the document does not exist => no error
         """
-        self.nb_changes += 1
         data = _reduce_size(_encode(self._fields['abspath'], abspath))
         self._db.delete_document('Q' + data)
 

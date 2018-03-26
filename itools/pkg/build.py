@@ -55,8 +55,8 @@ def make(worktree, rules, manifest, package_root):
                 if not lfs.exists(target) or \
                    lfs.get_mtime(source) > lfs.get_mtime(target):
                     f(package_root, source, target)     # 1. Compile
-                    manifest.add(target)                # 2. Update manifest
-                    print target                        # 3. Print
+                manifest.add(target)
+                print(target)
 
 
 # PO => MO

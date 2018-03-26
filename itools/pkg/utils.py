@@ -195,6 +195,7 @@ def setup(path, ext_modules=None):
                package_dir = {package_name: package_root},
                packages = packages,
                package_data = package_data,
+               include_package_data=True,
                # Requires / Provides
                install_requires=install_requires,
                # Scripts

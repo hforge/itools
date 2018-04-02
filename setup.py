@@ -186,7 +186,7 @@ if __name__ == '__main__':
       'Topic :: Software Development :: Localization',
       'Topic :: Text Processing',
       'Topic :: Text Processing :: Markup',
-      'Topic :: Text Processing :: Markup :: XML"',
+      'Topic :: Text Processing :: Markup :: XML',
     ]
     packages = [
         "itools",

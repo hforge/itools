@@ -324,12 +324,15 @@ class BaseView(ItoolsView):
         handler = resource.get_value('data')
         if not isinstance(handler, File):
             raise ValueError(u"PUT only allowed on files")
-        # Save the data
+        # Save the data and set mtime if possible to be able to edit it n times
+        now = context.timestamp
         body = context.get_form_value('body')
         handler.load_state_from_string(body)
+        if context.set_mtime and resource.get_field('mtime'):
+            resource.set_value('mtime', now)
         context.database.change_resource(resource)
         # Set the Last-Modified header (if possible)
-        mtime = resource.get_value('mtime')
+        mtime = now
         if mtime is not None:
             mtime = mtime.replace(microsecond=0)
             context.set_header('Last-Modified', mtime)

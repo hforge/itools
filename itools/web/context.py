@@ -154,7 +154,7 @@ class Context(prototype):
         elif media_type == 'application/json':
             # Case 2: json
             return self.get_json_body(body)
-        elif media_type == 'application/octet-stream':
+        elif media_type.startswith('application/'):
             return {'body': body}
         elif media_type.startswith('multipart/'):
             # Case 3: multipart

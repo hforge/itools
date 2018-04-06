@@ -265,7 +265,6 @@ class GitBackend(object):
 
 
     def abort_transaction(self):
-        raise
         strategy = GIT_CHECKOUT_FORCE | GIT_CHECKOUT_REMOVE_UNTRACKED
         if pygit2.__version__ >= '0.21.1':
             self.worktree.repo.checkout_head(strategy=strategy)

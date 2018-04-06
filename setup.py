@@ -178,6 +178,7 @@ if __name__ == '__main__':
         "itools.core",
         "itools.csv",
         "itools.database",
+        "itools.database.backends",
         "itools.datatypes",
         "itools.fs",
         "itools.gettext",

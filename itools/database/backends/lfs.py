@@ -27,8 +27,8 @@ class LFSBackend(object):
         self.fs = lfs
 
 
-    def normalize_key(self, path, __root):
-        return self.normalize_key(path)
+    def normalize_key(self, path, __root=None):
+        return self.fs.normalize_key(path)
 
 
     def handler_exists(self, key):
@@ -45,7 +45,7 @@ class LFSBackend(object):
         return self.fs.open(key).read()
 
 
-    def get_handler_mimetype(self):
+    def get_handler_mimetype(self, key):
         return self.fs.get_mimetype(key)
 
 

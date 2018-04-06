@@ -46,7 +46,7 @@ class Folder(Handler):
         if database is not None:
             self.database = database
         else:
-            from database import ro_database
+            from itools.database.ro import ro_database
             self.database = ro_database
         if key is not None:
             self.key = self.database.normalize_key(key)

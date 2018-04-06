@@ -18,7 +18,6 @@
 # Import from the Standard Library
 from datetime import datetime
 from os.path import abspath
-from magic_ import magic_from_buffer
 
 # Import from pygit2
 from pygit2 import Repository, IndexEntry, init_repository
@@ -26,6 +25,7 @@ from pygit2 import GIT_OBJ_TREE, GIT_FILEMODE_TREE,GIT_FILEMODE_BLOB_EXECUTABLE
 
 # Import from itools
 from itools.core import fixed_offset
+from itools.database.magic_ import magic_from_buffer
 from itools.fs import lfs
 
 
@@ -48,6 +48,16 @@ class GitBareBackend(object):
             self.repo.index.read_tree(tree.id)
         except:
             pass
+
+
+    def normalize_key(self, path, __root=None):
+        # Performance is critical so assume the path is already relative to
+        # the repository.
+        key = __root.resolve(path)
+        if key and key[0] == '.git':
+            err = "bad '{0}' path, access to the '.git' folder is denied"
+            raise ValueError(err.format(path))
+        return '/'.join(key)
 
 
     def handler_exists(self, key):
@@ -81,7 +91,7 @@ class GitBareBackend(object):
         return blob.data
 
 
-    def get_handler_mimetype(self):
+    def get_handler_mimetype(self, key):
         data = self.get_handler_data(key)
         return magic_from_buffer(data)
 

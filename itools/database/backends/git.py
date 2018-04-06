@@ -16,7 +16,6 @@
 
 # Import from the Standard Library
 from os.path import abspath, dirname
-from magic_ import magic_from_buffer
 from heapq import heappush, heappop
 
 # Import from pygit2
@@ -25,6 +24,7 @@ from pygit2 import TreeBuilder, GIT_FILEMODE_TREE, init_repository
 from pygit2 import GIT_CHECKOUT_FORCE, GIT_CHECKOUT_REMOVE_UNTRACKED
 
 # Import from itools
+from itools.database.magic_ import magic_from_buffer
 from itools.database.git import open_worktree
 from itools.fs import lfs
 
@@ -98,7 +98,7 @@ class GitBackend(object):
     #######################################################################
     # Database API
     #######################################################################
-    def normalize_key(self, path, __root):
+    def normalize_key(self, path, __root=None):
         # Performance is critical so assume the path is already relative to
         # the repository.
         key = __root.resolve(path)
@@ -122,7 +122,7 @@ class GitBackend(object):
         return self.fs.open(key).read()
 
 
-    def get_handler_mimetype(self):
+    def get_handler_mimetype(self, key):
         data = self.get_handler_data(key)
         return magic_from_buffer(data)
 

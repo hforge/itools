@@ -146,8 +146,7 @@ class Logger(object):
 
         # Case 1: log file
         if self.log_file:
-            with open(self.log_file, 'a') as log_file:
-                log_file.write(message)
+            self.write(message)
 
         # Case 2: standard output & error
         elif level & (FATAL | ERROR | WARNING):
@@ -158,6 +157,11 @@ class Logger(object):
         # Exit on fatal errors
         if level & FATAL:
             exit()
+
+
+    def write(self, message):
+        with open(self.log_file, 'a') as log_file:
+            log_file.write(message)
 
 
     def clear(self):

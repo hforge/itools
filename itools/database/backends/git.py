@@ -199,6 +199,10 @@ class GitBackend(object):
         git_add = list(added) + list(changed)
         worktree.git_add(*git_add)
 
+        # 3. Git rm
+        git_rm = list(removed)
+        worktree.git_rm(*git_rm)
+
         # 4. Create the tree
         repo = worktree.repo
         index = repo.index

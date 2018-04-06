@@ -26,6 +26,7 @@ from sys import exc_info
 # Import from itools
 from itools.fs import vfs
 from base import Handler
+from database import ro_database
 from registry import register_handler_class
 
 
@@ -57,6 +58,8 @@ class File(Handler):
     def __init__(self, key=None, string=None, database=None, **kw):
         if database is not None:
             self.database = database
+        else:
+            self.database = ro_database
         if key is None:
             self.reset()
             self.dirty = datetime.now()

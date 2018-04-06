@@ -26,8 +26,11 @@ import fnmatch
 from itools.fs import lfs
 from itools.handlers import Folder
 from itools.log import log_error
+
+# Import from here
+from backends import GitBackend
+from backends.git import init_backend
 from catalog import make_catalog
-from git import init_backend
 from registry import get_register_fields
 from ro import RODatabase
 
@@ -38,6 +41,7 @@ MSG_URI_IS_BUSY = 'The "%s" URI is busy.'
 class RWDatabase(RODatabase):
 
 
+    backend_cls = GitBackend
     read_only = False
 
     def __init__(self, path, size_min, size_max, catalog=None):
@@ -210,6 +214,11 @@ class RWDatabase(RODatabase):
         self.has_changed = True
         # Set in changed list
         self.changed.add(key)
+
+
+
+    def save_handler(self, key, handler):
+        self.backend.save_handler(key, handler)
 
 
     def get_handler_names(self, key):

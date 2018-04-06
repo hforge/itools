@@ -23,9 +23,6 @@ from cStringIO import StringIO
 from datetime import datetime
 from sys import exc_info
 
-# Import from itools
-from itools.fs import lfs
-
 # Import from itools.handlers
 from base import Handler
 from registry import register_handler_class
@@ -124,14 +121,6 @@ class File(Handler):
         self.dirty = None
 
 
-    def load_state_from_uri(self, uri):
-        file = lfs.open(uri)
-        try:
-            self.load_state_from_file(file)
-        finally:
-            file.close()
-
-
     def load_state_from_file(self, file):
         self.set_changed()
         self.reset()
@@ -159,29 +148,7 @@ class File(Handler):
 
 
     def save_state_to(self, key):
-        fs = self.database.fs if self.database else lfs
-        # If there is an empty folder in the given key, remove it
-        if fs.is_folder(key) and not fs.get_names(key):
-            fs.remove(key)
-
-        # Save the file
-        if not fs.exists(key):
-            file = fs.make_file(key)
-        else:
-            file = fs.open(key, 'w')
-        try:
-            self.save_state_to_file(file)
-        finally:
-            file.close()
-
-
-    def save_state_to_file(self, file):
-        # We call "to_str" so this method will be good for sub-classes
-        data = self.to_str()
-        # Write and truncate (calls to "_save_state" must be done with the
-        # pointer pointing to the beginning)
-        file.write(data)
-        file.truncate(file.tell())
+        self.database.save_handler(key, self)
 
 
     clone_exclude = frozenset(['database', 'key', 'timestamp', 'dirty'])

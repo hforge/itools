@@ -25,9 +25,7 @@ MSG_NOT_ATTACHED = 'Method only available when attached to a database.'
 
 class Handler(object):
     """This class represents a resource handler; where a resource can be a
-    file or a directory, and is identified by a unique key. Handlers attached
-    to a vfs database use the URI. Handlers attached to a lfs database use the
-    absolute path.
+    file or a directory, and is identified by a unique key.
 
     It is used as a base class for any other handler class.
     """

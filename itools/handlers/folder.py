@@ -55,9 +55,8 @@ class Folder(Handler):
     def get_mtime(self):
         """Returns the last modification time.
         """
-        fs = self.database.fs
-        if fs.exists(self.key):
-            return fs.get_mtime(self.key)
+        if self.database.has_handler(self.key):
+            return self.database.get_handler_mtime(self.key)
         return None
 
 

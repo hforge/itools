@@ -28,10 +28,10 @@ from itools.log import log_warning, Logger, register_logger
 from itools.uri import Path
 
 # Import from itools.database
+from backends import GitBackend
+from backends.lfs import LFSBackend
 from catalog import Catalog, _get_xquery, SearchResults
 from exceptions import ReadonlyError
-from git import GitBackend
-from magic_ import magic_from_buffer
 from metadata import Metadata
 from registry import get_register_fields
 
@@ -39,9 +39,9 @@ from registry import get_register_fields
 class RODatabase(object):
 
     read_only = True
-    backend_cls = GitBackend
+    backend_cls = LFSBackend
 
-    def __init__(self, path, size_min=4800, size_max=5200, catalog=None):
+    def __init__(self, path=None, size_min=4800, size_max=5200, catalog=None):
         self.path = path
         # The "git add" arguments
         self.added = set()
@@ -52,11 +52,13 @@ class RODatabase(object):
         self.backend = self.backend_cls(self.path)
         # A mapping from key to handler
         self.cache = LRUCache(size_min, size_max, automatic=False)
+        # TODO FIXME Catalog should be moved into backend
         # 7. Get the catalog
-        if catalog:
-            self.catalog = catalog
-        else:
-            self.catalog = self.get_catalog()
+        if not self.read_only:
+            if catalog:
+                self.catalog = catalog
+            else:
+                self.catalog = self.get_catalog()
         # Log
         catalog_log = '{}/database.log'.format(self.path)
         self.logger = Logger(catalog_log)
@@ -131,14 +133,7 @@ class RODatabase(object):
     # Public API
     #######################################################################
     def normalize_key(self, path, __root=Path('/')):
-        # Performance is critical so assume the path is already relative to
-        # the repository.
-        key = __root.resolve(path)
-        if key and key[0] == '.git':
-            err = "bad '%s' path, access to the '.git' folder is denied"
-            raise ValueError, err % path
-
-        return '/'.join(key)
+        return self.backend.normalize_key(path, __root)
 
 
     def push_handler(self, key, handler):
@@ -197,6 +192,10 @@ class RODatabase(object):
         return self.backend.handler_exists(key)
 
 
+    def save_handler(self, key, handler):
+        self.backend.save_handler(key, handler)
+
+
     def get_handler_names(self, key):
         key = self.normalize_key(key)
         return self.backend.get_handler_names(key)
@@ -211,8 +210,7 @@ class RODatabase(object):
 
 
     def get_mimetype(self, key):
-        data = self.backend.get_handler_data(key)
-        return magic_from_buffer(data)
+        return self.backend.get_handler_mimetype(key)
 
 
     def get_handler_class(self, key):
@@ -290,7 +288,9 @@ class RODatabase(object):
     def touch_handler(self, key, handler=None):
         """Report a modification of the key/handler to the database.
         """
-        raise ReadonlyError, 'cannot set handler'
+        # FIXME touch_handler is called à handler loading
+        pass
+        # raise ReadonlyError, 'cannot set handler'
 
 
     def set_handler(self, key, handler):
@@ -493,3 +493,7 @@ class RODatabase(object):
 
     def reindex_catalog(self, base_abspath, recursif=True):
         raise ReadonlyError
+
+
+
+ro_database = RODatabase()

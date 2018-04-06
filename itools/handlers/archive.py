@@ -24,7 +24,6 @@ from tarfile import open as open_tarfile
 from cStringIO import StringIO
 
 # Import from itools
-from itools.fs import lfs
 from file import File
 from registry import register_handler_class
 
@@ -86,9 +85,10 @@ class ZIPFile(File):
         zip = self._open_zipfile()
         try:
             for filename in zip.namelist():
+                data = zip.read(filename)
                 path = join(dst, filename)
-                with lfs.make_file(path) as file:
-                    file.write(zip.read(filename))
+                handler = File(string=data)
+                self.database.set_handler(path, handler)
         finally:
             zip.close()
 

@@ -16,15 +16,18 @@
 
 
 # Import from the Standard Library
+import time
+from calendar import timegm
 from datetime import datetime
 from os.path import abspath
+from subprocess import Popen, PIPE
 
 # Import from pygit2
-from pygit2 import Repository, IndexEntry, init_repository
+from pygit2 import Repository, IndexEntry, Signature, init_repository
 from pygit2 import GIT_OBJ_TREE, GIT_FILEMODE_TREE,GIT_FILEMODE_BLOB_EXECUTABLE
 
 # Import from itools
-from itools.core import fixed_offset
+from itools.core import fixed_offset, lazy
 from itools.database.magic_ import magic_from_buffer
 from itools.fs import lfs
 
@@ -48,6 +51,73 @@ class GitBareBackend(object):
             self.repo.index.read_tree(tree.id)
         except:
             pass
+        # Check git commiter
+        try:
+            _, _ = self.username, self.useremail
+        except:
+            print '========================================='
+            print 'ERROR: Please configure GIT commiter via'
+            print ' $ git config --global user.name'
+            print ' $ git config --global user.email'
+            print '========================================='
+            raise
+
+
+    #######################################################################
+    # Internal utility functions
+    #######################################################################
+    def _call(self, command):
+        """Interface to cal git.git for functions not yet implemented using
+        libgit2.
+        """
+        popen = Popen(command, stdout=PIPE, stderr=PIPE, cwd=self.path_data)
+        stdoutdata, stderrdata = popen.communicate()
+        if popen.returncode != 0:
+            raise EnvironmentError, (popen.returncode, stderrdata)
+        return stdoutdata
+
+
+
+    @lazy
+    def username(self):
+        cmd = ['git', 'config', '--get', 'user.name']
+        try:
+            username = self._call(cmd).rstrip()
+        except EnvironmentError:
+            raise ValueError("Please configure 'git config --global user.name'")
+        return username
+
+
+    @lazy
+    def useremail(self):
+        cmd = ['git', 'config', '--get', 'user.email']
+        try:
+            useremail = self._call(cmd).rstrip()
+        except EnvironmentError:
+            raise ValueError("Please configure 'git config --global user.email'")
+        return useremail
+
+
+    def _resolve_reference(self, reference):
+        """This method returns the SHA the given reference points to. For now
+        only HEAD is supported.
+
+        FIXME This is quick & dirty. TODO Implement references in pygit2 and
+        use them here.
+        """
+        # Case 1: SHA
+        if len(reference) == 40:
+            return reference
+
+        # Case 2: reference
+        reference = self.repo.lookup_reference(reference)
+        try:
+            reference = reference.resolve()
+        except KeyError:
+            return None
+
+        return reference.target
+
 
 
     def normalize_key(self, path, __root=None):
@@ -168,6 +238,51 @@ class GitBareBackend(object):
         git_tree = index.write_tree()
         # Commit
         self.git_commit(git_msg, git_author, git_date, tree=git_tree)
+
+
+
+    def git_commit(self, message, author=None, date=None, tree=None):
+        """Equivalent to 'git commit', we must give the message and we can
+        also give the author and date.
+        """
+        # Tree
+        if tree is None:
+            #tree = self.index.write_tree()
+            raise ValueError('Please give me a tree')
+
+        # Parent
+        parent = self._resolve_reference('HEAD')
+        parents = [parent] if parent else []
+
+        # Committer
+        when_time = time.time()
+        when_offset = - (time.altzone if time.daylight else time.timezone)
+        when_offset = when_offset / 60
+
+        name = self.username
+        email = self.useremail
+        committer = Signature(name, email, when_time, when_offset)
+
+        # Author
+        if author is None:
+            author = (name, email)
+
+        if date:
+            if date.tzinfo:
+                from pytz import utc
+                when_time = date.astimezone(utc)            # To UTC
+                when_time = when_time.timetuple()           # As struct_time
+                when_time = timegm(when_time)               # To unix time
+                when_offset = date.utcoffset().seconds / 60
+            else:
+                err = "Worktree.git_commit doesn't support naive datatime yet"
+                raise NotImplementedError, err
+
+        author = Signature(author[0], author[1], when_time, when_offset)
+
+        # Create the commit
+        return self.repo.create_commit('HEAD', author, committer, message,
+                                       tree, parents)
 
 
     def abort_transaction(self):

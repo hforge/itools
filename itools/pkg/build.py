@@ -28,7 +28,7 @@ from json import dumps
 
 # Import from itools
 from itools.fs import lfs
-from itools.handlers import ro_database
+from itools.gettext import POFile
 
 # Import from here
 from build_gulp import GulpBuilder
@@ -71,9 +71,9 @@ def make_template(package_root, source, target):
     import itools.stl
     import itools.pdf
     # Get file
-    source_handler = ro_database.get_handler(source, XHTMLFile)
+    source_handler = XHTMLFile(source)
     language = target.rsplit('.', 1)[1]
-    po = ro_database.get_handler('%s/locale/%s.po' % (package_root, language))
+    po = POFile('%s/locale/%s.po' % (package_root, language))
     try:
         data = source_handler.translate(po)
     except TranslationError as e:

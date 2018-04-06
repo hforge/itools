@@ -209,7 +209,6 @@ if __name__ == '__main__':
       "scripts/igettext-build.py",
       "scripts/igettext-extract.py",
       "scripts/igettext-merge.py",
-      "scripts/iodf-greek.py",
       "scripts/ipkg-docs.py",
       "scripts/ipkg-quality.py",
       "scripts/ipkg-update-locale.py"]

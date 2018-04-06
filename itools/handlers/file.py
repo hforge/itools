@@ -66,6 +66,7 @@ class File(Handler):
                 print('Cannot attach this handler to a database')
                 with open(key, 'r') as f:
                     string = f.read()
+                key = None
         if key is None:
             self.reset()
             self.dirty = datetime.now()

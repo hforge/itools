@@ -63,10 +63,11 @@ class File(Handler):
                 from itools.database.ro import ro_database
                 self.database = ro_database
             except:
-                print('Cannot attach handler {0} to a database'.format(key))
-                with open(key, 'r') as f:
-                    string = f.read()
-                key = None
+                if key:
+                    print('Cannot attach handler {0} to a database'.format(key))
+                    with open(key, 'r') as f:
+                        string = f.read()
+                    key = None
         if key is None:
             self.reset()
             self.dirty = datetime.now()
@@ -78,6 +79,7 @@ class File(Handler):
                 self.new(**kw)
         else:
             self.key = self.database.normalize_key(key)
+            self.load_state()
 
 
     def reset(self):
@@ -123,7 +125,6 @@ class File(Handler):
 
 
     def load_state_from_file(self, file):
-        self.set_changed()
         self.reset()
         try:
             self._load_state_from_file(file)
@@ -184,14 +185,11 @@ class File(Handler):
         # Invalid handler
         if key is None and self.dirty is None:
             raise RuntimeError, 'cannot change an orphaned file handler'
-        # Ignore if not already loaded for the first time
-        if not self.loaded:
-            return
         # Set as dirty
         self.dirty = datetime.now()
         # Free handler (not attached to a database)
         database = self.database
-        if database is None:
+        if database is None or not self.key:
             return
         # Attached
         database.touch_handler(key, self)

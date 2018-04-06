@@ -22,7 +22,7 @@
 from unittest import TestCase, main
 
 # Import from itools
-from itools.handlers import File ConfigFile, TGZFile
+from itools.handlers import File, ConfigFile, TGZFile
 from itools.fs import lfs
 
 
@@ -30,7 +30,7 @@ from itools.fs import lfs
 class StateTestCase(TestCase):
 
     def test_abort(self):
-        handler = File(string'tests/hello.txt')
+        handler = File('tests/hello.txt')
         self.assertEqual(handler.data, u'hello world\n')
         handler.set_data(u'bye world\n')
         self.assertEqual(handler.data, u'bye world\n')
@@ -176,7 +176,7 @@ class ArchiveTestCase(TestCase):
 
     def test_get_handler(self):
         h = TGZFile('handlers/test.tar.gz')
-        to_str()
+        # TODO: Add unitests
 
 
 

@@ -25,6 +25,7 @@ from sys import _getframe
 from itools.core import prototype, is_prototype
 from itools.handlers import Folder
 from itools.i18n import get_language_name
+from itools.fs import lfs
 from itools.xml import XMLParser
 
 # Import from here
@@ -55,7 +56,7 @@ def get_domain(name):
 class Domain(dict):
 
     def __init__(self, uri):
-        for key in Folder(uri).get_handler_names():
+        for key in lfs.get_names(uri):
             if key[-3:] == '.mo':
                 language = key[:-3]
                 path = '{0}/{1}'.format(uri, key)

@@ -19,6 +19,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from datetime import datetime
 from sys import getrefcount
 
 # Import from itools
@@ -288,9 +289,21 @@ class RODatabase(object):
     def touch_handler(self, key, handler=None):
         """Report a modification of the key/handler to the database.
         """
-        # FIXME touch_handler is called à handler loading
-        pass
+        # FIXME touch_handler is called at handler loading
+        # ro_database is also a rw_database, so it can save data
         # raise ReadonlyError, 'cannot set handler'
+        key = self.normalize_key(key)
+        # Mark the handler as dirty
+        handler.dirty = datetime.now()
+        # Do some checks
+        if handler is None:
+            raise ValueError
+        if key in self.removed:
+            raise ValueError
+        # Set database has changed
+        self.has_changed = True
+        # Set in changed list
+        self.changed.add(key)
 
 
     def set_handler(self, key, handler):

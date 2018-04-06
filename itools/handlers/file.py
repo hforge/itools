@@ -28,7 +28,6 @@ from itools.fs import lfs
 
 # Import from itools.handlers
 from base import Handler
-from database import ro_database
 from registry import register_handler_class
 
 
@@ -63,8 +62,13 @@ class File(Handler):
         if database is not None:
             self.database = database
         else:
-            from database import ro_database
-            self.database = ro_database
+            try:
+                from database import ro_database
+                self.database = ro_database
+            except:
+                print('Cannot attach this handler to a database')
+                with open(key, 'r') as f:
+                    string = f.read()
         if key is None:
             self.reset()
             self.dirty = datetime.now()

@@ -18,6 +18,7 @@
 
 # Import from itools
 from base import Handler
+from database import ro_database
 from registry import register_handler_class
 
 
@@ -45,6 +46,8 @@ class Folder(Handler):
     def __init__(self, key=None, database=None, **kw):
         if database is not None:
             self.database = database
+        else:
+            self.database = ro_database
         if key is not None:
             self.key = self.database.normalize_key(key)
 

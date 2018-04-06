@@ -25,9 +25,9 @@ from itools.csv import Property
 from itools.csv.table import encode_param_value
 from itools.datatypes import String
 from itools.ical import DateTime, iCalendar
-from itools.handlers import ro_database
 from itools.ical.icalendar import iCalendar, VTimezone
 #
+
 
 # Example with 1 event
 content = """
@@ -445,7 +445,7 @@ class icalTestCase(TestCase):
 
 
     def test_vtimezone(self):
-        handler = ro_database.get_handler('tests/test_vtimezone.ics', iCalendar)
+        handler = iCalendar('tests/test_vtimezone.ics')
         tz = handler.get_components('VTIMEZONE')
         self.assertEqual(len(tz), 1)
         tz = tz[0]

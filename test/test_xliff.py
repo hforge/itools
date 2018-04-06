@@ -20,9 +20,7 @@
 from unittest import TestCase, main
 
 # Import from itools
-from itools.handlers import ro_database
 from itools.xliff import XLFFile
-
 
 
 class XLIFFTestCase(TestCase):
@@ -30,7 +28,7 @@ class XLIFFTestCase(TestCase):
     def test_input(self):
         """Test input.
         """
-        xliff = ro_database.get_handler('tests/gettext_en_es.xlf', XLFFile)
+        xliff = XLFFile('tests/gettext_en_es.xlf')
         xliff.to_str()
 
 

@@ -27,7 +27,6 @@ from itools.csv import CSVFile, Table, UniqueError
 from itools.csv.table import parse_table, unfold_lines
 from itools.datatypes import Date, Integer, Unicode, URI, String
 from itools.fs import lfs
-from itools.handlers import RODatabase
 
 
 TEST_DATA_1 = """python,http://python.org/,52343,2003-10-23
@@ -38,7 +37,6 @@ TEST_DATA_2 = 'one,two,three\nfour,five,six\nseven,eight,nine'
 TEST_SYNTAX_ERROR = '"one",,\n,"two",,\n,,"three"'
 
 
-ro_database = RODatabase(fs=lfs)
 
 
 class Languages(CSVFile):
@@ -166,16 +164,16 @@ class CSVTestCase(TestCase):
 
 
     def test_set_state_in_file_resource(self):
-        handler = ro_database.get_handler('tests/test.csv', CSVFile)
+        handler = CSVFile('tests/test.csv')
         handler.add_row(['d1', 'e1', 'f1'])
         handler.save_state()
 
-        handler2 = ro_database.get_handler('tests/test.csv', CSVFile)
+        handler2 = CSVFile('tests/test.csv')
         self.assertEqual(handler2.get_row(3), ['d1', 'e1', 'f1'])
         handler2.del_row(3)
         handler2.save_state()
 
-        handler = ro_database.get_handler('tests/test.csv', CSVFile)
+        handler = CSVFile('tests/test.csv')
         self.assertEqual(handler.get_nrows(), 3)
 
 
@@ -343,13 +341,13 @@ class TableTestCase(TestCase):
         agenda = Agenda(string=agenda_file)
         agenda.save_state_to('tests/agenda')
         # Change
-        agenda = ro_database.get_handler('tests/agenda', Agenda)
+        agenda = Agenda('tests/agenda')
         fake = agenda.add_record({'firstname': u'Toto', 'lastname': u'Fofo'})
         agenda.add_record({'firstname': u'Albert', 'lastname': u'Einstein'})
         agenda.del_record(fake.id)
         agenda.save_state()
         # Test
-        agenda = ro_database.get_handler('tests/agenda', Agenda)
+        agenda = Agenda('tests/agenda')
         ids = [ x.id for x in agenda.search('firstname', u'Toto') ]
         self.assertEqual(len(ids), 0)
         ids = [ x.id for x in agenda.search('firstname', u'Albert') ]
@@ -394,7 +392,7 @@ class TableTestCase(TestCase):
         table = Books(string=books_file)
         table.save_state_to('tests/books')
         # Load
-        table = ro_database.get_handler('tests/books', Books)
+        table = Books('tests/books')
         table.load_state()
         # Test
         record_0 = table.get_record(0)

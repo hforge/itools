@@ -19,9 +19,7 @@
 from unittest import TestCase, main
 
 # Import from itools
-from itools.handlers import ro_database
 from itools.tmx import TMXFile
-
 
 
 class TMXTestCase(TestCase):
@@ -29,7 +27,7 @@ class TMXTestCase(TestCase):
     def test_input(self):
         """Test input.
         """
-        tmx = ro_database.get_handler('tests/localizermsgs.tmx', TMXFile)
+        tmx = TMXFile('tests/localizermsgs.tmx')
         tmx.to_str()
 
 

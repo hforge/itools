@@ -22,7 +22,6 @@ from copy import deepcopy
 # Import from itools
 from itools.core import get_abspath
 from itools.datatypes import String
-from itools.handlers import ro_database
 from itools.relaxng import RelaxNGFile
 from itools.xml import register_namespace, get_namespace, XMLNamespace
 
@@ -198,7 +197,7 @@ class ODFRelaxNGFile(RelaxNGFile):
 ###########################################################################
 # Read the Relax NG schema
 rng_file = get_abspath('OpenDocument-v1.2-cd05-schema.rng')
-rng_file = ro_database.get_handler(rng_file, ODFRelaxNGFile)
+rng_file = ODFRelaxNGFile(rng_file)
 rng_file.auto_register()
 
 # The namespaces fo and svg have two names

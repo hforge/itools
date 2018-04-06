@@ -30,7 +30,6 @@ from sys import argv
 
 # Import from itools
 from itools.core import get_pipe
-from itools.handlers import ro_database
 
 # Import from itools.pkg
 from build import build, get_package_version
@@ -100,7 +99,7 @@ def get_compile_flags(command):
 
 
 def get_config():
-    return ro_database.get_handler('setup.conf', SetupConf)
+    return SetupConf('setup.conf')
 
 
 

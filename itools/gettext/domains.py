@@ -23,9 +23,12 @@ from sys import _getframe
 
 # Import from itools
 from itools.core import prototype, is_prototype
-from itools.handlers import RODatabase
+from itools.handlers import Folder
 from itools.i18n import get_language_name
 from itools.xml import XMLParser
+
+# Import from here
+from mo import MOFile
 
 
 xhtml_namespaces = {
@@ -48,16 +51,15 @@ def get_domain(name):
 
 
 
-database = RODatabase()
 
 class Domain(dict):
 
     def __init__(self, uri):
-        folder = database.get_handler(uri)
-        for key in folder.get_handler_names():
+        for key in Folder(uri).get_handler_names():
             if key[-3:] == '.mo':
                 language = key[:-3]
-                self[language] = folder.get_handler(key)
+                path = '{0}/{1}'.format(uri, key)
+                self[language] = MOFile(path)
 
 
     def gettext(self, message, language):

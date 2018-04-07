@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.core import is_prototype, freeze
+from itools.core import freeze
 from itools.gettext import MSG
 from messages import ERROR
 
@@ -126,7 +126,7 @@ class FormError(StandardError):
         else:
             messages = MSG(u'There are errors... XXX')
         for value in messages:
-            if not is_prototype(value, MSG):
+            if not isinstance(value, MSG):
                 value = ERROR(value)
             final_messages.append(value(format='replace').gettext())
         return final_messages
@@ -142,7 +142,7 @@ class FormError(StandardError):
 
     def __str__(self):
         msg = self.get_message(mode='text')
-        if is_prototype(msg, MSG):
+        if isinstance(msg, MSG):
             return msg.gettext()
         return msg
 

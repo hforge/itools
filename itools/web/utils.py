@@ -20,7 +20,6 @@ from decimal import Decimal
 from json import JSONEncoder
 
 # Import from itools
-from itools.core import is_prototype
 from itools.gettext import MSG
 from itools.html import stream_to_str_as_html
 from itools.xml import XMLParser
@@ -112,7 +111,7 @@ class NewJSONEncoder(JSONEncoder):
             return o.isoformat()
         elif isinstance(o, time):
             return o.isoformat()
-        elif is_prototype(o, MSG):
+        elif isinstance(o, MSG):
             return o.gettext()
         elif isinstance(o, XMLParser):
             return stream_to_str_as_html(o)

@@ -22,7 +22,6 @@ from string import Formatter
 from sys import _getframe
 
 # Import from itools
-from itools.core import prototype, is_prototype
 from itools.handlers import Folder
 from itools.i18n import get_language_name
 from itools.fs import lfs
@@ -87,7 +86,7 @@ class MSGFormatter(Formatter):
         else:
             value = getattr(msg, key)
 
-        if is_prototype(value, MSG):
+        if isinstance(value, MSG):
             return value.gettext()
 
         return value
@@ -95,15 +94,14 @@ class MSGFormatter(Formatter):
 
 msg_formatter = MSGFormatter()
 
-
-class MSG(prototype):
+class MSG(object):
 
     domain = None
     format = 'replace'
 
     def __init__(self, message=None, **kw):
         if self.domain is None:
-            domain = _getframe(2).f_globals.get('__name__')
+            domain = _getframe(1).f_globals.get('__name__')
             self.domain = domain.split('.', 1)[0]
 
         if message:

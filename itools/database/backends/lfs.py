@@ -42,6 +42,8 @@ class LFSBackend(object):
     def get_handler_data(self, key):
         if not key:
             return None
+        if not self.fs.exists(key):
+            return None
         return self.fs.open(key).read()
 
 

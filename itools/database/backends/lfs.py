@@ -24,7 +24,10 @@ from itools.fs import lfs
 class LFSBackend(object):
 
     def __init__(self, path):
-        self.fs = lfs
+        if path:
+            self.fs = lfs.open('{0}/database'.format(path))
+        else:
+            self.fs = lfs
 
 
     def normalize_key(self, path, __root=None):

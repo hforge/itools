@@ -126,9 +126,9 @@ class FormError(StandardError):
         else:
             messages = MSG(u'There are errors... XXX')
         for value in messages:
-            if not isinstance(value, MSG):
-                value = ERROR(value)
-            final_messages.append(value(format='replace').gettext())
+            if isinstance(value, MSG):
+                value = value.gettext()
+            final_messages.append(value)
         return final_messages
 
 

@@ -48,6 +48,8 @@ class File(Handler):
 
     """
 
+    class_mimetypes = ['application/octet-stream']
+
     # By default handlers are not loaded
     # XXX We should remove timestamp variable
     timestamp = None

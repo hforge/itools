@@ -23,7 +23,7 @@ from text import TextFile
 
 class JSFile(TextFile):
 
-    class_mimetypes = ['application/x-javascript']
+    class_mimetypes = ['application/x-javascript', 'application/javascript']
     class_extension = 'js'
 
 

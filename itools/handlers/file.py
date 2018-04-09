@@ -242,6 +242,9 @@ class File(Handler):
         if database is None:
             self.dirty = datetime.now()
             return
+        # Cannot set changed if no key
+        if not key:
+            return
 
         # Attached
         database.touch_handler(key, self)

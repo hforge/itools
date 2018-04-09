@@ -91,19 +91,6 @@ class File(Handler):
     def new(self, data=''):
         self.data = data
 
-
-    def __getattr__(self, name):
-        # Not attached to a key or already loaded (should be correctly
-        # initialized)
-        if self.key is None or self.timestamp is not None:
-            message = "'%s' object has no attribute '%s'"
-            raise AttributeError, message % (self.__class__.__name__, name)
-
-        # Load and try again
-        self.load_state()
-        return getattr(self, name)
-
-
     #########################################################################
     # Load / Save
     #########################################################################

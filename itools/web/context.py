@@ -123,6 +123,7 @@ def check_form_value(field, value):
     if value in field.empty_values:
         return
     errors = []
+    context = get_context()
     for validator in field.get_validators():
         validator = validator(title=field.title, context=context)
         try:

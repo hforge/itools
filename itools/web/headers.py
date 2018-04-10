@@ -338,7 +338,8 @@ class CookieDataType(DataType):
                 if name == '$domain':
                     cookie.domain = value
                     index += 1
-        CACHE_COOKIES[base_data] = cookies
+        if base_data:
+            CACHE_COOKIES[base_data] = cookies
         return cookies
 
 

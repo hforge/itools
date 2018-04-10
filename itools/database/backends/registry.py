@@ -1,7 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright (C) 2005-2008, 2010-2011 J. David Ibáñez <jdavid.ibp@gmail.com>
-# Copyright (C) 2007, 2011 Hervé Cauwelier <herve@oursours.net>
-# Copyright (C) 2010-2011 David Versmisse <versmisse@lil.univ-littoral.fr>
+# Copyright (C) 2018 Sylvain Taverne <taverne.sylvain@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,8 +14,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from itools
-from git import GitBackend
-from git_bare import GitBareBackend
-from lfs import LFSBackend
-from registry import register_backend, backends_registry
+# Import from the Standard Library
+
+
+backends_registry = {}
+
+def register_backend(name, backends_cls):
+    if name not in backends_registry:
+        backends_registry[name] = backends_cls
+        return
+
+
+def get_backends():
+    return backends_registry

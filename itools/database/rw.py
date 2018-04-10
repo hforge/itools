@@ -28,8 +28,7 @@ from itools.handlers import Folder
 from itools.log import log_error
 
 # Import from here
-from backends import GitBackend
-from backends.git import init_backend
+from backends import backends_registry
 from catalog import make_catalog
 from registry import get_register_fields
 from ro import RODatabase
@@ -40,13 +39,11 @@ MSG_URI_IS_BUSY = 'The "%s" URI is busy.'
 
 class RWDatabase(RODatabase):
 
-
-    backend_cls = GitBackend
     read_only = False
 
-    def __init__(self, path, size_min, size_max, catalog=None):
+    def __init__(self, path, size_min, size_max, catalog=None, backend='git'):
         proxy = super(RWDatabase, self)
-        proxy.__init__(path, size_min, size_max, catalog)
+        proxy.__init__(path, size_min, size_max, catalog, backend)
         # Changes on DB
         self.added = set()
         self.changed = set()
@@ -535,7 +532,8 @@ def make_database(path, size_min, size_max, fields=None):
     """
     path = lfs.get_absolute_path(path)
     # Init backend
-    init_backend('%s/database' % path)
+    backend_cls = backends_registry[backend]
+    backend_cls.init_backend(path)
     # The catalog
     if fields is None:
         fields = get_register_fields()

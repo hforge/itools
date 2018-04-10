@@ -29,8 +29,7 @@ from itools.log import log_warning, Logger, register_logger
 from itools.uri import Path
 
 # Import from itools.database
-from backends import GitBackend
-from backends.lfs import LFSBackend
+from backends import GitBackend, backends_registry
 from catalog import Catalog, _get_xquery, SearchResults
 from exceptions import ReadonlyError
 from metadata import Metadata
@@ -40,10 +39,13 @@ from registry import get_register_fields
 class RODatabase(object):
 
     read_only = True
-    backend_cls = LFSBackend
+    backend_cls = None
 
-    def __init__(self, path=None, size_min=4800, size_max=5200, catalog=None):
+    def __init__(self, path=None, size_min=4800, size_max=5200, catalog=None, backend='lfs'):
+        # Init path
         self.path = path
+        # Init backend
+        self.backend_cls = backends_registry[backend]
         # The "git add" arguments
         self.added = set()
         self.changed = set()
@@ -189,7 +191,7 @@ class RODatabase(object):
         if handler is not None:
             return True
 
-        # Ask vfs
+        # Ask backend
         return self.backend.handler_exists(key)
 
 
@@ -211,6 +213,8 @@ class RODatabase(object):
 
 
     def get_mimetype(self, key):
+        print 'GET MIMETYPE1'
+        '====>', key, self.backend.get_handler_mimetype(key), self.backend
         return self.backend.get_handler_mimetype(key)
 
 

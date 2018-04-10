@@ -20,6 +20,9 @@ from os.path import abspath
 # Import from itools
 from itools.fs import lfs
 
+# Import from here
+from registry import register_backend
+
 
 class LFSBackend(object):
 
@@ -106,3 +109,6 @@ class LFSBackend(object):
 
     def abort_transaction(self):
         raise NotImplementedError
+
+
+register_backend('lfs', LFSBackend)

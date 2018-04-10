@@ -28,6 +28,9 @@ from itools.database.magic_ import magic_from_buffer
 from itools.database.git import open_worktree
 from itools.fs import lfs
 
+# Import from here
+from registry import register_backend
+
 
 class Heap(object):
     """
@@ -279,3 +282,6 @@ class GitBackend(object):
 
 def init_backend(path, init=False, soft=False):
     init_repository(path)
+
+
+register_backend('git', GitBackend)

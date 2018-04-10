@@ -31,6 +31,10 @@ from itools.core import fixed_offset, lazy
 from itools.database.magic_ import magic_from_buffer
 from itools.fs import lfs
 
+# Import from here
+from registry import register_backend
+
+
 
 class GitBareBackend(object):
 
@@ -293,3 +297,6 @@ class GitBareBackend(object):
 
 def init_backend(path, init=False, soft=False):
     init_repository(path, bare=True)
+
+
+register_backend('git-bare', GitBareBackend)

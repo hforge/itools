@@ -109,11 +109,23 @@ class LFSBackend(object):
 
 
     def do_transaction(self, commit_message, data, added, changed, removed, handlers):
-        raise NotImplementedError
+        # List of Changed
+        added_and_changed = list(added) + list(changed)
+        # Build the tree from index
+        for key in added_and_changed:
+            handler = handlers.get(key)
+            parent_path = dirname(key)
+            if not self.fs.exists(parent_path):
+                self.fs.make_folder(parent_path)
+            handler.save_state()
+        for key in removed:
+            self.fs.remove(key)
+
 
 
     def abort_transaction(self):
-        raise NotImplementedError
+        # Cannot abort transaction with this backend
+        pass
 
 
 register_backend('lfs', LFSBackend)

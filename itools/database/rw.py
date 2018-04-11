@@ -526,7 +526,7 @@ class RWDatabase(RODatabase):
         return n
 
 
-def make_database(path, size_min, size_max, fields=None):
+def make_database(path, size_min, size_max, fields=None, backend=None):
     """Create a new empty database if the given path does not exists or
     is a folder.
     """

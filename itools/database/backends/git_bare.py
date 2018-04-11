@@ -67,6 +67,11 @@ class GitBareBackend(object):
             raise
 
 
+    @classmethod
+    def init_backend(cls, path, init=False, soft=False):
+        init_repository('{0}/database'.format(path), bare=True)
+
+
     #######################################################################
     # Internal utility functions
     #######################################################################
@@ -293,10 +298,6 @@ class GitBareBackend(object):
         # TODO: Remove created blobs
         pass
 
-
-
-def init_backend(path, init=False, soft=False):
-    init_repository(path, bare=True)
 
 
 register_backend('git-bare', GitBareBackend)

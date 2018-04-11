@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from os.path import abspath
+from os.path import abspath, dirname
 
 # Import from itools
 from itools.fs import lfs
@@ -31,6 +31,11 @@ class LFSBackend(object):
             self.fs = lfs.open('{0}/database'.format(path))
         else:
             self.fs = lfs
+
+
+    @classmethod
+    def init_backend(cls, path, init=False, soft=False):
+        self.fs.make_folder('{0}/database'.format(path))
 
 
     def normalize_key(self, path, __root=None):

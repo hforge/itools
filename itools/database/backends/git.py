@@ -98,6 +98,11 @@ class GitBackend(object):
         self.worktree = open_worktree(self.path_data)
 
 
+    @classmethod
+    def init_backend(cls, path, init=False, soft=False):
+        init_repository('{0}/database'.format(path), bare=False)
+
+
     #######################################################################
     # Database API
     #######################################################################
@@ -277,11 +282,6 @@ class GitBackend(object):
             self.worktree.repo.checkout_head(strategy=strategy)
         else:
             self.worktree.repo.checkout_head(strategy)
-
-
-
-def init_backend(path, init=False, soft=False):
-    init_repository(path)
 
 
 register_backend('git', GitBackend)

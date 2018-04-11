@@ -162,22 +162,19 @@ class GitBackend(object):
 
 
     def save_handler(self, key, handler):
-				# If there is an empty folder in the given key, remove it
-				#if self.fs.is_folder(key) and not self.fs.get_names(key):
-				#		raise ValueError
-				# Save the file
-				if not self.fs.exists(key):
-						f = self.fs.make_file(key)
-				else:
-						f = self.fs.open(key, 'w')
-				try:
-						data = handler.to_str()
-						# Write and truncate (calls to "_save_state" must be done with the
-						# pointer pointing to the beginning)
-						f.write(data)
-						f.truncate(f.tell())
-				finally:
-						f.close()
+        # Save the file
+        if not self.fs.exists(key):
+            f = self.fs.make_file(key)
+        else:
+            f = self.fs.open(key, 'w')
+        try:
+            data = handler.to_str()
+            # Write and truncate (calls to "_save_state" must be done with the
+            # pointer pointing to the beginning)
+            f.write(data)
+            f.truncate(f.tell())
+        finally:
+            f.close()
 
 
     def traverse_resources(self):
@@ -189,11 +186,10 @@ class GitBackend(object):
         # 1. Synchronize the handlers and the filesystem
         for key in added:
             handler = handlers.get(key)
-            if handler and handler.dirty:
-                parent_path = dirname(key)
-                if not self.fs.exists(parent_path):
-                    self.fs.make_folder(parent_path)
-                handler.save_state()
+            parent_path = dirname(key)
+            if not self.fs.exists(parent_path):
+                self.fs.make_folder(parent_path)
+            self.save_handler(key, handler)
 
         for key in changed:
             handler = handlers[key]

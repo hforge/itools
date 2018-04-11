@@ -213,8 +213,6 @@ class RODatabase(object):
 
 
     def get_mimetype(self, key):
-        print 'GET MIMETYPE1'
-        '====>', key, self.backend.get_handler_mimetype(key), self.backend
         return self.backend.get_handler_mimetype(key)
 
 

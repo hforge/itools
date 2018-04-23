@@ -267,7 +267,13 @@ class RODatabase(object):
         self.push_handler(key, handler)
         if not is_folder:
             # Load handler data
-            handler.load_state_from_string(data)
+            # FIXME We should reset handler state on errors
+            try:
+                handler.load_state_from_string(data)
+            except Exception:
+                # Remove handler from cache if cannot load it
+                self._discard_handler(key)
+                raise
 
         # Ok
         return handler

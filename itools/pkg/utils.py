@@ -23,8 +23,8 @@ from distutils import core
 from distutils.core import Extension
 from distutils.command.build_ext import build_ext
 from distutils.errors import LinkError
-from pip.download import PipSession
-from pip.req import parse_requirements
+from pip._internal.download import PipSession
+from pip._internal.req import parse_requirements
 from os.path import exists, join as join_path
 from sys import argv
 

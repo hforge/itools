@@ -196,6 +196,8 @@ class File(Handler):
             return
         # Abort
         self._clean_state()
+        # Reload state
+        self.load_state()
 
 
     #########################################################################

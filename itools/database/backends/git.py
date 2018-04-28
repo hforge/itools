@@ -15,8 +15,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from os.path import abspath, dirname
+from datetime import datetime
 from heapq import heappush, heappop
+from os.path import abspath, dirname
+from uuid import uuid4
 
 # Import from pygit2
 import pygit2
@@ -24,6 +26,7 @@ from pygit2 import TreeBuilder, GIT_FILEMODE_TREE, init_repository
 from pygit2 import GIT_CHECKOUT_FORCE, GIT_CHECKOUT_REMOVE_UNTRACKED
 
 # Import from itools
+from itools.database import Metadata
 from itools.database.magic_ import magic_from_buffer
 from itools.database.git import open_worktree
 from itools.fs import lfs
@@ -92,15 +95,21 @@ class GitBackend(object):
         if not lfs.is_folder(self.path_data):
             error = '"{0}" should be a folder, but it is not'.format(self.path_data)
             raise ValueError(error)
-        # 3. Initialize the database, but chrooted
-        self.fs = lfs.open(self.path_data)
-        # 4. New interface to Git
+        # New interface to Git
         self.worktree = open_worktree(self.path_data)
+        # Initialize the database, but chrooted
+        self.fs = lfs.open(self.path_data)
+        # Static FS
+        self.static_fs = lfs.open('{0}/database_static'.format(path))
 
 
     @classmethod
     def init_backend(cls, path, init=False, soft=False):
+        # Metadata database
         init_repository('{0}/database'.format(path), bare=False)
+        # Static database
+        lfs.make_folder('{0}/database_static'.format(path))
+        lfs.make_folder('{0}/database_static/.history'.format(path))
 
 
     #######################################################################
@@ -117,7 +126,8 @@ class GitBackend(object):
 
 
     def handler_exists(self, key):
-        return self.fs.exists(key)
+        fs = self.get_handler_fs_by_key(key)
+        return fs.exists(key)
 
 
     def get_handler_names(self, key):
@@ -127,7 +137,8 @@ class GitBackend(object):
     def get_handler_data(self, key):
         if not key:
             return None
-        return self.fs.open(key).read()
+        fs = self.get_handler_fs_by_key(key)
+        return fs.open(key).read()
 
 
     def get_handler_mimetype(self, key):
@@ -136,15 +147,18 @@ class GitBackend(object):
 
 
     def handler_is_file(self, key):
-        return self.fs.is_file(key)
+        fs = self.get_handler_fs_by_key(key)
+        return fs.is_file(key)
 
 
     def handler_is_folder(self, key):
-        return self.fs.is_folder(key)
+        fs = self.get_handler_fs_by_key(key)
+        return fs.is_folder(key)
 
 
     def get_handler_mtime(self, key):
-        return self.fs.get_mtime(key)
+        fs = self.get_handler_fs_by_key(key)
+        return fs.get_mtime(key)
 
 
     def get_handler_infos(self, key):
@@ -163,10 +177,11 @@ class GitBackend(object):
 
     def save_handler(self, key, handler):
         # Save the file
-        if not self.fs.exists(key):
-            f = self.fs.make_file(key)
+        fs = self.get_handler_fs(handler)
+        if not fs.exists(key):
+            f = fs.make_file(key)
         else:
-            f = self.fs.open(key, 'w')
+            f = fs.open(key, 'w')
         try:
             data = handler.to_str()
             # Write and truncate (calls to "_save_state" must be done with the
@@ -181,30 +196,64 @@ class GitBackend(object):
         raise NotImplementedError
 
 
+    def get_handler_fs(self, handler):
+        if isinstance(handler, Metadata):
+            return self.fs
+        return self.static_fs
+
+
+    def get_handler_fs_by_key(self, key):
+        if key.endswith('metadata'):
+            return self.fs
+        return self.static_fs
+
+
+    def add_handler_into_static_history(self, key):
+        the_time = datetime.now().strftime('%Y%m%d%H%M%S')
+        new_key = '.history/{0}.{1}.{2}'.format(key, the_time, uuid4())
+        parent_path = dirname(new_key)
+        if not self.static_fs.exists(parent_path):
+            self.static_fs.make_folder(parent_path)
+        self.static_fs.copy(key, new_key)
+
+
     def do_transaction(self, commit_message, data, added, changed, removed, handlers):
-        worktree = self.worktree
-        # 1. Synchronize the handlers and the filesystem
-        for key in added:
+        # Synchronize the handlers and the filesystem
+        changed_and_removed = list(changed) + list(removed)
+        for key in changed_and_removed:
+            if not key.endswith('metadata'):
+                self.add_handler_into_static_history(key)
+        # Added and changed
+        added_and_changed = list(added) + list(changed)
+        for key in added_and_changed:
             handler = handlers.get(key)
             parent_path = dirname(key)
-            if not self.fs.exists(parent_path):
-                self.fs.make_folder(parent_path)
+            fs = self.get_handler_fs(handler)
+            if not fs.exists(parent_path):
+                fs.make_folder(parent_path)
             self.save_handler(key, handler)
+        for key in removed:
+            fs = self.get_handler_fs_by_key(key)
+            fs.remove(key)
+        # Do git transaction for metadata
+        self.do_git_transaction(commit_message, data, added, changed, removed, handlers)
 
-        for key in changed:
-            handler = handlers[key]
-            handler.save_state()
 
+
+    def do_git_transaction(self, commit_message, data, added, changed, removed, handlers):
+        worktree = self.worktree
         # 2. Build the 'git commit' command
         git_author, git_date, git_msg, docs_to_index, docs_to_unindex = data
         git_msg = git_msg or 'no comment'
 
         # 3. Git add
         git_add = list(added) + list(changed)
+        git_add = [x for x in git_add if x.endswith('metadata')]
         worktree.git_add(*git_add)
 
         # 3. Git rm
         git_rm = list(removed)
+        git_rm = [x for x in git_rm if x.endswith('metadata')]
         worktree.git_rm(*git_rm)
 
         # 4. Create the tree

@@ -177,8 +177,8 @@ class RWDatabase(RODatabase):
                 self.added.remove(key)
             else:
                 self.changed.discard(key)
-            # Changed
-            self.removed.add(key)
+                # Changed
+                self.removed.add(key)
             self.has_changed = True
             return
 

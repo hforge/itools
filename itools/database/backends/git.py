@@ -220,6 +220,10 @@ class GitBackend(object):
 
 
     def create_patch(self, added, changed, removed, handlers):
+        """ We create a patch into database/.git/patchs at each transaction.
+        The idea is to commit into GIT each N transactions on big databases to avoid performances problems.
+        We want to keep a diff on each transaction, to help debug.
+        """
         diffs = []
         # Added
         for key in added:
@@ -242,8 +246,14 @@ class GitBackend(object):
                 diff = difflib.unified_diff(before, after, fromfile=key, tofile=key)
                 diffs.append(''.join(diff))
         # Create patch
-        the_time = datetime.now().strftime('%Y%m%d%H%M%S')
-        patch_key = '.git/patchs/{0}.{1}'.format(the_time, uuid4())
+        base_path = datetime.now().strftime('.git/patchs/%Y%m%d/')
+        if not self.fs.exists(base_path):
+            self.fs.make_folder(base_path)
+        the_time = datetime.now().strftime('%Hh%Mm%Ss')
+        patch_key = '{base_path}/{the_time}.{uuid}.patch'.format(
+              base_path=base_path,
+              the_time=the_time,
+              uuid=uuid4())
         f = self.fs.open(patch_key, 'w')
         data = '\n'.join(diffs)
         f.write(data)

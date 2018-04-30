@@ -210,7 +210,8 @@ class RWDatabase(RODatabase):
         # Set database has changed
         self.has_changed = True
         # Set in changed list
-        self.changed.add(key)
+        if key not in self.added:
+            self.changed.add(key)
 
 
 

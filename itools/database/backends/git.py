@@ -16,6 +16,7 @@
 
 # Import from the Standard Library
 from datetime import datetime
+import difflib
 from heapq import heappush, heappop
 from os.path import abspath, dirname
 from uuid import uuid4
@@ -107,6 +108,7 @@ class GitBackend(object):
     def init_backend(cls, path, init=False, soft=False):
         # Metadata database
         init_repository('{0}/database'.format(path), bare=False)
+        lfs.make_folder('{0}/database/.git/patchs'.format(path))
         # Static database
         lfs.make_folder('{0}/database_static'.format(path))
         lfs.make_folder('{0}/database_static/.history'.format(path))
@@ -217,12 +219,45 @@ class GitBackend(object):
         self.static_fs.copy(key, new_key)
 
 
+    def create_patch(self, added, changed, removed, handlers):
+        diffs = []
+        # Added
+        for key in added:
+            if key.endswith('.metadata'):
+                after = handlers.get(key).to_str().splitlines(True)
+                diff = difflib.unified_diff('', after, fromfile=key, tofile=key)
+                diffs.append(''.join(diff))
+        # Changed
+        for key in changed:
+            if key.endswith('.metadata'):
+                before = self.fs.open(key).read().splitlines(True)
+                after = handlers.get(key).to_str().splitlines(True)
+                diff = difflib.unified_diff(before, after, fromfile=key, tofile=key)
+                diffs.append(''.join(diff))
+        # Removed
+        for key in removed:
+            if key.endswith('.metadata'):
+                before = self.fs.open(key).read().splitlines(True)
+                after = ''
+                diff = difflib.unified_diff(before, after, fromfile=key, tofile=key)
+                diffs.append(''.join(diff))
+        # Create patch
+        the_time = datetime.now().strftime('%Y%m%d%H%M%S')
+        patch_key = '.git/patchs/{0}.{1}'.format(the_time, uuid4())
+        f = self.fs.open(patch_key, 'w')
+        data = '\n'.join(diffs)
+        f.write(data)
+        f.truncate(f.tell())
+
+
     def do_transaction(self, commit_message, data, added, changed, removed, handlers):
-        # Synchronize the handlers and the filesystem
+        # Add static changed & removed files to ~/database_static/.history/
         changed_and_removed = list(changed) + list(removed)
         for key in changed_and_removed:
             if not key.endswith('metadata'):
                 self.add_handler_into_static_history(key)
+        # Create patch
+        self.create_patch(added, changed, removed, handlers)
         # Added and changed
         added_and_changed = list(added) + list(changed)
         for key in added_and_changed:
@@ -242,91 +277,33 @@ class GitBackend(object):
 
     def do_git_transaction(self, commit_message, data, added, changed, removed, handlers):
         worktree = self.worktree
-        # 2. Build the 'git commit' command
-        git_author, git_date, git_msg, docs_to_index, docs_to_unindex = data
-        git_msg = git_msg or 'no comment'
-
         # 3. Git add
         git_add = list(added) + list(changed)
         git_add = [x for x in git_add if x.endswith('metadata')]
         worktree.git_add(*git_add)
-
         # 3. Git rm
         git_rm = list(removed)
         git_rm = [x for x in git_rm if x.endswith('metadata')]
         worktree.git_rm(*git_rm)
-
+        # 2. Build the 'git commit' command
+        git_author, git_date, git_msg, docs_to_index, docs_to_unindex = data
+        git_msg = git_msg or 'no comment'
         # 4. Create the tree
         repo = worktree.repo
         index = repo.index
-        try:
-            head = repo.revparse_single('HEAD')
-        except KeyError:
-            git_tree = None
-        else:
-            root = head.tree
-            # Initialize the heap
-            heap = Heap()
-            heap[''] = repo.TreeBuilder(root)
-            for key in git_add:
-                entry = index[key]
-                heap[key] = (entry.oid, entry.mode)
-            for key in removed:
-                heap[key] = None
-
-            while heap:
-                path, value = heap.popitem()
-                # Stop condition
-                if path == '':
-                    git_tree = value.write()
-                    break
-
-                if type(value) is TreeBuilder:
-                    if len(value) == 0:
-                        value = None
-                    else:
-                        oid = value.write()
-                        value = (oid, GIT_FILEMODE_TREE)
-
-                # Split the path
-                if '/' in path:
-                    parent, name = path.rsplit('/', 1)
-                else:
-                    parent = ''
-                    name = path
-
-                # Get the tree builder
-                tb = heap.get(parent)
-                if tb is None:
-                    try:
-                        tentry = root[parent]
-                    except KeyError:
-                        tb = repo.TreeBuilder()
-                    else:
-                        tree = repo[tentry.oid]
-                        tb = repo.TreeBuilder(tree)
-                    heap[parent] = tb
-
-                # Modify
-                if value is None:
-                    # Sometimes there are empty folders left in the
-                    # filesystem, but not in the tree, then we get a
-                    # "Failed to remove entry" error.  Be robust.
-                    if tb.get(name) is not None:
-                        tb.remove(name)
-                else:
-                    tb.insert(name, value[0], value[1])
-
+        git_tree = index.write_tree()
         # 5. Git commit
         worktree.git_commit(git_msg, git_author, git_date, tree=git_tree)
 
 
     def abort_transaction(self):
-        strategy = GIT_CHECKOUT_FORCE | GIT_CHECKOUT_REMOVE_UNTRACKED
-        if pygit2.__version__ >= '0.21.1':
-            self.worktree.repo.checkout_head(strategy=strategy)
-        else:
-            self.worktree.repo.checkout_head(strategy)
+        pass
+        # Don't need to abort since git add is made à last minute
+        #strategy = GIT_CHECKOUT_FORCE | GIT_CHECKOUT_REMOVE_UNTRACKED
+        #if pygit2.__version__ >= '0.21.1':
+        #    self.worktree.repo.checkout_head(strategy=strategy)
+        #else:
+        #    self.worktree.repo.checkout_head(strategy)
 
 
 register_backend('git', GitBackend)

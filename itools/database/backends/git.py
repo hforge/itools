@@ -224,27 +224,27 @@ class GitBackend(object):
         The idea is to commit into GIT each N transactions on big databases to avoid performances problems.
         We want to keep a diff on each transaction, to help debug.
         """
-        diffs = []
+        diffs = {}
         # Added
         for key in added:
             if key.endswith('.metadata'):
                 after = handlers.get(key).to_str().splitlines(True)
                 diff = difflib.unified_diff('', after, fromfile=key, tofile=key)
-                diffs.append(''.join(diff))
+                diffs[key] = ''.join(diff)
         # Changed
         for key in changed:
             if key.endswith('.metadata'):
                 before = self.fs.open(key).read().splitlines(True)
                 after = handlers.get(key).to_str().splitlines(True)
                 diff = difflib.unified_diff(before, after, fromfile=key, tofile=key)
-                diffs.append(''.join(diff))
+                diffs[key] = ''.join(diff)
         # Removed
         for key in removed:
             if key.endswith('.metadata'):
                 before = self.fs.open(key).read().splitlines(True)
                 after = ''
                 diff = difflib.unified_diff(before, after, fromfile=key, tofile=key)
-                diffs.append(''.join(diff))
+                diffs[key] = ''.join(diff)
         # Create patch
         base_path = datetime.now().strftime('.git/patchs/%Y%m%d/')
         if not self.fs.exists(base_path):
@@ -255,7 +255,7 @@ class GitBackend(object):
               the_time=the_time,
               uuid=uuid4())
         f = self.fs.open(patch_key, 'w')
-        data = '\n'.join(diffs)
+        data = '\n'.join([diffs[x] for x in sorted(diffs.keys())])
         f.write(data)
         f.truncate(f.tell())
 

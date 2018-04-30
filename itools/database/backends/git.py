@@ -219,11 +219,12 @@ class GitBackend(object):
         self.static_fs.copy(key, new_key)
 
 
-    def create_patch(self, added, changed, removed, handlers):
+    def create_patch(self, added, changed, removed, handlers, git_author):
         """ We create a patch into database/.git/patchs at each transaction.
         The idea is to commit into GIT each N transactions on big databases to avoid performances problems.
         We want to keep a diff on each transaction, to help debug.
         """
+        author_id, author_email = git_author
         diffs = {}
         # Added
         for key in added:
@@ -250,24 +251,26 @@ class GitBackend(object):
         if not self.fs.exists(base_path):
             self.fs.make_folder(base_path)
         the_time = datetime.now().strftime('%Hh%Mm%Ss')
-        patch_key = '{base_path}/{the_time}.{uuid}.patch'.format(
+        patch_key = '{base_path}/{the_time}-user{author_id}-{uuid}.patch'.format(
               base_path=base_path,
+              author_id=author_id,
               the_time=the_time,
               uuid=uuid4())
         f = self.fs.open(patch_key, 'w')
-        data = '\n'.join([diffs[x] for x in sorted(diffs.keys())])
+        data = ''.join([diffs[x] for x in sorted(diffs.keys())])
         f.write(data)
         f.truncate(f.tell())
 
 
     def do_transaction(self, commit_message, data, added, changed, removed, handlers):
+        git_author, git_date, git_msg, docs_to_index, docs_to_unindex = data
         # Add static changed & removed files to ~/database_static/.history/
         changed_and_removed = list(changed) + list(removed)
         for key in changed_and_removed:
             if not key.endswith('metadata'):
                 self.add_handler_into_static_history(key)
         # Create patch
-        self.create_patch(added, changed, removed, handlers)
+        self.create_patch(added, changed, removed, handlers, git_author)
         # Added and changed
         added_and_changed = list(added) + list(changed)
         for key in added_and_changed:

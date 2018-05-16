@@ -280,9 +280,11 @@ class GitBackend(object):
             if not fs.exists(parent_path):
                 fs.make_folder(parent_path)
             self.save_handler(key, handler)
+        # Remove files (if not removed via git-rm)
         for key in removed:
-            fs = self.get_handler_fs_by_key(key)
-            fs.remove(key)
+            if not key.endswith('metadata'):
+                fs = self.get_handler_fs_by_key(key)
+                fs.remove(key)
         # Do git transaction for metadata
         self.do_git_transaction(commit_message, data, added, changed, removed, handlers)
 
@@ -310,13 +312,12 @@ class GitBackend(object):
 
 
     def abort_transaction(self):
-        pass
         # Don't need to abort since git add is made à last minute
-        #strategy = GIT_CHECKOUT_FORCE | GIT_CHECKOUT_REMOVE_UNTRACKED
-        #if pygit2.__version__ >= '0.21.1':
-        #    self.worktree.repo.checkout_head(strategy=strategy)
-        #else:
-        #    self.worktree.repo.checkout_head(strategy)
+        strategy = GIT_CHECKOUT_FORCE | GIT_CHECKOUT_REMOVE_UNTRACKED
+        if pygit2.__version__ >= '0.21.1':
+            self.worktree.repo.checkout_head(strategy=strategy)
+        else:
+            self.worktree.repo.checkout_head(strategy)
 
 
 register_backend('git', GitBackend)

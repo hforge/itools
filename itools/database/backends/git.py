@@ -306,7 +306,63 @@ class GitBackend(object):
         # 4. Create the tree
         repo = worktree.repo
         index = repo.index
-        git_tree = index.write_tree()
+        try:
+            head = repo.revparse_single('HEAD')
+        except KeyError:
+            git_tree = None
+        else:
+            root = head.tree
+            # Initialize the heap
+            heap = Heap()
+            heap[''] = repo.TreeBuilder(root)
+            for key in git_add:
+                entry = index[key]
+                heap[key] = (entry.oid, entry.mode)
+            for key in git_rm:
+                heap[key] = None
+
+            while heap:
+                path, value = heap.popitem()
+                # Stop condition
+                if path == '':
+                    git_tree = value.write()
+                    break
+
+                if type(value) is TreeBuilder:
+                    if len(value) == 0:
+                        value = None
+                    else:
+                        oid = value.write()
+                        value = (oid, GIT_FILEMODE_TREE)
+
+                # Split the path
+                if '/' in path:
+                    parent, name = path.rsplit('/', 1)
+                else:
+                    parent = ''
+                    name = path
+
+                # Get the tree builder
+                tb = heap.get(parent)
+                if tb is None:
+                    try:
+                        tentry = root[parent]
+                    except KeyError:
+                        tb = repo.TreeBuilder()
+                    else:
+                        tree = repo[tentry.oid]
+                        tb = repo.TreeBuilder(tree)
+                    heap[parent] = tb
+
+                # Modify
+                if value is None:
+                    # Sometimes there are empty folders left in the
+                    # filesystem, but not in the tree, then we get a
+                    # "Failed to remove entry" error.  Be robust.
+                    if tb.get(name) is not None:
+                        tb.remove(name)
+                else:
+                    tb.insert(name, value[0], value[1])
         # 5. Git commit
         worktree.git_commit(git_msg, git_author, git_date, tree=git_tree)
 

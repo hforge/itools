@@ -249,9 +249,10 @@ def read_cookie_parameter(data):
 class Cookie(object):
     __hash__ = None
 
-    def __init__(self, value, comment=None, domain=None, max_age=None,
+    def __init__(self, name, value, comment=None, domain=None, max_age=None,
                  path=None, secure=None, version=None, commenturl=None,
                  discard=None, port=None, expires=None):
+        self.name = name
         self.value = value
         # Parameters (RFC 2109)
         self.comment = comment
@@ -322,7 +323,7 @@ class CookieDataType(DataType):
         index = 0
         while index < n:
             cookie_name, cookie_value = parameters[index]
-            cookie = Cookie(cookie_value)
+            cookie = Cookie(cookie_name, cookie_value)
             cookies[cookie_name] = cookie
             # Next
             index += 1
@@ -357,53 +358,50 @@ class CookieDataType(DataType):
 
 class SetCookieDataType(DataType):
 
+    # FIXME: Didn't works
+    #@staticmethod
+    #def decode(data):
+    #    cookies = {}
+    #    # Cookie
+    #    cookie, data = read_cookie_parameter(data)
+    #    name, value = cookie
+    #    # White Space
+    #    white, data = read_white_space(data)
+    #    # Parameters
+    #    parameters, data = read_parameters(data, read_cookie_parameter)
+
+    #    # FIXME There may be more cookies (comma separated)
+    #    cookies[name] = Cookie(value, **parameters)
+    #    if data:
+    #        raise ValueError('unexpected string "%s"' % data)
+
+    #    return cookies
+
+
     @staticmethod
-    def decode(data):
-        cookies = {}
-        # Cookie
-        cookie, data = read_cookie_parameter(data)
-        name, value = cookie
-        # White Space
-        white, data = read_white_space(data)
-        # Parameters
-        parameters, data = read_parameters(data, read_cookie_parameter)
-
-        # FIXME There may be more cookies (comma separated)
-        cookies[name] = Cookie(value, **parameters)
-        if data:
-            raise ValueError('unexpected string "%s"' % data)
-
-        return cookies
-
-
-    @staticmethod
-    def encode(cookies):
-        output = []
-        for name in cookies:
-            cookie = cookies[name]
-            aux = []
-            aux.append('%s="%s"' % (name, cookie.value))
-            # The parameters
-            expires = cookie.expires
-            if expires is not None:
-                if isinstance(expires, datetime):
-                    expires = HTTPDate.encode(expires)
-                aux.append('expires=%s' % expires)
-            if cookie.domain is not None:
-                aux.append('domain=%s' % cookie.domain)
-            if cookie.path is not None:
-                aux.append('path=%s' % cookie.path)
-            else:
-                aux.append('path=/')
-            if cookie.max_age is not None:
-                aux.append('max-age="%s"' % cookie.max_age)
-            if cookie.comment is not None:
-                aux.append('comment="%s"' % cookie.comment)
-            if cookie.secure is not None:
-                aux.append('secure="%s"' % cookie.secure)
-            # The value
-            output.append('; '.join(aux))
-        return ', '.join(output)
+    def encode(cookie):
+        aux = []
+        aux.append('%s="%s"' % (cookie.name, cookie.value))
+        # The parameters
+        expires = cookie.expires
+        if expires is not None:
+            if isinstance(expires, datetime):
+                expires = HTTPDate.encode(expires)
+            aux.append('expires=%s' % expires)
+        if cookie.domain is not None:
+            aux.append('domain=%s' % cookie.domain)
+        if cookie.path is not None:
+            aux.append('path=%s' % cookie.path)
+        else:
+            aux.append('path=/')
+        if cookie.max_age is not None:
+            aux.append('max-age="%s"' % cookie.max_age)
+        if cookie.comment is not None:
+            aux.append('comment="%s"' % cookie.comment)
+        if cookie.secure is not None:
+            aux.append('secure="%s"' % cookie.secure)
+        # The value
+        return '; '.join(aux)
 
 
 

@@ -163,21 +163,8 @@ class GitBackend(object):
         return fs.get_mtime(key)
 
 
-    def get_handler_infos(self, key):
-        exists = self.handler_exists(key)
-        if exists:
-            is_folder = self.handler_is_folder(key)
-            if is_folder:
-                data = None
-            else:
-                data = self.get_handler_data(key)
-        else:
-            is_folder = False
-            data = None
-        return exists, is_folder, data
-
-
     def save_handler(self, key, handler):
+        data = handler.to_str()
         # Save the file
         fs = self.get_handler_fs(handler)
         if not fs.exists(key):
@@ -185,7 +172,6 @@ class GitBackend(object):
         else:
             f = fs.open(key, 'w')
         try:
-            data = handler.to_str()
             # Write and truncate (calls to "_save_state" must be done with the
             # pointer pointing to the beginning)
             f.write(data)

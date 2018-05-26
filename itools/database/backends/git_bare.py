@@ -194,22 +194,6 @@ class GitBareBackend(object):
         return datetime.utcnow().replace(tzinfo=fixed_offset(0))
 
 
-    def get_handler_infos(self, key):
-        exists = is_folder = False
-        data = None
-        try:
-            tree = self.repo.head.peel(GIT_OBJ_TREE)
-            tree_entry = tree[key]
-        except:
-            pass
-        else:
-            exists = True
-            is_folder = tree_entry.type == 'tree'
-            if not is_folder:
-                data = self.repo[tree_entry.id].data
-        return exists, is_folder, data
-
-
     def traverse_resources(self):
         tree = self.repo.head.peel(GIT_OBJ_TREE)
         yield self.get_resource('/')

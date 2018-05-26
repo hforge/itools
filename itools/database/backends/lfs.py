@@ -53,8 +53,6 @@ class LFSBackend(object):
     def get_handler_data(self, key):
         if not key:
             return None
-        if not self.fs.exists(key):
-            return None
         return self.fs.open(key).read()
 
 
@@ -72,20 +70,6 @@ class LFSBackend(object):
 
     def get_handler_mtime(self, key):
         return self.fs.get_mtime(key)
-
-
-    def get_handler_infos(self, key):
-        exists = self.handler_exists(key)
-        if exists:
-            is_folder = self.handler_is_folder(key)
-            if is_folder:
-                data = None
-            else:
-                data = self.get_handler_data(key)
-        else:
-            is_folder = False
-            data = None
-        return exists, is_folder, data
 
 
     def save_handler(self, key, handler):

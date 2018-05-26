@@ -218,24 +218,16 @@ class RODatabase(object):
 
     def get_handler_class(self, key):
         mimetype = self.get_mimetype(key)
-        try:
-            return get_handler_class_by_mimetype(mimetype)
-        except ValueError:
-            log_warning('unknown handler class "{0}"'.format(mimetype))
-            if self.backend.handler_is_file(key):
-                from itools.handlers import File
-                return File
-            elif self.backend.handler_is_folder(key):
-                from itools.handlers import Folder
-                return Folder
-        raise ValueError
+        return get_handler_class_by_mimetype(mimetype)
 
 
     def _get_handler(self, key, cls=None, soft=False):
         # Get resource
         if key in self.removed:
             return None
-
+        # Folders are not cached
+        if cls is Folder:
+            return Folder(key, database=self)
         # Synchronize
         handler = self.cache.get(key)
         if handler is not None:
@@ -248,32 +240,29 @@ class RODatabase(object):
             return handler
 
         # Check the resource exists
-        exists, is_folder, data = self.backend.get_handler_infos(key)
-        if not exists:
+        try:
+            data = self.backend.get_handler_data(key)
+        except:
+            # Do not exists
             if soft:
                 return None
-            raise LookupError, 'the resource "%s" does not exist' % key
+            raise LookupError('the resource "{0}" does not exist'.format(key))
 
-        # Folders are not cached
-        if is_folder:
-            handler = Folder(key, database=self)
-        else:
-            # Cache miss
-            if cls is None:
-                cls = self.get_handler_class(key)
-            # Build the handler and update the cache
-            handler = object.__new__(cls)
+        # Cache miss
+        if cls is None:
+            cls = self.get_handler_class(key)
+        # Build the handler and update the cache
+        handler = object.__new__(cls)
         # Put handler in cache
         self.push_handler(key, handler)
-        if not is_folder:
-            # Load handler data
-            # FIXME We should reset handler state on errors
-            try:
-                handler.load_state_from_string(data)
-            except Exception:
-                # Remove handler from cache if cannot load it
-                self._discard_handler(key)
-                raise
+        # Load handler data
+        # FIXME We should reset handler state on errors
+        try:
+            handler.load_state_from_string(data)
+        except Exception:
+            # Remove handler from cache if cannot load it
+            self._discard_handler(key)
+            raise
 
         # Ok
         return handler

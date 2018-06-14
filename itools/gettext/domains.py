@@ -97,6 +97,7 @@ msg_formatter = MSGFormatter()
 class MSG(object):
 
     domain = None
+    message = None
     format = 'replace'
 
     def __init__(self, message=None, **kw):

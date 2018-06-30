@@ -30,7 +30,7 @@ from tarfile import open as open_tar
 # Import from itools
 import itools
 from itools.core import vmsize, get_time_spent
-from itools.fs import vfs, lfs
+from itools.fs import lfs
 
 
 #####################################################################
@@ -141,10 +141,10 @@ def get_test_filenames(test_path, force_download):
             if lfs.exists(compressed_dest) is False:
                 src = join(base_uri, '%s%s' % (name, ext))
                 print 'GET %s file' % src
-                if vfs.exists(src) is False:
+                if lfs.exists(src) is False:
                     print "%s uri does not exists" % src
                     continue
-                src_file = vfs.open(src)
+                src_file = lfs.open(src)
                 # save Gzip file
                 compressed_dest_file = lfs.make_file(compressed_dest)
                 compressed_dest_file.write(src_file.read())

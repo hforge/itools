@@ -20,16 +20,10 @@
 # Import from itools
 from common import READ, WRITE, READ_WRITE, APPEND, FileName
 from lfs import lfs
-from vfs import vfs
-
-# Import from gio
-from gi.repository.GLib import GError
-
 
 
 __all__ = [
     'lfs',
-    'vfs',
     # Datatypes
     'FileName',
     # File modes
@@ -37,6 +31,4 @@ __all__ = [
     'WRITE',
     'READ_WRITE',
     'APPEND',
-    # Exceptions
-    'GError'
     ]

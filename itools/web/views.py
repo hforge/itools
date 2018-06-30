@@ -206,9 +206,11 @@ class ItoolsView(prototype):
 
 
     def on_form_error(self, resource, context):
-        content_type, type_parameters = context.get_header('content-type')
-        if content_type == 'application/json':
-            return self.on_form_error_json(resource, context)
+        content_type = context.get_header('content-type')
+        if content_type:
+            content_type, type_parameters = content_type
+            if content_type == 'application/json':
+                return self.on_form_error_json(resource, context)
         return self.on_form_error_default(resource, context)
 
 

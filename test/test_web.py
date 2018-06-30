@@ -97,31 +97,31 @@ class CookieTestCase(TestCase):
         # Client requests a document, and receives in the response:
         a = ('CUSTOMER=WILE_E_COYOTE; path=/; expires=Wednesday,'
              ' 09-Nov-99 23:12:40 GMT')
-        b = {'customer': Cookie('WILE_E_COYOTE', path='/',
+        b = {'customer': Cookie('customer', 'WILE_E_COYOTE', path='/',
                                 expires='Wednesday, 09-Nov-99 23:12:40 GMT')}
         self.assertEqual(SetCookieDataType.decode(a), b)
         # When client requests a URL in path "/" on this server, it sends:
         a = 'CUSTOMER=WILE_E_COYOTE'
-        b = {'customer': Cookie('WILE_E_COYOTE')}
+        b = {'customer': Cookie('customer', 'WILE_E_COYOTE')}
         self.assertEqual(CookieDataType.decode(a), b)
         # Client requests a document, and receives in the response:
         a = 'PART_NUMBER=ROCKET_LAUNCHER_0001; path=/'
-        b = {'part_number': Cookie('ROCKET_LAUNCHER_0001', path='/')}
+        b = {'part_number': Cookie('customer', 'ROCKET_LAUNCHER_0001', path='/')}
         self.assertEqual(SetCookieDataType.decode(a), b)
         # When client requests a URL in path "/" on this server, it sends:
         a = 'CUSTOMER=WILE_E_COYOTE; PART_NUMBER=ROCKET_LAUNCHER_0001'
-        b = {'customer': Cookie('WILE_E_COYOTE'),
-             'part_number': Cookie('ROCKET_LAUNCHER_0001')}
+        b = {'customer': Cookie('customer', 'WILE_E_COYOTE'),
+             'part_number': Cookie('part_number', 'ROCKET_LAUNCHER_0001')}
         self.assertEqual(CookieDataType.decode(a), b)
         # Client receives:
         a = 'SHIPPING=FEDEX; path=/foo'
-        b = {'shipping': Cookie('FEDEX', path='/foo')}
+        b = {'shipping': Cookie('shipping', 'FEDEX', path='/foo')}
         self.assertEqual(SetCookieDataType.decode(a), b)
         # When client requests a URL in path "/foo" on this server, it sends:
         a = 'CUSTOMER=WILE_E_COYOTE; PART_NUMBER=ROCKET_LAUNCHER_0001; SHIPPING=FEDEX'
-        b = {'customer': Cookie('WILE_E_COYOTE'),
-             'part_number': Cookie('ROCKET_LAUNCHER_0001'),
-             'shipping': Cookie('FEDEX')}
+        b = {'customer': Cookie('customer', 'WILE_E_COYOTE'),
+             'part_number': Cookie('part_number', 'ROCKET_LAUNCHER_0001'),
+             'shipping': Cookie('shipping', 'FEDEX')}
         self.assertEqual(CookieDataType.decode(a), b)
 
 
@@ -132,13 +132,13 @@ class CookieTestCase(TestCase):
         cookie = '__utma=148580960.1549592533.1131137049.1200608996.1200962259.202; __qca=1193853942-44919481-52504193; __utmz=148580960.1196124914.184.2.utmccn=(organic)|utmcsr=google|utmctr=lorum+generator|utmcmd=organic; __qcb=689621141; __utmc=148580960; T3CK=TANT%3D1%7CTANO%3D0; __utma=148580960.1549592533.1131137049.1140634832.1140725853.67'
 
         expected = {
-            '__utma': Cookie('148580960.1549592533.1131137049.1200608996.1200962259.202'),
-            '__qca': Cookie('1193853942-44919481-52504193'),
-            '__utmz': Cookie('148580960.1196124914.184.2.utmccn=(organic)|utmcsr=google|utmctr=lorum+generator|utmcmd=organic'),
-            '__qcb': Cookie('689621141'),
-            '__utmc': Cookie('148580960'),
-            't3ck': Cookie('TANT%3D1%7CTANO%3D0'),
-            '__utma': Cookie('148580960.1549592533.1131137049.1140634832.1140725853.67')}
+            '__utma': Cookie('__utma', '148580960.1549592533.1131137049.1200608996.1200962259.202'),
+            '__qca': Cookie('__qca', '1193853942-44919481-52504193'),
+            '__utmz': Cookie('__utmz', '148580960.1196124914.184.2.utmccn=(organic)|utmcsr=google|utmctr=lorum+generator|utmcmd=organic'),
+            '__qcb': Cookie('__qcb', '689621141'),
+            '__utmc': Cookie('__utmc', '148580960'),
+            't3ck': Cookie('t3ck', 'TANT%3D1%7CTANO%3D0'),
+            '__utma': Cookie('__utma', '148580960.1549592533.1131137049.1140634832.1140725853.67')}
 
         self.assertEqual(CookieDataType.decode(cookie), expected)
 
@@ -148,19 +148,19 @@ class CookieTestCase(TestCase):
     #######################################################################
     def test_last_is_empty(self):
         cookie = 'areYourCookiesEnabled='
-        expected = {'areyourcookiesenabled': Cookie('')}
+        expected = {'areyourcookiesenabled': Cookie('areyourcookiesenabled', '')}
         self.assertEqual(CookieDataType.decode(cookie), expected)
 
 
     def test_ends_with_semicolon(self):
         cookie = 'language="en";'
-        expected = {'language': Cookie('en')}
+        expected = {'language': Cookie('language', 'en')}
         self.assertEqual(CookieDataType.decode(cookie), expected)
 
 
     def test_garbage(self):
         cookie = 'a=1; toto; b=2'
-        expected = {'a': Cookie('1'), 'b': Cookie('2')}
+        expected = {'a': Cookie('a', '1'), 'b': Cookie('b', '2')}
         self.assertEqual(CookieDataType.decode(cookie), expected)
 
 

@@ -100,11 +100,12 @@ class MSG(object):
     message = None
     format = 'replace'
 
-    def __init__(self, message=None, **kw):
+    def __init__(self, message=None, format=None):
         if self.domain is None:
             domain = _getframe(1).f_globals.get('__name__')
             self.domain = domain.split('.', 1)[0]
-
+        if format:
+            self.format = format
         if message:
             self.message = message
 

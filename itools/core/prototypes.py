@@ -179,7 +179,9 @@ class proto_lazy_property(lazy):
 
 def is_prototype(value, cls):
     from itools.gettext import MSG
-    if cls is MSG and isinstance(value, MSG):
-        print("Warning: is_prototype(xxx, MSG) is obsolete. MSG is not a prototype anymore")
-        return True
+    from itools.web import INFO, ERROR
+    for c in [MSG, INFO, ERROR]:
+        if cls is c and isinstance(value, c):
+            print("Warning: is_prototype(xxx, MSG) is obsolete. MSG is not a prototype anymore")
+            return True
     return issubclass(type(value), prototype_type) and issubclass(value, cls)

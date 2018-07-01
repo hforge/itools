@@ -159,12 +159,13 @@ class RWDatabase(RODatabase):
         if self._get_handler(key, soft=True) is not None:
             raise RuntimeError, MSG_URI_IS_BUSY % key
 
-        self.push_handler(key, handler)
         # Added or modified ?
-        if self.has_handler(key):
+        if key not in self.added and self.has_handler(key):
             self.changed.add(key)
         else:
             self.added.add(key)
+        # Push in cache
+        self.push_handler(key, handler)
         # Changed
         self.removed.discard(key)
         self.has_changed = True

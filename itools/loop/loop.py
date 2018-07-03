@@ -40,6 +40,7 @@ else:
 
 def _cron(callback, interval):
     while True:
+        interval = total_seconds(interval)
         sleep(interval)
         interval = callback()
         if not interval:
@@ -55,5 +56,4 @@ def cron(callback, interval):
     if interval == 0:
         error = "cron: your timedelta has a too small resolution (< 1s)"
         raise ValueError(error)
-    interval = total_seconds(interval)
     Greenlet.spawn(_cron, callback, interval)

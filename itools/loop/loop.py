@@ -41,15 +41,16 @@ else:
 def _cron(callback, interval):
     while True:
         sleep(interval)
-        callback()
+        interval = callback()
+        if not interval:
+            break
 
 
 
-def cron(callback, interval, *args):
+def cron(callback, interval):
     """Add new cronjob.
        callback -- the callable to run.
        interval -- timedelta specifying when the cronjob will be called.
-       args -- payload that will be passed to the callable on each call.
     """
     if interval == 0:
         error = "cron: your timedelta has a too small resolution (< 1s)"

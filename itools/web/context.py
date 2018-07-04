@@ -40,6 +40,8 @@ g = local()
 
 
 def set_context(ctx):
+    if ctx and get_context() != None:
+        raise ValueError('Cannot set context')
     g.context = ctx
 
 

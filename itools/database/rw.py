@@ -230,7 +230,10 @@ class RWDatabase(RODatabase):
         names = super(RWDatabase, self).get_handler_names(key)
         names = set(names)
         # In added
-        base = key + '/'
+        if key:
+            base = key + '/'
+        else:
+            base = ''
         n = len(base)
         for f_key in self.added:
             if f_key[:n] == base:

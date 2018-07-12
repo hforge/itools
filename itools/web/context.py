@@ -172,7 +172,7 @@ class WebLogger(Logger):
         # Request header
         lines.append(context.get_request_line() + '\n')
         headers = context.get_headers()
-        for key, value in headers.items():
+        for key, value in headers:
             lines.append('%s: %s\n' % (key, value))
         lines.append('\n')
 

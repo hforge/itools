@@ -25,7 +25,7 @@ from marshal import dumps, loads
 from hashlib import sha1
 
 # Import from xapian
-from xapian import Database, WritableDatabase, DB_CREATE, DB_OPEN, DB_BACKEND_CHERT
+from xapian import Database, WritableDatabase, DB_OPEN
 from xapian import Document, Query, QueryParser, Enquire
 from xapian import sortable_serialise, sortable_unserialise, TermGenerator
 
@@ -40,10 +40,15 @@ from queries import RangeQuery, StartQuery, TextQuery, _MultipleQuery
 
 try:
     from xapian import MultiValueSorter
+    from xapian import DB_CREATE
     XAPIAN_VERSION = '1.2'
+    XAPIAN_BACKEND = DB_CREATE
 except:
+    # FIXME GLASS backend seems to be buggy in 1.4 branch
     from xapian import MultiValueKeyMaker
+    from xapian import DB_BACKEND_CHERT
     XAPIAN_VERSION = '1.4'
+    XAPIAN_BACKEND = DB_BACKEND_CHERT
 
 
 
@@ -715,9 +720,7 @@ def make_catalog(uri, fields):
                 'name': Unicode(indexed=True), ...}
     """
     path = lfs.get_absolute_path(uri)
-    db = WritableDatabase(path, DB_BACKEND_CHERT)
-    # FIXME GLASS backend seems to be buggy
-    # db = WritableDatabase(path, DB_CREATE)
+    db = WritableDatabase(path, XAPIAN_BACKEND)
     return Catalog(db, fields)
 
 

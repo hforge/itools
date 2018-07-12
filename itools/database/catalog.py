@@ -438,9 +438,15 @@ class Catalog(object):
             self._db = None
             return
         if self.commit_each_transaction:
-            self._db.cancel_transaction()
-            self._db.close()
-            self._db = None
+            try:
+                self._db.cancel_transaction()
+            except:
+                print('Warning: cannot cancel xapian transaction')
+                self._db.close()
+                self._db = None
+            else:
+                self._db.close()
+                self._db = None
         else:
             self.abort_changes()
             self._db.commit_transaction()

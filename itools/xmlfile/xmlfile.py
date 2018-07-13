@@ -60,7 +60,6 @@ class XMLFile(TextFile):
 
 
     def load_state_from_string(self, string):
-        self.set_changed()
         self.reset()
         stream = XMLParser(string)
         self.events = list(stream)

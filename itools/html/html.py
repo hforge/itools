@@ -59,7 +59,6 @@ class HTMLFile(XHTMLFile):
 
 
     def load_state_from_string(self, string):
-        self.set_changed()
         self.reset()
         stream = HTMLParser(string)
         self.events = list(stream)

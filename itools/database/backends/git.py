@@ -16,7 +16,7 @@
 
 # Import from the Standard Library
 from datetime import datetime
-import difflib
+import difflib, os
 from heapq import heappush, heappop
 from os.path import abspath, dirname
 from uuid import uuid4
@@ -34,6 +34,9 @@ from itools.fs import lfs
 
 # Import from here
 from registry import register_backend
+
+
+TEST_DB_WITHOUT_COMMITS = bool(int(os.environ.get('TEST_DB_WITHOUT_COMMITS') or 0))
 
 
 class Heap(object):
@@ -268,11 +271,12 @@ class GitBackend(object):
             self.save_handler(key, handler)
         # Remove files (if not removed via git-rm)
         for key in removed:
-            if not key.endswith('metadata'):
+            if not key.endswith('metadata') or TEST_DB_WITHOUT_COMMITS:
                 fs = self.get_handler_fs_by_key(key)
                 fs.remove(key)
         # Do git transaction for metadata
-        self.do_git_transaction(commit_message, data, added, changed, removed, handlers)
+        if not TEST_DB_WITHOUT_COMMITS:
+            self.do_git_transaction(commit_message, data, added, changed, removed, handlers)
 
 
 

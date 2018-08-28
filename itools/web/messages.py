@@ -29,9 +29,11 @@ class INFO(MSG):
 
     def _format(self, message, **kw):
         if self.format == 'stl':
+            namespace = kw
+            namespace['css'] = self.css
             events = XMLParser(message.encode('utf_8'),
                                namespaces=stl_namespaces)
-            return stl(events=events, namespace=self)
+            return stl(events=events, namespace=namespace)
 
         return super(INFO, self)._format(message, **kw)
 

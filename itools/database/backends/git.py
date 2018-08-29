@@ -18,6 +18,7 @@
 from datetime import datetime
 import difflib, os
 from heapq import heappush, heappop
+from multiprocessing import Process
 from os.path import abspath, dirname
 from uuid import uuid4
 
@@ -91,6 +92,7 @@ class Heap(object):
 class GitBackend(object):
 
     def __init__(self, path):
+        self.nb_transactions = 0
         self.path = abspath(path) + '/'
         # Open database
         self.path_data = '%s/database/' % self.path
@@ -253,6 +255,7 @@ class GitBackend(object):
 
     def do_transaction(self, commit_message, data, added, changed, removed, handlers):
         git_author, git_date, git_msg, docs_to_index, docs_to_unindex = data
+        self.nb_transactions += 1
         # Add static changed & removed files to ~/database_static/.history/
         changed_and_removed = list(changed) + list(removed)
         for key in changed_and_removed:
@@ -277,7 +280,23 @@ class GitBackend(object):
         # Do git transaction for metadata
         if not TEST_DB_WITHOUT_COMMITS:
             self.do_git_transaction(commit_message, data, added, changed, removed, handlers)
+        else:
+            if self.nb_transactions % 50 == 0:
+                self.do_git_big_commit()
 
+
+    def do_git_big_commit(self):
+        """ Some databases are really bigs (1 millions files). GIT is too slow in this cases.
+        So we don't commit at each transaction, but at each N transactions.
+        """
+        p1 = Process(target=self._do_git_big_commit)
+        p1.start()
+
+
+    def _do_git_big_commit(self):
+        worktree = self.worktree
+        worktree._call(['git', 'add', '-A'])
+        worktree._call(['git', 'commit', '-m', 'Autocommit'])
 
 
     def do_git_transaction(self, commit_message, data, added, changed, removed, handlers):

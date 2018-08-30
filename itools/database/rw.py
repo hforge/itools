@@ -499,13 +499,13 @@ class RWDatabase(RODatabase):
         # Commit
         try:
             self._save_changes(data, commit_message)
-        except Exception:
+        except Exception as e:
             log_error('Transaction failed', domain='itools.database')
             try:
                 self._abort_changes()
             except Exception:
                 log_error('Aborting failed', domain='itools.database')
-            raise
+            raise(e)
         finally:
             self._cleanup()
 

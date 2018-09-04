@@ -106,7 +106,10 @@ class GitBackend(object):
         # Initialize the database, but chrooted
         self.fs = lfs.open(self.path_data)
         # Static FS
-        self.static_fs = lfs.open('{0}/database_static'.format(path))
+        database_static_path = '{0}/database_static'.format(path)
+        if not lfs.exists(database_static_path):
+            self.init_backend_static(path)
+        self.static_fs = lfs.open(database_static_path)
 
 
     @classmethod
@@ -114,6 +117,11 @@ class GitBackend(object):
         # Metadata database
         init_repository('{0}/database'.format(path), bare=False)
         lfs.make_folder('{0}/database/.git/patchs'.format(path))
+        cls.init_backend_static(path)
+
+
+    @classmethod
+    def init_backend_static(cls, path):
         # Static database
         lfs.make_folder('{0}/database_static'.format(path))
         lfs.make_folder('{0}/database_static/.history'.format(path))

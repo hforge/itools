@@ -91,21 +91,22 @@ class RWDatabase(RODatabase):
 
 
     def check_catalog(self):
-        """Reindex resources if database wasn't stoped gracefully"""
-        lines = self.catalog.logger.get_lines()
-        if not lines:
-            return
-        print("Catalog wasn't stopped gracefully. Reindexation in progress")
-        for abspath in set(lines):
-            r = self.get_resource(abspath, soft=True)
-            if r:
-                self.catalog.index_document(r)
-            else:
-                self.catalog.unindex_document(abspath)
-        self.catalog._db.commit_transaction()
-        self.catalog._db.flush()
-        self.catalog._db.begin_transaction(self.catalog.commit_each_transaction)
-        self.catalog.logger.clear()
+        pass
+        #"""Reindex resources if database wasn't stoped gracefully"""
+        #lines = self.catalog.logger.get_lines()
+        #if not lines:
+        #    return
+        #print("Catalog wasn't stopped gracefully. Reindexation in progress")
+        #for abspath in set(lines):
+        #    r = self.get_resource(abspath, soft=True)
+        #    if r:
+        #        self.catalog.index_document(r)
+        #    else:
+        #        self.catalog.unindex_document(abspath)
+        #self.catalog._db.commit_transaction()
+        #self.catalog._db.flush()
+        #self.catalog._db.begin_transaction(self.catalog.commit_each_transaction)
+        #self.catalog.logger.clear()
 
 
     def close(self):

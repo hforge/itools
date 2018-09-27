@@ -28,11 +28,7 @@ class JSFile(TextFile):
 
 
     def get_units(self, srx_handler=None):
-        raise NotImplementedError
-
-
-    def translate(self, catalog, srx_handler=None):
-        raise NotImplementedError
+        return []
 
 
 # Register

@@ -98,6 +98,7 @@ if __name__ == '__main__':
     write('* Extract text strings')
     extensions = [
         '.py',
+        '.js',
         '.xhtml.%s' % src_language,
         '.xml.%s' % src_language,
         '.html.%s' % src_language]

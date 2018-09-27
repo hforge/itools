@@ -172,6 +172,8 @@ def build(path, config, environment):
             ('.xml.%s' % src_lang, '.xml.%s' % dst_lang, make_template))
         rules.append(
             ('.xhtml.%s' % src_lang, '.xhtml.%s' % dst_lang, make_template))
+        rules.append(
+            ('.html.%s' % src_lang, '.html.%s' % dst_lang, make_template))
     # Make
     make(worktree, rules, manifest, package_root)
     # Write the manifest

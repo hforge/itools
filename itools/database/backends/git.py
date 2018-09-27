@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from datetime import datetime
+from datetime import datetime, timedelta
 import difflib, os
 from heapq import heappush, heappop
 from multiprocessing import Process
@@ -93,6 +93,7 @@ class GitBackend(object):
 
     def __init__(self, path):
         self.nb_transactions = 0
+        self.last_transaction_dtime = None
         self.path = abspath(path) + '/'
         # Open database
         self.path_data = '%s/database/' % self.path
@@ -249,7 +250,7 @@ class GitBackend(object):
         base_path = datetime.now().strftime('.git/patchs/%Y%m%d/')
         if not self.fs.exists(base_path):
             self.fs.make_folder(base_path)
-        the_time = datetime.now().strftime('%Hh%Mm%Ss')
+        the_time = datetime.now().strftime('%Hh%Mm%S.%f')
         patch_key = '{base_path}/{the_time}-user{author_id}-{uuid}.patch'.format(
               base_path=base_path,
               author_id=author_id,
@@ -263,6 +264,7 @@ class GitBackend(object):
 
     def do_transaction(self, commit_message, data, added, changed, removed, handlers):
         git_author, git_date, git_msg, docs_to_index, docs_to_unindex = data
+        # Statistics
         self.nb_transactions += 1
         # Add static changed & removed files to ~/database_static/.history/
         changed_and_removed = list(changed) + list(removed)
@@ -289,7 +291,9 @@ class GitBackend(object):
         if not TEST_DB_WITHOUT_COMMITS:
             self.do_git_transaction(commit_message, data, added, changed, removed, handlers)
         else:
-            if self.nb_transactions % 50 == 0:
+            now = datetime.now()
+            # Commit at start or every hour
+            if not self.last_transaction_dtime or now - self.last_transaction_dtime > timedelta(minutes=60):
                 self.do_git_big_commit()
 
 
@@ -299,6 +303,7 @@ class GitBackend(object):
         """
         p1 = Process(target=self._do_git_big_commit)
         p1.start()
+        self.last_transaction_dtime = datetime.now()
 
 
     def _do_git_big_commit(self):

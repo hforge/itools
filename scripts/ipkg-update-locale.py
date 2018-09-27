@@ -96,7 +96,11 @@ if __name__ == '__main__':
 
     # Process Python and HTML files
     write('* Extract text strings')
-    extensions = ['.py', '.xhtml.%s' % src_language, '.xml.%s' % src_language]
+    extensions = [
+        '.py',
+        '.xhtml.%s' % src_language,
+        '.xml.%s' % src_language,
+        '.html.%s' % src_language]
 
     for path in lines:
         # Filter files

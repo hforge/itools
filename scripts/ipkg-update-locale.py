@@ -107,7 +107,14 @@ if __name__ == '__main__':
             continue
         # Get the units
         write('.')
-        handler = ro_database.get_handler(path)
+        try:
+            handler = ro_database.get_handler(path)
+        except Exception:
+            print
+            print '*'
+            print '* Error:', path
+            print '*'
+            raise
         try:
             units = handler.get_units(srx_handler=srx_handler)
             units = list(units)

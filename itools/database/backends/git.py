@@ -38,6 +38,7 @@ from registry import register_backend
 
 
 TEST_DB_WITHOUT_COMMITS = bool(int(os.environ.get('TEST_DB_WITHOUT_COMMITS') or 0))
+TEST_DB_DESACTIVATE_GIT = bool(int(os.environ.get('TEST_DB_DESACTIVATE_GIT') or 0))
 
 
 class Heap(object):
@@ -301,6 +302,8 @@ class GitBackend(object):
         """ Some databases are really bigs (1 millions files). GIT is too slow in this cases.
         So we don't commit at each transaction, but at each N transactions.
         """
+        if TEST_DB_DESACTIVATE_GIT is True:
+            return
         p1 = Process(target=self._do_git_big_commit)
         p1.start()
         self.last_transaction_dtime = datetime.now()

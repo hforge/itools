@@ -119,7 +119,7 @@ class Boolean(DataType):
         elif value is False:
             return '0'
         else:
-            raise ValueError, 'value is not a boolean'
+            raise ValueError('{0} value is not a boolean'.format(value))
 
 
 

@@ -47,18 +47,21 @@ def make(worktree, rules, manifest, package_root):
         if 'docs/' in source:
             continue
         # Apply rules
-        for source_ext, target_ext, f in rules:
+        for source_ext, target_ext, f, handler_cls in rules:
             if source.endswith(source_ext):
                 target = source[:-len(source_ext)] + target_ext
                 if not lfs.exists(target) or \
                    lfs.get_mtime(source) > lfs.get_mtime(target):
-                    f(package_root, source, target)     # 1. Compile
-                    manifest.add(target)                # 2. Update manifest
-                    print target                        # 3. Print
+                    # 1. Compile
+                    f(package_root, source, target, handler_cls)
+                    # 2. Update manifest
+                    manifest.add(target)
+                    # 3. Print
+                    print target
 
 
 # PO => MO
-def po2mo(package_root, source, target):
+def po2mo(package_root, source, target, handler_cls):
     Popen(['msgfmt', source, '-o', target])
 
 
@@ -164,7 +167,7 @@ def build(path, config, environment):
         gulp_builder = GulpBuilder(worktree, manifest)
         gulp_builder.run()
     # Rules
-    rules = [('.po', '.mo', po2mo)]
+    rules = [('.po', '.mo', po2mo, None)]
     # Templates
     from itools.html import XHTMLFile, HTMLFile
     src_lang = config.get_value('source_language', default='en')

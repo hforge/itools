@@ -63,17 +63,17 @@ def po2mo(package_root, source, target):
 
 
 # Translate templates
-def make_template(package_root, source, target):
+def make_template(package_root, source, target, handler_cls):
     # Import some packages so we can compile templates
-    from itools.html import XHTMLFile
     from itools.xmlfile.errors import TranslationError
     import itools.gettext
     import itools.stl
     import itools.pdf
     # Get file
-    source_handler = XHTMLFile(source)
+    source_handler = handler_cls(source)
     language = target.rsplit('.', 1)[1]
     po = POFile('%s/locale/%s.po' % (package_root, language))
+    print source_handler, source, target
     try:
         data = source_handler.translate(po)
     except TranslationError as e:
@@ -166,14 +166,15 @@ def build(path, config, environment):
     # Rules
     rules = [('.po', '.mo', po2mo)]
     # Templates
+    from itools.html import XHTMLFile, HTMLFile
     src_lang = config.get_value('source_language', default='en')
     for dst_lang in config.get_value('target_languages'):
         rules.append(
-            ('.xml.%s' % src_lang, '.xml.%s' % dst_lang, make_template))
+            ('.xml.%s' % src_lang, '.xml.%s' % dst_lang, make_template, XHTMLFile))
         rules.append(
-            ('.xhtml.%s' % src_lang, '.xhtml.%s' % dst_lang, make_template))
+            ('.xhtml.%s' % src_lang, '.xhtml.%s' % dst_lang, make_template, XHTMLFile))
         rules.append(
-            ('.html.%s' % src_lang, '.html.%s' % dst_lang, make_template))
+            ('.html.%s' % src_lang, '.html.%s' % dst_lang, make_template, HTMLFile))
     # Make
     make(worktree, rules, manifest, package_root)
     # Write the manifest

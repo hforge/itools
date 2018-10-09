@@ -20,6 +20,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+import itertools
 from re import compile
 from time import gmtime, strftime, time
 
@@ -60,6 +61,7 @@ class POSyntaxError(Exception):
 BLANK = 'blank'
 FUZZY = 'fuzzy'
 COMMENT = 'comment'
+REFERENCE = 'reference'
 MSGCTXT = 'msgctxt'
 MSGID = 'msgid'
 MSGSTR = 'msgstr'
@@ -93,6 +95,9 @@ def get_lines(data):
         # Fuzzy flag
         elif line == '#, fuzzy':
             yield FUZZY, None, line_number
+        # Reference
+        elif line.startswith('#:'):
+            yield REFERENCE, line[1:], line_number
         # Comment
         elif line.startswith('#'):
             yield COMMENT, line[1:], line_number
@@ -261,9 +266,15 @@ class POUnit(object):
         for comment in self.comments:
             s.append('#%s\n' % comment.encode(encoding))
         # The reference comments
-        for filename, lines in self.references.items():
+        i = 1
+        references = self.references.items()
+        nb_references = len(list(itertools.chain(*[y for x, y in references])))
+        for filename, lines in references:
             for line in lines:
-                s.append('#: %s:%s\n' % (filename, line))
+                comma = '' if i == nb_references else ','
+                line = '#: %s:%s%s\n' % (filename, line, comma)
+                s.append(line)
+                i+=1
         # The Fuzzy flag
         if self.fuzzy:
             s.append('#, fuzzy\n')
@@ -339,6 +350,7 @@ class POFile(TextFile):
         # Initialize entry information
         id, comments, context = None, [], None
         source, target, fuzzy = [], [], False
+        references = []
 
         # Parse entry
         state = 0
@@ -352,6 +364,11 @@ class POFile(TextFile):
                     pass
                 elif line_type == COMMENT:
                     comments.append(value)
+                    state = 1
+                elif line_type == REFERENCE:
+                    for reference in value[3:].split(' '):
+                        value, line_no = reference.split(':')
+                        references.append((value, line_no))
                     state = 1
                 elif line_type == FUZZY and not fuzzy:
                     fuzzy = True
@@ -369,6 +386,10 @@ class POFile(TextFile):
                 # Read comments and wait for the context or message id
                 if line_type == COMMENT:
                     comments.append(value)
+                elif line_type == REFERENCE:
+                    for reference in value[3:].split(' '):
+                        value, line_no = reference.split(':')
+                        references.append((value, line_no))
                 elif line_type == FUZZY and not fuzzy:
                     fuzzy = True
                 elif line_type == BLANK:
@@ -421,19 +442,21 @@ class POFile(TextFile):
                             self.encoding = charset[len('charset='):]
                 elif line_type == BLANK:
                     # End of the entry
-                    yield (comments, context, source, target, fuzzy,
+                    yield (comments, references, context, source, target, fuzzy,
                            line_number)
                     # Reset
                     id, comments, context = None, [], None
                     source, target, fuzzy = [], [], False
+                    references = []
                     state = 0
                 elif line_type == COMMENT:
                     # Add entry
-                    yield (comments, context, source, target, fuzzy,
+                    yield (comments, references, context, source, target, fuzzy,
                            line_number)
                     # Reset
                     id, comments, context = None, [], None
                     source, target, fuzzy = [], [], False
+                    references = []
                     state = 5
                 else:
                     raise POSyntaxError(line_number, line_type)
@@ -442,13 +465,16 @@ class POFile(TextFile):
                 # Discard trailing comments
                 if line_type == COMMENT:
                     pass
+                elif line_type == REFERENCE:
+                    pass
                 elif line_type == BLANK:
                     # End of the entry
-                    yield (comments, context, source, target, fuzzy,
+                    yield (comments, references, context, source, target, fuzzy,
                            line_number)
                     # Reset
                     id, comments, context = None, [], None
                     source, target, fuzzy = [], [], False
+                    references = []
                     state = 0
                 else:
                     raise POSyntaxError(line_number, line_type)
@@ -481,7 +507,7 @@ class POFile(TextFile):
 
         # Add entries
         for entry in self.next_entry(data):
-            comments, context, source, target, fuzzy, line_number = entry
+            comments, references, context, source, target, fuzzy, line_number = entry
 
             # Check for duplicated messages
             if context is not None:
@@ -502,7 +528,7 @@ class POFile(TextFile):
             target = [ unicode(x, self.encoding) for x in target ]
 
             # Add the message
-            self._set_message(context, source, target, comments, None, fuzzy)
+            self._set_message(context, source, target, comments, references, fuzzy)
 
 
     def to_str(self, encoding='UTF-8'):
@@ -517,7 +543,7 @@ class POFile(TextFile):
     # API / Private
     #######################################################################
     def _set_message(self, context, source, target=freeze([u'']),
-                     comments=freeze([]), reference=None, fuzzy=False):
+                     comments=freeze([]), references=None, fuzzy=False):
 
         if context is not None and isinstance(context, (str, unicode)):
             context = [context]
@@ -544,9 +570,10 @@ class POFile(TextFile):
             messages[key] = unit
 
         # Add the reference and return
-        if reference is None:
+        if not references:
             return unit
-        unit.references.setdefault(reference[0], []).append(reference[1])
+        for reference in references:
+            unit.references.setdefault(str(reference[0]), []).append(reference[1])
         return unit
 
 
@@ -604,7 +631,7 @@ class POFile(TextFile):
         source = encode_source(source)
 
         return self._set_message(context, [source], [u''], [],
-                                 (filename, line))
+                                 [(filename, line)])
 
 
 

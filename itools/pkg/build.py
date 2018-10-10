@@ -50,14 +50,12 @@ def make(worktree, rules, manifest, package_root):
         for source_ext, target_ext, f, handler_cls in rules:
             if source.endswith(source_ext):
                 target = source[:-len(source_ext)] + target_ext
-                if not lfs.exists(target) or \
-                   lfs.get_mtime(source) > lfs.get_mtime(target):
-                    # 1. Compile
-                    f(package_root, source, target, handler_cls)
-                    # 2. Update manifest
-                    manifest.add(target)
-                    # 3. Print
-                    print target
+                # 1. Compile
+                f(package_root, source, target, handler_cls)
+                # 2. Update manifest
+                manifest.add(target)
+                # 3. Print
+                print target
 
 
 # PO => MO
@@ -166,20 +164,20 @@ def build(path, config, environment):
     if environment == 'production':
         gulp_builder = GulpBuilder(worktree, manifest)
         gulp_builder.run()
-    # Rules
-    rules = [('.po', '.mo', po2mo, None)]
-    # Templates
-    from itools.html import XHTMLFile, HTMLFile
-    src_lang = config.get_value('source_language', default='en')
-    for dst_lang in config.get_value('target_languages'):
-        rules.append(
-            ('.xml.%s' % src_lang, '.xml.%s' % dst_lang, make_template, XHTMLFile))
-        rules.append(
-            ('.xhtml.%s' % src_lang, '.xhtml.%s' % dst_lang, make_template, XHTMLFile))
-        rules.append(
-            ('.html.%s' % src_lang, '.html.%s' % dst_lang, make_template, HTMLFile))
-    # Make
-    make(worktree, rules, manifest, package_root)
+        # Rules
+        from itools.html import XHTMLFile, HTMLFile
+        rules = [('.po', '.mo', po2mo, None)]
+        # Templates
+        src_lang = config.get_value('source_language', default='en')
+        for dst_lang in config.get_value('target_languages'):
+            rules.append(
+                ('.xml.%s' % src_lang, '.xml.%s' % dst_lang, make_template, XHTMLFile))
+            rules.append(
+                ('.xhtml.%s' % src_lang, '.xhtml.%s' % dst_lang, make_template, XHTMLFile))
+            rules.append(
+                ('.html.%s' % src_lang, '.html.%s' % dst_lang, make_template, HTMLFile))
+        # Make
+        make(worktree, rules, manifest, package_root)
     # Write the manifest
     lines = [ x + '\n' for x in sorted(manifest) ]
     open(path + 'MANIFEST', 'w').write(''.join(lines))

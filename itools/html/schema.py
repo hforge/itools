@@ -391,7 +391,7 @@ html_elements = [
                     'formenctype' , 'formmethod', 'formonvalidate',
                     'formtarget', 'name', 'type', 'value'],
         obsolete_attributes=['datasrc', 'datafld', 'dataformatas']),
-    EmptyBlockElement(name='canvas', attributes=['width', 'height']),
+    BlockElement(name='canvas', attributes=['width', 'height']),
     BlockElement(
         name='caption',
         obsolete_attributes=['align']),

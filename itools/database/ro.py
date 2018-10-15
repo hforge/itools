@@ -57,10 +57,10 @@ class RODatabase(object):
         self.cache = LRUCache(size_min, size_max, automatic=False)
         # TODO FIXME Catalog should be moved into backend
         # 7. Get the catalog
-        if not self.read_only:
-            if catalog:
-                self.catalog = catalog
-            else:
+        if catalog:
+            self.catalog = catalog
+        else:
+            if self.path:
                 self.catalog = self.get_catalog()
         # Log
         catalog_log = '{}/database.log'.format(self.path)

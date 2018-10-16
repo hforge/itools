@@ -64,7 +64,8 @@ class File(Handler):
             try:
                 from itools.database.ro import ro_database
                 self.database = ro_database
-            except:
+            except Exception as e:
+                print e.message, e.args
                 if key:
                     print('Cannot attach handler {0} to a database'.format(key))
                     with open(key, 'r') as f:

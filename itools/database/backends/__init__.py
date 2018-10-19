@@ -18,6 +18,5 @@
 
 # Import from itools
 from git import GitBackend
-from git_bare import GitBareBackend
 from lfs import LFSBackend
 from registry import register_backend, backends_registry

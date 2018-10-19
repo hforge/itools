@@ -21,7 +21,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from ast import parse, NodeVisitor
+from ast import parse, Attribute, Call, Name, NodeVisitor, Str
 
 # Import from itools
 from itools.handlers import TextFile, register_handler_class
@@ -29,17 +29,28 @@ from itools.srx import TEXT
 
 
 
-class VisitorUnicode(NodeVisitor):
+class VisitorMSG(NodeVisitor):
 
     def __init__(self):
         self.messages = []
 
 
-    def visit_Str(self, str):
-        if type(str.s) is unicode and str.s.strip():
-            # Context = None
-            msg = ((TEXT, str.s),), None, str.lineno
-            self.messages.append(msg)
+    def visit_Call(self, node):
+        if isinstance(node.func, Attribute):
+            node = node.func.value
+            if not isinstance(node, Call):
+                return
+            func = node.func
+        else:
+            func = node.func
+        if isinstance(func, Name):
+            if node.func.id in ('MSG', 'INFO', 'ERROR'):
+                text = node.args[0]
+                if isinstance(text, Str):
+                    if type(text.s) is unicode and text.s.strip():
+                        # Context = None
+                        msg = ((TEXT, text.s),), None, node.lineno
+                        self.messages.append(msg)
 
 
 
@@ -56,7 +67,7 @@ class Python(TextFile):
         data = ''.join([ x + '\n' for x in data.splitlines() ])
         # Parse and Walk
         ast = parse(data)
-        visitor = VisitorUnicode()
+        visitor = VisitorMSG()
         visitor.generic_visit(ast)
         return visitor.messages
 

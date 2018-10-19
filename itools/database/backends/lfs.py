@@ -26,7 +26,7 @@ from registry import register_backend
 
 class LFSBackend(object):
 
-    def __init__(self, path):
+    def __init__(self, path, fields, read_only=False):
         if path:
             self.fs = lfs.open('{0}/database'.format(path))
         else:
@@ -34,7 +34,7 @@ class LFSBackend(object):
 
 
     @classmethod
-    def init_backend(cls, path, init=False, soft=False):
+    def init_backend(cls, path, fields, init=False, soft=False):
         self.fs.make_folder('{0}/database'.format(path))
 
 

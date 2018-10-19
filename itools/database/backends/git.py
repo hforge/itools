@@ -34,6 +34,7 @@ from itools.database.git import open_worktree
 from itools.fs import lfs
 
 # Import from here
+from catalog import Catalog, _get_xquery, SearchResults, make_catalog
 from registry import register_backend
 
 
@@ -92,10 +93,12 @@ class Heap(object):
 
 class GitBackend(object):
 
-    def __init__(self, path):
+    def __init__(self, path, fields, read_only=False):
         self.nb_transactions = 0
         self.last_transaction_dtime = None
         self.path = abspath(path) + '/'
+        self.fields = fields
+        self.read_only = read_only
         # Open database
         self.path_data = '%s/database/' % self.path
         # Check if is a folder
@@ -112,14 +115,18 @@ class GitBackend(object):
         if not lfs.exists(database_static_path):
             self.init_backend_static(path)
         self.static_fs = lfs.open(database_static_path)
+        # Catalog
+        self.catalog = self.get_catalog()
 
 
     @classmethod
-    def init_backend(cls, path, init=False, soft=False):
+    def init_backend(cls, path, fields, init=False, soft=False):
         # Metadata database
         init_repository('{0}/database'.format(path), bare=False)
         lfs.make_folder('{0}/database/.git/patchs'.format(path))
         cls.init_backend_static(path)
+        # Make catalog
+        make_catalog('{0}/catalog'.format(path), fields)
 
 
     @classmethod
@@ -263,7 +270,8 @@ class GitBackend(object):
         f.truncate(f.tell())
 
 
-    def do_transaction(self, commit_message, data, added, changed, removed, handlers):
+    def do_transaction(self, commit_message, data, added, changed, removed, handlers,
+          docs_to_index, docs_to_unindex):
         git_author, git_date, git_msg, docs_to_index, docs_to_unindex = data
         # Statistics
         self.nb_transactions += 1
@@ -296,6 +304,12 @@ class GitBackend(object):
             # Commit at start or every hour
             if not self.last_transaction_dtime or now - self.last_transaction_dtime > timedelta(minutes=60):
                 self.do_git_big_commit()
+        # Catalog
+        for path in docs_to_unindex:
+            self.catalog.unindex_document(path)
+        for resource, values in docs_to_index:
+            self.catalog.index_document(values)
+        self.catalog.save_changes()
 
 
     def do_git_big_commit(self):
@@ -393,13 +407,30 @@ class GitBackend(object):
 
 
     def abort_transaction(self):
-        pass
+        self.catalog.abort_changes()
         # Don't need to abort since git add is made à last minute
         #strategy = GIT_CHECKOUT_FORCE | GIT_CHECKOUT_REMOVE_UNTRACKED
         #if pygit2.__version__ >= '0.21.1':
         #    self.worktree.repo.checkout_head(strategy=strategy)
         #else:
         #    self.worktree.repo.checkout_head(strategy)
+
+
+    def get_catalog(self):
+        path = '%s/catalog' % self.path
+        return Catalog(path, self.fields, read_only=self.read_only)
+
+
+    def search(self, query=None, **kw):
+        """Launch a search in the catalog.
+        """
+        catalog = self.catalog
+        xquery = _get_xquery(catalog, query, **kw)
+        return SearchResults(catalog, xquery)
+
+
+    def close(self):
+        self.catalog.close()
 
 
 register_backend('git', GitBackend)

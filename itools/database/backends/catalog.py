@@ -36,8 +36,8 @@ from itools.datatypes import Decimal, Integer, Unicode, String
 from itools.fs import lfs
 from itools.i18n import is_punctuation
 from itools.log import Logger, log_warning, log_info, register_logger
-from queries import AllQuery, _AndQuery, NotQuery, _OrQuery, PhraseQuery
-from queries import RangeQuery, StartQuery, TextQuery, _MultipleQuery
+from itools.database.queries import AllQuery, _AndQuery, NotQuery, _OrQuery, PhraseQuery
+from itools.database.queries import RangeQuery, StartQuery, TextQuery, _MultipleQuery
 
 try:
     from xapian import MultiValueSorter
@@ -201,14 +201,14 @@ class Doc(object):
 
 class SearchResults(object):
 
-    def __init__(self, database, xquery):
-        self._database = database
+    def __init__(self, catalog, xquery):
+        self._catalog = catalog
         self._xquery = xquery
 
 
     @lazy
     def _enquire(self):
-        enquire = Enquire(self._database.catalog._db)
+        enquire = Enquire(self._catalog._db)
         enquire.set_query(self._xquery)
         return enquire
 
@@ -216,7 +216,7 @@ class SearchResults(object):
     @lazy
     def _max(self):
         enquire = self._enquire
-        db = self._database.catalog._db
+        db = self._catalog._db
         doccount = db.get_doccount()
         return enquire.get_mset(0, doccount).size()
 
@@ -227,11 +227,9 @@ class SearchResults(object):
 
 
     def search(self, query=None, **kw):
-        database = self._database
-
-        xquery = _get_xquery(database.catalog, query, **kw)
+        xquery = _get_xquery(self._catalog, query, **kw)
         query = Query(Query.OP_AND, [self._xquery, xquery])
-        return self.__class__(database, query)
+        return self.__class__(self._catalog, query)
 
 
     def get_documents(self, sort_by=None, reverse=False, start=0, size=0):
@@ -262,10 +260,8 @@ class SearchResults(object):
         By default all the documents are returned.
         """
         enquire = self._enquire
-        catalog = self._database.catalog
-
         # sort_by != None
-        metadata = catalog._metadata
+        metadata = self._catalog._metadata
         if sort_by is not None:
             if isinstance(sort_by, list):
                 if XAPIAN_VERSION == '1.4':
@@ -297,10 +293,10 @@ class SearchResults(object):
 
         # start/size
         if size == 0:
-            size = self._database.catalog._db.get_doccount()
+            size = self._catalog._db.get_doccount()
 
         # Construction of the results
-        fields = catalog._fields
+        fields = self._catalog._fields
         results = [ Doc(x.document, fields, metadata)
                     for x in enquire.get_mset(start, size) ]
 
@@ -311,13 +307,6 @@ class SearchResults(object):
         return results
 
 
-    def get_resources(self, sort_by=None, reverse=False, start=0, size=0):
-        database = self._database
-        brains = list(self.get_documents(sort_by, reverse, start, size))
-        for brain in brains:
-            yield database.get_resource_from_brain(brain)
-
-
 
 class Catalog(object):
 
@@ -326,7 +315,7 @@ class Catalog(object):
     _db = None
     read_only = False
 
-    def __init__(self, ref, fields, read_only=False, asynchronous_mode=True, root=None):
+    def __init__(self, ref, fields, read_only=False, asynchronous_mode=True):
         self.read_only = read_only
         # Load the database
         if isinstance(ref, (Database, WritableDatabase)):
@@ -342,10 +331,8 @@ class Catalog(object):
         db = self._db
         self._asynchronous = asynchronous_mode
         self._fields = fields
-        self.root = root
         # FIXME: There's a bug in xapian:
         # Wa cannot get stored values if DB not flushed
-        #self.commit_each_transaction = root is None
         self.commit_each_transaction = True
         # Asynchronous mode
         if not read_only and asynchronous_mode:
@@ -356,7 +343,6 @@ class Catalog(object):
         self._metadata = {}
         self._value_nb = 0
         self._prefix_nb = 0
-        self.transaction_abspaths = []
         self._load_all_internal()
         if not read_only:
             self._init_all_metadata()
@@ -404,7 +390,6 @@ class Catalog(object):
         #    if self.logger:
         #        self.logger.clear()
         #    self.nb_changes = 0
-        self.transaction_abspaths = []
         db.begin_transaction(self.commit_each_transaction)
 
 
@@ -418,13 +403,7 @@ class Catalog(object):
             db.cancel_transaction()
             db.begin_transaction(self.commit_each_transaction)
         else:
-            abspaths = deepcopy(self.transaction_abspaths)
-            for abspath in abspaths:
-                r_to_reindex = self.root.get_resource(abspath, soft=True)
-                if r_to_reindex:
-                    self.index_document(r_to_reindex)
-                else:
-                    self.unindex_document(abspath)
+            raise NotImplementedError
         self._load_all_internal()
 
 
@@ -466,8 +445,6 @@ class Catalog(object):
         self._db.replace_document(term, xdoc)
         if self.logger:
             log_info(abspath, domain='itools.catalog')
-        if self.root:
-            self.transaction_abspaths.append(abspath)
 
 
     def unindex_document(self, abspath):
@@ -479,20 +456,16 @@ class Catalog(object):
         self._db.delete_document('Q' + data)
         if self.logger:
             log_info(abspath, domain='itools.catalog')
-        if self.root:
-            self.transaction_abspaths.append(abspath)
 
 
-    def get_xdoc_from_document(self, document):
+    def get_xdoc_from_document(self, doc_values):
         """Return (abspath, term, xdoc) from the document (resource or values as dict)
         """
         term = None
         metadata = self._metadata
         # Check the input
-        if type(document) is dict:
-            doc_values = document
-        else:
-            doc_values = document.get_catalog_values()
+        if type(doc_values) is not dict:
+            raise NotImplementedError('Deprecated: doc_values should be a dict')
         fields = self._fields
         abspath = doc_values['abspath']
         # Make the xapian document

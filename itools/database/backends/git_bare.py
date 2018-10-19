@@ -68,7 +68,7 @@ class GitBareBackend(object):
 
 
     @classmethod
-    def init_backend(cls, path, init=False, soft=False):
+    def init_backend(cls, path, fields, init=False, soft=False):
         init_repository('{0}/database'.format(path), bare=True)
 
 

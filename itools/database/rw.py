@@ -29,7 +29,6 @@ from itools.log import log_error
 
 # Import from here
 from backends import backends_registry
-from catalog import make_catalog
 from registry import get_register_fields
 from ro import RODatabase
 
@@ -41,9 +40,9 @@ class RWDatabase(RODatabase):
 
     read_only = False
 
-    def __init__(self, path, size_min, size_max, catalog=None, backend='git'):
+    def __init__(self, path, size_min, size_max, backend='git'):
         proxy = super(RWDatabase, self)
-        proxy.__init__(path, size_min, size_max, catalog, backend)
+        proxy.__init__(path, size_min, size_max, backend)
         # Changes on DB
         self.added = set()
         self.changed = set()
@@ -92,26 +91,11 @@ class RWDatabase(RODatabase):
 
     def check_catalog(self):
         pass
-        #"""Reindex resources if database wasn't stoped gracefully"""
-        #lines = self.catalog.logger.get_lines()
-        #if not lines:
-        #    return
-        #print("Catalog wasn't stopped gracefully. Reindexation in progress")
-        #for abspath in set(lines):
-        #    r = self.get_resource(abspath, soft=True)
-        #    if r:
-        #        self.catalog.index_document(r)
-        #    else:
-        #        self.catalog.unindex_document(abspath)
-        #self.catalog._db.commit_transaction()
-        #self.catalog._db.flush()
-        #self.catalog._db.begin_transaction(self.catalog.commit_each_transaction)
-        #self.catalog.logger.clear()
 
 
     def close(self):
         self.abort_changes()
-        self.catalog.close()
+        self.backend.close()
 
 
     #######################################################################
@@ -430,10 +414,7 @@ class RWDatabase(RODatabase):
         self.changed.clear()
         self.removed.clear()
 
-        # 2. Catalog
-        self.catalog.abort_changes()
-
-        # 3. Resources
+        # Resources
         self.resources_old2new.clear()
         self.resources_new2old.clear()
 
@@ -466,18 +447,12 @@ class RWDatabase(RODatabase):
         the_author, the_date, the_msg, docs_to_index, docs_to_unindex = data
         # Do transaction
         self.backend.do_transaction(commit_msg,
-            data, self.added, self.changed, self.removed, self.cache)
+            data, self.added, self.changed, self.removed, self.cache,
+            docs_to_index, docs_to_unindex)
         # 6. Clear state
         self.changed.clear()
         self.added.clear()
         self.removed.clear()
-        # 7. Catalog
-        catalog = self.catalog
-        for path in docs_to_unindex:
-            catalog.unindex_document(path)
-        for resource, values in docs_to_index:
-            catalog.index_document(values)
-        catalog.save_changes()
 
 
     def save_changes(self, commit_message=None):
@@ -541,12 +516,10 @@ def make_database(path, size_min, size_max, fields=None, backend=None):
     is a folder.
     """
     path = lfs.get_absolute_path(path)
-    # Init backend
-    backend_cls = backends_registry[backend]
-    backend_cls.init_backend(path)
-    # The catalog
     if fields is None:
         fields = get_register_fields()
-    catalog = make_catalog('%s/catalog' % path, fields)
+    # Init backend
+    backend_cls = backends_registry[backend]
+    backend_cls.init_backend(path, fields)
     # Ok
-    return RWDatabase(path, size_min, size_max, catalog=catalog)
+    return RWDatabase(path, size_min, size_max)

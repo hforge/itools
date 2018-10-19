@@ -25,15 +25,40 @@ from sys import getrefcount
 # Import from itools
 from itools.core import LRUCache
 from itools.handlers import Folder, get_handler_class_by_mimetype
-from itools.log import log_warning, Logger, register_logger
 from itools.uri import Path
 
 # Import from itools.database
 from backends import GitBackend, backends_registry
-from catalog import Catalog, _get_xquery, SearchResults
 from exceptions import ReadonlyError
 from metadata import Metadata
 from registry import get_register_fields
+
+
+class SearchResults(object):
+
+    def __init__(self, database, results):
+        self.database = database
+        self.results = results
+
+
+    def __len__(self):
+        return len(self.results)
+
+
+    def search(self, query=None, **kw):
+        results = self.results.search(query, **kw)
+        return SearchResults(self.database, results)
+
+
+    def get_documents(self, sort_by=None, reverse=False, start=0, size=0):
+        return self.results.get_documents(sort_by, reverse, start, size)
+
+
+    def get_resources(self, sort_by=None, reverse=False, start=0, size=0):
+        brains = list(self.get_documents(sort_by, reverse, start, size))
+        for brain in brains:
+            yield self.database.get_resource_from_brain(brain)
+
 
 
 class RODatabase(object):
@@ -41,7 +66,7 @@ class RODatabase(object):
     read_only = True
     backend_cls = None
 
-    def __init__(self, path=None, size_min=4800, size_max=5200, catalog=None, backend='lfs'):
+    def __init__(self, path=None, size_min=4800, size_max=5200, backend='lfs'):
         # Init path
         self.path = path
         # Init backend
@@ -51,29 +76,22 @@ class RODatabase(object):
         self.changed = set()
         self.removed = set()
         self.has_changed = False
+        # Fields
+        self.fields = get_register_fields()
         # init backend
-        self.backend = self.backend_cls(self.path)
+        self.backend = self.backend_cls(self.path, self.fields, self.read_only)
         # A mapping from key to handler
         self.cache = LRUCache(size_min, size_max, automatic=False)
-        # TODO FIXME Catalog should be moved into backend
-        # 7. Get the catalog
-        if catalog:
-            self.catalog = catalog
-        else:
-            if self.path:
-                self.catalog = self.get_catalog()
-        # Log
-        catalog_log = '{}/database.log'.format(self.path)
-        self.logger = Logger(catalog_log)
-        register_logger(self.logger, 'itools.database')
 
 
-    def check_catalog(self):
-        pass
+    @property
+    def catalog(self):
+        print('obsolete')
+        return self.backend.catalog
 
 
     def close(self):
-        self.catalog.close()
+        self.backend.close()
 
 
     def check_database(self):
@@ -121,13 +139,13 @@ class RODatabase(object):
         """For maintenance operations, this method is automatically called
         after a transaction is committed or aborted.
         """
-#       import gc
-#       from itools.core import vmsize
-#       print 'RODatabase._cleanup (0): % 4d %s' % (len(self.cache), vmsize())
-#       print gc.get_count()
+        #import gc
+        #from itools.core import vmsize
+        #print 'RODatabase._cleanup (0): % 4d %s' % (len(self.cache), vmsize())
+        #print gc.get_count()
         self.make_room()
-#       print 'RODatabase._cleanup (1): % 4d %s' % (len(self.cache), vmsize())
-#       print gc.get_count()
+        #print 'RODatabase._cleanup (1): % 4d %s' % (len(self.cache), vmsize())
+        #print gc.get_count()
 
 
     #######################################################################
@@ -485,18 +503,9 @@ class RODatabase(object):
     #######################################################################
     # Search
     #######################################################################
-    def get_catalog(self):
-        path = '%s/catalog' % self.path
-        fields = get_register_fields()
-        root = self.get_resource('/', soft=True)
-        return Catalog(path, fields, read_only=self.read_only, root=root)
-
-
     def search(self, query=None, **kw):
-        """Launch a search in the catalog.
-        """
-        xquery = _get_xquery(self.catalog, query, **kw)
-        return SearchResults(self, xquery)
+        results = self.backend.search(query, **kw)
+        return SearchResults(database=self, results=results)
 
 
     def reindex_catalog(self, base_abspath, recursif=True):

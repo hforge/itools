@@ -17,7 +17,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from catalog import Catalog, make_catalog
 from fields import Field, get_field_and_datatype
 from queries import AllQuery, NotQuery, StartQuery, TextQuery
 from queries import RangeQuery, PhraseQuery, AndQuery, OrQuery, pprint_query
@@ -47,9 +46,6 @@ __all__ = [
     'Field',
     'get_field_and_datatype',
     'Resource',
-    # Xapian
-    'make_catalog',
-    'Catalog',
     # Queries
     'RangeQuery',
     'PhraseQuery',

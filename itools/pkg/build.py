@@ -74,7 +74,6 @@ def make_template(package_root, source, target, handler_cls):
     source_handler = handler_cls(source)
     language = target.rsplit('.', 1)[1]
     po = POFile('%s/locale/%s.po' % (package_root, language))
-    print source_handler, source, target
     try:
         data = source_handler.translate(po)
     except TranslationError as e:

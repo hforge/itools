@@ -86,7 +86,7 @@ class RODatabase(object):
 
     @property
     def catalog(self):
-        print('obsolete')
+        print('WARNING: Uses of context.database.catalog is obsolete')
         return self.backend.catalog
 
 

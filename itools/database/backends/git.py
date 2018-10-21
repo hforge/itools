@@ -417,7 +417,9 @@ class GitBackend(object):
 
 
     def get_catalog(self):
-        path = '%s/catalog' % self.path
+        path = '{0}/catalog'.format(self.path)
+        if not lfs.is_folder(path):
+            return None
         return Catalog(path, self.fields, read_only=self.read_only)
 
 

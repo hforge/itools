@@ -43,8 +43,18 @@ class VisitorMSG(NodeVisitor):
             func = node.func
         else:
             func = node.func
+        # Other items
+        for e in node.args:
+            self.visit(e)
+        for e in node.keywords:
+            self.visit(e)
+        if node.starargs:
+            self.visit(node.starargs)
+        if node.kwargs:
+            self.visit(node.kwargs)
+        # Check names
         if isinstance(func, Name):
-            if node.func.id in ('MSG', 'INFO', 'ERROR'):
+            if func.id in ('MSG', 'INFO', 'ERROR'):
                 text = node.args[0]
                 if isinstance(text, Str):
                     if type(text.s) is unicode and text.s.strip():

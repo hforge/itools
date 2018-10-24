@@ -22,35 +22,11 @@
 
 # Import from the Standard Library
 from optparse import OptionParser
-from os import sep
-from subprocess import call
-import sys
 
 # Import from itools
 import itools
-from itools.gettext import POFile
-from itools.handlers import register_handler_class
 from itools.database.ro import ro_database
-import itools.html
-import itools.python
-import itools.stl
-import itools.pdf
-from itools.pkg import get_config
-import itools.srx
-from itools.stl import STLFile
-from itools.uri import Path
-from itools.fs import lfs, WRITE
-
-
-# FIXME We register STLFile to override get_units of XHTMLFile handler
-# (See bug #864)
-register_handler_class(STLFile)
-
-
-def write(text):
-    sys.stdout.write(text)
-    sys.stdout.flush()
-
+from itools.pkg import update_locale
 
 
 if __name__ == '__main__':
@@ -68,103 +44,11 @@ if __name__ == '__main__':
     if len(args) != 0:
         parser.error('incorrect number of arguments')
 
-    # Read configuration for languages
-    config = get_config()
-    src_language = config.get_value('source_language', default='en')
-
-    # Get local folder
-    package_root = config.get_value('package_root')
-    if lfs.exists(package_root):
-        locale_folder_path = Path('{0}/locale'.format(package_root))
-    else:
-        locale_folder_path = Path('locale/')
-    locale_folder = lfs.open(locale_folder_path)
-
     # The SRX file
     if options.srx is not None:
         srx_handler = ro_database.get_handler(options.srx)
     else:
         srx_handler = None
-
-    # Initialize message catalog
-    po = POFile()
-    lines = []
-    for line in open('MANIFEST').readlines():
-        line = line.strip()
-        if line.split(sep)[0] not in ('archive', 'docs', 'skeleton', 'test'):
-            lines.append(line)
-
-    # Process Python and HTML files
-    write('* Extract text strings')
-    extensions = [
-        '.py',
-        '.js',
-        '.xhtml.%s' % src_language,
-        '.xml.%s' % src_language,
-        '.html.%s' % src_language]
-
-    for path in lines:
-        # Filter files
-        for extension in extensions:
-            if path.endswith(extension):
-                break
-        else:
-            continue
-        # Get the units
-        write('.')
-        try:
-            handler = ro_database.get_handler(path)
-        except Exception:
-            print
-            print '*'
-            print '* Error:', path
-            print '*'
-            raise
-        try:
-            units = handler.get_units(srx_handler=srx_handler)
-            units = list(units)
-        except Exception:
-            print
-            print '*'
-            print '* Error:', path
-            print '*'
-            raise
-
-        relative_path = locale_folder_path.get_pathto(path)
-        for source, context, line in units:
-            po.add_unit(relative_path, source, context, line)
-    print
-
-    write('* Update PO template ')
-    data = po.to_str()
-
-    # Write the po into the locale.pot
-    try:
-        locale_pot = locale_folder.open('locale.pot', WRITE)
-    except IOError:
-        # The locale.pot file does not exist create and open
-        locale_pot = locale_folder.make_file('locale.pot')
-    else:
-        with locale_pot:
-            locale_pot.write(data)
-
-    # Update PO files
-    filenames = set([ x for x in locale_folder.get_names() if x[-3:] == '.po' ])
-    filenames.add('%s.po' % src_language)
-    for language in config.get_value('target_languages'):
-        filenames.add('%s.po' % language)
-    filenames = list(filenames)
-    filenames.sort()
-
-    print '* Update PO files:'
-    locale_pot_path = locale_folder.get_absolute_path('locale.pot')
-    for filename in filenames:
-        if locale_folder.exists(filename):
-            write('  %s ' % filename)
-            file_path = locale_folder.get_absolute_path(filename)
-            call(['msgmerge', '-U', '-s', file_path, locale_pot_path])
-        else:
-            print '  %s (new)' % filename
-            file_path = locale_folder.get_absolute_path(filename)
-            lfs.copy(locale_pot_path, file_path)
-    print
+    # Update locale
+    exclude_folders = ('archive', 'docs', 'skeleton', 'test')
+    update_locale(srx_handler, exclude_folders)

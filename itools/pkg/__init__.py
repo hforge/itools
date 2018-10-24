@@ -20,6 +20,7 @@
 # Import from itools
 from handlers import SetupConf
 from build import get_manifest
+from update_locale import update_locale
 from utils import get_compile_flags
 from utils import setup, get_config, OptionalExtension
 
@@ -28,6 +29,7 @@ __all__ = [
     'get_compile_flags',
     'get_config',
     'get_manifest',
+    'update_locale',
     'OptionalExtension',
     'setup',
     'SetupConf']

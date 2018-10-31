@@ -41,7 +41,7 @@ def get_manifest():
     return [ x for x in worktree.get_filenames() if x not in exclude ]
 
 
-def make(worktree, rules, manifest, package_root):
+def make(worktree, rules, manifest, package_root, po_files):
     for source in deepcopy(manifest):
         # Exclude
         if 'docs/' in source:
@@ -51,7 +51,7 @@ def make(worktree, rules, manifest, package_root):
             if source.endswith(source_ext):
                 target = source[:-len(source_ext)] + target_ext
                 # 1. Compile
-                f(package_root, source, target, handler_cls)
+                f(package_root, source, target, handler_cls, po_files)
                 # 2. Update manifest
                 manifest.add(target)
                 # 3. Print
@@ -59,12 +59,12 @@ def make(worktree, rules, manifest, package_root):
 
 
 # PO => MO
-def po2mo(package_root, source, target, handler_cls):
+def po2mo(package_root, source, target, handler_cls, po_files):
     Popen(['msgfmt', source, '-o', target])
 
 
 # Translate templates
-def make_template(package_root, source, target, handler_cls):
+def make_template(package_root, source, target, handler_cls, po_files):
     # Import some packages so we can compile templates
     from itools.xmlfile.errors import TranslationError
     import itools.gettext
@@ -73,7 +73,7 @@ def make_template(package_root, source, target, handler_cls):
     # Get file
     source_handler = handler_cls(source)
     language = target.rsplit('.', 1)[1]
-    po = POFile('%s/locale/%s.po' % (package_root, language))
+    po = po_files[language]
     try:
         data = source_handler.translate(po)
     except TranslationError as e:
@@ -166,6 +166,11 @@ def build(path, config, environment):
         # Rules
         from itools.html import XHTMLFile, HTMLFile
         rules = [('.po', '.mo', po2mo, None)]
+        # Pre-load PO files
+        po_files = {}
+        for dst_lang in config.get_value('target_languages'):
+            po = POFile('%s/locale/%s.po' % (package_root, dst_lang))
+            po_files[dst_lang] = po
         # Templates
         src_lang = config.get_value('source_language', default='en')
         for dst_lang in config.get_value('target_languages'):
@@ -176,7 +181,7 @@ def build(path, config, environment):
             rules.append(
                 ('.html.%s' % src_lang, '.html.%s' % dst_lang, make_template, HTMLFile))
         # Make
-        make(worktree, rules, manifest, package_root)
+        make(worktree, rules, manifest, package_root, po_files)
     # Write the manifest
     lines = [ x + '\n' for x in sorted(manifest) ]
     open(path + 'MANIFEST', 'w').write(''.join(lines))

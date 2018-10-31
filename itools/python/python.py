@@ -37,10 +37,11 @@ class VisitorMSG(NodeVisitor):
 
     def visit_Call(self, node):
         if isinstance(node.func, Attribute):
-            node = node.func.value
-            if not isinstance(node, Call):
-                return
-            func = node.func
+            try:
+                func = node.func.value.func
+                node = node.func.value
+            except:
+                func = node.func
         else:
             func = node.func
         # Other items

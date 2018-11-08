@@ -287,7 +287,8 @@ class RequestMethod(object):
             cls.internal_server_error(context)
 
         # Cookies for authentification
-        if context.user and context.server.session_timeout != timedelta(0):
+        session_timeout = context.get_session_timeout()
+        if context.user and session_timeout != timedelta(0):
             cookie = context.get_cookie('iauth')
             context._set_auth_cookie(cookie)
 

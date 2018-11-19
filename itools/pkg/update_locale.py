@@ -21,7 +21,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from os import sep
 from subprocess import call
 import sys
 
@@ -70,7 +69,12 @@ def update_locale(srx_handler, exclude_folders, no_wrap=False):
     lines = []
     for line in open('MANIFEST').readlines():
         line = line.strip()
-        if line.split(sep)[0] not in exclude_folders:
+        exclude_folder = False
+        for x in exclude_folders:
+            if line.startswith(x):
+                exclude_folder = True
+                break
+        if exclude_folder is False:
             lines.append(line)
 
     # Process Python and HTML files

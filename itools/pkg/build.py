@@ -137,11 +137,13 @@ def build(path, config, environment):
     # Get version path
     package_root = config.get_value('package_root')
     version_txt = get_file_path(package_root, 'version.txt')
+    # Get git worktree
     try:
-        # Get git worktree
         worktree = open_worktree(path)
     except KeyError:
-        # Not in a git repostory
+        worktree = None
+    # If not in a git repostory, get package version
+    if worktree is None:
         return get_package_version(package_root)
     # Find out the version string
     version = make_version(worktree)

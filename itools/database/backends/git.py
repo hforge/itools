@@ -416,6 +416,13 @@ class GitBackend(object):
         #    self.worktree.repo.checkout_head(strategy)
 
 
+    def flush_catalog(self, docs_to_unindex, docs_to_index):
+        for path in docs_to_unindex:
+            self.catalog.unindex_document(path)
+        for resource, values in docs_to_index:
+            self.catalog.index_document(values)
+
+
     def get_catalog(self):
         path = '{0}/catalog'.format(self.path)
         if not lfs.is_folder(path):

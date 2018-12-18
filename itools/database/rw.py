@@ -87,6 +87,8 @@ class RWDatabase(RODatabase):
         #
         self.resources_old2new = {}
         self.resources_new2old = {}
+        self.resources_old2new_catalog = {}
+        self.resources_new2old_catalog = {}
 
 
     def check_catalog(self):
@@ -330,6 +332,8 @@ class RWDatabase(RODatabase):
             path = str(x.abspath)
             old2new[path] = None
             new2old.pop(path, None)
+            self.resources_old2new_catalog[path] = None
+            self.resources_new2old_catalog.pop(path, None)
 
 
     def add_resource(self, resource):
@@ -353,6 +357,8 @@ class RWDatabase(RODatabase):
         # Case 3: not yet touched
         old2new[path] = path
         new2old[path] = path
+        self.resources_old2new_catalog[path] = path
+        self.resources_new2old_catalog[path] = path
 
 
     def is_changed(self, resource):
@@ -382,7 +388,9 @@ class RWDatabase(RODatabase):
             source_path = new2old.pop(source_path, source_path)
             if source_path:
                 old2new[source_path] = target_path
+                self.resources_old2new_catalog[source_path] = target_path
             new2old[target_path] = source_path
+            self.resources_new2old_catalog[target_path] = source_path
 
 
     #######################################################################
@@ -417,6 +425,8 @@ class RWDatabase(RODatabase):
         # Resources
         self.resources_old2new.clear()
         self.resources_new2old.clear()
+        self.resources_old2new_catalog.clear()
+        self.resources_new2old_catalog.clear()
 
 
     def abort_changes(self):
@@ -458,7 +468,6 @@ class RWDatabase(RODatabase):
     def save_changes(self, commit_message=None):
         if not self.has_changed:
             return
-
         # Prepare for commit, do here the most you can, if something fails
         # the transaction will be aborted
         try:
@@ -491,8 +500,8 @@ class RWDatabase(RODatabase):
         (allow to search in catalog on changed elements)
         """
         root = self.get_resource('/')
-        docs_to_index = set(self.resources_new2old.keys())
-        docs_to_unindex = self.resources_old2new.keys()
+        docs_to_index = set(self.resources_new2old_catalog.keys())
+        docs_to_unindex = self.resources_old2new_catalog.keys()
         docs_to_unindex = list(set(docs_to_unindex) - docs_to_index)
         docs_to_index = list(docs_to_index)
         aux = []
@@ -502,6 +511,8 @@ class RWDatabase(RODatabase):
                 values = resource.get_catalog_values()
                 aux.append((resource, values))
         self.backend.flush_catalog(docs_to_unindex, aux)
+        self.resources_old2new_catalog.clear()
+        self.resources_new2old_catalog.clear()
 
 
     def reindex_catalog(self, base_abspath, recursif=True):

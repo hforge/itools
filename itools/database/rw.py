@@ -678,6 +678,29 @@ class RWDatabase(RODatabase):
             self._cleanup()
 
 
+
+    def flush_catalog(self):
+        """ Flush changes in catalog without commiting
+        (allow to search in catalog on changed elements)
+        """
+        root = self.get_resource('/')
+        docs_to_index = set(self.resources_new2old.keys())
+        docs_to_unindex = self.resources_old2new.keys()
+        docs_to_unindex = list(set(docs_to_unindex) - docs_to_index)
+        docs_to_index = list(docs_to_index)
+        aux = []
+        for path in docs_to_index:
+            resource = root.get_resource(path, soft=True)
+            if resource:
+                values = resource.get_catalog_values()
+                aux.append((resource, values))
+        # Index / Unindex
+        for path in docs_to_unindex:
+            self.catalog.unindex_document(path)
+        for resource, values in aux:
+            self.catalog.index_document(values)
+
+
     def create_tag(self, tag_name, message=None):
         worktree = self.worktree
         if message is None:

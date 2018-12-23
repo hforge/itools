@@ -35,7 +35,7 @@ class GulpBuilder(object):
 
     def __init__(self, package_root, worktree, manifest):
         self.package_root = package_root
-        if self.package_root:
+        if self.package_root != '.':
             self.ui_path = '{0}/ui/'.format(self.package_root)
         else:
             self.ui_path = 'ui/'

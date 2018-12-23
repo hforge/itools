@@ -33,21 +33,26 @@ class GulpBuilder(object):
     """
 
 
-    def __init__(self, worktree, manifest):
+    def __init__(self, package_root, worktree, manifest):
+        self.package_root = package_root
+        if self.package_root:
+            self.ui_path = '{0}/ui/'.format(self.package_root)
+        else:
+            self.ui_path = 'ui/'
         self.worktree = worktree
         self.manifest = manifest
         self.fs = LocalFolder('.')
-        if self.fs.is_folder('ui/'):
-            self.dist_folders = tuple(['ui/{0}'.format(x)
-              for x in LocalFolder('ui/').get_names()])
+        if self.fs.is_folder(self.ui_path):
+            self.dist_folders = tuple(['{0}{1}'.format(self.ui_path, x)
+              for x in LocalFolder(self.ui_path).get_names()])
 
 
     def run(self):
         npm_done = self.launch_npm_install()
         gulp_done = self.launch_gulp_build()
         # Add DIST files into manifest
-        if (npm_done or gulp_done) and self.fs.exists('ui/'):
-            for path in self.fs.traverse('ui/'):
+        if (npm_done or gulp_done) and self.fs.exists(self.ui_path):
+            for path in self.fs.traverse(self.ui_path):
                 relative_path = self.fs.get_relative_path(path)
                 if (relative_path and
                     relative_path.startswith(self.dist_folders) and self.fs.is_file(path)):

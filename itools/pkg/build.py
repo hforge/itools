@@ -163,7 +163,7 @@ def build(path, config, environment):
     print '* Build environment.json'
     # Run gulp
     if environment == 'production':
-        gulp_builder = GulpBuilder(worktree, manifest)
+        gulp_builder = GulpBuilder(package_root, worktree, manifest)
         gulp_builder.run()
         # Rules
         from itools.html import XHTMLFile, HTMLFile

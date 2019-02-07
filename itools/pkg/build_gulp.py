@@ -83,7 +83,7 @@ class GulpBuilder(object):
         done = False
         for path in self.manifest:
             filename = get_uri_name(path)
-            if filename == 'package.json':
+            if filename == 'gulpfile.js':
                 print '***'*25
                 print '*** Run $ gulp build on ', path
                 print '***'*25

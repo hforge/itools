@@ -6,12 +6,17 @@ We've:
  - removed `C` server to avoid complex migration to python3.
  - removed `itools.vfs` to avoid complex dependency with GIO
  - fixed various bugs
+
 The purpose is to prepare future:
+
  - Migration to python3
  - Increase performances of database
- - Possiblily to add an SQL backend (posgres json for example ?)
+ - Possibility to add an SQL backend (posgres json for example ?)
  - Allow to handle several requests at once on ikaaro webserver
  - Simplify build of javascript web applications with ikaaro
+
+Lot of works remains to be cleaned...
+In 0.78 we'll try to make non breaking changes. (or small ones).
 
 ### Changes
 - `Database`: Refactor code to ensure only one is opened at once

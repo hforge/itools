@@ -120,6 +120,28 @@ class RODatabase(object):
     #######################################################################
     # Private API
     #######################################################################
+    def _sync_filesystem(self, key):
+        """This method checks the state of the key in the cache against the
+        filesystem. Synchronizes the state if needed by discarding the
+        handler.
+        , or raises an error if there is a conflict.
+        Returns the handler for the given key if it is still in the cache
+        after all the tests, or None otherwise.
+        """
+        # If the key is not in the cache nothing can be wrong
+        handler = self.cache.get(key)
+        if handler is None:
+            return None
+        # Modified in the filesystem ?
+        mtime = self.get_handler_mtime(key)
+        if mtime > handler.timestamp:
+            # Remove from cache
+            self._discard_handler(key)
+            return None
+        # Everything looks fine
+        return handler
+
+
     def _discard_handler(self, key):
         """Unconditionally remove the handler identified by the given key from
         the cache, and invalidate it (and free memory at the same time).
@@ -203,7 +225,7 @@ class RODatabase(object):
         key = self.normalize_key(key)
 
         # Synchronize
-        handler = self.cache.get(key)
+        handler = self._sync_filesystem(key)
         if handler is not None:
             return True
 
@@ -245,7 +267,7 @@ class RODatabase(object):
         if cls is Folder:
             return Folder(key, database=self)
         # Synchronize
-        handler = self.cache.get(key)
+        handler = self._sync_filesystem(key)
         if handler is not None:
             # Check the class matches
             if cls is not None and not isinstance(handler, cls):
@@ -275,6 +297,7 @@ class RODatabase(object):
         # FIXME We should reset handler state on errors
         try:
             handler.load_state_from_string(data)
+            handler.timestamp = self.backend.get_handler_mtime(key)
         except Exception:
             # Remove handler from cache if cannot load it
             self._discard_handler(key)

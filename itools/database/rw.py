@@ -100,6 +100,12 @@ class RWDatabase(RODatabase):
         self.backend.close()
 
 
+    def _sync_filesystem(self, key):
+        # Don't check if handler has been modified since last loading,
+        # we only have one writer
+        handler = self.cache.get(key)
+        return handler
+
     #######################################################################
     # Layer 0: handlers
     #######################################################################

@@ -51,7 +51,6 @@ class File(Handler):
     class_mimetypes = ['application/octet-stream']
 
     # By default handlers are not loaded
-    # XXX We should remove timestamp variable
     timestamp = None
     dirty = None
     loaded = False
@@ -109,7 +108,7 @@ class File(Handler):
             message = '{0} on "{1}"'.format(e.message, self.key)
             self._clean_state()
             raise type(e), type(e)(message), exc_info()[2]
-        self.timestamp = None
+        self.timestamp = self.database.get_handler_mtime(self.key)
         self.dirty = None
 
 
@@ -134,7 +133,7 @@ class File(Handler):
         # Save
         self.save_state_to(self.key)
         # Update timestamp/dirty
-        self.timestamp = None
+        self.timestamp = self.database.get_handler_mtime(self.key)
         self.dirty = None
 
 

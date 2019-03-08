@@ -50,6 +50,7 @@ class GulpBuilder(object):
     def run(self):
         npm_done = self.launch_npm_install()
         gulp_done = self.launch_gulp_build()
+        webpack_done = self.launch_webpack()
         # Add DIST files into manifest
         if (npm_done or gulp_done) and self.fs.exists(self.ui_path):
             for path in self.fs.traverse(self.ui_path):
@@ -93,6 +94,26 @@ class GulpBuilder(object):
                 if p.returncode == 1:
                     print '***'*25
                     print '*** Error running gulp ', path
+                    print '***'*25
+                    sys.exit(1)
+                done = True
+        return done
+
+
+    def launch_webpack(self):
+        done = False
+        for path in self.manifest:
+            filename = get_uri_name(path)
+            if filename == 'webpack.config.js' and path.startswith('ui_dev/'):
+                print '***'*25
+                print '*** Run $ webpack ', path
+                print '***'*25
+                path = str(Path(path)[:-1]) + '/'
+                p = Popen(['webpack', '--mode=production'], cwd=path)
+                p.wait()
+                if p.returncode == 1:
+                    print '***'*25
+                    print '*** Error running webpack ', path
                     print '***'*25
                     sys.exit(1)
                 done = True

@@ -64,7 +64,7 @@ class GulpBuilder(object):
         done = False
         for path in self.manifest:
             filename = get_uri_name(path)
-            if filename == 'package.json' and path.startswith('ui_dev/'):
+            if filename == 'package.json':
                 print '***'*25
                 print '*** Run $ npm install on ', path
                 print '***'*25
@@ -84,7 +84,7 @@ class GulpBuilder(object):
         done = False
         for path in self.manifest:
             filename = get_uri_name(path)
-            if filename == 'gulpfile.js' and path.startswith('ui_dev/'):
+            if filename == 'gulpfile.js':
                 print '***'*25
                 print '*** Run $ gulp build on ', path
                 print '***'*25
@@ -104,7 +104,7 @@ class GulpBuilder(object):
         done = False
         for path in self.manifest:
             filename = get_uri_name(path)
-            if filename == 'webpack.config.js' and path.startswith('ui_dev/'):
+            if filename == 'webpack.config.js':
                 print '***'*25
                 print '*** Run $ webpack ', path
                 print '***'*25

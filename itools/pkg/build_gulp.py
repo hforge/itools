@@ -52,7 +52,7 @@ class GulpBuilder(object):
         gulp_done = self.launch_gulp_build()
         webpack_done = self.launch_webpack()
         # Add DIST files into manifest
-        if (npm_done or gulp_done) and self.fs.exists(self.ui_path):
+        if (npm_done or gulp_done or webpack_done) and self.fs.exists(self.ui_path):
             for path in self.fs.traverse(self.ui_path):
                 relative_path = self.fs.get_relative_path(path)
                 if (relative_path and

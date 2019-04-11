@@ -200,6 +200,10 @@ class GitBackend(object):
             with fs.open(key, 'w') as f:
                 f.write(data)
                 f.truncate(f.tell())
+        # Set dirty = None
+        handler.timestamp = self.get_handler_mtime(key)
+        handler.dirty = None
+
 
 
     def traverse_resources(self):

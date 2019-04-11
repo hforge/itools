@@ -57,7 +57,8 @@ def get_version(mname=None):
 
     path = get_abspath('version.txt', mname=mname)
     if exists(path):
-        return open(path).read().strip()
+        with open(path, 'r') as f:
+            return f.read().strip()
     return None
 
 

@@ -53,7 +53,8 @@ class LFSBackend(object):
     def get_handler_data(self, key):
         if not key:
             return None
-        return self.fs.open(key).read()
+        with self.fs.open(key) as f:
+            return f.read()
 
 
     def get_handler_mimetype(self, key):
@@ -73,19 +74,16 @@ class LFSBackend(object):
 
 
     def save_handler(self, key, handler):
+        data = handler.to_str()
         # Save the file
         if not self.fs.exists(key):
-            f = self.fs.make_file(key)
+            with self.fs.make_file(key) as f:
+                f.write(data)
+                f.truncate(f.tell())
         else:
-            f = self.fs.open(key, 'w')
-        try:
-            data = handler.to_str()
-            # Write and truncate (calls to "_save_state" must be done with the
-            # pointer pointing to the beginning)
-            f.write(data)
-            f.truncate(f.tell())
-        finally:
-            f.close()
+            with self.fs.open(key, 'w') as f:
+                f.write(data)
+                f.truncate(f.tell())
 
 
     def traverse_resources(self):

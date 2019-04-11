@@ -162,7 +162,8 @@ class GitBackend(object):
         if not key:
             return None
         fs = self.get_handler_fs_by_key(key)
-        return fs.open(key).read()
+        with fs.open(key) as f:
+            return f.read()
 
 
     def get_handler_mimetype(self, key):
@@ -189,17 +190,16 @@ class GitBackend(object):
         data = handler.to_str()
         # Save the file
         fs = self.get_handler_fs(handler)
+        # Write and truncate (calls to "_save_state" must be done with the
+        # pointer pointing to the beginning)
         if not fs.exists(key):
-            f = fs.make_file(key)
+            with fs.make_file(key) as f:
+                f.write(data)
+                f.truncate(f.tell())
         else:
-            f = fs.open(key, 'w')
-        try:
-            # Write and truncate (calls to "_save_state" must be done with the
-            # pointer pointing to the beginning)
-            f.write(data)
-            f.truncate(f.tell())
-        finally:
-            f.close()
+            with fs.open(key, 'w') as f:
+                f.write(data)
+                f.truncate(f.tell())
 
 
     def traverse_resources(self):
@@ -243,14 +243,16 @@ class GitBackend(object):
         # Changed
         for key in changed:
             if key.endswith('.metadata'):
-                before = self.fs.open(key).read().splitlines(True)
+                with self.fs.open(key) as f:
+                    before = f.readlines()
                 after = handlers.get(key).to_str().splitlines(True)
                 diff = difflib.unified_diff(before, after, fromfile=key, tofile=key)
                 diffs[key] = ''.join(diff)
         # Removed
         for key in removed:
             if key.endswith('.metadata'):
-                before = self.fs.open(key).read().splitlines(True)
+                with self.fs.open(key) as f:
+                    before = f.readlines()
                 after = ''
                 diff = difflib.unified_diff(before, after, fromfile=key, tofile=key)
                 diffs[key] = ''.join(diff)
@@ -264,10 +266,11 @@ class GitBackend(object):
               author_id=author_id,
               the_time=the_time,
               uuid=uuid4())
-        f = self.fs.open(patch_key, 'w')
         data = ''.join([diffs[x] for x in sorted(diffs.keys())])
-        f.write(data)
-        f.truncate(f.tell())
+        # Write
+        with self.fs.open(patch_key, 'w') as f:
+            f.write(data)
+            f.truncate(f.tell())
 
 
     def do_transaction(self, commit_message, data, added, changed, removed, handlers,

@@ -187,6 +187,10 @@ class RODatabase(object):
             return
         # Store in the cache
         self.cache[key] = handler
+        # Make room if cache is full
+        cache_is_full = len(self.cache) > self.cache.size_max
+        if cache_is_full:
+            self.make_room()
 
 
     def make_room(self):
@@ -196,12 +200,8 @@ class RODatabase(object):
         used outside the database, and one of them (or more) are modified, then
         there will be an error.
         """
-        # Find out how many handlers should be removed
         size = len(self.cache)
-        if size < self.cache.size_max:
-            return
-
-        # Discard as many handlers as needed
+        cache_is_full = size > self.cache.size_max
         n = size - self.cache.size_min
         for key, handler in self.cache.iteritems():
             # Skip externally referenced handlers (refcount should be 3:
@@ -213,12 +213,15 @@ class RODatabase(object):
             # Skip modified (not new) handlers
             if handler.dirty is not None:
                 continue
+            # Always remove non-metadata handlers from cache
+            if not key.endswith('.metadata'):
+                self._discard_handler(key)
+                continue
             # Discard this handler
-            self._discard_handler(key)
-            # Check whether we are done
             n -= 1
-            if n == 0:
-                return
+            if cache_is_full and n > 0:
+                self._discard_handler(key)
+
 
 
     def has_handler(self, key):

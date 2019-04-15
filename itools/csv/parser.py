@@ -47,6 +47,9 @@ def parse_line(reader, line, datatypes, encoding, n_columns):
         next_line = reader.next()
     except StopIteration:
         next_line = None
+    except Exception:
+        line_num = getattr(reader, 'line_num', None)
+        raise ValueError('Cannot read line number {}'.format(line_num))
 
     # Ok
     return decoded, next_line

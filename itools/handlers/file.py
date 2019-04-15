@@ -107,7 +107,7 @@ class File(Handler):
             # Update message to add the problematic file
             message = '{0} on "{1}"'.format(e.message, self.key)
             self._clean_state()
-            raise type(e), type(e)(message), exc_info()[2]
+            raise
         self.timestamp = self.database.get_handler_mtime(self.key)
         self.dirty = None
 

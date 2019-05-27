@@ -37,8 +37,7 @@ from git import open_worktree
 
 def get_manifest():
     worktree = open_worktree('.')
-    exclude = frozenset(['.gitignore'])
-    return [ x for x in worktree.get_filenames() if x not in exclude ]
+    return [ x for x in worktree.get_filenames() if not x.startswith('.')]
 
 
 def make(worktree, rules, manifest, package_root, po_files):

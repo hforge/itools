@@ -49,12 +49,11 @@ def make(worktree, rules, manifest, package_root, po_files):
         for source_ext, target_ext, f, handler_cls in rules:
             if source.endswith(source_ext):
                 target = source[:-len(source_ext)] + target_ext
-                # 1. Compile
+                print(target)
+                # Compile
                 f(package_root, source, target, handler_cls, po_files)
-                # 2. Update manifest
+                # Update manifest
                 manifest.add(target)
-                # 3. Print
-                print target
 
 
 # PO => MO

@@ -23,7 +23,6 @@ from distutils import core
 from distutils.core import Extension
 from distutils.command.build_ext import build_ext
 from distutils.errors import LinkError
-from pip._internal.download import PipSession
 from pip._internal.req import parse_requirements
 from os.path import exists, join as join_path
 from sys import argv
@@ -173,7 +172,7 @@ def setup(path, ext_modules=None):
     install_requires = []
     if exists('requirements.txt'):
         install_requires = parse_requirements(
-            'requirements.txt', session=PipSession())
+            'requirements.txt', session='xxx')
         install_requires = [str(ir.req) for ir in install_requires]
     # XXX Workaround buggy distutils ("sdist" don't likes unicode strings,
     # and "register" don't likes normal strings).

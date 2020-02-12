@@ -20,7 +20,6 @@
 from distutils.core import Extension
 from distutils.core import setup
 from os.path import join as join_path
-from pip._internal.download import PipSession
 from pip._internal.req import parse_requirements
 from sys import stderr
 from subprocess import Popen, PIPE
@@ -214,7 +213,7 @@ if __name__ == '__main__':
       "scripts/ipkg-quality.py",
       "scripts/ipkg-update-locale.py"]
     install_requires = parse_requirements(
-        'requirements.txt', session=PipSession())
+        'requirements.txt', session='xxx')
     install_requires = [str(ir.req) for ir in install_requires]
     # The data files
     package_data = {'itools': []}

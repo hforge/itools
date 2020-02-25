@@ -332,6 +332,7 @@ class RWDatabase(RODatabase):
     # Layer 1: resources
     #######################################################################
     def remove_resource(self, resource):
+        self.has_changed = True
         old2new = self.resources_old2new
         new2old = self.resources_new2old
         for x in resource.traverse_resources():
@@ -343,6 +344,7 @@ class RWDatabase(RODatabase):
 
 
     def add_resource(self, resource):
+        self.has_changed = True
         new2old = self.resources_new2old
         # Catalog
         for x in resource.traverse_resources():
@@ -351,6 +353,7 @@ class RWDatabase(RODatabase):
 
 
     def change_resource(self, resource):
+        self.has_changed = True
         old2new = self.resources_old2new
         new2old = self.resources_new2old
         # Case 1: added, moved in-here or already changed
@@ -377,6 +380,7 @@ class RWDatabase(RODatabase):
 
 
     def move_resource(self, source, new_path):
+        self.has_changed = True
         old2new = self.resources_old2new
         new2old = self.resources_new2old
 
@@ -455,12 +459,13 @@ class RWDatabase(RODatabase):
 
 
     def _save_changes(self, data, commit_msg=None):
-        # Check
-        if not self.added and not self.changed and not self.removed:
-            msg = 'No changes, should never happen'
-            raise ValueError(msg)
         # Get data informations
         the_author, the_date, the_msg, docs_to_index, docs_to_unindex = data
+        # Check
+        if (not self.added and not self.changed and not self.removed and
+            not docs_to_index and not docs_to_unindex):
+            msg = 'No changes, should never happen'
+            raise ValueError(msg)
         # Do transaction
         self.backend.do_transaction(commit_msg,
             data, self.added, self.changed, self.removed, self.cache,

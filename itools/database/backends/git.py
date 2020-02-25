@@ -287,8 +287,12 @@ class GitBackend(object):
         for key in changed_and_removed:
             if not key.endswith('metadata'):
                 self.add_handler_into_static_history(key)
-        # Create patch
-        self.create_patch(added, changed, removed, handlers, git_author)
+        # Create patch if there's changed
+        if added or changed or removed:
+            self.create_patch(added, changed, removed, handlers, git_author)
+        else:
+            # it's a catalog transaction, we have to do nothing
+            pass
         # Added and changed
         added_and_changed = list(added) + list(changed)
         for key in added_and_changed:

@@ -1,4 +1,4 @@
-psutil==5.0.1
+psutil==5.6.6
 pytz==2010h
 xlrd==0.6.1
 pygit2==0.28.2

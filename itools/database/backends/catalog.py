@@ -31,7 +31,7 @@ from xapian import Document, Query, QueryParser, Enquire
 from xapian import sortable_serialise, sortable_unserialise, TermGenerator
 
 # Import from itools
-from itools.core import fixed_offset, lazy
+from itools.core import fixed_offset, lazy, merge_dicts
 from itools.datatypes import Decimal, Integer, Unicode, String
 from itools.fs import lfs
 from itools.i18n import is_punctuation
@@ -361,8 +361,18 @@ class Catalog(object):
         metadata = self._metadata
         for name, field_cls in self._fields.items():
             if name not in metadata:
+                print('[Catalog] New field: {0}'.format(name))
                 has_changes = True
                 metadata[name] = self._get_info(field_cls, name)
+            else:
+                # If the field was in the catalog but is newly stored
+                if (not metadata[name].has_key('value') and
+                    getattr(field_cls, 'stored', False)):
+                    print('[Catalog] New stored field: {0}'.format(name))
+                    has_changes = True
+                    metadata[name] = merge_dicts(
+                        metadata[name],
+                        self._get_info_stored())
         if has_changes:
             self._db.set_metadata('metadata', dumps(metadata))
             self._db.commit_transaction()
@@ -570,14 +580,25 @@ class Catalog(object):
         # Stored ?
         info = {}
         if getattr(field_cls, 'stored', False):
-            info['value'] = self._value_nb
-            self._value_nb += 1
+            info = self._get_info_stored()
         # Indexed ?
         if getattr(field_cls, 'indexed', False):
-            info['prefix'] = _get_prefix(self._prefix_nb)
-            self._prefix_nb += 1
-
+            info = merge_dicts(info, self._get_info_indexed())
+        # Ok
         return info
+
+
+    def _get_info_stored(self):
+        value = self._value_nb
+        self._value_nb += 1
+        return {'value': value}
+
+
+    def _get_info_indexed(self):
+        prefix = _get_prefix(self._prefix_nb)
+        self._prefix_nb += 1
+        return {'prefix': prefix}
+
 
 
     def _load_all_internal(self):

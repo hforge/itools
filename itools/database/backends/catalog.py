@@ -361,18 +361,26 @@ class Catalog(object):
         metadata = self._metadata
         for name, field_cls in self._fields.items():
             if name not in metadata:
-                print('[Catalog] New field: {0}'.format(name))
+                print('[Catalog] New field registered: {0}'.format(name))
                 has_changes = True
                 metadata[name] = self._get_info(field_cls, name)
             else:
                 # If the field was in the catalog but is newly stored
                 if (not metadata[name].has_key('value') and
                     getattr(field_cls, 'stored', False)):
-                    print('[Catalog] New stored field: {0}'.format(name))
+                    print('[Catalog] Indexed field is now stored: {0}'.format(name))
                     has_changes = True
                     metadata[name] = merge_dicts(
                         metadata[name],
                         self._get_info_stored())
+                # If the field was stored in the catalog but is newly indexed
+                if (not metadata[name].has_key('prefix') and
+                    getattr(field_cls, 'indexed', False)):
+                    print('[Catalog] Stored field is now indexed: {0}'.format(name))
+                    has_changes = True
+                    metadata[name] = merge_dicts(
+                        metadata[name],
+                        self._get_info_indexed())
         if has_changes:
             self._db.set_metadata('metadata', dumps(metadata))
             self._db.commit_transaction()

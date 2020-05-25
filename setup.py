@@ -214,7 +214,7 @@ if __name__ == '__main__':
       "scripts/ipkg-update-locale.py"]
     install_requires = parse_requirements(
         'requirements.txt', session='xxx')
-    install_requires = [str(ir.req) for ir in install_requires]
+    install_requires = [str(ir.requirement) for ir in install_requires]
     # The data files
     package_data = {'itools': []}
     filenames = [ x for x in filenames if not x.endswith('.py') ]

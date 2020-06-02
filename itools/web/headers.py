@@ -485,12 +485,14 @@ class ContentDisposition(DataType):
 class Authorization(DataType):
     """RFC 7617 The 'Basic' HTTP Authentication Scheme"""
 
-    @staticmethod
-    def decode(data):
+    auth_types = ['bearer', 'basic']
+
+    @classmethod
+    def decode(cls, data):
         auth_type, credentials = read_token(data)
         if not credentials or not auth_type:
             raise ValueError('missing value')
-        if auth_type.lower() != 'basic':
+        if auth_type.lower() not in cls.auth_types:
             raise ValueError('unexpected authorization type "%s"' % auth_type)
         return auth_type, credentials
 

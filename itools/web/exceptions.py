@@ -54,6 +54,33 @@ class Unauthorized(ClientError):
     title = 'Unauthorized'
 
 
+class TokenAuthorizationException(Unauthorized):
+
+    code = 401
+    message = None
+    error = "token_error"
+
+    def to_dict(self):
+        return {
+            "error": self.error,
+            "message": self.message,
+            "code": self.code
+        }
+
+
+class InvalidJWTSignatureException(TokenAuthorizationException):
+
+    message = MSG(u"Signature du jeton invalide")
+    error = "invalid_token_signature"
+
+
+class JWTExpiredException(TokenAuthorizationException):
+
+    message = MSG(u"Jeton expiré")
+    error = "token_expired"
+
+
+
 class Forbidden(ClientError):
     code = 403
     title = 'Forbidden'

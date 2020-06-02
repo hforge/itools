@@ -16,7 +16,6 @@
 
 # Import from the Standard Library
 from copy import copy
-from datetime import timedelta
 from sys import exc_clear
 from types import FunctionType, MethodType
 
@@ -285,12 +284,6 @@ class RequestMethod(object):
             context.site_root.after_traverse(context)
         except Exception:
             cls.internal_server_error(context)
-
-        # Cookies for authentification
-        session_timeout = context.get_session_timeout()
-        if context.user and session_timeout != timedelta(0):
-            cookie = context.get_cookie('iauth')
-            context._set_auth_cookie(cookie)
 
         # (7) Build and return the response
         context.set_response_from_context()

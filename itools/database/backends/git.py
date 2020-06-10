@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 import difflib, os
 from heapq import heappush, heappop
 from multiprocessing import Process
@@ -311,10 +311,16 @@ class GitBackend(object):
         if not TEST_DB_WITHOUT_COMMITS:
             self.do_git_transaction(commit_message, data, added, changed, removed, handlers)
         else:
-            now = datetime.now()
-            # Commit at start or every hour
-            if not self.last_transaction_dtime or now - self.last_transaction_dtime > timedelta(minutes=60):
+            # Commit at start
+            if not self.last_transaction_dtime:
                 self.do_git_big_commit()
+            else:
+                now = datetime.now()
+                t = now.time()
+                is_night = time(21, 00) < t or t < time(06, 00)
+                done_recently = now - self.last_transaction_dtime < timedelta(minutes=120)
+                if is_night and not done_recently:
+                    self.do_git_big_commit()
         # Catalog
         for path in docs_to_unindex:
             self.catalog.unindex_document(path)

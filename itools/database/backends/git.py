@@ -40,8 +40,8 @@ from registry import register_backend
 
 TEST_DB_WITHOUT_COMMITS = bool(int(os.environ.get('TEST_DB_WITHOUT_COMMITS') or 0))
 TEST_DB_DESACTIVATE_GIT = bool(int(os.environ.get('TEST_DB_DESACTIVATE_GIT') or 0))
-TEST_DB_DESACTIVATE_STATIC_HISTORY = bool(int(os.environ.get('TEST_DB_DESACTIVATE_STATIC_HISTORY') or 0))
-TEST_DB_DESACTIVATE_PATCH = bool(int(os.environ.get('TEST_DESACTIVATE_PATCH') or 0))
+TEST_DB_DESACTIVATE_STATIC_HISTORY = bool(int(os.environ.get('TEST_DB_DESACTIVATE_STATIC_HISTORY') or 1))
+TEST_DB_DESACTIVATE_PATCH = bool(int(os.environ.get('TEST_DESACTIVATE_PATCH') or 1))
 
 
 class Heap(object):

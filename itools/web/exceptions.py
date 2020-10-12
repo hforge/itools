@@ -132,7 +132,7 @@ class FormError(StandardError):
 
     def __init__(self, message=None, missing=False, invalid=False,
             missings=freeze([]), invalids=freeze([]),
-            messages=freeze([]), code=400):
+            messages=freeze([]), values=freeze([]), code=400, **kw):
         self.msg = message
         self.missing = missing
         self.invalid = invalid
@@ -140,6 +140,8 @@ class FormError(StandardError):
         self.invalids = invalids
         self.messages = messages
         self.code = code
+        self.values = values
+        self.kw = kw
 
 
     def get_messages(self):
@@ -175,10 +177,13 @@ class FormError(StandardError):
 
 
     def to_dict(self):
-        return {
-            'msg': self.get_message(),
+        namespace = {
+            'msg': self.msg,
             'messages': self.messages,
             'missing': self.missing,
             'invalid': self.invalid,
             'missings': self.missings,
-            'invalids': self.invalids}
+            'invalids': self.invalids,
+        }
+        namespace.update(self.kw)
+        return namespace

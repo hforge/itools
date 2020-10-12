@@ -26,7 +26,6 @@ from gevent.local import local
 # Import from itools
 from itools.database.fields import get_field_and_datatype
 from itools.datatypes import String
-from itools.log import Logger
 from itools.validators import ValidationError
 
 # Local imports
@@ -40,7 +39,7 @@ g = local()
 
 
 def set_context(ctx):
-    if ctx and get_context() != None:
+    if ctx and get_context() is not None:
         raise ValueError('Cannot set context')
     g.context = ctx
 
@@ -86,7 +85,7 @@ def _get_form_value(form, name, type=String, default=None):
         if not isinstance(value, list):
             value = [value]
         try:
-            values = [ datatype.decode(x) for x in value ]
+            values = [datatype.decode(x) for x in value]
         except Exception:
             raise FormError(invalid_msg, invalid=True)
         # Check the values are valid
@@ -130,7 +129,7 @@ def check_form_value(field, value):
         validator = validator(title=field.title, context=context)
         try:
             validator.check(value)
-        except ValidationError, e:
+        except ValidationError as e:
             errors.extend(e.get_messages(field))
     if errors:
         raise FormError(messages=errors, invalid=True)
@@ -146,37 +145,37 @@ def get_form_value(form, name, type=String, default=None):
         return value
     # Multilingual
     values = {}
-    for key, value in form.iteritems():
+    for key, value in form.items():
         if key.startswith('%s:' % name):
             x, lang = key.split(':', 1)
-            value =_get_form_value(form, key, type, default)
+            value = _get_form_value(form, key, type, default)
             values[lang] = value
     check_form_value(field, values)
     return values
 
 
 
-class WebLogger(Logger):
-
-    def get_body(self):
-        context = get_context()
-        if context is None:
-            return Logger.get_body(self)
-
-        # The URI and user
-        if context.user:
-            lines = ['%s (user: %s)\n\n' % (context.uri, context.user.name)]
-        else:
-            lines = ['%s\n\n' % context.uri]
-
-        # Request header
-        lines.append(context.get_request_line() + '\n')
-        headers = context.get_headers()
-        for key, value in headers:
-            lines.append('%s: %s\n' % (key, value))
-        lines.append('\n')
-
-        # Ok
-        body = Logger.get_body(self)
-        lines.extend(body)
-        return lines
+# class WebLogger(Logger):
+#
+#     def get_body(self):
+#         context = get_context()
+#         if context is None:
+#             return Logger.get_body(self)
+#
+#         # The URI and user
+#         if context.user:
+#             lines = ['%s (user: %s)\n\n' % (context.uri, context.user.name)]
+#         else:
+#             lines = ['%s\n\n' % context.uri]
+#
+#         # Request header
+#         lines.append(context.get_request_line() + '\n')
+#         headers = context.get_headers()
+#         for key, value in headers:
+#             lines.append('%s: %s\n' % (key, value))
+#         lines.append('\n')
+#
+#         # Ok
+#         body = Logger.get_body(self)
+#         lines.extend(body)
+#         return lines

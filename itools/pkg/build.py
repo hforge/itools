@@ -150,15 +150,15 @@ def build(path, config, environment):
     manifest.add('MANIFEST')
     # Write version
     open(path + version_txt, 'w').write(version)
-    print '**'*30
-    print '* Version:', version
+    print("**"*30)
+    print("* Version: {}".format(version))
     manifest.add(version_txt)
     # Write environment.json file
     environment_json = get_file_path(package_root, 'environment.json')
     environment_kw = {'build_path': path, 'environment': environment}
     open(path + environment_json, 'w').write(dumps(environment_kw))
     manifest.add(environment_json)
-    print '* Build environment.json'
+    print("* Build environment.json")
     # Run gulp
     if environment == 'production':
         gulp_builder = GulpBuilder(package_root, worktree, manifest)
@@ -185,6 +185,6 @@ def build(path, config, environment):
     # Write the manifest
     lines = [ x + '\n' for x in sorted(manifest) ]
     open(path + 'MANIFEST', 'w').write(''.join(lines))
-    print '* Build MANIFEST file (list of files to install)'
-    print '**'*30
+    print('* Build MANIFEST file (list of files to install)')
+    print('**'*30)
     return version

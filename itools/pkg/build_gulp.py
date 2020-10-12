@@ -65,16 +65,16 @@ class GulpBuilder(object):
         for path in self.manifest:
             filename = get_uri_name(path)
             if filename == 'package.json':
-                print '***'*25
-                print '*** Run $ npm install on ', path
-                print '***'*25
+                print("***"*25)
+                print("*** Run $ npm install on {}".format(path))
+                print("***"*25)
                 path = str(Path(path)[:-1]) + '/'
                 p = Popen(['npm', 'install'], cwd=path)
                 p.wait()
                 if p.returncode == 1:
-                    print '***'*25
-                    print '*** Error running npm install ', path
-                    print '***'*25
+                    print("***"*25)
+                    print("*** Error running npm install {}".format(path))
+                    print("***"*25)
                     sys.exit(1)
                 done = True
         return done
@@ -85,16 +85,16 @@ class GulpBuilder(object):
         for path in self.manifest:
             filename = get_uri_name(path)
             if filename == 'gulpfile.js':
-                print '***'*25
-                print '*** Run $ gulp build on ', path
-                print '***'*25
+                print("***"*25)
+                print("*** Run $ gulp build on ".format(path))
+                print("***"*25)
                 path = str(Path(path)[:-1]) + '/'
                 p = Popen(['gulp', 'build'], cwd=path)
                 p.wait()
                 if p.returncode == 1:
-                    print '***'*25
-                    print '*** Error running gulp ', path
-                    print '***'*25
+                    print("***"*25)
+                    print("*** Error running gulp ".format(path))
+                    print("***"*25)
                     sys.exit(1)
                 done = True
         return done
@@ -105,16 +105,16 @@ class GulpBuilder(object):
         for path in self.manifest:
             filename = get_uri_name(path)
             if filename == 'webpack.config.js':
-                print '***'*25
-                print '*** Run $ webpack ', path
-                print '***'*25
+                print("***"*25)
+                print("*** Run $ webpack ".format(path))
+                print("***"*25)
                 path = str(Path(path)[:-1]) + '/'
                 p = Popen(['webpack', '--mode=production'], cwd=path)
                 p.wait()
                 if p.returncode == 1:
-                    print '***'*25
-                    print '*** Error running webpack ', path
-                    print '***'*25
+                    print("***"*25)
+                    print("*** Error running webpack ".format(path))
+                    print("***"*25)
                     sys.exit(1)
                 done = True
         return done

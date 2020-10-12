@@ -100,8 +100,6 @@ class RODatabase(object):
 
         This is meant to be used by scripts, like 'icms-start.py'
         """
-        # TODO Check if bare repository is OK
-        print('Checking database...')
         return True
 
 
@@ -273,8 +271,7 @@ class RODatabase(object):
         if handler is not None:
             # Check the class matches
             if cls is not None and not isinstance(handler, cls):
-                error = "expected '%s' class, '%s' found"
-                raise LookupError, error % (cls, handler.__class__)
+                raise LookupError("expected '{}' class, '{}' found".format(cls, handler.__class__))
             # Cache hit
             self.cache.touch(key)
             return handler
@@ -345,19 +342,19 @@ class RODatabase(object):
 
 
     def set_handler(self, key, handler):
-        raise ReadonlyError, 'cannot set handler'
+        raise ReadonlyError('cannot set handler')
 
 
     def del_handler(self, key):
-        raise ReadonlyError, 'cannot del handler'
+        raise ReadonlyError('cannot del handler')
 
 
     def copy_handler(self, source, target, exclude_patterns=None):
-        raise ReadonlyError, 'cannot copy handler'
+        raise ReadonlyError('cannot copy handler')
 
 
     def move_handler(self, source, target):
-        raise ReadonlyError, 'cannot move handler'
+        raise ReadonlyError('cannot move handler')
 
 
     #######################################################################
@@ -382,7 +379,7 @@ class RODatabase(object):
 
     def get_resource_class(self, class_id):
         if type(class_id) is not str:
-            raise TypeError, 'expected byte string, got %s' % class_id
+            raise TypeError('expected byte string, got {}'.format(class_id))
 
         # Check dynamic models are not broken
         registry = self._resources_registry
@@ -390,8 +387,7 @@ class RODatabase(object):
             model = self.get_resource(class_id, soft=True)
             if model is None:
                 registry.pop(class_id, None)
-                err = 'the resource "%s" does not exist' % class_id
-                raise LookupError, err
+                raise LookupError("the resource '{}' does not exist".format(class_id))
 
         # Cache hit
         cls = registry.get(class_id)
@@ -461,19 +457,19 @@ class RODatabase(object):
 
 
     def remove_resource(self, resource):
-         raise ReadonlyError
+        raise ReadonlyError
 
 
     def add_resource(self, resource):
-         raise ReadonlyError
+        raise ReadonlyError
 
 
     def change_resource(self, resource):
-         raise ReadonlyError
+        raise ReadonlyError
 
 
     def move_resource(self, source, new_path):
-         raise ReadonlyError
+        raise ReadonlyError
 
 
     def save_changes(self):

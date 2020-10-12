@@ -18,15 +18,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from logging import getLogger
 from copy import deepcopy
 from cStringIO import StringIO
 from datetime import datetime
-from sys import exc_info
 
 # Import from itools.handlers
 from base import Handler
 from registry import register_handler_class
 
+log = getLogger("ikaaro.database")
 
 
 class File(Handler):
@@ -65,7 +66,7 @@ class File(Handler):
                 self.database = ro_database
             except:
                 if key:
-                    print('Cannot attach handler {0} to a database'.format(key))
+                    log.warning('Cannot attach handler {0} to a database'.format(key))
                     with open(key, 'r') as f:
                         string = f.read()
                     key = None
@@ -147,8 +148,7 @@ class File(Handler):
         if cls is None:
             cls = self.__class__
         elif not issubclass(cls, self.__class__):
-            msg = 'the given class must be a subclass of the object'
-            raise ValueError, msg
+            raise ValueError("the given class must be a subclass of the object")
 
         # Load first, if needed
         if self.dirty is None:
@@ -172,7 +172,7 @@ class File(Handler):
         key = self.key
         # Invalid handler
         if key is None and self.dirty is None:
-            raise RuntimeError, 'cannot change an orphaned file handler'
+            raise RuntimeError('cannot change an orphaned file handler')
         # Set as dirty
         self.dirty = datetime.now()
         # Free handler (not attached to a database)

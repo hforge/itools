@@ -14,9 +14,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from standard lib
+from logging import getLogger, NullHandler
+
 # Import from itools
 from core import get_version
 
+getLogger("itools.core").addHandler(NullHandler())
+getLogger("itools.web").addHandler(NullHandler())
+getLogger("itools.database").addHandler(NullHandler())
+getLogger("itools.stl").addHandler(NullHandler())
+getLogger("itools.catalog").addHandler(NullHandler())
 
 __version__ = get_version()
-

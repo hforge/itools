@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from logging import getLogger
 # Import from itools
 from itools.core import freeze, is_prototype
 
@@ -22,6 +23,7 @@ from fields import Field
 from registry import register_field
 from ro import RODatabase
 
+log = getLogger("ikaaro.database")
 
 
 class DBResourceMetaclass(type):
@@ -33,8 +35,7 @@ class DBResourceMetaclass(type):
 
         # Lookup fields
         if 'fields' not in dict:
-            cls.fields = [ x for x in dir(cls)
-                           if is_prototype(getattr(cls, x), Field) ]
+            cls.fields = [x for x in dir(cls) if is_prototype(getattr(cls, x), Field)]
 
         # Register new fields in the catalog
         for name in cls.fields:
@@ -54,7 +55,6 @@ class Resource(object):
     __metaclass__ = DBResourceMetaclass
     __hash__ = None
 
-
     fields = freeze([])
 
     # Says what to do when a field not defined by the schema is found.
@@ -67,10 +67,9 @@ class Resource(object):
     def get_field(cls, name, soft=True):
         if name in cls.fields:
             return getattr(cls, name, None)
-        msg = 'Undefined field %s on %s' % (name, cls)
         if soft is True:
             return None
-        print('Warning: '+ msg)
+        log.warning("Warning: Undefined field {} on {}".format(name, cls))
         return None
 
 

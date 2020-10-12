@@ -16,17 +16,19 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from logging import getLogger
+
 # Import from itools
 from itools.datatypes import Boolean, Date, DateTime, Decimal, Integer
 from itools.datatypes import QName, String, Time, URI
 from itools.fs import lfs
 from itools.handlers import TextFile, register_handler_class
-from itools.log import log_warning
 from itools.uri import get_reference
 from itools.xml import XMLNamespace, ElementSchema, xml_uri, xmlns_uri
 from itools.xml import XMLParser, XML_DECL, START_ELEMENT, END_ELEMENT, TEXT
 from itools.xml import register_namespace, has_namespace
 
+log = getLogger("itools.core")
 
 # Namespace of Relax NG
 rng_uri = 'http://relaxng.org/ns/structure/1.0'
@@ -48,9 +50,9 @@ def read_common_attrs(tag_uri, attrs, context):
                 context['default_ns'] = value
             elif name == 'datatypeLibrary':
                 if value != 'http://www.w3.org/2001/XMLSchema-datatypes':
-                    raise NotImplementedError, ('relax NG: we implement only '
-                       'the "http://www.w3.org/2001/XMLSchema-datatypes" '
-                       'for datatypes')
+                    raise NotImplementedError(('relax NG: we implement only '
+                                               'the "http://www.w3.org/2001/XMLSchema-datatypes" '
+                                               'for datatypes'))
 
 
 def read_name_class(context, event, stream):
@@ -67,13 +69,13 @@ def read_name_class(context, event, stream):
                 # Read the content
                 type, value, line = stream.next()
                 if type != TEXT:
-                    raise ValueError, 'your relax NG file is malformed'
+                    raise ValueError('your relax NG file is malformed')
                 name = value
                 # Read "</name>"
                 type, value, line = stream.next()
                 if (type != END_ELEMENT or value[0] != rng_uri or
                     value[1] != 'name'):
-                    raise ValueError, 'your relax NG file is malformed'
+                    raise ValueError('your relax NG file is malformed')
                 # Make Qname
                 if ':' in name:
                     prefix, trash, name = name.partition(':')
@@ -108,7 +110,7 @@ def read_name_class(context, event, stream):
                         if level == 0:
                             return None
             else:
-                raise ValueError, 'your relax NG file is malformed'
+                raise ValueError('your relax NG file is malformed')
         else:
             event = stream.next()
 
@@ -247,8 +249,8 @@ def read_file(context, uri, file):
 
                 # Tags not implemented
                 else:
-                    raise NotImplementedError, ('relax NG: <%s> not '
-                          'implemented') % tag_name
+                    raise NotImplementedError(('relax NG: <%s> not '
+                                               'implemented') % tag_name)
         elif type == END_ELEMENT:
             tag_uri, tag_name = value
             if (tag_uri == rng_uri and
@@ -314,7 +316,7 @@ def convert_type(data):
     if datatype is not None:
         return datatype
     else:
-        raise ValueError, 'relax NG: unexpected datatype "%s"' % data
+        raise ValueError('relax NG: unexpected datatype "%s"' % data)
 
 
 def split_attributes(uri, attributes):
@@ -353,8 +355,8 @@ def make_namespaces(context):
                 try:
                     ref = references[ref]
                 except KeyError:
-                    raise KeyError, ('the define "%s" is missing in your '
-                                     'relax NG file') % ref
+                    raise KeyError(('the define "%s" is missing in your '
+                                    'relax NG file') % ref)
                 attributes.extend(ref['attributes'])
                 new_refs.extend(ref['refs'])
                 is_empty = is_empty and ref['is_empty']
@@ -381,8 +383,8 @@ def make_namespaces(context):
                     try:
                         ref = references[ref]
                     except KeyError:
-                        raise KeyError, ('the define "%s" is missing in your '
-                                         'relax NG file') % ref
+                        raise KeyError(('the define "%s" is missing in your '
+                                        'relax NG file') % ref)
                     new_refs.extend(ref['refs'])
 
                     ref_data = ref['data']
@@ -430,8 +432,7 @@ def make_namespaces(context):
                     default_datatype=String)
                 break
         else:
-            log_warning('relaxng: namespace "%s" not found' % namespace)
-
+            log.warning('relaxng: namespace "%s" not found' % namespace)
     return result
 
 

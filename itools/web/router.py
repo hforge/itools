@@ -16,13 +16,13 @@
 
 # Import from the Standard Library
 from copy import copy
+from logging import getLogger
 from sys import exc_clear
 from types import FunctionType, MethodType
 
 # Import from itools
 from itools.core import local_tz
 from itools.database import ReadonlyError
-from itools.log import log_error
 from itools.uri import decode_query, Reference
 
 # Local imports
@@ -30,6 +30,7 @@ from exceptions import ClientError, NotModified, Forbidden, NotFound
 from exceptions import Unauthorized, FormError, ServiceUnavailable
 from exceptions import MethodNotAllowed
 
+log = getLogger("itools.web")
 
 
 ###########################################################################
@@ -48,7 +49,6 @@ status2name = {
 
 class RequestMethod(object):
 
-
     @classmethod
     def check_access(cls, context):
         """Tell whether the user is allowed to access the view
@@ -63,7 +63,6 @@ class RequestMethod(object):
 
         # Forbidden (403)
         raise Forbidden
-
 
 
     @classmethod
@@ -107,11 +106,11 @@ class RequestMethod(object):
         # Warning: Context.commit on GET is not recommended
         if context.method not in ('POST', 'DELETE', 'PUT', 'PATCH'):
             # Warning in case of commiting on a GET
-            print('WARNING: context.commit=True is not recommended')
+            log.debug("WARNING: context.commit=True is not recommended")
         # Save changes
         try:
             database.save_changes()
-        except Exception:
+        except Exception as e:
             cls.internal_server_error(context)
 
 
@@ -191,13 +190,13 @@ class RequestMethod(object):
             context.view_method = getattr(context.view, context.method, None)
             # Check the client's cache
             cls.check_cache(context)
-        except ClientError, error:
+        except ClientError as error:
             has_error = True
             cls.handle_client_error(error, context)
         except NotModified:
             context.http_not_modified()
             return
-        except Exception:
+        except Exception as e:
             has_error = True
             cls.internal_server_error(context)
         finally:
@@ -216,7 +215,7 @@ class RequestMethod(object):
                     context.path_query = view.get_path_query(context)
                 # Uri query
                 context.query = view.get_query(context)
-            except FormError, error:
+            except FormError as error:
                 # If the query is invalid we consider that URL do not exist.
                 # Otherwise anybody can create many empty webpages,
                 # which is very bad for SEO.
@@ -234,7 +233,7 @@ class RequestMethod(object):
                 try:
                     cls.get_form(context)
                     method = cls.check_subview_method(context, method)
-                except FormError, error:
+                except FormError as error:
                     context.form_error = error
                     method = context.view.on_form_error
                 except Exception:
@@ -244,18 +243,18 @@ class RequestMethod(object):
         if not has_error and method:
             try:
                 context.entity = method(context.resource, context)
-            except ClientError, error:
+            except ClientError as error:
                 cls.handle_client_error(error, context)
             except ReadonlyError:
                 error = ServiceUnavailable
                 cls.handle_client_error(error, context)
-            except FormError, error:
+            except FormError as error:
                 context.form_error = error
                 cls.handle_client_error(error, context)
             except NotModified:
                 context.http_not_modified()
                 return
-            except Exception:
+            except Exception as e:
                 cls.internal_server_error(context)
             else:
                 # Ok: set status
@@ -273,7 +272,7 @@ class RequestMethod(object):
             except NotModified:
                 context.http_not_modified()
                 return
-            except Exception:
+            except Exception as e:
                 cls.internal_server_error(context)
             else:
                 cls.set_status_from_entity(context)
@@ -282,7 +281,7 @@ class RequestMethod(object):
         # (6) After Traverse hook
         try:
             context.site_root.after_traverse(context)
-        except Exception:
+        except Exception as e:
             cls.internal_server_error(context)
 
         # (7) Build and return the response
@@ -296,7 +295,7 @@ class RequestMethod(object):
         accept = context.get_header('accept')
         if content_type:
             content_type, type_parameters = content_type
-        accept_json = accept == 'application/json'
+        accept_json = 'application/json' in accept
         # Manage error code
         if error.code == 405:
             # Add allow methods in case of 405
@@ -332,10 +331,9 @@ class RequestMethod(object):
             context.status = 200
 
 
-
     @classmethod
     def internal_server_error(cls, context):
-        log_error('Internal Server Error', domain='itools.web')
+        log.error("Internal Server Error", exc_info=True)
         context.status = 500
         context.set_content_type('text/html', charset='UTF-8')
         context.entity = context.root.internal_server_error(context)
@@ -374,4 +372,3 @@ class RequestMethod(object):
         # Return subview method
         view = context.view.get_action_view(context, context.form_action)
         return getattr(view, context.method)
-

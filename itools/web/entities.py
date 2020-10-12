@@ -14,11 +14,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from logging import getLogger
+
 # Import from itools
 from itools.handlers import File
-from itools.log import log_warning
 from headers import get_type
 
+log = getLogger("itools.web")
 
 
 def read_headers(file):
@@ -36,8 +38,7 @@ def read_headers(file):
         try:
             value = datatype.decode(value)
         except Exception:
-            log_warning("Failed to parse the '%s' header" % name,
-                        domain='itools.web')
+            log.warning("Failed to parse the '%s' header" % name, exc_info=True)
         else:
             entity_headers[name] = value
         # Next

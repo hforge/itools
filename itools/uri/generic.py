@@ -163,14 +163,13 @@ class Path(list):
 
 
     def __add__(self, path):
-        raise NotImplementedError, \
-              'paths can not be added, use resolve2 instead'
+        raise NotImplementedError('paths can not be added, use resolve2 instead')
 
 
     ##########################################################################
     # API
     def __repr__(self):
-        return '<itools.uri.Path at %s>' % hex(id(self))
+        return "Path({path!r})".format(path=str(self))
 
 
     def __str__(self):

@@ -69,11 +69,11 @@ class Worktree(object):
         try:
             _, _ = self.username, self.useremail
         except:
-            print '========================================='
-            print 'ERROR: Please configure GIT commiter via'
-            print ' $ git config --global user.name'
-            print ' $ git config --global user.email'
-            print '========================================='
+            print('========================================')
+            print('ERROR: Please configure GIT commiter via')
+            print(' $ git config --global user.name')
+            print(' $ git config --global user.email')
+            print('=========================================')
             raise
 
 
@@ -88,7 +88,7 @@ class Worktree(object):
         if isabs(path):
             if path.startswith(self.path):
                 return path
-            raise ValueError, 'unexpected absolute path "%s"' % path
+            raise ValueError("unexpected absolute path '{}'".format(path))
         if path == '.':
             return self.path
         return '%s%s' % (self.path, path)
@@ -101,7 +101,7 @@ class Worktree(object):
         popen = Popen(command, stdout=PIPE, stderr=PIPE, cwd=self.path)
         stdoutdata, stderrdata = popen.communicate()
         if popen.returncode != 0:
-            raise EnvironmentError, (popen.returncode, stderrdata)
+            raise EnvironmentError((popen.returncode, stderrdata))
         return stdoutdata
 
 
@@ -144,13 +144,13 @@ class Worktree(object):
         """
         # 1. Check and normalize path
         if isabs(path):
-            raise ValueError, 'unexpected absolute path "%s"' % path
+            raise ValueError('unexpected absolute path "%s"' % path)
 
         path = normpath(path)
         if path == '.':
             path = ''
         elif path == '.git':
-            raise ValueError, 'cannot walk .git'
+            raise ValueError('cannot walk .git')
         elif not isdir('%s%s' % (self.path, path)):
             yield path
             return
@@ -216,7 +216,7 @@ class Worktree(object):
         index = self.repo.index
         # Bare repository
         if index is None:
-            raise RuntimeError, 'expected standard repository, not bare'
+            raise RuntimeError('expected standard repository, not bare')
 
         path = self.index_path
         if exists(path):
@@ -383,7 +383,7 @@ class Worktree(object):
                 when_offset = date.utcoffset().seconds / 60
             else:
                 err = "Worktree.git_commit doesn't support naive datatime yet"
-                raise NotImplementedError, err
+                raise NotImplementedError(err)
 
         author = Signature(author[0], author[1], when_time, when_offset)
 

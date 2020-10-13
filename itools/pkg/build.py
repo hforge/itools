@@ -29,7 +29,8 @@ from json import dumps
 # Import from itools
 from itools.fs import lfs
 from itools.gettext import POFile
-
+from itools.html import XHTMLFile, HTMLFile
+from itools.xmlfile.errors import TranslationError
 # Import from here
 from build_gulp import GulpBuilder
 from git import open_worktree
@@ -63,11 +64,6 @@ def po2mo(package_root, source, target, handler_cls, po_files):
 
 # Translate templates
 def make_template(package_root, source, target, handler_cls, po_files):
-    # Import some packages so we can compile templates
-    from itools.xmlfile.errors import TranslationError
-    import itools.gettext
-    import itools.stl
-    import itools.pdf
     # Get file
     source_handler = handler_cls(source)
     language = target.rsplit('.', 1)[1]
@@ -164,7 +160,6 @@ def build(path, config, environment):
         gulp_builder = GulpBuilder(package_root, worktree, manifest)
         gulp_builder.run()
         # Rules
-        from itools.html import XHTMLFile, HTMLFile
         rules = [('.po', '.mo', po2mo, None)]
         # Pre-load PO files
         po_files = {}

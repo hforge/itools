@@ -27,7 +27,7 @@ from datetime import datetime
 from base import Handler
 from registry import register_handler_class
 
-log = getLogger("ikaaro.database")
+log = getLogger("itools.database")
 
 
 class File(Handler):

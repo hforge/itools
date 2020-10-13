@@ -23,7 +23,7 @@ from fields import Field
 from registry import register_field
 from ro import RODatabase
 
-log = getLogger("ikaaro.database")
+log = getLogger("itools.database")
 
 
 class DBResourceMetaclass(type):

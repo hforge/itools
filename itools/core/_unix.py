@@ -51,7 +51,7 @@ def become_daemon():
     try:
         pid = fork()
     except OSError:
-        print 'unable to fork'
+        print('unable to fork')
         exit(1)
 
     if pid == 0:

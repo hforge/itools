@@ -41,7 +41,7 @@ from messages import ERROR
 def process_form(get_value, schema, error_msg=None):
     missings = []
     invalids = []
-    messages = []
+    messages = {}
     unknow = []
     values = {}
     for name in schema:

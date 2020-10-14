@@ -13,10 +13,10 @@ if __name__ == '__main__':
     for type, value, line in XMLParser(data):
         if type == START_ELEMENT:
             tag_uri, tag_name, attributes = value
-            print 'START TAG :', tag_name, attributes
+            print("START TAG : {} {}".format(tag_name, attributes))
         elif type == END_ELEMENT:
             tag_uri, tag_name = value
-            print 'END TAG   :', tag_name
+            print("END TAG   : {}".format(tag_name))
         elif type == TEXT:
-            print 'TEXT      :', value
+            print("TEXT  {}    :".format(value))
 

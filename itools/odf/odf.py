@@ -196,7 +196,7 @@ class ODFFile(OOFile):
         # Verify PIL is installed
         if PILImage is None:
             err = 'The greeking feature requires the Python Imaging Library'
-            raise ImportError, err
+            raise ImportError(err)
 
         folder = lfs.open(get_abspath('.'))
         err = 'Unexpected "%s" file will be omitted from the greeked document'
@@ -226,7 +226,7 @@ class ODFFile(OOFile):
                 else:
                     # Unexpected (TODO use the logging system)
                     modified_files[filename] = None
-                    print err % filename
+                    print(err % filename)
 
             # SVM files (usually they are in the Pictures folder)
             elif extension == '.svm':
@@ -257,7 +257,7 @@ class ODFFile(OOFile):
             # Unexpected (TODO use the logging system)
             else:
                 modified_files[filename] = None
-                print err % filename
+                print(err % filename)
 
         return  zip_data(self.data, modified_files)
 

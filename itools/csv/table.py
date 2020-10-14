@@ -121,7 +121,7 @@ def read_name(line, allowed=allowed):
     # Test first character of name
     c = line[0]
     if not c.isalnum() and c != '-':
-        raise SyntaxError, 'unexpected character (%s)' % c
+        raise SyntaxError('unexpected character (%s)' % c)
 
     # Test the rest
     idx = 1
@@ -133,9 +133,9 @@ def read_name(line, allowed=allowed):
         if c.isalnum() or c in allowed:
             idx += 1
             continue
-        raise SyntaxError, "unexpected character '%s' (%s)" % (c, ord(c))
+        raise SyntaxError("unexpected character '%s' (%s)" % (c, ord(c)))
 
-    raise SyntaxError, 'unexpected end of line (%s)' % line
+    raise SyntaxError('unexpected end of line (%s)' % line)
 
 
 # Manage an icalendar content line value property [with parameters] :
@@ -178,7 +178,7 @@ def get_tokens(property):
             if c.isalnum() or c in ('-'):
                 param_name, status = c, 2
             else:
-                raise SyntaxError, error1 % (c, status)
+                raise SyntaxError(error1 % (c, status))
 
         # param-name begun
         elif status == 2:
@@ -188,7 +188,7 @@ def get_tokens(property):
                 parameters[param_name] = []
                 status = 3
             else:
-                raise SyntaxError, error1 % (c, status)
+                raise SyntaxError(error1 % (c, status))
 
         # param-name ended, param-value beginning
         elif status == 3:
@@ -233,7 +233,7 @@ def get_tokens(property):
                 parameters[param_name].append(param_value)
                 status = 3
             elif c == '"':
-                raise SyntaxError, error1 % (c, status)
+                raise SyntaxError(error1 % (c, status))
             else:
                 param_value += c
 
@@ -251,10 +251,10 @@ def get_tokens(property):
             elif c == ',':
                 status = 3
             else:
-                raise SyntaxError, error1 % (c, status)
+                raise SyntaxError(error1 % (c, status))
 
     if status not in (7, 8):
-        raise SyntaxError, 'unexpected property (%s)' % property
+        raise SyntaxError('unexpected property (%s)' % property)
 
     # Unescape special characters (TODO Check the spec)
     value = unescape_data(value)
@@ -297,7 +297,7 @@ def deserialize_parameters(parameters, schema, default=String(multiple=True)):
     for name in parameters:
         datatype = schema.get(name, default)
         if datatype is None:
-            raise ValueError, 'parameter "{0}" not defined'.format(name)
+            raise ValueError('parameter "{0}" not defined'.format(name))
         # Decode
         value = parameters[name]
         value = [ decode_param_value(x, datatype) for x in value ]
@@ -305,7 +305,7 @@ def deserialize_parameters(parameters, schema, default=String(multiple=True)):
         if not datatype.multiple:
             if len(value) > 1:
                 msg = 'parameter "%s" must be a singleton'
-                raise ValueError, msg % name
+                raise ValueError(msg % name)
             value = value[0]
         # Update
         parameters[name] = value
@@ -352,7 +352,7 @@ class Property(object):
         # Copy the value and parameters
         value = deepcopy(self.value)
         parameters = {}
-        for p_key, p_value in self.parameters.iteritems():
+        for p_key, p_value in self.parameters.items():
             c_value = deepcopy(p_value)
             parameters[p_key] = c_value
 
@@ -401,7 +401,7 @@ def encode_param_value(p_name, p_value, p_datatype):
     # Standard case (ical behavior)
     if '"' in p_value or '\n' in p_value:
         error = 'the "%s" parameter contains a double quote'
-        raise ValueError, error % p_name
+        raise ValueError(error % p_name)
     if ';' in p_value or ':' in p_value or ',' in p_value:
         return '"%s"' % p_value
     return p_value
@@ -456,8 +456,8 @@ def _property_to_str(name, property, datatype, p_schema, encoding='utf-8'):
     else:
         value = datatype.encode(property.value)
     if type(value) is not str:
-        raise ValueError, 'property "{0}" is not str but {1}'.format(
-                name, type(value))
+        raise ValueError('property "{0}" is not str but {1}'.format(
+            name, type(value)))
     value = escape_data(value)
 
     # Ok
@@ -470,7 +470,7 @@ def property_to_str(name, property, datatype, p_schema, encoding='utf-8'):
         return _property_to_str(name, property, datatype, p_schema, encoding)
     except StandardError:
         err = 'failed to serialize "%s" property, probably a bad value'
-        raise ValueError, err % name
+        raise ValueError(err % name)
 
 
 
@@ -488,8 +488,8 @@ class Record(dict):
         if name == '__number__':
             return self.id
         if name not in self:
-            raise AttributeError, "'%s' object has no attribute '%s'" % (
-                self.__class__.__name__, name)
+            raise AttributeError("'%s' object has no attribute '%s'" % (
+                self.__class__.__name__, name))
 
         property = self[name]
         if type(property) is list:
@@ -644,7 +644,7 @@ class Table(File):
                 record.setdefault(name, []).append(property)
             elif name in record:
                 msg = "record %s: property '%s' can occur only once"
-                raise ValueError, msg % (uid, name)
+                raise ValueError(msg % (uid, name))
             else:
                 record[name] = property
 
@@ -729,7 +729,7 @@ class Table(File):
         record = self.records[id]
         if record is None:
             msg = 'cannot modify record "%s" because it has been deleted'
-            raise LookupError, msg % id
+            raise LookupError(msg % id)
         # Check for duplicate
         for name in kw:
             datatype = self.get_record_datatype(name)
@@ -762,7 +762,7 @@ class Table(File):
         record = self.records[id]
         if record is None:
             msg = 'cannot delete record "%s" because it was deleted before'
-            raise LookupError, msg % id
+            raise LookupError(msg % id)
         # Change
         self.set_changed()
         self.records[id] = None
@@ -912,7 +912,7 @@ class Table(File):
                         # TODO represent multiple values
                         message = ("multiple values are not supported, "
                                    "use a separator")
-                        raise NotImplementedError, message
+                        raise NotImplementedError(message)
                 else:
                     data = datatype.encode(value)
                 line.append(data)

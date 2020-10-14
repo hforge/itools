@@ -12,7 +12,7 @@ register_domain('__main__', 'locale')
 
 def say_hello():
     message = MSG(u'Hello World')
-    print message.gettext()
+    print(message.gettext())
 
 
 def get_template(name):
@@ -34,7 +34,7 @@ def get_template(name):
 
 def tell_fable():
     template = get_template('fable.xhtml')
-    print open(template).read()
+    print(open(template).read())
 
 
 say_hello()

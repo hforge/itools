@@ -36,4 +36,4 @@ def get_handler_class_by_mimetype(mimetype, soft=False):
     if soft:
         return None
 
-    raise ValueError, mimetype
+    raise ValueError(mimetype)

@@ -161,8 +161,7 @@ class TMXFile(TextFile):
                     tu.notes = notes
                     srclang = tu.attributes.get('srclang', default_srclang)
                     if srclang == '*all*':
-                        raise NotImplementedError, \
-                              'no support for "*all*" in srclang attribute.'
+                        raise NotImplementedError('no support for "*all*" in srclang attribute.')
                     msgid = tu.msgstr[srclang].text
                     messages[msgid] = tu
                 elif local_name == 'tuv':

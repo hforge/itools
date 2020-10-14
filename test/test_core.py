@@ -349,21 +349,21 @@ class CacheTestCase(TestCase):
 
     def test_iteritems(self):
         cache = self.cache
-        items = cache.iteritems()
+        items = cache.items()
         items = list(items)
         self.assertEqual(items, [('x', 'X'), ('y', 'Y'), ('z', 'Z')])
 
 
     def test_iterkeys(self):
         cache = self.cache
-        keys = cache.iterkeys()
+        keys = cache.keys()
         keys = list(keys)
         self.assertEqual(keys, list('xyz'))
 
 
     def test_itervalues(self):
         cache = self.cache
-        values = cache.itervalues()
+        values = cache.values()
         values = list(values)
         self.assertEqual(values, list('XYZ'))
 

@@ -17,6 +17,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from __future__ import print_function
+
 from unittest import TestCase, main
 
 # Import from itools
@@ -344,11 +346,11 @@ class ResolveTestCase(TestCase):
             try:
                 self.assertEqual(x, expected)
             except AssertionError:
-                print '\n%s + %s = %s != %s' \
-                      % (self.base, reference, x, expected)
+                print('\n%s + %s = %s != %s' \
+                      % (self.base, reference, x, expected))
                 failure += 1
         if failure:
-            raise AssertionError, '%s uri resolutions failed' % failure
+            raise AssertionError('%s uri resolutions failed' % failure)
 
 
     def test_others(self):

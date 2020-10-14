@@ -135,7 +135,7 @@ class OrderedDict(dict):
 
 
     def items(self):
-        return list(self.items())
+        return list(self.iteritems())
 
 
     def iteritems(self):

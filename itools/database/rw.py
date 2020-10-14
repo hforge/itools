@@ -144,14 +144,14 @@ class RWDatabase(RODatabase):
         handler.loaded = True
         handler.set_changed()
         if type(handler) is Folder:
-            raise ValueError, 'unexpected folder (only files can be "set")'
+            raise ValueError('unexpected folder (only files can be "set")')
 
         if handler.key is not None:
-            raise ValueError, 'only new files can be added, try to clone first'
+            raise ValueError('only new files can be added, try to clone first')
 
         key = self.normalize_key(key)
         if self._get_handler(key, soft=True) is not None:
-            raise RuntimeError, MSG_URI_IS_BUSY % key
+            raise RuntimeError(MSG_URI_IS_BUSY % key)
 
         # Added or modified ?
         if key not in self.added and self.has_handler(key):
@@ -253,7 +253,7 @@ class RWDatabase(RODatabase):
 
         # Check the target is free
         if self._get_handler(target, soft=True) is not None:
-            raise RuntimeError, MSG_URI_IS_BUSY % target
+            raise RuntimeError(MSG_URI_IS_BUSY % target)
 
         handler = self._get_handler(source)
         if type(handler) is Folder:
@@ -277,7 +277,7 @@ class RWDatabase(RODatabase):
 
         # Check the target is free
         if self._get_handler(target, soft=True) is not None:
-            raise RuntimeError, MSG_URI_IS_BUSY % target
+            raise RuntimeError(MSG_URI_IS_BUSY % target)
 
         # Go
         cache = self.cache

@@ -58,7 +58,7 @@ class Worktree(object):
         popen = Popen(command, stdout=PIPE, stderr=PIPE, cwd=self.path)
         stdoutdata, stderrdata = popen.communicate()
         if popen.returncode != 0:
-            raise EnvironmentError, (popen.returncode, stderrdata)
+            raise EnvironmentError((popen.returncode, stderrdata))
         return stdoutdata
 
 
@@ -106,7 +106,7 @@ class Worktree(object):
         index = self.repo.index
         # Bare repository
         if index is None:
-            raise RuntimeError, 'expected standard repository, not bare'
+            raise RuntimeError('expected standard repository, not bare')
 
         return index
 

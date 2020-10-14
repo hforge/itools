@@ -517,7 +517,7 @@ class POFile(TextFile):
             second_part = ''.join(source)
             key = (first_part, second_part)
             if key in self.messages:
-                raise POError, 'msgid at line %d is duplicated' % line_number
+                raise POError('msgid at line %d is duplicated' % line_number)
 
             # Get the comments and the msgstr in unicode
             comments = [ unicode(x, self.encoding) for x in comments ]

@@ -24,55 +24,55 @@ class frozenlist(list):
     #######################################################################
     # Mutable operations must raise 'TypeError'
     def __delitem__(self, index):
-        raise TypeError, 'frozenlists are not mutable'
+        raise TypeError('frozenlists are not mutable')
 
 
     def __delslice__(self, left, right):
-        raise TypeError, 'frozenlists are not mutable'
+        raise TypeError('frozenlists are not mutable')
 
 
     def __iadd__(self, alist):
-        raise TypeError, 'frozenlists are not mutable'
+        raise TypeError('frozenlists are not mutable')
 
 
     def __imul__(self, alist):
-        raise TypeError, 'frozenlists are not mutable'
+        raise TypeError('frozenlists are not mutable')
 
 
     def __setitem__(self, index, value):
-        raise TypeError, 'frozenlists are not mutable'
+        raise TypeError('frozenlists are not mutable')
 
 
     def __setslice__(self, left, right, value):
-        raise TypeError, 'frozenlists are not mutable'
+        raise TypeError('frozenlists are not mutable')
 
 
     def append(self, item):
-        raise TypeError, 'frozenlists are not mutable'
+        raise TypeError('frozenlists are not mutable')
 
 
     def extend(self, alist):
-        raise TypeError, 'frozenlists are not mutable'
+        raise TypeError('frozenlists are not mutable')
 
 
     def insert(self, index, value):
-        raise TypeError, 'frozenlists are not mutable'
+        raise TypeError('frozenlists are not mutable')
 
 
     def pop(self, index=-1):
-        raise TypeError, 'frozenlists are not mutable'
+        raise TypeError('frozenlists are not mutable')
 
 
     def remove(self, value):
-        raise TypeError, 'frozenlists are not mutable'
+        raise TypeError('frozenlists are not mutable')
 
 
     def reverse(self):
-        raise TypeError, 'frozenlists are not mutable'
+        raise TypeError('frozenlists are not mutable')
 
 
     def sort(self, cmp=None, key=None, reverse=False):
-        raise TypeError, 'frozenlists are not mutable'
+        raise TypeError('frozenlists are not mutable')
 
 
     #######################################################################
@@ -84,7 +84,7 @@ class frozenlist(list):
 
     def __hash__(self):
         # TODO Implement frozenlists hash-ability
-        raise NotImplementedError, 'frozenlists not yet hashable'
+        raise NotImplementedError('frozenlists not yet hashable')
 
 
     def __mul__(self, factor):
@@ -110,38 +110,38 @@ class frozendict(dict):
     #######################################################################
     # Mutable operations must raise 'TypeError'
     def __delitem__(self, index):
-        raise TypeError, 'frozendicts are not mutable'
+        raise TypeError('frozendicts are not mutable')
 
 
     def __setitem__(self, key, value):
-        raise TypeError, 'frozendicts are not mutable'
+        raise TypeError('frozendicts are not mutable')
 
 
     def clear(self):
-        raise TypeError, 'frozendicts are not mutable'
+        raise TypeError('frozendicts are not mutable')
 
 
     def pop(self, key, default=None):
-        raise TypeError, 'frozendicts are not mutable'
+        raise TypeError('frozendicts are not mutable')
 
 
     def popitem(self):
-        raise TypeError, 'frozendicts are not mutable'
+        raise TypeError('frozendicts are not mutable')
 
 
     def setdefault(self, key, default=None):
-        raise TypeError, 'frozendicts are not mutable'
+        raise TypeError('frozendicts are not mutable')
 
 
     def update(self, a_dict=None, **kw):
-        raise TypeError, 'frozendicts are not mutable'
+        raise TypeError('frozendicts are not mutable')
 
 
     #######################################################################
     # Non-mutable operations
     def __hash__(self):
         # TODO Implement frozendicts hash-ability
-        raise NotImplementedError, 'frozendicts not yet hashable'
+        raise NotImplementedError('frozendicts not yet hashable')
 
 
     def __repr__(self):
@@ -163,6 +163,6 @@ def freeze(value):
     if isinstance(value, (frozenlist, frozendict, frozenset)):
         return value
     # Error
-    raise TypeError, 'unable to freeze "%s"' % value_type
+    raise TypeError('unable to freeze "%s"' % value_type)
 
 

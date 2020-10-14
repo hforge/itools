@@ -170,7 +170,7 @@ class CSVFile(TextFile):
         """
         row = self.lines[number]
         if row is None:
-            raise IndexError, 'list index out of range'
+            raise IndexError('list index out of range')
         return row
 
 
@@ -219,7 +219,7 @@ class CSVFile(TextFile):
         # Remove
         row = self.lines[number]
         if row is None:
-            raise IndexError, 'list assignment index out of range'
+            raise IndexError('list assignment index out of range')
         self.lines[number] = None
 
 

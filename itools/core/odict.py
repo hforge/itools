@@ -55,7 +55,7 @@ class OrderedDict(dict):
         keys2.sort()
         assert keys == keys2
         # Check the key-to-node against the doubly-linked list
-        for key, node in self.key2node.iteritems():
+        for key, node in self.key2node.items():
             assert type(key) is type(node.key)
             assert key == node.key
         # Check the doubly-linked list against the cache
@@ -127,15 +127,15 @@ class OrderedDict(dict):
 
     def copy(self):
         message = "use 'copy.deepcopy' to copy an ordered dict"
-        raise NotImplementedError, message
+        raise NotImplementedError(message)
 
 
     def fromkeys(self, seq, value=None):
-        raise NotImplementedError, "the 'fromkeys' method is not supported"
+        raise NotImplementedError("the 'fromkeys' method is not supported")
 
 
     def items(self):
-        return list(self.iteritems())
+        return list(self.items())
 
 
     def iteritems(self):
@@ -160,7 +160,7 @@ class OrderedDict(dict):
 
 
     def keys(self):
-        return list(self.iterkeys())
+        return list(self.keys())
 
 
     def pop(self, key):
@@ -170,7 +170,7 @@ class OrderedDict(dict):
 
     def popitem(self):
         if self.first is None:
-            raise KeyError, 'popitem(): ordered dict is empty'
+            raise KeyError('popitem(): ordered dict is empty')
         key = self.first.key
         value = self[key]
         del self[key]
@@ -178,13 +178,13 @@ class OrderedDict(dict):
 
 
     def setdefault(self, key, default=None):
-        raise NotImplementedError, "the 'setdefault' method is not supported"
+        raise NotImplementedError("the 'setdefault' method is not supported")
 
 
     def update(self, value=None, **kw):
-        raise NotImplementedError, "the 'update' method is not supported"
+        raise NotImplementedError("the 'update' method is not supported")
 
 
     def values(self):
-        return list(self.itervalues())
+        return list(self.values())
 

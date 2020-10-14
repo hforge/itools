@@ -89,7 +89,7 @@ def get_lines(file):
                 value = ''.join(groups)
                 value = value.replace('\\"','"')
                 if nb_groups > 3:
-                    raise SyntaxError, 'unescaped char, line %d' % line_num
+                    raise SyntaxError('unescaped char, line %d' % line_num)
 
                 if nb_groups in (3,1):
                     yield VAR, (name, value), line_num
@@ -97,7 +97,7 @@ def get_lines(file):
                     yield VAR_START, (name, value), line_num
                     state = 1
             else:
-                raise SyntaxError, 'unknown line "%d"' % line_num
+                raise SyntaxError('unknown line "%d"' % line_num)
         elif state == 1:
             # Multiline value
             if line == '"':
@@ -108,7 +108,7 @@ def get_lines(file):
             value = groups[0]
             value = value.replace('\\"','"')
             if nb_groups > 2:
-                raise SyntaxError, 'unescaped char, line %d' % line_num
+                raise SyntaxError('unescaped char, line %d' % line_num)
             elif nb_groups == 2:
                 yield VAR_END, value, line_num
                 state = 0
@@ -187,7 +187,7 @@ def read_block(lines):
         lines.next()
         return None
     else:
-        raise SyntaxError, 'unexpected line "%d"' % line_num
+        raise SyntaxError('unexpected line "%d"' % line_num)
 
 
 def read_comment(lines):
@@ -233,7 +233,7 @@ def read_multiline(lines):
         lines.next()
         return value
     else:
-        raise SyntaxError, 'unexpected line "%s"' % line_num
+        raise SyntaxError('unexpected line "%s"' % line_num)
 
 
 ###########################################################################
@@ -281,7 +281,7 @@ class ConfigFile(TextFile):
         n = 0
         for name, value in kw.items():
             if isinstance(value, str) is False:
-                raise TypeError, 'the value must be a string.'
+                raise TypeError('the value must be a string.')
             # Add the variable, with an empty comment
             self.lines.append(([], (name, value)))
             # Separate with a blank line
@@ -328,7 +328,7 @@ class ConfigFile(TextFile):
             if self.schema is not None and name in self.schema:
                 value = self.schema[name].encode(value)
             if not isinstance(value, str):
-                raise TypeError, 'the value must be a string.'
+                raise TypeError('the value must be a string.')
 
         self.set_changed()
         if name in self.values:

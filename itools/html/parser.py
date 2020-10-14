@@ -314,7 +314,7 @@ class Parser(BaseParser, object):
                     attribute_value = attribute_name
                 else:
                     message = 'missing attribute value for "%s"'
-                    raise XMLError, message % attribute_name
+                    raise XMLError(message % attribute_name)
             elif type(attribute_value) is unicode:
                 attribute_value = attribute_value.encode(self.encoding)
             attributes[(None, attribute_name)] = attribute_value
@@ -399,7 +399,7 @@ def make_xml_compatible(stream):
                     last = stack.pop()
                 else:
                     msg = 'missing end tag </%s> at line %s'
-                    raise XMLError, msg % (last, line)
+                    raise XMLError(msg % (last, line))
             yield event
         else:
             yield event
@@ -411,17 +411,17 @@ def make_xml_compatible(stream):
             yield END_ELEMENT, (xhtml_uri, last), line
         else:
             msg = 'missing end tag </%s> at line %s'
-            raise XMLError, msg % (last, line)
+            raise XMLError(msg % (last, line))
 
 
 
 def HTMLParser(data):
     if type(data) is not str:
-        raise TypeError, 'expected a byte string, "%s" found' % type(data)
+        raise TypeError('expected a byte string, "%s" found' % type(data))
     try:
         stream = Parser().parse(data)
-    except HTMLParseError, message:
-        raise XMLError, message
+    except HTMLParseError as message:
+        raise XMLError(message)
     stream = make_xml_compatible(stream)
     # TODO Don't transform to a list, keep the stream
     return list(stream)

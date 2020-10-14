@@ -30,7 +30,7 @@ def parse_line(reader, line, datatypes, encoding, n_columns):
     if len(line) != n_columns:
         msg = 'CSV syntax error: wrong number of columns at line %d: %s'
         line_num = getattr(reader, 'line_num', None)
-        raise ValueError, msg % (line_num, line)
+        raise ValueError(msg % (line_num, line))
 
     # Decode values
     decoded = []

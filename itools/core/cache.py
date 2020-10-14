@@ -63,18 +63,18 @@ class LRUCache(OrderedDict):
         # Check arguments type
         if type(size_min) is not int:
             error = "the 'size_min' argument must be an int, not '%s'"
-            raise TypeError, error % type(size_min)
+            raise TypeError(error % type(size_min))
         if type(automatic) is not bool:
             error = "the 'automatic' argument must be an int, not '%s'"
-            raise TypeError, error % type(automatic)
+            raise TypeError(error % type(automatic))
 
         if size_max is None:
             size_max = size_min
         elif type(size_max) is not int:
             error = "the 'size_max' argument must be an int, not '%s'"
-            raise TypeError, error % type(size_max)
+            raise TypeError(error % type(size_max))
         elif size_max < size_min:
-            raise ValueError, "the 'size_max' is smaller than 'size_min'"
+            raise ValueError("the 'size_max' is smaller than 'size_min'")
 
         # Initialize the dict
         super(LRUCache, self).__init__()

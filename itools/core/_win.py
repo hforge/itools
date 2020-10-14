@@ -61,10 +61,10 @@ def vmsize():
 
 
 def become_daemon():
-    raise NotImplementedError, 'become_daemon not yet implemented for Windows'
+    raise NotImplementedError('become_daemon not yet implemented for Windows')
 
 
 
 def fork():
-    raise NotImplementedError, 'fork not yet implemented for Windows'
+    raise NotImplementedError('fork not yet implemented for Windows')
 

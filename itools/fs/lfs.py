@@ -40,9 +40,9 @@ class LocalFolder(object):
 
     def __init__(self, path='.'):
         if not exists(path):
-            raise IOError, "No such directory: '%s'" % path
+            raise IOError("No such directory: '%s'" % path)
         if isfile(path):
-            raise IOError, "Is a directory: '%s'" % path
+            raise IOError("Is a directory: '%s'" % path)
         self.path = Path(abspath(path))
 
 
@@ -84,7 +84,7 @@ class LocalFolder(object):
         parent_path = dirname(path)
         if exists(parent_path):
             if exists(path):
-                raise OSError, "File exists: '%s'" % path
+                raise OSError("File exists: '%s'" % path)
         else:
             makedirs(parent_path)
         return file(path, 'wb')
@@ -167,7 +167,7 @@ class LocalFolder(object):
         path = self._resolve_path(path)
         try:
             return listdir(path)
-        except OSError, e:
+        except OSError as e:
             # Path does not exist or is not a directory
             if e.errno == 2 or e.errno == 20:
                 return []
@@ -177,7 +177,7 @@ class LocalFolder(object):
     def traverse(self, path='.'):
         path = self._resolve_path(path)
         if not exists(path):
-            raise IOError, "No such directory: '%s'" % path
+            raise IOError("No such directory: '%s'" % path)
         yield path
         if isdir(path):
             for root, folders, files in walk(path, topdown=True):

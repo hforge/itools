@@ -96,7 +96,7 @@ class URIDispatcher(object):
         Path resolution, look for a corresponding registered pattern
         and return associated data along with the extracted parameters.
         """
-        for pattern, values in self.patterns.iteritems():
+        for pattern, values in self.patterns.items():
             compiled_regex, data = values
             match = compiled_regex.search(path)
             if match:

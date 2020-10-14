@@ -46,7 +46,7 @@ def get_start_tag(value):
 def get_end_tag(value):
     tag_uri, tag_name = value
     if tag_uri and tag_uri != xhtml_uri:
-        raise ValueError, tag_uri
+        raise ValueError(tag_uri)
 
     # Case 1: empty
     schema = html_namespace.get_element_schema(tag_name)

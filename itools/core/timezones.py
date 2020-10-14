@@ -103,7 +103,7 @@ class LocalTimezone(tzinfo):
         """Implemented for compatibility with pytz
         """
         if dt.tzinfo is not None:
-            raise ValueError, 'Not naive datetime (tzinfo is already set)'
+            raise ValueError('Not naive datetime (tzinfo is already set)')
         return dt.replace(tzinfo=self)
 
 

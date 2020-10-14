@@ -123,7 +123,7 @@ class MSG(object):
             data = message.encode('utf_8')
             return XMLParser(data, namespaces=xhtml_namespaces)
 
-        raise ValueError, 'unexpected format "{0}"'.format(self.format)
+        raise ValueError('unexpected format "{0}"'.format(self.format))
 
 
     def gettext(self, language=None, **kw):

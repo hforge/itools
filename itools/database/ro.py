@@ -20,6 +20,7 @@
 
 # Import from the Standard Library
 from datetime import datetime
+from os.path import splitext
 from sys import getrefcount
 
 # Import from itools
@@ -215,6 +216,12 @@ class RODatabase(object):
                 continue
             # Always remove non-metadata handlers from cache
             if not key.endswith('.metadata'):
+                # FIXME Do not remove handler from cache if the associated
+                # resource is in cache (else we cannot move resource)
+                metadata_key = splitext(key)[0] + '.metadata'
+                if metadata_key in self.cache:
+                    continue
+                # Remove from cache
                 self._discard_handler(key)
                 continue
             # Discard this handler

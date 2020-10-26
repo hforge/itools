@@ -15,8 +15,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+import os
 from datetime import datetime, timedelta, time
-import difflib, os
 from heapq import heappush, heappop
 from multiprocessing import Process
 from os.path import abspath, dirname
@@ -35,6 +35,7 @@ from itools.fs import lfs
 
 # Import from here
 from catalog import Catalog, _get_xquery, SearchResults, make_catalog
+from patchs import PatchsBackend
 from registry import register_backend
 
 
@@ -115,6 +116,8 @@ class GitBackend(object):
         if not lfs.exists(database_static_path):
             self.init_backend_static(path)
         self.static_fs = lfs.open(database_static_path)
+        # Patchs backend
+        self.patchs_backend = PatchsBackend(path, self.fs, read_only)
         # Catalog
         self.catalog = self.get_catalog()
 
@@ -123,7 +126,7 @@ class GitBackend(object):
     def init_backend(cls, path, fields, init=False, soft=False):
         # Metadata database
         init_repository('{0}/database'.format(path), bare=False)
-        lfs.make_folder('{0}/database/.git/patchs'.format(path))
+        # Init backend static
         cls.init_backend_static(path)
         # Make catalog
         make_catalog('{0}/catalog'.format(path), fields)
@@ -231,52 +234,6 @@ class GitBackend(object):
         self.static_fs.copy(key, new_key)
 
 
-    def create_patch(self, added, changed, removed, handlers, git_author):
-        """ We create a patch into database/.git/patchs at each transaction.
-        The idea is to commit into GIT each N transactions on big databases to avoid performances problems.
-        We want to keep a diff on each transaction, to help debug.
-        """
-        author_id, author_email = git_author
-        diffs = {}
-        # Added
-        for key in added:
-            if key.endswith('.metadata'):
-                after = handlers.get(key).to_str().splitlines(True)
-                diff = difflib.unified_diff('', after, fromfile=key, tofile=key)
-                diffs[key] = ''.join(diff)
-        # Changed
-        for key in changed:
-            if key.endswith('.metadata'):
-                with self.fs.open(key) as f:
-                    before = f.readlines()
-                after = handlers.get(key).to_str().splitlines(True)
-                diff = difflib.unified_diff(before, after, fromfile=key, tofile=key)
-                diffs[key] = ''.join(diff)
-        # Removed
-        for key in removed:
-            if key.endswith('.metadata'):
-                with self.fs.open(key) as f:
-                    before = f.readlines()
-                after = ''
-                diff = difflib.unified_diff(before, after, fromfile=key, tofile=key)
-                diffs[key] = ''.join(diff)
-        # Create patch
-        base_path = datetime.now().strftime('.git/patchs/%Y%m%d/')
-        if not self.fs.exists(base_path):
-            self.fs.make_folder(base_path)
-        the_time = datetime.now().strftime('%Hh%Mm%S.%f')
-        patch_key = '{base_path}/{the_time}-user{author_id}-{uuid}.patch'.format(
-              base_path=base_path,
-              author_id=author_id,
-              the_time=the_time,
-              uuid=uuid4())
-        data = ''.join([diffs[x] for x in sorted(diffs.keys())])
-        # Write
-        with self.fs.open(patch_key, 'w') as f:
-            f.write(data)
-            f.truncate(f.tell())
-
-
     def do_transaction(self, commit_message, data, added, changed, removed, handlers,
           docs_to_index, docs_to_unindex):
         git_author, git_date, git_msg, docs_to_index, docs_to_unindex = data
@@ -289,7 +246,7 @@ class GitBackend(object):
                 self.add_handler_into_static_history(key)
         # Create patch if there's changed
         if added or changed or removed:
-            self.create_patch(added, changed, removed, handlers, git_author)
+            self.patchs_backend.create_patch(added, changed, removed, handlers, git_author)
         else:
             # it's a catalog transaction, we have to do nothing
             pass

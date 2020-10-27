@@ -27,7 +27,6 @@ from subprocess import Popen
 from json import dumps
 
 # Import from itools
-from itools.fs import lfs
 from itools.gettext import POFile
 
 # Import from here
@@ -38,6 +37,30 @@ from git import open_worktree
 def get_manifest():
     worktree = open_worktree('.')
     return [ x for x in worktree.get_filenames() if not x.startswith('.')]
+
+
+
+def ipkg_build(worktree, manifest, config):
+    from itools.html import XHTMLFile, HTMLFile
+    package_root = config.get_value('package_root')
+    rules = [('.po', '.mo', po2mo, None)]
+    # Pre-load PO files
+    po_files = {}
+    for dst_lang in config.get_value('target_languages'):
+        po = POFile('%s/locale/%s.po' % (package_root, dst_lang))
+        po_files[dst_lang] = po
+    # Templates
+    src_lang = config.get_value('source_language', default='en')
+    for dst_lang in config.get_value('target_languages'):
+        rules.append(
+            ('.xml.%s' % src_lang, '.xml.%s' % dst_lang, make_template, XHTMLFile))
+        rules.append(
+            ('.xhtml.%s' % src_lang, '.xhtml.%s' % dst_lang, make_template, XHTMLFile))
+        rules.append(
+            ('.html.%s' % src_lang, '.html.%s' % dst_lang, make_template, HTMLFile))
+    # Make
+    make(worktree, rules, manifest, package_root, po_files)
+
 
 
 def make(worktree, rules, manifest, package_root, po_files):
@@ -164,24 +187,7 @@ def build(path, config, environment):
         gulp_builder = GulpBuilder(package_root, worktree, manifest)
         gulp_builder.run()
         # Rules
-        from itools.html import XHTMLFile, HTMLFile
-        rules = [('.po', '.mo', po2mo, None)]
-        # Pre-load PO files
-        po_files = {}
-        for dst_lang in config.get_value('target_languages'):
-            po = POFile('%s/locale/%s.po' % (package_root, dst_lang))
-            po_files[dst_lang] = po
-        # Templates
-        src_lang = config.get_value('source_language', default='en')
-        for dst_lang in config.get_value('target_languages'):
-            rules.append(
-                ('.xml.%s' % src_lang, '.xml.%s' % dst_lang, make_template, XHTMLFile))
-            rules.append(
-                ('.xhtml.%s' % src_lang, '.xhtml.%s' % dst_lang, make_template, XHTMLFile))
-            rules.append(
-                ('.html.%s' % src_lang, '.html.%s' % dst_lang, make_template, HTMLFile))
-        # Make
-        make(worktree, rules, manifest, package_root, po_files)
+        ipkg_build(worktree, manifest, config)
     # Write the manifest
     lines = [ x + '\n' for x in sorted(manifest) ]
     open(path + 'MANIFEST', 'w').write(''.join(lines))

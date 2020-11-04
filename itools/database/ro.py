@@ -29,7 +29,7 @@ from itools.handlers import Folder, get_handler_class_by_mimetype
 from itools.uri import Path
 
 # Import from itools.database
-from backends import GitBackend, backends_registry
+from backends import backends_registry
 from exceptions import ReadonlyError
 from metadata import Metadata
 from registry import get_register_fields

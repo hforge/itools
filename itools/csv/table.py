@@ -27,6 +27,9 @@ from datetime import datetime
 # Import from itools
 from itools.datatypes import DateTime, String, Unicode
 from itools.handlers import File
+from itools.i18n.accept import select_language
+
+# Import from here
 from csv_ import CSVFile
 from parser import parse
 

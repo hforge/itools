@@ -21,7 +21,6 @@
 from copy import deepcopy
 from cStringIO import StringIO
 from datetime import datetime
-from sys import exc_info
 
 # Import from itools.handlers
 from base import Handler
@@ -103,9 +102,7 @@ class File(Handler):
         self.reset()
         try:
             self.load_state_from_string(data)
-        except Exception as e:
-            # Update message to add the problematic file
-            message = '{0} on "{1}"'.format(e.message, self.key)
+        except Exception:
             self._clean_state()
             raise
         self.timestamp = self.database.get_handler_mtime(self.key)

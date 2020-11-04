@@ -19,6 +19,7 @@
 from itools.core import add_type, freeze
 from itools.datatypes import String
 from itools.handlers import File, register_handler_class
+from itools.i18n.accept import select_language
 from itools.log import log_warning
 
 # Import from here

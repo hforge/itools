@@ -321,7 +321,7 @@ class BaseView(ItoolsView):
         # Check content-range
         content_range = context.get_header('content-range')
         if content_range:
-            raise NotImplemented
+            raise NotImplementedError
         # Check if handler is a File
         handler = resource.get_value('data')
         if not isinstance(handler, File):

@@ -694,8 +694,6 @@ class TZProp(object):
             dates = [self.properties['DTSTART'].value]
             for rdate in self.properties['RDATE']:
                 dates.append(DateTime.decode(rdate.value))
-            dict = {}
-            null_delta = timedelta(0)
             for d in dates:
                 if d.year == dt.year:
                     return d

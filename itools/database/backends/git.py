@@ -23,9 +23,7 @@ from os.path import abspath, dirname
 from uuid import uuid4
 
 # Import from pygit2
-import pygit2
 from pygit2 import TreeBuilder, GIT_FILEMODE_TREE, init_repository
-from pygit2 import GIT_CHECKOUT_FORCE, GIT_CHECKOUT_REMOVE_UNTRACKED
 
 # Import from itools
 from itools.database import Metadata
@@ -382,6 +380,7 @@ class GitBackend(object):
 
     def abort_transaction(self):
         self.catalog.abort_changes()
+        #from pygit2 import GIT_CHECKOUT_FORCE, GIT_CHECKOUT_REMOVE_UNTRACKED
         # Don't need to abort since git add is made à last minute
         #strategy = GIT_CHECKOUT_FORCE | GIT_CHECKOUT_REMOVE_UNTRACKED
         #if pygit2.__version__ >= '0.21.1':

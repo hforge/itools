@@ -17,6 +17,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+from __future__ import print_function
+import sys
 from distutils.core import Extension
 from distutils.core import setup
 from os.path import join as join_path
@@ -31,7 +33,7 @@ def get_pipe(command, cwd=None):
     popen = Popen(command, stdout=PIPE, stderr=PIPE, cwd=cwd)
     stdoutdata, stderrdata = popen.communicate()
     if popen.returncode != 0:
-        raise EnvironmentError, (popen.returncode, stderrdata)
+        raise EnvironmentError(popen.returncode, stderrdata)
     return stdoutdata
 
 
@@ -78,7 +80,7 @@ def generate_mo_files(po_file_names):
             Popen(['msgfmt', po_file, '-o', mo_file])
         except OSError:
             # Check msgfmt is properly installed
-            print >> stderr, "[ERROR] 'msgfmt' not found, aborting..."
+            print("[ERROR] 'msgfmt' not found, aborting...", file=stderr)
             return []
         mo_files.append(mo_file)
     return mo_files
@@ -110,11 +112,11 @@ if __name__ == '__main__':
     try:
         flags = get_compile_flags('pkg-config --cflags --libs glib-2.0')
     except OSError:
-        print >> stderr, "[ERROR] 'pkg-config' not found, aborting..."
+        print("[ERROR] 'pkg-config' not found, aborting...", file=stderr)
         raise
     except EnvironmentError:
         err = '[ERROR] Glib 2.0 library or headers not found, aborting...'
-        print >> stderr, err
+        print(err, file=stderr)
         raise
     else:
         sources = [
@@ -129,7 +131,7 @@ if __name__ == '__main__':
             'pkg-config --cflags --libs "poppler >= 0.20.0" fontconfig')
     except EnvironmentError:
         err = "[WARNING] poppler headers not found, PDF indexation won't work"
-        print >> stderr, err
+        print(err, file=stderr)
     else:
         sources = ['itools/pdf/pdftotext.cc']
         extension = Extension('itools.pdf.pdftotext', sources, **flags)
@@ -140,11 +142,15 @@ if __name__ == '__main__':
         flags = get_compile_flags('wv2-config --cflags --libs')
     except EnvironmentError:
         err = "[WARNING] wv2 not found, DOC indexation won't work"
-        print >> stderr, err
+        print(err, file=stderr)
     else:
         sources = ['itools/office/doctotext.cc']
         extension = Extension('itools.office.doctotext', sources, **flags)
         ext_modules.append(extension)
+
+    # On python 3, no extension is available yet FIXME 2to3
+    if sys.version_info[0] == 3:
+        ext_modules = []
 
     # Ok
     if itools_is_available:
@@ -213,9 +219,12 @@ if __name__ == '__main__':
       "scripts/ipkg-docs.py",
       "scripts/ipkg-quality.py",
       "scripts/ipkg-update-locale.py"]
-    install_requires = parse_requirements(
-        'requirements.txt', session='xxx')
-    install_requires = [str(ir.requirement) for ir in install_requires]
+    # FIXME 2to3
+    if sys.version_info[0] == 3:
+        install_requires = []
+    else:
+        install_requires = parse_requirements('requirements.txt', session='xxx')
+        install_requires = [str(ir.requirement) for ir in install_requires]
     # The data files
     package_data = {'itools': []}
     filenames = [ x for x in filenames if not x.endswith('.py') ]

@@ -2,6 +2,7 @@
 *.mo
 *.pyc
 *.swp
+*.bak
 build
 dist
 version.txt

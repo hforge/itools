@@ -20,7 +20,6 @@ protocol.
 """
 
 # Import from the Standard Library
-import __builtin__
 from decimal import Decimal
 from locale import getdefaultlocale
 

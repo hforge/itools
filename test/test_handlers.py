@@ -22,7 +22,7 @@
 from unittest import TestCase, main
 
 # Import from itools
-from itools.handlers import File, ConfigFile, TGZFile
+from itools.handlers import File, ConfigFile
 from itools.fs import lfs
 
 
@@ -172,11 +172,11 @@ class ConfigFileTestCase(TestCase):
 ###########################################################################
 # Archive files
 ###########################################################################
-class ArchiveTestCase(TestCase):
-
-    def test_get_handler(self):
-        h = TGZFile('handlers/test.tar.gz')
-        # TODO: Add unitests
+#class ArchiveTestCase(TestCase):
+#
+#    def test_get_handler(self):
+#        h = TGZFile('handlers/test.tar.gz')
+#        # TODO: Add unitests
 
 
 

@@ -89,8 +89,6 @@ def make_template(package_root, source, target, handler_cls, po_files):
     # Import some packages so we can compile templates
     from itools.xmlfile.errors import TranslationError
     import itools.gettext
-    import itools.stl
-    import itools.pdf
     # Get file
     source_handler = handler_cls(source)
     language = target.rsplit('.', 1)[1]

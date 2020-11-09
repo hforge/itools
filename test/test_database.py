@@ -17,34 +17,34 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the Standard Library
-from unittest import TestCase, main
-from os.path import basename
-from random import sample
-import re
-
-# Import from itools
-from itools.database import AndQuery, RangeQuery, PhraseQuery, NotQuery
-from itools.database import AllQuery, OrQuery, TextQuery
-from itools.database import make_catalog, Catalog, Resource, StartQuery
-from itools.database.catalog import _index, _decode
-from itools.datatypes import String, Unicode, Boolean, Integer
-from itools.fs import lfs, FileName
-from itools.handlers import TextFile
-from itools.log.log import register_logger, Logger, FATAL
-
-# Import from xapian
-from xapian import Document as XapianDocument
-
-
-
-class BrokenHandler(TextFile):
-
-    def to_str(self):
-        iamsobroken
+## Import from the Standard Library
+#from unittest import TestCase, main
+#from os.path import basename
+#from random import sample
+#import re
+#
+## Import from itools
+#from itools.database import AndQuery, RangeQuery, PhraseQuery, NotQuery
+#from itools.database import AllQuery, OrQuery, TextQuery
+#from itools.database import make_catalog, Catalog, Resource, StartQuery
+#from itools.database.catalog import _index, _decode
+#from itools.datatypes import String, Unicode, Boolean, Integer
+#from itools.fs import lfs, FileName
+#from itools.handlers import TextFile
+#from itools.log.log import register_logger, Logger, FATAL
+#
+## Import from xapian
+#from xapian import Document as XapianDocument
 
 
 
+#class BrokenHandler(TextFile):
+#
+#    def to_str(self):
+#        iamsobroken
+#
+#
+#
 #class RWDatabaseTestCase(TestCase):
 #
 #    def setUp(self):

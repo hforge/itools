@@ -22,7 +22,6 @@ from string import Formatter
 from sys import _getframe
 
 # Import from itools
-from itools.handlers import Folder
 from itools.i18n import get_language_name
 from itools.i18n.accept import select_language
 from itools.fs import lfs

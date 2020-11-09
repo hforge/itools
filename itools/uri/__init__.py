@@ -45,4 +45,5 @@ __all__ = [
     'get_uri_name',
     'get_uri_path',
     'get_host_from_authority',
+    'mailto'
     ]

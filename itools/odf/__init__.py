@@ -23,6 +23,7 @@ import schema
 
 
 __all__ = [
+    'schema',
     # Opend Document Format
     'ODFFile',
     'ODTFile',

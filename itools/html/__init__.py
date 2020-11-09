@@ -29,6 +29,7 @@ import schema
 
 # Public API
 __all__ = [
+    'schema',
     # File Handlers
     'XHTMLFile',
     'HTMLFile',

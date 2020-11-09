@@ -19,14 +19,13 @@
 
 # Import from the standard library
 import os
-from copy import deepcopy
 from decimal import Decimal as decimal
 from datetime import datetime
 from marshal import dumps, loads
 from hashlib import sha1
 
 # Import from xapian
-from xapian import Database, WritableDatabase, DB_CREATE, DB_OPEN, DB_BACKEND_CHERT
+from xapian import Database, WritableDatabase, DB_OPEN, DB_BACKEND_CHERT
 from xapian import Document, Query, QueryParser, Enquire
 from xapian import sortable_serialise, sortable_unserialise, TermGenerator
 

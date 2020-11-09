@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from os.path import abspath, dirname
+from os.path import dirname
 
 # Import from itools
 from itools.fs import lfs

@@ -26,4 +26,8 @@ __all__ = [
       'BaseValidator',
       'ValidationError',
       'register_validator',
-      'validator']
+      'validator',
+      'password',
+      'files',
+      'database'
+      ]

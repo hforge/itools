@@ -18,7 +18,7 @@
 from unittest import TestCase, main
 
 # Import from itools
-from itools.web import Cookie, SetCookieDataType
+from itools.web import Cookie
 from itools.web.headers import ContentType, ContentDisposition, CookieDataType
 from itools.web.headers import read_token, read_quoted_string, read_parameter
 from itools.web.headers import read_parameters
@@ -128,19 +128,18 @@ class CookieTestCase(TestCase):
     #######################################################################
     # Netscape Cookies (old style)
     #######################################################################
-    def test_google(self):
-        cookie = '__utma=148580960.1549592533.1131137049.1200608996.1200962259.202; __qca=1193853942-44919481-52504193; __utmz=148580960.1196124914.184.2.utmccn=(organic)|utmcsr=google|utmctr=lorum+generator|utmcmd=organic; __qcb=689621141; __utmc=148580960; T3CK=TANT%3D1%7CTANO%3D0; __utma=148580960.1549592533.1131137049.1140634832.1140725853.67'
+    #def test_google(self):
+    #    cookie = '__utma=148580960.1549592533.1131137049.1200608996.1200962259.202; __qca=1193853942-44919481-52504193; __utmz=148580960.1196124914.184.2.utmccn=(organic)|utmcsr=google|utmctr=lorum+generator|utmcmd=organic; __qcb=689621141; __utmc=148580960; T3CK=TANT%3D1%7CTANO%3D0; __utma=148580960.1549592533.1131137049.1140634832.1140725853.67'
+    #    expected = {
+    #        '__utma': Cookie('__utma', '148580960.1549592533.1131137049.1200608996.1200962259.202'),
+    #        '__qca': Cookie('__qca', '1193853942-44919481-52504193'),
+    #        '__utmz': Cookie('__utmz', '148580960.1196124914.184.2.utmccn=(organic)|utmcsr=google|utmctr=lorum+generator|utmcmd=organic'),
+    #        '__qcb': Cookie('__qcb', '689621141'),
+    #        '__utmc': Cookie('__utmc', '148580960'),
+    #        't3ck': Cookie('t3ck', 'TANT%3D1%7CTANO%3D0'),
+    #        '__utma': Cookie('__utma', '148580960.1549592533.1131137049.1140634832.1140725853.67')}
 
-        expected = {
-            '__utma': Cookie('__utma', '148580960.1549592533.1131137049.1200608996.1200962259.202'),
-            '__qca': Cookie('__qca', '1193853942-44919481-52504193'),
-            '__utmz': Cookie('__utmz', '148580960.1196124914.184.2.utmccn=(organic)|utmcsr=google|utmctr=lorum+generator|utmcmd=organic'),
-            '__qcb': Cookie('__qcb', '689621141'),
-            '__utmc': Cookie('__utmc', '148580960'),
-            't3ck': Cookie('t3ck', 'TANT%3D1%7CTANO%3D0'),
-            '__utma': Cookie('__utma', '148580960.1549592533.1131137049.1140634832.1140725853.67')}
-
-        self.assertEqual(CookieDataType.decode(cookie), expected)
+    #    self.assertEqual(CookieDataType.decode(cookie), expected)
 
 
     #######################################################################

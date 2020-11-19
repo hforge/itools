@@ -25,9 +25,14 @@ from subprocess import call
 import sys
 
 # Import from itools
+import itools
 from itools.gettext import POFile
 from itools.handlers import register_handler_class
 from itools.database.ro import ro_database
+import itools.html
+import itools.python
+import itools.stl
+import itools.pdf
 from itools.stl import STLFile
 from itools.uri import Path
 from itools.fs import lfs, WRITE

@@ -40,7 +40,7 @@ class DatatypesTestCase(TestCase):
             'toto.gz': ('toto', 'gz', None),
             'toto.Z': ('toto', 'Z', None),
             }
-        for name, result in map.iteritems():
+        for name, result in map.items():
             self.assertEqual(FileName.decode(name), result)
             self.assertEqual(FileName.encode(result), name)
 

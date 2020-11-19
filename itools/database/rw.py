@@ -21,17 +21,18 @@
 # Import from the Standard Library
 from datetime import datetime
 import fnmatch
+from logging import getLogger
 
 # Import from itools
 from itools.fs import lfs
 from itools.handlers import Folder
-from itools.log import log_error
 
 # Import from here
 from backends import backends_registry
 from registry import get_register_fields
 from ro import RODatabase
 
+log = getLogger("itools.database")
 
 MSG_URI_IS_BUSY = 'The "%s" URI is busy.'
 
@@ -143,14 +144,14 @@ class RWDatabase(RODatabase):
         handler.loaded = True
         handler.set_changed()
         if type(handler) is Folder:
-            raise ValueError, 'unexpected folder (only files can be "set")'
+            raise ValueError('unexpected folder (only files can be "set")')
 
         if handler.key is not None:
-            raise ValueError, 'only new files can be added, try to clone first'
+            raise ValueError('only new files can be added, try to clone first')
 
         key = self.normalize_key(key)
         if self._get_handler(key, soft=True) is not None:
-            raise RuntimeError, MSG_URI_IS_BUSY % key
+            raise RuntimeError(MSG_URI_IS_BUSY % key)
 
         # Added or modified ?
         if key not in self.added and self.has_handler(key):
@@ -252,7 +253,7 @@ class RWDatabase(RODatabase):
 
         # Check the target is free
         if self._get_handler(target, soft=True) is not None:
-            raise RuntimeError, MSG_URI_IS_BUSY % target
+            raise RuntimeError(MSG_URI_IS_BUSY % target)
 
         handler = self._get_handler(source)
         if type(handler) is Folder:
@@ -276,7 +277,7 @@ class RWDatabase(RODatabase):
 
         # Check the target is free
         if self._get_handler(target, soft=True) is not None:
-            raise RuntimeError, MSG_URI_IS_BUSY % target
+            raise RuntimeError(MSG_URI_IS_BUSY % target)
 
         # Go
         cache = self.cache
@@ -362,7 +363,7 @@ class RWDatabase(RODatabase):
             return
         # Case 2: removed or moved away
         if path in old2new and not old2new[path]:
-            raise ValueError, 'cannot change a resource that has been removed'
+            raise ValueError('cannot change a resource that has been removed')
         # Case 3: not yet touched
         old2new[path] = path
         new2old[path] = path
@@ -393,7 +394,7 @@ class RWDatabase(RODatabase):
             target_path = str(target_path)
             if source_path in old2new and not old2new[source_path]:
                 err = 'cannot move a resource that has been removed'
-                raise ValueError, err
+                raise ValueError(err)
 
             source_path = new2old.pop(source_path, source_path)
             if source_path:
@@ -483,12 +484,12 @@ class RWDatabase(RODatabase):
         # the transaction will be aborted
         try:
             data = self._before_commit()
-        except Exception:
-            log_error('Transaction failed', domain='itools.database')
+        except Exception as e:
+            log.error("Transaction failed", exc_info=True)
             try:
                 self._abort_changes()
-            except Exception:
-                log_error('Aborting failed', domain='itools.database')
+            except Exception as e:
+                log.error("Aborting failed", exc_info=True)
             self._cleanup()
             raise
 
@@ -496,12 +497,12 @@ class RWDatabase(RODatabase):
         try:
             self._save_changes(data, commit_message)
         except Exception as e:
-            log_error('Transaction failed', domain='itools.database')
+            log.error("Transaction failed", exc_info=True)
             try:
                 self._abort_changes()
-            except Exception:
-                log_error('Aborting failed', domain='itools.database')
-            raise(e)
+            except Exception as e:
+                log.error("Aborting failed", exc_info=True)
+            raise e
         finally:
             self._cleanup()
 

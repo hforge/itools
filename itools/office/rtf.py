@@ -74,11 +74,11 @@ def rtf_parse(data):
 
 def rtf_to_text(data):
     if not isinstance(data, str):
-        raise ValueError, "string data is expected"
+        raise ValueError("string data is expected")
     if not data:
-        raise ValueError, "data is empty"
+        raise ValueError("data is empty")
     if not data.startswith('{\\rtf'):
-        raise ValueError, "data is not RTF"
+        raise ValueError("data is not RTF")
 
     parser = rtf_parse(data)
     text = []

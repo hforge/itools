@@ -15,17 +15,20 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from logging import getLogger
+
 # Import from itools
 from itools.core import add_type, freeze
 from itools.datatypes import String
 from itools.handlers import File, register_handler_class
-from itools.log import log_warning
+from itools.i18n import select_language
 
 # Import from here
 from fields import Field
 from metadata_parser import parse_table, MetadataProperty, property_to_str
 from metadata_parser import deserialize_parameters
 
+log = getLogger("itools.database")
 
 
 class DefaultField(Field):
@@ -86,14 +89,14 @@ class Metadata(File):
         # Read the format & version
         name, value, parameters = parser.next()
         if name != 'format':
-            raise ValueError, 'unexpected "%s" property' % name
+            raise ValueError('unexpected "%s" property' % name)
         if 'version' in parameters:
             version = parameters.pop('version')
             if len(version) > 1:
-                raise ValueError, 'version parameter cannot be repeated'
+                raise ValueError('version parameter cannot be repeated')
             self.version = version[0]
         if parameters:
-            raise ValueError, 'unexpected parameters for the format property'
+            raise ValueError('unexpected parameters for the format property')
         self.format = value
         # Get the schema
         resource_class = self.get_resource_class(self.format)
@@ -101,7 +104,7 @@ class Metadata(File):
         # Parse
         for name, value, parameters in parser:
             if name == 'format':
-                raise ValueError, 'unexpected "format" property'
+                raise ValueError('unexpected "format" property')
 
             # 1. Get the field
             field = resource_class.get_field(name)
@@ -109,10 +112,10 @@ class Metadata(File):
                 msg = 'unexpected field "{0}" in resource {1}, cls {2}'
                 msg = msg.format(name, self.key, resource_class)
                 if resource_class.fields_soft:
-                    log_warning(msg, domain='itools.database')
+                    log.warning(msg)
                     field = DefaultField
                 else:
-                    raise ValueError, msg
+                    raise ValueError(msg)
 
             # 2. Deserialize the parameters
             params_schema = field.parameters_schema
@@ -120,14 +123,14 @@ class Metadata(File):
             try:
                 deserialize_parameters(parameters, params_schema,
                                        params_default)
-            except ValueError, e:
+            except ValueError as e:
                 msg = 'in class "{0}", resource {1} property "{2}": {3}'
-                raise ValueError, msg.format(resource_class, self.key, name, e)
+                raise ValueError(msg.format(resource_class, self.key, name, e))
 
             # 3. Get the datatype properties
             if field.multiple and field.multilingual:
                 error = 'property "%s" is both multilingual and multiple'
-                raise ValueError, error % name
+                raise ValueError(error % name)
 
             # 4. Build the property
             datatype = field.datatype
@@ -171,9 +174,9 @@ class Metadata(File):
                 msg = 'unexpected field "{0}" in resource "{1}" (format "{2}")'
                 msg = msg.format(name, self.key, self.format)
                 if resource_class.fields_soft:
-                    log_warning(msg, domain='itools.database')
+                    log.warning(msg)
                     continue
-                raise ValueError, msg
+                raise ValueError(msg)
 
             datatype = field.datatype
             params_schema = field.parameters_schema

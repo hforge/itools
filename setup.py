@@ -15,6 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+from __future__ import print_function
 
 # Import from the Standard Library
 from distutils.core import Extension
@@ -31,7 +32,7 @@ def get_pipe(command, cwd=None):
     popen = Popen(command, stdout=PIPE, stderr=PIPE, cwd=cwd)
     stdoutdata, stderrdata = popen.communicate()
     if popen.returncode != 0:
-        raise EnvironmentError, (popen.returncode, stderrdata)
+        raise EnvironmentError((popen.returncode, stderrdata))
     return stdoutdata
 
 
@@ -78,7 +79,7 @@ def generate_mo_files(po_file_names):
             Popen(['msgfmt', po_file, '-o', mo_file])
         except OSError:
             # Check msgfmt is properly installed
-            print >> stderr, "[ERROR] 'msgfmt' not found, aborting..."
+            print("[ERROR] 'msgfmt' not found, aborting...", file=stderr)
             return []
         mo_files.append(mo_file)
     return mo_files
@@ -110,11 +111,10 @@ if __name__ == '__main__':
     try:
         flags = get_compile_flags('pkg-config --cflags --libs glib-2.0')
     except OSError:
-        print >> stderr, "[ERROR] 'pkg-config' not found, aborting..."
+        print("[ERROR] 'pkg-config' not found, aborting...", file=stderr)
         raise
     except EnvironmentError:
-        err = '[ERROR] Glib 2.0 library or headers not found, aborting...'
-        print >> stderr, err
+        print("[ERROR] Glib 2.0 library or headers not found, aborting...", file=stderr)
         raise
     else:
         sources = [
@@ -128,8 +128,7 @@ if __name__ == '__main__':
         flags = get_compile_flags(
             'pkg-config --cflags --libs "poppler >= 0.20.0" fontconfig')
     except EnvironmentError:
-        err = "[WARNING] poppler headers not found, PDF indexation won't work"
-        print >> stderr, err
+        print("[WARNING] poppler headers not found, PDF indexation won't work", file=stderr)
     else:
         sources = ['itools/pdf/pdftotext.cc']
         extension = Extension('itools.pdf.pdftotext', sources, **flags)
@@ -139,8 +138,7 @@ if __name__ == '__main__':
     try:
         flags = get_compile_flags('wv2-config --cflags --libs')
     except EnvironmentError:
-        err = "[WARNING] wv2 not found, DOC indexation won't work"
-        print >> stderr, err
+        print("[WARNING] wv2 not found, DOC indexation won't work", file=stderr)
     else:
         sources = ['itools/office/doctotext.cc']
         extension = Extension('itools.office.doctotext', sources, **flags)
@@ -185,7 +183,6 @@ if __name__ == '__main__':
         "itools.html",
         "itools.i18n",
         "itools.ical",
-        "itools.log",
         "itools.loop",
         "itools.odf",
         "itools.office",

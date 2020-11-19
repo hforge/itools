@@ -87,7 +87,7 @@ class ConfigFileTestCase(TestCase):
         config2 = ConfigFile(self.config_path)
         try:
             config2_value = config2.get_value("test")
-        except SyntaxError, e:
+        except SyntaxError as e:
             self.fail(e)
         finally:
             lfs.remove(self.config_path)
@@ -124,7 +124,7 @@ class ConfigFileTestCase(TestCase):
         config = ConfigFile(self.config_path)
         try:
             config.set_value("test", value)
-        except SyntaxError, e:
+        except SyntaxError as e:
             self.fail(e)
         config.save_state()
 
@@ -132,7 +132,7 @@ class ConfigFileTestCase(TestCase):
         config2 = ConfigFile(self.config_path)
         try:
             config2_value = config2.get_value("test")
-        except SyntaxError, e:
+        except SyntaxError as e:
             self.fail(e)
         finally:
             lfs.remove(self.config_path)
@@ -151,7 +151,7 @@ class ConfigFileTestCase(TestCase):
         config = ConfigFile(self.config_path)
         try:
             config.set_value("test", value)
-        except SyntaxError, e:
+        except SyntaxError as e:
             self.fail(e)
         config.save_state()
 
@@ -159,7 +159,7 @@ class ConfigFileTestCase(TestCase):
         config2 = ConfigFile(self.config_path)
         try:
             config2_value = config2.get_value("test")
-        except SyntaxError, e:
+        except SyntaxError as e:
             self.fail(e)
         finally:
             lfs.remove(self.config_path)

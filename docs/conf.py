@@ -269,7 +269,7 @@ def setup(app):
             synopsis = "Itools %s module" % module
 
         # And the save the file
-        print '[autodoc] make the modules/%s.rst file' % module
+        print('[autodoc] make the modules/%s.rst file' % module)
         with open('autodoc/modules/%s.rst' % module, 'w') as rst_file:
             rst_file.write(template_module.format(module=module,
                                                   synopsis=synopsis))

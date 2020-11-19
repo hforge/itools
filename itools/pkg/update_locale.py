@@ -25,14 +25,9 @@ from subprocess import call
 import sys
 
 # Import from itools
-import itools
 from itools.gettext import POFile
 from itools.handlers import register_handler_class
 from itools.database.ro import ro_database
-import itools.html
-import itools.python
-import itools.stl
-import itools.pdf
 from itools.stl import STLFile
 from itools.uri import Path
 from itools.fs import lfs, WRITE
@@ -98,25 +93,22 @@ def update_locale(srx_handler, exclude_folders, no_wrap=False):
         try:
             handler = ro_database.get_handler(path)
         except Exception:
-            print
-            print '*'
-            print '* Error:', path
-            print '*'
+            print("*")
+            print("* Error: {}".format(path))
+            print("*")
             raise
         try:
             units = handler.get_units(srx_handler=srx_handler)
             units = list(units)
         except Exception:
-            print
-            print '*'
-            print '* Error:', path
-            print '*'
+            print("*")
+            print("* Error: {}".format(path))
+            print("*")
             raise
 
         relative_path = locale_folder_path.get_pathto(path)
         for source, context, line in units:
             po.add_unit(relative_path, source, context, line)
-    print
 
     write('* Update PO template ')
     data = po.to_str()
@@ -139,7 +131,7 @@ def update_locale(srx_handler, exclude_folders, no_wrap=False):
     filenames = list(filenames)
     filenames.sort()
 
-    print '* Update PO files:'
+    print("* Update PO files:")
     locale_pot_path = locale_folder.get_absolute_path('locale.pot')
     for filename in filenames:
         if locale_folder.exists(filename):
@@ -150,7 +142,6 @@ def update_locale(srx_handler, exclude_folders, no_wrap=False):
             else:
                 call(['msgmerge', '-U', '-s', file_path, locale_pot_path])
         else:
-            print '  %s (new)' % filename
+            print("  %s (new)" % filename)
             file_path = locale_folder.get_absolute_path(filename)
             lfs.copy(locale_pot_path, file_path)
-    print

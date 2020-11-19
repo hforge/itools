@@ -307,7 +307,7 @@ def translate(events, catalog, srx_handler=None):
                                        namespaces, doctype=doctype):
                     yield event
             except XMLError:
-                raise XMLError, ('please have a look in your source file, '
-                                 'line ~ %d:\n%s') % (line, value.to_str())
+                raise XMLError(('please have a look in your source file, '
+                                'line ~ %d:\n%s') % (line, value.to_str()))
         else:
             yield event

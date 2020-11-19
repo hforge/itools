@@ -27,12 +27,12 @@ language I could imagine.
 from functools import partial
 from re import compile
 from types import GeneratorType, MethodType
+from logging import getLogger
 
 # Import from itools
 from itools.core import freeze, prototype
 from itools.datatypes import Boolean
 from itools.gettext import MSG
-from itools.log import log_error
 from itools.uri import Path, Reference, get_reference
 from itools.xml import XMLParser, find_end, get_attr_datatype, stream_to_str
 from itools.xml import DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, TEXT
@@ -43,6 +43,7 @@ from itools.html import xhtml_uri
 from itools.html import stream_to_str_as_html, stream_to_str_as_xhtml
 from schema import stl_uri
 
+log = getLogger("itools.stl")
 
 
 ########################################################################
@@ -86,13 +87,13 @@ def evaluate(expression, stack, repeat_stack):
     try:
         value = stack.lookup(path[0])
     except STLError:
-        raise STLError, err % (expression, path[0])
+        raise STLError(err % (expression, path[0]))
 
     for name in path[1:]:
         try:
             value = lookup(value, name)
         except STLError:
-            raise STLError, err % (expression, name)
+            raise STLError(err % (expression, name))
 
     return value
 
@@ -147,10 +148,10 @@ def lookup(namespace, name):
     # Case 2: instance
     try:
         value = getattr(namespace, name)
-    except AttributeError:
-        log_error('lookup failed', domain='itools.stl')
-        err = "name '{}' not found in the namespace"
-        raise STLError, err.format(name)
+    except AttributeError as e:
+        err = "Lookup failed : name '{}' not found in the namespace".format(name)
+        log.error(err, exc_info=True)
+        raise STLError(err.format(name))
     if type(value) is MethodType:
         value = value()
     return value
@@ -168,7 +169,7 @@ class NamespaceStack(list):
             except STLError:
                 pass
 
-        raise STLError, 'name "%s" not found in the namespace' % name
+        raise STLError('name "%s" not found in the namespace' % name)
 
 
     def __getslice__(self, a, b):
@@ -203,7 +204,7 @@ def substitute_attribute(data, stack, repeat_stack, encoding='utf-8'):
     substitutions done.
     """
     if type(data) is not str:
-        raise ValueError, 'byte string expected, not %s' % type(data)
+        raise ValueError('byte string expected, not %s' % type(data))
     # Solo, preserve the value None
     match = subs_expr_solo.match(data)
     if match is not None:
@@ -243,7 +244,7 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
     substitutions done.
     """
     if type(data) is not str:
-        raise ValueError, 'byte string expected, not %s' % type(data)
+        raise ValueError('byte string expected, not %s' % type(data))
 
     segments = subs_expr.split(data)
     for i, segment in enumerate(segments):
@@ -268,7 +269,7 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
             elif is_xml_stream(value):
                 for x in value:
                     if type(x) is not tuple:
-                        raise STLError, ERR_EXPR_XML % (type(x), segment)
+                        raise STLError(ERR_EXPR_XML % (type(x), segment))
                     yield x
             else:
                 yield TEXT, str(value), 0
@@ -309,7 +310,7 @@ def stl(document=None, namespace=freeze({}), prefix=None, events=None,
             return stream_to_str_as_xhtml(stream, encoding)
         elif mode == 'html':
             return stream_to_str_as_html(stream, encoding)
-    except STLError, e:
+    except STLError as e:
         error = 'Error in generation of {0}\n'.format(mode)
         if document:
             error += 'Template {0}\n'.format(document.key)
@@ -567,7 +568,7 @@ class STLTemplate(prototype):
             return self.template
 
         error = 'template variable of unexpected type "%s"'
-        raise TypeError, error % type(self.template).__name__
+        raise TypeError(error % type(self.template).__name__)
 
 
     def render(self, mode='events'):

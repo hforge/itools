@@ -91,4 +91,4 @@ class TestValidators(AutoEdit):
           return field(resource=resource)
 
     def action(self, resource, context, form):
-        print form
+        print(form)

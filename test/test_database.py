@@ -31,7 +31,6 @@ from itools.database.catalog import _index, _decode
 from itools.datatypes import String, Unicode, Boolean, Integer
 from itools.fs import lfs, FileName
 from itools.handlers import TextFile
-from itools.log.log import register_logger, Logger, FATAL
 
 # Import from xapian
 from xapian import Document as XapianDocument
@@ -50,8 +49,6 @@ class BrokenHandler(TextFile):
 #    def setUp(self):
 #        self.tearDown()
 #        # Silence the log system
-#        logger = Logger(min_level=FATAL)
-#        register_logger(logger, 'itools.database')
 #        # Make database
 #        self.database = make_git_database('fables', 20, 20)
 #        self.database.worktree.git_add('.')
@@ -61,7 +58,6 @@ class BrokenHandler(TextFile):
 #
 #    def tearDown(self):
 #        # Restore logging
-#        register_logger(None, 'itools.database')
 #        # Clean file-system
 #        paths = ['fables/catalog',
 #                 'fables/database/.git',

@@ -15,7 +15,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-
 # From http://blog.pythonisito.com/2008/08/lazy-descriptors.html
 class lazy(object):
 
@@ -37,4 +36,3 @@ class lazy(object):
 
     def __repr__(self):
         return '%s wrapps %s' % (object.__repr__(self), repr(self.meth))
-

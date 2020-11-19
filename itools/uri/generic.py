@@ -61,7 +61,7 @@ from itools.core import freeze
 
 def _normalize_path(path):
     if type(path) is not str:
-        raise TypeError, 'path must be an string, not a %s' % type(path)
+        raise TypeError('path must be an string, not a %s' % type(path))
 
     # Does the path start and/or end with an slash?
     startswith_slash = endswith_slash = False
@@ -163,14 +163,13 @@ class Path(list):
 
 
     def __add__(self, path):
-        raise NotImplementedError, \
-              'paths can not be added, use resolve2 instead'
+        raise NotImplementedError('paths can not be added, use resolve2 instead')
 
 
     ##########################################################################
     # API
     def __repr__(self):
-        return '<itools.uri.Path at %s>' % hex(id(self))
+        return "Path({path!r})".format(path=str(self))
 
 
     def __str__(self):
@@ -275,7 +274,7 @@ class Path(list):
         reference is known to be a relative path of length = 1.
         """
         if not isinstance(name, str):
-            raise TypeError, 'unexpected value "%s"' % repr(name)
+            raise TypeError('unexpected value "%s"' % repr(name))
 
         # Relative path
         path = copy(self)
@@ -287,7 +286,7 @@ class Path(list):
     def get_prefix(self, path):
         """Returns the common prefix of two paths, for example:
 
-          >>> print Path('a/b/c').get_prefix(Path('a/b/d/e'))
+          >>> print(Path('a/b/c').get_prefix(Path('a/b/d/e')))
           a/b
 
         XXX When there are parameters (e.g. a/b;lang=es/c) it is undefined.
@@ -614,7 +613,7 @@ class Reference(object):
             elif value_type is unicode:
                 value = value.encode('utf-8')
             elif value_type is not str:
-                raise TypeError, 'unexepected %s value' % type
+                raise TypeError('unexepected %s value' % value_type)
             # Update
             query[key] = value
         # Ok
@@ -656,7 +655,7 @@ class GenericDataType(object):
             return Reference('', '', data, {}, None)
 
         if data_type is not str:
-            raise TypeError, 'unexpected %s' % type(data)
+            raise TypeError('unexpected %s' % type(data))
 
         # Special case, the empty reference
         if data == '':

@@ -6,13 +6,13 @@ if __name__ == '__main__':
     data = open('hello.html').read()
     for type, value, line in HTMLParser(data):
         if type == DOCUMENT_TYPE:
-            print 'DOC TYPE  :', repr(value)
+            print("DOC TYPE  : {}".format(repr(value)))
         elif type == START_ELEMENT:
             tag_uri, tag_name, attributes = value
-            print 'START TAG :', tag_name
+            print("START TAG : {}".format(tag_name))
         elif type == END_ELEMENT:
             tag_uri, tag_name = value
-            print 'END TAG   :', tag_name
+            print("END TAG   : {}".format(tag_name))
         elif type == TEXT:
-            print 'TEXT      :', value
+            print("TEXT  {}    :".format(value))
 

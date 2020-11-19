@@ -41,30 +41,33 @@ from messages import ERROR
 def process_form(get_value, schema, error_msg=None):
     missings = []
     invalids = []
-    messages = []
+    messages = {}
     unknow = []
     values = {}
     for name in schema:
         datatype = schema[name]
         try:
             values[name] = get_value(name, type=datatype)
-        except FormError, e:
+        except FormError as e:
             if e.missing:
                 missings.append(name)
             elif e.invalid:
                 invalids.append(name)
             else:
                 unknow.append(name)
-            messages.extend(e.messages)
+            messages[name] = e.get_messages()
+            values[name] = None
     if missings or invalids or unknow:
         error_msg = error_msg or ERROR(u'Form values are invalid')
         raise FormError(
             message=error_msg,
-            missing=len(missings)>0,
-            invalid=len(invalids)>0,
+            missing=len(missings) > 0,
+            invalid=len(invalids) > 0,
             messages=messages,
             missings=missings,
-            invalids=invalids)
+            invalids=invalids,
+            values=values
+        )
     return values
 
 
@@ -363,7 +366,7 @@ class STLView(BaseView):
         template = self.template
         if template is None:
             msg = "%s is missing the 'template' variable"
-            raise NotImplementedError, msg % repr(self.__class__)
+            raise NotImplementedError(msg % repr(self.__class__))
 
         # Case 1: a path to a file somewhere
         template_type = type(template)
@@ -380,7 +383,7 @@ class STLView(BaseView):
 
         # Error
         error = 'unexpected type "%s" for the template' % template_type
-        raise TypeError, error
+        raise TypeError(error)
 
 
     def GET(self, resource, context):
@@ -431,7 +434,7 @@ class STLView(BaseView):
             if submit and not is_readonly:
                 try:
                     value = context.get_form_value(name, type=datatype)
-                except FormError, err:
+                except FormError as err:
                     error = err.get_message(mode='text')
                     if issubclass(datatype, Enumerate):
                         value = datatype.get_namespace(None)
@@ -450,7 +453,7 @@ class STLView(BaseView):
             else:
                 try:
                     value = self.get_value(resource, context, name, datatype)
-                except FormError, err:
+                except FormError as err:
                     error = err.get_message(mode='text')
                     if issubclass(datatype, Enumerate):
                         value = datatype.get_namespace(None)

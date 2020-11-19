@@ -41,7 +41,7 @@ class Handler(object):
     def has_handler(self, reference):
         database = self.database
         if database is None:
-            raise NotImplementedError, MSG_NOT_ATTACHED
+            raise NotImplementedError(MSG_NOT_ATTACHED)
 
         key = database.resolve2(self.key, reference)
         return database.has_handler(key)
@@ -50,7 +50,7 @@ class Handler(object):
     def get_handler_names(self, reference='.'):
         database = self.database
         if database is None:
-            raise NotImplementedError, MSG_NOT_ATTACHED
+            raise NotImplementedError(MSG_NOT_ATTACHED)
 
         key = database.resolve2(self.key, reference)
         return database.get_handler_names(key)
@@ -59,7 +59,7 @@ class Handler(object):
     def get_handler(self, reference, cls=None, soft=False):
         database = self.database
         if database is None:
-            raise NotImplementedError, MSG_NOT_ATTACHED
+            raise NotImplementedError(MSG_NOT_ATTACHED)
 
         key = database.resolve2(self.key, reference)
         return database._get_handler(key, cls, soft)
@@ -68,7 +68,7 @@ class Handler(object):
     def get_handlers(self, reference='.'):
         database = self.database
         if database is None:
-            raise NotImplementedError, MSG_NOT_ATTACHED
+            raise NotImplementedError(MSG_NOT_ATTACHED)
 
         key = database.resolve2(self.key, reference)
         return database.get_handlers(key)
@@ -77,7 +77,7 @@ class Handler(object):
     def set_handler(self, reference, handler):
         database = self.database
         if database is None:
-            raise NotImplementedError, MSG_NOT_ATTACHED
+            raise NotImplementedError(MSG_NOT_ATTACHED)
 
         key = database.resolve2(self.key, reference)
         database.set_handler(key, handler)
@@ -86,7 +86,7 @@ class Handler(object):
     def del_handler(self, reference):
         database = self.database
         if database is None:
-            raise NotImplementedError, MSG_NOT_ATTACHED
+            raise NotImplementedError(MSG_NOT_ATTACHED)
 
         key = database.resolve2(self.key, reference)
         database.del_handler(key)
@@ -95,7 +95,7 @@ class Handler(object):
     def copy_handler(self, source, target, exclude_patterns=None):
         database = self.database
         if database is None:
-            raise NotImplementedError, MSG_NOT_ATTACHED
+            raise NotImplementedError(MSG_NOT_ATTACHED)
 
         source = database.resolve2(self.key, source)
         target = database.resolve2(self.key, target)
@@ -105,7 +105,7 @@ class Handler(object):
     def move_handler(self, source, target):
         database = self.database
         if database is None:
-            raise NotImplementedError, MSG_NOT_ATTACHED
+            raise NotImplementedError(MSG_NOT_ATTACHED)
 
         source = database.resolve2(self.key, source)
         target = database.resolve2(self.key, target)

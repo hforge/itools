@@ -29,7 +29,8 @@ from json import dumps
 # Import from itools
 from itools.fs import lfs
 from itools.gettext import POFile
-
+from itools.html import XHTMLFile, HTMLFile
+from itools.xmlfile.errors import TranslationError
 # Import from here
 from build_gulp import GulpBuilder
 from git import open_worktree
@@ -63,11 +64,6 @@ def po2mo(package_root, source, target, handler_cls, po_files):
 
 # Translate templates
 def make_template(package_root, source, target, handler_cls, po_files):
-    # Import some packages so we can compile templates
-    from itools.xmlfile.errors import TranslationError
-    import itools.gettext
-    import itools.stl
-    import itools.pdf
     # Get file
     source_handler = handler_cls(source)
     language = target.rsplit('.', 1)[1]
@@ -150,21 +146,20 @@ def build(path, config, environment):
     manifest.add('MANIFEST')
     # Write version
     open(path + version_txt, 'w').write(version)
-    print '**'*30
-    print '* Version:', version
+    print("**"*30)
+    print("* Version: {}".format(version))
     manifest.add(version_txt)
     # Write environment.json file
     environment_json = get_file_path(package_root, 'environment.json')
     environment_kw = {'build_path': path, 'environment': environment}
     open(path + environment_json, 'w').write(dumps(environment_kw))
     manifest.add(environment_json)
-    print '* Build environment.json'
+    print("* Build environment.json")
     # Run gulp
     if environment == 'production':
         gulp_builder = GulpBuilder(package_root, worktree, manifest)
         gulp_builder.run()
         # Rules
-        from itools.html import XHTMLFile, HTMLFile
         rules = [('.po', '.mo', po2mo, None)]
         # Pre-load PO files
         po_files = {}
@@ -185,6 +180,6 @@ def build(path, config, environment):
     # Write the manifest
     lines = [ x + '\n' for x in sorted(manifest) ]
     open(path + 'MANIFEST', 'w').write(''.join(lines))
-    print '* Build MANIFEST file (list of files to install)'
-    print '**'*30
+    print('* Build MANIFEST file (list of files to install)')
+    print('**'*30)
     return version

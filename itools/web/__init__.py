@@ -20,7 +20,6 @@
 # Import from itools
 from context import get_context, set_context
 from context import select_language
-from context import WebLogger
 from exceptions import HTTPError, ClientError, ServerError
 from exceptions import NotModified
 from exceptions import BadRequest, Unauthorized, Forbidden, NotFound
@@ -33,7 +32,6 @@ from utils import NewJSONEncoder
 from views import ItoolsView, BaseView, STLView
 
 __all__ = [
-    'WebLogger',
     # Context
     'set_context',
     'get_context',

@@ -15,15 +15,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
+import traceback
+from logging import getLogger
 from sys import _getframe
 from types import FunctionType
-
-# Import from itools
-from itools.log import log_error
 
 # Import from here
 from lazy import lazy
 
+
+log = getLogger("itools.core")
 
 """
 This module provides prototype-based programming:
@@ -152,8 +153,8 @@ class proto_property(lazy):
         try:
             value = self.meth(owner)
         except Exception as e:
-            msg = 'Error on proto property:\n'
-            log_error(msg + str(e), domain='itools.core')
+            tb = traceback.format_exc()
+            log.error("Error on proto property: {}".format(tb), exc_info=True)
             raise
         return value
 
@@ -169,8 +170,8 @@ class proto_lazy_property(lazy):
                 try:
                     value = self.meth(owner)
                 except Exception as e:
-                    msg = 'Error on proto lazy property:\n'
-                    log_error(msg + str(e), domain='itools.core')
+                    tb = traceback.format_exc()
+                    log.error("Error on proto lazy property: {}".format(tb), exc_info=True)
                     raise
                 setattr(owner, name, value)
                 return value
@@ -182,6 +183,6 @@ def is_prototype(value, cls):
     from itools.web import INFO, ERROR
     for c in [MSG, INFO, ERROR]:
         if cls is c and isinstance(value, c):
-            print("Warning: is_prototype(xxx, MSG) is obsolete. MSG is not a prototype anymore")
+            log.debug("Warning: is_prototype(xxx, MSG) is obsolete. MSG is not a prototype anymore")
             return True
     return issubclass(type(value), prototype_type) and issubclass(value, cls)

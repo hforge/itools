@@ -19,7 +19,6 @@
 
 # Import from the standard library
 import os
-from copy import deepcopy
 from decimal import Decimal as decimal
 from datetime import datetime
 from marshal import dumps, loads
@@ -34,18 +33,18 @@ from xapian import sortable_serialise, sortable_unserialise, TermGenerator
 from itools.core import fixed_offset, lazy, merge_dicts
 from itools.datatypes import Decimal, Integer, Unicode, String
 from itools.fs import lfs
-from itools.i18n import is_punctuation
-from itools.log import Logger, log_warning, log_info, register_logger
+from itools.i18n import is_punctuation, select_language
+from logging import getLogger
 from itools.database.queries import AllQuery, _AndQuery, NotQuery, _OrQuery, PhraseQuery
 from itools.database.queries import RangeQuery, StartQuery, TextQuery, _MultipleQuery
 
+log = getLogger("itools.database")
 try:
     from xapian import MultiValueSorter
     XAPIAN_VERSION = '1.2'
-except:
+except Exception:
     from xapian import MultiValueKeyMaker
     XAPIAN_VERSION = '1.4'
-
 
 
 # Constants
@@ -81,24 +80,17 @@ TRANSLATE_MAP = { ord(u'À'): ord(u'A'),
                   ord(u"'"): ord(u' ') }
 
 
-
 MSG_NOT_INDEXED = 'the "{name}" field is not indexed'
 def warn_not_indexed(name):
-    log_warning(MSG_NOT_INDEXED.format(name=name), 'itools.database')
+    log.warning(MSG_NOT_INDEXED.format(name=name))
 
 MSG_NOT_STORED = 'the "{name}" field is not stored'
 def warn_not_stored(name):
-    log_warning(MSG_NOT_STORED.format(name=name), 'itools.database')
+    log.warning(MSG_NOT_STORED.format(name=name))
 
 MSG_NOT_INDEXED_NOR_STORED = 'the "{name}" field is not indexed nor stored'
 def warn_not_indexed_nor_stored(name):
-    log_warning(MSG_NOT_INDEXED_NOR_STORED.format(name=name), 'itools.database')
-
-
-class CatalogLogger(Logger):
-
-    def format(self, domain, level, message):
-        return message + '\n'
+    log.warning(MSG_NOT_INDEXED_NOR_STORED.format(name=name))
 
 
 class Doc(object):
@@ -113,11 +105,11 @@ class Doc(object):
         # 1. Get the raw value
         info = self._metadata.get(name)
         if info is None:
-            raise AttributeError, MSG_NOT_INDEXED_NOR_STORED.format(name=name)
+            raise AttributeError(MSG_NOT_INDEXED_NOR_STORED.format(name=name))
 
         stored = info.get('value')
         if stored is None:
-            raise AttributeError, MSG_NOT_STORED.format(name=name)
+            raise AttributeError(MSG_NOT_STORED.format(name=name))
         raw_value = self._xdoc.get_value(stored)
 
         # 2. Decode
@@ -311,7 +303,6 @@ class SearchResults(object):
 class Catalog(object):
 
     nb_changes = 0
-    logger = None
     _db = None
     read_only = False
 
@@ -346,12 +337,6 @@ class Catalog(object):
         self._load_all_internal()
         if not read_only:
             self._init_all_metadata()
-        # Catalog log
-        if path:
-            catalog_log = '{}/catalog.log'.format(path)
-            self.logger = CatalogLogger(catalog_log)
-            register_logger(self.logger, 'itools.catalog')
-
 
 
     def _init_all_metadata(self):
@@ -361,22 +346,20 @@ class Catalog(object):
         metadata = self._metadata
         for name, field_cls in self._fields.items():
             if name not in metadata:
-                print('[Catalog] New field registered: {0}'.format(name))
+                log.debug("[Catalog] New field registered: {0}".format(name))
                 has_changes = True
                 metadata[name] = self._get_info(field_cls, name)
             else:
                 # If the field was in the catalog but is newly stored
-                if (not metadata[name].has_key('value') and
-                    getattr(field_cls, 'stored', False)):
-                    print('[Catalog] Indexed field is now stored: {0}'.format(name))
+                if not metadata[name].has_key('value') and getattr(field_cls, 'stored', False):
+                    log.debug("[Catalog] Indexed field is now stored: {0}".format(name))
                     has_changes = True
                     metadata[name] = merge_dicts(
                         metadata[name],
                         self._get_info_stored())
                 # If the field was stored in the catalog but is newly indexed
-                if (not metadata[name].has_key('prefix') and
-                    getattr(field_cls, 'indexed', False)):
-                    print('[Catalog] Stored field is now indexed: {0}'.format(name))
+                if not metadata[name].has_key('prefix') and getattr(field_cls, 'indexed', False):
+                    log.debug("[Catalog] Stored field is now indexed: {0}".format(name))
                     has_changes = True
                     metadata[name] = merge_dicts(
                         metadata[name],
@@ -394,7 +377,7 @@ class Catalog(object):
         """Save the last changes to disk.
         """
         if not self._asynchronous:
-            raise ValueError, "The transactions are synchronous"
+            raise ValueError("The transactions are synchronous")
         db = self._db
         db.commit_transaction()
         db.commit()
@@ -405,8 +388,6 @@ class Catalog(object):
         #    # cancel all transactions not commited to disk
         #    # We have to use new strategy to abort transaction
         #    db.commit()
-        #    if self.logger:
-        #        self.logger.clear()
         #    self.nb_changes = 0
         db.begin_transaction(self.commit_each_transaction)
 
@@ -415,7 +396,7 @@ class Catalog(object):
         """Abort the last changes made in memory.
         """
         if not self._asynchronous:
-            raise ValueError, "The transactions are synchronous"
+            raise ValueError("The transactions are synchronous")
         db = self._db
         if self.commit_each_transaction:
             db.cancel_transaction()
@@ -427,8 +408,7 @@ class Catalog(object):
 
     def close(self):
         if self._db is None:
-            msg = 'Catalog is already closed'
-            print(msg)
+            log.info("Catalog is already closed")
             return
         if self.read_only:
             self._db.close()
@@ -437,8 +417,8 @@ class Catalog(object):
         if self.commit_each_transaction:
             try:
                 self._db.cancel_transaction()
-            except:
-                print('Warning: cannot cancel xapian transaction')
+            except Exception:
+                log.info("Warning: cannot cancel xapian transaction", exc_info=True)
                 self._db.close()
                 self._db = None
             else:
@@ -450,8 +430,6 @@ class Catalog(object):
             self._db.flush()
             self._db.close()
             self._db = None
-        if self.logger:
-            self.logger.clear()
 
 
     #######################################################################
@@ -461,8 +439,7 @@ class Catalog(object):
         self.nb_changes += 1
         abspath, term, xdoc = self.get_xdoc_from_document(document)
         self._db.replace_document(term, xdoc)
-        if self.logger:
-            log_info(abspath, domain='itools.catalog')
+        log.debug("Indexed : {}".format(abspath))
 
 
     def unindex_document(self, abspath):
@@ -472,9 +449,7 @@ class Catalog(object):
         self.nb_changes += 1
         data = _reduce_size(_encode(self._fields['abspath'], abspath))
         self._db.delete_document('Q' + data)
-        if self.logger:
-            log_info(abspath, domain='itools.catalog')
-
+        log.debug("Unindexed : {}".format(abspath))
 
     def get_xdoc_from_document(self, doc_values):
         """Return (abspath, term, xdoc) from the document (resource or values as dict)
@@ -489,7 +464,7 @@ class Catalog(object):
         # Make the xapian document
         metadata_modified = False
         xdoc = Document()
-        for name, value in doc_values.iteritems():
+        for name, value in doc_values.items():
             if name not in fields:
                 warn_not_indexed_nor_stored(name)
             field_cls = fields[name]
@@ -515,7 +490,7 @@ class Catalog(object):
 
             # A multilingual value?
             if isinstance(value, dict):
-                for language, lang_value in value.iteritems():
+                for language, lang_value in value.items():
                     lang_name = name + '_' + language
 
                     # New field ?
@@ -583,8 +558,8 @@ class Catalog(object):
             if not (issubclass(field_cls, String) and
                     field_cls.stored and
                     field_cls.indexed):
-                raise ValueError, ('the abspath field must be declared as '
-                                   'String(stored=True, indexed=True)')
+                raise ValueError(('the abspath field must be declared as '
+                                  'String(stored=True, indexed=True)'))
         # Stored ?
         info = {}
         if getattr(field_cls, 'stored', False):
@@ -620,7 +595,7 @@ class Catalog(object):
             self._metadata = {}
         else:
             self._metadata = loads(metadata)
-            for name, info in self._metadata.iteritems():
+            for name, info in self._metadata.items():
                 if 'value' in info:
                     self._value_nb += 1
                 if 'prefix' in info:
@@ -642,7 +617,7 @@ class Catalog(object):
         if query_class is PhraseQuery:
             name = query.name
             if type(name) is not str:
-                raise TypeError, "unexpected '%s'" % type(name)
+                raise TypeError("unexpected '%s'" % type(name))
             # If there is a problem => an empty result
             if name not in metadata:
                 warn_not_indexed(name)
@@ -651,7 +626,7 @@ class Catalog(object):
             try:
                 prefix = info['prefix']
             except KeyError:
-                raise ValueError, 'the field "%s" must be indexed' % name
+                raise ValueError('the field "%s" must be indexed' % name)
             field_cls = _get_field_cls(name, fields, info)
             return _make_PhraseQuery(field_cls, query.value, prefix)
 
@@ -659,7 +634,7 @@ class Catalog(object):
         if query_class is RangeQuery:
             name = query.name
             if type(name) is not str:
-                raise TypeError, "unexpected '%s'" % type(name)
+                raise TypeError("unexpected '%s'" % type(name))
             # If there is a problem => an empty result
             if name not in metadata:
                 warn_not_indexed(name)
@@ -668,11 +643,11 @@ class Catalog(object):
             info = metadata[name]
             value = info.get('value')
             if value is None:
-                raise AttributeError, MSG_NOT_STORED.format(name=name)
+                raise AttributeError(MSG_NOT_STORED.format(name=name))
             field_cls = _get_field_cls(name, fields, info)
             if field_cls.multiple:
                 error = 'range-query not supported on multiple fields'
-                raise ValueError, error
+                raise ValueError(error)
 
             left = query.left
             if left is not None:
@@ -701,7 +676,7 @@ class Catalog(object):
         if query_class is StartQuery:
             name = query.name
             if type(name) is not str:
-                raise TypeError, "unexpected '%s'" % type(name)
+                raise TypeError("unexpected '%s'" % type(name))
             # If there is a problem => an empty result
             if name not in metadata:
                 warn_not_indexed(name)
@@ -710,7 +685,7 @@ class Catalog(object):
             info = metadata[name]
             value_nb = info.get('value')
             if value_nb is None:
-                raise AttributeError, MSG_NOT_STORED.format(name=name)
+                raise AttributeError(MSG_NOT_STORED.format(name=name))
             field_cls = _get_field_cls(name, fields, info)
 
             value = query.value
@@ -750,7 +725,7 @@ class Catalog(object):
         if query_class is TextQuery:
             name = query.name
             if type(name) is not str:
-                raise TypeError, "unexpected %s for 'name'" % type(name)
+                raise TypeError("unexpected %s for 'name'" % type(name))
             # If there is a problem => an empty result
             if name not in metadata:
                 warn_not_indexed(name)
@@ -761,12 +736,12 @@ class Catalog(object):
             try:
                 prefix = info['prefix']
             except KeyError:
-                raise ValueError, 'the field "%s" must be indexed' % name
+                raise ValueError('the field "%s" must be indexed' % name)
 
             # Remove accents from the value
             value = query.value
             if type(value) is not unicode:
-                raise TypeError, "unexpected %s for 'value'" % type(value)
+                raise TypeError("unexpected %s for 'value'" % type(value))
             value = value.translate(TRANSLATE_MAP)
 
             qp = QueryParser()
@@ -953,7 +928,7 @@ def _index_unicode(xdoc, value, prefix, language, termpos,
     # Check type
     if type(value) is not unicode:
         msg = 'The value "%s", field "%s", is not a unicode'
-        raise TypeError, msg % (value, prefix)
+        raise TypeError(msg % (value, prefix))
 
     # Case 1: Japanese or Chinese
     if language in ['ja', 'zh']:
@@ -1040,7 +1015,7 @@ def _get_xquery(catalog, query=None, **kw):
     metadata = catalog._metadata
     fields = catalog._fields
     xqueries = []
-    for name, value in kw.iteritems():
+    for name, value in kw.items():
         # If name is a field not yet indexed, return nothing
         if name not in metadata:
             warn_not_indexed(name)

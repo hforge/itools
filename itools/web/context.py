@@ -152,30 +152,3 @@ def get_form_value(form, name, type=String, default=None):
             values[lang] = value
     check_form_value(field, values)
     return values
-
-
-
-# class WebLogger(Logger):
-#
-#     def get_body(self):
-#         context = get_context()
-#         if context is None:
-#             return Logger.get_body(self)
-#
-#         # The URI and user
-#         if context.user:
-#             lines = ['%s (user: %s)\n\n' % (context.uri, context.user.name)]
-#         else:
-#             lines = ['%s\n\n' % context.uri]
-#
-#         # Request header
-#         lines.append(context.get_request_line() + '\n')
-#         headers = context.get_headers()
-#         for key, value in headers:
-#             lines.append('%s: %s\n' % (key, value))
-#         lines.append('\n')
-#
-#         # Ok
-#         body = Logger.get_body(self)
-#         lines.extend(body)
-#         return lines

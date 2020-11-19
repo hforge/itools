@@ -40,6 +40,8 @@ from registry import register_backend
 
 TEST_DB_WITHOUT_COMMITS = bool(int(os.environ.get('TEST_DB_WITHOUT_COMMITS') or 0))
 TEST_DB_DESACTIVATE_GIT = bool(int(os.environ.get('TEST_DB_DESACTIVATE_GIT') or 0))
+TEST_DB_DESACTIVATE_STATIC_HISTORY = bool(int(os.environ.get('TEST_DB_DESACTIVATE_STATIC_HISTORY') or 1))
+TEST_DB_DESACTIVATE_PATCH = bool(int(os.environ.get('TEST_DESACTIVATE_PATCH') or 1))
 
 
 class Heap(object):
@@ -236,6 +238,8 @@ class GitBackend(object):
         The idea is to commit into GIT each N transactions on big databases to avoid performances problems.
         We want to keep a diff on each transaction, to help debug.
         """
+        if TEST_DB_DESACTIVATE_PATCH is True:
+            return
         author_id, author_email = git_author
         diffs = {}
         # Added
@@ -283,10 +287,11 @@ class GitBackend(object):
         # Statistics
         self.nb_transactions += 1
         # Add static changed & removed files to ~/database_static/.history/
-        changed_and_removed = list(changed) + list(removed)
-        for key in changed_and_removed:
-            if not key.endswith('metadata'):
-                self.add_handler_into_static_history(key)
+        if TEST_DB_DESACTIVATE_STATIC_HISTORY is False:
+            changed_and_removed = list(changed) + list(removed)
+            for key in changed_and_removed:
+                if not key.endswith('metadata'):
+                    self.add_handler_into_static_history(key)
         # Create patch if there's changed
         if added or changed or removed:
             self.create_patch(added, changed, removed, handlers, git_author)

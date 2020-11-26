@@ -33,7 +33,7 @@ from xapian import sortable_serialise, sortable_unserialise, TermGenerator
 from itools.core import fixed_offset, lazy, merge_dicts
 from itools.datatypes import Decimal, Integer, Unicode, String
 from itools.fs import lfs
-from itools.i18n import is_punctuation, select_language
+from itools.i18n import is_punctuation
 from logging import getLogger
 from itools.database.queries import AllQuery, _AndQuery, NotQuery, _OrQuery, PhraseQuery
 from itools.database.queries import RangeQuery, StartQuery, TextQuery, _MultipleQuery

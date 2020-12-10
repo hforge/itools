@@ -134,7 +134,7 @@ class Image(File):
         # To string
         output = StringIO()
         # JPEG : Convert to RGB
-        if format.lower() == 'jpeg':
+        if format.lower() in ("jpeg", "mpo"):
             im = im.convert("RGB")
         im.save(output, format, quality=80)
         value = output.getvalue()

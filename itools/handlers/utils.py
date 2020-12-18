@@ -22,9 +22,9 @@ import unicodedata
 
 
 
-src = (ur"""ÄÅÁÀÂÃĀäåáàâãāăÇçÉÈÊËĒéèêëēğÍÌÎÏĪíìîïīıļÑñÖÓÒÔÕØŌöóòôõøōőÜÚÙÛŪüúùûū"""
+src = (ur"""ÄÅÁÀÂÃĀäåáàâãāăČÇçÉÈÊËĒéèêëēğÍÌÎÏĪíìîïīıļÑñÖÓÒÔÕØŌöóòôõøōőÜÚÙÛŪüúùûū"""
        ur"""ŞşšţÝŸȲýÿȳŽž°«»’""")
-dst = (ur"""AAAAAAAaaaaaaaaCcEEEEEeeeeegIIIIIiiiiiilNnOOOOOOOooooooooUUUUUuuuuu"""
+dst = (ur"""AAAAAAAaaaaaaaaCCcEEEEEeeeeegIIIIIiiiiiilNnOOOOOOOooooooooUUUUUuuuuu"""
        ur"""SsstYYYyyyZz----""")
 
 transmap = {}

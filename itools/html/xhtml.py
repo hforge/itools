@@ -40,6 +40,10 @@ def get_start_tag(value):
         qname = get_attribute_qname(attr_uri, attr_name)
         value = XMLAttribute.encode(value)
         s += ' %s="%s"' % (qname, value)
+    # Close the start tag
+    schema = html_namespace.get_element_schema(tag_name)
+    if getattr(schema, 'is_empty', False):
+        return s + '/>'
     return s + '>'
 
 

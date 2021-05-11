@@ -18,10 +18,12 @@
 from datetime import datetime, date, time
 from decimal import Decimal
 from json import JSONEncoder
+import types
 
 # Import from itools
 from itools.gettext import MSG
-from itools.html import stream_to_str_as_html
+from itools.html import stream_to_str_as_html, XHTMLFile
+from itools.uri import Reference
 from itools.xml import XMLParser
 
 
@@ -115,4 +117,12 @@ class NewJSONEncoder(JSONEncoder):
             return o.gettext()
         elif isinstance(o, XMLParser):
             return stream_to_str_as_html(o)
+        elif isinstance(o, XHTMLFile):
+            return stream_to_str_as_html(o.events)
+        elif isinstance(o, types.GeneratorType):
+            return list(o)
+        elif isinstance(o, set):
+            return list(o)
+        elif isinstance(o, Reference):
+            return str(o)
         return JSONEncoder.default(self, o)

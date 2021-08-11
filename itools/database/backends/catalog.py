@@ -386,7 +386,7 @@ class Catalog(object):
 
     def abort_changes(self):
 
-        """Abort the last changes made in memory. YOLO
+        """Abort the last changes made in memory.
         """
         if not self._asynchronous:
             raise ValueError("The transactions are synchronous")

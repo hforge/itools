@@ -437,6 +437,7 @@ class GitBackend(object):
             self.catalog.unindex_document(path)
         for resource, values in docs_to_index:
             self.catalog.index_document(values)
+        self.catalog.save_changes()
 
 
     def get_catalog(self):

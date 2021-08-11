@@ -25,7 +25,7 @@ from marshal import dumps, loads
 from hashlib import sha1
 
 # Import from xapian
-from xapian import Database, WritableDatabase, DB_CREATE, DB_OPEN, DB_BACKEND_CHERT
+from xapian import Database, WritableDatabase, DB_CREATE, DB_OPEN, DB_BACKEND_GLASS
 from xapian import Document, Query, QueryParser, Enquire
 from xapian import sortable_serialise, sortable_unserialise, TermGenerator
 
@@ -322,9 +322,7 @@ class Catalog(object):
         db = self._db
         self._asynchronous = asynchronous_mode
         self._fields = fields
-        # FIXME: There's a bug in xapian:
-        # Wa cannot get stored values if DB not flushed
-        self.commit_each_transaction = True
+        self.commit_each_transaction = False
         # Asynchronous mode
         if not read_only and asynchronous_mode:
             db.begin_transaction(self.commit_each_transaction)
@@ -380,20 +378,15 @@ class Catalog(object):
             raise ValueError("The transactions are synchronous")
         db = self._db
         db.commit_transaction()
-        db.commit()
-        # FIXME: There's a bug in xapian:
-        # Wa cannot get stored values if DB not flushed
-        #if self.nb_changes > 200:
-        #    # XXX Not working since cancel_transaction()
-        #    # cancel all transactions not commited to disk
-        #    # We have to use new strategy to abort transaction
-        #    db.commit()
-        #    self.nb_changes = 0
+        if self.nb_changes > 200:
+            db.commit()
+            self.nb_changes = 0
         db.begin_transaction(self.commit_each_transaction)
 
 
     def abort_changes(self):
-        """Abort the last changes made in memory.
+
+        """Abort the last changes made in memory. YOLO
         """
         if not self._asynchronous:
             raise ValueError("The transactions are synchronous")
@@ -402,7 +395,8 @@ class Catalog(object):
             db.cancel_transaction()
             db.begin_transaction(self.commit_each_transaction)
         else:
-            raise NotImplementedError
+            db.cancel_transaction()
+            db.begin_transaction(self.commit_each_transaction)
         self._load_all_internal()
 
 
@@ -425,9 +419,8 @@ class Catalog(object):
                 self._db.close()
                 self._db = None
         else:
-            self.abort_changes()
             self._db.commit_transaction()
-            self._db.flush()
+            self._db.commit()
             self._db.close()
             self._db = None
 
@@ -779,9 +772,7 @@ def make_catalog(uri, fields):
                 'name': Unicode(indexed=True), ...}
     """
     path = lfs.get_absolute_path(uri)
-    db = WritableDatabase(path, DB_BACKEND_CHERT)
-    # FIXME GLASS backend seems to be buggy
-    # db = WritableDatabase(path, DB_CREATE)
+    db = WritableDatabase(path, DB_BACKEND_GLASS)
     return Catalog(db, fields)
 
 

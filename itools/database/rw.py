@@ -511,20 +511,18 @@ class RWDatabase(RODatabase):
         """ Flush changes in catalog without commiting
         (allow to search in catalog on changed elements)
         """
-        root = self.get_resource('/')
-        docs_to_index = set(self.resources_new2old_catalog.keys())
-        docs_to_unindex = self.resources_old2new_catalog.keys()
-        docs_to_unindex = list(set(docs_to_unindex) - docs_to_index)
-        docs_to_index = list(docs_to_index)
-        aux = []
-        for path in docs_to_index:
-            resource = root.get_resource(path, soft=True)
-            if resource:
-                values = resource.get_catalog_values()
-                aux.append((resource, values))
-        self.backend.flush_catalog(docs_to_unindex, aux)
-        self.resources_old2new_catalog.clear()
-        self.resources_new2old_catalog.clear()
+        try:
+            data = self._before_commit()
+        except Exception as e:
+            log.error("Transaction failed", exc_info=True)
+            try:
+                self._abort_changes()
+            except Exception as e:
+                log.error("Aborting failed", exc_info=True)
+            self._cleanup()
+            raise
+        _, _, _, docs_to_index, docs_to_unindex = data
+        self.backend.flush_catalog(docs_to_unindex, docs_to_index)
 
 
     def reindex_catalog(self, base_abspath, recursif=True):

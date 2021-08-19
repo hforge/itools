@@ -79,10 +79,12 @@ class RODatabase(object):
         # Fields
         self.fields = get_register_fields()
         # init backend
-        self.backend = self.backend_cls(self.path, self.fields, self.read_only)
+        self.init_backend()
         # A mapping from key to handler
         self.cache = LRUCache(size_min, size_max, automatic=False)
 
+    def init_backend(self):
+        self.backend = self.backend_cls(self.path, self.fields, self.read_only)
 
     @property
     def catalog(self):

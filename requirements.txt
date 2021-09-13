@@ -4,4 +4,4 @@ xlrd==2.0.1
 pygit2==0.28.2
 python-magic==0.4.24
 junitxml
-gevent
+gevent==21.8.0

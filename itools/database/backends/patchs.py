@@ -62,6 +62,8 @@ class PatchsBackend(object):
 
 
     def launch_rotate(self):
+        # FIXME it's too slow, we need to optimize it
+        return
         last = self.get_last_rotate_date()
         # If here, there is no rotated files => so, we create one
         if not last:

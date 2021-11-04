@@ -376,7 +376,7 @@ class GitBackend(object):
                 else:
                     tb.insert(name, value[0], value[1])
         # 5. Git commit
-        worktree.git_commit(git_msg, git_author, git_date, tree=git_tree)
+        self.worktree.git_commit(git_msg, git_author, git_date, tree=git_tree)
 
 
     def abort_transaction(self):

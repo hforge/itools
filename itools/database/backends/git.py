@@ -106,7 +106,10 @@ class GitBackend(object):
             error = '"{0}" should be a folder, but it is not'.format(self.path_data)
             raise ValueError(error)
         # New interface to Git
-        self.worktree = open_worktree(self.path_data)
+        if TEST_DB_DESACTIVATE_GIT is True:
+            self.worktree = None
+        else:
+            self.worktree = open_worktree(self.path_data)
         # Initialize the database, but chrooted
         self.fs = lfs.open(self.path_data)
         # Static FS
@@ -296,26 +299,24 @@ class GitBackend(object):
 
 
     def _do_git_big_commit(self):
-        worktree = self.worktree
-        worktree._call(['git', 'add', '-A'])
-        worktree._call(['git', 'commit', '-m', 'Autocommit'])
+        self.worktree._call(['git', 'add', '-A'])
+        self.worktree._call(['git', 'commit', '-m', 'Autocommit'])
 
 
     def do_git_transaction(self, commit_message, data, added, changed, removed, handlers):
-        worktree = self.worktree
         # 3. Git add
         git_add = list(added) + list(changed)
         git_add = [x for x in git_add if x.endswith('metadata')]
-        worktree.git_add(*git_add)
+        self.worktree.git_add(*git_add)
         # 3. Git rm
         git_rm = list(removed)
         git_rm = [x for x in git_rm if x.endswith('metadata')]
-        worktree.git_rm(*git_rm)
+        self.worktree.git_rm(*git_rm)
         # 2. Build the 'git commit' command
         git_author, git_date, git_msg, docs_to_index, docs_to_unindex = data
         git_msg = git_msg or 'no comment'
         # 4. Create the tree
-        repo = worktree.repo
+        repo = self.worktree.repo
         index = repo.index
         try:
             head = repo.revparse_single('HEAD')

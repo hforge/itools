@@ -166,11 +166,11 @@ class Email(String):
 
     @staticmethod
     def encode(value):
-        return value.lower() if value else value
+        return value
 
     @staticmethod
     def decode(value):
-        return value.lower()
+        return value
 
     @staticmethod
     def is_valid(value):

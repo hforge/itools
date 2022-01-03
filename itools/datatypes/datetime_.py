@@ -100,6 +100,8 @@ class ISOCalendarDate(DataType):
             return None
         format_date = cls.format_date
         sep_date = cls.sep_date
+        # For backwards compatibility, we try to decode a date and if it is not possible,
+        # it seems to be a encrypted date, so we retrieve the information as it is
         try:
             values = data.split(cls.sep_date)
             year, month, day = 1, 1, 1
@@ -124,7 +126,8 @@ class ISOCalendarDate(DataType):
         # We choose the extended format as the canonical representation
         if value is None:
             return ''
-
+        # For backwards compatibility, we try to encode a date type into a string and if it is not possible,
+        # it seems to be a encrypted date, so we keep the information as it is
         if isinstance(value, unicode) or isinstance(value, str):
             return value
         return value.strftime(cls.format_date)

@@ -322,7 +322,9 @@ class Catalog(object):
         db = self._db
         self._asynchronous = asynchronous_mode
         self._fields = fields
-        self.commit_each_transaction = False
+        # FIXME: There's a bug in xapian:
+        # We cannot get stored values if DB not flushed
+        self.commit_each_transaction = True
         # Asynchronous mode
         if not read_only and asynchronous_mode:
             db.begin_transaction(self.commit_each_transaction)
@@ -378,9 +380,12 @@ class Catalog(object):
             raise ValueError("The transactions are synchronous")
         db = self._db
         db.commit_transaction()
-        if self.nb_changes > 200:
+        if self.commit_each_transaction:
             db.commit()
-            self.nb_changes = 0
+        else:
+            if self.nb_changes > 200:
+                db.commit()
+                self.nb_changes = 0
         db.begin_transaction(self.commit_each_transaction)
 
 

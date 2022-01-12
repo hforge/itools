@@ -100,6 +100,7 @@ class ISOCalendarDate(DataType):
             return None
         format_date = cls.format_date
         sep_date = cls.sep_date
+
         values = data.split(cls.sep_date)
         year, month, day = 1, 1, 1
 
@@ -116,13 +117,13 @@ class ISOCalendarDate(DataType):
 
         return date(year, month, day)
 
+
     @classmethod
     def encode(cls, value):
         # We choose the extended format as the canonical representation
         if value is None:
             return ''
         return value.strftime(cls.format_date)
-
 
 
     @classmethod

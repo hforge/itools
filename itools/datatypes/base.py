@@ -16,44 +16,38 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from std
+import os
+
+# Import from external
+from cryptography.fernet import Fernet
+from cryptography.fernet import InvalidToken
+
 # Import from itools
 from itools.core import prototype
-import os
-import base64
-from Crypto.Cipher import AES
-from Crypto import Random
-from cryptography.fernet import Fernet
 
+# Fernet is an abstraction implementation of symmetric encryption
+# using AES-256 CBC-MODE with a 32 bytes key
+# https://cryptography.io/en/latest/fernet/#fernet-symmetric-encryption
 
-# Encryption/Decryption functions
+# To generate a 32 bytes keys use the following methods
+# Oneliner CLI : python -c "import base64;import os;print(base64.urlsafe_b64encode(os.urandom(32)))"
+# In code : Fernet.generate_key()
+FERNET_KEY = os.getenv("FERNET_KEY")
 
+if FERNET_KEY:
+    print(
+        "ENV VAR FERNET_KEY FOR FERNET ENCRYPTION KEY IS SET,"
+        " SENSITIVE VALUES WILL BE ENCRYPTED"
+    )
+    fernet = Fernet(FERNET_KEY)
+else:
+    print(
+        "ENV VAR FERNET_KEY FOR FERNET ENCRYPTION KEY IS NOT SET,"
+        " SENSITIVE VALUES WILL NOT BE ENCRYPTED"
+    )
+    fernet = None
 
-def _pad(in_str):
-    missing = int(os.getenv('_BS')) - len(in_str) % int(os.getenv('_BS'))
-    return in_str + missing * chr(missing)
-
-
-def _unpad(in_str):
-    return in_str[:-ord(in_str[len(in_str) - 1:])]
-
-
-def encrypt(raw):
-    raw = _pad(raw)
-    b_raw = raw.encode('utf8')
-    iv = Random.new().read(AES.block_size)
-    cipher = AES.new(bytes(base64.urlsafe_b64decode(os.getenv('_KEY'))), AES.MODE_CBC, iv)
-    return base64.b64encode(iv + cipher.encrypt(b_raw))
-
-
-def decrypt(enc):
-    not_enc = enc
-    try:
-        enc = base64.b64decode(enc)
-        iv = enc[:AES.block_size]
-        cipher = AES.new(bytes(base64.urlsafe_b64decode(os.getenv('_KEY'))), AES.MODE_CBC, iv)
-        return _unpad(cipher.decrypt(enc[AES.block_size:]))
-    except (UnicodeDecodeError, ValueError, TypeError):
-        return not_enc
 
 class DataType(prototype):
 
@@ -106,30 +100,26 @@ class DataType(prototype):
         """
         return value is None
 
+    # Encryption/Decryption functions
+
     @classmethod
     def encrypt(cls, value):
-        print("ENCRYPT !")
-        print("raw value is")
-        print(value)
         if not cls.encrypted:
-            print("value is not encrypted")
             return value
-        print("value will be encrypted")
-        value = encrypt(value)
-        print(value)
-        return value
+        if not fernet:
+            # Fernet is not correctly set do not try to encrypt
+            return value
+        return fernet.encrypt(value)
 
 
     @classmethod
     def decrypt(cls, value):
-        print("DECRYPT !")
-        print("raw value is")
-        print(value)
         if not cls.encrypted:
-            print("value is not encrypted")
             return value
-        print("value will be decrypted")
-        value = decrypt(value)
-        print("decrypted")
-        print(value)
-        return value
+        if not fernet:
+            # Fernet is not correctly set do not try to decrypt
+            return value
+        try:
+            return fernet.decrypt(value)
+        except InvalidToken:
+            return value

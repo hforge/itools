@@ -5,3 +5,4 @@ pygit2==0.28.2
 python-magic==0.4.24
 junitxml
 gevent==21.8.0
+cryptography==3.3.2 # Dropped py2.7 support at v3.4 => https://github.com/pyca/cryptography/blob/main/CHANGELOG.rst#34---2021-02-07

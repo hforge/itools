@@ -132,7 +132,9 @@ class Metadata(File):
                 raise ValueError(error % name)
 
             # 4. Build the property
-            datatype = field.datatype
+            datatype = field.get_datatype()
+            if datatype.encrypted:
+                value = datatype.decrypt(value)
             property = MetadataProperty(value, datatype, **parameters)
 
             # Case 1: Multilingual
@@ -177,7 +179,7 @@ class Metadata(File):
                     continue
                 raise ValueError(msg)
 
-            datatype = field.datatype
+            datatype = field.get_datatype()
             params_schema = field.parameters_schema
             is_empty = datatype.is_empty
             p_type = type(property)

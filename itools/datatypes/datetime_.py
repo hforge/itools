@@ -100,36 +100,27 @@ class ISOCalendarDate(DataType):
             return None
         format_date = cls.format_date
         sep_date = cls.sep_date
-        # For backwards compatibility, we try to decode a date and if it is not possible,
-        # it seems to be a encrypted date, so we retrieve the information as it is
-        try:
-            values = data.split(cls.sep_date)
-            year, month, day = 1, 1, 1
+        values = data.split(cls.sep_date)
+        year, month, day = 1, 1, 1
 
-            for i, key in enumerate(format_date.split(sep_date)):
-                if i >= len(values):
-                    break
-                value = int(values[i])
-                if key == '%Y':
-                    year = value
-                elif key == '%m':
-                    month = value
-                elif key == '%d':
-                    day = value
+        for i, key in enumerate(format_date.split(sep_date)):
+            if i >= len(values):
+                break
+            value = int(values[i])
+            if key == '%Y':
+                year = value
+            elif key == '%m':
+                month = value
+            elif key == '%d':
+                day = value
 
-            return date(year, month, day)
-        except ValueError:
-            return data
+        return date(year, month, day)
 
     @classmethod
     def encode(cls, value):
         # We choose the extended format as the canonical representation
         if value is None:
             return ''
-        # For backwards compatibility, we try to encode a date type into a string and if it is not possible,
-        # it seems to be a encrypted date, so we keep the information as it is
-        if isinstance(value, unicode) or isinstance(value, str):
-            return value
         return value.strftime(cls.format_date)
 
 

@@ -16,9 +16,37 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from std
+import os
+
+# Import from external
+from cryptography.fernet import Fernet
+from cryptography.fernet import InvalidToken
+
 # Import from itools
 from itools.core import prototype
 
+# Fernet is an abstraction implementation of symmetric encryption
+# using AES-256 CBC-MODE with a 32 bytes key
+# https://cryptography.io/en/latest/fernet/#fernet-symmetric-encryption
+
+# To generate a 32 bytes keys use the following methods
+# Oneliner CLI : python -c "import base64;import os;print(base64.urlsafe_b64encode(os.urandom(32)))"
+# In code : Fernet.generate_key()
+FERNET_KEY = os.getenv("FERNET_KEY")
+
+if FERNET_KEY:
+    print(
+        "ENV VAR FERNET_KEY FOR FERNET ENCRYPTION KEY IS SET,"
+        " SENSITIVE VALUES WILL BE ENCRYPTED"
+    )
+    fernet = Fernet(FERNET_KEY)
+else:
+    print(
+        "ENV VAR FERNET_KEY FOR FERNET ENCRYPTION KEY IS NOT SET,"
+        " SENSITIVE VALUES WILL NOT BE ENCRYPTED"
+    )
+    fernet = None
 
 
 class DataType(prototype):
@@ -26,6 +54,7 @@ class DataType(prototype):
     # Default value
     default = None
     multiple = False
+    encrypted = False
 
 
     def get_default(cls):
@@ -70,3 +99,27 @@ class DataType(prototype):
         as empty.  (NOTE This is used by the multilingual code.)
         """
         return value is None
+
+    # Encryption/Decryption functions
+
+    @classmethod
+    def encrypt(cls, value):
+        if not cls.encrypted:
+            return value
+        if not fernet:
+            # Fernet is not correctly set do not try to encrypt
+            return value
+        return fernet.encrypt(value)
+
+
+    @classmethod
+    def decrypt(cls, value):
+        if not cls.encrypted:
+            return value
+        if not fernet:
+            # Fernet is not correctly set do not try to decrypt
+            return value
+        try:
+            return fernet.decrypt(value)
+        except InvalidToken:
+            return value

@@ -442,6 +442,8 @@ def _property_to_str(name, property, datatype, p_schema, encoding='utf-8'):
         raise ValueError('property "{0}" is not str but {1}'.format(
             name, type(value)))
     value = escape_data(value)
+    if datatype.encrypted:
+        value = datatype.encrypt(value)
 
     # Ok
     property = '%s%s:%s\n' % (name, parameters, value)

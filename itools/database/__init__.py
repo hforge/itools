@@ -17,16 +17,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from fields import Field, get_field_and_datatype
-from queries import AllQuery, NotQuery, StartQuery, TextQuery
-from queries import RangeQuery, PhraseQuery, AndQuery, OrQuery, pprint_query
-from magic_ import magic_from_buffer, magic_from_file
-from metadata import Metadata
-from metadata_parser import MetadataProperty
-from registry import get_register_fields, register_field
-from resources import Resource
-from ro import RODatabase, ReadonlyError
-from rw import RWDatabase, make_database
+from .fields import Field, get_field_and_datatype
+from .queries import AllQuery, NotQuery, StartQuery, TextQuery
+from .queries import RangeQuery, PhraseQuery, AndQuery, OrQuery, pprint_query
+from .magic_ import magic_from_buffer, magic_from_file
+from .metadata import Metadata
+from .metadata_parser import MetadataProperty
+from .registry import get_register_fields, register_field
+from .resources import Resource
+from .ro import RODatabase, ReadonlyError
+from .rw import RWDatabase, make_database
 
 
 __all__ = [

@@ -17,16 +17,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from base import DataType
-from primitive import Boolean, Decimal, Email, Integer, String, Unicode
-from primitive import Tokens, MultiLinesTokens, Enumerate
-from primitive import PathDataType, URI
-from primitive import QName, XMLAttribute, XMLContent
-from datetime_ import ISOCalendarDate, ISOTime, ISODateTime, HTTPDate
-from languages import LanguageTag
+from .base import DataType
+from .primitive import Boolean, Decimal, Email, Integer, String, Unicode
+from .primitive import Tokens, MultiLinesTokens, Enumerate
+from .primitive import PathDataType, URI
+from .primitive import QName, XMLAttribute, XMLContent
+from .datetime_ import ISOCalendarDate, ISOTime, ISODateTime, HTTPDate
+from .languages import LanguageTag
 # Define alias Date, Time and DateTime (use ISO standard)
-from datetime_ import ISOCalendarDate as Date, ISOTime as Time
-from datetime_ import ISODateTime as DateTime
+from .datetime_ import ISOCalendarDate as Date, ISOTime as Time
+from .datetime_ import ISODateTime as DateTime
 
 
 __all__ = [

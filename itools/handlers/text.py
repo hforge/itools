@@ -16,8 +16,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from file import File
-from registry import register_handler_class
+from .file import File
+from .registry import register_handler_class
 
 
 def guess_encoding(data):

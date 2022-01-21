@@ -24,7 +24,7 @@ except ImportError:
 
 # Import from itools
 from itools.handlers import File, register_handler_class
-from rtf import rtf_to_text
+from .rtf import rtf_to_text
 try:
     from doctotext import doc_to_text, DocRtfException
 except ImportError:

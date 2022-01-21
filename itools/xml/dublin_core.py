@@ -18,7 +18,7 @@
 
 # Import from itools
 from itools.datatypes import Unicode, String, ISODateTime
-from namespaces import XMLNamespace, register_namespace, ElementSchema
+from .namespaces import XMLNamespace, register_namespace, ElementSchema
 
 
 dc_attributes = {

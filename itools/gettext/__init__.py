@@ -18,9 +18,9 @@
 
 # Import from itools
 from itools.core import add_type, get_abspath
-from domains import register_domain, get_domain, MSG, get_language_msg
-from mo import MOFile
-from po import POFile, POUnit, encode_source
+from .domains import register_domain, get_domain, MSG, get_language_msg
+from .mo import MOFile
+from .po import POFile, POUnit, encode_source
 
 
 __all__ = [

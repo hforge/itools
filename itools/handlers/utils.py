@@ -21,21 +21,23 @@
 import unicodedata
 
 
+src = (r"""ÄÅÁÀÂÃĀäåáàâãāăÇçÉÈÊËĒéèêëēğÍÌÎÏĪíìîïīıļÑñÖÓÒÔÕØŌöóòôõøōőÜÚÙÛŪüúùûū
+        ŞşšţÝŸȲýÿȳŽž°«»’""")
+dst = (r"""AAAAAAAaaaaaaaaCcEEEEEeeeeegIIIIIiiiiiilNnOOOOOOOooooooooUUUUUuuuuu
+            SsstYYYyyyZz----""")
 
-src = (ur"""ÄÅÁÀÂÃĀäåáàâãāăÇçÉÈÊËĒéèêëēğÍÌÎÏĪíìîïīıļÑñÖÓÒÔÕØŌöóòôõøōőÜÚÙÛŪüúùûū"""
-       ur"""ŞşšţÝŸȲýÿȳŽž°«»’""")
-dst = (ur"""AAAAAAAaaaaaaaaCcEEEEEeeeeegIIIIIiiiiiilNnOOOOOOOooooooooUUUUUuuuuu"""
-       ur"""SsstYYYyyyZz----""")
 
 transmap = {}
 for i in range(len(src)):
     a, b = src[i], dst[i]
     transmap[ord(a)] = b
-transmap[ord(u'æ')] = u'ae'
-transmap[ord(u'Æ')] = u'AE'
-transmap[ord(u'œ')] = u'oe'
-transmap[ord(u'Œ')] = u'OE'
-transmap[ord(u'ß')] = u'ss'
+transmap[ord('æ')] = 'ae'
+transmap[ord('Æ')] = 'AE'
+transmap[ord('œ')] = 'oe'
+transmap[ord('Œ')] = 'OE'
+transmap[ord('ß')] = 'ss'
+
+
 
 
 def checkid(id, soft=True):

@@ -18,11 +18,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from cStringIO import StringIO
+from io import StringIO
 
 # Import from itools
 from itools.handlers import File, register_handler_class
-from ole import SEEK_CUR, getshort, getulong, convert_char, Ole
+from .ole import SEEK_CUR, getshort, getulong, convert_char, Ole
 
 
 DOCUMENT                      = 1000

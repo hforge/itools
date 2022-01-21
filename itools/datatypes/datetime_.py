@@ -27,7 +27,7 @@ from time import mktime
 
 # Import from itools
 from itools.core import fixed_offset
-from base import DataType
+from .base import DataType
 
 
 ###########################################################################

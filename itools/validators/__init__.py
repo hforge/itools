@@ -15,12 +15,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from base import BaseValidator
-from exceptions import ValidationError
-from registry import register_validator, validator
-import database
-import files
-import password
+from .base import BaseValidator
+from .exceptions import ValidationError
+from .registry import register_validator, validator
+from itools.validators import database, files, password
 
 __all__ = [
       'BaseValidator',

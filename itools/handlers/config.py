@@ -27,7 +27,7 @@ from re import split
 
 # Import from itools
 from itools.datatypes import String
-from text import TextFile
+from .text import TextFile
 
 
 ###########################################################################

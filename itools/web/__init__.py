@@ -18,18 +18,18 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from context import get_context, set_context
-from context import select_language
-from exceptions import HTTPError, ClientError, ServerError
-from exceptions import NotModified
-from exceptions import BadRequest, Unauthorized, Forbidden, NotFound
-from exceptions import InternalServerError, NotImplemented, BadGateway
-from exceptions import ServiceUnavailable, MethodNotAllowed, Conflict
-from exceptions import FormError
-from headers import Cookie, SetCookieDataType
-from messages import INFO, ERROR, MSG_MISSING_OR_INVALID
-from utils import NewJSONEncoder
-from views import ItoolsView, BaseView, STLView
+from .context import get_context, set_context
+from .context import select_language
+from .exceptions import HTTPError, ClientError, ServerError
+from .exceptions import NotModified
+from .exceptions import BadRequest, Unauthorized, Forbidden, NotFound
+from .exceptions import InternalServerError, NotImplemented, BadGateway
+from .exceptions import ServiceUnavailable, MethodNotAllowed, Conflict
+from .exceptions import FormError
+from .headers import Cookie, SetCookieDataType
+from .messages import INFO, ERROR, MSG_MISSING_OR_INVALID
+from .utils import NewJSONEncoder
+from .views import ItoolsView, BaseView, STLView
 
 __all__ = [
     # Context

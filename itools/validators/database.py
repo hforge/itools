@@ -18,7 +18,7 @@
 from itools.gettext import MSG
 
 # Import from here
-from base import BaseValidator
+from .base import BaseValidator
 
 
 class UniqueValidator(BaseValidator):

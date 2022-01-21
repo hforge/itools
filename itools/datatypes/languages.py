@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from base import DataType
+from .base import DataType
 
 
 class LanguageTag(DataType):

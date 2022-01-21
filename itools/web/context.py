@@ -29,7 +29,7 @@ from itools.datatypes import String
 from itools.validators import ValidationError
 
 # Local imports
-from exceptions import FormError
+from .exceptions import FormError
 
 
 ###########################################################################

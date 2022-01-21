@@ -23,7 +23,7 @@ Output dates and times in locale format.
 from decimal import Decimal
 
 # Import from itools
-from accept import get_accept
+from .accept import get_accept
 
 
 def get_format(source, accept):

@@ -18,7 +18,7 @@
 
 # Import from itools
 from itools.core import get_abspath
-from srx import SRXFile
+from .srx import SRXFile
 
 # Constants
 TEXT, START_FORMAT, END_FORMAT = range(3)

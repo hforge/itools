@@ -18,7 +18,7 @@
 # Import from itools
 from itools.core import add_type, get_abspath
 from itools.xml import register_dtd
-from xliff import XLFFile, XLFUnit, XLFNote, File
+from .xliff import XLFFile, XLFUnit, XLFNote, File
 
 
 __all__ = ['XLFFile', 'XLFUnit', 'XLFNote', 'File']

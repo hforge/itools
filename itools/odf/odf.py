@@ -21,7 +21,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from cStringIO import StringIO
+from io import StringIO
 from os.path import splitext
 from random import choice
 from zipfile import ZipFile

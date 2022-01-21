@@ -29,7 +29,7 @@ from itools.csv import Property, parse_table, deserialize_parameters
 from itools.csv import property_to_str
 from itools.datatypes import String, Unicode
 from itools.handlers import guess_encoding, TextFile
-from datatypes import DateTime, record_properties, record_parameters, Time
+from .datatypes import DateTime, record_properties, record_parameters, Time
 
 
 class Component(object):

@@ -1,8 +1,8 @@
 psutil==5.8.0
-pytz==2010h
+pytz==2021.3
 xlrd==2.0.1
-pygit2==0.28.2
+pygit2==1.7.2
 python-magic==0.4.24
 junitxml
 gevent==21.8.0
-cryptography==3.3.2 # Dropped py2.7 support at v3.4 => https://github.com/pyca/cryptography/blob/main/CHANGELOG.rst#34---2021-02-07
+cryptography==36.0.1

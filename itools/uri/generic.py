@@ -48,9 +48,7 @@ Other related RFCs include:
 
 # Import from the Standard Library
 from copy import copy
-from urlparse import urlsplit, urlunsplit
-from urllib import quote_plus, unquote, unquote_plus
-
+from urllib.parse import urlsplit, urlunsplit, quote_plus, unquote, unquote_plus
 # Import from itools
 from itools.core import freeze
 

@@ -20,12 +20,12 @@
 # Import from the Standard Library
 from logging import getLogger
 from copy import deepcopy
-from cStringIO import StringIO
+from io import StringIO, BytesIO
 from datetime import datetime
 
 # Import from itools.handlers
-from base import Handler
-from registry import register_handler_class
+from .base import Handler
+from .registry import register_handler_class
 
 log = getLogger("itools.database")
 

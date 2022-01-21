@@ -29,7 +29,7 @@ from shutil import rmtree, copytree, copy as shutil_copy
 
 # Import from itools
 from itools.uri import Path
-from common import WRITE, READ_WRITE, APPEND, READ, get_mimetype
+from .common import WRITE, READ_WRITE, APPEND, READ, get_mimetype
 
 
 MODES = {WRITE: 'wb', READ_WRITE: 'r+b', APPEND: 'ab', READ: 'rb'}

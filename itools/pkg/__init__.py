@@ -18,11 +18,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from handlers import SetupConf
-from build import get_manifest
-from update_locale import update_locale
-from utils import get_compile_flags
-from utils import setup, get_config, OptionalExtension
+from .handlers import SetupConf
+from .build import get_manifest
+from .update_locale import update_locale
+from .utils import get_compile_flags
+from .utils import setup, get_config, OptionalExtension
 
 
 __all__ = [

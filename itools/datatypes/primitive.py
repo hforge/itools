@@ -30,7 +30,7 @@ from itools.core import freeze
 from itools.uri import Path, get_reference
 
 # Import from here
-from base import DataType
+from .base import DataType
 
 
 class Integer(DataType):

@@ -31,9 +31,8 @@ from sys import argv
 from itools.core import get_pipe
 
 # Import from itools.pkg
-from build import build, get_package_version
-from handlers import SetupConf
-
+from .build import build, get_package_version
+from .handlers import SetupConf
 
 
 class OptionalExtension(Extension):

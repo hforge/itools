@@ -21,7 +21,7 @@
 
 # Import from itools
 from itools.datatypes import XMLAttribute, XMLContent
-from namespaces import get_namespace, is_empty
+from .namespaces import get_namespace, is_empty
 from parser import START_ELEMENT, END_ELEMENT
 
 

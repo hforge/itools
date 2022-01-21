@@ -33,8 +33,8 @@ from itools.stl import stl
 from itools.uri import Reference
 
 # Import from here
-from exceptions import FormError, Conflict, MethodNotAllowed
-from messages import ERROR
+from .exceptions import FormError, Conflict, MethodNotAllowed
+from .messages import ERROR
 
 
 

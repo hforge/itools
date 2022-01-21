@@ -16,10 +16,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from office import MSWord, MSExcel
-from ooxml import MSWordX, MSExcelX, MSPowerPointX
-from ppt import MSPowerPoint
-from rtf import RTF
+from .office import MSWord, MSExcel
+from .ooxml import MSWordX, MSExcelX, MSPowerPointX
+from .ppt import MSPowerPoint
+from .rtf import RTF
 
 
 

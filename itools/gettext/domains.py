@@ -28,7 +28,7 @@ from itools.fs import lfs
 from itools.xml import XMLParser
 
 # Import from here
-from mo import MOFile
+from .mo import MOFile
 
 
 xhtml_namespaces = {

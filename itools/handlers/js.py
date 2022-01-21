@@ -15,8 +15,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from registry import register_handler_class
-from text import TextFile
+from .registry import register_handler_class
+from .text import TextFile
 
 
 

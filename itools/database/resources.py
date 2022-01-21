@@ -19,9 +19,9 @@ from logging import getLogger
 from itools.core import freeze, is_prototype
 
 # Import from itools.database
-from fields import Field
-from registry import register_field
-from ro import RODatabase
+from .fields import Field
+from .registry import register_field
+from .ro import RODatabase
 
 log = getLogger("itools.database")
 

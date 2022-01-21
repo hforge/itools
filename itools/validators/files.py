@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from standard library
-from cStringIO import StringIO
+from io import StringIO
 
 # Import from PIL
 from PIL import Image as PILImage
@@ -24,8 +24,8 @@ from PIL import Image as PILImage
 from itools.gettext import MSG
 
 # Import from here
-from base import BaseValidator
-from exceptions import ValidationError
+from .base import BaseValidator
+from .exceptions import ValidationError
 
 
 

@@ -28,9 +28,9 @@ from itools.fs import lfs
 from itools.handlers import Folder
 
 # Import from here
-from backends import backends_registry
-from registry import get_register_fields
-from ro import RODatabase
+from .backends import backends_registry
+from .registry import get_register_fields
+from .ro import RODatabase
 
 log = getLogger("itools.database")
 

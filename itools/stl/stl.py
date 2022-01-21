@@ -41,7 +41,7 @@ from itools.xml import is_xml_stream
 from itools.xmlfile import XMLFile, get_units
 from itools.html import xhtml_uri
 from itools.html import stream_to_str_as_html, stream_to_str_as_xhtml
-from schema import stl_uri
+from .schema import stl_uri
 
 log = getLogger("itools.stl")
 
@@ -49,7 +49,7 @@ log = getLogger("itools.stl")
 ########################################################################
 # Exceptions
 ########################################################################
-class STLError(StandardError):
+class STLError(Exception):
     pass
 
 

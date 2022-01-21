@@ -19,7 +19,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from cStringIO import StringIO
+from io import StringIO
 
 # Import from the Python Image Library
 try:
@@ -38,8 +38,8 @@ except ImportError:
     rsvg_handle = None
 
 # Import from itools
-from file import File
-from registry import register_handler_class
+from .file import File
+from .registry import register_handler_class
 
 
 # This number controls the max surface ratio that we can lose when we crop.

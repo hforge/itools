@@ -22,6 +22,10 @@ from re import match, compile, DOTALL, MULTILINE
 from itools.xml import XMLParser, XML_DECL, START_ELEMENT, END_ELEMENT, TEXT
 from itools.handlers import TextFile, register_handler_class
 
+import sys
+if sys.version_info.major == 3:
+    unicode = str
+
 
 class SRXFile(TextFile):
     """ A handler for the Segmentation Rules eXchange format (SRX)

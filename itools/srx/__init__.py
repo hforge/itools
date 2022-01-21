@@ -18,9 +18,9 @@
 
 # Import from itools
 from itools.core import add_type
-from srx import SRXFile
-from segment import Message, get_segments, translate_message
-from segment import TEXT, START_FORMAT, END_FORMAT
+from .srx import SRXFile
+from .segment import Message, get_segments, translate_message
+from .segment import TEXT, START_FORMAT, END_FORMAT
 
 __all__ = [
     'SRXFile',

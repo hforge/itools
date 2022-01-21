@@ -21,7 +21,7 @@ http://en.wikipedia.org/wiki/Cache_algorithms
 """
 
 # Import from itools
-from odict import OrderedDict
+from .odict import OrderedDict
 
 
 class LRUCache(OrderedDict):

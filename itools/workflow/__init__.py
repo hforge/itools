@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from workflow import WorkflowError, Workflow, WorkflowAware
+from .workflow import WorkflowError, Workflow, WorkflowAware
 
 
 __all__ = ['WorkflowError', 'Workflow', 'WorkflowAware']

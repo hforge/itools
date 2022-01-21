@@ -38,7 +38,7 @@ from itools.uri import Path
 from itools.fs import lfs, WRITE
 
 # Import from here
-from utils import get_config
+from .utils import get_config
 
 
 # FIXME We register STLFile to override get_units of XHTMLFile handler

@@ -17,9 +17,8 @@
 
 # Import from itools
 from itools.core import LRUCache
-from generic import GenericDataType
-from registry import get_scheme
-
+from .generic import GenericDataType
+from .registry import get_scheme
 
 
 cache = LRUCache(200)

@@ -34,8 +34,8 @@ from itools.database.git import open_worktree
 from itools.fs import lfs
 
 # Import from here
-from catalog import Catalog, _get_xquery, SearchResults, make_catalog
-from registry import register_backend
+from .catalog import Catalog, _get_xquery, SearchResults, make_catalog
+from .registry import register_backend
 
 
 TEST_DB_WITHOUT_COMMITS = bool(int(os.environ.get('TEST_DB_WITHOUT_COMMITS') or 0))

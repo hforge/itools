@@ -17,18 +17,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-import dublin_core
-from namespaces import XMLNamespace, xml_uri, xmlns_uri
-from namespaces import register_namespace, get_namespace, has_namespace
-from namespaces import ElementSchema, get_element_schema, get_attr_datatype
-from namespaces import is_empty
+from itools.xml import dublin_core
+from .namespaces import XMLNamespace, xml_uri, xmlns_uri
+from .namespaces import register_namespace, get_namespace, has_namespace
+from .namespaces import ElementSchema, get_element_schema, get_attr_datatype
+from .namespaces import is_empty
 from parser import XMLParser, DocType, register_dtd, XMLError, XML_DECL
 from parser import DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, TEXT, COMMENT
 from parser import PI, CDATA
-from utils import is_xml_stream, xml_to_text
-from xml import Element, stream_to_str, get_element, find_end
-from xml import get_qname, get_attribute_qname, get_end_tag, get_doctype
-
+from .utils import is_xml_stream, xml_to_text
+from .xml import Element, stream_to_str, get_element, find_end
+from .xml import get_qname, get_attribute_qname, get_end_tag, get_doctype
 
 
 __all__ = [

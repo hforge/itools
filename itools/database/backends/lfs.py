@@ -21,7 +21,7 @@ from os.path import abspath, dirname
 from itools.fs import lfs
 
 # Import from here
-from registry import register_backend
+from .registry import register_backend
 
 
 class LFSBackend(object):

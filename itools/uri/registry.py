@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from generic import GenericDataType
+from .generic import GenericDataType
 
 
 _schemes = {}

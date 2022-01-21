@@ -22,8 +22,8 @@ from itools.core import prototype, prototype_type
 from itools.gettext import MSG
 
 # Import from here
-from exceptions import ValidationError
-from registry import register_validator
+from .exceptions import ValidationError
+from .registry import register_validator
 
 
 class BaseValidatorMetaclass(prototype_type):

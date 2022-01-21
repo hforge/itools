@@ -23,9 +23,9 @@ from itools.datatypes import String
 from itools.handlers import File, register_handler_class
 
 # Import from here
-from fields import Field
-from metadata_parser import parse_table, MetadataProperty, property_to_str
-from metadata_parser import deserialize_parameters
+from .fields import Field
+from .metadata_parser import parse_table, MetadataProperty, property_to_str
+from .metadata_parser import deserialize_parameters
 
 log = getLogger("itools.database")
 

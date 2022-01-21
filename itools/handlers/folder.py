@@ -17,8 +17,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from base import Handler
-from registry import register_handler_class
+from .base import Handler
+from .registry import register_handler_class
 
 
 

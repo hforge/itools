@@ -27,8 +27,8 @@ from datetime import datetime
 # Import from itools
 from itools.datatypes import DateTime, String, Unicode
 from itools.handlers import File
-from csv_ import CSVFile
-from parser import parse
+from .csv_ import CSVFile
+from .parser import parse
 
 
 ###########################################################################

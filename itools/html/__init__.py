@@ -19,12 +19,13 @@
 # Import from itools
 from itools.core import add_type, get_abspath
 from itools.xml import register_dtd, DocType
-from filters import sanitize_stream, sanitize_str
-from html import HTMLFile
-from parser import HTMLParser
-from xhtml import XHTMLFile, xhtml_uri, stream_is_empty
-from xhtml import stream_to_str_as_html, stream_to_str_as_xhtml
-import schema
+from itools.html import schema
+from .filters import sanitize_stream, sanitize_str
+from .html import HTMLFile
+from .parser import HTMLParser
+from .xhtml import XHTMLFile, xhtml_uri, stream_is_empty
+from .xhtml import stream_to_str_as_html, stream_to_str_as_xhtml
+
 
 
 # Public API

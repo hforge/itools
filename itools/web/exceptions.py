@@ -17,11 +17,11 @@
 # Import from itools
 from itools.core import freeze
 from itools.gettext import MSG
-from messages import ERROR
+from .messages import ERROR
 
 
 
-class HTTPError(StandardError):
+class HTTPError(Exception):
     """Base class for all errors, client or server side.
     """
 

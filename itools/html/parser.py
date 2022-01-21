@@ -16,14 +16,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-import htmlentitydefs
-from HTMLParser import HTMLParser as BaseParser, HTMLParseError
+import sys
+import html.entities
+from html.parser import HTMLParser as BaseParser
 from warnings import warn
 
 # Import from itools
 from itools.xml import DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, COMMENT
 from itools.xml import TEXT, XMLError, DocType
-from xhtml import xhtml_uri
+from .xhtml import xhtml_uri
 
 
 ###########################################################################

@@ -21,7 +21,7 @@ from sys import _getframe
 from types import FunctionType
 
 # Import from here
-from lazy import lazy
+from .lazy import lazy
 
 
 log = getLogger("itools.core")

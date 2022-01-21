@@ -21,7 +21,7 @@
 # Import from itools
 from itools.datatypes import String, Unicode
 from itools.handlers import TextFile, guess_encoding, register_handler_class
-from parser import parse
+from .parser import parse
 
 
 

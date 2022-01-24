@@ -126,7 +126,7 @@ class ServiceUnavailable(ServerError):
     title = 'Service Unavailable'
 
 
-class FormError(StandardError):
+class FormError(Exception):
     """Raised when a form is invalid (missing or invalid fields).
     """
 

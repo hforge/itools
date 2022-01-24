@@ -453,6 +453,6 @@ def _property_to_str(name, property, datatype, p_schema, encoding='utf-8'):
 def property_to_str(name, property, datatype, p_schema, encoding='utf-8'):
     try:
         return _property_to_str(name, property, datatype, p_schema, encoding)
-    except StandardError:
+    except Exception:
         err = 'failed to serialize "%s" property, probably a bad value'
         raise ValueError(err % name)

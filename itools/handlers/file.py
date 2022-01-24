@@ -184,7 +184,7 @@ class File(Handler):
 
 
     def _clean_state(self):
-        names = [ x for x in self.__dict__ if x not in ('database', 'key') ]
+        names = [x for x in self.__dict__ if x not in ('database', 'key')]
         for name in names:
             delattr(self, name)
 

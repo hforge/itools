@@ -21,11 +21,11 @@ from datetime import datetime
 from os.path import join
 from zipfile import ZipFile
 from tarfile import open as open_tarfile
-from cStringIO import StringIO
+from io import StringIO
 
 # Import from itools
-from file import File
-from registry import register_handler_class
+from .file import File
+from .registry import register_handler_class
 
 
 

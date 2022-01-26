@@ -28,7 +28,6 @@ READ_WRITE = 'rw'
 APPEND = 'a'
 
 
-
 class FileName(DataType):
     """A filename is tuple consisting of a name, a type and a language.
     """
@@ -71,8 +70,6 @@ class FileName(DataType):
         if language is not None:
             name = name + '.' + language
         return name
-
-
 
 
 def get_mimetype(name):

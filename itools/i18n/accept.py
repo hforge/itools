@@ -30,7 +30,6 @@ zero = Decimal('0.0')
 one = Decimal('1.0')
 
 
-
 # FIXME This class belongs to the public API, but it is not exposed since
 # we never create it directly (we use AcceptLanguageType).
 class AcceptLanguage(dict):
@@ -151,8 +150,6 @@ def select_language(languages=None):
 
 def init_language_selector(language_selector=select_language):
     builtins.__dict__['select_language'] = language_selector
-
-
 
 
 # Set default language selector

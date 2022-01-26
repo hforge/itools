@@ -24,7 +24,6 @@ from itools.handlers import TextFile, guess_encoding, register_handler_class
 from .parser import parse
 
 
-
 # TODO Drop the 'Row' class, use a list or a tuple instead.
 # Row.get_value(name) will be replaced by CSVFile.get_value(row, name)
 class Row(list):
@@ -37,13 +36,11 @@ class Row(list):
 
         return self[column]
 
-
     def copy(self):
         clone = self.__class__(self)
         clone.number = self.number
         clone.columns = self.columns
         return clone
-
 
 
 class CSVFile(TextFile):
@@ -66,7 +63,6 @@ class CSVFile(TextFile):
     has_header = False
     skip_header = False
 
-
     #########################################################################
     # Load & Save
     #########################################################################
@@ -75,10 +71,8 @@ class CSVFile(TextFile):
         self.lines = []
         self.n_lines = 0
 
-
     def new(self):
         pass
-
 
     def _load_state_from_file(self, file):
         # Guess encoding
@@ -97,15 +91,16 @@ class CSVFile(TextFile):
         for line in parser:
             self._add_row(line)
 
-
     def to_str(self, encoding='UTF-8', separator=',', newline='\n'):
+
         def escape(data):
+
             return '"%s"' % data.replace('"', '""')
 
         lines = []
         # Header
         if self.has_header:
-            line = [ escape(Unicode.encode(x, encoding)) for x in self.header ]
+            line = [escape(Unicode.encode(x, encoding)) for x in self.header]
             line = separator.join(line)
             lines.append(line)
 
@@ -114,22 +109,24 @@ class CSVFile(TextFile):
         schema = self.schema
         columns = self.columns
         if schema and columns:
-            datatypes = [ (i, schema[x]) for i, x in enumerate(columns) ]
+            datatypes = [(i, schema[x]) for i, x in enumerate(columns)]
             for row in self.get_rows():
                 line = []
                 for i, datatype in datatypes:
-                    try:
-                        data = datatype.encode(row[i], encoding=encoding)
-                    except TypeError:
-                        data = datatype.encode(row[i])
-                    line.append(escape(data))
+                    if isinstance(row[i], str):
+                        line.append(escape(row[i]))
+                    else:
+                        try:
+                            data = datatype.encode(row[i], encoding=encoding)
+                        except TypeError:
+                            data = datatype.encode(row[i])
+                        line.append(escape(data))
                 lines.append(separator.join(line))
         else:
             for row in self.get_rows():
-                line = [ escape(x) for x in row ]
+                line = [escape(x) for x in row]
                 lines.append(separator.join(line))
         return newline.join(lines)
-
 
     #########################################################################
     # API / Private
@@ -147,20 +144,17 @@ class CSVFile(TextFile):
 
         return row
 
-
     def get_datatype(self, name):
         if self.schema is None:
             # Default
             return String
         return self.schema[name]
 
-
     #########################################################################
     # API / Public
     #########################################################################
     def get_nrows(self):
-        return len([ x for x in self.lines if x is not None])
-
+        return len([x for x in self.lines if x is not None])
 
     def get_row(self, number):
         """Return row at the given line number. Count begins at 0.
@@ -172,7 +166,6 @@ class CSVFile(TextFile):
         if row is None:
             raise IndexError('list index out of range')
         return row
-
 
     def get_rows(self, numbers=None):
         """Return rows at the given list of line numbers. If no numbers
@@ -188,13 +181,11 @@ class CSVFile(TextFile):
             for i in numbers:
                 yield self.get_row(i)
 
-
     def add_row(self, row):
         """Append new row as an instance of row class.
         """
         self.set_changed()
         return self._add_row(row)
-
 
     def update_row(self, index, **kw):
         row = self.get_row(index)
@@ -210,7 +201,6 @@ class CSVFile(TextFile):
                 column = columns.index(name)
                 row[column] = kw[name]
 
-
     def del_row(self, number):
         """Delete row at the given line number. Count begins at 0.
         """
@@ -222,7 +212,6 @@ class CSVFile(TextFile):
             raise IndexError('list assignment index out of range')
         self.lines[number] = None
 
-
     def del_rows(self, numbers):
         """Delete rows at the given line numbers. Count begins at 0.
         """
@@ -231,9 +220,8 @@ class CSVFile(TextFile):
         for i in numbers:
             self.del_row(i)
 
-
     def get_unique_values(self, name):
-        return set([ x.get_value(name) for x in self.get_rows() ])
+        return set([x.get_value(name) for x in self.get_rows()])
 
 
 register_handler_class(CSVFile)

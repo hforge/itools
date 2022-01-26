@@ -44,5 +44,4 @@ __all__ = [
     ]
 
 
-
 add_type('text/comma-separated-values', '.csv')

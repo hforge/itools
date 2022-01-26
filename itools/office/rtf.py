@@ -19,7 +19,6 @@
 from itools.handlers import File, register_handler_class
 
 
-
 def rtf_parse(data):
     # 0 = default
     # 1 = keyword
@@ -71,7 +70,6 @@ def rtf_parse(data):
                 buffer.append(c)
 
 
-
 def rtf_to_text(data):
     if not isinstance(data, str):
         raise ValueError("string data is expected")
@@ -86,7 +84,7 @@ def rtf_to_text(data):
     # Read header
     for word in parser:
         if word in ('\\title', '\\author', '\\operator', '\\company'):
-            text.append(parser.next())
+            text.append(next(parser))
             text.append('\n')
         elif word in ('\\sectd', '\\pard', '\\plain'):
             break
@@ -95,7 +93,7 @@ def rtf_to_text(data):
     for word in parser:
         if word == '\\pntxta' or word == '\\pntxtb':
             # Skip noise
-            parser.next()
+            next(arser)
         elif word[0] not in '\\{}':
             text.append(word)
         elif word == '\\par':
@@ -114,10 +112,8 @@ def rtf_to_text(data):
 
     text = ''.join(text)
     text = text.decode('quopri_codec')
-    text = unicode(text, 'cp1252')
+    text = str(text, 'cp1252')
     return text
-
-
 
 
 ###########################################################################
@@ -127,7 +123,6 @@ class RTF(File):
 
     class_mimetypes = ['text/rtf']
     class_extension = 'rtf'
-
 
     def to_text(self):
         return rtf_to_text(self.to_str())

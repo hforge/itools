@@ -50,8 +50,8 @@ def process_item(entry, rectype, reclen):
             if ord(buf) != 0x0d:
                 yield convert_char(ord(buf))
             else:
-                yield u"\n"
-        yield u"\n"
+                yield "\n"
+        yield "\n"
     elif rectype == TEXT_CHARS_ATOM or rectype == CSTRING:
         text_len = reclen / 2
         for i in range(text_len):
@@ -64,7 +64,6 @@ def process_item(entry, rectype, reclen):
         yield u"\n"
     else:
         entry.seek(reclen, SEEK_CUR)
-
 
 
 def do_ppt(entry):
@@ -87,7 +86,6 @@ def do_ppt(entry):
             yield char
 
 
-
 def ppt_to_text(data):
     buffer = []
     file = StringIO(data)
@@ -98,8 +96,7 @@ def ppt_to_text(data):
             if entry.name == 'PowerPoint Document':
                 for text in do_ppt(entry):
                     buffer.append(text)
-    return u"".join(buffer)
-
+    return "".join(buffer)
 
 
 ###########################################################################
@@ -109,7 +106,6 @@ class MSPowerPoint(File):
 
     class_mimetypes = ['application/vnd.ms-powerpoint']
     class_extension = 'ppt'
-
 
     def to_text(self):
         return ppt_to_text(self.to_str())

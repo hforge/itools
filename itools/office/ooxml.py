@@ -26,17 +26,14 @@ class MSWordX(File):
     class_extension = 'docx'
 
 
-
 class MSExcelX(File):
     class_mimetypes = [prefix + 'spreadsheetml.sheet']
     class_extension = 'xlsx'
 
 
-
 class MSPowerPointX(File):
     class_mimetypes = [prefix + 'presentationml.presentation']
     class_extension = 'pptx'
-
 
 
 # Register

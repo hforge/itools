@@ -28,12 +28,10 @@ from itools.handlers import TextFile, register_handler_class
 from itools.srx import TEXT
 
 
-
 class VisitorMSG(NodeVisitor):
 
     def __init__(self):
         self.messages = []
-
 
     def visit_Call(self, node):
         if isinstance(node.func, Attribute):
@@ -58,11 +56,10 @@ class VisitorMSG(NodeVisitor):
             if func.id in ('MSG', 'INFO', 'ERROR'):
                 text = node.args[0]
                 if isinstance(text, Str):
-                    if type(text.s) is unicode and text.s.strip():
+                    if type(text.s) is str and text.s.strip():
                         # Context = None
                         msg = ((TEXT, text.s),), None, node.lineno
                         self.messages.append(msg)
-
 
 
 class Python(TextFile):
@@ -70,12 +67,11 @@ class Python(TextFile):
     class_mimetypes = ['text/x-python']
     class_extension = 'py'
 
-
     def get_units(self, srx_handler=None):
         data = self.to_str()
         # Make it work with Windows files (the parser expects '\n' ending
         # lines)
-        data = ''.join([ x + '\n' for x in data.splitlines() ])
+        data = ''.join([x + '\n' for x in data.splitlines()])
         # Parse and Walk
         ast = parse(data)
         visitor = VisitorMSG()

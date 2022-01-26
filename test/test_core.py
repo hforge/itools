@@ -15,12 +15,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from string import lowercase
+from string import ascii_lowercase
 from unittest import TestCase, main
-
+import sys
+sys.path.append('/home/elie/PycharmProjects/itools/')
 # Import from itools
 from itools.core import freeze, frozenlist, frozendict
 from itools.core import LRUCache
+
 
 
 ###########################################################################
@@ -32,21 +34,21 @@ class FreezeTestCase(TestCase):
         a_list = [1, 2, 3]
         a_frozen_list = freeze(a_list)
         self.assertEqual(a_frozen_list, a_list)
-        self.assert_(isinstance(a_frozen_list, frozenlist))
+        self.assertTrue(isinstance(a_frozen_list, frozenlist))
 
 
     def test_freeze_dict(self):
         a_dict = {'a': 5, 'b': 3}
         a_frozen_dict = freeze(a_dict)
         self.assertEqual(a_frozen_dict, a_dict)
-        self.assert_(isinstance(a_frozen_dict, frozendict))
+        self.assertTrue(isinstance(a_frozen_dict, frozendict))
 
 
     def test_freeze_set(self):
         a_set = set('abc')
         a_frozen_set = freeze(a_set)
         self.assertEqual(a_frozen_set, a_set)
-        self.assert_(isinstance(a_frozen_set, frozenset))
+        self.assertTrue(isinstance(a_frozen_set, frozenset))
 
 
 
@@ -59,11 +61,11 @@ a_frozen_list = freeze([1, 2, 3])
 class FrozenlistTestCase(TestCase):
 
     def test_inheritance(self):
-        self.assert_(isinstance(a_frozen_list, list))
+        self.assertTrue(isinstance(a_frozen_list, list))
 
 
     def test_identity(self):
-        self.assert_(freeze(a_frozen_list) is a_frozen_list)
+        self.assertTrue(freeze(a_frozen_list) is a_frozen_list)
 
 
     #######################################################################
@@ -86,7 +88,7 @@ class FrozenlistTestCase(TestCase):
         except TypeError:
             pass
         else:
-            self.assert_(False)
+            self.assertTrue(False)
 
 
     def test_del_slice(self):
@@ -95,7 +97,7 @@ class FrozenlistTestCase(TestCase):
         except TypeError:
             pass
         else:
-            self.assert_(False)
+            self.assertTrue(False)
 
 
     def test_incremental_add(self):
@@ -105,7 +107,7 @@ class FrozenlistTestCase(TestCase):
         except TypeError:
             pass
         else:
-            self.assert_(False)
+            self.assertTrue(False)
 
 
     def test_incremental_mul(self):
@@ -115,7 +117,7 @@ class FrozenlistTestCase(TestCase):
         except TypeError:
             pass
         else:
-            self.assert_(False)
+            self.assertTrue(False)
 
 
     def test_setitem(self):
@@ -124,7 +126,7 @@ class FrozenlistTestCase(TestCase):
         except TypeError:
             pass
         else:
-            self.assert_(False)
+            self.assertTrue(False)
 
 
     def test_setslice(self):
@@ -133,7 +135,7 @@ class FrozenlistTestCase(TestCase):
         except TypeError:
             pass
         else:
-            self.assert_(False)
+            self.assertTrue(False)
 
 
     def test_insert(self):
@@ -164,13 +166,13 @@ class FrozenlistTestCase(TestCase):
         """
         # frozenlist + frozenlist
         alist = freeze([]) + freeze([])
-        self.assert_(isinstance(alist, frozenlist))
+        self.assertTrue(isinstance(alist, frozenlist))
         # frozenlist + list
         alist = freeze([]) + []
-        self.assert_(isinstance(alist, frozenlist))
+        self.assertTrue(isinstance(alist, frozenlist))
         # list + frozenlist
         alist = [] + freeze([])
-        self.assert_(not isinstance(alist, frozenlist))
+        self.assertTrue(not isinstance(alist, frozenlist))
 
 
     def test_equality(self):
@@ -180,11 +182,11 @@ class FrozenlistTestCase(TestCase):
     def test_multiplication(self):
         # frozenlist * n
         alist = freeze([1, 2]) * 2
-        self.assert_(isinstance(alist, frozenlist))
+        self.assertTrue(isinstance(alist, frozenlist))
         self.assertEqual(alist, [1, 2, 1, 2])
         # n * frozenlist
         alist = 2 * freeze([1, 2])
-        self.assert_(isinstance(alist, frozenlist))
+        self.assertTrue(isinstance(alist, frozenlist))
         self.assertEqual(alist, [1, 2, 1, 2])
 
 
@@ -193,20 +195,20 @@ class FrozenlistTestCase(TestCase):
 
 
 
-###########################################################################
-# Frozen dicts
-###########################################################################
+# ###########################################################################
+# # Frozen dicts
+# ###########################################################################
 a_frozen_dict = freeze({'a': 5, 'b': 3})
 
 
 class FrozendictTestCase(TestCase):
 
     def test_inheritance(self):
-        self.assert_(isinstance(a_frozen_dict, dict))
+        self.assertTrue(isinstance(a_frozen_dict, dict))
 
 
     def test_identity(self):
-        self.assert_(freeze(a_frozen_dict) is a_frozen_dict)
+        self.assertTrue(freeze(a_frozen_dict) is a_frozen_dict)
 
 
     #######################################################################
@@ -221,7 +223,7 @@ class FrozendictTestCase(TestCase):
         except TypeError:
             pass
         else:
-            self.assert_(False)
+            self.assertTrue(False)
 
 
     def test_setitem(self):
@@ -230,7 +232,7 @@ class FrozendictTestCase(TestCase):
         except TypeError:
             pass
         else:
-            self.assert_(False)
+            self.assertTrue(False)
 
 
     def test_clear(self):
@@ -263,15 +265,15 @@ class FrozendictTestCase(TestCase):
         self.assertEqual(repr(a_frozen_dict), "frozendict({'a': 5, 'b': 3})")
 
 
-###########################################################################
-# Cache
-###########################################################################
+# ###########################################################################
+# # Cache
+# ###########################################################################
 
 class CacheTestCase(TestCase):
 
     def setUp(self):
         self.cache = LRUCache(3)
-        for c in lowercase:
+        for c in ascii_lowercase:
             self.cache[c] = c.upper()
 
 
@@ -313,8 +315,8 @@ class CacheTestCase(TestCase):
 
     def test_in(self):
         cache = self.cache
-        self.assert_('x' in cache)
-        self.assert_('n' not in cache)
+        self.assertTrue('x' in cache)
+        self.assertTrue('n' not in cache)
 
 
     def test_clear(self):

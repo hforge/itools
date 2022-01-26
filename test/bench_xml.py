@@ -99,11 +99,11 @@ def get_test_filenames(test_path, force_download):
     If the test files does'nt exists, we download it
     """
 
-    uris = {'http://download.wikimedia.org/qualitywiki/latest':
+    uris = {'https://dumps.wikimedia.org/qualitywiki/latest/':
             [('qualitywiki-latest-stub-articles.xml', '.gz'),      #~  3.1 KB
              ('qualitywiki-latest-stub-meta-current.xml', '.gz'),  #~ 11.0 KB
              ('qualitywiki-latest-stub-meta-history.xml', '.gz')], #~ 28.9 KB
-            'http://download.wikimedia.org/tawiki/latest':
+            'https://dumps.wikimedia.org/tawiki/latest/':
             [('tawiki-latest-stub-articles.xml', '.gz'),           #~ 1.2 MB
              ('tawiki-latest-stub-meta-history.xml', '.gz')],      #~ 7.3 MB
             'http://www.w3.org/XML/Test/': [('xmlts20080205', '.tar.gz')]
@@ -112,13 +112,13 @@ def get_test_filenames(test_path, force_download):
 
     if force_download is True:
         if lfs.exists(compressed_dir_path):
-            print 'Remove compressed directory ', compressed_dir_path
+            print('Remove compressed directory ', compressed_dir_path)
             lfs.remove(compressed_dir_path)
             for names in uris.itervalues():
                 for (name, ext) in names:
                     path = join(test_path, name)
                     if lfs.exists(path):
-                        print 'Remove %s file' % path
+                        print('Remove %s file' % path)
                         lfs.remove(path)
 
     # test directory
@@ -132,7 +132,7 @@ def get_test_filenames(test_path, force_download):
         lfs.open(compressed_dir_path)
 
     test_dir_filenames = lfs.get_names(test_path)
-    for base_uri, names in uris.iteritems():
+    for base_uri, names in uris.items():
         for (name, ext) in names:
             if test_dir_filenames.count(name):
                 continue
@@ -140,9 +140,9 @@ def get_test_filenames(test_path, force_download):
             # check if tarball already exists
             if lfs.exists(compressed_dest) is False:
                 src = join(base_uri, '%s%s' % (name, ext))
-                print 'GET %s file' % src
+                print('GET %s file' % src)
                 if lfs.exists(src) is False:
-                    print "%s uri does not exists" % src
+                    print("%s uri does not exists" % src)
                     continue
                 src_file = lfs.open(src)
                 # save Gzip file
@@ -150,7 +150,7 @@ def get_test_filenames(test_path, force_download):
                 compressed_dest_file.write(src_file.read())
                 compressed_dest_file.close()
                 src_file.close()
-            print 'Extract file %s' % compressed_dest
+            print('Extract file %s' % compressed_dest)
             # Uncompressed File Path
             if name == 'xmlts20080205':
                 # uncompress only xmlconf.xml file
@@ -189,11 +189,11 @@ def get_test_filenames(test_path, force_download):
 ###########################################################################
 
 def output_init(parsers_name):
-    print u'-' * 78
+    print(u'-' * 78)
     # 30c | 23c | 23c -> 78c
-    print u' %s|%s|%s' % (center(u'file', 30), center(parser_names[0], 23),
-                          center(parser_names[1], 23))
-    print u'-' * 78
+    print(u' %s|%s|%s' % (center(u'file', 30), center(parser_names[0], 23),
+                          center(parser_names[1], 23)))
+    print(u'-' * 78)
 
 
 
@@ -225,16 +225,16 @@ def output_result(results, file):
         # time_spent ok already like ___.___ ms or s or mn
         output2 = rjust(u'%s / %s' % (time_spent, memory), 21)
 
-    print '%s | %s | %s ' % (file_string, output1, output2)
+    print('%s | %s | %s ' % (file_string, output1, output2))
 
 
 #####################################################################
 # MAIN
 #####################################################################
 parser_scripts = {
-    'expat': './bench_xml_expat.py',
-    'itools': './bench_xml_itools.py',
-    'itools_c': './a.out',
+    'expat': 'test/bench_xml_expat.py',
+    'itools': 'test/bench_xml_itools.py',
+    'itools_c': 'test/a.out',
 }
 
 
@@ -254,7 +254,7 @@ if __name__ == '__main__':
     parser.add_option(
         '-d', '--directory',
         help=('An optional  directory  to  which  to extract  files.'),
-        default='/tmp/itools_bench', dest='test_dir')
+        default='test/bench', dest='test_dir')
     parser.add_option(
         '', '--force-download',
         help='Force the test files download.',
@@ -263,7 +263,7 @@ if __name__ == '__main__':
     options, args = parser.parse_args()
     # Garbage collector
     if options.no_gc is True:
-        print u'DISABLE GARBAGE COLLECTOR'
+        print('DISABLE GARBAGE COLLECTOR')
         gc.disable()
 
     # Get test files
@@ -275,7 +275,7 @@ if __name__ == '__main__':
     else:
         parser_names = ['itools', 'expat']
 #    parser_names = ['itools_c', 'itools']
-    output_init(parser_names);
+    output_init(parser_names)
 
     # Go
     for real_path, filename, file_bytes, file_size in filenames:
@@ -300,5 +300,5 @@ if __name__ == '__main__':
             else:
                 test_results.append((parser_name, None))
         output_result(test_results, (filename, file_bytes))
-    print
+    print()
 

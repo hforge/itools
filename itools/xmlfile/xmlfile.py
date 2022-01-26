@@ -20,7 +20,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from cStringIO import InputType
+from io import StringIO
 
 # Import from itools
 from itools.handlers import TextFile, register_handler_class

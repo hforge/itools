@@ -26,7 +26,6 @@ from itools.handlers import File, ConfigFile, TGZFile
 from itools.fs import lfs
 
 
-
 class StateTestCase(TestCase):
 
     def test_abort(self):
@@ -38,7 +37,6 @@ class StateTestCase(TestCase):
         self.assertEqual(handler.data, u'hello world\n')
 
 
-
 class ConfigFileTestCase(TestCase):
     """ still need to complete the tests with schema """
 
@@ -47,11 +45,9 @@ class ConfigFileTestCase(TestCase):
         if lfs.exists(self.config_path):
             lfs.remove(self.config_path)
 
-
     def tearDown(self):
         if lfs.exists(self.config_path):
             lfs.remove(self.config_path)
-
 
     def _init_test(self, value):
         # Init data
@@ -62,7 +58,6 @@ class ConfigFileTestCase(TestCase):
         config = ConfigFile(self.config_path)
         config.set_value("test", value)
         config.save_state()
-
 
     def test_simple_value(self):
         # Init data
@@ -76,7 +71,6 @@ class ConfigFileTestCase(TestCase):
 
         # Test data
         self.assertEqual(config2_value, value)
-
 
     def test_long_value(self):
         # Init data
@@ -95,7 +89,6 @@ class ConfigFileTestCase(TestCase):
         # Test data
         self.assertEqual(config2_value, value)
 
-
     def test_last_line_empty(self):
         # Init data
         value = "HELLO, WORLD!\n\n"
@@ -113,7 +106,6 @@ class ConfigFileTestCase(TestCase):
 
         # Test data
         self.assertEqual(config2_value, value)
-
 
     def test_quote_value(self):
         # Init data
@@ -140,8 +132,6 @@ class ConfigFileTestCase(TestCase):
         # Test data
         self.assertEqual(config2_value, value)
 
-
-
     def test_wrapped_quote_value(self):
         # Init data
         value = "\"HELLO, WORLD!\""
@@ -166,7 +156,6 @@ class ConfigFileTestCase(TestCase):
 
         # Test data
         self.assertEqual(config2_value, value)
-
 
 
 ###########################################################################

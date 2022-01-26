@@ -216,7 +216,7 @@ def substitute_attribute(data, stack, repeat_stack, encoding='utf-8'):
         # Send the string
         if isinstance(value, MSG):
             return value.gettext().encode(encoding), 1
-        elif type(value) is unicode:
+        elif type(value) is str:
             return value.encode(encoding), 1
         return str(value), 1
     # A little more complex
@@ -229,7 +229,7 @@ def substitute_attribute(data, stack, repeat_stack, encoding='utf-8'):
         # Send the string
         if isinstance(value, MSG):
             return value.gettext().encode(encoding)
-        elif type(value) is unicode:
+        elif type(value) is str:
             return value.encode(encoding)
         return str(value)
     return subs_expr.subn(repl, data)
@@ -264,7 +264,7 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
                 value = value.gettext()
 
             # Yield
-            if type(value) is unicode:
+            if type(value) is str:
                 yield TEXT, value.encode(encoding), 0
             elif is_xml_stream(value):
                 for x in value:

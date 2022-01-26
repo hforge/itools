@@ -35,6 +35,7 @@ class ParserTestCase(TestCase):
         self.assertEqual(XMLParser(data).next(), (token, value, 1))
 
 
+
     #######################################################################
     # Character References
     def test_char_ref(self):

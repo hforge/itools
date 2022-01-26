@@ -22,7 +22,6 @@ from itools.handlers import TextFile, register_handler_class
 from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, COMMENT, TEXT
 
 
-
 # FIXME TMXNote and XLFNote are the same
 class TMXNote(object):
 
@@ -48,14 +47,12 @@ class TMXNote(object):
         return '<note%s>%s</note>\n' % (attributes, self.text)
 
 
-
 class Sentence(object):
 
     def __init__(self, attributes):
         self.attributes = attributes
         self.text = ''
         self.notes = []
-
 
     def to_str(self):
         s = []
@@ -74,14 +71,12 @@ class Sentence(object):
         return ''.join(s)
 
 
-
 class TMXUnit(object):
 
     def __init__(self, attributes):
         self.attributes = attributes
         self.msgstr = {}
         self.notes = []
-
 
     def to_str(self):
         s = []
@@ -105,12 +100,10 @@ class TMXUnit(object):
         return ''.join(s)
 
 
-
 class TMXFile(TextFile):
 
     class_mimetypes = ['application/x-tmx']
     class_extension = 'tmx'
-
 
     def new(self):
         self.version = '1.4'
@@ -174,7 +167,7 @@ class TMXFile(TextFile):
             elif event == COMMENT:
                 pass
             elif event == TEXT:
-                text = unicode(value, 'UTF-8')
+                text = str(value, 'UTF-8')
 
         self.messages = messages
 

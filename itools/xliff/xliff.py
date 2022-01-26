@@ -227,7 +227,7 @@ class XLFFile(TextFile):
             elif event == COMMENT:
                 pass
             elif event == TEXT:
-                text = unicode(value, 'UTF-8')
+                text = str(value, 'UTF-8')
                 if phrase is not None:
                     phrase.append((srx_TEXT, text))
 

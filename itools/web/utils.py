@@ -89,7 +89,7 @@ def fix_json(obj):
     TODO Use a custom JSONDecoder instead.
     """
     obj_type = type(obj)
-    if obj_type is unicode:
+    if obj_type is str:
         return obj.encode('utf-8')
     if obj_type is list:
         return [ fix_json(x) for x in obj ]

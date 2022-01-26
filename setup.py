@@ -23,6 +23,7 @@ from distutils.core import setup
 from os.path import join as join_path
 from pip._internal.req import parse_requirements
 from sys import stderr
+import sys
 from subprocess import Popen, PIPE
 
 
@@ -48,7 +49,7 @@ def get_compile_flags(command):
 
     for line in data.splitlines():
         for token in line.split():
-            flag, value = token[:2], token[2:]
+            flag, value = token[:2].decode("utf-8"), token[2:].decode("utf-8")
             if flag == '-I':
                 include_dirs.append(value)
             elif flag == '-f':
@@ -87,9 +88,10 @@ def generate_mo_files(po_file_names):
 
 if __name__ == '__main__':
     itools_is_available = False
+    from itools.core import get_abspath
+    from itools.pkg.utils import setup as itools_setup
     try:
-        from itools.core import get_abspath
-        from itools.pkg import setup as itools_setup
+
         itools_is_available = True
         print('[OK] itools is available')
     except ImportError:
@@ -97,7 +99,7 @@ if __name__ == '__main__':
         pass
     ext_modules = []
 
-    filenames = [x.strip() for x in open('MANIFEST').readlines() ]
+    filenames = [x.strip() for x in open('MANIFEST').readlines()]
     if not itools_is_available:
         # In case itools is not yet install, build won't work
         # thus we need to make sure mo files will be generated
@@ -110,17 +112,19 @@ if __name__ == '__main__':
     # XML Parser
     try:
         flags = get_compile_flags('pkg-config --cflags --libs glib-2.0')
+        print(flags)
     except OSError:
         print("[ERROR] 'pkg-config' not found, aborting...", file=stderr)
         raise
-    except EnvironmentError:
+    except Exception:
         print("[ERROR] Glib 2.0 library or headers not found, aborting...", file=stderr)
         raise
     else:
         sources = [
             'itools/xml/parser.c', 'itools/xml/doctype.c', 'itools/xml/arp.c',
             'itools/xml/pyparser.c']
-        extension = Extension('itools.xml.parser', sources, **flags)
+        print("flags", sources, flags)
+        extension = Extension('itools.xml.parser', sources=sources, **flags)
         ext_modules.append(extension)
 
     # PDF indexation
@@ -143,6 +147,9 @@ if __name__ == '__main__':
         sources = ['itools/office/doctotext.cc']
         extension = Extension('itools.office.doctotext', sources, **flags)
         ext_modules.append(extension)
+
+    # if sys.version_info[0] == 3:
+    #     ext_modules = []
 
     # Ok
     if itools_is_available:
@@ -178,7 +185,7 @@ if __name__ == '__main__':
         "itools.database.backends",
         "itools.datatypes",
         "itools.fs",
-        "itools.gettext",
+        #"itools.gettext",
         "itools.handlers",
         "itools.html",
         "itools.i18n",
@@ -187,11 +194,11 @@ if __name__ == '__main__':
         "itools.odf",
         "itools.office",
         "itools.pdf",
-        "itools.pkg",
+        #"itools.pkg",
         "itools.python",
         "itools.relaxng",
         "itools.rss",
-        "itools.srx",
+        #"itools.srx",
         "itools.stl",
         "itools.tmx",
         "itools.uri",
@@ -199,7 +206,7 @@ if __name__ == '__main__':
         "itools.web",
         "itools.workflow",
         "itools.xliff",
-        "itools.xml",
+        #"itools.xml",
         "itools.xmlfile"]
     scripts =  [
       "scripts/idb-inspect.py",
@@ -233,8 +240,8 @@ if __name__ == '__main__':
           license="GNU General Public License (GPL)",
           url="http://www.hforge.org/itools",
           description=description,
-          long_description=None,
-          classifiers = classifiers,
+          long_description="",
+          classifiers=classifiers,
           install_requires=install_requires,
           # Packages
           packages=packages,

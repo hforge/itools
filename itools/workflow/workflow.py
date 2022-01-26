@@ -83,7 +83,7 @@ class Workflow(object):
         """Sets the default initial state.
         """
         if name not in self.states:
-            raise WorkflowError, "invalid initial state: '%s'" % name
+            raise WorkflowError("invalid initial state: '%s'" % name)
         self.initstate = name
 
 
@@ -100,11 +100,11 @@ class Workflow(object):
         try:
             state_from = self.states[state_from]
         except KeyError:
-            raise WorkflowError, "unregistered state: '%s'" % state_from
+            raise WorkflowError("unregistered state: '%s'" % state_from)
         try:
             state_to = self.states[state_to]
         except KeyError:
-            raise WorkflowError, "unregistered state: '%s'" % state_to
+            raise WorkflowError("unregistered state: '%s'" % state_to)
         state_from.add_trans(name, transition)
 
 
@@ -213,10 +213,10 @@ class WorkflowAware(object):
             initstate = self.workflow.initstate
 
         if not initstate:
-            raise WorkflowError, 'undefined initial state'
+            raise WorkflowError('undefined initial state')
 
         if not initstate in self.workflow.states:
-            raise WorkflowError, "invalid initial state: '%s'" % initstate
+            raise WorkflowError("invalid initial state: '%s'" % initstate)
 
         self.workflow_state = initstate
 
@@ -240,7 +240,7 @@ class WorkflowAware(object):
         state = workflow.states[self.workflow_state]
         if transname not in state.transitions:
             error = "transition '%s' is invalid from state '%s'"
-            raise WorkflowError, error % (transname, self.workflow_state)
+            raise WorkflowError(error % (transname, self.workflow_state))
 
         # Get the new state name
         state = state.transitions[transname].state_to

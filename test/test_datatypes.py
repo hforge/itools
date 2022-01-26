@@ -25,6 +25,7 @@ import decimal
 import random
 from unittest import TestCase, main
 
+
 # Import from itools
 from itools.core import fixed_offset
 from itools.datatypes import ISOTime, ISOCalendarDate, ISODateTime, HTTPDate
@@ -51,19 +52,16 @@ class BasicTypeTest(TestCase):
             data = Integer.encode(x)
             self.assertEqual(x, Integer.decode(data))
 
-
     def test_Decimal(self):
         for x in [random.uniform(-100,100) for _ in range(10)]:
             x = decimal.Decimal(str(x))
             data = Decimal.encode(x)
             self.assertEqual(x, Decimal.decode(data))
 
-
     def test_Unicode(self):
         x = u'العربيه 中文 Español Français'
         data = Unicode.encode(x)
         self.assertEqual(x, Unicode.decode(data))
-
 
     def test_Boolean(self):
         for x in [True, False]:

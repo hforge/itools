@@ -56,11 +56,11 @@ class File(Handler):
     dirty = None
     loaded = False
 
-
     def __init__(self, key=None, string=None, database=None, **kw):
         if database is not None:
             self.database = database
         else:
+
             try:
                 from itools.database.ro import ro_database
                 self.database = ro_database
@@ -83,10 +83,8 @@ class File(Handler):
             self.key = self.database.normalize_key(key)
             self.load_state()
 
-
     def reset(self):
         pass
-
 
     def new(self, data=''):
         self.data = data
@@ -98,7 +96,6 @@ class File(Handler):
         """Method to be overriden by sub-classes."""
         self.data = file.read()
 
-
     def load_state(self):
         data = self.database.get_handler_data(self.key)
         self.reset()
@@ -106,12 +103,11 @@ class File(Handler):
             self.load_state_from_string(data)
         except Exception as e:
             # Update message to add the problematic file
-            message = '{0} on "{1}"'.format(e.message, self.key)
+            message = '{0} on "{1}"'.format(e, self.key)
             self._clean_state()
             raise
         self.timestamp = self.database.get_handler_mtime(self.key)
         self.dirty = None
-
 
     def load_state_from_file(self, file):
         self.reset()
@@ -122,11 +118,9 @@ class File(Handler):
             raise
         self.loaded = True
 
-
     def load_state_from_string(self, string):
         file = StringIO(string)
         self.load_state_from_file(file)
-
 
     def save_state(self):
         if not self.dirty:
@@ -137,12 +131,11 @@ class File(Handler):
         self.timestamp = self.database.get_handler_mtime(self.key)
         self.dirty = None
 
-
     def save_state_to(self, key):
         self.database.save_handler(key, self)
 
-
     clone_exclude = frozenset(['database', 'key', 'timestamp', 'dirty'])
+
     def clone(self, cls=None):
         # Define the class to build
         if cls is None:
@@ -166,7 +159,6 @@ class File(Handler):
         copy.dirty = datetime.now()
         return copy
 
-
     def set_changed(self):
         # Set as changed
         key = self.key
@@ -182,12 +174,10 @@ class File(Handler):
         # Attached
         database.touch_handler(key, self)
 
-
     def _clean_state(self):
         names = [x for x in self.__dict__ if x not in ('database', 'key')]
         for name in names:
             delattr(self, name)
-
 
     def abort_changes(self):
         # Not attached to a key or not changed
@@ -197,7 +187,6 @@ class File(Handler):
         self._clean_state()
         # Reload state
         self.load_state()
-
 
     #########################################################################
     # API
@@ -216,23 +205,18 @@ class File(Handler):
         # Not yet loaded, check the FS
         return self.database.get_handler_mtime(self.key)
 
-
     def to_str(self):
         return self.data
-
 
     def set_data(self, data):
         self.set_changed()
         self.data = data
 
-
     def to_text(self):
         raise NotImplementedError
 
-
     def is_empty(self):
         raise NotImplementedError
-
 
 
 register_handler_class(File)

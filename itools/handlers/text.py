@@ -27,7 +27,7 @@ def guess_encoding(data):
     """
     for encoding in ('ascii', 'utf8', 'iso8859'):
         try:
-            unicode(data, encoding)
+            data.encode(encoding)
         except UnicodeError:
             pass
         else:
@@ -42,16 +42,14 @@ class TextFile(File):
     class_mimetypes = ['text']
     class_extension = 'txt'
 
-
-    def new(self, data=u''):
+    def new(self, data=''):
         self.data = data
         self.encoding = 'utf-8'
-
 
     def _load_state_from_file(self, file):
         data = file.read()
         self.encoding = guess_encoding(data)
-        self.data = unicode(data, self.encoding)
+        self.data = str(data, self.encoding)
 
 
     #########################################################################
@@ -60,18 +58,14 @@ class TextFile(File):
     def get_encoding(self):
         return self.encoding
 
-
     def to_str(self, encoding='utf-8'):
         return self.data.encode(encoding)
 
-
     def to_text(self):
-        return unicode(self.to_str(), 'utf-8')
-
+        return str(self.to_str(), 'utf-8')
 
     def is_empty(self):
-        return self.to_text().strip() == u""
-
+        return self.to_text().strip() == ""
 
 
 register_handler_class(TextFile)

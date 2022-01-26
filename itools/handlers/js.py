@@ -19,13 +19,10 @@ from .registry import register_handler_class
 from .text import TextFile
 
 
-
-
 class JSFile(TextFile):
 
     class_mimetypes = ['application/x-javascript', 'application/javascript']
     class_extension = 'js'
-
 
     def get_units(self, srx_handler=None):
         return []

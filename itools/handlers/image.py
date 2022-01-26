@@ -46,7 +46,6 @@ from .registry import register_handler_class
 MAX_CROP_RATIO = 2.0
 
 
-
 class Image(File):
 
     class_mimetypes = ['image']
@@ -60,7 +59,6 @@ class Image(File):
             self.size = self._get_size(handle)
         else:
             self.size = (0, 0)
-
 
     def _get_handle(self):
         if PIL is False:
@@ -76,21 +74,17 @@ class Image(File):
         # Ok
         return im
 
-
     def _get_size(self, handle):
         return handle.size
 
-
     def _get_format(self, handle):
         return handle.format
-
 
     #########################################################################
     # API
     #########################################################################
     def get_size(self):
         return self.size
-
 
     def get_thumbnail(self, xnewsize, ynewsize, format=None, fit=False):
         # Get the handle
@@ -143,7 +137,6 @@ class Image(File):
         # Ok
         return value, format.lower()
 
-
     def _scale_down(self, im, ratio):
         # Convert to RGBA
         im = im.convert("RGBA")
@@ -157,11 +150,9 @@ class Image(File):
         return im, xsize, ysize
 
 
-
 class SVGFile(Image):
 
     class_mimetypes = ['image/svg+xml']
-
 
     def _get_handle(self):
         if rsvg_handle is None:
@@ -173,14 +164,11 @@ class SVGFile(Image):
         svg.close()
         return svg
 
-
     def _get_size(self, handle):
         return handle.get_property('width'), handle.get_property('height')
 
-
     def _get_format(self, handle):
         return 'PNG'
-
 
     def _scale_down(self, handle, ratio):
         xsize, ysize = self.size
@@ -204,7 +192,6 @@ class SVGFile(Image):
         surface.finish()
 
         return im, xsize, ysize
-
 
 
 register_handler_class(Image)

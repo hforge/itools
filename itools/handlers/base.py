@@ -37,7 +37,6 @@ class Handler(object):
     database = None
     key = None
 
-
     def has_handler(self, reference):
         database = self.database
         if database is None:
@@ -45,7 +44,6 @@ class Handler(object):
 
         key = database.resolve2(self.key, reference)
         return database.has_handler(key)
-
 
     def get_handler_names(self, reference='.'):
         database = self.database
@@ -55,7 +53,6 @@ class Handler(object):
         key = database.resolve2(self.key, reference)
         return database.get_handler_names(key)
 
-
     def get_handler(self, reference, cls=None, soft=False):
         database = self.database
         if database is None:
@@ -63,7 +60,6 @@ class Handler(object):
 
         key = database.resolve2(self.key, reference)
         return database._get_handler(key, cls, soft)
-
 
     def get_handlers(self, reference='.'):
         database = self.database
@@ -73,7 +69,6 @@ class Handler(object):
         key = database.resolve2(self.key, reference)
         return database.get_handlers(key)
 
-
     def set_handler(self, reference, handler):
         database = self.database
         if database is None:
@@ -82,7 +77,6 @@ class Handler(object):
         key = database.resolve2(self.key, reference)
         database.set_handler(key, handler)
 
-
     def del_handler(self, reference):
         database = self.database
         if database is None:
@@ -90,7 +84,6 @@ class Handler(object):
 
         key = database.resolve2(self.key, reference)
         database.del_handler(key)
-
 
     def copy_handler(self, source, target, exclude_patterns=None):
         database = self.database
@@ -101,7 +94,6 @@ class Handler(object):
         target = database.resolve2(self.key, target)
         database.copy_handler(source, target, exclude_patterns)
 
-
     def move_handler(self, source, target):
         database = self.database
         if database is None:
@@ -110,7 +102,6 @@ class Handler(object):
         source = database.resolve2(self.key, source)
         target = database.resolve2(self.key, target)
         database.move_handler(source, target)
-
 
     def get_mimetype(self):
         return self.database.get_mimetype(self.key)

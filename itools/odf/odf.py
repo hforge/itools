@@ -42,7 +42,6 @@ except ImportError:
     PILImage = None
 
 
-
 def zip_data(source, modified_files):
     file = StringIO()
     outzip = ZipFile(file, 'w')
@@ -71,7 +70,6 @@ def zip_data(source, modified_files):
     return content
 
 
-
 def stl_to_odt(model_odt, namespace):
     # STL
     events = list(model_odt.get_events('content.xml'))
@@ -79,7 +77,6 @@ def stl_to_odt(model_odt, namespace):
     modified_files = {'content.xml': xml_content}
     # Zip
     return zip_data(model_odt.data, modified_files)
-
 
 
 class GreekCatalog(object):
@@ -112,11 +109,10 @@ class GreekCatalog(object):
 
         new_unit = []
         for x, s in unit:
-            if type(s) in (str, unicode):
-                s = ''.join([ f(c) for c in s ])
+            if type(s) is str:
+                s = ''.join([f(c) for c in s])
             new_unit.append((x, s))
         return new_unit
-
 
 
 class OOFile(ZIPFile):
@@ -126,7 +122,6 @@ class OOFile(ZIPFile):
     def to_text(self):
         content = self.get_file('content.xml')
         return xml_to_text(content)
-
 
 
 class ODFFile(OOFile):
@@ -158,7 +153,6 @@ class ODFFile(OOFile):
                         meta[previous_tag_name] = value
         return meta
 
-
     def get_events(self, filename):
         content = self.get_file(filename)
         for event in XMLParser(content):
@@ -167,14 +161,12 @@ class ODFFile(OOFile):
             else:
                 yield event
 
-
     def get_units(self, srx_handler=None):
         for filename in ['content.xml', 'meta.xml', 'styles.xml']:
             events = self.get_events(filename)
             for message in get_units(events, srx_handler):
                 # FIXME the line number has no sense here
                 yield message
-
 
     def translate(self, catalog, srx_handler=None):
         """Translate the document and reconstruct an odt document.
@@ -188,7 +180,6 @@ class ODFFile(OOFile):
 
         # Zip
         return zip_data(self.data, modified_files)
-
 
     def greek(self):
         """Anonymize the ODF file.
@@ -259,8 +250,7 @@ class ODFFile(OOFile):
                 modified_files[filename] = None
                 print(err % filename)
 
-        return  zip_data(self.data, modified_files)
-
+        return zip_data(self.data, modified_files)
 
 
 class ODTFile(ODFFile):
@@ -270,7 +260,6 @@ class ODTFile(ODFFile):
     namespace = 'urn:oasis:names:tc:opendocument:xmlns:text:1.0'
 
 
-
 class ODSFile(ODFFile):
 
     class_mimetypes = ['application/vnd.oasis.opendocument.spreadsheet']
@@ -278,13 +267,11 @@ class ODSFile(ODFFile):
     namespace = 'urn:oasis:names:tc:opendocument:xmlns:spreadsheet:1.0'
 
 
-
 class ODPFile(ODFFile):
 
     class_mimetypes = ['application/vnd.oasis.opendocument.presentation']
     class_extension = 'odp'
     namespace = 'urn:oasis:names:tc:opendocument:xmlns:presentation:1.0'
-
 
 
 # Register handler and mimetypes

@@ -91,8 +91,7 @@ class TMXUnit(object):
             for l in self.notes:
                 s.append(l.to_str())
 
-        languages = self.msgstr.keys()
-        languages.sort()
+        languages = sorted(list(self.msgstr.keys()))
         for language in languages:
             s.append(self.msgstr[language].to_str())
 
@@ -194,8 +193,7 @@ class TMXFile(TextFile):
         # TMX body
         output.append('<body>\n')
         messages = self.messages
-        msgids = messages.keys()
-        msgids.sort()
+        msgids = sorted(list(messages.keys()))
         for msgid in msgids:
             output.append(messages[msgid].to_str())
         output.append('</body>\n')
@@ -203,7 +201,6 @@ class TMXFile(TextFile):
         # Ok
         output.append('</tmx>\n')
         return ''.join(output)
-
 
     #######################################################################
     # API
@@ -216,10 +213,8 @@ class TMXFile(TextFile):
                     languages.append(l)
         return languages
 
-
     def get_srclang(self):
         return u'%s' % self.header['srclang']
-
 
     def add_unit(self, filename, source, context, line):
         # XXX Context must be used!!
@@ -231,7 +226,6 @@ class TMXFile(TextFile):
         unit.msgstr[src_lang] = sentence
         self.messages[source] = unit
         return unit
-
 
 
 register_handler_class(TMXFile)

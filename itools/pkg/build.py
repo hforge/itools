@@ -38,7 +38,7 @@ from git import open_worktree
 
 def get_manifest():
     worktree = open_worktree('.')
-    return [ x for x in worktree.get_filenames() if not x.startswith('.')]
+    return [x for x in worktree.get_filenames() if not x.startswith('.')]
 
 
 def make(worktree, rules, manifest, package_root, po_files):
@@ -178,7 +178,7 @@ def build(path, config, environment):
         # Make
         make(worktree, rules, manifest, package_root, po_files)
     # Write the manifest
-    lines = [ x + '\n' for x in sorted(manifest) ]
+    lines = [x + '\n' for x in sorted(manifest)]
     open(path + 'MANIFEST', 'w').write(''.join(lines))
     print('* Build MANIFEST file (list of files to install)')
     print('**'*30)

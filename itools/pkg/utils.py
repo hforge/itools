@@ -47,7 +47,6 @@ class OptionalExtension(Extension):
     """
 
 
-
 class OptionalBuildExt(build_ext):
     """Internal class to support OptionalExtension.
     """
@@ -58,13 +57,12 @@ class OptionalBuildExt(build_ext):
         try:
             build_ext.build_extension(self, ext)
         except LinkError:
-            print ""
-            print "  '%s' module will not be available." % ext.name
-            print "  Make sure the following libraries are installed:",
-            print ", ".join(ext.libraries)
-            print "  This error is not fatal, continuing build..."
-            print ""
-
+            print("")
+            print("  '%s' module will not be available." % ext.name)
+            print("  Make sure the following libraries are installed:")
+            print(", ".join(ext.libraries))
+            print("  This error is not fatal, continuing build...")
+            print("")
 
 
 def get_compile_flags(command):
@@ -95,10 +93,8 @@ def get_compile_flags(command):
             'libraries': libraries}
 
 
-
 def get_config():
     return SetupConf('setup.conf')
-
 
 
 def setup(path, ext_modules=None):
@@ -118,6 +114,7 @@ def setup(path, ext_modules=None):
         version = get_package_version(package_root)
 
     # Initialize variables
+
     package_name = config.get_value('package_name')
     if package_name is None:
         package_name = config.get_value('name')
@@ -133,8 +130,8 @@ def setup(path, ext_modules=None):
         subpackages = []
 
     # Python files are included by default
-    filenames = [ x.strip() for x in open(path + 'MANIFEST').readlines() ]
-    filenames = [ x for x in filenames if not x.endswith('.py') ]
+    filenames = [x.strip() for x in open(path + 'MANIFEST').readlines()]
+    filenames = [x for x in filenames if not x.endswith('.py')]
 
     # The data files
     prefix = '' if package_root == '.' else package_root + '/'
@@ -153,9 +150,10 @@ def setup(path, ext_modules=None):
             package_data[package_name].append(line)
 
     # The scripts
+
     if config.has_value('scripts'):
         scripts = config.get_value('scripts')
-        scripts = [ join_path(*['scripts', x]) for x in scripts ]
+        scripts = [join_path(*['scripts', x]) for x in scripts]
     else:
         scripts = []
 
@@ -169,6 +167,7 @@ def setup(path, ext_modules=None):
     author_name = config.get_value('author_name')
     # Requires
     install_requires = []
+
     if exists('requirements.txt'):
         install_requires = parse_requirements(
             'requirements.txt', session='xxx')
@@ -176,26 +175,27 @@ def setup(path, ext_modules=None):
     # XXX Workaround buggy distutils ("sdist" don't likes unicode strings,
     # and "register" don't likes normal strings).
     if 'register' in argv:
-        author_name = unicode(author_name, 'utf-8')
-    classifiers = [ x for x in config.get_value('classifiers') if x ]
-    core.setup(name = package_name,
-               version = version,
+        author_name = str(author_name, 'utf-8')
+    classifiers = [x for x in config.get_value('classifiers') if x]
+    packages.remove('itools.log')
+    core.setup(name=package_name,
+               version=version,
                # Metadata
-               author = author_name,
-               author_email = config.get_value('author_email'),
-               license = config.get_value('license'),
-               url = config.get_value('url'),
-               description = config.get_value('title'),
-               long_description = long_description,
-               classifiers = classifiers,
+               author=author_name,
+               author_email=config.get_value('author_email'),
+               license=config.get_value('license'),
+               url=config.get_value('url'),
+               description=config.get_value('title'),
+               long_description=long_description,
+               classifiers=classifiers,
                # Packages
-               package_dir = {package_name: package_root},
-               packages = packages,
-               package_data = package_data,
+               package_dir={package_name: package_root},
+               packages=packages,
+               package_data=package_data,
                # Requires / Provides
                install_requires=install_requires,
                # Scripts
-               scripts = scripts,
-               cmdclass = {'build_ext': OptionalBuildExt},
+               scripts=scripts,
+               cmdclass={'build_ext': OptionalBuildExt},
                # C extensions
                ext_modules=ext_modules)

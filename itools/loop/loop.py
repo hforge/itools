@@ -37,7 +37,6 @@ else:
         return int(td.total_seconds())
 
 
-
 def _cron(callback, interval):
     while True:
         interval = total_seconds(interval)
@@ -45,7 +44,6 @@ def _cron(callback, interval):
         interval = callback()
         if not interval:
             break
-
 
 
 def cron(callback, interval):

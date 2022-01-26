@@ -58,7 +58,7 @@ def process_form(get_value, schema, error_msg=None):
             messages[name] = e.get_messages()
             values[name] = None
     if missings or invalids or unknow:
-        error_msg = error_msg or ERROR(u'Form values are invalid')
+        error_msg = error_msg or ERROR('Form values are invalid')
         raise FormError(
             message=error_msg,
             missing=len(missings) > 0,

@@ -70,13 +70,13 @@ class TokenAuthorizationException(Unauthorized):
 
 class InvalidJWTSignatureException(TokenAuthorizationException):
 
-    message = MSG(u"Signature du jeton invalide")
+    message = MSG("Signature du jeton invalide")
     error = "invalid_token_signature"
 
 
 class JWTExpiredException(TokenAuthorizationException):
 
-    message = MSG(u"Jeton expiré")
+    message = MSG("Jeton expiré")
     error = "token_expired"
 
 

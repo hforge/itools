@@ -34,7 +34,7 @@ Implementation of standard HTTP headers.
 UNEXPECTED_CHAR = 'unexpected character "%s"'
 
 
-ctls = set([ chr(x) for x in range(32) ] + [chr(127)])
+ctls = set([chr(x) for x in range(32)] + [chr(127)])
 tspecials = set('()<>@,;:\\"/[]?={} \t')
 ctls_tspecials = ctls | tspecials
 white_space = ' \t'
@@ -44,14 +44,12 @@ def lookup_char(char, data):
     return (data and data[0] == char)
 
 
-
 def read_char(char, data):
     if not data:
         raise ValueError('unexpected end-of-data')
     if data[0] != char:
         raise ValueError(UNEXPECTED_CHAR % data[0])
     return data[1:]
-
 
 
 def read_opaque(data, delimiters):
@@ -68,7 +66,6 @@ def read_opaque(data, delimiters):
     return data, ''
 
 
-
 def read_white_space(data):
     index = 0
     n = len(data)
@@ -82,7 +79,6 @@ def read_white_space(data):
 
     # End-Of-Data
     return data, ''
-
 
 
 def read_token(data):
@@ -104,7 +100,6 @@ def read_token(data):
 
     # End-Of-Data
     return data, ''
-
 
 
 def read_quoted_string(data):
@@ -131,12 +126,10 @@ def read_quoted_string(data):
     raise ValueError('expected double-quote (") not found')
 
 
-
 def read_token_or_quoted_string(data):
     if data[0] == '"':
         return read_quoted_string(data)
     return read_token(data)
-
 
 
 def read_parameter(data):
@@ -150,7 +143,6 @@ def read_parameter(data):
     # value
     value, data = read_token_or_quoted_string(data)
     return (name, value), data
-
 
 
 def read_parameters(data, read_parameter=read_parameter):
@@ -171,7 +163,6 @@ def read_parameters(data, read_parameter=read_parameter):
 
     # End-Of-Data
     return parameters, ''
-
 
 
 def read_media_type(data):
@@ -245,7 +236,6 @@ def read_cookie_parameter(data):
     return (name, value), data
 
 
-
 class Cookie(object):
     __hash__ = None
 
@@ -268,7 +258,6 @@ class Cookie(object):
         # Not standard
         self.expires = expires
 
-
     def __eq__(self, other):
         names = ['value', 'comment', 'domain', 'max_age', 'path', 'secure',
                  'version', 'commenturl', 'discard', 'port', 'expires']
@@ -277,7 +266,6 @@ class Cookie(object):
                 return False
         return True
 
-
     def __str__(self):
         output = ['"%s"' % self.value]
         if self.path is not None:
@@ -285,7 +273,6 @@ class Cookie(object):
         if self.domain is not None:
             output.append('$Domain="%s"' % self.domain)
         return '; '.join(output)
-
 
 
 CACHE_COOKIES = LRUCache(200)
@@ -476,7 +463,7 @@ class ContentDisposition(DataType):
     @staticmethod
     def encode(value):
         value, parameters = value
-        parameters = [ '; %s="%s"' % x for x in parameters.items() ]
+        parameters = ['; %s="%s"' % x for x in parameters.items()]
         parameters = ''.join(parameters)
         return '%s%s' % (value, parameters)
 

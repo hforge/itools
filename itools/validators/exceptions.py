@@ -30,7 +30,6 @@ class ValidationError(Exception):
             errors.append((msg, code, msg_params))
         self.errors = errors
 
-
     def get_messages(self, field):
         l = []
         for msg, code, msg_params in self.errors:
@@ -39,14 +38,12 @@ class ValidationError(Exception):
             l.append(msg.gettext(**msg_params))
         return l
 
-
     def get_message(self, field=None, mode='html'):
         messages = self.get_messages(field)
         if mode == 'html':
             msg = '<br/>'.join(messages)
             return MSG(msg, format='html')
         return MSG('\n'.join(messages))
-
 
     def __str__(self):
         return self.get_message()

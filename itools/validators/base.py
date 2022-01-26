@@ -35,15 +35,15 @@ class BaseValidatorMetaclass(prototype_type):
         return cls
 
 
-class validator_prototype(prototype):
+class validator_prototype(prototype, metaclass=BaseValidatorMetaclass):
 
-    __metaclass__ = BaseValidatorMetaclass
+    pass
 
 
 class BaseValidator(validator_prototype):
 
     validator_id = None
-    errors = {'invalid': MSG(u'Enter a valid value')}
+    errors = {'invalid': MSG('Enter a valid value')}
 
     def is_valid(self, value):
         try:
@@ -52,19 +52,15 @@ class BaseValidator(validator_prototype):
             return False
         return True
 
-
     def check(self, value):
         raise NotImplementedError('Validator is not configured')
-
 
     def get_error_msg(self):
         return self.msg
 
-
     def raise_default_error(self, kw={}):
-        code, msg = self.errors.items()[0]
+        code, msg = list(self.errors.items())[0]
         raise ValidationError(msg, code, kw)
-
 
     def raise_errors(self, errors, kw={}):
         l = []
@@ -73,23 +69,20 @@ class BaseValidator(validator_prototype):
             l.append((msg, code, kw))
         raise ValidationError(l)
 
-
     def __call__(self, value):
         return self.check(value)
-
 
 
 class EqualsValidator(BaseValidator):
 
     validator_id = 'equals-to'
     base_value = None
-    errors = {'not_equals':  MSG(u'The value should be equals to {base_value}')}
+    errors = {'not_equals':  MSG('The value should be equals to {base_value}')}
 
     def check(self, value):
         if value != self.base_value:
             kw = {'base_value': self.base_value}
             self.raise_default_error(kw)
-
 
 
 class RegexValidator(BaseValidator):
@@ -104,20 +97,17 @@ class RegexValidator(BaseValidator):
             self.raise_default_error()
 
 
-
-
 class HexadecimalValidator(RegexValidator):
 
     validator_id = 'hexadecimal'
     regex = '^#[A-Fa-f0-9]+$'
-    errors = {'invalid': MSG(u'Enter a valid value.')}
-
+    errors = {'invalid': MSG('Enter a valid value.')}
 
 
 class PositiveIntegerValidator(BaseValidator):
 
     validator_id = 'integer-positive'
-    errors = {'integer_positive':  MSG(u'Ensure this value is positive.')}
+    errors = {'integer_positive':  MSG('Ensure this value is positive.')}
 
     def check(self, value):
         if value < 0:
@@ -125,11 +115,10 @@ class PositiveIntegerValidator(BaseValidator):
             self.raise_default_error(kw)
 
 
-
 class PositiveIntegerNotNullValidator(BaseValidator):
 
     validator_id = 'integer-positive-not-null'
-    errors = {'integer_positive_not_null':  MSG(u'Ensure this value is greater than 0.')}
+    errors = {'integer_positive_not_null':  MSG('Ensure this value is greater than 0.')}
 
     def check(self, value):
         if value <= 0:
@@ -137,11 +126,10 @@ class PositiveIntegerNotNullValidator(BaseValidator):
             self.raise_default_error(kw)
 
 
-
 class MaxValueValidator(BaseValidator):
 
     validator_id = 'max-value'
-    errors = {'max_value':  MSG(u'Ensure this value is less than or equal to {max_value}.')}
+    errors = {'max_value':  MSG('Ensure this value is less than or equal to {max_value}.')}
     max_value = None
 
     def check(self, value):
@@ -150,11 +138,10 @@ class MaxValueValidator(BaseValidator):
             self.raise_default_error(kw)
 
 
-
 class MinValueValidator(BaseValidator):
 
     validator_id = 'min-value'
-    errors = {'min_value':  MSG(u'Ensure this value is greater than or equal to {min_value}.')}
+    errors = {'min_value':  MSG('Ensure this value is greater than or equal to {min_value}.')}
     min_value = None
 
     def check(self, value):
@@ -163,13 +150,12 @@ class MinValueValidator(BaseValidator):
             self.raise_default_error(kw)
 
 
-
 class MinMaxValueValidator(BaseValidator):
 
     validator_id = 'min-max-value'
     errors = {'min_max_value': MSG(
-        u'Ensure this value is greater than or equal to {min_value} '
-        u'and value is less than or equal to {max_value}.')}
+        'Ensure this value is greater than or equal to {min_value} '
+        'and value is less than or equal to {max_value}.')}
     min_value = None
     max_value = None
 
@@ -180,13 +166,11 @@ class MinMaxValueValidator(BaseValidator):
             self.raise_default_error(kw)
 
 
-
-
 class MinLengthValidator(BaseValidator):
 
     validator_id = 'min-length'
     min_length = 0
-    errors = {'min_length': MSG(u'Ensure this value has at least {min_length} characters.')}
+    errors = {'min_length': MSG('Ensure this value has at least {min_length} characters.')}
 
     def check(self, value):
         if len(value) < self.min_length:
@@ -196,12 +180,11 @@ class MinLengthValidator(BaseValidator):
             self.raise_default_error(kw)
 
 
-
 class MaxLengthValidator(BaseValidator):
 
     validator_id = 'max-length'
     max_length = 0
-    errors = {'max_length': MSG(u'Ensure this value has at most {max_length} characters.')}
+    errors = {'max_length': MSG('Ensure this value has at most {max_length} characters.')}
 
     def check(self, value):
         if len(value) > self.max_length:

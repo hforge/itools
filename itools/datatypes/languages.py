@@ -29,7 +29,6 @@ class LanguageTag(DataType):
         else:
             return (res[0].lower(), res[1].upper())
 
-
     @staticmethod
     def encode(value):
         language, locality = value

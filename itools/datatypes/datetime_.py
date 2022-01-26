@@ -60,7 +60,6 @@ class HTTPDate(DataType):
         tz = fixed_offset(tz/60)
         return tz.localize(naive_dt)
 
-
     @staticmethod
     def encode(value):
         """Encode a datetime object to RFC 1123 format: ::
@@ -85,7 +84,6 @@ class HTTPDate(DataType):
 # XXX Python dates (the datetime.date module) require the month and day,
 # they are not able to represent lower precision dates as ISO 8601 does.
 # In the long run we will need to replace Python dates by something else.
-
 class ISOCalendarDate(DataType):
     """Extended formats (from max. to min. precision): %Y-%m-%d, %Y-%m, %Y
 
@@ -117,14 +115,12 @@ class ISOCalendarDate(DataType):
 
         return date(year, month, day)
 
-
     @classmethod
     def encode(cls, value):
         # We choose the extended format as the canonical representation
         if value is None:
             return ''
         return value.strftime(cls.format_date)
-
 
     @classmethod
     def is_valid(cls, value):
@@ -146,7 +142,6 @@ class ISOTime(DataType):
 
     Basic formats: %H%M%S%f, %H%M%S, %H%M, %H
     """
-
 
     @staticmethod
     def decode(data):
@@ -220,7 +215,6 @@ class ISOTime(DataType):
         microsecond = int(data)
         return time(hour, minute, second, microsecond, tzinfo=tzinfo)
 
-
     @staticmethod
     def encode(value):
         # We choose the extended format as the canonical representation
@@ -230,7 +224,6 @@ class ISOTime(DataType):
         if value.tzinfo is not None:
             fmt += '%Z'
         return value.strftime(fmt)
-
 
 
 class ISODateTime(DataType):
@@ -254,7 +247,6 @@ class ISODateTime(DataType):
             raise ValueError('expected time field not found')
 
         return date
-
 
     def encode(self, value):
         if value is None:

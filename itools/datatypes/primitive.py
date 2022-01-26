@@ -41,13 +41,11 @@ class Integer(DataType):
             return None
         return int(value)
 
-
     @staticmethod
     def encode(value):
         if value is None:
             return ''
         return str(value)
-
 
 
 class Decimal(DataType):
@@ -65,26 +63,22 @@ class Decimal(DataType):
         return str(value)
 
 
-
 class Unicode(DataType):
 
-    default = u''
-
+    default = ''
 
     @staticmethod
     def decode(value, encoding='UTF-8'):
-        return unicode(value, encoding).strip()
+        return value.strip()
 
 
     @staticmethod
     def encode(value, encoding='UTF-8'):
-        return value.strip().encode(encoding)
-
+        return value.strip()
 
     @staticmethod
     def is_empty(value):
-        return value == u''
-
+        return value == ''
 
 
 class String(DataType):
@@ -101,7 +95,6 @@ class String(DataType):
         return value
 
 
-
 class Boolean(DataType):
 
     default = False
@@ -111,7 +104,6 @@ class Boolean(DataType):
     def decode(value):
         return bool(int(value))
 
-
     @staticmethod
     def encode(value):
         if value is True:
@@ -120,7 +112,6 @@ class Boolean(DataType):
             return '0'
         else:
             raise ValueError('{0} value is not a boolean'.format(value))
-
 
 
 class URI(String):
@@ -134,11 +125,9 @@ class URI(String):
             return False
         return True
 
-
     @staticmethod
     def is_empty(value):
         return not value
-
 
 
 class PathDataType(DataType):
@@ -155,7 +144,6 @@ class PathDataType(DataType):
     @staticmethod
     def encode(value):
         return str(value)
-
 
 
 # We consider the local part in emails is case-insensitive. This is against
@@ -177,7 +165,6 @@ class Email(String):
         return email_expr.match(value) is not None
 
 
-
 class QName(DataType):
 
     @staticmethod
@@ -187,13 +174,11 @@ class QName(DataType):
 
         return None, data
 
-
     @staticmethod
     def encode(value):
         if value[0] is None:
             return value[1]
         return '%s:%s' % value
-
 
 
 class Tokens(DataType):
@@ -204,11 +189,9 @@ class Tokens(DataType):
     def decode(data):
         return tuple(data.split())
 
-
     @staticmethod
     def encode(value):
         return ' '.join(value)
-
 
 
 class MultiLinesTokens(DataType):
@@ -217,22 +200,17 @@ class MultiLinesTokens(DataType):
     def decode(data):
         return tuple(data.splitlines())
 
-
     @staticmethod
     def encode(value):
         return '\n'.join(value)
 
 
-
-
 ###########################################################################
 # Enumerates
-
 class Enumerate(String):
 
     is_enumerate = True
     options = freeze([])
-
 
     def get_options(cls):
         """Returns a list of dictionaries in the format
@@ -242,7 +220,6 @@ class Enumerate(String):
         afterwards.
         """
         return deepcopy(cls.options)
-
 
     def is_valid(self, name):
         """Returns True if the given name is part of this Enumerate's options.
@@ -256,14 +233,12 @@ class Enumerate(String):
                 return True
         return False
 
-
     def get_namespace(cls, name):
         """Extends the options with information about which one is matching
         the given name.
         """
         options = cls.get_options()
         return enumerate_get_namespace(options, name)
-
 
     def get_value(cls, name, default=None):
         """Returns the value matching the given name, or the default value.
@@ -300,11 +275,9 @@ class XMLContent(object):
     def encode(value):
         return value.replace('&', '&amp;').replace('<', '&lt;')
 
-
     @staticmethod
     def decode(value):
         return value.replace('&amp;', '&').replace('&lt;', '<')
-
 
 
 class XMLAttribute(object):
@@ -349,7 +322,6 @@ class JSONObject(DataType):
         return dumps(value, cls=NewJSONEncoder)
 
 
-
 class JSONArray(JSONObject):
     """A JSON array, which is a Python list serialized as a JSON string
 
@@ -357,7 +329,6 @@ class JSONArray(JSONObject):
     """
 
     default = []
-
 
     @staticmethod
     def is_valid(value):

@@ -98,7 +98,6 @@ def evaluate(expression, stack, repeat_stack):
     return value
 
 
-
 def evaluate_if(expression, stack, repeat_stack):
     # stl:if="expression1 and expression2"
     # stl:if="expression1 or expression2"
@@ -124,7 +123,6 @@ def evaluate_if(expression, stack, repeat_stack):
         return not evaluate(expression[4:], stack, repeat_stack)
     # stl:if="expression"
     return evaluate(expression, stack, repeat_stack)
-
 
 
 def evaluate_repeat(expression, stack, repeat_stack):
@@ -170,7 +168,6 @@ class NamespaceStack(list):
                 pass
 
         raise STLError('name "%s" not found in the namespace' % name)
-
 
     def __getslice__(self, a, b):
         return self.__class__(list.__getslice__(self, a, b))
@@ -235,7 +232,6 @@ def substitute_attribute(data, stack, repeat_stack, encoding='utf-8'):
     return subs_expr.subn(repl, data)
 
 
-
 def substitute(data, stack, repeat_stack, encoding='utf-8'):
     """Interprets the given data as a substitution string with the "${expr}"
     format, where the expression within the brackets is an STL expression.
@@ -277,7 +273,6 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
             yield TEXT, segment, 0
 
 
-
 def stl(document=None, namespace=freeze({}), prefix=None, events=None,
         mode='events', skip=(DOCUMENT_TYPE,)):
     # Input
@@ -314,10 +309,9 @@ def stl(document=None, namespace=freeze({}), prefix=None, events=None,
         error = 'Error in generation of {0}\n'.format(mode)
         if document:
             error += 'Template {0}\n'.format(document.key)
-        raise STLError(error + e.message)
+        raise STLError(error + str(e))
     # Unknow mode
     raise ValueError('unexpected mode "{0}"'.format(mode))
-
 
 
 stl_repeat = stl_uri, 'repeat'
@@ -444,11 +438,11 @@ def process(events, start, end, stack, re_stack, encoding, skip_events):
         i += 1
 
 
-
 ########################################################################
 # Set prefix
 ########################################################################
-css_uri_expr = compile (r"url\(([a-zA-Z0-9\./%\-\_]*/%3[bB]{1}download)\);")
+css_uri_expr = compile(r"url\(([a-zA-Z0-9\./%\-\_]*/%3[bB]{1}download)\);")
+
 
 def set_prefix(stream, prefix, ns_uri=xhtml_uri, uri=None):
     if isinstance(prefix, str):
@@ -461,7 +455,6 @@ def set_prefix(stream, prefix, ns_uri=xhtml_uri, uri=None):
     rewrite = partial(resolve_pointer, prefix, ref)
 
     return rewrite_uris(stream, rewrite, ns_uri)
-
 
 
 def resolve_pointer(offset, reference, value):
@@ -489,7 +482,6 @@ def resolve_pointer(offset, reference, value):
         authority = reference.authority
     value = Reference(scheme, authority, path, uri.query.copy(), uri.fragment)
     return str(value)
-
 
 
 def rewrite_uris(stream, rewrite, ns_uri=xhtml_uri):
@@ -538,10 +530,10 @@ def rewrite_uris(stream, rewrite, ns_uri=xhtml_uri):
         else:
             yield event
 
+
 ###########################################################################
 # STLFile
 ###########################################################################
-
 class STLFile(XMLFile):
 
     # FIXME To be changed once we have our own extension and mimetype (#864)
@@ -562,14 +554,12 @@ class STLTemplate(prototype):
     template = None
     show = True
 
-
     def get_template(self):
         if type(self.template) is list:
             return self.template
 
         error = 'template variable of unexpected type "%s"'
         raise TypeError(error % type(self.template).__name__)
-
 
     def render(self, mode='events'):
         if not self.show:

@@ -69,14 +69,11 @@ class Heap(object):
         self._dict = {}
         self._heap = []
 
-
     def __len__(self):
         return len(self._dict)
 
-
     def get(self, path):
         return self._dict.get(path)
-
 
     def __setitem__(self, path, value):
         if path not in self._dict:
@@ -85,12 +82,10 @@ class Heap(object):
 
         self._dict[path] = value
 
-
     def popitem(self):
         key = heappop(self._heap)
         path = key[1]
         return path, self._dict.pop(path)
-
 
 
 class GitBackend(object):
@@ -123,7 +118,6 @@ class GitBackend(object):
         # Catalog
         self.catalog = self.get_catalog()
 
-
     @classmethod
     def init_backend(cls, path, fields, init=False, soft=False):
         # Metadata database
@@ -133,13 +127,11 @@ class GitBackend(object):
         # Make catalog
         make_catalog('{0}/catalog'.format(path), fields)
 
-
     @classmethod
     def init_backend_static(cls, path):
         # Static database
         lfs.make_folder('{0}/database_static'.format(path))
         lfs.make_folder('{0}/database_static/.history'.format(path))
-
 
     #######################################################################
     # Database API
@@ -153,15 +145,12 @@ class GitBackend(object):
             raise ValueError(err.format(path))
         return '/'.join(key)
 
-
     def handler_exists(self, key):
         fs = self.get_handler_fs_by_key(key)
         return fs.exists(key)
 
-
     def get_handler_names(self, key):
         return self.fs.get_names(key)
-
 
     def get_handler_data(self, key):
         if not key:
@@ -170,26 +159,21 @@ class GitBackend(object):
         with fs.open(key) as f:
             return f.read()
 
-
     def get_handler_mimetype(self, key):
         data = self.get_handler_data(key)
         return magic_from_buffer(data)
-
 
     def handler_is_file(self, key):
         fs = self.get_handler_fs_by_key(key)
         return fs.is_file(key)
 
-
     def handler_is_folder(self, key):
         fs = self.get_handler_fs_by_key(key)
         return fs.is_folder(key)
 
-
     def get_handler_mtime(self, key):
         fs = self.get_handler_fs_by_key(key)
         return fs.get_mtime(key)
-
 
     def save_handler(self, key, handler):
         data = handler.to_str()
@@ -210,22 +194,18 @@ class GitBackend(object):
         handler.dirty = None
 
 
-
     def traverse_resources(self):
         raise NotImplementedError
-
 
     def get_handler_fs(self, handler):
         if isinstance(handler, Metadata):
             return self.fs
         return self.static_fs
 
-
     def get_handler_fs_by_key(self, key):
         if key.endswith('metadata'):
             return self.fs
         return self.static_fs
-
 
     def add_handler_into_static_history(self, key):
         the_time = datetime.now().strftime('%Y%m%d%H%M%S')
@@ -234,7 +214,6 @@ class GitBackend(object):
         if not self.static_fs.exists(parent_path):
             self.static_fs.make_folder(parent_path)
         self.static_fs.copy(key, new_key)
-
 
     def create_patch(self, added, changed, removed, handlers, git_author):
         """ We create a patch into database/.git/patchs at each transaction.
@@ -283,7 +262,6 @@ class GitBackend(object):
             f.write(data)
             f.truncate(f.tell())
 
-
     def do_transaction(self, commit_message, data, added, changed, removed, handlers,
           docs_to_index, docs_to_unindex):
         git_author, git_date, git_msg, docs_to_index, docs_to_unindex = data
@@ -330,7 +308,6 @@ class GitBackend(object):
             self.catalog.index_document(values)
         self.catalog.save_changes()
 
-
     def do_git_big_commit(self):
         """ Some databases are really bigs (1 millions files). GIT is too slow in this cases.
         So we don't commit at each transaction, but at each N transactions.
@@ -341,11 +318,9 @@ class GitBackend(object):
         p1.start()
         self.last_transaction_dtime = datetime.now()
 
-
     def _do_git_big_commit(self):
         self.worktree._call(['git', 'add', '-A'])
         self.worktree._call(['git', 'commit', '-m', 'Autocommit'])
-
 
     def do_git_transaction(self, commit_message, data, added, changed, removed, handlers):
         worktree = self.worktree
@@ -423,7 +398,6 @@ class GitBackend(object):
         # 5. Git commit
         self.worktree.git_commit(git_msg, git_author, git_date, tree=git_tree)
 
-
     def abort_transaction(self):
         self.catalog.abort_changes()
         # Don't need to abort since git add is made à last minute
@@ -433,7 +407,6 @@ class GitBackend(object):
         #else:
         #    self.worktree.repo.checkout_head(strategy)
 
-
     def flush_catalog(self, docs_to_unindex, docs_to_index):
         for path in docs_to_unindex:
             self.catalog.unindex_document(path)
@@ -441,13 +414,11 @@ class GitBackend(object):
             self.catalog.index_document(values)
         self.catalog.save_changes()
 
-
     def get_catalog(self):
         path = '{0}/catalog'.format(self.path)
         if not lfs.is_folder(path):
             return None
         return Catalog(path, self.fields, read_only=self.read_only)
-
 
     def search(self, query=None, **kw):
         """Launch a search in the catalog.
@@ -455,7 +426,6 @@ class GitBackend(object):
         catalog = self.catalog
         xquery = _get_xquery(catalog, query, **kw)
         return SearchResults(catalog, xquery)
-
 
     def close(self):
         self.catalog.close()

@@ -39,7 +39,6 @@ class DefaultField(Field):
     multilingual = False
 
 
-
 class Metadata(File):
 
     class_mimetypes = ['text/x-metadata']
@@ -52,33 +51,29 @@ class Metadata(File):
         self.version = None
         self.properties = {}
 
-
     def __init__(self, key=None, string=None, database=None, cls=None, **kw):
+        super().__init__(key, string, database, **kw)
         self.cls = cls
         self.database = database
         kw['cls'] = cls
         proxy = super(Metadata, self)
         proxy.__init__(key=key, string=string, database=database, **kw)
 
-
     def new(self, cls=None, format=None, version=None):
         self.cls = cls
         self.format = format or cls.class_id
         self.version = version or cls.class_version
-
 
     def get_resource_class(self, class_id):
         if self.cls:
             return self.cls
         return self.database.get_resource_class(class_id)
 
-
     def change_class_id(self, new_class_id):
         self.cls = None
         self.set_changed()
         self.format = new_class_id
         self.get_resource_class(new_class_id)
-
 
     def _load_state_from_file(self, file):
         properties = self.properties
@@ -152,7 +147,6 @@ class Metadata(File):
             else:
                 properties[name] = property
 
-
     def to_str(self):
         resource_class = self.get_resource_class(self.format)
 
@@ -162,8 +156,7 @@ class Metadata(File):
             lines = ['format;version=%s:%s\n' % (self.version, self.format)]
         # Properties are to be sorted by alphabetical order
         properties = self.properties
-        names = properties.keys()
-        names.sort()
+        names = sorted(list(properties.keys()))
 
         # Properties
         for name in names:
@@ -200,7 +193,6 @@ class Metadata(File):
                     property_to_str(name, property, datatype, params_schema))
 
         return ''.join(lines)
-
 
     ########################################################################
     # API
@@ -245,7 +237,6 @@ class Metadata(File):
 
         return property[language]
 
-
     def has_property(self, name, language=None):
         if name not in self.properties:
             return False
@@ -254,7 +245,6 @@ class Metadata(File):
             return language in self.properties[name]
 
         return True
-
 
     def _set_property(self, name, value):
         properties = self.properties
@@ -294,11 +284,9 @@ class Metadata(File):
         if not field.datatype.is_empty(value.value):
             properties.setdefault(name, []).append(value)
 
-
     def set_property(self, name, value):
         self.set_changed()
         self._set_property(name, value)
-
 
     def del_property(self, name):
         if name in self.properties:

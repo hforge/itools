@@ -17,9 +17,8 @@
 # Import from the Standard Library
 from types import MethodType
 
-
-
 fields_registry = {}
+
 
 def register_field(name, field_cls):
     if name not in fields_registry:

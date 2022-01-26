@@ -48,7 +48,6 @@ def unescape_data(data, escape_table=escape_table):
     return '\\'.join(out)
 
 
-
 def escape_data(data, escape_table=escape_table):
     """Escape the data
     """
@@ -56,7 +55,6 @@ def escape_data(data, escape_table=escape_table):
     for c, c_escaped in escape_table:
         data = data.replace(c, c_escaped)
     return data
-
 
 
 def unfold_lines(data):
@@ -77,7 +75,6 @@ def unfold_lines(data):
         i += 1
     if line:
         yield line
-
 
 
 def fold_line(data):
@@ -102,7 +99,6 @@ def fold_line(data):
             size = len(lines[i])
             i = i + 1
     return res
-
 
 
 # XXX The RFC only allows '-', we allow more because this is used by
@@ -258,7 +254,6 @@ def get_tokens(property):
     return value, parameters
 
 
-
 def parse_table(data):
     """This is the public interface of the module "itools.ical.parser", a
     low-level parser of iCalendar files.
@@ -276,7 +271,6 @@ def parse_table(data):
         # Read the parameters and the property value
         value, parameters = get_tokens(line)
         yield name, value, parameters
-
 
 
 ###########################################################################
@@ -308,7 +302,6 @@ def deserialize_parameters(parameters, schema, default=String(multiple=True)):
         parameters[name] = value
 
 
-
 class MetadataProperty(object):
     """A property has a value, and may have one or more parameters.
 
@@ -329,7 +322,6 @@ class MetadataProperty(object):
             return self.datatype.decode(self.raw_value)
         return self.raw_value
 
-
     def clone(self):
         # Copy the value and parameters
         value = deepcopy(self.value)
@@ -339,18 +331,15 @@ class MetadataProperty(object):
             parameters[p_key] = c_value
         return MetadataProperty(value, self.datatype, **parameters)
 
-
     def get_parameter(self, name, default=None):
         if self.parameters is None:
             return default
         return self.parameters.get(name, default)
 
-
     def set_parameter(self, name, value):
         if self.parameters is None:
             self.parameters = {}
         self.parameters[name] = value
-
 
     def __eq__(self, other):
         if type(other) is not MetadataProperty:
@@ -359,12 +348,8 @@ class MetadataProperty(object):
             return False
         return self.parameters == other.parameters
 
-
     def __ne__(self, other):
         return not self.__eq__(other)
-
-
-
 
 
 params_escape_table = (

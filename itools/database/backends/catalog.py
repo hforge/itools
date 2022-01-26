@@ -58,35 +58,36 @@ OP_VALUE_LE = Query.OP_VALUE_LE
 TQ_FLAGS = (QueryParser.FLAG_LOVEHATE +
             QueryParser.FLAG_PHRASE +
             QueryParser.FLAG_WILDCARD)
-TRANSLATE_MAP = { ord(u'À'): ord(u'A'),
-                  ord(u'Â'): ord(u'A'),
-                  ord(u'â'): ord(u'a'),
-                  ord(u'à'): ord(u'a'),
-                  ord(u'Ç'): ord(u'C'),
-                  ord(u'ç'): ord(u'c'),
-                  ord(u'É'): ord(u'E'),
-                  ord(u'Ê'): ord(u'E'),
-                  ord(u'é'): ord(u'e'),
-                  ord(u'ê'): ord(u'e'),
-                  ord(u'è'): ord(u'e'),
-                  ord(u'ë'): ord(u'e'),
-                  ord(u'Î'): ord(u'I'),
-                  ord(u'î'): ord(u'i'),
-                  ord(u'ï'): ord(u'i'),
-                  ord(u'ô'): ord(u'o'),
-                  ord(u'û'): ord(u'u'),
-                  ord(u'ù'): ord(u'u'),
-                  ord(u'ü'): ord(u'u'),
-                  ord(u"'"): ord(u' ') }
-
+TRANSLATE_MAP = { ord('À'): ord('A'),
+                  ord('Â'): ord('A'),
+                  ord('â'): ord('a'),
+                  ord('à'): ord('a'),
+                  ord('Ç'): ord('C'),
+                  ord('ç'): ord('c'),
+                  ord('É'): ord('E'),
+                  ord('Ê'): ord('E'),
+                  ord('é'): ord('e'),
+                  ord('ê'): ord('e'),
+                  ord('è'): ord('e'),
+                  ord('ë'): ord('e'),
+                  ord('Î'): ord('I'),
+                  ord('î'): ord('i'),
+                  ord('ï'): ord('i'),
+                  ord('ô'): ord('o'),
+                  ord('û'): ord('u'),
+                  ord('ù'): ord('u'),
+                  ord('ü'): ord(u'u'),
+                  ord("'"): ord(' ') }
 
 MSG_NOT_INDEXED = 'the "{name}" field is not indexed'
 def warn_not_indexed(name):
     log.warning(MSG_NOT_INDEXED.format(name=name))
 
+
 MSG_NOT_STORED = 'the "{name}" field is not stored'
 def warn_not_stored(name):
     log.warning(MSG_NOT_STORED.format(name=name))
+
 
 MSG_NOT_INDEXED_NOR_STORED = 'the "{name}" field is not indexed nor stored'
 def warn_not_indexed_nor_stored(name):
@@ -99,7 +100,6 @@ class Doc(object):
         self._xdoc = xdoc
         self._fields = fields
         self._metadata = metadata
-
 
     def __getattr__(self, name):
         # 1. Get the raw value
@@ -147,7 +147,6 @@ class Doc(object):
         setattr(self, name, value)
         return value
 
-
     def get_value(self, name, language=None):
         # Check if stored
         info = self._metadata.get(name)
@@ -190,20 +189,17 @@ class Doc(object):
         return field_cls.get_default()
 
 
-
 class SearchResults(object):
 
     def __init__(self, catalog, xquery):
         self._catalog = catalog
         self._xquery = xquery
 
-
     @lazy
     def _enquire(self):
         enquire = Enquire(self._catalog._db)
         enquire.set_query(self._xquery)
         return enquire
-
 
     @lazy
     def _max(self):
@@ -212,17 +208,14 @@ class SearchResults(object):
         doccount = db.get_doccount()
         return enquire.get_mset(0, doccount).size()
 
-
     def __len__(self):
         """Returns the number of documents found."""
         return self._max
-
 
     def search(self, query=None, **kw):
         xquery = _get_xquery(self._catalog, query, **kw)
         query = Query(Query.OP_AND, [self._xquery, xquery])
         return self.__class__(self._catalog, query)
-
 
     def get_documents(self, sort_by=None, reverse=False, start=0, size=0):
         """Returns the documents for the search, sorted by weight.
@@ -289,15 +282,14 @@ class SearchResults(object):
 
         # Construction of the results
         fields = self._catalog._fields
-        results = [ Doc(x.document, fields, metadata)
-                    for x in enquire.get_mset(start, size) ]
+        results = [Doc(x.document, fields, metadata)
+                    for x in enquire.get_mset(start, size)]
 
         # sort_by=None/reverse=True
         if sort_by is None and reverse:
             results.reverse()
 
         return results
-
 
 
 class Catalog(object):
@@ -338,7 +330,6 @@ class Catalog(object):
         if not read_only:
             self._init_all_metadata()
 
-
     def _init_all_metadata(self):
         """Init new metadata (to avoid 'field is not indexed' warning)
         """
@@ -369,7 +360,6 @@ class Catalog(object):
             self._db.commit_transaction()
             self._db.begin_transaction(self.commit_each_transaction)
 
-
     #######################################################################
     # API / Public / Transactions
     #######################################################################
@@ -388,7 +378,6 @@ class Catalog(object):
                 self.nb_changes = 0
         db.begin_transaction(self.commit_each_transaction)
 
-
     def abort_changes(self):
 
         """Abort the last changes made in memory.
@@ -403,7 +392,6 @@ class Catalog(object):
             db.cancel_transaction()
             db.begin_transaction(self.commit_each_transaction)
         self._load_all_internal()
-
 
     def close(self):
         if self._db is None:
@@ -429,7 +417,6 @@ class Catalog(object):
             self._db.close()
             self._db = None
 
-
     #######################################################################
     # API / Public / (Un)Index
     #######################################################################
@@ -438,7 +425,6 @@ class Catalog(object):
         abspath, term, xdoc = self.get_xdoc_from_document(document)
         self._db.replace_document(term, xdoc)
         log.debug("Indexed : {}".format(abspath))
-
 
     def unindex_document(self, abspath):
         """Remove the document that has value stored in its abspath.
@@ -544,8 +530,7 @@ class Catalog(object):
         # Ok
         prefix = metadata[name]['prefix']
         prefix_len = len(prefix)
-        return set([ t.term[prefix_len:] for t in self._db.allterms(prefix) ])
-
+        return set([t.term[prefix_len:] for t in self._db.allterms(prefix)])
 
     #######################################################################
     # API / Private
@@ -568,19 +553,15 @@ class Catalog(object):
         # Ok
         return info
 
-
     def _get_info_stored(self):
         value = self._value_nb
         self._value_nb += 1
         return {'value': value}
 
-
     def _get_info_indexed(self):
         prefix = _get_prefix(self._prefix_nb)
         self._prefix_nb += 1
         return {'prefix': prefix}
-
-
 
     def _load_all_internal(self):
         """Load the metadata from the database
@@ -598,7 +579,6 @@ class Catalog(object):
                     self._value_nb += 1
                 if 'prefix' in info:
                     self._prefix_nb += 1
-
 
     def _query2xquery(self, query):
         """take a "itools" query and return a "xapian" query
@@ -738,7 +718,7 @@ class Catalog(object):
 
             # Remove accents from the value
             value = query.value
-            if type(value) is not unicode:
+            if type(value) is not str:
                 raise TypeError("unexpected %s for 'value'" % type(value))
             value = value.translate(TRANSLATE_MAP)
 
@@ -753,16 +733,15 @@ class Catalog(object):
 
         # And
         if query_class is _AndQuery:
-            return Query(OP_AND, [ i2x(q) for q in query.atoms ])
+            return Query(OP_AND, [i2x(q) for q in query.atoms])
 
         # Or
         if query_class is _OrQuery:
-            return Query(OP_OR, [ i2x(q) for q in query.atoms ])
+            return Query(OP_OR, [i2x(q) for q in query.atoms])
 
         # Not
         if query_class is NotQuery:
             return Query(OP_AND_NOT, Query(''), i2x(query.query))
-
 
 
 def make_catalog(uri, fields):
@@ -781,11 +760,8 @@ def make_catalog(uri, fields):
     return Catalog(db, fields)
 
 
-
 #############
 # Private API
-
-
 def _get_prefix(number):
     """By convention:
     Q is used for the unique Id of a document
@@ -796,7 +772,6 @@ def _get_prefix(number):
     size = len(magic_letters)
     result = 'X'*(number/size)
     return result+magic_letters[number%size]
-
 
 
 def _decode_simple_value(field_cls, data):
@@ -811,7 +786,6 @@ def _decode_simple_value(field_cls, data):
     return field_cls.decode(data)
 
 
-
 def _decode(field_cls, data):
     # Singleton
     if not field_cls.multiple:
@@ -822,8 +796,7 @@ def _decode(field_cls, data):
         value = loads(data)
     except (ValueError, MemoryError):
         return _decode_simple_value(field_cls, data)
-    return [ _decode_simple_value(field_cls, a_value) for a_value in value ]
-
+    return [_decode_simple_value(field_cls, a_value) for a_value in value]
 
 
 # We must overload the normal behaviour (range + optimization)
@@ -843,7 +816,6 @@ def _encode_simple_value(field_cls, value):
     return field_cls.encode(value)
 
 
-
 def _encode(field_cls, value):
     """Used to encode values in stored fields.
     """
@@ -856,10 +828,8 @@ def _encode(field_cls, value):
     return dumps(value)
 
 
-
 def _get_field_cls(name, fields, info):
     return fields[name] if (name in fields) else fields[info['from']]
-
 
 
 def _reduce_size(data):
@@ -875,7 +845,6 @@ def _reduce_size(data):
     return data
 
 
-
 def _index_cjk(xdoc, value, prefix, termpos):
     """
     Returns the next word and its position in the data. The analysis
@@ -889,7 +858,7 @@ def _index_cjk(xdoc, value, prefix, termpos):
     2 -> 0 [stop word]
     """
     state = 0
-    previous_cjk = u''
+    previous_cjk = ''
 
     for c in value:
         if is_punctuation(c):
@@ -898,12 +867,12 @@ def _index_cjk(xdoc, value, prefix, termpos):
                 xdoc.add_posting(prefix + previous_cjk, termpos)
                 termpos += 1
             # reset state
-            previous_cjk = u''
+            previous_cjk = ''
             state = 0
         else:
             c = c.lower()
             if previous_cjk:
-                xdoc.add_posting(prefix + (u'%s%s' % (previous_cjk, c)),
+                xdoc.add_posting(prefix + ('%s%s' % (previous_cjk, c)),
                                  termpos)
                 termpos += 1
                 state = 2
@@ -918,11 +887,10 @@ def _index_cjk(xdoc, value, prefix, termpos):
     return termpos + 1
 
 
-
 def _index_unicode(xdoc, value, prefix, language, termpos,
                    TRANSLATE_MAP=TRANSLATE_MAP):
     # Check type
-    if type(value) is not unicode:
+    if type(value) is not str:
         msg = 'The value "%s", field "%s", is not a unicode'
         raise TypeError(msg % (value, prefix))
 
@@ -942,7 +910,6 @@ def _index_unicode(xdoc, value, prefix, language, termpos,
 
     tg.index_text(value, 1, prefix)
     return tg.get_termpos() + 1
-
 
 
 def _index(xdoc, field_cls, value, prefix, language):
@@ -977,7 +944,6 @@ def _index(xdoc, field_cls, value, prefix, language):
         xdoc.add_posting(prefix + data, 1)
 
 
-
 def _make_PhraseQuery(field_cls, value, prefix):
     # Get the words
     # XXX It's too complex (slow), we must use xapian
@@ -995,7 +961,6 @@ def _make_PhraseQuery(field_cls, value, prefix):
 
     # Make the query
     return Query(OP_PHRASE, words)
-
 
 
 def _get_xquery(catalog, query=None, **kw):

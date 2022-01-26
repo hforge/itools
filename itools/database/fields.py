@@ -36,15 +36,12 @@ class Field(prototype):
     error_messages = {}
     validators = []
 
-
     def get_datatype(self):
         return self.datatype
-
 
     def access(self, mode, resource):
         # mode may be "read" or "write"
         return True
-
 
     def get_validators(self):
         validators = []
@@ -54,13 +51,11 @@ class Field(prototype):
               validators.append(v)
         return validators
 
-
     def get_error_message(self, code):
         messages = merge_dicts(
             self.base_error_messages,
             self.error_messages)
         return messages.get(code)
-
 
 
 def get_field_and_datatype(elt):

@@ -16,7 +16,6 @@
 
 # Import from the Standard Library
 
-
 backends_registry = {}
 
 def register_backend(name, backends_cls):

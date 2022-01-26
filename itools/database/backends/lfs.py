@@ -32,23 +32,18 @@ class LFSBackend(object):
         else:
             self.fs = lfs
 
-
     @classmethod
     def init_backend(cls, path, fields, init=False, soft=False):
         self.fs.make_folder('{0}/database'.format(path))
 
-
     def normalize_key(self, path, __root=None):
         return self.fs.normalize_key(path)
-
 
     def handler_exists(self, key):
         return self.fs.exists(key)
 
-
     def get_handler_names(self, key):
         return self.fs.get_names(key)
-
 
     def get_handler_data(self, key):
         if not key:
@@ -56,22 +51,17 @@ class LFSBackend(object):
         with self.fs.open(key) as f:
             return f.read()
 
-
     def get_handler_mimetype(self, key):
         return self.fs.get_mimetype(key)
-
 
     def handler_is_file(self, key):
         return self.fs.is_file(key)
 
-
     def handler_is_folder(self, key):
         return self.fs.is_folder(key)
 
-
     def get_handler_mtime(self, key):
         return self.fs.get_mtime(key)
-
 
     def save_handler(self, key, handler):
         data = handler.to_str()
@@ -85,10 +75,8 @@ class LFSBackend(object):
                 f.write(data)
                 f.truncate(f.tell())
 
-
     def traverse_resources(self):
         raise NotImplementedError
-
 
     def do_transaction(self, commit_message, data, added, changed, removed, handlers):
         # List of Changed
@@ -102,8 +90,6 @@ class LFSBackend(object):
             handler.save_state()
         for key in removed:
             self.fs.remove(key)
-
-
 
     def abort_transaction(self):
         # Cannot abort transaction with this backend

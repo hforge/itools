@@ -86,12 +86,10 @@ def encode_element(name, value, encoding='UTF-8'):
     return XMLContent.encode(result)
 
 
-
 class RSSFile(TextFile):
 
     class_mimetypes = ['application/rss+xml']
     class_extension = 'rss'
-
 
     def new(self):
         # Channel API
@@ -108,7 +106,6 @@ class RSSFile(TextFile):
 
         # Item API is a list of dictionaries similar to the channel
         self.items = []
-
 
     def _load_state_from_file(self, file):
         # Default values
@@ -152,7 +149,6 @@ class RSSFile(TextFile):
                 # Will overwrite the 'encoding' defaut value
                 # Others are ignored
                 version, encoding, standalone = value
-
 
     def to_str(self, encoding='UTF-8'):
         s = []
@@ -216,7 +212,6 @@ class RSSFile(TextFile):
         s.append('  </channel>')
         s.append('</rss>')
         return '\n'.join(s)
-
 
 
 register_handler_class(RSSFile)

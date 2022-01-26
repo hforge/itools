@@ -22,9 +22,6 @@ from re import match, compile, DOTALL, MULTILINE
 from itools.xml import XMLParser, XML_DECL, START_ELEMENT, END_ELEMENT, TEXT
 from itools.handlers import TextFile, register_handler_class
 
-import sys
-if sys.version_info.major == 3:
-    unicode = str
 
 
 class SRXFile(TextFile):
@@ -33,7 +30,6 @@ class SRXFile(TextFile):
 
     class_mimetypes = ['text/x-srx']
     class_extension = 'srx'
-
 
     def _load_state_from_file(self, file):
         # Default values
@@ -71,7 +67,7 @@ class SRXFile(TextFile):
                         self.header['formathandle_'+type_value] = include
                     # languagerule
                     elif tag_name == 'languagerule':
-                        languagerulename = unicode(
+                        languagerulename = str(
                                             attrs[None, 'languagerulename'],
                                             encoding)
                         current_language =\
@@ -86,15 +82,15 @@ class SRXFile(TextFile):
                             current_break = break_value.lower() != 'no'
                     # languagemap
                     elif tag_name == 'languagemap':
-                        languagepattern = unicode(
+                        languagepattern = str(
                             attrs[None, 'languagepattern'], encoding)
-                        languagerulename= unicode(
+                        languagerulename= str(
                             attrs[None, 'languagerulename'], encoding)
                         self.map_rules.append((languagepattern,
                                               languagerulename))
-                current_text = u''
+                current_text = ''
             elif type == TEXT:
-                current_text = unicode(value, encoding)
+                current_text = str(value, encoding)
             elif type == END_ELEMENT:
                 tag_uri, tag_name = value
                 if tag_uri == srx_uri:
@@ -123,10 +119,8 @@ class SRXFile(TextFile):
             result.append((break_value, regexp))
         return result
 
-
     def get_languages(self):
         return self.language_rules.keys()
-
 
     def get_rules(self, language):
         language_rules = self.language_rules

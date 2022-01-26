@@ -56,7 +56,6 @@ def collapse(text):
     return ''.join(collapsed_text)
 
 
-
 def _remove_spaces(left, center, right, keep_spaces):
     # (1) Move only "spaces" surrounding the center to left and right
     if center:
@@ -83,7 +82,7 @@ def _remove_spaces(left, center, right, keep_spaces):
             text, context = value
 
             new_end = len(text)
-            moved_text = u''
+            moved_text = ''
             for c in reversed(text):
                 if isspace(c):
                     # Move the character
@@ -111,13 +110,13 @@ def _remove_spaces(left, center, right, keep_spaces):
 
                 # Begin and End
                 if i > 0 and text and isspace(text[0]):
-                    begin = u' '
+                    begin = ' '
                 else:
-                    begin = u''
+                    begin = ''
                 if i < len(center) - 1 and isspace(text[-1]):
-                    end = u' '
+                    end = ' '
                 else:
-                    end = u''
+                    end = ''
 
                 # Compute the new "line" argument
                 for c in text:
@@ -184,7 +183,7 @@ def _split_message(message, srx_handler=None):
     for type, value, line in message:
         if type == TEXT:
             concat_text.append(value[0])
-    concat_text = u''.join(concat_text)
+    concat_text = ''.join(concat_text)
 
     # Get the rules
     if srx_handler is None:
@@ -263,8 +262,8 @@ def _translate_message(message, catalog):
     id2tags = {}
     for type, value, line in message:
         if type != TEXT:
-            id = value[1]
-            id2tags[type, id] = (type, value, line)
+            _id = value[1]
+            id2tags[type, _id] = (type, value, line)
 
     # Translation
     translation = catalog.gettext(message.to_unit(), message.get_context())
@@ -357,25 +356,21 @@ class Message(list):
         else:
             list.append(self, (TEXT, (text, context), line))
 
-
-    def append_start_format(self, content, id, line=1):
+    def append_start_format(self, content, _id, line=1):
         """value=[(u'...', translatable, context), ...]
         """
-        self.append((START_FORMAT, (content, id), line))
+        self.append((START_FORMAT, (content, _id), line))
 
-
-    def append_end_format(self, content, id, line=1):
+    def append_end_format(self, content, _id, line=1):
         """value=idem as start_format
         """
-        self.append((END_FORMAT, (content, id), line))
-
+        self.append((END_FORMAT, (content, _id), line))
 
     def get_line(self):
         if self:
             return self[0][2]
         else:
             return None
-
 
     def get_context(self):
          # Return the first context != None
@@ -386,7 +381,6 @@ class Message(list):
                     return value[1]
         return None
 
-
     def to_str(self):
         result = []
         for type, value, line in self:
@@ -395,8 +389,7 @@ class Message(list):
             else:
                 for text, translatable, context in value[0]:
                     result.append(text)
-        return u''.join(result)
-
+        return ''.join(result)
 
     def to_unit(self):
         result = []

@@ -36,7 +36,6 @@ class Boolean(Boolean):
     def decode(value):
         return value
 
-
     @staticmethod
     def encode(value):
         return value
@@ -259,17 +258,14 @@ class Element(ElementSchema):
         return String
 
 
-
 class BlockElement(Element):
 
     is_inline = False
 
 
-
 class EmptyElement(Element):
 
     is_empty = True
-
 
 
 class EmptyBlockElement(Element):
@@ -278,12 +274,10 @@ class EmptyBlockElement(Element):
     is_empty = True
 
 
-
 class InputElement(Element):
 
     is_inline = True
     is_empty = True
-
 
     def get_attr_datatype(self, attr_name, attributes):
         if attr_name == 'value':
@@ -294,7 +288,6 @@ class InputElement(Element):
                 return Unicode(context='button')
         proxy = super(InputElement, self)
         return proxy.get_attr_datatype(attr_name, attributes)
-
 
 
 class WebComponentElement(BlockElement):
@@ -625,7 +618,6 @@ html_elements = [
     ]
 
 
-
 class HTML5Namespace(XMLNamespace):
 
     uri = html_uri
@@ -644,7 +636,6 @@ class HTML5Namespace(XMLNamespace):
                 raise ValueError('element "%s" is defined twice' % name)
             kw[name] = element
         return kw
-
 
     def get_element_schema(self, name):
         element = self.elements_kw.get(name)

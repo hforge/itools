@@ -27,7 +27,6 @@ from .xhtml import XHTMLFile, xhtml_uri, stream_is_empty
 from .xhtml import stream_to_str_as_html, stream_to_str_as_xhtml
 
 
-
 # Public API
 __all__ = [
     # File Handlers

@@ -114,7 +114,6 @@ def sanitize_stream(stream):
                 yield event
 
 
-
 def sanitize_str(str):
     stream = XMLParser(str)
     return sanitize_stream(stream)

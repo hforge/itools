@@ -30,7 +30,6 @@ class MOFile(File):
     def _load_state_from_file(self, file):
         self.translations = GNUTranslations(file)
 
-
     def gettext(self, message):
         """Returns the translation for the given message.
         """

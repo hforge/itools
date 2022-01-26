@@ -46,7 +46,6 @@ class POSyntaxError(Exception):
         self.line_number = line_number
         self.line_type = line_type
 
-
     def __str__(self):
         if self.line_type is None:
             return 'syntax error at line %d' % self.line_number
@@ -139,14 +138,14 @@ def encode_source(source):
         elif type == START_FORMAT:
             # A lonely tag ?
             if source[i+1][0] == END_FORMAT:
-                result.append(u"<x id='%d'/>" % value)
+                result.append("<x id='%d'/>" % value)
             else:
-                result.append(u"<g id='%d'>" % value)
+                result.append("<g id='%d'>" % value)
         elif type == END_FORMAT:
             # A lonely tag ?
             if source[i-1][0] != START_FORMAT:
-                result.append(u'</g>')
-    return u''.join(result)
+                result.append('</g>')
+    return ''.join(result)
 
 
 def decode_target(target):
@@ -202,7 +201,6 @@ def decode_target(target):
     return result
 
 
-
 ###########################################################################
 # Handler
 ###########################################################################
@@ -213,9 +211,10 @@ def escape(s):
 
 
 expr = compile(r'(\\.)')
+
+
 def unescape(s):
     return expr.sub(lambda x: eval("'%s'" % x.group(0)), s)
-
 
 
 class POUnit(object):
@@ -259,7 +258,6 @@ class POUnit(object):
         self.target = target
         self.fuzzy = fuzzy
 
-
     def to_str(self, encoding='UTF-8'):
         s = []
         # The comments
@@ -295,17 +293,14 @@ class POUnit(object):
 
         return ''.join(s)
 
-
     def __repr__(self):
         msg = "<POUnit object context=%s source=%s target=%s (%s)>"
         return msg % (self.context, self.source, self.target, self.references)
-
 
     def __eq__(self, other):
         return ((other.context == self.context) and
                 (other.source == self.source) and
                 (other.target == self.target))
-
 
 
 skeleton = """# SOME DESCRIPTIVE TITLE.
@@ -327,7 +322,6 @@ msgstr ""
 """
 
 
-
 class POFile(TextFile):
 
     class_mimetypes = [
@@ -335,7 +329,6 @@ class POFile(TextFile):
         'text/x-gettext-translation-template',
         'text/x-po']
     class_extension = 'po'
-
 
     def new(self):
         # XXX Old style (like in the "get_skeleton" times)
@@ -479,7 +472,6 @@ class POFile(TextFile):
                 else:
                     raise POSyntaxError(line_number, line_type)
 
-
     def _load_state_from_file(self, file):
         """A PO file is made of entries, where entries are separated by one
         or more blank lines. Each entry consists of a msgid and a msgstr,
@@ -520,36 +512,34 @@ class POFile(TextFile):
                 raise POError('msgid at line %d is duplicated' % line_number)
 
             # Get the comments and the msgstr in unicode
-            comments = [ unicode(x, self.encoding) for x in comments ]
+            comments = [str(x, self.encoding) for x in comments]
 
             if context is not None:
-                context = [ unicode(x, self.encoding) for x in context ]
-            source = [ unicode(x, self.encoding) for x in source ]
-            target = [ unicode(x, self.encoding) for x in target ]
+                context = [str(x, self.encoding) for x in context]
+            source = [str(x, self.encoding) for x in source]
+            target = [str(x, self.encoding) for x in target]
 
             # Add the message
             self._set_message(context, source, target, comments, references, fuzzy)
 
-
     def to_str(self, encoding='UTF-8'):
         messages = self.messages
-        message_ids = messages.keys()
-        message_ids.sort()
-        messages = [ messages[x].to_str(encoding) for x in message_ids ]
+        message_ids = sorted(list(messages.keys()))
+        messages = [messages[x].to_str(encoding) for x in message_ids]
         return '\n'.join(messages)
 
 
     #######################################################################
     # API / Private
     #######################################################################
-    def _set_message(self, context, source, target=freeze([u'']),
+    def _set_message(self, context, source, target=freeze(['']),
                      comments=freeze([]), references=None, fuzzy=False):
 
-        if context is not None and isinstance(context, (str, unicode)):
+        if context is not None and isinstance(context, (str, str)):
             context = [context]
-        if isinstance(source, (str, unicode)):
+        if isinstance(source, (str, str)):
             source = [source]
-        if isinstance(target, (str, unicode)):
+        if isinstance(target, (str, str)):
             target = [target]
 
         # Make the key
@@ -576,8 +566,6 @@ class POFile(TextFile):
             unit.references.setdefault(str(reference[0]), []).append(reference[1])
         return unit
 
-
-
     #######################################################################
     # API / Public
     #######################################################################
@@ -586,12 +574,10 @@ class POFile(TextFile):
         """
         return self.messages.keys()
 
-
     def get_units(self):
         """Returns all the message (objects of the class <POUnit>).
         """
         return self.messages.values()
-
 
     def get_msgstr(self, source, context=None):
         """Returns the 'msgstr' for the given (context, msgid).
@@ -601,10 +587,8 @@ class POFile(TextFile):
             return ''.join(message.target)
         return None
 
-
     def set_msgstr(self, source, target, context=None):
         self._set_message(context, [source], [target])
-
 
     def gettext(self, source, context=None):
         """Returns the translation of the given message id.
@@ -620,7 +604,6 @@ class POFile(TextFile):
                 return decode_target(target)
         return source
 
-
     def add_unit(self, filename, source, context, line):
         if not source:
             return None
@@ -630,9 +613,8 @@ class POFile(TextFile):
 
         source = encode_source(source)
 
-        return self._set_message(context, [source], [u''], [],
+        return self._set_message(context, [source], [''], [],
                                  [(filename, line)])
-
 
 
 register_handler_class(POFile)

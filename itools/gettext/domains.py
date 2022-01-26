@@ -41,6 +41,7 @@ xhtml_namespaces = {
 
 domains = {}
 
+
 def register_domain(name, locale_path):
     if name not in domains:
         domains[name] = Domain(locale_path)
@@ -50,17 +51,15 @@ def get_domain(name):
     return domains[name]
 
 
-
-
 class Domain(dict):
 
     def __init__(self, uri):
+        super().__init__()
         for key in lfs.get_names(uri):
             if key[-3:] == '.mo':
                 language = key[:-3]
                 path = '{0}/{1}'.format(uri, key)
                 self[language] = MOFile(path)
-
 
     def gettext(self, message, language):
         if language not in self:
@@ -68,10 +67,8 @@ class Domain(dict):
         handler = self[language]
         return handler.gettext(message)
 
-
     def get_languages(self):
         return self.keys()
-
 
 
 class MSGFormatter(Formatter):
@@ -94,6 +91,7 @@ class MSGFormatter(Formatter):
 
 msg_formatter = MSGFormatter()
 
+
 class MSG(object):
 
     domain = None
@@ -109,7 +107,6 @@ class MSG(object):
         if message:
             self.message = message
 
-
     def _format(self, message, **kw):
         if self.format == 'replace':
             return msg_formatter.vformat(message, [], (self, kw))
@@ -124,7 +121,6 @@ class MSG(object):
             return XMLParser(data, namespaces=xhtml_namespaces)
 
         raise ValueError('unexpected format "{0}"'.format(self.format))
-
 
     def gettext(self, language=None, **kw):
         message = self.message
@@ -142,7 +138,6 @@ class MSG(object):
                 message = domain.gettext(message, language)
 
         return self._format(message, **kw)
-
 
 
 def get_language_msg(code):

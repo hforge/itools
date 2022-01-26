@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 # Copyright (C) 2010 J. David Ibáñez <jdavid.ibp@gmail.com>
 #
@@ -34,7 +33,7 @@ def run(command):
     else:
         command_str = ' '.join(command)
     # Print
-    print command_str
+    print(command_str)
     # Call
     return call(command)
 
@@ -84,9 +83,9 @@ def make_html():
     make_figures('png')
     # HTML
     command = sphinx.format(mode='html')
-    print run(command)
+    print(run(command))
     # Ok
-    print 'The HTML pages are in docs/_build/html'
+    print('The HTML pages are in docs/_build/html')
 
 
 def make_pdf():
@@ -94,11 +93,11 @@ def make_pdf():
     make_figures('eps')
     # Latex
     command = sphinx.format(mode='latex')
-    print run(command)
+    print(run(command))
     # PDF
     chdir('_build/latex')
-    print run('make all-pdf')
-    print 'The PDF is available in docs/_build/latex'
+    print(run('make all-pdf'))
+    print('The PDF is available in docs/_build/latex')
 
 
 def make_release():
@@ -109,7 +108,7 @@ def make_release():
     chdir('_build/html')
     call('zip -r %s.zip *' % pkgname, shell=True)
     call('mv %s.zip /tmp/' % pkgname, shell=True)
-    print 'The tarball is available in /tmp/%s.zip' % pkgname
+    print('The tarball is available in /tmp/%s.zip' % pkgname)
 
 
 if __name__ == '__main__':

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 # Copyright (C) 2006, 2010 Hervé Cauwelier <herve@oursours.net>
 # Copyright (C) 2006-2010 J. David Ibáñez <jdavid.ibp@gmail.com>

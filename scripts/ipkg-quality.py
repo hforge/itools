@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Copyright (C) 2007 David Versmisse <versmisse@lil.univ-littoral.fr>
 # Copyright (C) 2007-2009, 2011 J. David Ibáñez <jdavid.ibp@gmail.com>
@@ -237,10 +236,10 @@ def analyse_file_by_tokens(filename, ignore_errors):
             for plugin in plugins:
                 if plugin.analyse_token(token, value, srow, scol):
                     stats[plugin.key].append(srow)
-    except TokenError, e:
+    except TokenError as e:
         if ignore_errors is False:
             raise e
-        print e
+        print(e)
         return {'tokens': 0}
 
     return stats
@@ -273,10 +272,10 @@ def analyse_file_by_ast(filename, ignore_errors):
     """
     try:
         ast = parse(open(filename).read())
-    except (SyntaxError, IndentationError), e:
+    except (SyntaxError, IndentationError) as e:
         if ignore_errors is False:
             raise e
-        print e
+        print(e)
         return None
     visitor = Visitor()
     visitor.generic_visit(ast)
@@ -341,10 +340,10 @@ def analyse(filenames, ignore_errors=False):
 
 def print_list(title, string_list):
     if len(string_list) != 0:
-        print title
-        print '-'*len(title)
+        print(title)
+        print('-'*len(title))
         for line in string_list:
-            print line
+            print(line)
         print
 
 
@@ -363,11 +362,11 @@ def print_worses(db, worse, criteria):
         for f in db[:number]:
             if sort_key(f) != 0:
                 if first:
-                    print 'Worse files:'
+                    print('Worse files:')
                     first = False
-                print '- %s (%d)' % (f['filename'], sort_key(f))
+                print('- %s (%d)' % (f['filename'], sort_key(f)))
         if not first:
-            print
+            print()
 
 
 def show_lines(filenames):
@@ -376,7 +375,7 @@ def show_lines(filenames):
     # We get statistics
     stats, files_db = analyse(filenames)
     # We show lines
-    print
+    print()
     comments = []
     infos = files_db[0]
     for problem in problems.keys():
@@ -387,9 +386,9 @@ def show_lines(filenames):
                 comments.append('%s +%d' % (filenames[0], line))
             comments.append('\n')
     if comments:
-        print '\n'.join(comments)
+        print('\n'.join(comments))
     else:
-        print u'This file is perfect !'
+        print('This file is perfect !')
 
 
 def show_stats(filenames, worse):
@@ -398,10 +397,10 @@ def show_stats(filenames, worse):
     # We get statistics
     stats, files_db = analyse(filenames)
     # Show quality summary
-    print
-    print 'Code length: %d lines, %d tokens' % (stats['lines'],
-                                                stats['tokens'])
-    print
+    print()
+    print('Code length: %d lines, %d tokens' % (stats['lines'],
+                                                stats['tokens']))
+    print()
 
     # Aesthetics (and readibility)
     show_comments = []
@@ -524,9 +523,9 @@ if __name__ == '__main__':
     # (2) Fix
     elif options.fix is True:
         show_stats(filenames, options.worse)
-        print 'FIXING...'
+        print('FIXING...')
         fix(filenames)
-        print 'DONE'
+        print('DONE')
         show_stats(filenames, options.worse)
 
     # (3) Analyse

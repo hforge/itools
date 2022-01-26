@@ -24,7 +24,6 @@ from .registry import get_scheme
 cache = LRUCache(200)
 
 
-
 def get_reference(reference):
     """Returns a URI reference of the good type from the given string.
     """
@@ -45,12 +44,10 @@ def get_reference(reference):
     return parsed_reference
 
 
-
 def get_uri_name(uri):
     uri = get_reference(uri)
 
     return str(uri.path[-1])
-
 
 
 def get_uri_path(uri):
@@ -75,14 +72,12 @@ def resolve_uri(base, reference):
     return str(uri)
 
 
-
 def resolve_uri2(base, reference):
     base = get_reference(base)
     reference = get_reference(reference)
 
     uri = base.resolve2(reference)
     return str(uri)
-
 
 
 def resolve_name(base, name):

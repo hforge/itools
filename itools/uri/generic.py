@@ -121,7 +121,6 @@ def normalize_path(path):
     return ''
 
 
-
 class Path(list):
     """A path is a sequence of segments. A segment is has a name and,
     optionally one or more parameters.
@@ -132,7 +131,6 @@ class Path(list):
     """
 
     __slots__ = ['startswith_slash', 'endswith_slash']
-
 
     def __init__(self, path):
         if type(path) is str:
@@ -153,22 +151,18 @@ class Path(list):
 
         list.__init__(self, path)
 
-
     def __getslice__(self, a, b):
         slice = Path(list.__getslice__(self, a, b))
         slice.startswith_slash = self.startswith_slash
         return slice
 
-
     def __add__(self, path):
         raise NotImplementedError('paths can not be added, use resolve2 instead')
-
 
     ##########################################################################
     # API
     def __repr__(self):
         return "Path({path!r})".format(path=str(self))
-
 
     def __str__(self):
         path = '/' if self.startswith_slash else ''
@@ -179,13 +173,11 @@ class Path(list):
 
         return path if path else '.'
 
-
     def __ne__(self, other):
         if isinstance(other, str):
             other = Path(other)
 
         return str(self) != str(other)
-
 
     def __eq__(self, other):
         if isinstance(other, str):
@@ -193,24 +185,19 @@ class Path(list):
 
         return str(self) == str(other)
 
-
     def __hash__(self):
         return hash(str(self))
-
 
     def is_absolute(self):
         return self.startswith_slash
 
-
     def is_relative(self):
         return not self.startswith_slash
-
 
     def get_name(self):
         if len(self) > 0:
             return self[-1]
         return ''
-
 
     def resolve(self, path):
         """Resolve the path following the standard (RFC2396). This is to say,
@@ -233,7 +220,6 @@ class Path(list):
             return path
 
         return Path('%s/../%s' % (self_str, path))
-
 
     def resolve2(self, path):
         """This method provides an alternative to the standards resolution
@@ -266,7 +252,6 @@ class Path(list):
                 new_path.append(name)
         return new_path
 
-
     def resolve_name(self, name):
         """This is a particular case of the 'resolve2' method, where the
         reference is known to be a relative path of length = 1.
@@ -279,7 +264,6 @@ class Path(list):
         path.append(name)
         path.endswith_slash = False
         return path
-
 
     def get_prefix(self, path):
         """Returns the common prefix of two paths, for example:
@@ -297,7 +281,6 @@ class Path(list):
             i = i + 1
         return self[:i]
 
-
     def get_pathto(self, path):
         """Returns the relative path from 'self' to 'path'. This operation is
         the complement of 'resolve2'. So, if 'x = a.get_pathto(b)', then
@@ -310,12 +293,10 @@ class Path(list):
         i = len(prefix)
         return Path(((['..'] * len(self[i:])) + path[i:]) or [])
 
-
     def get_pathtoroot(self):
         """Returns the path from the tail to the head, for example: '../../..'
         """
         return Path('../' * (len(self) - 1))
-
 
 
 #########################################################################
@@ -371,7 +352,6 @@ def decode_query(data, schema=None):
     return query
 
 
-
 def encode_query(query, schema=None):
     """This method encodes a query as defined by the
     "application/x-www-form-urlencoded" content type (see
@@ -419,7 +399,6 @@ def encode_query(query, schema=None):
     return '&'.join(line)
 
 
-
 ##########################################################################
 # Generic references
 ##########################################################################
@@ -448,7 +427,6 @@ class Reference(object):
 
     __slots__ = ['scheme', 'authority', 'path', 'query', 'fragment']
 
-
     def __init__(self, scheme, authority, path, query, fragment=None):
         self.scheme = scheme
         self.authority = authority
@@ -460,7 +438,6 @@ class Reference(object):
 ##    @property
 ##    def netpath(self):
 ##        return NetPath('//%s/%s' % (self.authority, self.path))
-
 
     def __str__(self):
         path = str(self.path)
@@ -475,18 +452,14 @@ class Reference(object):
             return '.'
         return reference
 
-
     def __eq__(self, other):
         return str(self) == str(other)
-
 
     def __ne__(self, other):
         return str(self) != str(other)
 
-
     def __hash__(self):
         return hash(str(self))
-
 
     def resolve(self, reference):
         """Resolve the given relative URI, this URI (self) is considered to be
@@ -535,7 +508,6 @@ class Reference(object):
                          copy(reference.query),
                          reference.fragment)
 
-
     def resolve2(self, reference):
         """This is much like 'resolve', but uses 'Path.resolve2' method
         instead.
@@ -583,14 +555,12 @@ class Reference(object):
                          copy(reference.query),
                          reference.fragment)
 
-
     def resolve_name(self, name):
         """This is a particular case of the 'resolve2' method, where the
         reference is known to be a relative path of length = 1.
         """
         path = self.path.resolve_name(name)
         return Reference(self.scheme, self.authority, path, {})
-
 
     def replace(self, **kw):
         """This method returns a new uri reference, equal to this one, but
@@ -617,7 +587,6 @@ class Reference(object):
         # Ok
         return Reference(self.scheme, self.authority, self.path, query,
                          self.fragment)
-
 
 
 class EmptyReference(Reference):

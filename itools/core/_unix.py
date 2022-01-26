@@ -21,7 +21,6 @@ from resource import getrusage, RUSAGE_SELF
 from sys import exit, stdin, stdout, stderr
 
 
-
 def vmsize():
     """Returns the resident size in bytes.
     """
@@ -67,4 +66,3 @@ def become_daemon():
         dup2(file_desc, 2)
     else:
         exit()
-

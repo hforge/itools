@@ -54,7 +54,6 @@ And you can combine this ad-aeternam:
 """
 
 
-
 class prototype_type(type):
 
     def __new__(mcs, class_name, bases, dict):
@@ -114,16 +113,11 @@ class prototype_type(type):
                     elif type(value) is proto_lazy_property:
                         value.__name__ = name
 
-
         # Make and return the class
         return type.__new__(mcs, class_name, bases, dict)
 
 
-
-class prototype(object):
-
-    __metaclass__ = prototype_type
-
+class prototype(object, metaclass=prototype_type):
 
     def __new__(cls, *args, **kw):
         """
@@ -141,10 +135,8 @@ class prototype(object):
         # Ok
         return new_class
 
-
     def __init__(self, *args, **kw):
         pass
-
 
 
 class proto_property(lazy):
@@ -157,7 +149,6 @@ class proto_property(lazy):
             log.error("Error on proto property: {}".format(tb), exc_info=True)
             raise
         return value
-
 
 
 class proto_lazy_property(lazy):
@@ -175,7 +166,6 @@ class proto_lazy_property(lazy):
                     raise
                 setattr(owner, name, value)
                 return value
-
 
 
 def is_prototype(value, cls):

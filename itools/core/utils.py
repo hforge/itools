@@ -50,7 +50,6 @@ def get_abspath(local_path, mname=None):
     return mpath
 
 
-
 def get_version(mname=None):
     if mname is None:
         mname = _getframe(1).f_globals.get('__name__')
@@ -62,7 +61,6 @@ def get_version(mname=None):
     return None
 
 
-
 def merge_dicts(d, *args, **kw):
     """Merge two or more dictionaries into a new dictionary object.
     """
@@ -71,7 +69,6 @@ def merge_dicts(d, *args, **kw):
         new_d.update(dic)
     new_d.update(kw)
     return new_d
-
 
 
 def get_sizeof(obj):
@@ -91,7 +88,6 @@ def get_sizeof(obj):
                 todo[obj_id] = obj
 
     return size
-
 
 
 def get_pipe(command, cwd=None):

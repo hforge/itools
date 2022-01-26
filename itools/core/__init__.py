@@ -38,7 +38,6 @@ else:
     from ._unix import become_daemon, fork, get_time_spent, vmsize
 
 
-
 __all__ = [
     # Thingies are cool
     'prototype_type',

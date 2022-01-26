@@ -206,7 +206,7 @@ def read_file(context, uri, file):
 
                 # <define>
                 elif tag_name == 'define':
-                    name =  attrs[None, 'name']
+                    name = attrs[None, 'name']
 
                     # New or merge ?
                     if name in references and (None, 'combine') in attrs:
@@ -309,7 +309,8 @@ convert_type_data = {
     'gYear': String,
     'gMonthDay': String,
     'gDay': String,
-    'gMonth': String }
+    'gMonth': String}
+
 
 def convert_type(data):
     datatype = convert_type_data.get(data)
@@ -452,11 +453,11 @@ class RelaxNGFile(TextFile):
 
     def _load_state_from_file(self, file):
         # A new context
-        context = {'encoding' : 'utf-8',
-                   'current_ns' : None,
+        context = {'encoding': 'utf-8',
+                   'current_ns': None,
                    'elements': [],
                    'references': {},
-                   'prefix' : {}}
+                   'prefix': {}}
         context['prefix']['xml'] = xml_uri
 
         # Parse the file

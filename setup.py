@@ -88,10 +88,12 @@ def generate_mo_files(po_file_names):
 
 if __name__ == '__main__':
     itools_is_available = False
-    from itools.core import get_abspath
-    from itools.pkg.utils import setup as itools_setup
+    #from itools.core import get_abspath
+    #from itools.pkg.utils import setup as itools_setup
     try:
-
+        # TODO FIXME Try Except hide import errors with Python 3
+        from itools.core import get_abspath
+        from itools.pkg.utils import setup as itools_setup
         itools_is_available = True
         print('[OK] itools is available')
     except ImportError:

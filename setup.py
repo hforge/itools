@@ -17,9 +17,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import print_function
 
+from setuptools import setup
+
 # Import from the Standard Library
 from distutils.core import Extension
-from distutils.core import setup
 from os.path import join as join_path
 from pip._internal.req import parse_requirements
 from sys import stderr

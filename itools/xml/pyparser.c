@@ -729,10 +729,9 @@ static PyMethodDef module_methods[] = {
 #define PyMODINIT_FUNC void
 #endif
 
-static struct PyModuleDef Combinations =
-{
+static struct PyModuleDef moduledef = {
     PyModuleDef_HEAD_INIT,
-    "Combinations", /* name of module */
+    "parser", /* name of module */
     "usage: Combinations.uniqueCombinations(lstSortableItems, comboSize)\n", /* module documentation, may be NULL */
     -1,   /* size of per-interpreter state of the module, or -1 if the module keeps state in global variables. */
     module_methods
@@ -740,7 +739,7 @@ static struct PyModuleDef Combinations =
 
 /* Declaration */
 PyMODINIT_FUNC
-initparser (void)
+PyInit_parser(void)
 {
   /* TODO Make verifications / destructions ... */
   PyObject *module;
@@ -749,7 +748,7 @@ initparser (void)
   XMLParserType.tp_iter = PyObject_SelfIter;
 
   /* Register parser */
-  module = PyModule_Create(&Combinations);
+  module = PyModule_Create(&moduledef);
   if (module == NULL)
     return NULL;
 
@@ -781,5 +780,6 @@ initparser (void)
   PyModule_AddIntConstant (module, "COMMENT", COMMENT);
   PyModule_AddIntConstant (module, "PI", PI);
   PyModule_AddIntConstant (module, "CDATA", CDATA);
-  return 0;
+
+  return module;
 }

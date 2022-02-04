@@ -490,7 +490,7 @@ XMLParser_init (XMLParser * self, PyObject * args, PyObject * kwds)
   Parser *parser;
 
   PyObject *py_prefix, *py_uri;
-  char *prefix, *uri;
+  const char *prefix, *uri;
   Py_ssize_t pos = 0;
 
 

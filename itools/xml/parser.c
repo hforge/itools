@@ -57,7 +57,7 @@ struct _Parser
   gint source_type;
   union
   {
-    gchar *cursor;
+    const gchar *cursor;
     FILE *file;
   } source;
   gint source_row;
@@ -332,10 +332,10 @@ _parser_error (Parser * parser, ErrorEvent * event, gchar * msg)
 
 
 gchar *
-intern_string (gchar * str)
+intern_string (const gchar * str)
 {
   HStrTree *node;
-  gchar *cursor;
+  const gchar *cursor;
 
   node = intern_strings_tree;
 
@@ -401,7 +401,7 @@ parser_search_namespace (Parser * parser, gchar * prefix)
 
 
 void
-parser_push_namespace (Parser * parser, gchar * prefix, gchar * uri)
+parser_push_namespace (Parser * parser, gchar * prefix, const gchar * uri)
 {
   Namespace *namespace;
 
@@ -1310,7 +1310,7 @@ parser_read_BOM (Parser * parser)
  *************************************************************************/
 
 Parser *
-parser_new (gchar * data, FILE * file, DocType * doctype)
+parser_new (const gchar * data, FILE * file, DocType * doctype)
 {
   Parser *parser;
 
@@ -1409,7 +1409,7 @@ parser_free (Parser * parser)
 
 
 void
-parser_add_namespace (Parser * parser, gchar * prefix, gchar * uri)
+parser_add_namespace (Parser * parser, const gchar * prefix, const gchar * uri)
 {
   parser_push_namespace (parser, intern_string (prefix), uri);
 }

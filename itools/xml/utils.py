@@ -19,7 +19,7 @@
 from types import GeneratorType
 
 # Import from itools
-from parser import XMLParser, TEXT, XML_DECL
+from .parser import XMLParser, TEXT, XML_DECL
 
 
 

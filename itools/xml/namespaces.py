@@ -22,7 +22,7 @@ from warnings import warn
 # Import from itools
 from itools.core import proto_lazy_property, prototype
 from itools.datatypes import String
-from parser import XMLError
+from .parser import XMLError
 
 
 """

@@ -6,3 +6,4 @@ python-magic==0.4.24
 junitxml
 gevent==21.8.0
 cryptography==36.0.1
+pillow

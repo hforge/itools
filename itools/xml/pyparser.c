@@ -516,22 +516,19 @@ XMLParser_init (XMLParser * self, PyObject * args, PyObject * kwds)
       doctype = ((PyDocType *) py_doctype)->doctype;
     }
 
-  int fd = PyObject_AsFileDescriptor(source);
-
   /* Check the source */
   if (PyUnicode_CheckExact (source))
     {
       /* Create the parser object */
       parser = parser_new (PyUnicode_AsUTF8 (source), NULL, doctype);
     }
-  else if (fd != -1)
-    {
-      parser = parser_new (NULL, fdopen(fd, "w"), doctype);
-    }
   else
     {
-      PyErr_SetString (PyExc_TypeError, "argument 1 must be string or file");
-      return -1;
+      int fd = PyObject_AsFileDescriptor(source);
+      if (fd == -1)
+        return -1;
+
+      parser = parser_new (NULL, fdopen(fd, "w"), doctype);
     }
 
   /* End of the creation of the parser object */

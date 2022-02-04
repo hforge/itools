@@ -490,7 +490,7 @@ XMLParser_init (XMLParser * self, PyObject * args, PyObject * kwds)
   Parser *parser;
 
   PyObject *py_prefix, *py_uri;
-  char *prefix, *uri;
+  const char *prefix, *uri;
   Py_ssize_t pos = 0;
 
 
@@ -516,22 +516,19 @@ XMLParser_init (XMLParser * self, PyObject * args, PyObject * kwds)
       doctype = ((PyDocType *) py_doctype)->doctype;
     }
 
-  int fd = PyObject_AsFileDescriptor(source);
-
   /* Check the source */
   if (PyUnicode_CheckExact (source))
     {
       /* Create the parser object */
       parser = parser_new (PyUnicode_AsUTF8 (source), NULL, doctype);
     }
-  else if (fd != -1)
-    {
-      parser = parser_new (NULL, fdopen(fd, "w"), doctype);
-    }
   else
     {
-      PyErr_SetString (PyExc_TypeError, "argument 1 must be string or file");
-      return -1;
+      int fd = PyObject_AsFileDescriptor(source);
+      if (fd == -1)
+        return -1;
+
+      parser = parser_new (NULL, fdopen(fd, "w"), doctype);
     }
 
   /* End of the creation of the parser object */
@@ -732,10 +729,9 @@ static PyMethodDef module_methods[] = {
 #define PyMODINIT_FUNC void
 #endif
 
-static struct PyModuleDef Combinations =
-{
+static struct PyModuleDef moduledef = {
     PyModuleDef_HEAD_INIT,
-    "Combinations", /* name of module */
+    "parser", /* name of module */
     "usage: Combinations.uniqueCombinations(lstSortableItems, comboSize)\n", /* module documentation, may be NULL */
     -1,   /* size of per-interpreter state of the module, or -1 if the module keeps state in global variables. */
     module_methods
@@ -743,7 +739,7 @@ static struct PyModuleDef Combinations =
 
 /* Declaration */
 PyMODINIT_FUNC
-initparser (void)
+PyInit_parser(void)
 {
   /* TODO Make verifications / destructions ... */
   PyObject *module;
@@ -752,7 +748,7 @@ initparser (void)
   XMLParserType.tp_iter = PyObject_SelfIter;
 
   /* Register parser */
-  module = PyModule_Create(&Combinations);
+  module = PyModule_Create(&moduledef);
   if (module == NULL)
     return NULL;
 
@@ -784,5 +780,6 @@ initparser (void)
   PyModule_AddIntConstant (module, "COMMENT", COMMENT);
   PyModule_AddIntConstant (module, "PI", PI);
   PyModule_AddIntConstant (module, "CDATA", CDATA);
-  return 0;
+
+  return module;
 }

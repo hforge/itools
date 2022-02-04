@@ -67,9 +67,7 @@ class SRXFile(TextFile):
                         self.header['formathandle_'+type_value] = include
                     # languagerule
                     elif tag_name == 'languagerule':
-                        languagerulename = str(
-                                            attrs[None, 'languagerulename'],
-                                            encoding)
+                        languagerulename = attrs[None, 'languagerulename']
                         current_language =\
                             self.language_rules[languagerulename] = []
                     # rule
@@ -82,15 +80,13 @@ class SRXFile(TextFile):
                             current_break = break_value.lower() != 'no'
                     # languagemap
                     elif tag_name == 'languagemap':
-                        languagepattern = str(
-                            attrs[None, 'languagepattern'], encoding)
-                        languagerulename= str(
-                            attrs[None, 'languagerulename'], encoding)
+                        languagepattern = attrs[None, 'languagepattern']
+                        languagerulename= attrs[None, 'languagerulename']
                         self.map_rules.append((languagepattern,
                                               languagerulename))
                 current_text = ''
             elif type == TEXT:
-                current_text = str(value, encoding)
+                current_text = value
             elif type == END_ELEMENT:
                 tag_uri, tag_name = value
                 if tag_uri == srx_uri:

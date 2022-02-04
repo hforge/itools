@@ -159,14 +159,14 @@ typedef union
 /* if data != NULL source = data
  * else            source = file
  */
-Parser *parser_new (gchar * data, FILE * file, DocType * doctype);
+Parser *parser_new (const gchar * data, FILE * file, DocType * doctype);
 void parser_free (Parser * parser);
 
 
 /**********************************************
  * Add a prefix/namespace in namespaces table *
  **********************************************/
-void parser_add_namespace (Parser * parser, gchar * prefix, gchar * uri);
+void parser_add_namespace (Parser * parser, const gchar * prefix, const gchar * uri);
 
 
 /*********************

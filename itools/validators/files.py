@@ -81,7 +81,7 @@ class FileSizeValidator(BaseValidator):
 
     validator_id = 'file-size'
     max_size = 1024*1024*10
-    errors = {'too_big': MSG(u'Your file is too big. ({size})')}
+    errors = {'too_big': MSG('Your file is too big. ({size})')}
 
     def check(self, value):
         filename, mimetype, body = value
@@ -97,11 +97,11 @@ class FileSizeValidator(BaseValidator):
         # 1 Megabyte = 1048576 Bytes
         # 1 Gigabyte = 1073741824 Bytes
         if b < 1024:
-            return u'%.01f Bytes' % b
+            return '%.01f Bytes' % b
         elif b < 1048576:
-            return u'%.01f KB' % (b / 1024)
+            return '%.01f KB' % (b / 1024)
         elif b < 1073741824:
-            return u'%.01f MB' % (b / 1048576)
+            return '%.01f MB' % (b / 1048576)
         return u'%.01f GB' % (b / 1073741824)
 
 

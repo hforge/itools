@@ -23,6 +23,7 @@ from copy import deepcopy
 from io import StringIO, BytesIO
 from datetime import datetime
 
+
 # Import from itools.handlers
 from .base import Handler
 from .registry import register_handler_class
@@ -64,12 +65,16 @@ class File(Handler):
             try:
                 from itools.database.ro import ro_database
                 self.database = ro_database
-            except:
+            except Exception as e:
+                print(e)
                 if key:
                     log.warning('Cannot attach handler {0} to a database'.format(key))
-                    with open(key, 'r') as f:
-                        string = f.read()
+                    try:
+                        string = open(key, 'r').read()
+                    except UnicodeDecodeError:
+                        string = open(key, 'rb').read()
                     key = None
+
         if key is None:
             self.reset()
             self.dirty = datetime.now()
@@ -119,7 +124,12 @@ class File(Handler):
         self.loaded = True
 
     def load_state_from_string(self, string):
-        file = StringIO(string)
+        if isinstance(string, bytes):
+            file = BytesIO(string)
+        elif isinstance(string, str):
+            file = StringIO(string)
+        else:
+            raise Exception(f"String type error {type(string)}")
         self.load_state_from_file(file)
 
     def save_state(self):

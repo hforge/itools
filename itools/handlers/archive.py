@@ -21,7 +21,7 @@ from datetime import datetime
 from os.path import join
 from zipfile import ZipFile
 from tarfile import open as open_tarfile
-from io import StringIO
+from io import StringIO, BytesIO
 
 # Import from itools
 from .file import File
@@ -45,7 +45,13 @@ class ZIPFile(File):
     class_extension = 'zip'
 
     def _open_zipfile(self):
-        archive = StringIO(self.to_str())
+        data = self.to_str()
+        if isinstance(data, bytes):
+            archive = BytesIO(data)
+        elif isinstance(data, str):
+            archive = StringIO(data)
+        else:
+            raise Exception("Error Zipfile")
         return ZipFile(archive)
 
     def get_members(self):
@@ -70,6 +76,8 @@ class ZIPFile(File):
     def get_file(self, filename):
         zip = self._open_zipfile()
         try:
+            print(zip.infolist())
+            print(filename)
             return zip.read(filename)
         finally:
             zip.close()

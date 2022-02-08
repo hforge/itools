@@ -33,7 +33,7 @@ from .text import TextFile
 ###########################################################################
 # Lines Analyser (an automaton)
 ###########################################################################
-BLANK, COMMENT, VAR, VAR_START, VAR_CONT, VAR_END, EOF = range(7)
+BLANK, COMMENT, VAR, VAR_START, VAR_CONT, VAR_END, EOF = list(range(7))
 
 
 def get_lines(file):
@@ -297,6 +297,7 @@ class ConfigFile(TextFile):
     def to_str(self):
         lines = []
         for line in self.lines:
+
             if line is None:
                 # Blank line
                 lines.append('\n')

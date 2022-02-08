@@ -49,7 +49,7 @@ class TextFile(File):
     def _load_state_from_file(self, file):
         data = file.read()
         self.encoding = guess_encoding(data)
-        self.data = str(data, self.encoding)
+        self.data = data
 
 
     #########################################################################

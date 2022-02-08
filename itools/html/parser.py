@@ -313,7 +313,7 @@ class Parser(BaseParser, object):
                     message = 'missing attribute value for "%s"'
                     raise XMLError(message % attribute_name)
             elif type(attribute_value) is str:
-                attribute_value = attribute_value.encode(self.encoding)
+                attribute_value = attribute_value
             attributes[(None, attribute_name)] = attribute_value
 
         # Start element
@@ -408,7 +408,8 @@ def make_xml_compatible(stream):
 
 def HTMLParser(data):
     if type(data) is not str:
-        raise TypeError('expected a byte string, "%s" found' % type(data))
+        data = data.decode("utf-8")
+        #raise TypeError('expected a byte string, "%s" found' % type(data))
 
     try:
         stream = Parser().parse(data)

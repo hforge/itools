@@ -166,7 +166,9 @@ class TMXFile(TextFile):
             elif event == COMMENT:
                 pass
             elif event == TEXT:
-                text = str(value, 'UTF-8')
+                if isinstance(value, bytes):
+                    value = value.decode("utf-8")
+                text = value
 
         self.messages = messages
 
@@ -214,7 +216,7 @@ class TMXFile(TextFile):
         return languages
 
     def get_srclang(self):
-        return u'%s' % self.header['srclang']
+        return '%s' % self.header['srclang']
 
     def add_unit(self, filename, source, context, line):
         # XXX Context must be used!!

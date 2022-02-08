@@ -32,7 +32,7 @@ def get_format(source, accept):
         accept = get_accept()
 
     # Negotiate
-    available_languages = source.keys()
+    available_languages = list(source.keys())
     language = accept.select_language(available_languages)
     if language is None:
         language = 'en'
@@ -102,10 +102,10 @@ def moneyfmt(value, places=2, curr='', sep=',', dp='.', pos='',
     if sign:
         build(trailneg)
     for i in range(places):
-        build(next() if digits else u'0')
+        build(next() if digits else '0')
     build(dp)
     if not digits:
-        build(u'0')
+        build('0')
     i = 0
     while digits:
         build(next())

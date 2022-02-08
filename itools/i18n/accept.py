@@ -117,8 +117,7 @@ class AcceptLanguageType(object):
     def encode(accept):
         # Sort
         accept = [(y, x) for x, y in accept.items()]
-        accept.sort()
-        accept.reverse()
+        accept = sorted(accept, key=lambda x: x[0], reverse=True)
         # Encode
         data = []
         for quality, language in accept:

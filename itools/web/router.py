@@ -30,9 +30,9 @@ from itools.database import ReadonlyError
 from itools.uri import decode_query, Reference
 
 # Local imports
-from exceptions import ClientError, NotModified, Forbidden, NotFound
-from exceptions import Unauthorized, FormError, ServiceUnavailable
-from exceptions import MethodNotAllowed
+from .exceptions import ClientError, NotModified, Forbidden, NotFound
+from .exceptions import Unauthorized, FormError, ServiceUnavailable
+from .exceptions import MethodNotAllowed
 
 log = getLogger("itools.web")
 

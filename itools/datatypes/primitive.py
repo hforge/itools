@@ -69,12 +69,16 @@ class Unicode(DataType):
 
     @staticmethod
     def decode(value, encoding='UTF-8'):
-        return value.strip()
+        if isinstance(value, str):
+            return value.strip()
+        elif isinstance(value, bytes):
+            return value.decode(encoding).strip()
 
 
     @staticmethod
     def encode(value, encoding='UTF-8'):
         return value.strip()
+
 
     @staticmethod
     def is_empty(value):
@@ -273,6 +277,8 @@ class XMLContent(object):
 
     @staticmethod
     def encode(value):
+        if isinstance(value, bytes):
+            value = value.decode("utf-8")
         return value.replace('&', '&amp;').replace('<', '&lt;')
 
     @staticmethod
@@ -284,6 +290,8 @@ class XMLAttribute(object):
 
     @staticmethod
     def encode(value):
+        if isinstance(value, bytes):
+            value = value.decode("utf-8")
         value = value.replace('&', '&amp;').replace('<', '&lt;')
         return value.replace('"', '&quot;')
 

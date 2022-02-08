@@ -433,7 +433,7 @@ class MailtoTestCase(TestCase):
         """Compare two Mailto objects with same parameters."""
         ob = Mailto(self.address)
         copy = MailtoDataType.decode(self.uri)
-        self.assert_(type(ob) is type(copy))
+        self.assertTrue(type(ob) is type(copy))
         self.assertEqual(ob.username, copy.username)
         self.assertEqual(ob.host, copy.host)
         self.assertEqual(str(ob), str(copy))

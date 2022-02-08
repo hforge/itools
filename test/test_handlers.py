@@ -30,11 +30,11 @@ class StateTestCase(TestCase):
 
     def test_abort(self):
         handler = File('tests/hello.txt')
-        self.assertEqual(handler.data, u'hello world\n')
-        handler.set_data(u'bye world\n')
-        self.assertEqual(handler.data, u'bye world\n')
+        self.assertEqual(handler.data, 'hello world\n')
+        handler.set_data('bye world\n')
+        self.assertEqual(handler.data, 'bye world\n')
         handler.abort_changes()
-        self.assertEqual(handler.data, u'hello world\n')
+        self.assertEqual(handler.data, 'hello world\n')
 
 
 class ConfigFileTestCase(TestCase):
@@ -52,8 +52,8 @@ class ConfigFileTestCase(TestCase):
     def _init_test(self, value):
         # Init data
         if not lfs.exists(self.config_path):
-            lfs.make_file(self.config_path)
-
+            f = lfs.make_file(self.config_path)
+            f.close()
         # Write data
         config = ConfigFile(self.config_path)
         config.set_value("test", value)

@@ -37,14 +37,14 @@ class Test_ODT_File(TestCase):
 
     def test_get_msg(self):
         messages = [unit[0] for unit in self.doc.get_units()]
-        expected = [((TEXT, u'Hello '), (START_FORMAT, 1), (TEXT, u'world'),
-                     (END_FORMAT, 1), (TEXT, u' !')),
-                    ((TEXT, u'Hello world Document'),),
-                    ((TEXT, u"it's a very good document"),),
-                    ((TEXT, u'Itools test'),),
-                    ((TEXT, u'itools'),),
-                    ((TEXT, u'odt'),),
-                    ((TEXT, u'odf'),)]
+        expected = [((TEXT, 'Hello '), (START_FORMAT, 1), (TEXT, 'world'),
+                     (END_FORMAT, 1), (TEXT, ' !')),
+                    ((TEXT, 'Hello world Document'),),
+                    ((TEXT, "it's a very good document"),),
+                    ((TEXT, 'Itools test'),),
+                    ((TEXT, 'itools'),),
+                    ((TEXT, 'odt'),),
+                    ((TEXT, 'odf'),)]
 
         self.assertEqual(messages, expected)
 
@@ -62,29 +62,29 @@ class Test_ODT_File(TestCase):
         # Check if allright
         expected = [
             # content.xml
-            ((TEXT, u'Hello '), (START_FORMAT, 1), (TEXT, u'world'),
-             (END_FORMAT, 1), (TEXT, u' !')),
+            ((TEXT, 'Hello '), (START_FORMAT, 1), (TEXT, 'world'),
+             (END_FORMAT, 1), (TEXT, ' !')),
             # meta.xml
-            ((TEXT, u'Hello world Document'),),
-            ((TEXT, u"it's a very good document"),),
-            ((TEXT, u'Itools test'),),
-            ((TEXT, u'itools'),),
-            ((TEXT, u'odt'),),
-            ((TEXT, u'odf'),)]
+            ((TEXT, 'Hello world Document'),),
+            ((TEXT, "it's a very good document"),),
+            ((TEXT, 'Itools test'),),
+            ((TEXT, 'itools'),),
+            ((TEXT, 'odt'),),
+            ((TEXT, 'odf'),)]
 
         self.assertEqual(messages, expected)
 
 
     def test_meta(self):
-        expected_meta = {'initial-creator': u'sylvain',
-                         'description': u"it's a very good document",
-                         'keyword': u'itools\nodt\nodf',
-                         'creator': u'sylvain',
-                         'title': u'Hello world Document',
-                         'language': u'fr-FR',
-                         'creation-date': u'2007-06-01T11:25:20',
-                         'date': u'2007-06-03T21:26:04',
-                         'subject': u'Itools test'}
+        expected_meta = {'initial-creator': 'sylvain',
+                         'description': "it's a very good document",
+                         'keyword': 'itools\nodt\nodf',
+                         'creator': 'sylvain',
+                         'title': 'Hello world Document',
+                         'language': 'fr-FR',
+                         'creation-date': '2007-06-01T11:25:20',
+                         'date': '2007-06-03T21:26:04',
+                         'subject': 'Itools test'}
 
         meta = self.doc.get_meta()
         self.assertEqual(expected_meta, meta)
@@ -99,10 +99,10 @@ class Test_ODP_File(TestCase):
 
     def test_get_msg(self):
         messages = [unit[0] for unit in self.doc.get_units()]
-        expected = [((START_FORMAT, 1), (TEXT, u'Hello '), (END_FORMAT, 1),
-                     (START_FORMAT, 2), (TEXT, u'World'), (END_FORMAT, 2),
-                     (START_FORMAT, 3), (TEXT, u' !'), (END_FORMAT, 3)),
-                    ((TEXT, u'Welcome'),)]
+        expected = [((START_FORMAT, 1), (TEXT, 'Hello '), (END_FORMAT, 1),
+                     (START_FORMAT, 2), (TEXT, 'World'), (END_FORMAT, 2),
+                     (START_FORMAT, 3), (TEXT, ' !'), (END_FORMAT, 3)),
+                    ((TEXT, 'Welcome'),)]
 
         self.assertEqual(messages, expected)
 
@@ -115,30 +115,30 @@ class Test_ODS_File(TestCase):
 
     def test_get_msg(self):
         messages = [unit[0] for unit in self.doc.get_units()]
-        expected = [((TEXT, u'Chocolate'),),
-                    ((TEXT, u'Coffee'),),
-                    ((TEXT, u'Tea'),),
-                    ((TEXT, u'Price'),),
-                    ((TEXT, u'80'),),
-                    ((TEXT, u'20'),),
-                    ((TEXT, u'40'),),
-                    ((TEXT, u'Quantity'),),
-                    ((TEXT, u'20'),),
-                    ((TEXT, u'30'),),
-                    ((TEXT, u'20'),),
-                    ((TEXT, u'Quality'),),
-                    ((TEXT, u'0'),),
-                    ((TEXT, u'50'),),
-                    ((TEXT, u'40'),),
-                    ((TEXT, u'-'),),
-                    ((TEXT, u'-'),),
-                    ((TEXT, u'Page'),),
-                    ((TEXT, u'('),),
-                    ((TEXT, u'???'),),
-                    ((TEXT, u')'),),
-                    ((TEXT, u','),),
-                    ((TEXT, u'Page'),),
-                    ((TEXT, u'/'),)]
+        expected = [((TEXT, 'Chocolate'),),
+                    ((TEXT, 'Coffee'),),
+                    ((TEXT, 'Tea'),),
+                    ((TEXT, 'Price'),),
+                    ((TEXT, '80'),),
+                    ((TEXT, '20'),),
+                    ((TEXT, '40'),),
+                    ((TEXT, 'Quantity'),),
+                    ((TEXT, '20'),),
+                    ((TEXT, '30'),),
+                    ((TEXT, '20'),),
+                    ((TEXT, 'Quality'),),
+                    ((TEXT, '0'),),
+                    ((TEXT, '50'),),
+                    ((TEXT, '40'),),
+                    ((TEXT, '-'),),
+                    ((TEXT, '-'),),
+                    ((TEXT, 'Page'),),
+                    ((TEXT, '('),),
+                    ((TEXT, '???'),),
+                    ((TEXT, ')'),),
+                    ((TEXT, ','),),
+                    ((TEXT, 'Page'),),
+                    ((TEXT, '/'),)]
 
         self.assertEqual(messages, expected)
 
@@ -232,12 +232,12 @@ class Test_ODT_Parser(TestCase):
         content = odt_template % content
         messages = XMLParser(content)
         messages = [unit[0] for unit in get_units(messages)]
-        expected= [((TEXT, u'A'),),
-                   ((TEXT, u'B'),),
-                   ((TEXT, u'C'),),
-                   ((TEXT, u'D'),),
-                   ((TEXT, u'E'),),
-                   ((TEXT, u'F'),)]
+        expected= [((TEXT, 'A'),),
+                   ((TEXT, 'B'),),
+                   ((TEXT, 'C'),),
+                   ((TEXT, 'D'),),
+                   ((TEXT, 'E'),),
+                   ((TEXT, 'F'),)]
 
         self.assertEqual(messages, expected)
 
@@ -258,7 +258,7 @@ class Test_ODT_Parser(TestCase):
         messages = XMLParser(content)
         messages = translate(messages, po)
         messages = [unit[0] for unit in get_units(messages)]
-        self.assertEqual(messages, [((TEXT, u'hola mundo'),)])
+        self.assertEqual(messages, [((TEXT, 'hola mundo'),)])
 
 
 if __name__ == '__main__':

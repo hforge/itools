@@ -23,17 +23,14 @@ from itools.validators import validator
 
 class ValidatorsTestCase(TestCase):
 
-
     def test_hexadecimal(self):
         v = validator('hexadecimal')
         self.assertEqual(True, v.is_valid('#000000'))
-
 
     def test_equals(self):
         v = validator('equals-to', base_value=2)
         self.assertEqual(True, v.is_valid(2))
         self.assertEqual(False, v.is_valid(3))
-
 
     def test_integer_positive(self):
         v = validator('integer-positive')
@@ -41,13 +38,11 @@ class ValidatorsTestCase(TestCase):
         self.assertEqual(True, v.is_valid(2))
         self.assertEqual(False, v.is_valid(-1))
 
-
     def test_integer_positive_not_null(self):
         v = validator('integer-positive-not-null')
         self.assertEqual(True, v.is_valid(2))
         self.assertEqual(False, v.is_valid(-1))
         self.assertEqual(False, v.is_valid(0))
-
 
     def test_image_mimetypes(self):
         v = validator('image-mimetypes')

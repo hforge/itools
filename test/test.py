@@ -74,7 +74,7 @@ if __name__ == '__main__':
     elif options.mode == 'junitxml':
         path = get_abspath('./junit.xml')
         print('Result is here: %s' % path)
-        f = file(path, 'wb')
+        f = open(path, 'wb')
         result = JUnitXmlResult(f)
         result.startTestRun()
         ret = suite.run(result)

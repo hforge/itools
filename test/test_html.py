@@ -99,7 +99,7 @@ class i18nTestCase(TestCase):
         doc = HTMLFile(string='<p>hello world</p>')
 
         messages = [unit[0] for unit in doc.get_units()]
-        self.assertEqual(messages, [((TEXT, u'hello world'),)])
+        self.assertEqual(messages, [((TEXT, 'hello world'),)])
 
 
     def test_case2(self):
@@ -107,7 +107,7 @@ class i18nTestCase(TestCase):
         doc = HTMLFile(string='<img alt="The beach" src="beach.jpg">')
 
         messages = [unit[0] for unit in doc.get_units()]
-        self.assertEqual(messages, [((TEXT, u'The beach'),)])
+        self.assertEqual(messages, [((TEXT, 'The beach'),)])
 
 
     def test_case3(self):
@@ -119,7 +119,7 @@ class i18nTestCase(TestCase):
             '</html>')
 
         messages = [unit[0] for unit in doc.get_units()]
-        self.assertEqual(messages, [((TEXT, u'Change'),)])
+        self.assertEqual(messages, [((TEXT, 'Change'),)])
 
 
     def test_case4(self):
@@ -145,9 +145,8 @@ class i18nTestCase(TestCase):
 
         string = doc.translate(po)
         output = HTMLFile(string=string)
-
         expected = HTMLFile(string='<img alt="La playa" src="beach.jpg">')
-        self.assertEqual(output, expected)
+        self.assertEqual(output.to_str(), expected.to_str())
 
 
     def test_case6(self):
@@ -160,7 +159,6 @@ class i18nTestCase(TestCase):
             'msgctxt "button"\n'
             'msgid "Change"\n'
             'msgstr "Cambiar"')
-
         output = HTMLFile(string=doc.translate(p))
 
         expected = HTMLFile(string=

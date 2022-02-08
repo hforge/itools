@@ -105,23 +105,23 @@ def property_to_string(prop_name, prop):
     prop_value = prop.value
     if type(prop.value) is datetime:
         params = prop.parameters
-        if params:# and prop.parameters.has_key('VALUE'):
-            t = params['VALUE'][0] if params.has_key('VALUE') else None
+        if params:
+            t = params['VALUE'][0] if 'VALUE' in params else None
         else:
             t = None
         prop_value = DateTime.encode(prop.value, type=t)
     # Simple case
     if not prop.parameters:
-        return u'%s:%s' % (prop_name, prop_value)
+        return '%s:%s' % (prop_name, prop_value)
 
     # Params
     params = ''
     for p_name in prop.parameters:
         p_value = prop.parameters[p_name]
-        p_value = [ encode_param_value(p_name, x, String) for x in p_value ]
+        p_value = [encode_param_value(p_name, x, String) for x in p_value]
         param = ';%s=%s' % (p_name, ','.join(p_value))
         params = params + param
-    return u'%s%s:%s' % (prop_name, params, prop_value)
+    return '%s%s:%s' % (prop_name, params, prop_value)
 
 
 
@@ -240,11 +240,10 @@ class icalTestCase(TestCase):
             value = property_value.value
             property = '%s;%s:%s' % (name, params, value)
             properties.append(property)
-
         expected_properties = [
             u'VERSION;None:2.0',
             u'METHOD;None:PUBLISH',
-            u'PRODID;None:-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN' ]
+            u'PRODID;None:-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN']
         self.assertEqual(properties, expected_properties)
 
         # Test component properties
@@ -308,9 +307,9 @@ class icalTestCase(TestCase):
 
         # Test properties
         expected_properties = [
-            u'VERSION;None:2.0',
-            u'METHOD;None:PUBLISH',
-            u'PRODID;None:-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN' ]
+            'VERSION;None:2.0',
+            'METHOD;None:PUBLISH',
+            'PRODID;None:-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN' ]
         self.assertEqual(properties, expected_properties)
 
         events = []

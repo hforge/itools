@@ -166,7 +166,6 @@ class LocalFileTestCase(TestCase):
         for x in lfs.traverse('.'):
             self.assertEqual(lfs.exists(x), True)
 
-
     def test_append(self):
         # Initialize
         file = lfs.make_file('tests/toto.txt')

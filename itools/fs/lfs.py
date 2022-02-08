@@ -22,17 +22,19 @@
 from datetime import datetime
 from os import listdir, makedirs, remove as os_remove, renames, walk
 from os import access, R_OK, W_OK
-from os.path import exists, getatime, getctime, getmtime ,getsize
+from os.path import exists, getatime, getctime, getmtime, getsize
 from os.path import isfile, isdir, join, basename, dirname
 from os.path import abspath, relpath
 from shutil import rmtree, copytree, copy as shutil_copy
+import mimetypes
+
 
 # Import from itools
 from itools.uri import Path
 from .common import WRITE, READ_WRITE, APPEND, READ, get_mimetype
 
 
-MODES = {WRITE: 'w', READ_WRITE: 'r+w', APPEND: 'a', READ: 'r'}
+MODES = {WRITE: 'w+', READ_WRITE: 'w+', APPEND: 'a+', READ: 'rb'}
 
 
 class LocalFolder(object):
@@ -44,9 +46,11 @@ class LocalFolder(object):
             raise IOError("Is a directory: '%s'" % path)
         self.path = Path(abspath(path))
 
+
     def _resolve_path(self, path):
         path = self.path.resolve2(path)
         return str(path)
+
 
     #######################################################################
     # Public API
@@ -55,17 +59,21 @@ class LocalFolder(object):
         path = self._resolve_path(path)
         return exists(path)
 
+
     def is_file(self, path):
         path = self._resolve_path(path)
         return isfile(path)
+
 
     def is_folder(self, path):
         path = self._resolve_path(path)
         return isdir(path)
 
+
     def can_read(self, path):
         path = self._resolve_path(path)
         return access(path, R_OK)
+
 
     def can_write(self, path):
         path = self._resolve_path(path)
@@ -90,15 +98,18 @@ class LocalFolder(object):
         ctime = getctime(path)
         return datetime.fromtimestamp(ctime)
 
+
     def get_mtime(self, path):
         path = self._resolve_path(path)
         mtime = getmtime(path)
         return datetime.fromtimestamp(mtime)
 
+
     def get_atime(self, path):
         path = self._resolve_path(path)
         atime = getatime(path)
         return datetime.fromtimestamp(atime)
+
 
     def get_mimetype(self, path):
         path = self._resolve_path(path)
@@ -107,6 +118,7 @@ class LocalFolder(object):
             return 'application/x-not-regular-file'
         name = basename(path)
         return get_mimetype(name)
+
 
     def get_size(self, path):
         path = self._resolve_path(path)
@@ -117,15 +129,26 @@ class LocalFolder(object):
         if isdir(path):
             return self.__class__(path)
         mode = MODES.get(mode, 'r')
+        try:
+            open(path, mode).read()
+        except UnicodeDecodeError:
+            return open(path, "rb")
         return open(path, mode)
 
     def remove(self, path):
         path = self._resolve_path(path)
+        print(path)
         if isdir(path):
             # Remove folder contents
             rmtree(path)
         else:
-            os_remove(path)
+            try:
+                os_remove(path)
+                print("% s removed successfully" % path)
+            except OSError as error:
+                print(error)
+                print("File path can not be removed")
+
 
     def copy(self, source, target):
         source = self._resolve_path(source)
@@ -139,10 +162,12 @@ class LocalFolder(object):
             # Will overwrite target file
             shutil_copy(source, target)
 
+
     def move(self, source, target):
         source = self._resolve_path(source)
         target = self._resolve_path(target)
         return renames(source, target)
+
 
     def get_names(self, path='.'):
         path = self._resolve_path(path)
@@ -153,6 +178,7 @@ class LocalFolder(object):
             if e.errno == 2 or e.errno == 20:
                 return []
             raise
+
 
     def traverse(self, path='.'):
         path = self._resolve_path(path)
@@ -166,13 +192,16 @@ class LocalFolder(object):
                 for name in files:
                     yield join(root, name)
 
+
     def get_absolute_path(self, path='.'):
         path = self._resolve_path(path)
         return abspath(path)
 
+
     def get_relative_path(self, path):
         path = self._resolve_path(path)
         return relpath(path, start=str(self.path))
+
 
     #######################################################################
     # Used by itools.handlers
@@ -183,11 +212,13 @@ class LocalFolder(object):
             path = Path(path)
         return path.get_name()
 
+
     @staticmethod
     def get_path(path):
         if type(path) is not Path:
             path = Path(path)
         return str(path)
+
 
     @staticmethod
     def resolve(base, path):
@@ -196,12 +227,14 @@ class LocalFolder(object):
         path = base.resolve(path)
         return str(path)
 
+
     @staticmethod
     def resolve2(base, path):
         if type(base) is not Path:
             base = Path(base)
         path = base.resolve2(path)
         return str(path)
+
 
     # Resolution method for handler database keys
     normalize_key = get_absolute_path

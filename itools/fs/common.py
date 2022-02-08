@@ -24,8 +24,8 @@ from itools.i18n import has_language
 
 READ = 'r'
 WRITE = 'w'
-READ_WRITE = 'rw'
-APPEND = 'a'
+READ_WRITE = 'w+'
+APPEND = 'a+'
 
 
 class FileName(DataType):

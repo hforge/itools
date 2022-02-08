@@ -140,6 +140,8 @@ class Path(list):
         elif type(path) is Path:
             self.startswith_slash = path.startswith_slash
             self.endswith_slash = path.endswith_slash
+
+
         else:
             # XXX Here the path is not normalized:
             #
@@ -147,12 +149,12 @@ class Path(list):
             #   a/../b
             self.startswith_slash = False
             self.endswith_slash = False
-            path = [ str(x) for x in path ]
+            path = [str(x) for x in path]
 
         list.__init__(self, path)
 
-    def __getslice__(self, a, b):
-        slice = Path(list.__getslice__(self, a, b))
+    def __getitem__(self, val):
+        slice = Path(list.__getitem__(self, val))
         slice.startswith_slash = self.startswith_slash
         return slice
 
@@ -275,10 +277,10 @@ class Path(list):
         """
         if type(path) is not Path:
             path = Path(path)
-
         i = 0
         while i < len(self) and i < len(path) and self[i] == path[i]:
             i = i + 1
+
         return self[:i]
 
     def get_pathto(self, path):

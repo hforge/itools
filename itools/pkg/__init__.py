@@ -36,7 +36,7 @@ __all__ = [
 
 # Git: optional
 try:
-    from git import open_worktree
+    from .git import open_worktree
     __all__.append('open_worktree')
 except ImportError:
     pass

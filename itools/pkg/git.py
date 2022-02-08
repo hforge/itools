@@ -59,7 +59,7 @@ class Worktree(object):
         stdoutdata, stderrdata = popen.communicate()
         if popen.returncode != 0:
             raise EnvironmentError((popen.returncode, stderrdata))
-        return stdoutdata
+        return stdoutdata.decode("utf-8")
 
 
     def _resolve_reference(self, reference):
@@ -125,6 +125,7 @@ class Worktree(object):
             return None
 
         # Parse
+        print(data)
         tag, n, commit = data.rsplit('-', 2)
         return tag, int(n), commit
 

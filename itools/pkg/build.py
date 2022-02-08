@@ -32,8 +32,8 @@ from itools.gettext import POFile
 from itools.html import XHTMLFile, HTMLFile
 from itools.xmlfile.errors import TranslationError
 # Import from here
-from build_gulp import GulpBuilder
-from git import open_worktree
+from .build_gulp import GulpBuilder
+from .git import open_worktree
 
 
 def get_manifest():

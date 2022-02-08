@@ -411,7 +411,7 @@ def _property_to_str(name, property, datatype, p_schema, encoding='utf-8'):
     # Parameters
     if property.parameters:
         p_names = property.parameters.keys()
-        sorted(list(p_names))
+        p_names = sorted(list(p_names))
     else:
         p_names = []
 
@@ -625,7 +625,7 @@ class Table(File):
     def _record_to_str(self, id, record):
         lines = ['id:%d/0\n' % id]
         names = record.keys()
-        sorted(list(names))
+        names = sorted(list(names))
         # Table or record schema
         if id == -1:
             get_datatype = self.get_datatype

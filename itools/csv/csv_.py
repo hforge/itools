@@ -85,7 +85,7 @@ class CSVFile(TextFile):
 
         # Header
         if self.has_header:
-            self.header = parser.next()
+            self.header = next(parser)
 
         # Content
         for line in parser:

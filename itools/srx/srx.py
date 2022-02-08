@@ -43,11 +43,14 @@ class SRXFile(TextFile):
         self.map_rules = []
 
         srx_uri = 'http://www.lisa.org/srx20'
+        data_file = file.read()
+        if isinstance(data_file, bytes):
+            data_file = data_file.decode("utf-8")
 
-        for type, value, line in XMLParser(file.read()):
-            if type == XML_DECL:
+        for xml_type, value, line in XMLParser(data_file):
+            if xml_type == XML_DECL:
                 encoding = value[1]
-            elif type == START_ELEMENT:
+            elif xml_type == START_ELEMENT:
                 tag_uri, tag_name, attrs = value
                 if tag_uri == srx_uri:
                     # header
@@ -85,9 +88,9 @@ class SRXFile(TextFile):
                         self.map_rules.append((languagepattern,
                                               languagerulename))
                 current_text = ''
-            elif type == TEXT:
+            elif xml_type == TEXT:
                 current_text = value
-            elif type == END_ELEMENT:
+            elif xml_type == END_ELEMENT:
                 tag_uri, tag_name = value
                 if tag_uri == srx_uri:
                     # beforebreak
@@ -116,7 +119,7 @@ class SRXFile(TextFile):
         return result
 
     def get_languages(self):
-        return self.language_rules.keys()
+        return list(self.language_rules.keys())
 
     def get_rules(self, language):
         language_rules = self.language_rules

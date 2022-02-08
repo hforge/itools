@@ -21,7 +21,7 @@ from itools.core import get_abspath
 from .srx import SRXFile
 
 # Constants
-TEXT, START_FORMAT, END_FORMAT = range(3)
+TEXT, START_FORMAT, END_FORMAT = list(range(3))
 
 
 SPACE = ' \t\r\n'
@@ -179,12 +179,12 @@ default_srx_handler = get_abspath('srx/default.srx', 'itools')
 default_srx_handler = SRXFile(default_srx_handler)
 def _split_message(message, srx_handler=None):
     # Concatenation!
+
     concat_text = []
     for type, value, line in message:
         if type == TEXT:
             concat_text.append(value[0])
     concat_text = ''.join(concat_text)
-
     # Get the rules
     if srx_handler is None:
         srx_handler = default_srx_handler
@@ -202,12 +202,14 @@ def _split_message(message, srx_handler=None):
             if not break_value and pos not in breaks:
                 no_breaks.add(pos)
     breaks = list(breaks)
-    breaks.sort()
+    breaks = sorted(breaks)
+
 
     # And now cut the message
     forbidden_break_level = 0
     current_message = Message()
     current_length = 0
+
     for type, value, line in message:
         if type == TEXT:
             text, context = value
@@ -283,9 +285,7 @@ def _translate_message(message, catalog):
 def get_segments(message, keep_spaces=False, srx_handler=None):
     for sub_message in _split_message(message, srx_handler):
         left, center, right = _clean_message(sub_message, keep_spaces)
-
         todo = left+right
-
         if center != sub_message:
             for value, context, line in get_segments(center, keep_spaces,
                                                      srx_handler):

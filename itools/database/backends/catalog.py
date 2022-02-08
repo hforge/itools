@@ -76,8 +76,8 @@ TRANSLATE_MAP = { ord('À'): ord('A'),
                   ord('ô'): ord('o'),
                   ord('û'): ord('u'),
                   ord('ù'): ord('u'),
-                  ord('ü'): ord(u'u'),
-                  ord("'"): ord(' ') }
+                  ord('ü'): ord('u'),
+                  ord("'"): ord(' ')}
 
 MSG_NOT_INDEXED = 'the "{name}" field is not indexed'
 def warn_not_indexed(name):
@@ -342,14 +342,14 @@ class Catalog(object):
                 metadata[name] = self._get_info(field_cls, name)
             else:
                 # If the field was in the catalog but is newly stored
-                if not metadata[name].has_key('value') and getattr(field_cls, 'stored', False):
+                if 'value 'not in metadata[name] and getattr(field_cls, 'stored', False):
                     log.debug("[Catalog] Indexed field is now stored: {0}".format(name))
                     has_changes = True
                     metadata[name] = merge_dicts(
                         metadata[name],
                         self._get_info_stored())
                 # If the field was stored in the catalog but is newly indexed
-                if not metadata[name].has_key('prefix') and getattr(field_cls, 'indexed', False):
+                if 'prefix' not in metadata[name] and getattr(field_cls, 'indexed', False):
                     log.debug("[Catalog] Stored field is now indexed: {0}".format(name))
                     has_changes = True
                     metadata[name] = merge_dicts(

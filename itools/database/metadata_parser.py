@@ -393,8 +393,8 @@ def _property_to_str(name, property, datatype, p_schema, encoding='utf-8'):
     """
     # Parameters
     if property.parameters:
-        p_names = property.parameters.keys()
-        p_names.sort()
+        p_names = list(property.parameters.keys())
+        p_names = sorted(p_names)
     else:
         p_names = []
 

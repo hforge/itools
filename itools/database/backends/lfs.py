@@ -16,6 +16,7 @@
 
 # Import from the Standard Library
 from os.path import abspath, dirname
+import mimetypes
 
 # Import from itools
 from itools.fs import lfs
@@ -48,8 +49,10 @@ class LFSBackend(object):
     def get_handler_data(self, key):
         if not key:
             return None
-        with self.fs.open(key) as f:
-            return f.read()
+        f = self.fs.open(key)
+        if isinstance(f, str):
+            return f
+        return f.read()
 
     def get_handler_mimetype(self, key):
         return self.fs.get_mimetype(key)
@@ -71,7 +74,7 @@ class LFSBackend(object):
                 f.write(data)
                 f.truncate(f.tell())
         else:
-            with self.fs.open(key, 'w') as f:
+            with self.fs.open(key, 'w+') as f:
                 f.write(data)
                 f.truncate(f.tell())
 

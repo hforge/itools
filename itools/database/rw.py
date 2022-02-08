@@ -399,7 +399,7 @@ class RWDatabase(RODatabase):
         for key in self.added:
             self._discard_handler(key)
         for key in self.changed:
-            if cache.has_key(key):
+            if key in cache:
                 # FIXME
                 # We check cache since an handler
                 # can be added & changed at one

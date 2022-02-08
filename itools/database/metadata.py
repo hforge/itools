@@ -81,7 +81,7 @@ class Metadata(File):
         parser = parse_table(data)
 
         # Read the format & version
-        name, value, parameters = parser.next()
+        name, value, parameters = next(parser)
         if name != 'format':
             raise ValueError('unexpected "%s" property' % name)
         if 'version' in parameters:
@@ -177,8 +177,8 @@ class Metadata(File):
             is_empty = datatype.is_empty
             p_type = type(property)
             if p_type is dict:
-                languages = property.keys()
-                languages.sort()
+                languages = list(property.keys())
+                languages = sorted(languages)
                 lines += [
                     property_to_str(name, property[x], datatype, params_schema)
                     for x in languages if not is_empty(property[x].value) ]

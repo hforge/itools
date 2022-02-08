@@ -76,6 +76,9 @@ re_str = compile(r'^"(.*[^\\])"$')
 
 
 def get_lines(data):
+    if isinstance(data, bytes):
+        data = data.decode("utf-8")
+
     lines = data.split('\n') + ['']
     line_number = 0
     while line_number <= len(lines):
@@ -262,7 +265,7 @@ class POUnit(object):
         s = []
         # The comments
         for comment in self.comments:
-            s.append('#%s\n' % comment.encode(encoding))
+            s.append('#%s\n' % comment)
         # The reference comments
         i = 1
         references = self.references.items()
@@ -272,25 +275,23 @@ class POUnit(object):
                 comma = '' if i == nb_references else ','
                 line = '#: %s:%s%s\n' % (filename, line, comma)
                 s.append(line)
-                i+=1
+                i += 1
         # The Fuzzy flag
         if self.fuzzy:
             s.append('#, fuzzy\n')
         # The msgctxt
         if self.context is not None:
-            s.append('msgctxt "%s"\n' % escape(self.context[0].encode(
-                                               encoding)))
+            s.append('msgctxt "%s"\n' % escape(self.context[0]))
             for string in self.context[1:]:
-                s.append('"%s"\n' % escape(string.encode(encoding)))
+                s.append('"%s"\n' % escape(string))
         # The msgid
-        s.append('msgid "%s"\n' % escape(self.source[0].encode(encoding)))
+        s.append('msgid "%s"\n' % escape(self.source[0]))
         for string in self.source[1:]:
-            s.append('"%s"\n' % escape(string.encode(encoding)))
+            s.append('"%s"\n' % escape(string))
         # The msgstr
-        s.append('msgstr "%s"\n' % escape(self.target[0].encode(encoding)))
+        s.append('msgstr "%s"\n' % escape(self.target[0]))
         for string in self.target[1:]:
-            s.append('"%s"\n' % escape(string.encode(encoding)))
-
+            s.append('"%s"\n' % escape(string))
         return ''.join(s)
 
     def __repr__(self):
@@ -496,7 +497,6 @@ class POFile(TextFile):
 
         # Split the data by lines and intialize the line index
         data = file.read()
-
         # Add entries
         for entry in self.next_entry(data):
             comments, references, context, source, target, fuzzy, line_number = entry
@@ -512,13 +512,13 @@ class POFile(TextFile):
                 raise POError('msgid at line %d is duplicated' % line_number)
 
             # Get the comments and the msgstr in unicode
-            comments = [str(x, self.encoding) for x in comments]
-
-            if context is not None:
-                context = [str(x, self.encoding) for x in context]
-            source = [str(x, self.encoding) for x in source]
-            target = [str(x, self.encoding) for x in target]
-
+            # No need to encoding Python 3
+            # comments = [str(x, self.encoding) for x in comments]
+            #
+            # if context is not None:
+            #     context = [str(x, self.encoding) for x in context]
+            # source = [str(x, self.encoding) for x in source]
+            # target = [str(x, self.encoding) for x in target]
             # Add the message
             self._set_message(context, source, target, comments, references, fuzzy)
 
@@ -572,12 +572,12 @@ class POFile(TextFile):
     def get_msgids(self):
         """Returns all the (context, msgid).
         """
-        return self.messages.keys()
+        return list(self.messages.keys())
 
     def get_units(self):
         """Returns all the message (objects of the class <POUnit>).
         """
-        return self.messages.values()
+        return list(self.messages.values())
 
     def get_msgstr(self, source, context=None):
         """Returns the 'msgstr' for the given (context, msgid).

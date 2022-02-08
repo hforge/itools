@@ -68,7 +68,7 @@ class Domain(dict):
         return handler.gettext(message)
 
     def get_languages(self):
-        return self.keys()
+        return list(self.keys())
 
 
 class MSGFormatter(Formatter):

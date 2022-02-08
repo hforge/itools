@@ -107,7 +107,7 @@ class prototype_type(type):
                     del dict[source_name]
                     # Fix the name
                     if type(value) is classmethod:
-                        value.__get__(None, dict).im_func.__name__ = name
+                        value.__get__(None, dict).__func__.__name__ = name
                     elif type(value) is proto_property:
                         value.__name__ = name
                     elif type(value) is proto_lazy_property:
@@ -157,7 +157,7 @@ class proto_lazy_property(lazy):
         name = self.__name__
         for cls in owner.__mro__:
             if name in cls.__dict__:
-                name = self.meth.func_name
+                name = self.meth.__name__
                 try:
                     value = self.meth(owner)
                 except Exception as e:

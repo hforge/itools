@@ -27,7 +27,7 @@ class lazy(object):
     def __get__(self, instance, owner):
         if instance is None:
             return self
-        name = self.meth.func_name
+        name = self.meth.__name__
         value = self.meth(instance)
         instance.__dict__[name] = value
         return value

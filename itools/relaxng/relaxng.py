@@ -67,12 +67,12 @@ def read_name_class(context, event, stream):
             # <name> ... </name>
             if tag_name == 'name':
                 # Read the content
-                type, value, line = stream.next()
+                type, value, line = next(stream)
                 if type != TEXT:
                     raise ValueError('your relax NG file is malformed')
                 name = value
                 # Read "</name>"
-                type, value, line = stream.next()
+                type, value, line = next(stream)
                 if (type != END_ELEMENT or value[0] != rng_uri or
                     value[1] != 'name'):
                     raise ValueError('your relax NG file is malformed')
@@ -112,7 +112,7 @@ def read_name_class(context, event, stream):
             else:
                 raise ValueError('your relax NG file is malformed')
         else:
-            event = stream.next()
+            event = next(stream)
 
 
 def read_qnames(attrs, context, stream):
@@ -128,7 +128,7 @@ def read_qnames(attrs, context, stream):
             return [(uri, name)]
     # In the next events, ...
     else:
-        return read_name_class(context, stream.next(), stream)
+        return read_name_class(context, next(stream), stream)
 
 
 def read_file(context, uri, file):
@@ -139,16 +139,19 @@ def read_file(context, uri, file):
     references = context['references']
 
     # XML stream
-    stream = XMLParser(file.read())
-
+    data_file = file.read()
+    if isinstance(data_file, bytes):
+        data_file = data_file.decode("utf-8")
+    stream = XMLParser(data_file)
     # Parse !
     stack = []
-    for type, value, line in stream:
+    for xml_type, value, line in stream:
+
         # Set the good encoding
-        if type == XML_DECL:
+        if xml_type == XML_DECL:
             context['encoding'] = value[1]
 
-        elif type == START_ELEMENT:
+        elif xml_type == START_ELEMENT:
             tag_uri, tag_name, attrs = value
 
             # Set your context variable
@@ -189,13 +192,13 @@ def read_file(context, uri, file):
 
                 # <data>
                 elif tag_name == 'data':
-                    type = attrs[None, 'type']
+                    xml_type = attrs[None, 'type']
 
                     last = stack[-1]
                     if last['data'] is not None:
                         last['data'] = ''
                     else:
-                        last['data'] = type
+                        last['data'] = xml_type
 
                 # <ref>
                 elif tag_name == 'ref':
@@ -251,7 +254,7 @@ def read_file(context, uri, file):
                 else:
                     raise NotImplementedError(('relax NG: <%s> not '
                                                'implemented') % tag_name)
-        elif type == END_ELEMENT:
+        elif xml_type == END_ELEMENT:
             tag_uri, tag_name = value
             if (tag_uri == rng_uri and
                 tag_name in ['element', 'attribute', 'define']):
@@ -414,21 +417,21 @@ def make_namespaces(context):
                 namespace['elements'][name] = element
 
                 # Free attributes
-                for (uri, name), datatype in free.iteritems():
+                for (uri, name), datatype in free.items():
                     namespace = namespaces.setdefault(uri, {'elements': {},
                                                       'free_attributes': {}})
                     namespace['free_attributes'][name] = datatype
 
     result = {}
     prefix2uri = context['prefix']
-    for namespace, data in namespaces.iteritems():
+    for namespace, data in namespaces.items():
         # Find the prefix
-        for prefix, uri in prefix2uri.iteritems():
+        for prefix, uri in prefix2uri.items():
             if uri == namespace:
                 result[uri] = XMLNamespace(
                     uri=uri,
                     prefix=prefix,
-                    elements=data['elements'].values(),
+                    elements=list(data['elements'].values()),
                     free_attributes=data['free_attributes'],
                     default_datatype=String)
                 break
@@ -481,7 +484,7 @@ class RelaxNGFile(TextFile):
     # API Public
     #########################################################################
     def auto_register(self):
-        for uri, namespace in self.namespaces.iteritems():
+        for uri, namespace in self.namespaces.items():
             if not has_namespace(uri):
                 register_namespace(namespace)
 

@@ -21,10 +21,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from io import StringIO
+from io import StringIO, BytesIO
 from os.path import splitext
 from random import choice
 from zipfile import ZipFile
+import json
 
 # Import from itools
 from itools.core import add_type, get_abspath
@@ -43,9 +44,15 @@ except ImportError:
 
 
 def zip_data(source, modified_files):
-    file = StringIO()
-    outzip = ZipFile(file, 'w')
-    zip = ZipFile(StringIO(source))
+    if isinstance(source, bytes):
+        file = BytesIO()
+        outzip = ZipFile(file, 'w')
+        zip = ZipFile(BytesIO(source))
+    else:
+        file = StringIO()
+        outzip = ZipFile(file, 'w')
+        zip = ZipFile(BytesIO(source))
+
     for info in zip.infolist():
         # Replace the data from the map
         if info.filename in modified_files:
@@ -59,9 +66,8 @@ def zip_data(source, modified_files):
         # field.  So we remove it even if present in the source.
         if info.filename == 'mimetype':
             info.extra = ''
-
         # Ok
-        outzip.writestr(info, data)
+        outzip.writestr(str(info), str(data))
 
     # Ok
     outzip.close()
@@ -155,6 +161,9 @@ class ODFFile(OOFile):
 
     def get_events(self, filename):
         content = self.get_file(filename)
+        if isinstance(content, bytes):
+            content = content.decode("utf-8")
+
         for event in XMLParser(content):
             if event == XML_DECL:
                 pass
@@ -167,6 +176,7 @@ class ODFFile(OOFile):
             for message in get_units(events, srx_handler):
                 # FIXME the line number has no sense here
                 yield message
+
 
     def translate(self, catalog, srx_handler=None):
         """Translate the document and reconstruct an odt document.

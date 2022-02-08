@@ -37,7 +37,7 @@ class MSWord(File):
 
     def to_text(self):
         if doc_to_text is None:
-            return u""
+            return ""
         data = self.to_str()
         try:
             return doc_to_text(data)

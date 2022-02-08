@@ -60,8 +60,8 @@ def process_item(entry, rectype, reclen):
             if u != 0x0d:
                 yield convert_char(u)
             else:
-                yield u"\n"
-        yield u"\n"
+                yield "\n"
+        yield "\n"
     else:
         entry.seek(reclen, SEEK_CUR)
 

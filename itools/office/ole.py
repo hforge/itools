@@ -58,11 +58,11 @@ def getulong(buffer, offset):
 
 def convert_char(uc):
     if uc == 0x001C:
-        return u"\t"
+        return "\t"
     elif uc == 0x001E:
-        return u"\n"
+        return "\n"
     elif uc == 0x00AD:
-        return u""
+        return ""
     return chr(uc)
 
 

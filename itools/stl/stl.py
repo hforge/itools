@@ -139,7 +139,7 @@ def lookup(namespace, name):
     # Case 1: dict
     if type(namespace) is dict:
         if name not in namespace:
-            err = u"name '{}' not found in the namespace"
+            err = "name '{}' not found in the namespace"
             raise STLError(err.format(name))
         return namespace[name]
 

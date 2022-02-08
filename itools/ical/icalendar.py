@@ -276,6 +276,7 @@ class iCalendar(TextFile):
         # Parse
         lines = []
         for name, value, parameters in parse_table(data):
+            print(name, value)
             # Deserialize
             datatype = self.get_record_datatype(name)
             if isinstance(datatype, Unicode):
@@ -418,7 +419,7 @@ class iCalendar(TextFile):
             lines.append('BEGIN:VTIMEZONE\n')
             # Properties
             lines.append('TZID:%s\n' % tzid)
-            for key, value in timezone.content.iteritems():
+            for key, value in timezone.content.items():
                 line = self.encode_property(key, value, encoding)
                 lines.extend(line)
             # Insert inner components
@@ -429,7 +430,7 @@ class iCalendar(TextFile):
                 # Begin
                 lines.append('BEGIN:%s\n' % c_inner_type)
                 # Properties
-                for key, value in version.iteritems():
+                for key, value in version.items():
                     line = self.encode_property(key, value, encoding)
                     lines.extend(line)
                 # End
@@ -685,15 +686,6 @@ class TZProp(object):
         for name in self.properties['TZNAME']:
             yield (name.value, name.parameters)
 
-    def __cmp__(self, other):
-        self_b = self.get_begin()
-        other_b = other.get_begin()
-        if self_b > other_b:
-            return 1
-        if self_b < other_b:
-            return -1
-        return 0
-
 
 class VTimezone(tzinfo):
     """This class represent a Timezone with TZProps builded from an ICS file"""
@@ -705,7 +697,7 @@ class VTimezone(tzinfo):
         if len(tz_props) < 1:
             raise ValueError('A VTIMEZONE MUST contain at least one TZPROP')
         self.tz_props = tz_props
-        self.tz_props.sort()
+        self.tz_props = sorted(tz_props, key=lambda x: x.get_begin())
 
     def get_tz_prop(self, dt):
         props = self.tz_props
@@ -750,7 +742,7 @@ class VTimezone(tzinfo):
     def tzname(self, dt):
         tz_prop = self.get_tz_prop(dt)
         # FIXME TZNAME property is multiple and can have language property
-        value, parameters = tz_prop.get_names().next()
+        value, parameters = next(tz_prop.get_names())
         return str(value)
 
     def utcoffset(self, dt):

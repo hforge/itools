@@ -46,7 +46,7 @@ def checkid(_id, soft=True):
     It only supports Latin-based alphabets.
     """
     if type(_id) is str:
-        _id = str(_id, 'utf8')
+        _id = _id
 
     # Normalize unicode
     _id = unicodedata.normalize('NFKC', _id)

@@ -183,10 +183,14 @@ class GitBackend(object):
         # pointer pointing to the beginning)
         if not fs.exists(key):
             with fs.make_file(key) as f:
+                if not isinstance(data, str):
+                    data = data.decode("utf-8")
                 f.write(data)
                 f.truncate(f.tell())
         else:
             with fs.open(key, 'w') as f:
+                if not isinstance(data, str):
+                    data = data.decode("utf-8")
                 f.write(data)
                 f.truncate(f.tell())
         # Set dirty = None

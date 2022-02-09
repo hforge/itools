@@ -351,7 +351,12 @@ class Worktree(object):
 
         name = self.username
         email = self.useremail
-        committer = Signature(name, email, when_time, when_offset)
+        if not isinstance(name, str):
+            name = name.decode("utf-8")
+        if not isinstance(email, str):
+            email = email.decode("utf-8")
+
+        committer = Signature(name, email, int(when_time), int(when_offset))
 
         # Author
         if author is None:
@@ -368,7 +373,7 @@ class Worktree(object):
                 err = "Worktree.git_commit doesn't support naive datatime yet"
                 raise NotImplementedError(err)
 
-        author = Signature(author[0], author[1], when_time, when_offset)
+        author = Signature(author[0], author[1], int(when_time), int(when_offset))
 
         # Create the commit
         return self.repo.create_commit('HEAD', author, committer, message,

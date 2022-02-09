@@ -41,11 +41,12 @@ from itools.database.queries import RangeQuery, StartQuery, TextQuery, _Multiple
 log = getLogger("itools.database")
 try:
     from xapian import MultiValueSorter
+
     XAPIAN_VERSION = '1.2'
 except Exception:
     from xapian import MultiValueKeyMaker
-    XAPIAN_VERSION = '1.4'
 
+    XAPIAN_VERSION = '1.4'
 
 # Constants
 OP_AND = Query.OP_AND
@@ -58,38 +59,44 @@ OP_VALUE_LE = Query.OP_VALUE_LE
 TQ_FLAGS = (QueryParser.FLAG_LOVEHATE +
             QueryParser.FLAG_PHRASE +
             QueryParser.FLAG_WILDCARD)
-TRANSLATE_MAP = { ord('À'): ord('A'),
-                  ord('Â'): ord('A'),
-                  ord('â'): ord('a'),
-                  ord('à'): ord('a'),
-                  ord('Ç'): ord('C'),
-                  ord('ç'): ord('c'),
-                  ord('É'): ord('E'),
-                  ord('Ê'): ord('E'),
-                  ord('é'): ord('e'),
-                  ord('ê'): ord('e'),
-                  ord('è'): ord('e'),
-                  ord('ë'): ord('e'),
-                  ord('Î'): ord('I'),
-                  ord('î'): ord('i'),
-                  ord('ï'): ord('i'),
-                  ord('ô'): ord('o'),
-                  ord('û'): ord('u'),
-                  ord('ù'): ord('u'),
-                  ord('ü'): ord('u'),
-                  ord("'"): ord(' ')}
+TRANSLATE_MAP = {ord('À'): ord('A'),
+                 ord('Â'): ord('A'),
+                 ord('â'): ord('a'),
+                 ord('à'): ord('a'),
+                 ord('Ç'): ord('C'),
+                 ord('ç'): ord('c'),
+                 ord('É'): ord('E'),
+                 ord('Ê'): ord('E'),
+                 ord('é'): ord('e'),
+                 ord('ê'): ord('e'),
+                 ord('è'): ord('e'),
+                 ord('ë'): ord('e'),
+                 ord('Î'): ord('I'),
+                 ord('î'): ord('i'),
+                 ord('ï'): ord('i'),
+                 ord('ô'): ord('o'),
+                 ord('û'): ord('u'),
+                 ord('ù'): ord('u'),
+                 ord('ü'): ord('u'),
+                 ord("'"): ord(' ')}
 
 MSG_NOT_INDEXED = 'the "{name}" field is not indexed'
+
+
 def warn_not_indexed(name):
     log.warning(MSG_NOT_INDEXED.format(name=name))
 
 
 MSG_NOT_STORED = 'the "{name}" field is not stored'
+
+
 def warn_not_stored(name):
     log.warning(MSG_NOT_STORED.format(name=name))
 
 
 MSG_NOT_INDEXED_NOR_STORED = 'the "{name}" field is not indexed nor stored'
+
+
 def warn_not_indexed_nor_stored(name):
     log.warning(MSG_NOT_INDEXED_NOR_STORED.format(name=name))
 
@@ -283,7 +290,7 @@ class SearchResults(object):
         # Construction of the results
         fields = self._catalog._fields
         results = [Doc(x.document, fields, metadata)
-                    for x in enquire.get_mset(start, size)]
+                   for x in enquire.get_mset(start, size)]
 
         # sort_by=None/reverse=True
         if sort_by is None and reverse:
@@ -293,7 +300,6 @@ class SearchResults(object):
 
 
 class Catalog(object):
-
     nb_changes = 0
     _db = None
     read_only = False
@@ -342,7 +348,7 @@ class Catalog(object):
                 metadata[name] = self._get_info(field_cls, name)
             else:
                 # If the field was in the catalog but is newly stored
-                if 'value 'not in metadata[name] and getattr(field_cls, 'stored', False):
+                if 'value' not in metadata[name] and getattr(field_cls, 'stored', False):
                     log.debug("[Catalog] Indexed field is now stored: {0}".format(name))
                     has_changes = True
                     metadata[name] = merge_dicts(
@@ -570,7 +576,8 @@ class Catalog(object):
         self._prefix_nb = 0
 
         metadata = self._db.get_metadata('metadata')
-        if metadata == '':
+
+        if metadata == b'':
             self._metadata = {}
         else:
             self._metadata = loads(metadata)
@@ -770,8 +777,8 @@ def _get_prefix(number):
     """
     magic_letters = 'ABCDEFGHIJKLMNOPRSTUVWY'
     size = len(magic_letters)
-    result = 'X'*(number//size)
-    return result+magic_letters[number%size]
+    result = 'X' * (number // size)
+    return result + magic_letters[number % size]
 
 
 def _decode_simple_value(field_cls, data):
@@ -824,7 +831,7 @@ def _encode(field_cls, value):
         return _encode_simple_value(field_cls, value)
 
     # Case 2: Multiple
-    value = [ _encode_simple_value(field_cls, a_value) for a_value in value ]
+    value = [_encode_simple_value(field_cls, a_value) for a_value in value]
     return dumps(value)
 
 
@@ -863,7 +870,7 @@ def _index_cjk(xdoc, value, prefix, termpos):
     for c in value:
         if is_punctuation(c):
             # Stop word
-            if previous_cjk and state == 1: # CJK not yielded yet
+            if previous_cjk and state == 1:  # CJK not yielded yet
                 xdoc.add_posting(prefix + previous_cjk, termpos)
                 termpos += 1
             # reset state
@@ -906,7 +913,7 @@ def _index_unicode(xdoc, value, prefix, language, termpos,
     value = value.translate(TRANSLATE_MAP)
     # XXX With the stemmer, the words are saved twice:
     # with prefix and with Zprefix
-#    tg.set_stemmer(stemmer)
+    #    tg.set_stemmer(stemmer)
 
     tg.index_text(value, 1, prefix)
     return tg.get_termpos() + 1
@@ -957,7 +964,7 @@ def _make_PhraseQuery(field_cls, value, prefix):
         for termpos in term_list_item.positer:
             words.append((termpos, term))
     words.sort()
-    words = [ word[1] for word in words ]
+    words = [word[1] for word in words]
 
     # Make the query
     return Query(OP_PHRASE, words)

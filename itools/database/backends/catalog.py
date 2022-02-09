@@ -770,7 +770,7 @@ def _get_prefix(number):
     """
     magic_letters = 'ABCDEFGHIJKLMNOPRSTUVWY'
     size = len(magic_letters)
-    result = 'X'*(number/size)
+    result = 'X'*(number//size)
     return result+magic_letters[number%size]
 
 

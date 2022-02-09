@@ -35,7 +35,7 @@ class LFSBackend(object):
 
     @classmethod
     def init_backend(cls, path, fields, init=False, soft=False):
-        self.fs.make_folder('{0}/database'.format(path))
+        lfs.make_folder('{0}/database'.format(path))
 
     def normalize_key(self, path, __root=None):
         return self.fs.normalize_key(path)
@@ -97,6 +97,9 @@ class LFSBackend(object):
     def abort_transaction(self):
         # Cannot abort transaction with this backend
         pass
+
+    def close(self):
+        self.fs.close()
 
 
 register_backend('lfs', LFSBackend)

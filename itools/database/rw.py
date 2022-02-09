@@ -537,4 +537,4 @@ def make_database(path, size_min, size_max, fields=None, backend=None):
     backend_cls = backends_registry[backend]
     backend_cls.init_backend(path, fields)
     # Ok
-    return RWDatabase(path, size_min, size_max)
+    return RWDatabase(path, size_min, size_max, backend=backend)

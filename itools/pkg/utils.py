@@ -177,7 +177,8 @@ def setup(path, ext_modules=None):
     if 'register' in argv:
         author_name = str(author_name, 'utf-8')
     classifiers = [x for x in config.get_value('classifiers') if x]
-    packages.remove('itools.log')
+    if 'itools.log' in packages:
+        packages.remove('itools.log')
     core.setup(name=package_name,
                version=version,
                # Metadata

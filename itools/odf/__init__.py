@@ -19,7 +19,7 @@
 # Import from itools
 from .odf import ODFFile, ODTFile, ODPFile, ODSFile
 from .oo import SXWFile, SXCFile, SXIFile
-from itools.odf import schema
+from . import schema
 
 
 __all__ = [

@@ -19,7 +19,7 @@ Identifiers) as specified by RFC2396.
 """
 
 # Import from itools
-from itools.uri import mailto
+from . import mailto
 from .generic import Path, Reference, decode_query, encode_query
 from .generic import normalize_path
 from .uri import get_reference, get_uri_name, get_uri_path

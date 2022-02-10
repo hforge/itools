@@ -19,7 +19,7 @@
 # Import from itools
 from itools.core import add_type, get_abspath
 from itools.xml import register_dtd, DocType
-from itools.html import schema
+from . import schema
 from .filters import sanitize_stream, sanitize_str
 from .html import HTMLFile
 from .parser import HTMLParser

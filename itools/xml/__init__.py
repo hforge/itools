@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from itools.xml import dublin_core
+from . import dublin_core
 from .namespaces import XMLNamespace, xml_uri, xmlns_uri
 from .namespaces import register_namespace, get_namespace, has_namespace
 from .namespaces import ElementSchema, get_element_schema, get_attr_datatype

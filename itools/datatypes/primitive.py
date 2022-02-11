@@ -96,6 +96,9 @@ class String(DataType):
     def encode(value):
         if value is None:
             return ''
+        if isinstance(value, Path):
+            return str(value)
+
         return value
 
 

@@ -32,6 +32,7 @@ from itools.database import Metadata
 from itools.database.magic_ import magic_from_buffer
 from itools.database.git import open_worktree
 from itools.fs import lfs
+from itools.fs.common import WRITE, READ_WRITE, APPEND, READ
 
 # Import from here
 from .catalog import Catalog, _get_xquery, SearchResults, make_catalog
@@ -187,7 +188,7 @@ class GitBackend(object):
                 f.write(data)
                 f.truncate(f.tell())
         else:
-            with fs.open(key, text=text) as f:
+            with fs.open(key, text=text, mode=READ_WRITE) as f:
                 f.write(data)
                 f.truncate(f.tell())
         # Set dirty = None

@@ -845,7 +845,9 @@ def _reduce_size(data):
     # If the data is too long, we replace it by its sha1
     # FIXME Visibly a bug in xapian counts twice the \x00 character
     # http://bugs.hforge.org/show_bug.cgi?id=940
-    if len(data) + data.count("\x00") > 240:
+    if isinstance(data, str):
+        data = data.encode("utf-8")
+    if len(data) + data.count(b"\x00") > 240:
         return sha1(data).hexdigest()
 
     # All OK, we simply return the data

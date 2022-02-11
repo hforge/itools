@@ -34,7 +34,7 @@ from itools.uri import Path
 from .common import WRITE, READ_WRITE, APPEND, READ, get_mimetype
 
 
-MODES = {WRITE: 'w+', READ_WRITE: 'w+', APPEND: 'a+', READ: 'rb'}
+MODES = {WRITE: ('w', 'wb'), READ_WRITE: ('w+', 'wb+'), APPEND: ('a+', 'ab+'), READ: ('r', 'rb')}
 
 
 class LocalFolder(object):
@@ -79,7 +79,7 @@ class LocalFolder(object):
         path = self._resolve_path(path)
         return access(path, W_OK)
 
-    def make_file(self, path):
+    def make_file(self, path, text=False):
         path = self._resolve_path(path)
         parent_path = dirname(path)
         if exists(parent_path):
@@ -87,7 +87,10 @@ class LocalFolder(object):
                 raise OSError("File exists: '%s'" % path)
         else:
             makedirs(parent_path)
-        return open(path, 'w')
+        if text:
+            return open(path, 'w')
+        else:
+            return open(path, 'wb')
 
     def make_folder(self, path):
         path = self._resolve_path(path)
@@ -124,20 +127,19 @@ class LocalFolder(object):
         path = self._resolve_path(path)
         return getsize(path)
 
-    def open(self, path, mode=None):
+    def open(self, path, mode=None, text=False):
         path = self._resolve_path(path)
         if isdir(path):
             return self.__class__(path)
         mode = MODES.get(mode, 'r')
-        try:
-            open(path, mode).read()
-        except UnicodeDecodeError:
-            return open(path, "rb")
+        if text:
+            mode = mode[0]
+        else:
+            mode = mode[1]
         return open(path, mode)
 
     def remove(self, path):
         path = self._resolve_path(path)
-        print(path)
         if isdir(path):
             # Remove folder contents
             rmtree(path)

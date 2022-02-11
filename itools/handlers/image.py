@@ -19,7 +19,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from io import StringIO
+from io import BytesIO
 
 # Import from the Python Image Library
 try:
@@ -65,7 +65,7 @@ class Image(File):
             return None
 
         # Open image
-        f = StringIO(self.data)
+        f = BytesIO(self.data)
         try:
             im = open_image(f)
         except (IOError, OverflowError):

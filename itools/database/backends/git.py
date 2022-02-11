@@ -177,20 +177,17 @@ class GitBackend(object):
 
     def save_handler(self, key, handler):
         data = handler.to_str()
+        text = isinstance(data, str)
         # Save the file
         fs = self.get_handler_fs(handler)
         # Write and truncate (calls to "_save_state" must be done with the
         # pointer pointing to the beginning)
         if not fs.exists(key):
-            with fs.make_file(key) as f:
-                if not isinstance(data, str):
-                    data = data.decode("utf-8")
+            with fs.make_file(key, text=text) as f:
                 f.write(data)
                 f.truncate(f.tell())
         else:
-            with fs.open(key, 'w') as f:
-                if not isinstance(data, str):
-                    data = data.decode("utf-8")
+            with fs.open(key, text=text) as f:
                 f.write(data)
                 f.truncate(f.tell())
         # Set dirty = None

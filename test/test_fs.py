@@ -145,14 +145,14 @@ class LocalFileTestCase(TestCase):
 
 
     def test_open_file(self):
-        file = lfs.open('tests/hello.txt')
+        file = lfs.open('tests/hello.txt', text=True)
         self.assertEqual(file.read(), 'hello world\n')
 
 
     def test_move_file(self):
         lfs.copy('tests/hello.txt', 'tests/hello.txt.bak')
         lfs.move('tests/hello.txt.bak', 'tests/hello.txt.old')
-        file = lfs.open('tests/hello.txt.old')
+        file = lfs.open('tests/hello.txt.old', text=True)
         self.assertEqual(file.read(), 'hello world\n')
         self.assertEqual(lfs.exists('tests/hello.txt.bak'), False)
         lfs.remove('tests/hello.txt.old')
@@ -168,13 +168,13 @@ class LocalFileTestCase(TestCase):
 
     def test_append(self):
         # Initialize
-        file = lfs.make_file('tests/toto.txt')
+        file = lfs.make_file('tests/toto.txt', text=True)
         try:
             file.write('hello\n')
         finally:
             file.close()
         # Test
-        file = lfs.open('tests/toto.txt', APPEND)
+        file = lfs.open('tests/toto.txt', APPEND, text=True)
         try:
             file.write('bye\n')
         finally:
@@ -186,13 +186,13 @@ class LocalFileTestCase(TestCase):
 
     def test_write_and_truncate(self):
         # Initialize
-        file = lfs.make_file('tests/toto.txt')
+        file = lfs.make_file('tests/toto.txt', text=True)
         try:
             file.write('hello\n')
         finally:
             file.close()
         # Test
-        file = lfs.open('tests/toto.txt', WRITE)
+        file = lfs.open('tests/toto.txt', WRITE, text=True)
         try:
             file.write('bye\n')
         finally:
@@ -249,7 +249,7 @@ class LocalCopyTestCase(TestCase):
 
     def test_copy_file(self):
         lfs.copy('tests/hello.txt', 'tmp/hello.txt.bak')
-        file = lfs.open('tmp/hello.txt.bak')
+        file = lfs.open('tmp/hello.txt.bak', text=True)
         try:
             self.assertEqual(file.read(), 'hello world\n')
         finally:
@@ -258,7 +258,7 @@ class LocalCopyTestCase(TestCase):
 
     def test_copy_file_to_folder(self):
         lfs.copy('tests/hello.txt', 'tmp')
-        file = lfs.open('tmp/hello.txt')
+        file = lfs.open('tmp/hello.txt', text=True)
         try:
             self.assertEqual(file.read(), 'hello world\n')
         finally:
@@ -267,7 +267,7 @@ class LocalCopyTestCase(TestCase):
 
     def test_copy_folder(self):
         lfs.copy('tests', 'tmp/xxx')
-        file = lfs.open('tmp/xxx/hello.txt')
+        file = lfs.open('tmp/xxx/hello.txt', text=True)
         try:
             self.assertEqual(file.read(), 'hello world\n')
         finally:
@@ -276,7 +276,7 @@ class LocalCopyTestCase(TestCase):
 
     def test_copy_folder_to_folder(self):
         lfs.copy('tests', 'tmp')
-        file = lfs.open('tmp/tests/hello.txt')
+        file = lfs.open('tmp/tests/hello.txt', text=True)
         try:
             self.assertEqual(file.read(), 'hello world\n')
         finally:

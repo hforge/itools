@@ -152,11 +152,11 @@ class GitBackend(object):
     def get_handler_names(self, key):
         return self.fs.get_names(key)
 
-    def get_handler_data(self, key):
+    def get_handler_data(self, key, text=False):
         if not key:
             return None
         fs = self.get_handler_fs_by_key(key)
-        with fs.open(key) as f:
+        with fs.open(key, text=text) as f:
             return f.read()
 
     def get_handler_mimetype(self, key):

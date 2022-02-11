@@ -41,6 +41,7 @@ class TextFile(File):
 
     class_mimetypes = ['text']
     class_extension = 'txt'
+    is_text = True
 
     def new(self, data=''):
         self.data = data

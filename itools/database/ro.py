@@ -224,8 +224,8 @@ class RODatabase(object):
         key = self.normalize_key(key)
         return self.backend.get_handler_names(key)
 
-    def get_handler_data(self, key):
-        return self.backend.get_handler_data(key)
+    def get_handler_data(self, key, text=False):
+        return self.backend.get_handler_data(key, text=text)
 
     def get_handler_mtime(self, key):
         return self.backend.get_handler_mtime(key)

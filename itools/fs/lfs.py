@@ -34,7 +34,12 @@ from itools.uri import Path
 from .common import WRITE, READ_WRITE, APPEND, READ, get_mimetype
 
 
-MODES = {WRITE: ('w', 'wb'), READ_WRITE: ('w+', 'wb+'), APPEND: ('a+', 'ab+'), READ: ('r', 'rb')}
+MODES = {
+    WRITE: ('w', 'wb'),
+    READ_WRITE: ('w+', 'wb+'),
+    APPEND: ('a+', 'ab+'),
+    READ: ('r', 'rb'),
+}
 
 
 class LocalFolder(object):
@@ -131,7 +136,7 @@ class LocalFolder(object):
         path = self._resolve_path(path)
         if isdir(path):
             return self.__class__(path)
-        mode = MODES.get(mode, 'r')
+        mode = MODES.get(mode, ('r', 'rb'))
         if text:
             mode = mode[0]
         else:

@@ -26,7 +26,7 @@ from datetime import datetime
 
 # Import from itools
 from itools.datatypes import DateTime, String, Unicode
-from itools.handlers import File
+from itools.handlers import TextFile
 from .csv_ import CSVFile
 from .parser import parse
 
@@ -493,7 +493,7 @@ class Record(dict):
         return property.value
 
 
-class Table(File):
+class Table(TextFile):
 
     record_class = Record
 

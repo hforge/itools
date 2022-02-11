@@ -276,7 +276,6 @@ class iCalendar(TextFile):
         # Parse
         lines = []
         for name, value, parameters in parse_table(data):
-            print(name, value)
             # Deserialize
             datatype = self.get_record_datatype(name)
             if isinstance(datatype, Unicode):

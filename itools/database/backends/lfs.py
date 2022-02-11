@@ -19,7 +19,7 @@ from os.path import abspath, dirname
 import mimetypes
 
 # Import from itools
-from itools.fs import lfs
+from itools.fs import lfs, WRITE
 
 # Import from here
 from .registry import register_backend
@@ -46,10 +46,10 @@ class LFSBackend(object):
     def get_handler_names(self, key):
         return self.fs.get_names(key)
 
-    def get_handler_data(self, key):
+    def get_handler_data(self, key, text=False):
         if not key:
             return None
-        f = self.fs.open(key)
+        f = self.fs.open(key, text=text)
         if isinstance(f, str):
             return f
         return f.read()
@@ -68,13 +68,14 @@ class LFSBackend(object):
 
     def save_handler(self, key, handler):
         data = handler.to_str()
+        text = isinstance(data, str)
         # Save the file
         if not self.fs.exists(key):
-            with self.fs.make_file(key) as f:
+            with self.fs.make_file(key, text=text) as f:
                 f.write(data)
                 f.truncate(f.tell())
         else:
-            with self.fs.open(key, 'w+') as f:
+            with self.fs.open(key, WRITE, text=text) as f:
                 f.write(data)
                 f.truncate(f.tell())
 

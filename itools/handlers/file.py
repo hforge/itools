@@ -51,6 +51,7 @@ class File(Handler):
     """
 
     class_mimetypes = ['application/octet-stream']
+    is_text = False
 
     # By default handlers are not loaded
     timestamp = None
@@ -102,7 +103,7 @@ class File(Handler):
         self.data = file.read()
 
     def load_state(self):
-        data = self.database.get_handler_data(self.key)
+        data = self.database.get_handler_data(self.key, text=self.is_text)
         self.reset()
         try:
             self.load_state_from_string(data)

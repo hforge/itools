@@ -99,7 +99,7 @@ def get_lines(data):
             yield FUZZY, None, line_number
         # Reference
         elif line.startswith('#:'):
-            yield REFERENCE, line[1:], line_number
+            yield REFERENCE, line[2:].strip(), line_number
         # Comment
         elif line.startswith('#'):
             yield COMMENT, line[1:], line_number
@@ -360,7 +360,7 @@ class POFile(TextFile):
                     comments.append(value)
                     state = 1
                 elif line_type == REFERENCE:
-                    for reference in value[3:].split(' '):
+                    for reference in value.split(' '):
                         value, line_no = reference.split(':')
                         references.append((value, line_no))
                     state = 1
@@ -381,7 +381,7 @@ class POFile(TextFile):
                 if line_type == COMMENT:
                     comments.append(value)
                 elif line_type == REFERENCE:
-                    for reference in value[3:].split(' '):
+                    for reference in value.split(' '):
                         value, line_no = reference.split(':')
                         references.append((value, line_no))
                 elif line_type == FUZZY and not fuzzy:
@@ -563,7 +563,7 @@ class POFile(TextFile):
         if not references:
             return unit
         for reference in references:
-            unit.references.setdefault(str(reference[0]), []).append(reference[1])
+            unit.references.setdefault(reference[0], []).append(reference[1])
         return unit
 
     #######################################################################

@@ -83,6 +83,18 @@ TRANSLATE_MAP = {ord('À'): ord('A'),
 MSG_NOT_INDEXED = 'the "{name}" field is not indexed'
 
 
+def bytes_to_str(data):
+    for encoding in ["utf-8", "windows-1252"]:
+        try:
+            if isinstance(data, bytes):
+                return data.decode(encoding)
+            else:
+                return data
+        except:
+            pass
+    raise Exception(f"Type DATA {type(data)} value {data}")
+
+
 def warn_not_indexed(name):
     log.warning(MSG_NOT_INDEXED.format(name=name))
 
@@ -475,6 +487,7 @@ class Catalog(object):
             #          the problem is that "_encode != _index"
             if name == 'abspath':
                 key_value = _reduce_size(_encode(field_cls, value))
+                key_value = bytes_to_str(key_value)
                 term = 'Q' + key_value
                 xdoc.add_term(term)
 
@@ -945,11 +958,13 @@ def _index(xdoc, field_cls, value, prefix, language):
         for position, data in enumerate(value):
             data = _encode_simple_value(field_cls, data)
             data = _reduce_size(data)
+            data = bytes_to_str(data)
             xdoc.add_posting(prefix + data, position + 1)
     # Case 3: singleton
     else:
         data = _encode_simple_value(field_cls, value)
         data = _reduce_size(data)
+        data = bytes_to_str(data)
         xdoc.add_posting(prefix + data, 1)
 
 

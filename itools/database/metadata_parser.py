@@ -112,6 +112,8 @@ def read_name(line, allowed=allowed):
         [parameters]value
     """
     # Test first character of name
+    if isinstance(line, bytes):
+        line = line.decode("utf-8")
     c = line[0]
     if not c.isalnum() and c != '-':
         raise SyntaxError('unexpected character (%s)' % c)

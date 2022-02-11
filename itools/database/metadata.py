@@ -52,7 +52,6 @@ class Metadata(File):
         self.properties = {}
 
     def __init__(self, key=None, string=None, database=None, cls=None, **kw):
-        super().__init__(key, string, database, **kw)
         self.cls = cls
         self.database = database
         kw['cls'] = cls

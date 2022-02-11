@@ -193,7 +193,7 @@ def substitute_boolean(data, stack, repeat_stack, encoding='utf-8'):
     return bool(value)
 
 
-def substitute_attribute(data, stack, repeat_stack, encoding='utf-8'):
+def substitute_attribute(data, stack, repeat_stack):
     """Interprets the given data as a substitution string with the "${expr}"
     format, where the expression within the brackets is an STL expression.
 
@@ -212,9 +212,9 @@ def substitute_attribute(data, stack, repeat_stack, encoding='utf-8'):
             return None, 1
         # Send the string
         if isinstance(value, MSG):
-            return value.gettext().encode(encoding), 1
+            return value.gettext(), 1
         elif type(value) is str:
-            return value.encode(encoding), 1
+            return value, 1
         return str(value), 1
     # A little more complex
     def repl(match):
@@ -225,9 +225,9 @@ def substitute_attribute(data, stack, repeat_stack, encoding='utf-8'):
             return ''
         # Send the string
         if isinstance(value, MSG):
-            return value.gettext().encode(encoding)
+            return value.gettext()
         elif type(value) is str:
-            return value.encode(encoding)
+            return value
         return str(value)
     return subs_expr.subn(repl, data)
 
@@ -351,7 +351,7 @@ def process_start_tag(tag_uri, tag_name, attributes, stack, repeat, encoding):
                 aux[(attr_uri, attr_name)] = attr_name
             continue
         # Non Boolean attributes
-        value, n = substitute_attribute(value, stack, repeat, encoding)
+        value, n = substitute_attribute(value, stack, repeat)
         # Output only values different than None
         if value is None:
             continue

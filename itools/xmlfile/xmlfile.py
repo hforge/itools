@@ -81,10 +81,8 @@ class XMLFile(TextFile):
         self.events = events
 
 
-    def __cmp__(self, other):
-        if not isinstance(other, self.__class__):
-            return 1
-        return cmp(self.events, other.events)
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.events == other.events
 
 
     def to_text(self):

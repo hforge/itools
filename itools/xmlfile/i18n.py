@@ -28,7 +28,7 @@ from itools.xml import is_empty, get_qname, get_attribute_qname, get_end_tag
 from itools.xml import XMLParser, XMLError, DOCUMENT_TYPE, XML_DECL
 from itools.xml import START_ELEMENT, END_ELEMENT, TEXT, COMMENT
 from itools.xml import stream_to_str
-from itools.xmlfile.errors import TranslationError
+from .errors import TranslationError
 
 
 

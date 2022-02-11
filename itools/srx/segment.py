@@ -175,10 +175,13 @@ def _clean_message(message, keep_spaces):
     return left, center, right
 
 
-default_srx_handler = get_abspath('srx/default.srx', 'itools')
-default_srx_handler = SRXFile(default_srx_handler)
+default_srx_handler = None
 def _split_message(message, srx_handler=None):
     # Concatenation!
+    global default_srx_handler
+    if default_srx_handler is None:
+        default_srx_handler = get_abspath('srx/default.srx', 'itools')
+        default_srx_handler = SRXFile(default_srx_handler)
 
     concat_text = []
     for type, value, line in message:
@@ -399,4 +402,3 @@ class Message(list):
             else:
                 result.append((type, value[1]))
         return tuple(result)
-

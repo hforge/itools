@@ -54,7 +54,7 @@ class ParserTestCase(TestCase):
 
     def test_char_ref_empty(self):
         data = '&#;'
-        self.assertRaises(XMLError, XMLParser(data).next)
+        self.assertRaises(XMLError, XMLParser(data).__next__)
 
 
     #######################################################################
@@ -82,12 +82,12 @@ class ParserTestCase(TestCase):
 
     def test_attributes_no_quote(self):
         data = "<a href=http://www.hforge.org>"
-        self.assertRaises(XMLError, XMLParser(data).next)
+        self.assertRaises(XMLError, XMLParser(data).__next__)
 
 
     def test_attributes_forbidden_char(self):
         data = '<img title="Black & White">'
-        self.assertRaises(XMLError, XMLParser(data).next)
+        self.assertRaises(XMLError, XMLParser(data).__next__)
 
 
     def test_attributes_entity_reference(self):

@@ -76,8 +76,6 @@ class ZIPFile(File):
     def get_file(self, filename):
         zip = self._open_zipfile()
         try:
-            print(zip.infolist())
-            print(filename)
             return zip.read(filename)
         finally:
             zip.close()

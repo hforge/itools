@@ -18,7 +18,7 @@
 from .base import BaseValidator
 from .exceptions import ValidationError
 from .registry import register_validator, validator
-from itools.validators import database, files, password
+from . import database, files, password
 
 __all__ = [
       'BaseValidator',

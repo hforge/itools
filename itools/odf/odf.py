@@ -25,7 +25,6 @@ from io import StringIO, BytesIO
 from os.path import splitext
 from random import choice
 from zipfile import ZipFile
-import json
 
 # Import from itools
 from itools.core import add_type, get_abspath
@@ -44,33 +43,29 @@ except ImportError:
 
 
 def zip_data(source, modified_files):
-    if isinstance(source, bytes):
-        file = BytesIO()
-        outzip = ZipFile(file, 'w')
-        zip = ZipFile(BytesIO(source))
-    else:
-        file = StringIO()
-        outzip = ZipFile(file, 'w')
-        zip = ZipFile(BytesIO(source))
+    assert isinstance(source, bytes)
+    inzip = ZipFile(BytesIO(source))
 
-    for info in zip.infolist():
-        # Replace the data from the map
-        if info.filename in modified_files:
-            data = modified_files[info.filename]
-            if data is None:
-                continue
-        else:
-            data = zip.read(info.filename)
+    file = BytesIO()
+    with ZipFile(file, 'w') as outzip:
+        for info in inzip.infolist():
+            # Replace the data from the map
+            if info.filename in modified_files:
+                data = modified_files[info.filename]
+                if data is None:
+                    continue
+            else:
+                data = inzip.read(info.filename)
 
-        # Section 17.4 says the mimetype file shall not include an extra
-        # field.  So we remove it even if present in the source.
-        if info.filename == 'mimetype':
-            info.extra = ''
-        # Ok
-        outzip.writestr(str(info), str(data))
+            # Section 17.4 says the mimetype file shall not include an extra
+            # field.  So we remove it even if present in the source.
+            if info.filename == 'mimetype':
+                info.extra = b''
+
+            # Ok
+            outzip.writestr(info, data)
 
     # Ok
-    outzip.close()
     content = file.getvalue()
     file.close()
     return content

@@ -328,6 +328,8 @@ def decode_query(data, schema=None):
     See http://www.w3.org/TR/REC-html40/interact/forms.html#h-17.13.4.1
     for details.
     """
+    if isinstance(data, bytes):
+        data = data.decode("utf-8")
     query = {}
     if data:
         if schema is None:

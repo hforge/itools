@@ -285,7 +285,7 @@ class BaseView(ItoolsView):
 
         # Remove noise from query parameters
         canonical_query_parameters = self.canonical_query_parameters
-        for parameter in query.keys():
+        for parameter in list(query.keys()):
             if parameter not in canonical_query_parameters:
                 del query[parameter]
         uri.query = query

@@ -155,7 +155,10 @@ class Path(list):
 
     def __getitem__(self, val):
         slice = Path(list.__getitem__(self, val))
-        slice.startswith_slash = self.startswith_slash
+        if isinstance(val, int):
+            slice.startswith_slash = False
+        else:
+            slice.startswith_slash = self.startswith_slash
         return slice
 
     def __add__(self, path):

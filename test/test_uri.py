@@ -226,6 +226,13 @@ class PathTestCase(TestCase):
         path = Path('../../a//.//b/c')
         self.assertEqual(str(path), '../../a/b/c')
 
+    def test_slice(self):
+        path = Path('/a/b/c')
+        self.assertEqual(str(path[1:3]), '/b/c')
+        self.assertEqual(path[0], 'a')
+        self.assertEqual(path[1], 'b')
+        self.assertEqual(path[-1], 'c')
+
 
 
 class ParseTestCase(TestCase):

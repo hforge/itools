@@ -25,7 +25,7 @@ def guess_encoding(data):
     the wrong encoding, for example many utf8 files will be identified
     as latin1.
     """
-    if isinstance(data, str):
+    if isinstance(data, bytes):
         return 'utf8'
 
     for encoding in ('ascii', 'utf8', 'iso8859'):

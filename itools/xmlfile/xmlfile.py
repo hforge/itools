@@ -61,6 +61,8 @@ class XMLFile(TextFile):
 
     def load_state_from_string(self, string):
         self.reset()
+        if isinstance(string, bytes):
+            string = string.decode("utf-8")
         stream = XMLParser(string)
         self.events = list(stream)
 

@@ -23,7 +23,7 @@ import calendar
 import datetime
 
 # Import from itools
-from itools.handlers import RWDatabase
+from itools.database import RWDatabase
 from itools.loop import Loop
 from itools.uri import get_reference
 from itools.web import WebServer, RootResource, Resource, BaseView

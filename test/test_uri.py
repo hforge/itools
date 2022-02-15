@@ -233,6 +233,13 @@ class PathTestCase(TestCase):
         self.assertEqual(path[1], 'b')
         self.assertEqual(path[-1], 'c')
 
+    def test_get_name(self):
+        path = Path('/a/b/c/;x')
+        self.assertEqual(path.get_name(), ';x')
+        self.assertEqual(path.get_name()[0], ';')
+
+
+
 
 
 class ParseTestCase(TestCase):

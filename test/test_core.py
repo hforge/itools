@@ -18,7 +18,6 @@
 from string import ascii_lowercase
 from unittest import TestCase, main
 import sys
-sys.path.append('/home/elie/PycharmProjects/itools/')
 # Import from itools
 from itools.core import freeze, frozenlist, frozendict
 from itools.core import LRUCache

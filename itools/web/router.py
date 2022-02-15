@@ -17,11 +17,6 @@
 # Import from the Standard Library
 from copy import copy
 from logging import getLogger
-try:
-    # Not use in Python 3
-    from sys import exc_clear
-except:
-    pass
 from types import FunctionType, MethodType
 
 # Import from itools
@@ -204,14 +199,7 @@ class RequestMethod(object):
             has_error = True
             cls.internal_server_error(context)
         finally:
-            # Fucking Python. Clear the exception, otherwise a later call
-            # to the logging system will print an exception that has been
-            # handled already.
-            try:
-                exc_clear()
-            except:
-                pass
-
+            pass
 
         # Deserialize the query and the form
         view = context.view

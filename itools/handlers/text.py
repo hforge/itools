@@ -63,6 +63,10 @@ class TextFile(File):
         return self.encoding
 
     def to_str(self, encoding='utf-8'):
+        # XXX self.data should always be unicode
+        if type(self.data) is bytes:
+            return self.data
+
         return self.data.encode(encoding)
 
     def to_text(self):

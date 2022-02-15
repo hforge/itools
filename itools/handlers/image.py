@@ -126,7 +126,7 @@ class Image(File):
             im, xsize, ysize = self._scale_down(handle, ratio)
 
         # To string
-        output = StringIO()
+        output = BytesIO()
         # JPEG : Convert to RGB
         if format.lower() in ("jpeg", "mpo"):
             im = im.convert("RGB")

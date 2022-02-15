@@ -133,6 +133,9 @@ class Path(list):
     __slots__ = ['startswith_slash', 'endswith_slash']
 
     def __init__(self, path):
+        if type(path) is bytes:
+            path = path.decode()
+
         if type(path) is str:
             startswith_slash, path, endswith_slash = _normalize_path(path)
             self.startswith_slash = startswith_slash

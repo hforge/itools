@@ -121,7 +121,7 @@ class Boolean(DataType):
             raise ValueError('{0} value is not a boolean'.format(value))
 
 
-class URI(String):
+class URI(Unicode):
     # XXX Should we at least normalize the sring when decoding/encoding?
 
     @staticmethod
@@ -157,7 +157,7 @@ class PathDataType(DataType):
 # the standard, but corresponds to common usage.
 email_expr = "^[0-9a-z]+[_\.0-9a-z-'+]*@([0-9a-z-]+\.)+[a-z]{2,6}$"
 email_expr = compile(email_expr)
-class Email(String):
+class Email(Unicode):
 
     @staticmethod
     def encode(value):

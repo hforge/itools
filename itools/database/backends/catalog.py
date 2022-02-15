@@ -450,6 +450,8 @@ class Catalog(object):
         """
         self.nb_changes += 1
         data = _reduce_size(_encode(self._fields['abspath'], abspath))
+        if type(data) is bytes:
+            data = data.decode("utf-8")
         self._db.delete_document('Q' + data)
         log.debug("Unindexed : {}".format(abspath))
 

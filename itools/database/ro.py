@@ -340,7 +340,7 @@ class RODatabase(object):
     @classmethod
     def unregister_resource_class(self, resource_class):
         registry = self._resources_registry
-        for class_id, cls in registry.items():
+        for class_id, cls in list(registry.items()):
             if resource_class is cls:
                 del registry[class_id]
 

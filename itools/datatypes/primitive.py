@@ -122,7 +122,7 @@ class Boolean(DataType):
             raise ValueError('{0} value is not a boolean'.format(value))
 
 
-class URI(Unicode):
+class URI(String):
     # XXX Should we at least normalize the sring when decoding/encoding?
 
     @staticmethod

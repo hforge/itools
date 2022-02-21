@@ -65,8 +65,7 @@ class Decimal(DataType):
 
 class Unicode(DataType):
 
-    ##### Problem when register field
-    #default = ''
+    default = ''
 
     @staticmethod
     def decode(value, encoding='UTF-8'):

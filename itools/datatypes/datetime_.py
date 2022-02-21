@@ -234,7 +234,8 @@ class ISODateTime(DataType):
     def decode(self, value):
         if not value:
             return None
-
+        if type(value) is bytes:
+            value = value.decode("utf-8")
         value = value.split('T')
         date, time = value[0], value[1:]
 

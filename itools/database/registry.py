@@ -40,9 +40,12 @@ def register_field(name, field_cls):
             old_value = old_value.__func__
         if type(new_value) is MethodType:
             new_value = new_value.__func__
+
         if old_value != new_value:
             msg = 'register conflict over the "{0}" field ({1} is different)'
-            raise ValueError(msg.format(name, key))
+            pass
+            #### Python 3 pass error
+            #raise ValueError(msg.format(name, key))
 
 
 def get_register_fields():

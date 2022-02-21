@@ -944,6 +944,7 @@ def _index(xdoc, field_cls, value, prefix, language):
 
     Where <word> will be a <str> value.
     """
+    value = bytes_to_str(value)
     is_multiple = (field_cls.multiple
                    and isinstance(value, (tuple, list, set, frozenset)))
 

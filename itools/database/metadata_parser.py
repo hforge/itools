@@ -112,8 +112,6 @@ def read_name(line, allowed=allowed):
         [parameters]value
     """
     # Test first character of name
-    if isinstance(line, bytes):
-        line = line.decode("utf-8")
     c = line[0]
     if not c.isalnum() and c != '-':
         raise SyntaxError('unexpected character (%s)' % c)
@@ -268,6 +266,8 @@ def parse_table(data):
     Where all the elements ('name', 'value', 'param_name' and 'param_value')
     are byte strings.
     """
+    if type(data) is bytes:
+        data = data.decode("utf-8")
     for line in unfold_lines(data):
         name, line = read_name(line)
         # Read the parameters and the property value

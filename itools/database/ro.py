@@ -379,7 +379,7 @@ class RODatabase(object):
 
     def get_resource_classes(self):
         registry = self._resources_registry
-        for class_id, cls in self._resources_registry.items():
+        for class_id, cls in list(self._resources_registry.items()):
             if class_id[0] == '/':
                 model = self.get_resource(class_id, soft=True)
                 if model is None:

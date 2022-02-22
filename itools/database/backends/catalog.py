@@ -559,7 +559,7 @@ class Catalog(object):
     def _get_info(self, field_cls, name):
         # The key field ?
         if name == 'abspath':
-            if not (issubclass(field_cls, String) and
+            if not (issubclass(field_cls, Unicode) and
                     field_cls.stored and
                     field_cls.indexed):
                 raise ValueError(('the abspath field must be declared as '
@@ -913,6 +913,8 @@ def _index_cjk(xdoc, value, prefix, termpos):
 
 def _index_unicode(xdoc, value, prefix, language, termpos,
                    TRANSLATE_MAP=TRANSLATE_MAP):
+
+    value = bytes_to_str(value)
     # Check type
     if type(value) is not str:
         msg = 'The value "%s", field "%s", is not a unicode'

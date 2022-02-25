@@ -77,6 +77,10 @@ class Unicode(DataType):
 
     @staticmethod
     def encode(value, encoding='UTF-8'):
+        if value is None:
+            return ""
+        if isinstance(value, bytes):
+            value = value.decode(encoding)
         return value.strip()
 
 
@@ -214,7 +218,7 @@ class MultiLinesTokens(DataType):
 
 ###########################################################################
 # Enumerates
-class Enumerate(String):
+class Enumerate(Unicode):
 
     is_enumerate = True
     options = freeze([])

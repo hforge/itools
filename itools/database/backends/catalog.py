@@ -951,7 +951,7 @@ def _index(xdoc, field_cls, value, prefix, language):
                    and isinstance(value, (tuple, list, set, frozenset)))
 
     # Case 1: Unicode (a complex split)
-    if issubclass(field_cls, Unicode):
+    if issubclass(field_cls, Unicode) and value is not None:
         if is_multiple:
             termpos = 1
             for x in value:

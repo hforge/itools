@@ -84,7 +84,7 @@ MSG_NOT_INDEXED = 'the "{name}" field is not indexed'
 
 
 def bytes_to_str(data):
-    for encoding in ["utf-8", "windows-1252"]:
+    for encoding in ["utf-8", "windows-1252", "latin-1"]:
         try:
             if isinstance(data, bytes):
                 return data.decode(encoding)

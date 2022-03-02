@@ -37,6 +37,7 @@ class DefaultField(Field):
     parameters_schema = freeze({})
     parameters_schema_default = None
     multilingual = False
+    encrypted = False
 
 
 class Metadata(File):

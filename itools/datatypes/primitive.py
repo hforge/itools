@@ -169,6 +169,8 @@ class Email(Unicode):
 
     @staticmethod
     def decode(value):
+        if isinstance(value, bytes):
+            value = value.decode("utf-8")
         return value.lower()
 
     @staticmethod

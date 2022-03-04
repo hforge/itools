@@ -559,7 +559,7 @@ class Catalog(object):
     def _get_info(self, field_cls, name):
         # The key field ?
         if name == 'abspath':
-            if not (issubclass(field_cls, Unicode) and
+            if not (issubclass(field_cls, String) and
                     field_cls.stored and
                     field_cls.indexed):
                 raise ValueError(('the abspath field must be declared as '

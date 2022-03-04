@@ -346,7 +346,7 @@ class RODatabase(object):
 
     def get_resource_class(self, class_id):
         if type(class_id) is not str:
-            raise TypeError('expected byte string, got {}'.format(class_id))
+            raise TypeError('expected string, got {}'.format(class_id))
 
         # Check dynamic models are not broken
         registry = self._resources_registry

@@ -63,17 +63,14 @@ class Decimal(DataType):
         return str(value)
 
 
-class Unicode(DataType):
-
-    default = ''
+class String(DataType):
 
     @staticmethod
     def decode(value, encoding='UTF-8'):
-        if isinstance(value, str):
-            return value.strip()
-        elif isinstance(value, bytes):
-            return value.decode(encoding).strip()
+        if isinstance(value, bytes):
+            value = value.decode(encoding)
 
+        return value
 
     @staticmethod
     def encode(value, encoding='UTF-8'):
@@ -81,29 +78,26 @@ class Unicode(DataType):
             return ""
         if isinstance(value, bytes):
             value = value.decode(encoding)
-        return value.strip()
-
+        return value
 
     @staticmethod
     def is_empty(value):
         return value == ''
 
 
-class String(DataType):
+class Unicode(String):
+    """
+    This exists only for backwards compatibility, to make migration to Pyhon 3
+    easier.
 
-    @staticmethod
-    def decode(value):
-        return value
+    The only difference with String is the default value (empty string), and
+    that itools.catalog will split Unicode in words when indexing.
 
+    Text would be a better name than Unicode, but we keep Unicode so we don't
+    have to change too much code.
+    """
 
-    @staticmethod
-    def encode(value):
-        if value is None:
-            return ''
-        if isinstance(value, Path):
-            return str(value)
-
-        return value
+    default = ''
 
 
 class Boolean(DataType):
@@ -161,7 +155,7 @@ class PathDataType(DataType):
 # the standard, but corresponds to common usage.
 email_expr = "^[0-9a-z]+[_\.0-9a-z-'+]*@([0-9a-z-]+\.)+[a-z]{2,6}$"
 email_expr = compile(email_expr)
-class Email(Unicode):
+class Email(String):
 
     @staticmethod
     def encode(value):

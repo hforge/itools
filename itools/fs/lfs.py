@@ -151,7 +151,6 @@ class LocalFolder(object):
         else:
             try:
                 os_remove(path)
-                print("% s removed successfully" % path)
             except OSError as error:
                 print(error)
                 print("File path can not be removed")

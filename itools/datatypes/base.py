@@ -67,13 +67,13 @@ class DataType(prototype):
 
     @staticmethod
     def decode(data):
-        """Deserializes the given byte string to a value with a type.
+        """Deserializes the given str data to a value with a type.
         """
         raise NotImplementedError
 
     @staticmethod
     def encode(value):
-        """Serializes the given value to a byte string.
+        """Serializes the given value to str.
         """
         raise NotImplementedError
 

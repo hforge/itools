@@ -214,7 +214,7 @@ class MultiLinesTokens(DataType):
 
 ###########################################################################
 # Enumerates
-class Enumerate(Unicode):
+class Enumerate(String):
 
     is_enumerate = True
     options = freeze([])

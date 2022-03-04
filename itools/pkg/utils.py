@@ -116,7 +116,7 @@ def setup(path, ext_modules=None):
     # Initialize variables
 
     package_name = config.get_value('package_name')
-    if package_name is None:
+    if not package_name:
         package_name = config.get_value('name')
     packages = [package_name]
     package_data = {package_name: []}
@@ -177,8 +177,6 @@ def setup(path, ext_modules=None):
     if 'register' in argv:
         author_name = str(author_name, 'utf-8')
     classifiers = [x for x in config.get_value('classifiers') if x]
-    if 'itools.log' in packages:
-        packages.remove('itools.log')
     core.setup(name=package_name,
                version=version,
                # Metadata

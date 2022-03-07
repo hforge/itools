@@ -94,6 +94,8 @@ class ISOCalendarDate(DataType):
 
     @classmethod
     def decode(cls, data):
+        if type(data) is bytes:
+            data = data.decode("utf-8")
         if not data:
             return None
         format_date = cls.format_date

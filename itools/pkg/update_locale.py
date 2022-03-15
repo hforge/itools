@@ -30,6 +30,7 @@ from itools.gettext import POFile
 from itools.handlers import register_handler_class
 from itools.database.ro import ro_database
 from itools.stl import STLFile
+from itools.python import Python
 from itools.uri import Path
 from itools.fs import lfs, WRITE
 
@@ -40,6 +41,7 @@ from .utils import get_config
 # FIXME We register STLFile to override get_units of XHTMLFile handler
 # (See bug #864)
 register_handler_class(STLFile)
+register_handler_class(Python)
 
 
 def write(text):
@@ -116,7 +118,7 @@ def update_locale(srx_handler, exclude_folders, no_wrap=False):
 
     # Write the po into the locale.pot
     try:
-        locale_pot = locale_folder.open('locale.pot', WRITE)
+        locale_pot = locale_folder.open('locale.pot', WRITE, text=True)
     except IOError:
         # The locale.pot file does not exist create and open
         locale_pot = locale_folder.make_file('locale.pot')

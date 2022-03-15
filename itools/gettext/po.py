@@ -524,7 +524,7 @@ class POFile(TextFile):
 
     def to_str(self, encoding='UTF-8'):
         messages = self.messages
-        message_ids = sorted(list(messages.keys()))
+        message_ids = sorted(list(messages.keys()), key=lambda x: x[1])
         messages = [messages[x].to_str(encoding) for x in message_ids]
         return '\n'.join(messages)
 

@@ -47,10 +47,6 @@ class VisitorMSG(NodeVisitor):
             self.visit(e)
         for e in node.keywords:
             self.visit(e)
-        if node.starargs:
-            self.visit(node.starargs)
-        if node.kwargs:
-            self.visit(node.kwargs)
         # Check names
         if isinstance(func, Name):
             if func.id in ('MSG', 'INFO', 'ERROR'):
@@ -71,6 +67,8 @@ class Python(TextFile):
         data = self.to_str()
         # Make it work with Windows files (the parser expects '\n' ending
         # lines)
+        if type(data) is bytes:
+            data = data.decode("utf-8")
         data = ''.join([x + '\n' for x in data.splitlines()])
         # Parse and Walk
         ast = parse(data)

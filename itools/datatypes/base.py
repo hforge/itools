@@ -106,7 +106,7 @@ class DataType(prototype):
             return value
         if type(value) is str:
             value = value.encode("utf-8")
-        return fernet.encrypt(value)
+        return fernet.encrypt(value).decode("utf-8")
 
     @classmethod
     def decrypt(cls, value):

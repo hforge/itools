@@ -348,10 +348,9 @@ class Catalog(object):
         if not read_only:
             self._init_all_metadata()
 
-    def _init_all_metadata(self):
+    def _init_all_metadata(self, has_changes=False):
         """Init new metadata (to avoid 'field is not indexed' warning)
         """
-        has_changes = False
         metadata = self._metadata
         for name, field_cls in self._fields.items():
             if name not in metadata:
@@ -595,7 +594,14 @@ class Catalog(object):
         if metadata == b'':
             self._metadata = {}
         else:
-            self._metadata = loads(metadata)
+            try:
+                self._metadata = loads(metadata)
+            except ValueError:
+                # Reload metadata if incompatibility between Python 2 and Python 3
+                self._init_all_metadata(has_changes=True)
+                metadata = self._db.get_metadata('metadata')
+                self._metadata = loads(metadata)
+
             for name, info in self._metadata.items():
                 if 'value' in info:
                     self._value_nb += 1

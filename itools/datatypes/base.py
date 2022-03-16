@@ -104,6 +104,8 @@ class DataType(prototype):
         if not fernet:
             # Fernet is not correctly set do not try to encrypt
             return value
+        if type(value) is str:
+            value = value.encode("utf-8")
         return fernet.encrypt(value)
 
     @classmethod
@@ -114,6 +116,8 @@ class DataType(prototype):
             # Fernet is not correctly set do not try to decrypt
             return value
         try:
-            return fernet.decrypt(value)
+            if type(value) is str:
+                value = value.encode("utf-8")
+            return fernet.decrypt(value).decode("utf-8")
         except InvalidToken:
             return value

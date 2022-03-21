@@ -35,6 +35,20 @@ escape_table = (
     ('\r', r'\r'),
     ('\n', r'\n'))
 
+def decode_lines(lines):
+    new_lines = []
+    for line in lines:
+        if type(line) is bytes:
+            for encoding in ["utf-8", "latin-1"]:
+                try:
+                    line = line.decode(encoding)
+                    break
+                except:
+                    pass
+        if type(line) is bytes:
+            raise Exception("Error decoding lines")
+        new_lines.append(line)
+    return new_lines
 
 def unescape_data(data, escape_table=escape_table):
     """Unescape the data
@@ -62,7 +76,7 @@ def unfold_lines(data):
     """
     i = 0
     lines = data.splitlines()
-
+    lines = decode_lines(lines)
     line = ''
     while i < len(lines):
         next = lines[i]
@@ -266,8 +280,6 @@ def parse_table(data):
     Where all the elements ('name', 'value', 'param_name' and 'param_value')
     are byte strings.
     """
-    if type(data) is bytes:
-        data = data.decode("utf-8")
     for line in unfold_lines(data):
         name, line = read_name(line)
         # Read the parameters and the property value

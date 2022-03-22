@@ -118,12 +118,10 @@ class MSG(object):
         elif self.format == 'none':
             return message
         elif self.format == 'html':
-            data = message.encode('utf_8')
-            return XMLParser(data, namespaces=xhtml_namespaces)
+            return XMLParser(message, namespaces=xhtml_namespaces)
         elif self.format == 'replace_html':
             message = msg_formatter.vformat(message, [], (self, kw))
-            data = message.encode('utf_8')
-            return XMLParser(data, namespaces=xhtml_namespaces)
+            return XMLParser(message, namespaces=xhtml_namespaces)
 
         raise ValueError('unexpected format "{0}"'.format(self.format))
 

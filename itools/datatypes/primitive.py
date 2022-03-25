@@ -39,13 +39,13 @@ class Integer(DataType):
     def decode(value):
         if value == '':
             return None
-        return int(value)
+        return int(float(value))
 
     @staticmethod
     def encode(value):
         if value is None:
             return ''
-        return str(value)
+        return str(int(value))
 
 
 class Decimal(DataType):

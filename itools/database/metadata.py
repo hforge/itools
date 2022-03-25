@@ -132,7 +132,8 @@ class Metadata(File):
                 raise ValueError(error % name)
 
             # 4. Build the property
-            datatype = field.datatype(encrypted=field.encrypted)
+            datatype = field.datatype
+            datatype.encrypted = field.encrypted
             if datatype.encrypted:
                 value = datatype.decrypt(value)
             property = MetadataProperty(value, datatype, **parameters)
@@ -178,8 +179,8 @@ class Metadata(File):
                     log.warning(msg)
                     continue
                 raise ValueError(msg)
-
-            datatype = field.datatype(encrypted=field.encrypted)
+            datatype = field.datatype
+            datatype.encrypted = field.encrypted
             params_schema = field.parameters_schema
             is_empty = datatype.is_empty
             p_type = type(property)

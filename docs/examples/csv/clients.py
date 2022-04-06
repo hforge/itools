@@ -19,7 +19,7 @@ from datetime import date
 
 # Import from itools
 from itools.csv import CSVFile
-from itools.handlers import RWDatabase
+from itools.database import RWDatabase
 from itools.datatypes import Integer, Unicode, String, Date
 
 
@@ -35,7 +35,7 @@ class Clients(CSVFile):
 
 
 if __name__ == '__main__':
-    rw_database = RWDatabase()
+    rw_database = RWDatabase(path="docs/examples/csv/", size_min=2048, size_max=4096, backend='lfs')
     clients = rw_database.get_handler("clients.csv", Clients)
 
     # Access a column by its name
@@ -48,4 +48,4 @@ if __name__ == '__main__':
     clients.add_row(
         [250, u'J. David Ibanez', 'jdavid@itaapy.com', date(2007, 1, 1)])
 
-    print clients.to_str()
+    print(clients.to_str())

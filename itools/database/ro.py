@@ -187,7 +187,7 @@ class RODatabase(object):
         size = len(self.cache)
         cache_is_full = size > self.cache.size_max
         n = size - self.cache.size_min
-        for key, handler in self.cache.items():
+        for key, handler in self.cache.iteritems():
             # Skip externally referenced handlers (refcount should be 3:
             # one for the cache, one for the local variable and one for
             # the argument passed to getrefcount).

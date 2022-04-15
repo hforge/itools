@@ -49,10 +49,11 @@ class LFSBackend(object):
     def get_handler_data(self, key, text=False):
         if not key:
             return None
-        f = self.fs.open(key, text=text)
-        if isinstance(f, str):
-            return f
-        return f.read()
+        with self.fs.open(key, text=text) as f:
+            if isinstance(f, str):
+                return f
+            else:
+                return f.read()
 
     def get_handler_mimetype(self, key):
         return self.fs.get_mimetype(key)

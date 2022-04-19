@@ -43,9 +43,7 @@ def register_field(name, field_cls):
 
         if old_value != new_value:
             msg = 'register conflict over the "{0}" field ({1} is different)'
-            pass
-            #### Python 3 pass error
-            #raise ValueError(msg.format(name, key))
+            raise ValueError(msg.format(name, key))
 
 
 def get_register_fields():

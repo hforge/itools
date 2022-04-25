@@ -18,10 +18,10 @@
 
 # Import from itools
 from itools.core import get_abspath
-from srx import SRXFile
+from .srx import SRXFile
 
 # Constants
-TEXT, START_FORMAT, END_FORMAT = range(3)
+TEXT, START_FORMAT, END_FORMAT = list(range(3))
 
 
 SPACE = ' \t\r\n'
@@ -56,7 +56,6 @@ def collapse(text):
     return ''.join(collapsed_text)
 
 
-
 def _remove_spaces(left, center, right, keep_spaces):
     # (1) Move only "spaces" surrounding the center to left and right
     if center:
@@ -83,7 +82,7 @@ def _remove_spaces(left, center, right, keep_spaces):
             text, context = value
 
             new_end = len(text)
-            moved_text = u''
+            moved_text = ''
             for c in reversed(text):
                 if isspace(c):
                     # Move the character
@@ -111,13 +110,13 @@ def _remove_spaces(left, center, right, keep_spaces):
 
                 # Begin and End
                 if i > 0 and text and isspace(text[0]):
-                    begin = u' '
+                    begin = ' '
                 else:
-                    begin = u''
+                    begin = ''
                 if i < len(center) - 1 and isspace(text[-1]):
-                    end = u' '
+                    end = ' '
                 else:
-                    end = u''
+                    end = ''
 
                 # Compute the new "line" argument
                 for c in text:
@@ -176,16 +175,19 @@ def _clean_message(message, keep_spaces):
     return left, center, right
 
 
-default_srx_handler = get_abspath('srx/default.srx', 'itools')
-default_srx_handler = SRXFile(default_srx_handler)
+default_srx_handler = None
 def _split_message(message, srx_handler=None):
     # Concatenation!
+    global default_srx_handler
+    if default_srx_handler is None:
+        default_srx_handler = get_abspath('srx/default.srx', 'itools')
+        default_srx_handler = SRXFile(default_srx_handler)
+
     concat_text = []
     for type, value, line in message:
         if type == TEXT:
             concat_text.append(value[0])
-    concat_text = u''.join(concat_text)
-
+    concat_text = ''.join(concat_text)
     # Get the rules
     if srx_handler is None:
         srx_handler = default_srx_handler
@@ -203,12 +205,14 @@ def _split_message(message, srx_handler=None):
             if not break_value and pos not in breaks:
                 no_breaks.add(pos)
     breaks = list(breaks)
-    breaks.sort()
+    breaks = sorted(breaks)
+
 
     # And now cut the message
     forbidden_break_level = 0
     current_message = Message()
     current_length = 0
+
     for type, value, line in message:
         if type == TEXT:
             text, context = value
@@ -263,8 +267,8 @@ def _translate_message(message, catalog):
     id2tags = {}
     for type, value, line in message:
         if type != TEXT:
-            id = value[1]
-            id2tags[type, id] = (type, value, line)
+            _id = value[1]
+            id2tags[type, _id] = (type, value, line)
 
     # Translation
     translation = catalog.gettext(message.to_unit(), message.get_context())
@@ -284,9 +288,7 @@ def _translate_message(message, catalog):
 def get_segments(message, keep_spaces=False, srx_handler=None):
     for sub_message in _split_message(message, srx_handler):
         left, center, right = _clean_message(sub_message, keep_spaces)
-
         todo = left+right
-
         if center != sub_message:
             for value, context, line in get_segments(center, keep_spaces,
                                                      srx_handler):
@@ -357,25 +359,21 @@ class Message(list):
         else:
             list.append(self, (TEXT, (text, context), line))
 
-
-    def append_start_format(self, content, id, line=1):
+    def append_start_format(self, content, _id, line=1):
         """value=[(u'...', translatable, context), ...]
         """
-        self.append((START_FORMAT, (content, id), line))
+        self.append((START_FORMAT, (content, _id), line))
 
-
-    def append_end_format(self, content, id, line=1):
+    def append_end_format(self, content, _id, line=1):
         """value=idem as start_format
         """
-        self.append((END_FORMAT, (content, id), line))
-
+        self.append((END_FORMAT, (content, _id), line))
 
     def get_line(self):
         if self:
             return self[0][2]
         else:
             return None
-
 
     def get_context(self):
          # Return the first context != None
@@ -386,7 +384,6 @@ class Message(list):
                     return value[1]
         return None
 
-
     def to_str(self):
         result = []
         for type, value, line in self:
@@ -395,8 +392,7 @@ class Message(list):
             else:
                 for text, translatable, context in value[0]:
                     result.append(text)
-        return u''.join(result)
-
+        return ''.join(result)
 
     def to_unit(self):
         result = []
@@ -406,4 +402,3 @@ class Message(list):
             else:
                 result.append((type, value[1]))
         return tuple(result)
-

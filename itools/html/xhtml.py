@@ -27,7 +27,7 @@ from itools.xml import get_doctype, get_element, get_namespace
 from itools.xmlfile import XMLFile
 
 # Import from here
-from schema import html_namespace, html_uri as xhtml_uri
+from .schema import html_namespace, html_uri as xhtml_uri
 
 
 

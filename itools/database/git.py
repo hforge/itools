@@ -54,7 +54,6 @@ def make_parent_dirs(path):
         makedirs(folder)
 
 
-
 class Worktree(object):
 
     def __init__(self, path, repo):
@@ -93,7 +92,6 @@ class Worktree(object):
             return self.path
         return '%s%s' % (self.path, path)
 
-
     def _call(self, command):
         """Interface to cal git.git for functions not yet implemented using
         libgit2.
@@ -103,7 +101,6 @@ class Worktree(object):
         if popen.returncode != 0:
             raise EnvironmentError((popen.returncode, stderrdata))
         return stdoutdata
-
 
     def _resolve_reference(self, reference):
         """This method returns the SHA the given reference points to. For now
@@ -124,7 +121,6 @@ class Worktree(object):
             return None
 
         return reference.target
-
 
     #######################################################################
     # External API
@@ -173,7 +169,6 @@ class Worktree(object):
 
                 yield path_rel
 
-
     def lookup(self, sha):
         """Return the object by the given SHA. We use a cache to warrant that
         two calls with the same SHA will resolve to the same object, so the
@@ -184,7 +179,6 @@ class Worktree(object):
             cache[sha] = self.repo[sha]
 
         return cache[sha]
-
 
     def lookup_from_commit_by_path(self, commit, path):
         """Return the object (tree or blob) the given path points to from the
@@ -203,7 +197,6 @@ class Worktree(object):
             entry = obj[name]
             obj = self.lookup(entry.oid)
         return obj
-
 
     @property
     def index(self):
@@ -227,7 +220,6 @@ class Worktree(object):
 
         return index
 
-
     def update_tree_cache(self):
         """libgit2 is able to read the tree cache, but not to write it.
         To speed up 'git_commit' this method should be called from time to
@@ -235,7 +227,6 @@ class Worktree(object):
         """
         command = ['git', 'write-tree']
         self._call(command)
-
 
     def git_add(self, *args):
         """Equivalent 'git add', adds the given paths to the index file.
@@ -246,7 +237,6 @@ class Worktree(object):
             for path in self.walk(path):
                 if path[-1] != '/':
                     index.add(path)
-
 
     def git_rm(self, *args):
         """Equivalent to 'git rm', removes the given paths from the index
@@ -268,7 +258,6 @@ class Worktree(object):
                     index.remove('%s/%s' % (root[n:], name))
                     remove('%s/%s' % (root, name))
                 rmdir(root)
-
 
     def git_mv(self, source, target, add=True):
         """Equivalent to 'git mv': moves the file or folder in the filesystem
@@ -296,7 +285,6 @@ class Worktree(object):
         if add is True:
             self.git_add(target)
 
-
     @lazy
     def username(self):
         cmd = ['git', 'config', '--get', 'user.name']
@@ -305,7 +293,6 @@ class Worktree(object):
         except EnvironmentError:
             raise ValueError("Please configure 'git config --global user.name'")
         return username
-
 
     @lazy
     def useremail(self):
@@ -316,7 +303,6 @@ class Worktree(object):
             raise ValueError("Please configure 'git config --global user.email'")
         return useremail
 
-
     def git_tag(self, tag_name, message):
         """Equivalent to 'git tag', we must give the name of the tag and the message
         TODO Implement using libgit2
@@ -326,13 +312,11 @@ class Worktree(object):
         cmd = ['git', 'tag', '-a', tag_name, '-m', message]
         return self._call(cmd)
 
-
     def git_remove_tag(self, tag_name):
         if not tag_name:
             raise ValueError('excepted tag name')
         cmd = ['git', 'tag', '-d', tag_name]
         return self._call(cmd)
-
 
     def git_reset(self, reference):
         """Equivalent to 'git reset --hard', we must provide the reference to reset to
@@ -341,7 +325,6 @@ class Worktree(object):
             raise ValueError('excepted reference to reset')
         cmd = ['git', 'reset', '--hard', '-q', reference]
         return self._call(cmd)
-
 
     def git_commit(self, message, author=None, date=None, tree=None):
         """Equivalent to 'git commit', we must give the message and we can
@@ -368,7 +351,12 @@ class Worktree(object):
 
         name = self.username
         email = self.useremail
-        committer = Signature(name, email, when_time, when_offset)
+        if not isinstance(name, str):
+            name = name.decode("utf-8")
+        if not isinstance(email, str):
+            email = email.decode("utf-8")
+
+        committer = Signature(name, email, int(when_time), int(when_offset))
 
         # Author
         if author is None:
@@ -385,12 +373,11 @@ class Worktree(object):
                 err = "Worktree.git_commit doesn't support naive datatime yet"
                 raise NotImplementedError(err)
 
-        author = Signature(author[0], author[1], when_time, when_offset)
+        author = Signature(author[0], author[1], int(when_time), int(when_offset))
 
         # Create the commit
         return self.repo.create_commit('HEAD', author, committer, message,
                                        tree, parents)
-
 
     def git_log(self, paths=None, n=None, author=None, grep=None,
                 reverse=False, reference='HEAD'):
@@ -458,7 +445,6 @@ class Worktree(object):
         # Ok
         return commits
 
-
     def git_diff(self, since, until=None, paths=None):
         """Return the diff between two commits, eventually reduced to the
         given paths.
@@ -475,7 +461,6 @@ class Worktree(object):
             cmd.append('--')
             cmd.extend(paths)
         return self._call(cmd)
-
 
     def git_stats(self, since, until=None, paths=None):
         """Return statistics of the changes done between two commits,
@@ -494,7 +479,6 @@ class Worktree(object):
             cmd.extend(paths)
         return self._call(cmd)
 
-
     def get_files_changed(self, since, until):
         """Return the files that have been changed between two commits.
 
@@ -504,8 +488,7 @@ class Worktree(object):
         cmd = ['git', 'show', '--numstat', '--pretty=format:', expr]
         data = self._call(cmd)
         lines = data.splitlines()
-        return frozenset([ line.split('\t')[-1] for line in lines if line ])
-
+        return frozenset([line.split('\t')[-1] for line in lines if line])
 
     def get_metadata(self, reference='HEAD'):
         """Resolves the given reference and returns metadata information
@@ -530,7 +513,6 @@ class Worktree(object):
             'message': commit.message,
             'message_short': message_short(commit),
             }
-
 
 
 def open_worktree(path, init=False, soft=False):

@@ -17,11 +17,11 @@
 # Import from itools
 from itools.core import freeze
 from itools.gettext import MSG
-from messages import ERROR
+from .messages import ERROR
 
 
 
-class HTTPError(StandardError):
+class HTTPError(Exception):
     """Base class for all errors, client or server side.
     """
 
@@ -70,13 +70,13 @@ class TokenAuthorizationException(Unauthorized):
 
 class InvalidJWTSignatureException(TokenAuthorizationException):
 
-    message = MSG(u"Signature du jeton invalide")
+    message = MSG("Signature du jeton invalide")
     error = "invalid_token_signature"
 
 
 class JWTExpiredException(TokenAuthorizationException):
 
-    message = MSG(u"Jeton expiré")
+    message = MSG("Jeton expiré")
     error = "token_expired"
 
 
@@ -126,7 +126,7 @@ class ServiceUnavailable(ServerError):
     title = 'Service Unavailable'
 
 
-class FormError(StandardError):
+class FormError(Exception):
     """Raised when a form is invalid (missing or invalid fields).
     """
 

@@ -41,7 +41,7 @@ from itools.xml import is_xml_stream
 from itools.xmlfile import XMLFile, get_units
 from itools.html import xhtml_uri
 from itools.html import stream_to_str_as_html, stream_to_str_as_xhtml
-from schema import stl_uri
+from .schema import stl_uri
 
 log = getLogger("itools.stl")
 
@@ -49,7 +49,7 @@ log = getLogger("itools.stl")
 ########################################################################
 # Exceptions
 ########################################################################
-class STLError(StandardError):
+class STLError(Exception):
     pass
 
 
@@ -98,7 +98,6 @@ def evaluate(expression, stack, repeat_stack):
     return value
 
 
-
 def evaluate_if(expression, stack, repeat_stack):
     # stl:if="expression1 and expression2"
     # stl:if="expression1 or expression2"
@@ -126,7 +125,6 @@ def evaluate_if(expression, stack, repeat_stack):
     return evaluate(expression, stack, repeat_stack)
 
 
-
 def evaluate_repeat(expression, stack, repeat_stack):
     name, expression = expression.split(' ', 1)
     values = evaluate(expression, stack, repeat_stack)
@@ -141,7 +139,7 @@ def lookup(namespace, name):
     # Case 1: dict
     if type(namespace) is dict:
         if name not in namespace:
-            err = u"name '{}' not found in the namespace"
+            err = "name '{}' not found in the namespace"
             raise STLError(err.format(name))
         return namespace[name]
 
@@ -171,7 +169,6 @@ class NamespaceStack(list):
 
         raise STLError('name "%s" not found in the namespace' % name)
 
-
     def __getslice__(self, a, b):
         return self.__class__(list.__getslice__(self, a, b))
 
@@ -196,7 +193,7 @@ def substitute_boolean(data, stack, repeat_stack, encoding='utf-8'):
     return bool(value)
 
 
-def substitute_attribute(data, stack, repeat_stack, encoding='utf-8'):
+def substitute_attribute(data, stack, repeat_stack):
     """Interprets the given data as a substitution string with the "${expr}"
     format, where the expression within the brackets is an STL expression.
 
@@ -215,9 +212,9 @@ def substitute_attribute(data, stack, repeat_stack, encoding='utf-8'):
             return None, 1
         # Send the string
         if isinstance(value, MSG):
-            return value.gettext().encode(encoding), 1
-        elif type(value) is unicode:
-            return value.encode(encoding), 1
+            return value.gettext(), 1
+        elif type(value) is str:
+            return value, 1
         return str(value), 1
     # A little more complex
     def repl(match):
@@ -228,12 +225,11 @@ def substitute_attribute(data, stack, repeat_stack, encoding='utf-8'):
             return ''
         # Send the string
         if isinstance(value, MSG):
-            return value.gettext().encode(encoding)
-        elif type(value) is unicode:
-            return value.encode(encoding)
+            return value.gettext()
+        elif type(value) is str:
+            return value
         return str(value)
     return subs_expr.subn(repl, data)
-
 
 
 def substitute(data, stack, repeat_stack, encoding='utf-8'):
@@ -264,7 +260,7 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
                 value = value.gettext()
 
             # Yield
-            if type(value) is unicode:
+            if type(value) is str:
                 yield TEXT, value.encode(encoding), 0
             elif is_xml_stream(value):
                 for x in value:
@@ -275,7 +271,6 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
                 yield TEXT, str(value), 0
         elif segment:
             yield TEXT, segment, 0
-
 
 
 def stl(document=None, namespace=freeze({}), prefix=None, events=None,
@@ -314,10 +309,9 @@ def stl(document=None, namespace=freeze({}), prefix=None, events=None,
         error = 'Error in generation of {0}\n'.format(mode)
         if document:
             error += 'Template {0}\n'.format(document.key)
-        raise STLError(error + e.message)
+        raise STLError(error + str(e))
     # Unknow mode
     raise ValueError('unexpected mode "{0}"'.format(mode))
-
 
 
 stl_repeat = stl_uri, 'repeat'
@@ -357,7 +351,7 @@ def process_start_tag(tag_uri, tag_name, attributes, stack, repeat, encoding):
                 aux[(attr_uri, attr_name)] = attr_name
             continue
         # Non Boolean attributes
-        value, n = substitute_attribute(value, stack, repeat, encoding)
+        value, n = substitute_attribute(value, stack, repeat)
         # Output only values different than None
         if value is None:
             continue
@@ -444,11 +438,11 @@ def process(events, start, end, stack, re_stack, encoding, skip_events):
         i += 1
 
 
-
 ########################################################################
 # Set prefix
 ########################################################################
-css_uri_expr = compile (r"url\(([a-zA-Z0-9\./%\-\_]*/%3[bB]{1}download)\);")
+css_uri_expr = compile(r"url\(([a-zA-Z0-9\./%\-\_]*/%3[bB]{1}download)\);")
+
 
 def set_prefix(stream, prefix, ns_uri=xhtml_uri, uri=None):
     if isinstance(prefix, str):
@@ -461,7 +455,6 @@ def set_prefix(stream, prefix, ns_uri=xhtml_uri, uri=None):
     rewrite = partial(resolve_pointer, prefix, ref)
 
     return rewrite_uris(stream, rewrite, ns_uri)
-
 
 
 def resolve_pointer(offset, reference, value):
@@ -489,7 +482,6 @@ def resolve_pointer(offset, reference, value):
         authority = reference.authority
     value = Reference(scheme, authority, path, uri.query.copy(), uri.fragment)
     return str(value)
-
 
 
 def rewrite_uris(stream, rewrite, ns_uri=xhtml_uri):
@@ -538,10 +530,10 @@ def rewrite_uris(stream, rewrite, ns_uri=xhtml_uri):
         else:
             yield event
 
+
 ###########################################################################
 # STLFile
 ###########################################################################
-
 class STLFile(XMLFile):
 
     # FIXME To be changed once we have our own extension and mimetype (#864)
@@ -562,14 +554,12 @@ class STLTemplate(prototype):
     template = None
     show = True
 
-
     def get_template(self):
         if type(self.template) is list:
             return self.template
 
         error = 'template variable of unexpected type "%s"'
         raise TypeError(error % type(self.template).__name__)
-
 
     def render(self, mode='events'):
         if not self.show:

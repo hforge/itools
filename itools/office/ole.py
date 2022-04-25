@@ -24,11 +24,11 @@ SEEK_SET = 0
 SEEK_CUR = 1
 SEEK_END = 2
 
-BBD_BLOCK_SIZE  = 512
-SBD_BLOCK_SIZE  =  64
+BBD_BLOCK_SIZE = 512
+SBD_BLOCK_SIZE = 64
 PROP_BLOCK_SIZE = 128
-OLENAMELENGHT   =  32
-MSAT_ORIG_SIZE  = 436
+OLENAMELENGHT = 32
+MSAT_ORIG_SIZE = 436
 
 TYPE_OLE_DIR = 1
 TYPE_OLE_STREAM = 2
@@ -58,12 +58,12 @@ def getulong(buffer, offset):
 
 def convert_char(uc):
     if uc == 0x001C:
-        return u"\t"
+        return "\t"
     elif uc == 0x001E:
-        return u"\n"
+        return "\n"
     elif uc == 0x00AD:
-        return u""
-    return unichr(uc)
+        return ""
+    return chr(uc)
 
 
 def getOleType(oleBuf):
@@ -75,13 +75,11 @@ def rightOleType(oleBuf):
                                   TYPE_OLE_ROOTDIR, TYPE_OLE_UNKNOWN)
 
 
-
 class OleEntry(object):
 
     __slots__ = ['ole', 'file', 'name', 'startBlock', 'curBlock', 'length',
                  'ole_offset', 'file_offset', 'dirPos', 'type',
                  'numOfBlocks', 'blocks', 'isBigBlock']
-
 
     def __init__(self, ole):
         self.ole = ole
@@ -96,7 +94,6 @@ class OleEntry(object):
         self.ole_offset = 0
         self.file_offset = self.file.tell()
         return 0
-
 
     def calcFileBlockOffset(self, blk):
         block = self.blocks[blk]
@@ -113,7 +110,6 @@ class OleEntry(object):
             res = (512 + ole.rootEntry.blocks[sbdSecNum] * sectorSize
                     + sbdSecMod * shortSectorSize)
         return res
-
 
     def read(self, size):
         """Reads block from open ole stream interface-compatible with read
@@ -178,7 +174,6 @@ class OleEntry(object):
     def is_eof(self):
         return self.ole_offset >= self.length
 
-
     def seek(self, offset, whence):
         ole = self.ole
         new_ole_offset = 0
@@ -189,7 +184,7 @@ class OleEntry(object):
         elif whence == SEEK_END:
             new_ole_offset = self.length + offset
         else:
-            raise ValueError, "Invalid whence!"
+            raise ValueError("Invalid whence!")
         if new_ole_offset < 0:
             new_ole_offset = 0
         if new_ole_offset > self.length:
@@ -234,9 +229,9 @@ class Ole(object):
         file.seek(0, SEEK_SET)
         oleBuf = file.read(BBD_BLOCK_SIZE)
         if len(oleBuf) != BBD_BLOCK_SIZE:
-            raise ValueError, "bad BBD_BLOCK_SIZE"
+            raise ValueError("bad BBD_BLOCK_SIZE")
         if not oleBuf.startswith(ole_sign):
-            raise ValueError, "not a PPT file"
+            raise ValueError("not a PPT file")
         self.file = file
         self.sectorSize = sectorSize = 1 << getshort(oleBuf, 0x1e)
         self.shortSectorSize = shortSectorSize = 1 << getshort(oleBuf, 0x20)
@@ -253,7 +248,7 @@ class Ole(object):
             file.seek(512 + mblock * sectorSize, SEEK_SET)
             newbuf = file.read(sectorSize)
             if len(newbuf) != sectorSize:
-                raise ValueError, "Error read MSAT"
+                raise ValueError("Error read MSAT")
             tmpBuf = tmpBuf[:MSAT_ORIG_SIZE + (sectorSize - 4) * i] + newbuf
             i += 1
             mblock = getlong(tmpBuf, MSAT_ORIG_SIZE + (sectorSize - 4) * i)
@@ -261,11 +256,11 @@ class Ole(object):
         for i in range(bbdNumBlocks):
             bbdSector = getlong(tmpBuf, 4 * i)
             if bbdSector >= (fileLength / sectorSize) or bbdSector < 0:
-                raise ValueError, "Bad BBD entry!"
+                raise ValueError("Bad BBD entry!")
             file.seek(512 + bbdSector * sectorSize, SEEK_SET)
             newbuf = file.read(sectorSize)
             if len(newbuf) != sectorSize:
-                raise ValueError, "Can't read BBD!"
+                raise ValueError("Can't read BBD!")
             BBD.append(newbuf)
         self.BBD = ''.join(BBD)
 
@@ -278,7 +273,7 @@ class Ole(object):
                 file.seek(512 + sbdCurrent * sectorSize, SEEK_SET)
                 newbuf = file.read(sectorSize)
                 if len(newbuf) != sectorSize:
-                    raise ValueError, "Can't read SBD!"
+                    raise ValueError("Can't read SBD!")
                 SBD.append(newbuf)
                 sbdLen += 1
                 sbdCurrent = getlong(self.BBD, sbdCurrent * 4)
@@ -298,7 +293,7 @@ class Ole(object):
                 file.seek(512 + propCurrent * sectorSize, SEEK_SET)
                 newbuf = file.read(sectorSize)
                 if len(newbuf) != sectorSize:
-                    raise ValueError, "Bad property entry!"
+                    raise ValueError("Bad property entry!")
                 self.properties += newbuf
                 propLen += 1
                 propCurrent = getlong(self.BBD, propCurrent * 4)
@@ -307,7 +302,7 @@ class Ole(object):
             self.propNumber = (propLen * sectorSize) / PROP_BLOCK_SIZE
             self.propCurNumber = 0
         else:
-            raise ValueError, "Bad properties!"
+            raise ValueError("Bad properties!")
 
         # Find Root Entry
         self.rootEntry = None
@@ -318,8 +313,8 @@ class Ole(object):
         self.propCurNumber = 0
         file.seek(0, SEEK_SET)
         if self.rootEntry is None:
-            raise ValueError, ("Broken OLE structure. "
-                               "Cannot find root entry in this file!")
+            raise ValueError(("Broken OLE structure. "
+                              "Cannot find root entry in this file!"))
 
 
     def readdir(self):

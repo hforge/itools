@@ -16,14 +16,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-import htmlentitydefs
-from HTMLParser import HTMLParser as BaseParser, HTMLParseError
+import sys
+import html.entities
+from html.parser import HTMLParser as BaseParser
 from warnings import warn
 
 # Import from itools
 from itools.xml import DOCUMENT_TYPE, START_ELEMENT, END_ELEMENT, COMMENT
 from itools.xml import TEXT, XMLError, DocType
-from xhtml import xhtml_uri
+from .xhtml import xhtml_uri
 
 
 ###########################################################################
@@ -39,7 +40,6 @@ class DocType_ersatz(DocType):
         self.PubidLiteral = PubidLiteral
         self.SystemLiteral = SystemLiteral
         self.intSubset = intSubset
-
 
     def to_str(self):
         """Return a 'ready to insert' representation of the doctype
@@ -223,12 +223,10 @@ class Parser(BaseParser, object):
 
     def parse(self, data):
         self.encoding = 'UTF-8'
-
         self.events = []
         self.feed(data)
         self.close()
         return self.events
-
 
     def handle_decl(self, value):
         # The document type declaration of HTML5 documents is always (case
@@ -289,7 +287,6 @@ class Parser(BaseParser, object):
                                      SystemLiteral=system_id)
         self.events.append((DOCUMENT_TYPE, value, line))
 
-
     def handle_starttag(self, name, attrs):
         events = self.events
         line = self.getpos()[0]
@@ -315,31 +312,27 @@ class Parser(BaseParser, object):
                 else:
                     message = 'missing attribute value for "%s"'
                     raise XMLError(message % attribute_name)
-            elif type(attribute_value) is unicode:
-                attribute_value = attribute_value.encode(self.encoding)
+            elif type(attribute_value) is str:
+                attribute_value = attribute_value
             attributes[(None, attribute_name)] = attribute_value
 
         # Start element
         events.append((START_ELEMENT, (xhtml_uri, name, attributes), line))
 
-
     def handle_endtag(self, name):
         self.events.append((END_ELEMENT, (xhtml_uri, name), self.getpos()[0]))
-
 
     def handle_comment(self, data):
         self.events.append((COMMENT, data, self.getpos()[0]))
 
-
     def handle_data(self, data):
         self.events.append((TEXT, data, self.getpos()[0]))
 
-
     def handle_entityref(self, name):
         # FIXME Duplicated code, also written in C in "xml/parser.c".
-        if name in htmlentitydefs.name2codepoint:
-            codepoint = htmlentitydefs.name2codepoint[name]
-            char = unichr(codepoint)
+        if name in html.entities.name2codepoint:
+            codepoint = html.entities.name2codepoint[name]
+            char = chr(codepoint)
             try:
                 char = char.encode(self.encoding)
             except UnicodeEncodeError:
@@ -357,7 +350,6 @@ class Parser(BaseParser, object):
 
     # TODO handlers that remain to implement include
 ##    def handle_pi(self, data):
-
 
 
 def make_xml_compatible(stream):
@@ -414,14 +406,16 @@ def make_xml_compatible(stream):
             raise XMLError(msg % (last, line))
 
 
-
 def HTMLParser(data):
     if type(data) is not str:
-        raise TypeError('expected a byte string, "%s" found' % type(data))
+        data = data.decode("utf-8")
+        #raise TypeError('expected a byte string, "%s" found' % type(data))
+
     try:
         stream = Parser().parse(data)
-    except HTMLParseError as message:
+    except Exception as message:
         raise XMLError(message)
+
     stream = make_xml_compatible(stream)
     # TODO Don't transform to a list, keep the stream
     return list(stream)

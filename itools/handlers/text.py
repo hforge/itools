@@ -16,8 +16,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from file import File
-from registry import register_handler_class
+from .file import File
+from .registry import register_handler_class
 
 
 def guess_encoding(data):
@@ -25,9 +25,12 @@ def guess_encoding(data):
     the wrong encoding, for example many utf8 files will be identified
     as latin1.
     """
+    if isinstance(data, bytes):
+        return 'utf8'
+
     for encoding in ('ascii', 'utf8', 'iso8859'):
         try:
-            unicode(data, encoding)
+            data.encode(encoding)
         except UnicodeError:
             pass
         else:
@@ -41,17 +44,16 @@ class TextFile(File):
 
     class_mimetypes = ['text']
     class_extension = 'txt'
+    is_text = True
 
-
-    def new(self, data=u''):
+    def new(self, data=''):
         self.data = data
         self.encoding = 'utf-8'
-
 
     def _load_state_from_file(self, file):
         data = file.read()
         self.encoding = guess_encoding(data)
-        self.data = unicode(data, self.encoding)
+        self.data = data
 
 
     #########################################################################
@@ -60,18 +62,18 @@ class TextFile(File):
     def get_encoding(self):
         return self.encoding
 
-
     def to_str(self, encoding='utf-8'):
+        # XXX self.data should always be unicode
+        if type(self.data) is bytes:
+            return self.data
+
         return self.data.encode(encoding)
 
-
     def to_text(self):
-        return unicode(self.to_str(), 'utf-8')
-
+        return str(self.to_str(), 'utf-8')
 
     def is_empty(self):
-        return self.to_text().strip() == u""
-
+        return self.to_text().strip() == ""
 
 
 register_handler_class(TextFile)

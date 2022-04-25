@@ -17,7 +17,6 @@
 # Import from the Standard Library
 from copy import copy
 from logging import getLogger
-from sys import exc_clear
 from types import FunctionType, MethodType
 
 # Import from itools
@@ -26,9 +25,9 @@ from itools.database import ReadonlyError
 from itools.uri import decode_query, Reference
 
 # Local imports
-from exceptions import ClientError, NotModified, Forbidden, NotFound
-from exceptions import Unauthorized, FormError, ServiceUnavailable
-from exceptions import MethodNotAllowed
+from .exceptions import ClientError, NotModified, Forbidden, NotFound
+from .exceptions import Unauthorized, FormError, ServiceUnavailable
+from .exceptions import MethodNotAllowed
 
 log = getLogger("itools.web")
 
@@ -200,10 +199,7 @@ class RequestMethod(object):
             has_error = True
             cls.internal_server_error(context)
         finally:
-            # Fucking Python. Clear the exception, otherwise a later call
-            # to the logging system will print an exception that has been
-            # handled already.
-            exc_clear()
+            pass
 
         # Deserialize the query and the form
         view = context.view

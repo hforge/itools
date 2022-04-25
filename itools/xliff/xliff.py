@@ -73,7 +73,7 @@ class XLFUnit(object):
             att = ['%s="%s"' % (k, self.attributes[k])
                   for k in self.attributes.keys() if k != 'space']
             s.append('  <trans-unit %s ' % '\n'.join(att))
-            if 'space' in self.attributes.keys():
+            if 'space' in list(self.attributes.keys()):
                 s.append('xml:space="%s"' % self.attributes['space'])
             s.append('>\n')
         else:
@@ -227,7 +227,7 @@ class XLFFile(TextFile):
             elif event == COMMENT:
                 pass
             elif event == TEXT:
-                text = unicode(value, 'UTF-8')
+                text = value
                 if phrase is not None:
                     phrase.append((srx_TEXT, text))
 

@@ -17,6 +17,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from git import GitBackend
-from lfs import LFSBackend
-from registry import register_backend, backends_registry
+from .git import GitBackend
+from .lfs import LFSBackend
+from .registry import register_backend, backends_registry

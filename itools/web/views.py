@@ -33,8 +33,8 @@ from itools.stl import stl
 from itools.uri import Reference
 
 # Import from here
-from exceptions import FormError, Conflict, MethodNotAllowed
-from messages import ERROR
+from .exceptions import FormError, Conflict, MethodNotAllowed
+from .messages import ERROR
 
 
 
@@ -58,7 +58,7 @@ def process_form(get_value, schema, error_msg=None):
             messages[name] = e.get_messages()
             values[name] = None
     if missings or invalids or unknow:
-        error_msg = error_msg or ERROR(u'Form values are invalid')
+        error_msg = error_msg or ERROR('Form values are invalid')
         raise FormError(
             message=error_msg,
             missing=len(missings) > 0,
@@ -187,7 +187,7 @@ class ItoolsView(prototype):
         return self.schema
 
 
-    form_error_message = ERROR(u'There are errors, check below')
+    form_error_message = ERROR('There are errors, check below')
     def _get_form(self, resource, context):
         """Form checks the request form and collect inputs consider the
         schema.  This method also checks the request form and raise an
@@ -195,8 +195,8 @@ class ItoolsView(prototype):
         or a value is not valid) or None if everything is ok.
 
         Its input data is a list (fields) that defines the form variables to
-          {'toto': Unicode(mandatory=True, multiple=False, default=u'toto'),
-           'tata': Unicode(mandatory=True, multiple=False, default=u'tata')}
+          {'toto': Unicode(mandatory=True, multiple=False, default='toto'),
+           'tata': Unicode(mandatory=True, multiple=False, default='tata')}
         """
         get_value = context.get_form_value
         schema = self.get_schema(resource, context)
@@ -238,7 +238,7 @@ class ItoolsView(prototype):
 
 
     def on_query_error_default(self, resource, context):
-        message = MSG(u'The query could not be processed.').gettext()
+        message = MSG('The query could not be processed.').gettext()
         return message.encode('utf-8')
 
 
@@ -285,7 +285,7 @@ class BaseView(ItoolsView):
 
         # Remove noise from query parameters
         canonical_query_parameters = self.canonical_query_parameters
-        for parameter in query.keys():
+        for parameter in list(query.keys()):
             if parameter not in canonical_query_parameters:
                 del query[parameter]
         uri.query = query
@@ -408,8 +408,8 @@ class STLView(BaseView):
         an HTML form. Its input data is a dictionnary that defines the form
         variables to consider:
 
-          {'toto': Unicode(mandatory=True, multiple=False, default=u'toto'),
-           'tata': Unicode(mandatory=True, multiple=False, default=u'tata')}
+          {'toto': Unicode(mandatory=True, multiple=False, default='toto'),
+           'tata': Unicode(mandatory=True, multiple=False, default='tata')}
 
         Every element specifies the datatype of the field.
         The output is like:

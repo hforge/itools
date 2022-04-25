@@ -22,7 +22,6 @@ from itools.handlers import TextFile, register_handler_class
 from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, COMMENT, TEXT
 
 
-
 # FIXME TMXNote and XLFNote are the same
 class TMXNote(object):
 
@@ -48,14 +47,12 @@ class TMXNote(object):
         return '<note%s>%s</note>\n' % (attributes, self.text)
 
 
-
 class Sentence(object):
 
     def __init__(self, attributes):
         self.attributes = attributes
         self.text = ''
         self.notes = []
-
 
     def to_str(self):
         s = []
@@ -74,14 +71,12 @@ class Sentence(object):
         return ''.join(s)
 
 
-
 class TMXUnit(object):
 
     def __init__(self, attributes):
         self.attributes = attributes
         self.msgstr = {}
         self.notes = []
-
 
     def to_str(self):
         s = []
@@ -96,8 +91,7 @@ class TMXUnit(object):
             for l in self.notes:
                 s.append(l.to_str())
 
-        languages = self.msgstr.keys()
-        languages.sort()
+        languages = sorted(list(self.msgstr.keys()))
         for language in languages:
             s.append(self.msgstr[language].to_str())
 
@@ -105,12 +99,10 @@ class TMXUnit(object):
         return ''.join(s)
 
 
-
 class TMXFile(TextFile):
 
     class_mimetypes = ['application/x-tmx']
     class_extension = 'tmx'
-
 
     def new(self):
         self.version = '1.4'
@@ -174,7 +166,9 @@ class TMXFile(TextFile):
             elif event == COMMENT:
                 pass
             elif event == TEXT:
-                text = unicode(value, 'UTF-8')
+                if isinstance(value, bytes):
+                    value = value.decode("utf-8")
+                text = value
 
         self.messages = messages
 
@@ -201,8 +195,7 @@ class TMXFile(TextFile):
         # TMX body
         output.append('<body>\n')
         messages = self.messages
-        msgids = messages.keys()
-        msgids.sort()
+        msgids = sorted(list(messages.keys()))
         for msgid in msgids:
             output.append(messages[msgid].to_str())
         output.append('</body>\n')
@@ -210,7 +203,6 @@ class TMXFile(TextFile):
         # Ok
         output.append('</tmx>\n')
         return ''.join(output)
-
 
     #######################################################################
     # API
@@ -223,10 +215,8 @@ class TMXFile(TextFile):
                     languages.append(l)
         return languages
 
-
     def get_srclang(self):
-        return u'%s' % self.header['srclang']
-
+        return '%s' % self.header['srclang']
 
     def add_unit(self, filename, source, context, line):
         # XXX Context must be used!!
@@ -238,7 +228,6 @@ class TMXFile(TextFile):
         unit.msgstr[src_lang] = sentence
         self.messages[source] = unit
         return unit
-
 
 
 register_handler_class(TMXFile)

@@ -37,8 +37,6 @@ TEST_DATA_2 = 'one,two,three\nfour,five,six\nseven,eight,nine'
 TEST_SYNTAX_ERROR = '"one",,\n,"two",,\n,,"three"'
 
 
-
-
 class Languages(CSVFile):
 
     columns = ['name', 'url', 'number', 'date']
@@ -54,7 +52,6 @@ class Numbers(CSVFile):
     schema = {'one': Unicode, 'two': Unicode, 'three': Unicode}
 
 
-
 class CSVTestCase(TestCase):
 
     def test_unicode(self):
@@ -64,12 +61,10 @@ class CSVTestCase(TestCase):
         self.assertEqual(rows, [["Martin von Löwis", "Marc André Lemburg",
                                  "Guido van Rossum"]])
 
-
     def test_num_of_lines(self):
         handler = CSVFile(string=TEST_DATA_2)
         rows = list(handler.get_rows())
         self.assertEqual(len(rows), 3)
-
 
     def test_num_of_lines_with_last_new_line(self):
         data = TEST_DATA_2 + '\r\n'

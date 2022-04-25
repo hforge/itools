@@ -22,13 +22,12 @@ from string import Formatter
 from sys import _getframe
 
 # Import from itools
-from itools.handlers import Folder
 from itools.i18n import get_language_name
 from itools.fs import lfs
 from itools.xml import XMLParser
 
 # Import from here
-from mo import MOFile
+from .mo import MOFile
 
 
 xhtml_namespaces = {
@@ -41,26 +40,31 @@ xhtml_namespaces = {
 
 domains = {}
 
+
 def register_domain(name, locale_path):
     if name not in domains:
-        domains[name] = Domain(locale_path)
+        domains[name] = locale_path
 
 
 def get_domain(name):
-    return domains[name]
+    domain = domains.get(name)
+    # Lazy load domain
+    if isinstance(domain, str):
+        domain = Domain(domain)
+        domains[name] = domain
 
-
+    return domain
 
 
 class Domain(dict):
 
     def __init__(self, uri):
+        super().__init__()
         for key in lfs.get_names(uri):
             if key[-3:] == '.mo':
                 language = key[:-3]
                 path = '{0}/{1}'.format(uri, key)
                 self[language] = MOFile(path)
-
 
     def gettext(self, message, language):
         if language not in self:
@@ -68,10 +72,8 @@ class Domain(dict):
         handler = self[language]
         return handler.gettext(message)
 
-
     def get_languages(self):
-        return self.keys()
-
+        return list(self.keys())
 
 
 class MSGFormatter(Formatter):
@@ -94,6 +96,7 @@ class MSGFormatter(Formatter):
 
 msg_formatter = MSGFormatter()
 
+
 class MSG(object):
 
     domain = None
@@ -109,26 +112,22 @@ class MSG(object):
         if message:
             self.message = message
 
-
     def _format(self, message, **kw):
         if self.format == 'replace':
             return msg_formatter.vformat(message, [], (self, kw))
         elif self.format == 'none':
             return message
         elif self.format == 'html':
-            data = message.encode('utf_8')
-            return XMLParser(data, namespaces=xhtml_namespaces)
+            return XMLParser(message, namespaces=xhtml_namespaces)
         elif self.format == 'replace_html':
             message = msg_formatter.vformat(message, [], (self, kw))
-            data = message.encode('utf_8')
-            return XMLParser(data, namespaces=xhtml_namespaces)
+            return XMLParser(message, namespaces=xhtml_namespaces)
 
         raise ValueError('unexpected format "{0}"'.format(self.format))
 
-
     def gettext(self, language=None, **kw):
         message = self.message
-        domain = domains.get(self.domain)
+        domain = get_domain(self.domain)
 
         if domain is not None:
             # Find out the language
@@ -142,7 +141,6 @@ class MSG(object):
                 message = domain.gettext(message, language)
 
         return self._format(message, **kw)
-
 
 
 def get_language_msg(code):

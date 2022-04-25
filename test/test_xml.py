@@ -32,7 +32,8 @@ class ParserTestCase(TestCase):
         data = '<?xml version="1.0" encoding="UTF-8"?>'
         token = XML_DECL
         value = '1.0', 'UTF-8', None
-        self.assertEqual(XMLParser(data).next(), (token, value, 1))
+        self.assertEqual(next(XMLParser(data)), (token, value, 1))
+
 
 
     #######################################################################
@@ -41,19 +42,19 @@ class ParserTestCase(TestCase):
         data = '&#241;'
         token = TEXT
         value = "ñ"
-        self.assertEqual(XMLParser(data).next(), (token, value, 1))
+        self.assertEqual(next(XMLParser(data)), (token, value, 1))
 
 
     def test_char_ref_hex(self):
         data = '&#xf1;'
         token = TEXT
         value = "ñ"
-        self.assertEqual(XMLParser(data).next(), (token, value, 1))
+        self.assertEqual(next(XMLParser(data)), (token, value, 1))
 
 
     def test_char_ref_empty(self):
         data = '&#;'
-        self.assertRaises(XMLError, XMLParser(data).next)
+        self.assertRaises(XMLError, XMLParser(data).__next__)
 
 
     #######################################################################
@@ -62,38 +63,38 @@ class ParserTestCase(TestCase):
         data = '<a>'
         token = START_ELEMENT
         value = None, 'a', {}
-        self.assertEqual(XMLParser(data).next(), (token, value, 1))
+        self.assertEqual(next(XMLParser(data)), (token, value, 1))
 
 
     def test_attributes(self):
         data = '<a href="http://www.hforge.org">'
         token = START_ELEMENT
         value = None, 'a', {(None, 'href'): 'http://www.hforge.org'}
-        self.assertEqual(XMLParser(data).next(), (token, value, 1))
+        self.assertEqual(next(XMLParser(data)), (token, value, 1))
 
 
     def test_attributes_single_quote(self):
         data = "<a href='http://www.hforge.org'>"
         token = START_ELEMENT
         value = None, 'a', {(None, 'href'): 'http://www.hforge.org'}
-        self.assertEqual(XMLParser(data).next(), (token, value, 1))
+        self.assertEqual(next(XMLParser(data)), (token, value, 1))
 
 
     def test_attributes_no_quote(self):
         data = "<a href=http://www.hforge.org>"
-        self.assertRaises(XMLError, XMLParser(data).next)
+        self.assertRaises(XMLError, XMLParser(data).__next__)
 
 
     def test_attributes_forbidden_char(self):
         data = '<img title="Black & White">'
-        self.assertRaises(XMLError, XMLParser(data).next)
+        self.assertRaises(XMLError, XMLParser(data).__next__)
 
 
     def test_attributes_entity_reference(self):
         data = '<img title="Black &amp; White">'
         token = START_ELEMENT
         value = None, 'img', {(None, 'title'): 'Black & White'}
-        self.assertEqual(XMLParser(data).next(), (token, value, 1))
+        self.assertEqual(next(XMLParser(data)), (token, value, 1))
 
 
     #######################################################################
@@ -102,7 +103,7 @@ class ParserTestCase(TestCase):
         data = '<![CDATA[Black & White]]>'
         token = CDATA
         value = 'Black & White'
-        self.assertEqual(XMLParser(data).next(), (token, value, 1))
+        self.assertEqual(next(XMLParser(data)), (token, value, 1))
 
 
     #######################################################################

@@ -28,10 +28,10 @@ from itools.handlers import Folder, get_handler_class_by_mimetype
 from itools.uri import Path
 
 # Import from itools.database
-from backends import GitBackend, backends_registry
-from exceptions import ReadonlyError
-from metadata import Metadata
-from registry import get_register_fields
+from .backends import GitBackend, backends_registry
+from .exceptions import ReadonlyError
+from .metadata import Metadata
+from .registry import get_register_fields
 
 
 class SearchResults(object):
@@ -40,25 +40,20 @@ class SearchResults(object):
         self.database = database
         self.results = results
 
-
     def __len__(self):
         return len(self.results)
-
 
     def search(self, query=None, **kw):
         results = self.results.search(query, **kw)
         return SearchResults(self.database, results)
 
-
     def get_documents(self, sort_by=None, reverse=False, start=0, size=0):
         return self.results.get_documents(sort_by, reverse, start, size)
-
 
     def get_resources(self, sort_by=None, reverse=False, start=0, size=0):
         brains = list(self.get_documents(sort_by, reverse, start, size))
         for brain in brains:
             yield self.database.get_resource_from_brain(brain)
-
 
 
 class RODatabase(object):
@@ -90,10 +85,8 @@ class RODatabase(object):
     def catalog(self):
         return self.backend.catalog
 
-
     def close(self):
         self.backend.close()
-
 
     def check_database(self):
         """This function checks whether the database is in a consisitent state,
@@ -104,14 +97,12 @@ class RODatabase(object):
         """
         return True
 
-
     #######################################################################
     # With statement
     #######################################################################
 
     def __enter__(self):
         return self
-
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.close()
@@ -140,7 +131,6 @@ class RODatabase(object):
         # Everything looks fine
         return handler
 
-
     def _discard_handler(self, key):
         """Unconditionally remove the handler identified by the given key from
         the cache, and invalidate it (and free memory at the same time).
@@ -149,12 +139,10 @@ class RODatabase(object):
         # Invalidate the handler
         handler.__dict__.clear()
 
-
     def _abort_changes(self):
         """To be called to abandon the transaction.
         """
         raise ReadonlyError
-
 
     def _cleanup(self):
         """For maintenance operations, this method is automatically called
@@ -168,13 +156,11 @@ class RODatabase(object):
         #print 'RODatabase._cleanup (1): % 4d %s' % (len(self.cache), vmsize())
         #print gc.get_count()
 
-
     #######################################################################
     # Public API
     #######################################################################
     def normalize_key(self, path, __root=Path('/')):
         return self.backend.normalize_key(path, __root)
-
 
     def push_handler(self, key, handler):
         """Adds the given resource to the cache.
@@ -190,7 +176,6 @@ class RODatabase(object):
         cache_is_full = len(self.cache) > self.cache.size_max
         if cache_is_full:
             self.make_room()
-
 
     def make_room(self):
         """Remove handlers from the cache until it fits the defined size.
@@ -221,8 +206,6 @@ class RODatabase(object):
             if cache_is_full and n > 0:
                 self._discard_handler(key)
 
-
-
     def has_handler(self, key):
         key = self.normalize_key(key)
 
@@ -234,32 +217,25 @@ class RODatabase(object):
         # Ask backend
         return self.backend.handler_exists(key)
 
-
     def save_handler(self, key, handler):
         self.backend.save_handler(key, handler)
-
 
     def get_handler_names(self, key):
         key = self.normalize_key(key)
         return self.backend.get_handler_names(key)
 
-
-    def get_handler_data(self, key):
-        return self.backend.get_handler_data(key)
-
+    def get_handler_data(self, key, text=False):
+        return self.backend.get_handler_data(key, text=text)
 
     def get_handler_mtime(self, key):
         return self.backend.get_handler_mtime(key)
 
-
     def get_mimetype(self, key):
         return self.backend.get_handler_mimetype(key)
-
 
     def get_handler_class(self, key):
         mimetype = self.get_mimetype(key)
         return get_handler_class_by_mimetype(mimetype)
-
 
     def _get_handler(self, key, cls=None, soft=False):
         # Get resource
@@ -307,21 +283,17 @@ class RODatabase(object):
         # Ok
         return handler
 
-
     def traverse_resources(self):
         return self.backend.traverse_resources()
-
 
     def get_handler(self, key, cls=None, soft=False):
         key = self.normalize_key(key)
         return self._get_handler(key, cls, soft)
 
-
     def get_handlers(self, key):
         base = self.normalize_key(key)
         for name in self.get_handler_names(base):
             yield self._get_handler(base + '/' + name)
-
 
     def touch_handler(self, key, handler=None):
         """Report a modification of the key/handler to the database.
@@ -342,22 +314,17 @@ class RODatabase(object):
         # Set in changed list
         self.changed.add(key)
 
-
     def set_handler(self, key, handler):
         raise ReadonlyError('cannot set handler')
-
 
     def del_handler(self, key):
         raise ReadonlyError('cannot del handler')
 
-
     def copy_handler(self, source, target, exclude_patterns=None):
         raise ReadonlyError('cannot copy handler')
 
-
     def move_handler(self, source, target):
         raise ReadonlyError('cannot move handler')
-
 
     #######################################################################
     # Layer 1: resources
@@ -370,18 +337,16 @@ class RODatabase(object):
             format = resource_class.class_id
         self._resources_registry[format] = resource_class
 
-
     @classmethod
     def unregister_resource_class(self, resource_class):
         registry = self._resources_registry
-        for class_id, cls in registry.items():
+        for class_id, cls in list(registry.items()):
             if resource_class is cls:
                 del registry[class_id]
 
-
     def get_resource_class(self, class_id):
         if type(class_id) is not str:
-            raise TypeError('expected byte string, got {}'.format(class_id))
+            raise TypeError('expected string, got {}'.format(class_id))
 
         # Check dynamic models are not broken
         registry = self._resources_registry
@@ -412,10 +377,9 @@ class RODatabase(object):
         # Default
         return self._resources_registry['application/octet-stream']
 
-
     def get_resource_classes(self):
         registry = self._resources_registry
-        for class_id, cls in self._resources_registry.items():
+        for class_id, cls in list(self._resources_registry.items()):
             if class_id[0] == '/':
                 model = self.get_resource(class_id, soft=True)
                 if model is None:
@@ -423,7 +387,6 @@ class RODatabase(object):
                     continue
 
             yield cls
-
 
     def get_metadata(self, abspath, soft=False):
         if type(abspath) is str:
@@ -434,11 +397,9 @@ class RODatabase(object):
         path_to_metadata = '%s.metadata' % path
         return self.get_handler(path_to_metadata, Metadata, soft=soft)
 
-
     def get_cls(self, class_id):
         cls = self.get_resource_class(class_id)
         return cls or self.get_resource_class('application/octet-stream')
-
 
     def get_resource(self, abspath, soft=False):
         abspath = Path(abspath)
@@ -452,43 +413,33 @@ class RODatabase(object):
         # Ok
         return cls(abspath=abspath, database=self, metadata=metadata)
 
-
     def get_resource_from_brain(self, brain):
         cls = self.get_cls(brain.format)
         return cls(abspath=Path(brain.abspath), database=self, brain=brain)
 
-
     def remove_resource(self, resource):
         raise ReadonlyError
-
 
     def add_resource(self, resource):
         raise ReadonlyError
 
-
     def change_resource(self, resource):
         raise ReadonlyError
-
 
     def move_resource(self, source, new_path):
         raise ReadonlyError
 
-
     def save_changes(self):
         return
-
 
     def create_tag(self, tag_name, message=None):
         raise ReadonlyError
 
-
     def reset_to_tag(self, tag_name):
         raise ReadonlyError
 
-
     def abort_changes(self):
         return
-
 
     #######################################################################
     # API for path
@@ -499,13 +450,11 @@ class RODatabase(object):
             path = Path(path)
         return path.get_name()
 
-
     @staticmethod
     def get_path(path):
         if type(path) is not Path:
             path = Path(path)
         return str(path)
-
 
     @staticmethod
     def resolve(base, path):
@@ -514,14 +463,12 @@ class RODatabase(object):
         path = base.resolve(path)
         return str(path)
 
-
     @staticmethod
     def resolve2(base, path):
         if type(base) is not Path:
             base = Path(base)
         path = base.resolve2(path)
         return str(path)
-
 
     #######################################################################
     # Search
@@ -530,10 +477,8 @@ class RODatabase(object):
         results = self.backend.search(query, **kw)
         return SearchResults(database=self, results=results)
 
-
     def reindex_catalog(self, base_abspath, recursif=True):
         raise ReadonlyError
-
 
 
 ro_database = RODatabase()

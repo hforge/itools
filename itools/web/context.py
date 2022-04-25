@@ -29,7 +29,7 @@ from itools.datatypes import String
 from itools.validators import ValidationError
 
 # Local imports
-from exceptions import FormError
+from .exceptions import FormError
 
 
 ###########################################################################
@@ -111,7 +111,7 @@ def _get_form_value(form, name, type=String, default=None):
         return default
 
     # We consider a blank string to be a missing value (FIXME not reliable).
-    is_blank = isinstance(value, (str, unicode)) and not value.strip()
+    is_blank = isinstance(value, (str, str)) and not value.strip()
     if is_blank:
         if is_mandatory:
             raise FormError(required_msg, missing=True)

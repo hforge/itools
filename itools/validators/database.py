@@ -18,13 +18,13 @@
 from itools.gettext import MSG
 
 # Import from here
-from base import BaseValidator
+from .base import BaseValidator
 
 
 class UniqueValidator(BaseValidator):
 
     validator_id = 'unique'
-    errors = {'unique': MSG(u'The field should be unique.')}
+    errors = {'unique': MSG('The field should be unique.')}
     field_name = None
     base_query = None
 

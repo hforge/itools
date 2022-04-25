@@ -24,15 +24,14 @@ class DNode(object):
 
     __slots__ = ['prev', 'next', 'key']
 
-
     def __init__(self, key):
         self.key = key
-
 
 
 class OrderedDict(dict):
 
     def __init__(self, items=None):
+        super().__init__()
         # The doubly-linked list
         self.first = None
         self.last = None
@@ -43,16 +42,15 @@ class OrderedDict(dict):
             for key, value in items:
                 self[key] = value
 
-
     def _check_integrity(self):
         """This method is for testing purposes, it checks the internal
         data structures are consistent.
         """
         keys = self.keys()
-        keys.sort()
+        keys = sorted(list(keys))
         # Check the key-to-node mapping
         keys2 = self.key2node.keys()
-        keys2.sort()
+        keys2 = sorted(list(keys2))
         assert keys == keys2
         # Check the key-to-node against the doubly-linked list
         for key, node in self.key2node.items():
@@ -66,7 +64,6 @@ class OrderedDict(dict):
             keys.discard(node.key)
             node = node.next
         assert len(keys) == 0
-
 
     def _append(self, key):
         node = DNode(key)
@@ -83,7 +80,6 @@ class OrderedDict(dict):
             self.last.next = node
         self.last = node
 
-
     def _remove(self, key):
         # (1) Pop the node from the key-to-node map
         node = self.key2node.pop(key)
@@ -99,7 +95,6 @@ class OrderedDict(dict):
         else:
             node.next.prev = node.prev
 
-
     ######################################################################
     # Override dict API
     def __iter__(self):
@@ -108,35 +103,28 @@ class OrderedDict(dict):
             yield node.key
             node = node.next
 
-
     def __setitem__(self, key, value):
         dict.__setitem__(self, key, value)
         self._append(key)
 
-
     def __delitem__(self, key):
         self._remove(key)
         dict.__delitem__(self, key)
-
 
     def clear(self):
         dict.clear(self)
         self.key2node.clear()
         self.first = self.last = None
 
-
     def copy(self):
         message = "use 'copy.deepcopy' to copy an ordered dict"
         raise NotImplementedError(message)
 
-
     def fromkeys(self, seq, value=None):
         raise NotImplementedError("the 'fromkeys' method is not supported")
 
-
     def items(self):
         return list(self.iteritems())
-
 
     def iteritems(self):
         node = self.first
@@ -144,13 +132,11 @@ class OrderedDict(dict):
             yield node.key, self[node.key]
             node = node.next
 
-
     def iterkeys(self):
         node = self.first
         while node is not None:
             yield node.key
             node = node.next
-
 
     def itervalues(self):
         node = self.first
@@ -158,15 +144,12 @@ class OrderedDict(dict):
             yield self[node.key]
             node = node.next
 
-
     def keys(self):
-        return list(self.keys())
-
+        return list(self.iterkeys())
 
     def pop(self, key):
         self._remove(key)
         return dict.pop(self, key)
-
 
     def popitem(self):
         if self.first is None:
@@ -176,15 +159,12 @@ class OrderedDict(dict):
         del self[key]
         return (key, value)
 
-
     def setdefault(self, key, default=None):
         raise NotImplementedError("the 'setdefault' method is not supported")
-
 
     def update(self, value=None, **kw):
         raise NotImplementedError("the 'update' method is not supported")
 
-
     def values(self):
-        return list(self.values())
+        return list(self.itervalues())
 

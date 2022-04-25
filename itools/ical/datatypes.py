@@ -39,7 +39,6 @@ class Time(ISOTime):
         return value.strftime('%H:%M:%S')
 
 
-
 class DateTime(DataType):
     """iCalendar Date format:
     A special case of itools.datatypes.DateTime, focused on RFC5545 needs
@@ -74,7 +73,6 @@ class DateTime(DataType):
 
         return datetime(year, month, day, hour, min, sec, tzinfo=tzinfo)
 
-
     @staticmethod
     def encode(value, type=None):
         if value is None:
@@ -86,7 +84,6 @@ class DateTime(DataType):
             if value.tzinfo is not None:
                 fmt += '%Z'
         return value.strftime(fmt)
-
 
 
 # data types for each property
@@ -149,7 +146,6 @@ record_properties = freeze({
   'URL': URI(multiple=False),
   'UID': String(multiple=False, indexed=True)
 })
-
 
 
 record_parameters = freeze({

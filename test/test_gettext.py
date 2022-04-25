@@ -24,7 +24,6 @@ from itools.gettext import POFile
 from itools.srx import TEXT
 
 
-
 class POTestCase(TestCase):
 
     def test_case1(self):
@@ -58,7 +57,6 @@ class POTestCase(TestCase):
 
         self.assertEqual(po.get_msgstr('test'), u'Esto es una "prueba"')
 
-
     def test_output(self):
         """Test output."""
         content = '# Comment\n' \
@@ -71,7 +69,6 @@ class POTestCase(TestCase):
         po.load_state_from_string(content)
 
         self.assertEqual((po.get_units())[0].to_str(), content)
-
 
     def test_fuzzy(self):
         """Test fuzzy."""
@@ -87,7 +84,6 @@ class POTestCase(TestCase):
         translation = po.gettext(((TEXT, 'Hello'),))
         self.assertEqual(translation, ((TEXT, 'Hello'),))
 
-
     def test_end_comment(self):
         """Test end comment."""
         content = '#, fuzzy\n' \
@@ -97,7 +93,7 @@ class POTestCase(TestCase):
         po.load_state_from_string(content)
 
         translation = po.gettext(((TEXT, 'Hello'),))
-        self.assertEqual(translation,((TEXT, 'Hello'),))
+        self.assertEqual(translation, ((TEXT, 'Hello'),))
 
 
 

@@ -24,22 +24,20 @@ except ImportError:
 
 # Import from itools
 from itools.handlers import File, register_handler_class
-from rtf import rtf_to_text
+from .rtf import rtf_to_text
 try:
     from doctotext import doc_to_text, DocRtfException
 except ImportError:
     doc_to_text = None
 
 
-
 class MSWord(File):
     class_mimetypes = ['application/msword']
     class_extension = 'doc'
 
-
     def to_text(self):
         if doc_to_text is None:
-            return u""
+            return ""
         data = self.to_str()
         try:
             return doc_to_text(data)
@@ -47,15 +45,13 @@ class MSWord(File):
             return rtf_to_text(data)
 
 
-
 class MSExcel(File):
     class_mimetypes = ['application/vnd.ms-excel']
     class_extension = 'xls'
 
-
     def to_text(self):
         if open_workbook is None:
-            return u""
+            return ""
 
         data = self.to_str()
 
@@ -68,15 +64,13 @@ class MSExcel(File):
         for sheet in book.sheets():
             for idx in range(sheet.nrows):
                 for value in sheet.row_values(idx):
-                    if type(value) is not unicode:
+                    if type(value) is not str:
                         try:
-                            value = unicode(value)
+                            value = str(value)
                         except UnicodeError:
                             continue
                     text.append(value)
-        return u' '.join(text)
-
-
+        return ' '.join(text)
 
 
 # Register

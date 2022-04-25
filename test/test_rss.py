@@ -61,7 +61,7 @@ class RSSTestCase(TestCase):
         self.assertEqual(str(link),
                 'http://liftoff.msfc.nasa.gov/news/2003/news-starcity.asp')
         expected = u"How do Americans get ready to work with Russians"
-        self.assert_(item['description'].startswith(expected))
+        self.assertTrue(item['description'].startswith(expected))
 
 
     def test_serialize(self):

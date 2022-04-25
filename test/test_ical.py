@@ -105,29 +105,30 @@ def property_to_string(prop_name, prop):
     prop_value = prop.value
     if type(prop.value) is datetime:
         params = prop.parameters
-        if params:# and prop.parameters.has_key('VALUE'):
-            t = params['VALUE'][0] if params.has_key('VALUE') else None
+        if params:
+            t = params['VALUE'][0] if 'VALUE' in params else None
         else:
             t = None
         prop_value = DateTime.encode(prop.value, type=t)
     # Simple case
     if not prop.parameters:
-        return u'%s:%s' % (prop_name, prop_value)
+        return '%s:%s' % (prop_name, prop_value)
 
     # Params
     params = ''
     for p_name in prop.parameters:
         p_value = prop.parameters[p_name]
-        p_value = [ encode_param_value(p_name, x, String) for x in p_value ]
+        p_value = [encode_param_value(p_name, x, String) for x in p_value]
         param = ';%s=%s' % (p_name, ','.join(p_value))
         params = params + param
-    return u'%s%s:%s' % (prop_name, params, prop_value)
+    return '%s%s:%s' % (prop_name, params, prop_value)
 
 
 
 class icalTestCase(TestCase):
 
     def setUp(self):
+        self.maxDiff = None
         self.cal1 = iCalendar(string=content)
         self.cal2 = iCalendar(string=content2)
 
@@ -144,8 +145,8 @@ class icalTestCase(TestCase):
 
         # Test properties
         expected_properties = [
-            u'VERSION;None:2.0',
-            u'PRODID;None:-//hforge.org/NONSGML ikaaro icalendar V1.0//EN']
+            'VERSION;None:2.0',
+            'PRODID;None:-//hforge.org/NONSGML ikaaro icalendar V1.0//EN']
         self.assertEqual(properties, expected_properties)
 
         # Test components
@@ -240,11 +241,11 @@ class icalTestCase(TestCase):
             value = property_value.value
             property = '%s;%s:%s' % (name, params, value)
             properties.append(property)
-
         expected_properties = [
-            u'VERSION;None:2.0',
-            u'METHOD;None:PUBLISH',
-            u'PRODID;None:-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN' ]
+            'VERSION;None:2.0',
+            'PRODID;None:-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN',
+            'METHOD;None:PUBLISH',
+        ]
         self.assertEqual(properties, expected_properties)
 
         # Test component properties
@@ -263,20 +264,19 @@ class icalTestCase(TestCase):
                     properties.append(property)
 
         expected_event_properties = [
-            u'STATUS:TENTATIVE',
-            u'DTSTAMP:20050601T074604Z',
-            u'DESCRIPTION:all all all',
-            u'ATTENDEE;MEMBER="mailto:DEV-GROUP@host2.com"'
-                     ';RSVP=TRUE:mailto:jdoe@itaapy.com',
-            u'ATTENDEE;MEMBER="mailto:DEV-GROUP@host2.com"'
-                     ':mailto:jsmith@itaapy.com',
-            u'SUMMARY:Résumé',
-            u'PRIORITY:1',
-            u'LOCATION:France',
-            u'X-MOZILLA-RECUR-DEFAULT-INTERVAL:0',
-            u'DTEND;VALUE=DATE:20050531',
-            u'DTSTART;VALUE=DATE:20050530',
-            u'CLASS:PRIVATE']
+            'SUMMARY:Résumé',
+            'DESCRIPTION:all all all',
+            'LOCATION:France',
+            'STATUS:TENTATIVE',
+            'CLASS:PRIVATE',
+            'X-MOZILLA-RECUR-DEFAULT-INTERVAL:0',
+            'DTSTART;VALUE=DATE:20050530',
+            'DTEND;VALUE=DATE:20050531',
+            'DTSTAMP:20050601T074604Z',
+            'ATTENDEE;RSVP=TRUE;MEMBER="mailto:DEV-GROUP@host2.com":mailto:jdoe@itaapy.com',
+            'ATTENDEE;MEMBER="mailto:DEV-GROUP@host2.com":mailto:jsmith@itaapy.com',
+            'PRIORITY:1',
+        ]
 
         self.assertEqual(event.uid, '581361a0-1dd2-11b2-9a42-bd3958eeac9a')
         self.assertEqual(properties, expected_event_properties)
@@ -308,9 +308,10 @@ class icalTestCase(TestCase):
 
         # Test properties
         expected_properties = [
-            u'VERSION;None:2.0',
-            u'METHOD;None:PUBLISH',
-            u'PRODID;None:-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN' ]
+            'VERSION;None:2.0',
+            'PRODID;None:-//Mozilla.org/NONSGML Mozilla Calendar V1.0//EN',
+            'METHOD;None:PUBLISH',
+        ]
         self.assertEqual(properties, expected_properties)
 
         events = []
@@ -335,24 +336,26 @@ class icalTestCase(TestCase):
 
         # Test events
         expected_events = [
-            [u'ATTENDEE;MEMBER="mailto:DEV-GROUP@host2.com";RSVP=TRUE'
-                             u':mailto:jdoe@itaapy.com',
-             u'SUMMARY:222222222',
-             u'PRIORITY:2',
-             u'DTEND;VALUE=DATE:20050701',
-             u'DTSTART;VALUE=DATE:20050701'],
-            [u'STATUS:TENTATIVE',
-             u'DESCRIPTION:all all all',
-             u'ATTENDEE;MEMBER="mailto:DEV-GROUP@host2.com"'
-                     u';RSVP=TRUE:mailto:jdoe@itaapy.com',
-             u'SUMMARY:Refound',
-             u'PRIORITY:1',
-             u'LOCATION:France',
-             u'X-MOZILLA-RECUR-DEFAULT-INTERVAL:0',
-             u'DTEND;VALUE=DATE:20050531',
-             u'DTSTART;VALUE=DATE:20050530',
-             u'CLASS:PRIVATE'],
-            ]
+            [
+                'SUMMARY:Refound',
+                'DESCRIPTION:all all all',
+                'LOCATION:France',
+                'STATUS:TENTATIVE',
+                'CLASS:PRIVATE',
+                'X-MOZILLA-RECUR-DEFAULT-INTERVAL:0',
+                'DTSTART;VALUE=DATE:20050530',
+                'DTEND;VALUE=DATE:20050531',
+                'ATTENDEE;RSVP=TRUE;MEMBER="mailto:DEV-GROUP@host2.com":mailto:jdoe@itaapy.com',
+                'PRIORITY:1',
+            ],
+            [
+                'SUMMARY:222222222',
+                'DTSTART;VALUE=DATE:20050701',
+                'DTEND;VALUE=DATE:20050701',
+                'ATTENDEE;RSVP=TRUE;MEMBER="mailto:DEV-GROUP@host2.com":mailto:jdoe@itaapy.com',
+                'PRIORITY:2',
+            ],
+        ]
 
         self.assertEqual(events, expected_events)
         self.assertEqual(len(cal.get_components('VEVENT')), 2)

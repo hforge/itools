@@ -32,7 +32,6 @@ class GulpBuilder(object):
     That allow to avoid commit compiled JS/CSS files into GIT.
     """
 
-
     def __init__(self, package_root, worktree, manifest):
         self.package_root = package_root
         if self.package_root != '.':
@@ -43,9 +42,7 @@ class GulpBuilder(object):
         self.manifest = manifest
         self.fs = LocalFolder('.')
         if self.fs.is_folder(self.ui_path):
-            self.dist_folders = tuple(['{0}{1}'.format(self.ui_path, x)
-              for x in LocalFolder(self.ui_path).get_names()])
-
+            self.dist_folders = tuple(['{0}{1}'.format(self.ui_path, x) for x in LocalFolder(self.ui_path).get_names()])
 
     def run(self):
         npm_done = self.launch_npm_install()
@@ -58,7 +55,6 @@ class GulpBuilder(object):
                 if (relative_path and
                     relative_path.startswith(self.dist_folders) and self.fs.is_file(path)):
                     self.manifest.add(relative_path)
-
 
     def launch_npm_install(self):
         done = False
@@ -79,7 +75,6 @@ class GulpBuilder(object):
                 done = True
         return done
 
-
     def launch_gulp_build(self):
         done = False
         for path in self.manifest:
@@ -98,7 +93,6 @@ class GulpBuilder(object):
                     sys.exit(1)
                 done = True
         return done
-
 
     def launch_webpack(self):
         done = False

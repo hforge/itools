@@ -21,7 +21,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from cStringIO import StringIO
+from io import StringIO, BytesIO
 from os.path import splitext
 from random import choice
 from zipfile import ZipFile
@@ -42,34 +42,33 @@ except ImportError:
     PILImage = None
 
 
-
 def zip_data(source, modified_files):
-    file = StringIO()
-    outzip = ZipFile(file, 'w')
-    zip = ZipFile(StringIO(source))
-    for info in zip.infolist():
-        # Replace the data from the map
-        if info.filename in modified_files:
-            data = modified_files[info.filename]
-            if data is None:
-                continue
-        else:
-            data = zip.read(info.filename)
+    assert isinstance(source, bytes)
+    inzip = ZipFile(BytesIO(source))
 
-        # Section 17.4 says the mimetype file shall not include an extra
-        # field.  So we remove it even if present in the source.
-        if info.filename == 'mimetype':
-            info.extra = ''
+    file = BytesIO()
+    with ZipFile(file, 'w') as outzip:
+        for info in inzip.infolist():
+            # Replace the data from the map
+            if info.filename in modified_files:
+                data = modified_files[info.filename]
+                if data is None:
+                    continue
+            else:
+                data = inzip.read(info.filename)
 
-        # Ok
-        outzip.writestr(info, data)
+            # Section 17.4 says the mimetype file shall not include an extra
+            # field.  So we remove it even if present in the source.
+            if info.filename == 'mimetype':
+                info.extra = b''
+
+            # Ok
+            outzip.writestr(info, data)
 
     # Ok
-    outzip.close()
     content = file.getvalue()
     file.close()
     return content
-
 
 
 def stl_to_odt(model_odt, namespace):
@@ -79,7 +78,6 @@ def stl_to_odt(model_odt, namespace):
     modified_files = {'content.xml': xml_content}
     # Zip
     return zip_data(model_odt.data, modified_files)
-
 
 
 class GreekCatalog(object):
@@ -112,11 +110,10 @@ class GreekCatalog(object):
 
         new_unit = []
         for x, s in unit:
-            if type(s) in (str, unicode):
-                s = ''.join([ f(c) for c in s ])
+            if type(s) is str:
+                s = ''.join([f(c) for c in s])
             new_unit.append((x, s))
         return new_unit
-
 
 
 class OOFile(ZIPFile):
@@ -126,7 +123,6 @@ class OOFile(ZIPFile):
     def to_text(self):
         content = self.get_file('content.xml')
         return xml_to_text(content)
-
 
 
 class ODFFile(OOFile):
@@ -158,15 +154,16 @@ class ODFFile(OOFile):
                         meta[previous_tag_name] = value
         return meta
 
-
     def get_events(self, filename):
         content = self.get_file(filename)
+        if isinstance(content, bytes):
+            content = content.decode("utf-8")
+
         for event in XMLParser(content):
             if event == XML_DECL:
                 pass
             else:
                 yield event
-
 
     def get_units(self, srx_handler=None):
         for filename in ['content.xml', 'meta.xml', 'styles.xml']:
@@ -188,7 +185,6 @@ class ODFFile(OOFile):
 
         # Zip
         return zip_data(self.data, modified_files)
-
 
     def greek(self):
         """Anonymize the ODF file.
@@ -259,8 +255,7 @@ class ODFFile(OOFile):
                 modified_files[filename] = None
                 print(err % filename)
 
-        return  zip_data(self.data, modified_files)
-
+        return zip_data(self.data, modified_files)
 
 
 class ODTFile(ODFFile):
@@ -270,7 +265,6 @@ class ODTFile(ODFFile):
     namespace = 'urn:oasis:names:tc:opendocument:xmlns:text:1.0'
 
 
-
 class ODSFile(ODFFile):
 
     class_mimetypes = ['application/vnd.oasis.opendocument.spreadsheet']
@@ -278,13 +272,11 @@ class ODSFile(ODFFile):
     namespace = 'urn:oasis:names:tc:opendocument:xmlns:spreadsheet:1.0'
 
 
-
 class ODPFile(ODFFile):
 
     class_mimetypes = ['application/vnd.oasis.opendocument.presentation']
     class_extension = 'odp'
     namespace = 'urn:oasis:names:tc:opendocument:xmlns:presentation:1.0'
-
 
 
 # Register handler and mimetypes

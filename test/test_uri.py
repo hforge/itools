@@ -226,6 +226,20 @@ class PathTestCase(TestCase):
         path = Path('../../a//.//b/c')
         self.assertEqual(str(path), '../../a/b/c')
 
+    def test_slice(self):
+        path = Path('/a/b/c')
+        self.assertEqual(str(path[1:3]), '/b/c')
+        self.assertEqual(path[0], 'a')
+        self.assertEqual(path[1], 'b')
+        self.assertEqual(path[-1], 'c')
+
+    def test_get_name(self):
+        path = Path('/a/b/c/;x')
+        self.assertEqual(path.get_name(), ';x')
+        self.assertEqual(path.get_name()[0], ';')
+
+
+
 
 
 class ParseTestCase(TestCase):
@@ -433,7 +447,7 @@ class MailtoTestCase(TestCase):
         """Compare two Mailto objects with same parameters."""
         ob = Mailto(self.address)
         copy = MailtoDataType.decode(self.uri)
-        self.assert_(type(ob) is type(copy))
+        self.assertTrue(type(ob) is type(copy))
         self.assertEqual(ob.username, copy.username)
         self.assertEqual(ob.host, copy.host)
         self.assertEqual(str(ob), str(copy))

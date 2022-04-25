@@ -17,6 +17,7 @@
 
 validators_registry = {}
 
+
 def register_validator(cls):
     validators_registry[cls.validator_id] = cls
 

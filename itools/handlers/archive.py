@@ -21,12 +21,11 @@ from datetime import datetime
 from os.path import join
 from zipfile import ZipFile
 from tarfile import open as open_tarfile
-from cStringIO import StringIO
+from io import StringIO, BytesIO
 
 # Import from itools
-from file import File
-from registry import register_handler_class
-
+from .file import File
+from .registry import register_handler_class
 
 
 class Info(object):
@@ -40,17 +39,20 @@ class Info(object):
         self.mtime = mtime
 
 
-
 class ZIPFile(File):
 
     class_mimetypes = ['application/zip']
     class_extension = 'zip'
 
-
     def _open_zipfile(self):
-        archive = StringIO(self.to_str())
+        data = self.to_str()
+        if isinstance(data, bytes):
+            archive = BytesIO(data)
+        elif isinstance(data, str):
+            archive = StringIO(data)
+        else:
+            raise Exception("Error Zipfile")
         return ZipFile(archive)
-
 
     def get_members(self):
         zip = self._open_zipfile()
@@ -64,7 +66,6 @@ class ZIPFile(File):
         finally:
             zip.close()
 
-
     def get_contents(self):
         zip = self._open_zipfile()
         try:
@@ -72,14 +73,12 @@ class ZIPFile(File):
         finally:
             zip.close()
 
-
     def get_file(self, filename):
         zip = self._open_zipfile()
         try:
             return zip.read(filename)
         finally:
             zip.close()
-
 
     def extract_to_folder(self, dst):
         zip = self._open_zipfile()
@@ -93,18 +92,15 @@ class ZIPFile(File):
             zip.close()
 
 
-
 class TARFile(File):
 
     class_mimetypes = ['application/x-tar']
     class_extension = 'tar'
     class_mode = 'r'
 
-
     def _open_tarfile(self):
         archive = StringIO(self.to_str())
         return open_tarfile(mode=self.class_mode, fileobj=archive)
-
 
     def get_members(self):
         tar = self._open_tarfile()
@@ -120,7 +116,6 @@ class TARFile(File):
         finally:
             tar.close()
 
-
     def get_contents(self):
         tar = self._open_tarfile()
         try:
@@ -131,14 +126,12 @@ class TARFile(File):
         finally:
             tar.close()
 
-
     def get_file(self, filename):
         tar = self._open_tarfile()
         try:
             return tar.extractfile(filename).read()
         finally:
             tar.close()
-
 
     def extract_to_folder(self, dst):
         tar = self._open_tarfile()
@@ -148,13 +141,11 @@ class TARFile(File):
             tar.close()
 
 
-
 class TGZFile(TARFile):
 
     class_mimetypes = ['application/x-tgz']
     class_extension = 'tgz'
     class_mode = 'r:gz'
-
 
 
 class TBZ2File(TARFile):
@@ -164,19 +155,16 @@ class TBZ2File(TARFile):
     class_mode = 'r:bz2'
 
 
-
 class GzipFile(File):
 
     class_mimetypes = ['application/x-gzip']
     class_extension = 'gz'
 
 
-
 class Bzip2File(File):
 
     class_mimetypes = ['application/x-bzip2']
     class_extension = 'bz2'
-
 
 
 # Register

@@ -19,7 +19,7 @@
 from types import GeneratorType
 
 # Import from itools
-from parser import XMLParser, TEXT, XML_DECL
+from .parser import XMLParser, TEXT, XML_DECL
 
 
 
@@ -39,4 +39,4 @@ def xml_to_text(stream):
             text.append(value)
         elif event == XML_DECL:
             encoding = value[1]
-    return unicode(' '.join(text), encoding)
+    return str(' '.join(text), encoding)

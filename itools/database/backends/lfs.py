@@ -16,12 +16,13 @@
 
 # Import from the Standard Library
 from os.path import abspath, dirname
+import mimetypes
 
 # Import from itools
-from itools.fs import lfs
+from itools.fs import lfs, WRITE
 
 # Import from here
-from registry import register_backend
+from .registry import register_backend
 
 
 class LFSBackend(object):
@@ -32,63 +33,55 @@ class LFSBackend(object):
         else:
             self.fs = lfs
 
-
     @classmethod
     def init_backend(cls, path, fields, init=False, soft=False):
-        self.fs.make_folder('{0}/database'.format(path))
-
+        lfs.make_folder('{0}/database'.format(path))
 
     def normalize_key(self, path, __root=None):
         return self.fs.normalize_key(path)
 
-
     def handler_exists(self, key):
         return self.fs.exists(key)
-
 
     def get_handler_names(self, key):
         return self.fs.get_names(key)
 
-
-    def get_handler_data(self, key):
+    def get_handler_data(self, key, text=False):
         if not key:
             return None
-        with self.fs.open(key) as f:
-            return f.read()
-
+        with self.fs.open(key, text=text) as f:
+            if isinstance(f, str):
+                return f
+            else:
+                return f.read()
 
     def get_handler_mimetype(self, key):
         return self.fs.get_mimetype(key)
 
-
     def handler_is_file(self, key):
         return self.fs.is_file(key)
-
 
     def handler_is_folder(self, key):
         return self.fs.is_folder(key)
 
-
     def get_handler_mtime(self, key):
         return self.fs.get_mtime(key)
 
-
     def save_handler(self, key, handler):
         data = handler.to_str()
+        text = isinstance(data, str)
         # Save the file
         if not self.fs.exists(key):
-            with self.fs.make_file(key) as f:
+            with self.fs.make_file(key, text=text) as f:
                 f.write(data)
                 f.truncate(f.tell())
         else:
-            with self.fs.open(key, 'w') as f:
+            with self.fs.open(key, WRITE, text=text) as f:
                 f.write(data)
                 f.truncate(f.tell())
 
-
     def traverse_resources(self):
         raise NotImplementedError
-
 
     def do_transaction(self, commit_message, data, added, changed, removed, handlers):
         # List of Changed
@@ -103,11 +96,12 @@ class LFSBackend(object):
         for key in removed:
             self.fs.remove(key)
 
-
-
     def abort_transaction(self):
         # Cannot abort transaction with this backend
         pass
+
+    def close(self):
+        self.fs.close()
 
 
 register_backend('lfs', LFSBackend)

@@ -26,17 +26,15 @@ from itools.handlers import File, ConfigFile, TGZFile
 from itools.fs import lfs
 
 
-
 class StateTestCase(TestCase):
 
     def test_abort(self):
         handler = File('tests/hello.txt')
-        self.assertEqual(handler.data, u'hello world\n')
-        handler.set_data(u'bye world\n')
-        self.assertEqual(handler.data, u'bye world\n')
+        self.assertEqual(handler.data, b'hello world\n')
+        handler.set_data(b'bye world\n')
+        self.assertEqual(handler.data, b'bye world\n')
         handler.abort_changes()
-        self.assertEqual(handler.data, u'hello world\n')
-
+        self.assertEqual(handler.data, b'hello world\n')
 
 
 class ConfigFileTestCase(TestCase):
@@ -47,22 +45,19 @@ class ConfigFileTestCase(TestCase):
         if lfs.exists(self.config_path):
             lfs.remove(self.config_path)
 
-
     def tearDown(self):
         if lfs.exists(self.config_path):
             lfs.remove(self.config_path)
 
-
     def _init_test(self, value):
         # Init data
         if not lfs.exists(self.config_path):
-            lfs.make_file(self.config_path)
-
+            f = lfs.make_file(self.config_path, text=True)
+            f.close()
         # Write data
         config = ConfigFile(self.config_path)
         config.set_value("test", value)
         config.save_state()
-
 
     def test_simple_value(self):
         # Init data
@@ -76,7 +71,6 @@ class ConfigFileTestCase(TestCase):
 
         # Test data
         self.assertEqual(config2_value, value)
-
 
     def test_long_value(self):
         # Init data
@@ -95,7 +89,6 @@ class ConfigFileTestCase(TestCase):
         # Test data
         self.assertEqual(config2_value, value)
 
-
     def test_last_line_empty(self):
         # Init data
         value = "HELLO, WORLD!\n\n"
@@ -113,7 +106,6 @@ class ConfigFileTestCase(TestCase):
 
         # Test data
         self.assertEqual(config2_value, value)
-
 
     def test_quote_value(self):
         # Init data
@@ -140,8 +132,6 @@ class ConfigFileTestCase(TestCase):
         # Test data
         self.assertEqual(config2_value, value)
 
-
-
     def test_wrapped_quote_value(self):
         # Init data
         value = "\"HELLO, WORLD!\""
@@ -166,7 +156,6 @@ class ConfigFileTestCase(TestCase):
 
         # Test data
         self.assertEqual(config2_value, value)
-
 
 
 ###########################################################################

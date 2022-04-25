@@ -26,7 +26,6 @@ except ImportError:
     print('Warning: win32 is not installed')
 
 
-
 def get_win32_handle(pid):
     """Return the windows handle for a pid.
     """
@@ -52,17 +51,14 @@ def get_time_spent(mode='both', since=0.0):
     return (data['KernelTime'] + data['UserTime']) / 10000000.0 - since
 
 
-
 def vmsize():
     handle = get_win32_handle(getpid())
     m = GetProcessMemoryInfo(handle)
     return m["WorkingSetSize"]
 
 
-
 def become_daemon():
     raise NotImplementedError('become_daemon not yet implemented for Windows')
-
 
 
 def fork():

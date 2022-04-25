@@ -78,7 +78,7 @@ def sanitize_stream(stream):
                 continue
             # Filter attributes
             attributes = attributes.copy()
-            for attr_key in attributes.keys():
+            for attr_key in list(attributes.keys()):
                 attr_value = attributes[attr_key]
                 attr_uri, attr_name = attr_key
                 # Check it is a safe attribute
@@ -112,7 +112,6 @@ def sanitize_stream(stream):
         else:
             if skip == 0:
                 yield event
-
 
 
 def sanitize_str(str):

@@ -18,9 +18,8 @@
 # Import from itools
 from itools.handlers import register_handler_class
 from itools.xmlfile import translate
-from xhtml import XHTMLFile, stream_to_str_as_html
-from parser import HTMLParser
-
+from .xhtml import XHTMLFile, stream_to_str_as_html
+from .parser import HTMLParser
 
 
 class HTMLFile(XHTMLFile):
@@ -51,21 +50,17 @@ class HTMLFile(XHTMLFile):
             '</html>')
         return skeleton % {'title': title}
 
-
     def _load_state_from_file(self, file):
         data = file.read()
         stream = HTMLParser(data)
         self.events = list(stream)
-
 
     def load_state_from_string(self, string):
         self.reset()
         stream = HTMLParser(string)
         self.events = list(stream)
 
-
     to_str = XHTMLFile.to_html
-
 
     def translate(self, catalog, srx_handler=None):
         stream = translate(self.events, catalog, srx_handler)

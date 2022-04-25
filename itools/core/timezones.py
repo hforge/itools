@@ -73,31 +73,28 @@ def fixed_offset(offset, _tzinfos={}):
 ###########################################################################
 # Local Time (copied from from Python datetime doc)
 ###########################################################################
-ZERO = timedelta(0)
-STDOFFSET = timedelta(seconds = -timezone)
-DSTOFFSET = timedelta(seconds = -altzone) if daylight else STDOFFSET
-DSTDIFF = DSTOFFSET - STDOFFSET
 
 class LocalTimezone(tzinfo):
 
-    def utcoffset(self, dt):
-        return DSTOFFSET if self._isdst(dt) else STDOFFSET
+    ZERO = timedelta(0)
+    STDOFFSET = timedelta(seconds=-timezone)
+    DSTOFFSET = timedelta(seconds=-altzone) if daylight else STDOFFSET
+    DSTDIFF = DSTOFFSET - STDOFFSET
 
+    def utcoffset(self, dt):
+        return self.DSTOFFSET if self._isdst(dt) else self.STDOFFSET
 
     def dst(self, dt):
-        return DSTDIFF if self._isdst(dt) else ZERO
-
+        return self.DSTDIFF if self._isdst(dt) else self.ZERO
 
     def tzname(self, dt):
         return tzname[self._isdst(dt)]
-
 
     def _isdst(self, dt):
         stamp = mktime((dt.year, dt.month, dt.day, dt.hour, dt.minute,
                         dt.second, dt.weekday(), 0, -1))
         tt = localtime(stamp)
         return tt.tm_isdst > 0
-
 
     def localize(self, dt, is_dst=False):
         """Implemented for compatibility with pytz

@@ -21,7 +21,7 @@ from string import ascii_letters, digits
 from itools.gettext import MSG
 
 # Import from here
-from base import BaseValidator
+from .base import BaseValidator
 
 
 class StrongPasswordValidator(BaseValidator):
@@ -36,10 +36,10 @@ class StrongPasswordValidator(BaseValidator):
     min_length = 5
 
     errors = {
-        'too_short': MSG(u"This password is too short. It must contain at least {min_length} characters."),
-        'need_character': MSG(u"This password should contains at least one character."),
-        'need_number': MSG(u"This password should contains at least one number."),
-        'need_special_character': MSG(u"This password should contains at least one special character."),
+        'too_short': MSG("This password is too short. It must contain at least {min_length} characters."),
+        'need_character': MSG("This password should contains at least one character."),
+        'need_number': MSG("This password should contains at least one number."),
+        'need_special_character': MSG("This password should contains at least one special character."),
       }
 
     def check(self, value):

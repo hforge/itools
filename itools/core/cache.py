@@ -21,7 +21,7 @@ http://en.wikipedia.org/wiki/Cache_algorithms
 """
 
 # Import from itools
-from odict import OrderedDict
+from .odict import OrderedDict
 
 
 class LRUCache(OrderedDict):
@@ -84,7 +84,6 @@ class LRUCache(OrderedDict):
         # Whether to free memory automatically or not (boolean)
         self.automatic = automatic
 
-
     def _append(self, key):
         super(LRUCache, self)._append(key)
 
@@ -92,7 +91,6 @@ class LRUCache(OrderedDict):
         if self.automatic is True and len(self) > self.size_max:
             while len(self) > self.size_min:
                 self.popitem()
-
 
     def touch(self, key):
         # (1) Get the node from the key-to-node map
@@ -115,4 +113,3 @@ class LRUCache(OrderedDict):
         node.next = None
         self.last.next = node
         self.last = node
-

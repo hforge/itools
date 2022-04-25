@@ -20,15 +20,14 @@ protocol.
 """
 
 # Import from the Standard Library
-import __builtin__
+
+import builtins
 from decimal import Decimal
 from locale import getdefaultlocale
 
 
-
 zero = Decimal('0.0')
 one = Decimal('1.0')
-
 
 
 # FIXME This class belongs to the public API, but it is not exposed since
@@ -46,7 +45,6 @@ class AcceptLanguage(dict):
         if key == '*':
             key = ''
         self[key] = quality
-
 
     def get_quality(self, language):
         """This method returns the quality of the given language. As defined
@@ -66,7 +64,6 @@ class AcceptLanguage(dict):
 
         return self.get(language, zero), steps
 
-
     def select_language(self, languages):
         """This is the selection language algorithm, it returns the user
         prefered language for the given list of available languages, if the
@@ -85,7 +82,6 @@ class AcceptLanguage(dict):
                 language, quality, steps = lang, q, s
 
         return language
-
 
 
 class AcceptLanguageType(object):
@@ -117,13 +113,11 @@ class AcceptLanguageType(object):
 
         return AcceptLanguage(accept)
 
-
     @staticmethod
     def encode(accept):
         # Sort
-        accept = [ (y, x) for x, y in accept.items() ]
-        accept.sort()
-        accept.reverse()
+        accept = [(y, x) for x, y in accept.items()]
+        accept = sorted(accept, key=lambda x: x[0], reverse=True)
         # Encode
         data = []
         for quality, language in accept:
@@ -138,7 +132,6 @@ class AcceptLanguageType(object):
         return ', '.join(data)
 
 
-
 def get_accept():
     language = getdefaultlocale()[0]
     if language is None:
@@ -150,14 +143,12 @@ def get_accept():
     return AcceptLanguageType.decode(language)
 
 
-
 def select_language(languages=None):
     return get_accept().select_language(languages)
 
 
-
 def init_language_selector(language_selector=select_language):
-    __builtin__.__dict__['select_language'] = language_selector
+    builtins.__dict__['select_language'] = language_selector
 
 
 # Set default language selector

@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from pdf import PDFFile
+from .pdf import PDFFile
 
 
 __all__ = ['PDFFile']

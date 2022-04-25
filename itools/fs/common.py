@@ -24,9 +24,8 @@ from itools.i18n import has_language
 
 READ = 'r'
 WRITE = 'w'
-READ_WRITE = 'rw'
-APPEND = 'a'
-
+READ_WRITE = 'w+'
+APPEND = 'a+'
 
 
 class FileName(DataType):
@@ -71,8 +70,6 @@ class FileName(DataType):
         if language is not None:
             name = name + '.' + language
         return name
-
-
 
 
 def get_mimetype(name):

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 # Copyright (C) 2003-2008, 2010 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2007 Sylvain Taverne <taverne.sylvain@gmail.com>
@@ -90,6 +89,6 @@ if __name__ == '__main__':
 
     # Output
     if options.output is None:
-        print data
+        print(data)
     else:
         open(options.output, 'w').write(data)

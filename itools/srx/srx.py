@@ -23,13 +23,13 @@ from itools.xml import XMLParser, XML_DECL, START_ELEMENT, END_ELEMENT, TEXT
 from itools.handlers import TextFile, register_handler_class
 
 
+
 class SRXFile(TextFile):
     """ A handler for the Segmentation Rules eXchange format (SRX)
     """
 
     class_mimetypes = ['text/x-srx']
     class_extension = 'srx'
-
 
     def _load_state_from_file(self, file):
         # Default values
@@ -43,11 +43,14 @@ class SRXFile(TextFile):
         self.map_rules = []
 
         srx_uri = 'http://www.lisa.org/srx20'
+        data_file = file.read()
+        if isinstance(data_file, bytes):
+            data_file = data_file.decode("utf-8")
 
-        for type, value, line in XMLParser(file.read()):
-            if type == XML_DECL:
+        for xml_type, value, line in XMLParser(data_file):
+            if xml_type == XML_DECL:
                 encoding = value[1]
-            elif type == START_ELEMENT:
+            elif xml_type == START_ELEMENT:
                 tag_uri, tag_name, attrs = value
                 if tag_uri == srx_uri:
                     # header
@@ -67,9 +70,7 @@ class SRXFile(TextFile):
                         self.header['formathandle_'+type_value] = include
                     # languagerule
                     elif tag_name == 'languagerule':
-                        languagerulename = unicode(
-                                            attrs[None, 'languagerulename'],
-                                            encoding)
+                        languagerulename = attrs[None, 'languagerulename']
                         current_language =\
                             self.language_rules[languagerulename] = []
                     # rule
@@ -82,16 +83,14 @@ class SRXFile(TextFile):
                             current_break = break_value.lower() != 'no'
                     # languagemap
                     elif tag_name == 'languagemap':
-                        languagepattern = unicode(
-                            attrs[None, 'languagepattern'], encoding)
-                        languagerulename= unicode(
-                            attrs[None, 'languagerulename'], encoding)
+                        languagepattern = attrs[None, 'languagepattern']
+                        languagerulename= attrs[None, 'languagerulename']
                         self.map_rules.append((languagepattern,
                                               languagerulename))
-                current_text = u''
-            elif type == TEXT:
-                current_text = unicode(value, encoding)
-            elif type == END_ELEMENT:
+                current_text = ''
+            elif xml_type == TEXT:
+                current_text = value
+            elif xml_type == END_ELEMENT:
                 tag_uri, tag_name = value
                 if tag_uri == srx_uri:
                     # beforebreak
@@ -119,10 +118,8 @@ class SRXFile(TextFile):
             result.append((break_value, regexp))
         return result
 
-
     def get_languages(self):
-        return self.language_rules.keys()
-
+        return list(self.language_rules.keys())
 
     def get_rules(self, language):
         language_rules = self.language_rules

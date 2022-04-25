@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 # Copyright (C) 2009-2010 David Versmisse <versmisse@lil.univ-littoral.fr>
 # Copyright (C) 2010 J. David Ibáñez <jdavid.ibp@gmail.com>
@@ -34,7 +33,7 @@ def get_db(path):
     try:
         return Database(path)
     except DatabaseOpeningError:
-        print 'Bad DB, sorry'
+        print('Bad DB, sorry')
         exit(1)
 
 
@@ -57,16 +56,16 @@ def get_regexp(regexp):
     if regexp is not None:
         try:
             return compile(regexp)
-        except Exception, error:
-            print 'Your regexp "%s" is invalid: %s' % (regexp, str(error))
+        except Exception as e:
+            print('Your regexp "%s" is invalid: %s' % (regexp, str(e)))
             exit(1)
     return None
 
 
 def dump_summary(db, metadata):
-    print 'Summary'
-    print '======='
-    print
+    print('Summary')
+    print('=======')
+    print()
     print (' * You have %d document(s) stocked in your '
            'database. ') % db.get_doccount()
 
@@ -77,40 +76,40 @@ def dump_summary(db, metadata):
             stored += 1
         if 'prefix' in info:
             indexed += 1
-    print ' * %d field(s) (%d stored, %d indexed).' % (total, stored, indexed)
-    print ' * key field: "abspath"'
+    print(' * %d field(s) (%d stored, %d indexed).' % (total, stored, indexed))
+    print(' * key field: "abspath"')
 
 
 def dump_fields(db, metadata, docs, only_field, show_values, show_terms):
-    print 'FIELDS'
-    print '======'
-    print
+    print('FIELDS')
+    print('======')
+    print()
 
     for name, info in metadata.iteritems():
         if only_field is not None and not only_field.match(name):
             continue
 
-        print name
-        print '-'*len(name)
+        print(name)
+        print('-'*len(name))
 
         # Info
         if name == 'abspath':
-            print ' * key field'
+            print(' * key field')
         if 'value' in info:
-            print ' * stored (%d)' % info['value']
+            print(' * stored (%d)' % info['value'])
         else:
-            print ' * not stored'
+            print(' * not stored')
         if 'prefix' in info:
-            print ' * indexed (%s)' % info['prefix']
+            print(' * indexed (%s)' % info['prefix'])
         else:
-            print ' * not indexed'
+            print(' * not indexed')
 
         # Values
         if 'value' in info and show_values:
             value = info['value']
-            print ' * raw values:'
+            print(' * raw values:')
             for doc in docs:
-                print '   "%s"' % doc.get_value(value)
+                print('   "%s"' % doc.get_value(value))
 
         # Terms
         if 'prefix' in info and show_terms:
@@ -118,18 +117,18 @@ def dump_fields(db, metadata, docs, only_field, show_values, show_terms):
             prefix_size = len(prefix)
             terms = set([ t.term[prefix_size:]
                           for t in db.allterms(prefix) ])
-            print ' * raw terms:'
+            print(' * raw terms:')
             for term in terms:
-                print '   "%s"' % term
+                print('   "%s"' % term)
 
-        print
+        print()
 
 
 def dump_docs(db, metadata, docs, only_doc, only_field, show_values,
               show_terms):
-    print 'DOCUMENTS'
-    print '========='
-    print
+    print('DOCUMENTS')
+    print('=========')
+    print()
 
     # Prepare the good docs
     if only_doc is not None:
@@ -146,8 +145,8 @@ def dump_docs(db, metadata, docs, only_doc, only_field, show_values,
     # Show the documents
     for doc in show_docs:
         title = 'document id#%d' % doc.get_docid()
-        print title
-        print '-'*len(title)
+        print(title)
+        print('-'*len(title))
 
         terms = [term.term for term in doc]
         for name, info in metadata.iteritems():
@@ -155,21 +154,21 @@ def dump_docs(db, metadata, docs, only_doc, only_field, show_values,
                 continue
 
             if show_values or show_terms:
-                print ' * %s:' % name
+                print(' * %s:' % name)
 
             # Value
             if 'value' in info and show_values:
-                print '   - raw value: "%s"' % doc.get_value(info['value'])
+                print('   - raw value: "%s"' % doc.get_value(info['value']))
 
             # Terms
             if 'prefix' in info and show_terms:
                 prefix = info['prefix']
                 prefix_size = len(prefix)
-                print '   - raw terms:'
+                print('   - raw terms:')
                 for term in terms:
                     if term.startswith(prefix):
-                        print '     "%s"' % term[prefix_size:]
-        print
+                        print('     "%s"' % term[prefix_size:])
+        print()
 
 
 

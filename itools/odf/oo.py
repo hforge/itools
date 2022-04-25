@@ -23,7 +23,7 @@
 # Import from itools
 from itools.core import add_type
 from itools.handlers import register_handler_class
-from odf import OOFile
+from .odf import OOFile
 
 
 class SXWFile(OOFile):
@@ -32,12 +32,10 @@ class SXWFile(OOFile):
     class_extension = 'sxw'
 
 
-
 class SXCFile(OOFile):
 
     class_mimetypes = ['application/vnd.sun.xml.calc']
     class_extension = 'sxc'
-
 
 
 class SXIFile(OOFile):

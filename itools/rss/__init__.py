@@ -17,7 +17,7 @@
 
 # Import from itools
 from itools.core import add_type
-from rss import RSSFile
+from .rss import RSSFile
 
 
 __all__ = ['RSSFile']

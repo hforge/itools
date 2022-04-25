@@ -27,7 +27,7 @@ from time import mktime
 
 # Import from itools
 from itools.core import fixed_offset
-from base import DataType
+from .base import DataType
 
 
 ###########################################################################
@@ -60,7 +60,6 @@ class HTTPDate(DataType):
         tz = fixed_offset(tz/60)
         return tz.localize(naive_dt)
 
-
     @staticmethod
     def encode(value):
         """Encode a datetime object to RFC 1123 format: ::
@@ -85,7 +84,6 @@ class HTTPDate(DataType):
 # XXX Python dates (the datetime.date module) require the month and day,
 # they are not able to represent lower precision dates as ISO 8601 does.
 # In the long run we will need to replace Python dates by something else.
-
 class ISOCalendarDate(DataType):
     """Extended formats (from max. to min. precision): %Y-%m-%d, %Y-%m, %Y
 
@@ -96,6 +94,8 @@ class ISOCalendarDate(DataType):
 
     @classmethod
     def decode(cls, data):
+        if type(data) is bytes:
+            data = data.decode("utf-8")
         if not data:
             return None
         format_date = cls.format_date
@@ -117,14 +117,12 @@ class ISOCalendarDate(DataType):
 
         return date(year, month, day)
 
-
     @classmethod
     def encode(cls, value):
         # We choose the extended format as the canonical representation
         if value is None:
             return ''
         return value.strftime(cls.format_date)
-
 
     @classmethod
     def is_valid(cls, value):
@@ -146,7 +144,6 @@ class ISOTime(DataType):
 
     Basic formats: %H%M%S%f, %H%M%S, %H%M, %H
     """
-
 
     @staticmethod
     def decode(data):
@@ -220,7 +217,6 @@ class ISOTime(DataType):
         microsecond = int(data)
         return time(hour, minute, second, microsecond, tzinfo=tzinfo)
 
-
     @staticmethod
     def encode(value):
         # We choose the extended format as the canonical representation
@@ -232,7 +228,6 @@ class ISOTime(DataType):
         return value.strftime(fmt)
 
 
-
 class ISODateTime(DataType):
 
     cls_date = ISOCalendarDate
@@ -241,7 +236,8 @@ class ISODateTime(DataType):
     def decode(self, value):
         if not value:
             return None
-
+        if type(value) is bytes:
+            value = value.decode("utf-8")
         value = value.split('T')
         date, time = value[0], value[1:]
 
@@ -254,7 +250,6 @@ class ISODateTime(DataType):
             raise ValueError('expected time field not found')
 
         return date
-
 
     def encode(self, value):
         if value is None:

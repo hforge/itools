@@ -24,16 +24,14 @@ except ImportError:
     pdf_to_text = None
 
 
-
 class PDFFile(File):
 
     class_mimetypes = ['application/pdf']
     class_extension = 'pdf'
 
-
     def to_text(self):
         if pdf_to_text is None:
-            return u""
+            return ""
         return pdf_to_text(self.to_str())
 
 

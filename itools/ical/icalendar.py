@@ -29,7 +29,7 @@ from itools.csv import Property, parse_table, deserialize_parameters
 from itools.csv import property_to_str
 from itools.datatypes import String, Unicode
 from itools.handlers import guess_encoding, TextFile
-from datatypes import DateTime, record_properties, record_parameters, Time
+from .datatypes import DateTime, record_properties, record_parameters, Time
 
 
 class Component(object):
@@ -58,15 +58,12 @@ class Component(object):
         self.uid = uid
         self.versions = {}
 
-
     #######################################################################
     # API / Private
     #######################################################################
     def get_sequences(self):
         sequences = self.versions.keys()
-        sequences.sort()
-        return sequences
-
+        return sorted(list(sequences))
 
     def add_version(self, properties):
         # Sequence in properties only if just loading file
@@ -76,7 +73,7 @@ class Component(object):
         else:
             sequences = self.get_sequences()
             if sequences:
-                sequence = sequences[-1] + 1
+                sequence = list(sequences)[-1] + 1
             else:
                 sequence = 0
 
@@ -93,7 +90,7 @@ class Component(object):
         """Return the last version of current component or the sequence's one.
         """
         if sequence is None:
-            sequence = self.get_sequences()[-1]
+            sequence = list(self.get_sequences())[-1]
         return self.versions[sequence]
 
 
@@ -113,7 +110,6 @@ class Component(object):
         return version
 
     get_property_values = get_property
-
 
     # TODO Move this: with Components that are not VEVENT, it will fail
     def get_ns_event(self, day, resource_name=None, conflicts_list=freeze([]),
@@ -206,7 +202,6 @@ class Component(object):
         return ns
 
 
-
 class iCalendar(TextFile):
     """icalendar structure :
 
@@ -226,7 +221,6 @@ class iCalendar(TextFile):
     class_mimetypes = ['text/calendar']
     class_extension = 'ics'
 
-
     record_properties = record_properties
     record_parameters = record_parameters
 
@@ -238,12 +232,10 @@ class iCalendar(TextFile):
         # Default
         return String(multiple=True)
 
-
     def generate_uid(self, c_type='UNKNOWN'):
         """Generate a uid based on c_type and current datetime.
         """
         return ' '.join([c_type, datetime.now().isoformat()])
-
 
     def encode_property(self, name, property_values, encoding='utf-8'):
         if type(property_values) is not list:
@@ -252,8 +244,7 @@ class iCalendar(TextFile):
         datatype = self.get_record_datatype(name)
         return [
             property_to_str(name, x, datatype, {}, encoding)
-            for x in property_values ]
-
+            for x in property_values]
 
     #########################################################################
     # New
@@ -263,17 +254,15 @@ class iCalendar(TextFile):
         self.timezones = {}
         self.components = {}
 
-
     def new(self):
         properties = (
-            ('VERSION', u'2.0'),
-            ('PRODID', u'-//hforge.org/NONSGML ikaaro icalendar V1.0//EN'))
+            ('VERSION', '2.0'),
+            ('PRODID', '-//hforge.org/NONSGML ikaaro icalendar V1.0//EN'))
         for name, value in properties:
             self.properties[name] = Property(value)
 
         # The encoding
         self.encoding = 'UTF-8'
-
 
     #########################################################################
     # Load State
@@ -303,7 +292,7 @@ class iCalendar(TextFile):
         first = lines[0]
         if (first[0] != 'BEGIN' or first[1].value != 'VCALENDAR'
             or first[1].parameters):
-            raise ValueError, 'icalendar must begin with BEGIN:VCALENDAR'
+            raise ValueError('icalendar must begin with BEGIN:VCALENDAR')
 
         lines = lines[1:]
 
@@ -317,10 +306,10 @@ class iCalendar(TextFile):
                 break
             elif name == 'VERSION':
                 if 'VERSION' in self.properties:
-                    raise ValueError, 'VERSION can appear only one time'
+                    raise ValueError('VERSION can appear only one time')
             elif name == 'PRODID':
                 if 'PRODID' in self.properties:
-                    raise ValueError, 'PRODID can appear only one time'
+                    raise ValueError('PRODID can appear only one time')
             # Add the property
             self.properties[name] = value
             n_line += 1
@@ -328,7 +317,7 @@ class iCalendar(TextFile):
         # The properties VERSION and PRODID are mandatory
         if ('VERSION' not in self.properties or
             'PRODID' not in self.properties):
-            raise ValueError, 'PRODID or VERSION parameter missing'
+            raise ValueError('PRODID or VERSION parameter missing')
 
         lines = lines[n_line:]
 
@@ -340,8 +329,8 @@ class iCalendar(TextFile):
 
         for prop_name, prop_value in lines[:-1]:
             if prop_name in ('PRODID', 'VERSION'):
-                raise ValueError, 'PRODID and VERSION must appear before '\
-                                  'any component'
+                raise ValueError('PRODID and VERSION must appear before ' \
+                                 'any component')
             if prop_name == 'BEGIN':
                 if c_type is None:
                     c_type = prop_value.value
@@ -355,7 +344,7 @@ class iCalendar(TextFile):
                 value = prop_value.value
                 if value == c_type:
                     if uid is None:
-                        raise ValueError, 'UID is not present'
+                        raise ValueError('UID is not present')
 
                     if c_type == 'VTIMEZONE':
                         timezone = VTimezone(uid, c_inner_components)
@@ -377,8 +366,8 @@ class iCalendar(TextFile):
                     c_inner_components.append(inner_component)
                     c_inner_type = None
                 else:
-                    raise ValueError, 'Component %s found, %s expected' \
-                                      % (value, c_inner_type)
+                    raise ValueError('Component %s found, %s expected' \
+                                     % (value, c_inner_type))
             else:
                 datatype = self.get_record_datatype(prop_name)
                 if c_inner_type is None:
@@ -393,7 +382,7 @@ class iCalendar(TextFile):
                             if prop_name in c_properties:
                                 msg = ('the property %s can be assigned only '
                                        'one value' % prop_name)
-                                raise ValueError, msg
+                                raise ValueError(msg)
                             # Set the property
                             c_properties[prop_name] = prop_value
                 else:
@@ -406,11 +395,10 @@ class iCalendar(TextFile):
                         if prop_name in c_inner_properties:
                             msg = ('the property %s can be assigned only one'
                                    ' value' % prop_name)
-                            raise ValueError, msg
+                            raise ValueError(msg)
                         value = prop_value
                     # Set the property
                     c_inner_properties[prop_name] = value
-
 
     #########################################################################
     # Save State
@@ -419,7 +407,7 @@ class iCalendar(TextFile):
         lines = ['BEGIN:VCALENDAR\n']
 
         # 1. Calendar properties
-        for key, value in self.properties.iteritems():
+        for key, value in self.properties.items():
             line = self.encode_property(key, value, encoding)
             lines.extend(line)
 
@@ -430,7 +418,7 @@ class iCalendar(TextFile):
             lines.append('BEGIN:VTIMEZONE\n')
             # Properties
             lines.append('TZID:%s\n' % tzid)
-            for key, value in timezone.content.iteritems():
+            for key, value in timezone.content.items():
                 line = self.encode_property(key, value, encoding)
                 lines.extend(line)
             # Insert inner components
@@ -441,7 +429,7 @@ class iCalendar(TextFile):
                 # Begin
                 lines.append('BEGIN:%s\n' % c_inner_type)
                 # Properties
-                for key, value in version.iteritems():
+                for key, value in version.items():
                     line = self.encode_property(key, value, encoding)
                     lines.extend(line)
                 # End
@@ -460,7 +448,7 @@ class iCalendar(TextFile):
                 # Properties
                 lines.append('UID:%s\n' % uid)
                 lines.append('SEQUENCE:%s\n' % sequence)
-                for key, value in version.iteritems():
+                for key, value in version.items():
                     line = self.encode_property(key, value, encoding)
                     lines.extend(line)
                 # End
@@ -470,7 +458,6 @@ class iCalendar(TextFile):
         lines.append('END:VCALENDAR\n')
         return ''.join(lines)
 
-
     def to_text(self):
         text = []
         for uid in self.components:
@@ -479,7 +466,6 @@ class iCalendar(TextFile):
                 if key in version:
                     text.append(version[key].value)
         return ' '.join(text)
-
 
     #######################################################################
     # API
@@ -494,13 +480,12 @@ class iCalendar(TextFile):
             if datatype.multiple is False:
                 if isinstance(value, list):
                     msg = 'property "%s" requires only one value' % name
-                    raise TypeError, msg
+                    raise TypeError(msg)
             else:
                 if not isinstance(value, list):
                     properties[name] = [value]
 
         return properties
-
 
     def add_component(self, c_type, **kw):
         """Add a new component of type c_type.  It generates a uid and a new
@@ -522,7 +507,6 @@ class iCalendar(TextFile):
         component.add_version(kw)
 
         return uid
-
 
     def update_component(self, uid, **kw):
         """Update component with given uid with properties given as kw,
@@ -551,14 +535,12 @@ class iCalendar(TextFile):
         # Unindex the component, add new version, index again
         component.add_version(version)
 
-
     def remove(self, uid):
         """Definitely remove from the calendar an existant component with all
         its versions.
         """
         self.set_changed()
         del self.components[uid]
-
 
     def get_property_values(self, name=None):
         """Return Property[] for the given icalendar property name or
@@ -570,7 +552,6 @@ class iCalendar(TextFile):
         if name:
             return self.properties.get(name, None)
         return self.properties
-
 
     def set_property(self, name, values):
         """Set values to the given calendar property, removing previous ones.
@@ -592,30 +573,26 @@ class iCalendar(TextFile):
         self.set_changed()
         self.properties[name] = values
 
-
     # Used to factorize code of cms ical between Calendar & CalendarTable
     def get_record(self, uid):
         return self.components.get(uid)
-
 
     def get_component_by_uid(self, uid):
         """Return components with the given uid, None if it doesn't appear.
         """
         return self.components.get(uid)
 
-
     def get_components(self, type=None):
         """Return the list of components of the given type, or all components
         if no type is given.
         """
         if type is None:
-            return self.components.items() + self.timezones.items()
+            return list(self.components.items()) + list(self.timezones.items())
 
         if type == 'VTIMEZONE':
-            return [component for tzid, component in self.timezones.iteritems()]
-        return [ component for uid, component in self.components.iteritems()
-                 if component.c_type == type ]
-
+            return [component for tzid, component in self.timezones.items()]
+        return [component for uid, component in self.components.items()
+                 if component.c_type == type]
 
 
 class TZProp(object):
@@ -642,7 +619,7 @@ class TZProp(object):
                        self.offset - offset_from)
         # Compute recurrency
         self.rec_dic = {}
-        if self.properties.has_key('RRULE'):
+        if 'RRULE' in self.properties:
             rrules = self.properties['RRULE']
             # FIXME RRULE can be multiple !
             rrule = rrules[0]
@@ -650,10 +627,8 @@ class TZProp(object):
                 name, value = prop.split('=')
                 self.rec_dic[name] = value
 
-
     def get_offset(self):
         return self.offset
-
 
     def get_date(self, dt):
         iso_weekdays = {'MO': 1, 'TU': 2, 'WE': 3, 'TH': 4,
@@ -665,11 +640,11 @@ class TZProp(object):
         delta = 0
         # Compute period for this year
         rec_dic = self.rec_dic
-        freq = rec_dic['FREQ'] if rec_dic.has_key('FREQ') else None
+        freq = rec_dic['FREQ'] if 'FREQ' in rec_dic else None
         if freq == 'YEARLY':
-            if self.rec_dic.has_key('BYMONTH'):
+            if 'BYMONTH' in self.rec_dic:
                 month = int(self.rec_dic['BYMONTH'])
-            if self.rec_dic.has_key('BYDAY'):
+            if 'BYDAY' in self.rec_dic:
                 byday = self.rec_dic['BYDAY']
                 if byday[0] == '-':
                     sign = -1
@@ -690,7 +665,7 @@ class TZProp(object):
                 else:
                     delta = (7 + byday - weekday) % 7 + weeks_delta
                     return datetime.combine(day, time) + timedelta(delta)
-        elif self.properties.has_key('RDATE'):
+        elif 'RDATE' in self.properties:
             dates = [self.properties['DTSTART'].value]
             for rdate in self.properties['RDATE']:
                 dates.append(DateTime.decode(rdate.value))
@@ -703,25 +678,12 @@ class TZProp(object):
         else:
             raise NotImplementedError('We only implement FREQ in  (YEARLY, )')
 
-
     def get_begin(self):
         return self.properties['DTSTART'].value
-
 
     def get_names(self):
         for name in self.properties['TZNAME']:
             yield (name.value, name.parameters)
-
-
-    def __cmp__(self, other):
-        self_b = self.get_begin()
-        other_b = other.get_begin()
-        if self_b > other_b:
-            return 1
-        if self_b < other_b:
-            return -1
-        return 0
-
 
 
 class VTimezone(tzinfo):
@@ -734,8 +696,7 @@ class VTimezone(tzinfo):
         if len(tz_props) < 1:
             raise ValueError('A VTIMEZONE MUST contain at least one TZPROP')
         self.tz_props = tz_props
-        self.tz_props.sort()
-
+        self.tz_props = sorted(tz_props, key=lambda x: x.get_begin())
 
     def get_tz_prop(self, dt):
         props = self.tz_props
@@ -777,18 +738,15 @@ class VTimezone(tzinfo):
         else:
            return std
 
-
     def tzname(self, dt):
         tz_prop = self.get_tz_prop(dt)
         # FIXME TZNAME property is multiple and can have language property
-        value, parameters = tz_prop.get_names().next()
+        value, parameters = next(tz_prop.get_names())
         return str(value)
-
 
     def utcoffset(self, dt):
         tz_prop = self.get_tz_prop(dt)
         return tz_prop.offset
-
 
     def dst(self, dt):
         if dt is None or dt.tzinfo is None:

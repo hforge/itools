@@ -28,9 +28,9 @@ from itools.fs import lfs
 from itools.handlers import Folder
 
 # Import from here
-from backends import backends_registry
-from registry import get_register_fields
-from ro import RODatabase
+from .backends import backends_registry
+from .registry import get_register_fields
+from .ro import RODatabase
 
 log = getLogger("itools.database")
 
@@ -42,8 +42,7 @@ class RWDatabase(RODatabase):
     read_only = False
 
     def __init__(self, path, size_min, size_max, backend='git'):
-        proxy = super(RWDatabase, self)
-        proxy.__init__(path, size_min, size_max, backend)
+        super().__init__(path, size_min, size_max, backend)
         # Changes on DB
         self.added = set()
         self.changed = set()
@@ -91,15 +90,12 @@ class RWDatabase(RODatabase):
         self.resources_old2new_catalog = {}
         self.resources_new2old_catalog = {}
 
-
     def check_catalog(self):
         pass
-
 
     def close(self):
         self.abort_changes()
         self.backend.close()
-
 
     def _sync_filesystem(self, key):
         # Don't check if handler has been modified since last loading,
@@ -122,7 +118,6 @@ class RWDatabase(RODatabase):
         # Normal case
         return super(RWDatabase, self).has_handler(key)
 
-
     def _get_handler(self, key, cls=None, soft=False):
         # A hook to handle the new directories
         base = key + '/'
@@ -133,7 +128,6 @@ class RWDatabase(RODatabase):
 
         # The other files
         return super(RWDatabase, self)._get_handler(key, cls, soft)
-
 
     def set_handler(self, key, handler):
         # TODO: We have to refactor the set_changed()
@@ -163,7 +157,6 @@ class RWDatabase(RODatabase):
         # Changed
         self.removed.discard(key)
         self.has_changed = True
-
 
     def del_handler(self, key):
         key = self.normalize_key(key)
@@ -196,7 +189,6 @@ class RWDatabase(RODatabase):
         self.removed.add(key)
         self.has_changed = True
 
-
     def touch_handler(self, key, handler=None):
         key = self.normalize_key(key)
         # Mark the handler as dirty
@@ -213,10 +205,8 @@ class RWDatabase(RODatabase):
             self.changed.add(key)
 
 
-
     def save_handler(self, key, handler):
         self.backend.save_handler(key, handler)
-
 
     def get_handler_names(self, key):
         key = self.normalize_key(key)
@@ -234,7 +224,6 @@ class RWDatabase(RODatabase):
                 name = f_key[n:].split('/', 1)[0]
                 names.add(name)
         return list(names)
-
 
     def copy_handler(self, source, target, exclude_patterns=None):
         source = self.normalize_key(source)
@@ -265,7 +254,6 @@ class RWDatabase(RODatabase):
         # Changed
         self.removed.discard(target)
         self.has_changed = True
-
 
     def move_handler(self, source, target):
         source = self.normalize_key(source)
@@ -328,7 +316,6 @@ class RWDatabase(RODatabase):
         self.removed.discard(target)
         self.has_changed = True
 
-
     #######################################################################
     # Layer 1: resources
     #######################################################################
@@ -343,7 +330,6 @@ class RWDatabase(RODatabase):
             self.resources_old2new_catalog[path] = None
             self.resources_new2old_catalog.pop(path, None)
 
-
     def add_resource(self, resource):
         self.has_changed = True
         new2old = self.resources_new2old
@@ -351,7 +337,6 @@ class RWDatabase(RODatabase):
         for x in resource.traverse_resources():
             path = str(x.abspath)
             new2old[path] = None
-
 
     def change_resource(self, resource):
         self.has_changed = True
@@ -370,7 +355,6 @@ class RWDatabase(RODatabase):
         self.resources_old2new_catalog[path] = path
         self.resources_new2old_catalog[path] = path
 
-
     def is_changed(self, resource):
         """We use for this function only the 2 dicts old2new and new2old.
         """
@@ -378,7 +362,6 @@ class RWDatabase(RODatabase):
         new2old = self.resources_new2old
         path = str(resource.abspath)
         return path in old2new or path in new2old
-
 
     def move_resource(self, source, new_path):
         self.has_changed = True
@@ -403,7 +386,6 @@ class RWDatabase(RODatabase):
             new2old[target_path] = source_path
             self.resources_new2old_catalog[target_path] = source_path
 
-
     #######################################################################
     # Transactions
     #######################################################################
@@ -411,14 +393,13 @@ class RWDatabase(RODatabase):
         super(RWDatabase, self)._cleanup()
         self.has_changed = False
 
-
     def _abort_changes(self):
         # 1. Handlers
         cache = self.cache
         for key in self.added:
             self._discard_handler(key)
         for key in self.changed:
-            if cache.has_key(key):
+            if key in cache:
                 # FIXME
                 # We check cache since an handler
                 # can be added & changed at one
@@ -439,14 +420,12 @@ class RWDatabase(RODatabase):
         self.resources_old2new_catalog.clear()
         self.resources_new2old_catalog.clear()
 
-
     def abort_changes(self):
         if not self.has_changed:
             return
 
         self._abort_changes()
         self._cleanup()
-
 
     def _before_commit(self):
         """This method is called before 'save_changes', and gives a chance
@@ -457,7 +436,6 @@ class RWDatabase(RODatabase):
         so it can be used to pre-calculate whatever data is needed.
         """
         return None, None, None, [], []
-
 
     def _save_changes(self, data, commit_msg=None):
         # Get data informations
@@ -475,7 +453,6 @@ class RWDatabase(RODatabase):
         self.changed.clear()
         self.added.clear()
         self.removed.clear()
-
 
     def save_changes(self, commit_message=None):
         if not self.has_changed:
@@ -506,7 +483,6 @@ class RWDatabase(RODatabase):
         finally:
             self._cleanup()
 
-
     def flush_catalog(self):
         """ Flush changes in catalog without commiting
         (allow to search in catalog on changed elements)
@@ -520,10 +496,9 @@ class RWDatabase(RODatabase):
             except Exception as e:
                 log.error("Aborting failed", exc_info=True)
             self._cleanup()
-            raise
+            raise e
         _, _, _, docs_to_index, docs_to_unindex = data
         self.backend.flush_catalog(docs_to_unindex, docs_to_index)
-
 
     def reindex_catalog(self, base_abspath, recursif=True):
         """Reindex the catalog & return nb resources re-indexed
@@ -562,4 +537,4 @@ def make_database(path, size_min, size_max, fields=None, backend=None):
     backend_cls = backends_registry[backend]
     backend_cls.init_backend(path, fields)
     # Ok
-    return RWDatabase(path, size_min, size_max)
+    return RWDatabase(path, size_min, size_max, backend=backend)

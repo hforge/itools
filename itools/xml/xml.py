@@ -21,8 +21,8 @@
 
 # Import from itools
 from itools.datatypes import XMLAttribute, XMLContent
-from namespaces import get_namespace, is_empty
-from parser import START_ELEMENT, END_ELEMENT
+from .namespaces import get_namespace, is_empty
+from .parser import START_ELEMENT, END_ELEMENT
 
 
 # Serialize
@@ -116,7 +116,7 @@ stream_to_str_map = (
 
 # XXX encoding is not used
 def stream_to_str(stream, encoding='UTF-8', map=stream_to_str_map):
-    return ''.join( map[x](y) for x, y, z in stream )
+    return ''.join(map[x](y) for x, y, z in stream)
 
 
 

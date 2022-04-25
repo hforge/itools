@@ -18,8 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from common import READ, WRITE, READ_WRITE, APPEND, FileName
-from lfs import lfs
+from .common import READ, WRITE, READ_WRITE, APPEND, FileName
+from .lfs import lfs
 
 
 __all__ = [

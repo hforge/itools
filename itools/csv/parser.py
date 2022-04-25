@@ -44,7 +44,7 @@ def parse_line(reader, line, datatypes, encoding, n_columns):
 
     # Next line
     try:
-        next_line = reader.next()
+        next_line = next(reader)
     except StopIteration:
         next_line = None
     except Exception:
@@ -53,7 +53,6 @@ def parse_line(reader, line, datatypes, encoding, n_columns):
 
     # Ok
     return decoded, next_line
-
 
 
 def parse(data, columns=None, schema=None, guess=False, has_header=False,
@@ -78,12 +77,12 @@ def parse(data, columns=None, schema=None, guess=False, has_header=False,
         reader = read_csv(lines, **kw)
 
     # 2. Find out the number of columns, if not specified
-    line = reader.next()
+    line = next(reader)
     n_columns = len(columns) if columns is not None else len(line)
 
     # 3. The header
     if has_header is True:
-        datatypes = [ Unicode for x in range(n_columns) ]
+        datatypes = [Unicode for x in range(n_columns)]
         datatypes = enumerate(datatypes)
         datatypes = list(datatypes)
         header, line = parse_line(reader, line, datatypes, encoding, n_columns)
@@ -91,9 +90,9 @@ def parse(data, columns=None, schema=None, guess=False, has_header=False,
 
     # 4. The content
     if schema is not None:
-        datatypes = [ schema.get(c, String) for c in columns ]
+        datatypes = [schema.get(c, String) for c in columns]
     else:
-        datatypes = [ String for x in range(n_columns) ]
+        datatypes = [String for x in range(n_columns)]
     datatypes = enumerate(datatypes)
     datatypes = list(datatypes)
 

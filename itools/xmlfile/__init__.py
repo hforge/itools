@@ -17,8 +17,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from i18n import get_units, translate
-from xmlfile import XMLFile
+from .i18n import get_units, translate
+from .xmlfile import XMLFile
 
 
 __all__ = [

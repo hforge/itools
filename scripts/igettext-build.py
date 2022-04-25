@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 # Copyright (C) 2003-2007, 2010 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2007 Sylvain Taverne <taverne.sylvain@gmail.com>
@@ -55,14 +54,14 @@ def build(parser):
     try:
         translate = handler.translate
     except AttributeError:
-        print 'Error: Unable to translate "%s", unsupported format.' % source
+        print('Error: Unable to translate "%s", unsupported format.' % source)
         return
     # Load the Catalog handler (check the API)
     catalog = ro_database.get_handler(catalog_name)
     try:
         catalog.gettext
     except AttributeError:
-        print ('Error: The file "%s" is not a supported '
+        print('Error: The file "%s" is not a supported '
               'catalog.') % catalog_name
         return
     # Translate

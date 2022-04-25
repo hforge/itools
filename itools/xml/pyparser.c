@@ -67,7 +67,7 @@ PyDocType_dealloc (PyDocType * self)
   if (self->doctype)
     doctype_free (self->doctype);
 
-  self->ob_type->tp_free ((PyObject *) self);
+  Py_TYPE(self)->tp_free ((PyObject *) self);
 }
 
 
@@ -110,7 +110,7 @@ PyDocType_init (PyDocType * self, PyObject * args, PyObject * kwds)
 static PyObject *
 PyDocType_to_str (PyDocType * self, PyObject * trash1, PyObject * trash2)
 {
-  return PyString_FromString (doctype_to_str (self->doctype));
+  return PyUnicode_FromString (doctype_to_str (self->doctype));
 }
 
 
@@ -135,8 +135,7 @@ static PyMethodDef PyDocType_methods[] = {
 };
 
 static PyTypeObject PyDocTypeType = {
-  PyObject_HEAD_INIT
-  (NULL) 0,                       /* ob_size */
+  PyVarObject_HEAD_INIT(NULL, 0)  /* ob_size */
   "itools.xml.parser.DocType",    /* tp_name */
   sizeof (PyDocType),             /* tp_basicsize */
   0,                              /* tp_itemsize */
@@ -199,7 +198,7 @@ XMLParser_intern_string (gchar * str)
       return Py_None;
     }
 
-  return PyString_FromString ((char *) str);
+  return PyUnicode_FromString ((char *) str);
 }
 
 
@@ -226,12 +225,12 @@ XMLParser_translate_Decl (XMLParser * self)
   PyObject *version, *encoding, *standalone, *result;
 
   /* Version */
-  version = PyString_FromString (event->version);
+  version = PyUnicode_FromString (event->version);
   if (version == NULL)
     return NULL;
 
   /* Encoding */
-  encoding = PyString_FromString (event->encoding);
+  encoding = PyUnicode_FromString (event->encoding);
   if (encoding == NULL)
     {
       Py_DECREF (version);
@@ -246,7 +245,7 @@ XMLParser_translate_Decl (XMLParser * self)
     }
   else
     {
-      standalone = PyString_FromString (event->standalone);
+      standalone = PyUnicode_FromString (event->standalone);
       if (standalone == NULL)
         {
           Py_DECREF (version);
@@ -277,7 +276,7 @@ XMLParser_translate_DocType (XMLParser * self)
   PyObject *name, *result;
 
   /* Name */
-  name = PyString_FromString (event->name);
+  name = PyUnicode_FromString (event->name);
   if (!name)
     return NULL;
 
@@ -346,7 +345,7 @@ XMLParser_translate_STag (XMLParser * self)
           return NULL;
         }
       /* The value */
-      value = PyString_FromString ((char *) (attribute->value->str));
+      value = PyUnicode_FromString ((char *) (attribute->value->str));
       if (value == NULL)
         {
           Py_DECREF (attributes);
@@ -470,7 +469,7 @@ static void
 XMLParser_dealloc (XMLParser * self)
 {
   XMLParser_reset (self);
-  self->ob_type->tp_free ((PyObject *) self);
+  Py_TYPE(self)->tp_free ((PyObject *) self);
 }
 
 
@@ -491,7 +490,7 @@ XMLParser_init (XMLParser * self, PyObject * args, PyObject * kwds)
   Parser *parser;
 
   PyObject *py_prefix, *py_uri;
-  char *prefix, *uri;
+  const char *prefix, *uri;
   Py_ssize_t pos = 0;
 
 
@@ -518,23 +517,18 @@ XMLParser_init (XMLParser * self, PyObject * args, PyObject * kwds)
     }
 
   /* Check the source */
-  if (PyString_CheckExact (source))
+  if (PyUnicode_CheckExact (source))
     {
       /* Create the parser object */
-      parser = parser_new (PyString_AsString (source), NULL, doctype);
-    }
-  else if (PyFile_CheckExact (source))
-    {
-      /* Set the buffer size */
-      PyFile_SetBufSize (source, BUFFER_SIZE);
-
-      /* Create the parser object */
-      parser = parser_new (NULL, PyFile_AsFile (source), doctype);
+      parser = parser_new (PyUnicode_AsUTF8 (source), NULL, doctype);
     }
   else
     {
-      PyErr_SetString (PyExc_TypeError, "argument 1 must be string or file");
-      return -1;
+      int fd = PyObject_AsFileDescriptor(source);
+      if (fd == -1)
+        return -1;
+
+      parser = parser_new (NULL, fdopen(fd, "w"), doctype);
     }
 
   /* End of the creation of the parser object */
@@ -563,10 +557,10 @@ XMLParser_init (XMLParser * self, PyObject * args, PyObject * kwds)
             if (py_prefix == Py_None)
               prefix = "";
             else
-              prefix = PyString_AsString (py_prefix);
+              prefix = PyUnicode_AsUTF8 (py_prefix);
 
             /* Keep the URI. */
-            uri = PyString_AsString (py_uri);
+            uri = PyUnicode_AsUTF8 (py_uri);
 
             /* prefix and uri should be two strings */
             if (!prefix || !uri)
@@ -615,7 +609,7 @@ XMLParser_iternext (XMLParser * self)
         case TEXT:
         case COMMENT:
         case CDATA:
-          value = PyString_FromString (self->event.text_event.text);
+          value = PyUnicode_FromString (self->event.text_event.text);
           break;
         case PI:
           value = XMLParser_translate_PI (self);
@@ -623,7 +617,7 @@ XMLParser_iternext (XMLParser * self)
         case END_DOCUMENT:
           return NULL;
         default:
-          value = PyString_FromString ("Not implemented");
+          value = PyUnicode_FromString ("Not implemented");
         }
 
       if (value == NULL)
@@ -646,8 +640,7 @@ XMLParser_iternext (XMLParser * self)
  * Declaration of XMLParser *
  ****************************/
 static PyTypeObject XMLParserType = {
-  PyObject_HEAD_INIT
-  (NULL) 0,                          /* ob_size */
+  PyVarObject_HEAD_INIT(NULL, 0)     /* ob_size */
   "itools.xml.parser.XMLParser",     /* tp_name */
   sizeof (XMLParser),                /* tp_basicsize */
   0,                                 /* tp_itemsize */
@@ -736,9 +729,17 @@ static PyMethodDef module_methods[] = {
 #define PyMODINIT_FUNC void
 #endif
 
+static struct PyModuleDef moduledef = {
+    PyModuleDef_HEAD_INIT,
+    "parser", /* name of module */
+    "usage: Combinations.uniqueCombinations(lstSortableItems, comboSize)\n", /* module documentation, may be NULL */
+    -1,   /* size of per-interpreter state of the module, or -1 if the module keeps state in global variables. */
+    module_methods
+};
+
 /* Declaration */
 PyMODINIT_FUNC
-initparser (void)
+PyInit_parser(void)
 {
   /* TODO Make verifications / destructions ... */
   PyObject *module;
@@ -747,26 +748,26 @@ initparser (void)
   XMLParserType.tp_iter = PyObject_SelfIter;
 
   /* Register parser */
-  module = Py_InitModule3 ("parser", module_methods, "Low-level XML parser");
+  module = PyModule_Create(&moduledef);
   if (module == NULL)
-    return;
+    return NULL;
 
   /* Register XMLParser */
   if (PyType_Ready (&XMLParserType) != 0)
-    return;
+    return NULL;
   Py_INCREF (&XMLParserType);
   PyModule_AddObject (module, "XMLParser", (PyObject *) & XMLParserType);
 
 
   /* Register DocType (PyDocType) */
   if (PyType_Ready (&PyDocTypeType) != 0)
-    return;
+    return NULL;
   Py_INCREF (&PyDocTypeType);
   PyModule_AddObject (module, "DocType", (PyObject *) & PyDocTypeType);
 
   /* Register exceptions */
   XMLError = PyErr_NewException ("itools.xml.parser.XMLError",
-                                 PyExc_StandardError, NULL);
+                                 PyExc_Exception, NULL);
   Py_INCREF (XMLError);
   PyModule_AddObject (module, "XMLError", XMLError);
 
@@ -779,4 +780,6 @@ initparser (void)
   PyModule_AddIntConstant (module, "COMMENT", COMMENT);
   PyModule_AddIntConstant (module, "PI", PI);
   PyModule_AddIntConstant (module, "CDATA", CDATA);
+
+  return module;
 }

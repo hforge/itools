@@ -42,7 +42,6 @@ class BaseQuery(object):
             self.__repr_parameters__())
 
 
-
 class AllQuery(BaseQuery):
 
     def __repr_parameters__(self):
@@ -93,7 +92,6 @@ class _MultipleQuery(BaseQuery):
         raise NotImplementedError
 
 
-
 class _AndQuery(_MultipleQuery):
 
     def append(self, atom):
@@ -105,7 +103,6 @@ class _AndQuery(_MultipleQuery):
             self.atoms = [atom]
         elif type(atom) is not AllQuery:
             atoms.append(atom)
-
 
 
 class _OrQuery(_MultipleQuery):
@@ -123,7 +120,6 @@ class _OrQuery(_MultipleQuery):
             atoms.append(atom)
 
 
-
 def _flat_query(cls, *args):
     query = cls()
     for subquery in args:
@@ -135,15 +131,12 @@ def _flat_query(cls, *args):
     return query
 
 
-
 def AndQuery(*args):
     return _flat_query(_AndQuery, *args)
 
 
-
 def OrQuery(*args):
     return _flat_query(_OrQuery, *args)
-
 
 
 class NotQuery(BaseQuery):
@@ -151,10 +144,8 @@ class NotQuery(BaseQuery):
     def __init__(self, query):
         self.query = query
 
-
     def __repr_parameters__(self):
         return repr(self.query)
-
 
 
 class StartQuery(BaseQuery):
@@ -163,10 +154,8 @@ class StartQuery(BaseQuery):
         self.name = name
         self.value = value
 
-
     def __repr_parameters__(self):
         return "%r, %r" % (self.name, self.value)
-
 
 
 class TextQuery(BaseQuery):
@@ -175,10 +164,8 @@ class TextQuery(BaseQuery):
         self.name = name
         self.value = value
 
-
     def __repr_parameters__(self):
         return "%r, %r" % (self.name, self.value)
-
 
 
 class QueryPrinter(PrettyPrinter):

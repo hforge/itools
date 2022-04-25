@@ -23,9 +23,9 @@ from itools.datatypes import String
 from itools.handlers import File, register_handler_class
 
 # Import from here
-from fields import Field
-from metadata_parser import parse_table, MetadataProperty, property_to_str
-from metadata_parser import deserialize_parameters
+from .fields import Field
+from .metadata_parser import parse_table, MetadataProperty, property_to_str
+from .metadata_parser import deserialize_parameters
 
 log = getLogger("itools.database")
 
@@ -37,7 +37,7 @@ class DefaultField(Field):
     parameters_schema = freeze({})
     parameters_schema_default = None
     multilingual = False
-
+    encrypted = False
 
 
 class Metadata(File):
@@ -52,7 +52,6 @@ class Metadata(File):
         self.version = None
         self.properties = {}
 
-
     def __init__(self, key=None, string=None, database=None, cls=None, **kw):
         self.cls = cls
         self.database = database
@@ -60,18 +59,15 @@ class Metadata(File):
         proxy = super(Metadata, self)
         proxy.__init__(key=key, string=string, database=database, **kw)
 
-
     def new(self, cls=None, format=None, version=None):
         self.cls = cls
         self.format = format or cls.class_id
         self.version = version or cls.class_version
 
-
     def get_resource_class(self, class_id):
         if self.cls:
             return self.cls
         return self.database.get_resource_class(class_id)
-
 
     def change_class_id(self, new_class_id):
         self.cls = None
@@ -79,14 +75,13 @@ class Metadata(File):
         self.format = new_class_id
         self.get_resource_class(new_class_id)
 
-
     def _load_state_from_file(self, file):
         properties = self.properties
         data = file.read()
         parser = parse_table(data)
 
         # Read the format & version
-        name, value, parameters = parser.next()
+        name, value, parameters = next(parser)
         if name != 'format':
             raise ValueError('unexpected "%s" property' % name)
         if 'version' in parameters:
@@ -153,7 +148,6 @@ class Metadata(File):
             else:
                 properties[name] = property
 
-
     def to_str(self):
         resource_class = self.get_resource_class(self.format)
 
@@ -163,8 +157,7 @@ class Metadata(File):
             lines = ['format;version=%s:%s\n' % (self.version, self.format)]
         # Properties are to be sorted by alphabetical order
         properties = self.properties
-        names = properties.keys()
-        names.sort()
+        names = sorted(list(properties.keys()))
 
         # Properties
         for name in names:
@@ -185,8 +178,8 @@ class Metadata(File):
             is_empty = datatype.is_empty
             p_type = type(property)
             if p_type is dict:
-                languages = property.keys()
-                languages.sort()
+                languages = list(property.keys())
+                languages = sorted(languages)
                 lines += [
                     property_to_str(name, property[x], datatype, params_schema)
                     for x in languages if not is_empty(property[x].value) ]
@@ -201,7 +194,6 @@ class Metadata(File):
                     property_to_str(name, property, datatype, params_schema))
 
         return ''.join(lines)
-
 
     ########################################################################
     # API
@@ -246,7 +238,6 @@ class Metadata(File):
 
         return property[language]
 
-
     def has_property(self, name, language=None):
         if name not in self.properties:
             return False
@@ -255,7 +246,6 @@ class Metadata(File):
             return language in self.properties[name]
 
         return True
-
 
     def _set_property(self, name, value):
         properties = self.properties
@@ -295,11 +285,9 @@ class Metadata(File):
         if not field.datatype.is_empty(value.value):
             properties.setdefault(name, []).append(value)
 
-
     def set_property(self, name, value):
         self.set_changed()
         self._set_property(name, value)
-
 
     def del_property(self, name):
         if name in self.properties:

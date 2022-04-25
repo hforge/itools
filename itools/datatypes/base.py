@@ -56,7 +56,6 @@ class DataType(prototype):
     multiple = False
     encrypted = False
 
-
     def get_default(cls):
         default = cls.default
         if cls.multiple:
@@ -66,20 +65,17 @@ class DataType(prototype):
             return []
         return default
 
-
     @staticmethod
     def decode(data):
-        """Deserializes the given byte string to a value with a type.
+        """Deserializes the given str data to a value with a type.
         """
         raise NotImplementedError
-
 
     @staticmethod
     def encode(value):
-        """Serializes the given value to a byte string.
+        """Serializes the given value to str.
         """
         raise NotImplementedError
-
 
     @staticmethod
     def is_valid(value):
@@ -89,7 +85,6 @@ class DataType(prototype):
         this method will check that it is not a negative number.
         """
         return True
-
 
     @staticmethod
     def is_empty(value):
@@ -109,8 +104,9 @@ class DataType(prototype):
         if not fernet:
             # Fernet is not correctly set do not try to encrypt
             return value
-        return fernet.encrypt(value)
-
+        if type(value) is str:
+            value = value.encode("utf-8")
+        return fernet.encrypt(value).decode("utf-8")
 
     @classmethod
     def decrypt(cls, value):
@@ -120,6 +116,8 @@ class DataType(prototype):
             # Fernet is not correctly set do not try to decrypt
             return value
         try:
-            return fernet.decrypt(value)
+            if type(value) is str:
+                value = value.encode("utf-8")
+            return fernet.decrypt(value).decode("utf-8")
         except InvalidToken:
             return value

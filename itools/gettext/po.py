@@ -46,7 +46,6 @@ class POSyntaxError(Exception):
         self.line_number = line_number
         self.line_type = line_type
 
-
     def __str__(self):
         if self.line_type is None:
             return 'syntax error at line %d' % self.line_number
@@ -77,6 +76,9 @@ re_str = compile(r'^"(.*[^\\])"$')
 
 
 def get_lines(data):
+    if isinstance(data, bytes):
+        data = data.decode("utf-8")
+
     lines = data.split('\n') + ['']
     line_number = 0
     while line_number <= len(lines):
@@ -97,7 +99,7 @@ def get_lines(data):
             yield FUZZY, None, line_number
         # Reference
         elif line.startswith('#:'):
-            yield REFERENCE, line[1:], line_number
+            yield REFERENCE, line[2:].strip(), line_number
         # Comment
         elif line.startswith('#'):
             yield COMMENT, line[1:], line_number
@@ -139,14 +141,14 @@ def encode_source(source):
         elif type == START_FORMAT:
             # A lonely tag ?
             if source[i+1][0] == END_FORMAT:
-                result.append(u"<x id='%d'/>" % value)
+                result.append("<x id='%d'/>" % value)
             else:
-                result.append(u"<g id='%d'>" % value)
+                result.append("<g id='%d'>" % value)
         elif type == END_FORMAT:
             # A lonely tag ?
             if source[i-1][0] != START_FORMAT:
-                result.append(u'</g>')
-    return u''.join(result)
+                result.append('</g>')
+    return ''.join(result)
 
 
 def decode_target(target):
@@ -202,7 +204,6 @@ def decode_target(target):
     return result
 
 
-
 ###########################################################################
 # Handler
 ###########################################################################
@@ -213,9 +214,10 @@ def escape(s):
 
 
 expr = compile(r'(\\.)')
+
+
 def unescape(s):
     return expr.sub(lambda x: eval("'%s'" % x.group(0)), s)
-
 
 
 class POUnit(object):
@@ -259,12 +261,11 @@ class POUnit(object):
         self.target = target
         self.fuzzy = fuzzy
 
-
     def to_str(self, encoding='UTF-8'):
         s = []
         # The comments
         for comment in self.comments:
-            s.append('#%s\n' % comment.encode(encoding))
+            s.append('#%s\n' % comment)
         # The reference comments
         i = 1
         references = self.references.items()
@@ -274,38 +275,33 @@ class POUnit(object):
                 comma = '' if i == nb_references else ','
                 line = '#: %s:%s%s\n' % (filename, line, comma)
                 s.append(line)
-                i+=1
+                i += 1
         # The Fuzzy flag
         if self.fuzzy:
             s.append('#, fuzzy\n')
         # The msgctxt
         if self.context is not None:
-            s.append('msgctxt "%s"\n' % escape(self.context[0].encode(
-                                               encoding)))
+            s.append('msgctxt "%s"\n' % escape(self.context[0]))
             for string in self.context[1:]:
-                s.append('"%s"\n' % escape(string.encode(encoding)))
+                s.append('"%s"\n' % escape(string))
         # The msgid
-        s.append('msgid "%s"\n' % escape(self.source[0].encode(encoding)))
+        s.append('msgid "%s"\n' % escape(self.source[0]))
         for string in self.source[1:]:
-            s.append('"%s"\n' % escape(string.encode(encoding)))
+            s.append('"%s"\n' % escape(string))
         # The msgstr
-        s.append('msgstr "%s"\n' % escape(self.target[0].encode(encoding)))
+        s.append('msgstr "%s"\n' % escape(self.target[0]))
         for string in self.target[1:]:
-            s.append('"%s"\n' % escape(string.encode(encoding)))
-
+            s.append('"%s"\n' % escape(string))
         return ''.join(s)
-
 
     def __repr__(self):
         msg = "<POUnit object context=%s source=%s target=%s (%s)>"
         return msg % (self.context, self.source, self.target, self.references)
 
-
     def __eq__(self, other):
         return ((other.context == self.context) and
                 (other.source == self.source) and
                 (other.target == self.target))
-
 
 
 skeleton = """# SOME DESCRIPTIVE TITLE.
@@ -327,7 +323,6 @@ msgstr ""
 """
 
 
-
 class POFile(TextFile):
 
     class_mimetypes = [
@@ -335,7 +330,6 @@ class POFile(TextFile):
         'text/x-gettext-translation-template',
         'text/x-po']
     class_extension = 'po'
-
 
     def new(self):
         # XXX Old style (like in the "get_skeleton" times)
@@ -366,7 +360,7 @@ class POFile(TextFile):
                     comments.append(value)
                     state = 1
                 elif line_type == REFERENCE:
-                    for reference in value[3:].split(' '):
+                    for reference in value.split(' '):
                         value, line_no = reference.split(':')
                         references.append((value, line_no))
                     state = 1
@@ -387,7 +381,7 @@ class POFile(TextFile):
                 if line_type == COMMENT:
                     comments.append(value)
                 elif line_type == REFERENCE:
-                    for reference in value[3:].split(' '):
+                    for reference in value.split(' '):
                         value, line_no = reference.split(':')
                         references.append((value, line_no))
                 elif line_type == FUZZY and not fuzzy:
@@ -479,7 +473,6 @@ class POFile(TextFile):
                 else:
                     raise POSyntaxError(line_number, line_type)
 
-
     def _load_state_from_file(self, file):
         """A PO file is made of entries, where entries are separated by one
         or more blank lines. Each entry consists of a msgid and a msgstr,
@@ -504,7 +497,6 @@ class POFile(TextFile):
 
         # Split the data by lines and intialize the line index
         data = file.read()
-
         # Add entries
         for entry in self.next_entry(data):
             comments, references, context, source, target, fuzzy, line_number = entry
@@ -520,36 +512,34 @@ class POFile(TextFile):
                 raise POError('msgid at line %d is duplicated' % line_number)
 
             # Get the comments and the msgstr in unicode
-            comments = [ unicode(x, self.encoding) for x in comments ]
-
-            if context is not None:
-                context = [ unicode(x, self.encoding) for x in context ]
-            source = [ unicode(x, self.encoding) for x in source ]
-            target = [ unicode(x, self.encoding) for x in target ]
-
+            # No need to encoding Python 3
+            # comments = [str(x, self.encoding) for x in comments]
+            #
+            # if context is not None:
+            #     context = [str(x, self.encoding) for x in context]
+            # source = [str(x, self.encoding) for x in source]
+            # target = [str(x, self.encoding) for x in target]
             # Add the message
             self._set_message(context, source, target, comments, references, fuzzy)
 
-
     def to_str(self, encoding='UTF-8'):
         messages = self.messages
-        message_ids = messages.keys()
-        message_ids.sort()
-        messages = [ messages[x].to_str(encoding) for x in message_ids ]
+        message_ids = sorted(list(messages.keys()), key=lambda x: x[1])
+        messages = [messages[x].to_str(encoding) for x in message_ids]
         return '\n'.join(messages)
 
 
     #######################################################################
     # API / Private
     #######################################################################
-    def _set_message(self, context, source, target=freeze([u'']),
+    def _set_message(self, context, source, target=freeze(['']),
                      comments=freeze([]), references=None, fuzzy=False):
 
-        if context is not None and isinstance(context, (str, unicode)):
+        if context is not None and isinstance(context, (str, str)):
             context = [context]
-        if isinstance(source, (str, unicode)):
+        if isinstance(source, (str, str)):
             source = [source]
-        if isinstance(target, (str, unicode)):
+        if isinstance(target, (str, str)):
             target = [target]
 
         # Make the key
@@ -573,10 +563,8 @@ class POFile(TextFile):
         if not references:
             return unit
         for reference in references:
-            unit.references.setdefault(str(reference[0]), []).append(reference[1])
+            unit.references.setdefault(reference[0], []).append(reference[1])
         return unit
-
-
 
     #######################################################################
     # API / Public
@@ -584,14 +572,12 @@ class POFile(TextFile):
     def get_msgids(self):
         """Returns all the (context, msgid).
         """
-        return self.messages.keys()
-
+        return list(self.messages.keys())
 
     def get_units(self):
         """Returns all the message (objects of the class <POUnit>).
         """
-        return self.messages.values()
-
+        return list(self.messages.values())
 
     def get_msgstr(self, source, context=None):
         """Returns the 'msgstr' for the given (context, msgid).
@@ -601,10 +587,8 @@ class POFile(TextFile):
             return ''.join(message.target)
         return None
 
-
     def set_msgstr(self, source, target, context=None):
         self._set_message(context, [source], [target])
-
 
     def gettext(self, source, context=None):
         """Returns the translation of the given message id.
@@ -620,7 +604,6 @@ class POFile(TextFile):
                 return decode_target(target)
         return source
 
-
     def add_unit(self, filename, source, context, line):
         if not source:
             return None
@@ -630,9 +613,8 @@ class POFile(TextFile):
 
         source = encode_source(source)
 
-        return self._set_message(context, [source], [u''], [],
+        return self._set_message(context, [source], [''], [],
                                  [(filename, line)])
-
 
 
 register_handler_class(POFile)

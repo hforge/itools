@@ -30,7 +30,7 @@ from itools.core import freeze
 from itools.uri import Path, get_reference
 
 # Import from here
-from base import DataType
+from .base import DataType
 
 
 class Integer(DataType):
@@ -39,15 +39,13 @@ class Integer(DataType):
     def decode(value):
         if value == '':
             return None
-        return int(value)
-
+        return int(float(value))
 
     @staticmethod
     def encode(value):
         if value is None:
             return ''
-        return str(value)
-
+        return str(int(value))
 
 
 class Decimal(DataType):
@@ -65,41 +63,41 @@ class Decimal(DataType):
         return str(value)
 
 
-
-class Unicode(DataType):
-
-    default = u''
-
-
-    @staticmethod
-    def decode(value, encoding='UTF-8'):
-        return unicode(value, encoding).strip()
-
-
-    @staticmethod
-    def encode(value, encoding='UTF-8'):
-        return value.strip().encode(encoding)
-
-
-    @staticmethod
-    def is_empty(value):
-        return value == u''
-
-
-
 class String(DataType):
 
     @staticmethod
-    def decode(value):
-        return value
+    def decode(value, encoding='UTF-8'):
+        if isinstance(value, bytes):
+            value = value.decode(encoding)
 
+        return value
 
     @staticmethod
-    def encode(value):
+    def encode(value, encoding='UTF-8'):
         if value is None:
-            return ''
+            return ""
+        if isinstance(value, bytes):
+            value = value.decode(encoding)
         return value
 
+    @staticmethod
+    def is_empty(value):
+        return value == ''
+
+
+class Unicode(String):
+    """
+    This exists only for backwards compatibility, to make migration to Pyhon 3
+    easier.
+
+    The only difference with String is the default value (empty string), and
+    that itools.catalog will split Unicode in words when indexing.
+
+    Text would be a better name than Unicode, but we keep Unicode so we don't
+    have to change too much code.
+    """
+
+    default = ''
 
 
 class Boolean(DataType):
@@ -111,7 +109,6 @@ class Boolean(DataType):
     def decode(value):
         return bool(int(value))
 
-
     @staticmethod
     def encode(value):
         if value is True:
@@ -120,7 +117,6 @@ class Boolean(DataType):
             return '0'
         else:
             raise ValueError('{0} value is not a boolean'.format(value))
-
 
 
 class URI(String):
@@ -134,11 +130,9 @@ class URI(String):
             return False
         return True
 
-
     @staticmethod
     def is_empty(value):
         return not value
-
 
 
 class PathDataType(DataType):
@@ -157,7 +151,6 @@ class PathDataType(DataType):
         return str(value)
 
 
-
 # We consider the local part in emails is case-insensitive. This is against
 # the standard, but corresponds to common usage.
 email_expr = "^[0-9a-z]+[_\.0-9a-z-'+]*@([0-9a-z-]+\.)+[a-z]{2,6}$"
@@ -170,12 +163,13 @@ class Email(String):
 
     @staticmethod
     def decode(value):
+        if isinstance(value, bytes):
+            value = value.decode("utf-8")
         return value.lower()
 
     @staticmethod
     def is_valid(value):
         return email_expr.match(value) is not None
-
 
 
 class QName(DataType):
@@ -187,13 +181,11 @@ class QName(DataType):
 
         return None, data
 
-
     @staticmethod
     def encode(value):
         if value[0] is None:
             return value[1]
         return '%s:%s' % value
-
 
 
 class Tokens(DataType):
@@ -204,11 +196,9 @@ class Tokens(DataType):
     def decode(data):
         return tuple(data.split())
 
-
     @staticmethod
     def encode(value):
         return ' '.join(value)
-
 
 
 class MultiLinesTokens(DataType):
@@ -217,22 +207,17 @@ class MultiLinesTokens(DataType):
     def decode(data):
         return tuple(data.splitlines())
 
-
     @staticmethod
     def encode(value):
         return '\n'.join(value)
 
 
-
-
 ###########################################################################
 # Enumerates
-
 class Enumerate(String):
 
     is_enumerate = True
     options = freeze([])
-
 
     def get_options(cls):
         """Returns a list of dictionaries in the format
@@ -242,7 +227,6 @@ class Enumerate(String):
         afterwards.
         """
         return deepcopy(cls.options)
-
 
     def is_valid(self, name):
         """Returns True if the given name is part of this Enumerate's options.
@@ -256,14 +240,12 @@ class Enumerate(String):
                 return True
         return False
 
-
     def get_namespace(cls, name):
         """Extends the options with information about which one is matching
         the given name.
         """
         options = cls.get_options()
         return enumerate_get_namespace(options, name)
-
 
     def get_value(cls, name, default=None):
         """Returns the value matching the given name, or the default value.
@@ -298,19 +280,21 @@ class XMLContent(object):
 
     @staticmethod
     def encode(value):
+        if isinstance(value, bytes):
+            value = value.decode("utf-8")
         return value.replace('&', '&amp;').replace('<', '&lt;')
-
 
     @staticmethod
     def decode(value):
         return value.replace('&amp;', '&').replace('&lt;', '<')
 
 
-
 class XMLAttribute(object):
 
     @staticmethod
     def encode(value):
+        if isinstance(value, bytes):
+            value = value.decode("utf-8")
         value = value.replace('&', '&amp;').replace('<', '&lt;')
         return value.replace('"', '&quot;')
 
@@ -349,7 +333,6 @@ class JSONObject(DataType):
         return dumps(value, cls=NewJSONEncoder)
 
 
-
 class JSONArray(JSONObject):
     """A JSON array, which is a Python list serialized as a JSON string
 
@@ -357,7 +340,6 @@ class JSONArray(JSONObject):
     """
 
     default = []
-
 
     @staticmethod
     def is_valid(value):

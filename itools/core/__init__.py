@@ -20,23 +20,22 @@
 from sys import platform
 
 # Import from itools
-from cache import LRUCache
-from freeze import freeze, frozendict, frozenlist
-from lazy import lazy
-from mimetypes_ import add_type, guess_all_extensions, guess_extension
-from mimetypes_ import guess_type, has_encoding, has_extension
-from odict import OrderedDict
-from prototypes import prototype_type, prototype, is_prototype
-from prototypes import proto_property, proto_lazy_property
-from timezones import fixed_offset, local_tz
-from utils import get_abspath, merge_dicts, get_sizeof, get_pipe, get_version
+from .cache import LRUCache
+from .freeze import freeze, frozendict, frozenlist
+from .lazy import lazy
+from .mimetypes_ import add_type, guess_all_extensions, guess_extension
+from .mimetypes_ import guess_type, has_encoding, has_extension
+from .odict import OrderedDict
+from .prototypes import prototype_type, prototype, is_prototype
+from .prototypes import proto_property, proto_lazy_property
+from .timezones import fixed_offset, local_tz
+from .utils import get_abspath, merge_dicts, get_sizeof, get_pipe, get_version
 
 
 if platform[:3] == 'win':
-    from _win import become_daemon, fork, get_time_spent, vmsize
+    from ._win import become_daemon, fork, get_time_spent, vmsize
 else:
-    from _unix import become_daemon, fork, get_time_spent, vmsize
-
+    from ._unix import become_daemon, fork, get_time_spent, vmsize
 
 
 __all__ = [

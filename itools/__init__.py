@@ -18,7 +18,7 @@
 from logging import getLogger, NullHandler
 
 # Import from itools
-from core import get_version
+from .core import get_version
 
 getLogger("itools.core").addHandler(NullHandler())
 getLogger("itools.web").addHandler(NullHandler())

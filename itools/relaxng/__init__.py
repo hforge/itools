@@ -17,7 +17,7 @@
 
 # Import from itools
 from itools.core import add_type
-from relaxng import RelaxNGFile
+from .relaxng import RelaxNGFile
 
 __all__ = [
     'RelaxNGFile',

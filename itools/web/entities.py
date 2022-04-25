@@ -18,7 +18,7 @@ from logging import getLogger
 
 # Import from itools
 from itools.handlers import File
-from headers import get_type
+from .headers import get_type
 
 log = getLogger("itools.web")
 

@@ -17,9 +17,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from odf import ODFFile, ODTFile, ODPFile, ODSFile
-from oo import SXWFile, SXCFile, SXIFile
-import schema
+from .odf import ODFFile, ODTFile, ODPFile, ODSFile
+from .oo import SXWFile, SXCFile, SXIFile
+from . import schema
 
 
 __all__ = [

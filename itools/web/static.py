@@ -22,7 +22,8 @@ from os.path import basename, getmtime, isfile
 from itools.core import fixed_offset
 from itools.fs.common import get_mimetype
 from itools.uri import Path
-from itools.web import BaseView, NotModified
+from .exceptions import NotModified
+from .views import BaseView
 
 
 class StaticView(BaseView):

@@ -27,13 +27,14 @@ from re import split
 
 # Import from itools
 from itools.datatypes import String
-from text import TextFile
+from .text import TextFile
 
 
 ###########################################################################
 # Lines Analyser (an automaton)
 ###########################################################################
-BLANK, COMMENT, VAR, VAR_START, VAR_CONT, VAR_END, EOF = range(7)
+BLANK, COMMENT, VAR, VAR_START, VAR_CONT, VAR_END, EOF = list(range(7))
+
 
 def get_lines(file):
     """Analyses the physical lines, identifies the type and parses them.
@@ -91,7 +92,7 @@ def get_lines(file):
                 if nb_groups > 3:
                     raise SyntaxError('unescaped char, line %d' % line_num)
 
-                if nb_groups in (3,1):
+                if nb_groups in (3, 1):
                     yield VAR, (name, value), line_num
                 if nb_groups == 2:
                     yield VAR_START, (name, value), line_num
@@ -106,7 +107,7 @@ def get_lines(file):
             groups = split('(?<=[^\\\\])"', line)
             nb_groups = len(groups)
             value = groups[0]
-            value = value.replace('\\"','"')
+            value = value.replace('\\"', '"')
             if nb_groups > 2:
                 raise SyntaxError('unescaped char, line %d' % line_num)
             elif nb_groups == 2:
@@ -126,11 +127,11 @@ class Lines(object):
 
     def __init__(self, file):
         self.lines = get_lines(file)
-        self.next()
+        next(self)
 
 
-    def next(self):
-        self.current = self.lines.next()
+    def __next__(self):
+        self.current = next(self.lines)
 
 
 
@@ -168,23 +169,23 @@ def read_block(lines):
     """
     type, value, line_num = lines.current
     if type == BLANK:
-        lines.next()
+        next(lines)
         return None
     elif type == COMMENT:
-        lines.next()
+        next(lines)
         comment = [value] + read_comment(lines)
         variable = read_variable(lines)
         return comment, variable
     elif type == VAR:
-        lines.next()
+        next(lines)
         return [], value
     elif type == VAR_START:
         name, value = value
-        lines.next()
+        next(lines)
         value = value + '\n' + read_multiline(lines)
         return [], (name, value)
     elif type == VAR_CONT:
-        lines.next()
+        next(lines)
         return None
     else:
         raise SyntaxError('unexpected line "%d"' % line_num)
@@ -198,7 +199,7 @@ def read_comment(lines):
     """
     type, value, line_num = lines.current
     if type == COMMENT:
-        lines.next()
+        next(lines)
         return [value] + read_comment(lines)
     return []
 
@@ -211,11 +212,11 @@ def read_variable(lines):
     """
     type, value, line_num = lines.current
     if type == VAR:
-        lines.next()
+        next(lines)
         return value
     elif type == VAR_START:
         name, value = value
-        lines.next()
+        next(lines)
         return name, value + '\n' + read_multiline(lines)
 
 
@@ -227,10 +228,10 @@ def read_multiline(lines):
     """
     type, value, line_num = lines.current
     if type == VAR_CONT:
-        lines.next()
+        next(lines)
         return value + '\n' + read_multiline(lines)
     elif type == VAR_END:
-        lines.next()
+        next(lines)
         return value
     else:
         raise SyntaxError('unexpected line "%s"' % line_num)
@@ -272,7 +273,6 @@ class ConfigFile(TextFile):
     class_extension = None
     schema = None
 
-
     def new(self, **kw):
         # Comments are not supported here
         self.values = {}
@@ -291,14 +291,13 @@ class ConfigFile(TextFile):
             # Next
             n += 2
 
-
     def _load_state_from_file(self, file):
         self.lines, self.values = parse(file)
-
 
     def to_str(self):
         lines = []
         for line in self.lines:
+
             if line is None:
                 # Blank line
                 lines.append('\n')
@@ -312,7 +311,6 @@ class ConfigFile(TextFile):
                     lines.append('%s = "%s"\n' % (name, value))
 
         return ''.join(lines)
-
 
     #########################################################################
     # API
@@ -350,7 +348,6 @@ class ConfigFile(TextFile):
             # Append a blank line
             self.lines.append(None)
 
-
     def append_comment(self, comment):
         """
         Appends a solitary comment.
@@ -363,7 +360,6 @@ class ConfigFile(TextFile):
         self.lines.append((comment, None))
         # Append a blank line
         self.lines.append(None)
-
 
     def get_value(self, name, type=None, default=None):
         if name not in self.values:
@@ -392,7 +388,6 @@ class ConfigFile(TextFile):
 
         return type.decode(value)
 
-
     def get_comment(self, name):
         if name not in self.values:
             return None
@@ -401,7 +396,6 @@ class ConfigFile(TextFile):
         line = self.lines[n]
         # Return the comment
         return ' '.join(line[0])
-
 
     def has_value(self, name):
         return name in self.values

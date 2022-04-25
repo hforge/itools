@@ -23,7 +23,7 @@ Output dates and times in locale format.
 from decimal import Decimal
 
 # Import from itools
-from accept import get_accept
+from .accept import get_accept
 
 
 def get_format(source, accept):
@@ -32,7 +32,7 @@ def get_format(source, accept):
         accept = get_accept()
 
     # Negotiate
-    available_languages = source.keys()
+    available_languages = list(source.keys())
     language = accept.select_language(available_languages)
     if language is None:
         language = 'en'
@@ -41,11 +41,9 @@ def get_format(source, accept):
     return source[language]
 
 
-
 #
 # Date and Time
 #
-
 def format_date(x, accept=None):
     format = get_format(date_formats, accept)[0]
     return x.strftime(format)
@@ -68,8 +66,8 @@ def format_datetime(x, accept=None):
 
 # http://docs.python.org/library/decimal.html#recipes
 # Modified for unicode and trailing currency
-def moneyfmt(value, places=2, curr=u'', sep=u',', dp=u'.', pos=u'',
-        neg=u'-', trailneg=u''):
+def moneyfmt(value, places=2, curr='', sep=',', dp='.', pos='',
+        neg='-', trailneg=''):
     """Convert Decimal to a money formatted unicode.
 
     places:  required number of places after the decimal point
@@ -97,17 +95,17 @@ def moneyfmt(value, places=2, curr=u'', sep=u',', dp=u'.', pos=u'',
     q = Decimal(10) ** -places      # 2 places --> '0.01'
     sign, digits, exp = value.quantize(q).as_tuple()
     result = []
-    digits = map(unicode, digits)
+    digits = list(map(str, digits))
     build, next = result.append, digits.pop
     if curr:
         build(curr)
     if sign:
         build(trailneg)
     for i in range(places):
-        build(next() if digits else u'0')
+        build(next() if digits else '0')
     build(dp)
     if not digits:
-        build(u'0')
+        build('0')
     i = 0
     while digits:
         build(next())
@@ -116,10 +114,10 @@ def moneyfmt(value, places=2, curr=u'', sep=u',', dp=u'.', pos=u'',
             i = 0
             build(sep)
     build(neg if sign else pos)
-    return u''.join(reversed(result))
+    return ''.join(reversed(result))
 
 
-def format_number(x, places=2, curr='', pos=u'', neg=u'-', trailneg=u"",
+def format_number(x, places=2, curr='', pos='', neg='-', trailneg="",
                   accept=None):
     """Convert Decimal to a number formatted unicode.
 
@@ -136,7 +134,6 @@ def format_number(x, places=2, curr='', pos=u'', neg=u'-', trailneg=u"",
             trailneg=trailneg, **format)
 
 
-
 ###########################################################################
 # Initialize the module
 ###########################################################################
@@ -151,7 +148,7 @@ date_formats = {
 
 number_formats = {
     # See "moneyfmt" docstring for help
-    'en': {'sep': u',', 'dp': u'.'},
-    'es': {'sep': u'.', 'dp': u','},
-    'fr': {'sep': u' ', 'dp': u','},
+    'en': {'sep': ',', 'dp': '.'},
+    'es': {'sep': '.', 'dp': ','},
+    'fr': {'sep': ' ', 'dp': ','},
     }

@@ -17,9 +17,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from base import Handler
-from registry import register_handler_class
-
+from .base import Handler
+from .registry import register_handler_class
 
 
 class Context(object):
@@ -28,7 +27,6 @@ class Context(object):
 
     def __init__(self):
         self.skip = False
-
 
 
 class Folder(Handler):
@@ -41,7 +39,6 @@ class Folder(Handler):
 
     dirty = False
 
-
     def __init__(self, key=None, database=None, **kw):
         if database is not None:
             self.database = database
@@ -51,14 +48,12 @@ class Folder(Handler):
         if key is not None:
             self.key = self.database.normalize_key(key)
 
-
     def get_mtime(self):
         """Returns the last modification time.
         """
         if self.database.has_handler(self.key):
             return self.database.get_handler_mtime(self.key)
         return None
-
 
 
     def traverse(self):
@@ -70,7 +65,6 @@ class Folder(Handler):
                     yield x
             else:
                 yield handler
-
 
     def traverse2(self, context=None):
         if context is None:

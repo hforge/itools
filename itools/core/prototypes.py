@@ -21,7 +21,7 @@ from sys import _getframe
 from types import FunctionType
 
 # Import from here
-from lazy import lazy
+from .lazy import lazy
 
 
 log = getLogger("itools.core")
@@ -52,7 +52,6 @@ And you can combine this ad-aeternam:
   proto3 = proto2(...)
 
 """
-
 
 
 class prototype_type(type):
@@ -108,22 +107,17 @@ class prototype_type(type):
                     del dict[source_name]
                     # Fix the name
                     if type(value) is classmethod:
-                        value.__get__(None, dict).im_func.__name__ = name
+                        value.__get__(None, dict).__func__.__name__ = name
                     elif type(value) is proto_property:
                         value.__name__ = name
                     elif type(value) is proto_lazy_property:
                         value.__name__ = name
 
-
         # Make and return the class
         return type.__new__(mcs, class_name, bases, dict)
 
 
-
-class prototype(object):
-
-    __metaclass__ = prototype_type
-
+class prototype(object, metaclass=prototype_type):
 
     def __new__(cls, *args, **kw):
         """
@@ -141,10 +135,8 @@ class prototype(object):
         # Ok
         return new_class
 
-
     def __init__(self, *args, **kw):
         pass
-
 
 
 class proto_property(lazy):
@@ -159,14 +151,13 @@ class proto_property(lazy):
         return value
 
 
-
 class proto_lazy_property(lazy):
 
     def __get__(self, instance, owner):
         name = self.__name__
         for cls in owner.__mro__:
             if name in cls.__dict__:
-                name = self.meth.func_name
+                name = self.meth.__name__
                 try:
                     value = self.meth(owner)
                 except Exception as e:
@@ -175,7 +166,6 @@ class proto_lazy_property(lazy):
                     raise
                 setattr(owner, name, value)
                 return value
-
 
 
 def is_prototype(value, cls):

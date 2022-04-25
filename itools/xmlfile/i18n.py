@@ -28,7 +28,7 @@ from itools.xml import is_empty, get_qname, get_attribute_qname, get_end_tag
 from itools.xml import XMLParser, XMLError, DOCUMENT_TYPE, XML_DECL
 from itools.xml import START_ELEMENT, END_ELEMENT, TEXT, COMMENT
 from itools.xml import stream_to_str
-from itools.xmlfile.errors import TranslationError
+from .errors import TranslationError
 
 
 
@@ -51,10 +51,11 @@ def _get_attr_context(datatype, tag_name, attr_name):
 
 def _make_start_format(tag_uri, tag_name, attributes, encoding):
     # We must search for translatable attributes
-    result = [(u'<%s' % get_qname(tag_uri, tag_name), False, None)]
+    result = [('<%s' % get_qname(tag_uri, tag_name), False, None)]
 
     for attr_uri, attr_name in attributes:
         qname = get_attribute_qname(attr_uri, attr_name)
+
         qname = Unicode.decode(qname, encoding=encoding)
         value = attributes[(attr_uri, attr_name)]
         value = Unicode.decode(value, encoding=encoding)
@@ -63,17 +64,17 @@ def _make_start_format(tag_uri, tag_name, attributes, encoding):
         datatype = get_attr_datatype(tag_uri, tag_name, attr_uri, attr_name,
                                      attributes)
         if issubclass(datatype, Unicode):
-            result[-1] = (result[-1][0] + u' %s="' % qname, False, None)
+            result[-1] = (result[-1][0] + ' %s="' % qname, False, None)
             context = _get_attr_context(datatype, tag_name, attr_name)
             result.append((value, True, context))
-            result.append((u'"', False, None))
+            result.append(('"', False, None))
         else:
-            result[-1] = (result[-1][0] + u' %s="%s"' % (qname, value), False, None)
+            result[-1] = (result[-1][0] + ' %s="%s"' % (qname, value), False, None)
     # Close the start tag
     if is_empty(tag_uri, tag_name):
-        result[-1] = (result[-1][0] + u'/>', False, None)
+        result[-1] = (result[-1][0] + '/>', False, None)
     else:
-        result[-1] = (result[-1][0] + u'>', False, None)
+        result[-1] = (result[-1][0] + '>', False, None)
 
     return result
 
@@ -92,13 +93,12 @@ def _get_translatable_blocks(events):
     message = Message()
     skip_level = 0
     for event in events:
-        type, value, line = event
-
+        xml_type, value, line = event
         # Set the good encoding
-        if type == XML_DECL:
+        if xml_type == XML_DECL:
             encoding = value[1]
         # And now, we catch only the good events
-        elif type == START_ELEMENT:
+        elif xml_type == START_ELEMENT:
             if skip_level > 0:
                 skip_level += 1
                 if stream:
@@ -107,7 +107,6 @@ def _get_translatable_blocks(events):
             else:
                 tag_uri, tag_name, attributes = value
                 schema = get_element_schema(tag_uri, tag_name)
-
                 # Context management
                 if schema.context is not None:
                     context_stack.append(schema.context)
@@ -131,7 +130,7 @@ def _get_translatable_blocks(events):
                     skip_level = 1
                     stream = [event]
                     continue
-        elif type == END_ELEMENT:
+        elif xml_type == END_ELEMENT:
             if skip_level > 0:
                 skip_level -= 1
                 if stream:
@@ -139,7 +138,6 @@ def _get_translatable_blocks(events):
                     if skip_level == 0:
                         id += 1
                         aux = stream_to_str(stream, encoding)
-                        aux = unicode(aux, encoding)
                         aux = [(aux, False, context_stack[-1])]
                         message.append_start_format(aux, id, line)
                         message.append_end_format([], id, line)
@@ -158,25 +156,22 @@ def _get_translatable_blocks(events):
                     message.append_end_format([(get_end_tag(value), False,
                                                 None)], id_stack.pop(), line)
                     continue
-        elif type == TEXT:
+        elif xml_type == TEXT:
             # Not empty ?
             if stream:
                 stream.append(event)
                 continue
             elif skip_level == 0 and (value.strip() != '' or message):
                 value = XMLContent.encode(value)
-                value = unicode(value, encoding)
                 message.append_text(value, line, context_stack[-1])
                 continue
-        elif type == COMMENT:
+        elif xml_type == COMMENT:
             if stream:
                 stream.append(event)
                 continue
             elif message:
                 id += 1
-                if isinstance(value, str):
-                    value = unicode(value, encoding)
-                value = u'<!--%s-->' % value
+                value = '<!--%s-->' % value
                 message.append_start_format([(value, False, None)], id, line)
                 message.append_end_format([], id, line)
                 continue
@@ -198,8 +193,8 @@ def _get_translatable_blocks(events):
 def get_units(events, srx_handler=None):
     keep_spaces = False
     keep_spaces_level = 0
-    for type, value, line in _get_translatable_blocks(events):
-        if type == START_ELEMENT:
+    for xml_type, value, line in _get_translatable_blocks(events):
+        if xml_type == START_ELEMENT:
             tag_uri, tag_name, attributes = value
             # Attributes
             for attr_uri, attr_name in attributes:
@@ -219,7 +214,7 @@ def get_units(events, srx_handler=None):
             if schema.keep_spaces:
                 keep_spaces = True
                 keep_spaces_level += 1
-        elif type == END_ELEMENT:
+        elif xml_type == END_ELEMENT:
             # Keep spaces ?
             tag_uri, tag_name = value
             schema = get_element_schema(tag_uri, tag_name)
@@ -227,7 +222,7 @@ def get_units(events, srx_handler=None):
                 keep_spaces_level -= 1
                 if keep_spaces_level == 0:
                     keep_spaces = False
-        elif type == MESSAGE:
+        elif xml_type == MESSAGE:
             # Segmentation
             for segment in get_segments(value, keep_spaces, srx_handler):
                 yield segment
@@ -246,18 +241,17 @@ def translate(events, catalog, srx_handler=None):
     namespaces = {}
 
     for event in _get_translatable_blocks(events):
-        type, value, line = event
-
+        xml_type, value, line = event
         # Set the good encoding
-        if type == XML_DECL:
+        if xml_type == XML_DECL:
             encoding = value[1]
             yield event
         # Store the current DTD
-        elif type == DOCUMENT_TYPE:
+        elif xml_type == DOCUMENT_TYPE:
             name, doctype = value
             yield event
         # GO !
-        elif type == START_ELEMENT:
+        elif xml_type == START_ELEMENT:
             tag_uri, tag_name, attributes = value
             # Attributes (translate)
             for attr_uri, attr_name in attributes:
@@ -286,7 +280,7 @@ def translate(events, catalog, srx_handler=None):
             if schema.keep_spaces:
                 keep_spaces = True
                 keep_spaces_level += 1
-        elif type == END_ELEMENT:
+        elif xml_type == END_ELEMENT:
             yield event
             # Keep spaces ?
             tag_uri, tag_name = value
@@ -295,7 +289,7 @@ def translate(events, catalog, srx_handler=None):
                 keep_spaces_level -= 1
                 if keep_spaces_level == 0:
                     keep_spaces = False
-        elif type == MESSAGE:
+        elif xml_type == MESSAGE:
             try:
                 translation = translate_message(value, catalog, keep_spaces,
                                                 srx_handler)
@@ -303,7 +297,7 @@ def translate(events, catalog, srx_handler=None):
                 # translate_message can raise an KeyError in case of translations mistake
                 raise TranslationError(line=line)
             try:
-                for event in XMLParser(translation.encode(encoding),
+                for event in XMLParser(translation,
                                        namespaces, doctype=doctype):
                     yield event
             except XMLError:

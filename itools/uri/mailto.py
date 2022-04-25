@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from registry import register_scheme
+from .registry import register_scheme
 
 
 class Mailto(object):
@@ -28,13 +28,11 @@ class Mailto(object):
     def __init__(self, address):
         self.address = address
 
-
     @property
     def username(self):
         if '@' in self.address:
             return self.address.split('@', 1)[0]
         return None
-
 
     @property
     def host(self):
@@ -42,10 +40,8 @@ class Mailto(object):
             return self.address.split('@', 1)[1]
         return None
 
-
     def __str__(self):
         return 'mailto:%s' % self.address
-
 
     def __eq__(self, other):
         return str(self) == str(other)
@@ -59,7 +55,6 @@ class MailtoDataType(object):
         # DOT com' to trick robots. In this case we just return the
         # given string.
         return Mailto(data[7:])
-
 
     @staticmethod
     def encode(value):

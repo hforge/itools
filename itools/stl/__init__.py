@@ -17,8 +17,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from stl import STLError, STLFile, STLTemplate, stl
-from stl import rewrite_uris, set_prefix
+from .stl import STLError, STLFile, STLTemplate, stl
+from .stl import rewrite_uris, set_prefix
 
 
 stl_namespaces = {

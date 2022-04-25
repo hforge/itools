@@ -17,9 +17,8 @@
 # Import from the Standard Library
 from types import MethodType
 
-
-
 fields_registry = {}
+
 
 def register_field(name, field_cls):
     if name not in fields_registry:
@@ -38,9 +37,10 @@ def register_field(name, field_cls):
         old_value = getattr(old, key, None)
         new_value = getattr(new, key, None)
         if type(old_value) is MethodType:
-            old_value = old_value.im_func
+            old_value = old_value.__func__
         if type(new_value) is MethodType:
-            new_value = new_value.im_func
+            new_value = new_value.__func__
+
         if old_value != new_value:
             msg = 'register conflict over the "{0}" field ({1} is different)'
             raise ValueError(msg.format(name, key))

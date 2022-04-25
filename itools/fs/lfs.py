@@ -22,18 +22,24 @@
 from datetime import datetime
 from os import listdir, makedirs, remove as os_remove, renames, walk
 from os import access, R_OK, W_OK
-from os.path import exists, getatime, getctime, getmtime ,getsize
+from os.path import exists, getatime, getctime, getmtime, getsize
 from os.path import isfile, isdir, join, basename, dirname
 from os.path import abspath, relpath
 from shutil import rmtree, copytree, copy as shutil_copy
+import mimetypes
+
 
 # Import from itools
 from itools.uri import Path
-from common import WRITE, READ_WRITE, APPEND, READ, get_mimetype
+from .common import WRITE, READ_WRITE, APPEND, READ, get_mimetype
 
 
-MODES = {WRITE: 'wb', READ_WRITE: 'r+b', APPEND: 'ab', READ: 'rb'}
-
+MODES = {
+    WRITE: ('w', 'wb'),
+    READ_WRITE: ('w+', 'wb+'),
+    APPEND: ('a+', 'ab+'),
+    READ: ('r', 'rb'),
+}
 
 
 class LocalFolder(object):
@@ -78,8 +84,7 @@ class LocalFolder(object):
         path = self._resolve_path(path)
         return access(path, W_OK)
 
-
-    def make_file(self, path):
+    def make_file(self, path, text=False):
         path = self._resolve_path(path)
         parent_path = dirname(path)
         if exists(parent_path):
@@ -87,13 +92,14 @@ class LocalFolder(object):
                 raise OSError("File exists: '%s'" % path)
         else:
             makedirs(parent_path)
-        return file(path, 'wb')
-
+        if text:
+            return open(path, 'w')
+        else:
+            return open(path, 'wb')
 
     def make_folder(self, path):
         path = self._resolve_path(path)
         return makedirs(path)
-
 
     def get_ctime(self, path):
         path = self._resolve_path(path)
@@ -126,14 +132,16 @@ class LocalFolder(object):
         path = self._resolve_path(path)
         return getsize(path)
 
-
-    def open(self, path, mode=None):
+    def open(self, path, mode=None, text=False):
         path = self._resolve_path(path)
         if isdir(path):
             return self.__class__(path)
-        mode = MODES.get(mode, 'rb')
-        return file(path, mode)
-
+        mode = MODES.get(mode, ('r', 'rb'))
+        if text:
+            mode = mode[0]
+        else:
+            mode = mode[1]
+        return open(path, mode)
 
     def remove(self, path):
         path = self._resolve_path(path)
@@ -141,7 +149,11 @@ class LocalFolder(object):
             # Remove folder contents
             rmtree(path)
         else:
-            os_remove(path)
+            try:
+                os_remove(path)
+            except OSError as error:
+                print(error)
+                print("File path can not be removed")
 
 
     def copy(self, source, target):

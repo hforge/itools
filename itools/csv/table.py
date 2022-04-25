@@ -26,9 +26,9 @@ from datetime import datetime
 
 # Import from itools
 from itools.datatypes import DateTime, String, Unicode
-from itools.handlers import File
-from csv_ import CSVFile
-from parser import parse
+from itools.handlers import TextFile
+from .csv_ import CSVFile
+from .parser import parse
 
 
 ###########################################################################
@@ -51,7 +51,6 @@ def unescape_data(data, escape_table=escape_table):
     return '\\'.join(out)
 
 
-
 def escape_data(data, escape_table=escape_table):
     """Escape the data
     """
@@ -59,7 +58,6 @@ def escape_data(data, escape_table=escape_table):
     for c, c_escaped in escape_table:
         data = data.replace(c, c_escaped)
     return data
-
 
 
 def unfold_lines(data):
@@ -80,7 +78,6 @@ def unfold_lines(data):
         i += 1
     if line:
         yield line
-
 
 
 def fold_line(data):
@@ -105,7 +102,6 @@ def fold_line(data):
             size = len(lines[i])
             i = i + 1
     return res
-
 
 
 # XXX The RFC only allows '-', we allow more because this is used by
@@ -261,7 +257,6 @@ def get_tokens(property):
     return value, parameters
 
 
-
 def parse_table(data):
     """This is the public interface of the module "itools.ical.parser", a
     low-level parser of iCalendar files.
@@ -279,7 +274,6 @@ def parse_table(data):
         # Read the parameters and the property value
         value, parameters = get_tokens(line)
         yield name, value, parameters
-
 
 
 ###########################################################################
@@ -300,7 +294,7 @@ def deserialize_parameters(parameters, schema, default=String(multiple=True)):
             raise ValueError('parameter "{0}" not defined'.format(name))
         # Decode
         value = parameters[name]
-        value = [ decode_param_value(x, datatype) for x in value ]
+        value = [decode_param_value(x, datatype) for x in value]
         # Multiple or single
         if not datatype.multiple:
             if len(value) > 1:
@@ -309,7 +303,6 @@ def deserialize_parameters(parameters, schema, default=String(multiple=True)):
             value = value[0]
         # Update
         parameters[name] = value
-
 
 
 ###########################################################################
@@ -323,11 +316,9 @@ class UniqueError(ValueError):
         self.name = name
         self.value = value
 
-
     def __str__(self):
-        return (
-            u'the "{field}" field must be unique, the "{value}" value is '
-            u' already used.').format(field=self.name, value=self.value)
+        return ('the "{field}" field must be unique, the "{value}" value is '
+                'already used.').format(field=self.name, value=self.value)
 
 
 ###########################################################################
@@ -347,7 +338,6 @@ class Property(object):
         self.value = value
         self.parameters = kw or None
 
-
     def clone(self):
         # Copy the value and parameters
         value = deepcopy(self.value)
@@ -358,18 +348,15 @@ class Property(object):
 
         return Property(value, **parameters)
 
-
     def get_parameter(self, name, default=None):
         if self.parameters is None:
             return default
         return self.parameters.get(name, default)
 
-
     def set_parameter(self, name, value):
         if self.parameters is None:
             self.parameters = {}
         self.parameters[name] = value
-
 
     def __eq__(self, other):
         if type(other) is not Property:
@@ -378,10 +365,8 @@ class Property(object):
             return False
         return self.parameters == other.parameters
 
-
     def __ne__(self, other):
         return not self.__eq__(other)
-
 
 
 params_escape_table = (
@@ -426,7 +411,7 @@ def _property_to_str(name, property, datatype, p_schema, encoding='utf-8'):
     # Parameters
     if property.parameters:
         p_names = property.parameters.keys()
-        p_names.sort()
+        p_names = sorted(list(p_names))
     else:
         p_names = []
 
@@ -443,7 +428,7 @@ def _property_to_str(name, property, datatype, p_schema, encoding='utf-8'):
         # FIXME Use the encoding
         if is_multiple(p_datatype):
             p_value = [
-                encode_param_value(p_name, x, p_datatype) for x in p_value ]
+                encode_param_value(p_name, x, p_datatype) for x in p_value]
             p_value = ','.join(p_value)
         else:
             p_value = encode_param_value(p_name, p_value, p_datatype)
@@ -468,21 +453,19 @@ def _property_to_str(name, property, datatype, p_schema, encoding='utf-8'):
 def property_to_str(name, property, datatype, p_schema, encoding='utf-8'):
     try:
         return _property_to_str(name, property, datatype, p_schema, encoding)
-    except StandardError:
+    except Exception:
         err = 'failed to serialize "%s" property, probably a bad value'
         raise ValueError(err % name)
-
 
 
 class Record(dict):
 
     __slots__ = ['id', 'record_properties']
 
-
-    def __init__(self, id, record_properties):
-        self.id = id
-        self.record_properties  = record_properties
-
+    def __init__(self, _id, record_properties):
+        super().__init__()
+        self.id = _id
+        self.record_properties = record_properties
 
     def __getattr__(self, name):
         if name == '__number__':
@@ -493,13 +476,11 @@ class Record(dict):
 
         property = self[name]
         if type(property) is list:
-            return [ x.value for x in property ]
+            return [x.value for x in property]
         return property.value
-
 
     def get_property(self, name):
         return self.get(name)
-
 
     # For indexing purposes
     def get_value(self, name):
@@ -508,12 +489,11 @@ class Record(dict):
             return None
 
         if type(property) is list:
-            return [ x.value for x in property ]
+            return [x.value for x in property]
         return property.value
 
 
-
-class Table(File):
+class Table(TextFile):
 
     record_class = Record
 
@@ -526,7 +506,6 @@ class Table(File):
     record_parameters = {
         'language': String(multiple=False)}
 
-
     def get_datatype(self, name):
         # Table schema
         if name == 'ts':
@@ -534,7 +513,6 @@ class Table(File):
         if name in self.schema:
             return self.schema[name]
         return String(multiple=True)
-
 
     def get_record_datatype(self, name):
         # Record schema
@@ -544,7 +522,6 @@ class Table(File):
             return self.record_properties[name]
         # FIXME Probably we should raise an exception here
         return String(multiple=True)
-
 
     def properties_to_dict(self, properties, record, first=False):
         """Add the given "properties" as Property objects or Property objects
@@ -566,22 +543,21 @@ class Table(File):
             # Transform values to properties
             if is_multilingual(datatype):
                 if type(value) is not list:
-                    value = [ value ]
+                    value = [value]
                 record.setdefault(name, [])
                 for p in value:
                     language = p.parameters['language']
                     record[name] = [
                         x for x in record[name]
-                        if x.parameters['language'] != language ]
+                        if x.parameters['language'] != language]
                     record[name].append(p)
             elif datatype.multiple:
                 if type(value) is list:
-                    record[name] = [ to_property(x) for x in value ]
+                    record[name] = [to_property(x) for x in value]
                 else:
                     record[name] = [to_property(value)]
             else:
                 record[name] = to_property(value)
-
 
     #######################################################################
     # Handlers
@@ -591,13 +567,11 @@ class Table(File):
         self.records = []
         self.changed_properties = False
 
-
     def new(self):
         # Add the properties record
         properties = self.record_class(-1, self.record_properties)
         properties['ts'] = Property(datetime.now())
         self.properties = properties
-
 
     def _load_state_from_file(self, file):
         # Load the records
@@ -648,11 +622,10 @@ class Table(File):
             else:
                 record[name] = property
 
-
     def _record_to_str(self, id, record):
         lines = ['id:%d/0\n' % id]
         names = record.keys()
-        names.sort()
+        names = sorted(list(names))
         # Table or record schema
         if id == -1:
             get_datatype = self.get_datatype
@@ -677,7 +650,6 @@ class Table(File):
         lines.append('\n')
         return ''.join(lines)
 
-
     def to_str(self):
         lines = []
         # Properties record
@@ -695,16 +667,14 @@ class Table(File):
 
         return ''.join(lines)
 
-
     #######################################################################
     # API / Public
     #######################################################################
-    def get_record(self, id):
+    def get_record(self, _id):
         try:
-            return self.records[id]
+            return self.records[_id]
         except IndexError:
             return None
-
 
     def add_record(self, kw):
         # Check for duplicate
@@ -714,8 +684,8 @@ class Table(File):
                 if self.search(name, kw[name]):
                     raise UniqueError(name, kw[name])
         # Make new record
-        id = len(self.records)
-        record = self.record_class(id, self.record_properties)
+        _id = len(self.records)
+        record = self.record_class(_id, self.record_properties)
         self.properties_to_dict(kw, record)
         record['ts'] = Property(datetime.now())
         # Change
@@ -724,24 +694,22 @@ class Table(File):
         # Back
         return record
 
-
-    def update_record(self, id, **kw):
-        record = self.records[id]
+    def update_record(self, _id, **kw):
+        record = self.records[_id]
         if record is None:
             msg = 'cannot modify record "%s" because it has been deleted'
-            raise LookupError(msg % id)
+            raise LookupError(msg % _id)
         # Check for duplicate
         for name in kw:
             datatype = self.get_record_datatype(name)
             if getattr(datatype, 'unique', False) is True:
                 search = self.search(name, kw[name])
-                if search and (search[0] != self.records[id]):
+                if search and (search[0] != self.records[_id]):
                     raise UniqueError(name, kw[name])
         # Update record
         self.set_changed()
         self.properties_to_dict(kw, record)
         record['ts'] = Property(datetime.now())
-
 
     def update_properties(self, **kw):
         record = self.properties
@@ -757,16 +725,14 @@ class Table(File):
         self.set_changed()
         self.changed_properties = True
 
-
-    def del_record(self, id):
-        record = self.records[id]
+    def del_record(self, _id):
+        record = self.records[_id]
         if record is None:
             msg = 'cannot delete record "%s" because it was deleted before'
-            raise LookupError(msg % id)
+            raise LookupError(msg % _id)
         # Change
         self.set_changed()
-        self.records[id] = None
-
+        self.records[_id] = None
 
     def get_record_ids(self):
         i = 0
@@ -775,16 +741,13 @@ class Table(File):
                 yield i
             i += 1
 
-
     def get_n_records(self):
         ids = self.get_record_ids()
         ids = list(ids)
         return len(ids)
 
-
     def get_records(self):
-        return ( x for x in self.records if x )
-
+        return (x for x in self.records if x)
 
     def get_record_value(self, record, name, language=None):
         """This is the preferred method for accessing record values.  It
@@ -808,8 +771,8 @@ class Table(File):
                 return datatype.get_default()
             # Language negotiation ('select_language' is a built-in)
             if language is None:
-                languages = [ x.parameters['language'] for x in property
-                              if not datatype.is_empty(x.value) ]
+                languages = [x.parameters['language'] for x in property
+                              if not datatype.is_empty(x.value)]
                 language = select_language(languages)
                 if language is None and languages:
                     # Pick up one at random (FIXME)
@@ -834,18 +797,16 @@ class Table(File):
                     return []
                 return default
             # Hit
-            return [ x.value for x in property ]
+            return [x.value for x in property]
 
         # Simple properties
         if property is None:
             return datatype.get_default()
         return property.value
 
-
     def get_property(self, name):
         record = self.properties
         return record.get_value(name)
-
 
     def get_property_value(self, name):
         """Return the value if name is in record
@@ -865,11 +826,9 @@ class Table(File):
                 else:
                     return getattr(datatype, 'default')
 
-
     def search(self, key, value):
         get = self.get_record_value
-        return [ x for x in self.records if x and get(x, key) == value ]
-
+        return [x for x in self.records if x and get(x, key) == value]
 
     def update_from_csv(self, data, columns, skip_header=False):
         """Update the table by adding record from data
@@ -887,7 +846,6 @@ class Table(File):
                 if key in record_properties:
                     record[key] = line[index]
             self.add_record(record)
-
 
     def to_csv(self, columns, separator=None, language=None):
         """Export the table to CSV handler.

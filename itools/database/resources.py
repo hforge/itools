@@ -19,9 +19,9 @@ from logging import getLogger
 from itools.core import freeze, is_prototype
 
 # Import from itools.database
-from fields import Field
-from registry import register_field
-from ro import RODatabase
+from .fields import Field
+from .registry import register_field
+from .ro import RODatabase
 
 log = getLogger("itools.database")
 
@@ -49,10 +49,8 @@ class DBResourceMetaclass(type):
         return cls
 
 
+class Resource(object, metaclass=DBResourceMetaclass):
 
-class Resource(object):
-
-    __metaclass__ = DBResourceMetaclass
     __hash__ = None
 
     fields = freeze([])
@@ -61,7 +59,6 @@ class Resource(object):
     #   soft = False: raise an exception
     #   soft = True : log a warning
     fields_soft = False
-
 
     @classmethod
     def get_field(cls, name, soft=True):
@@ -72,13 +69,11 @@ class Resource(object):
         log.warning("Warning: Undefined field {} on {}".format(name, cls))
         return None
 
-
     @classmethod
     def get_fields(self):
         for name in self.fields:
             field = self.get_field(name)
             yield name, field
-
 
     def get_catalog_values(self):
         """Returns a dictionary with the values of the fields to be indexed.

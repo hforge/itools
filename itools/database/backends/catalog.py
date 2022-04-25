@@ -41,11 +41,12 @@ from itools.database.queries import RangeQuery, StartQuery, TextQuery, _Multiple
 log = getLogger("itools.database")
 try:
     from xapian import MultiValueSorter
+
     XAPIAN_VERSION = '1.2'
 except Exception:
     from xapian import MultiValueKeyMaker
-    XAPIAN_VERSION = '1.4'
 
+    XAPIAN_VERSION = '1.4'
 
 # Constants
 OP_AND = Query.OP_AND
@@ -58,37 +59,56 @@ OP_VALUE_LE = Query.OP_VALUE_LE
 TQ_FLAGS = (QueryParser.FLAG_LOVEHATE +
             QueryParser.FLAG_PHRASE +
             QueryParser.FLAG_WILDCARD)
-TRANSLATE_MAP = { ord(u'À'): ord(u'A'),
-                  ord(u'Â'): ord(u'A'),
-                  ord(u'â'): ord(u'a'),
-                  ord(u'à'): ord(u'a'),
-                  ord(u'Ç'): ord(u'C'),
-                  ord(u'ç'): ord(u'c'),
-                  ord(u'É'): ord(u'E'),
-                  ord(u'Ê'): ord(u'E'),
-                  ord(u'é'): ord(u'e'),
-                  ord(u'ê'): ord(u'e'),
-                  ord(u'è'): ord(u'e'),
-                  ord(u'ë'): ord(u'e'),
-                  ord(u'Î'): ord(u'I'),
-                  ord(u'î'): ord(u'i'),
-                  ord(u'ï'): ord(u'i'),
-                  ord(u'ô'): ord(u'o'),
-                  ord(u'û'): ord(u'u'),
-                  ord(u'ù'): ord(u'u'),
-                  ord(u'ü'): ord(u'u'),
-                  ord(u"'"): ord(u' ') }
-
+TRANSLATE_MAP = {ord('À'): ord('A'),
+                 ord('Â'): ord('A'),
+                 ord('â'): ord('a'),
+                 ord('à'): ord('a'),
+                 ord('Ç'): ord('C'),
+                 ord('ç'): ord('c'),
+                 ord('É'): ord('E'),
+                 ord('Ê'): ord('E'),
+                 ord('é'): ord('e'),
+                 ord('ê'): ord('e'),
+                 ord('è'): ord('e'),
+                 ord('ë'): ord('e'),
+                 ord('Î'): ord('I'),
+                 ord('î'): ord('i'),
+                 ord('ï'): ord('i'),
+                 ord('ô'): ord('o'),
+                 ord('û'): ord('u'),
+                 ord('ù'): ord('u'),
+                 ord('ü'): ord('u'),
+                 ord("'"): ord(' ')}
 
 MSG_NOT_INDEXED = 'the "{name}" field is not indexed'
+
+
+def bytes_to_str(data):
+    for encoding in ["utf-8", "windows-1252", "latin-1"]:
+        try:
+            if isinstance(data, bytes):
+                return data.decode(encoding)
+            else:
+                return data
+        except:
+            pass
+    raise Exception(f"Type DATA {type(data)} value {data}")
+
+
 def warn_not_indexed(name):
     log.warning(MSG_NOT_INDEXED.format(name=name))
 
+
 MSG_NOT_STORED = 'the "{name}" field is not stored'
+
+
 def warn_not_stored(name):
     log.warning(MSG_NOT_STORED.format(name=name))
 
+
 MSG_NOT_INDEXED_NOR_STORED = 'the "{name}" field is not indexed nor stored'
+
+
 def warn_not_indexed_nor_stored(name):
     log.warning(MSG_NOT_INDEXED_NOR_STORED.format(name=name))
 
@@ -99,7 +119,6 @@ class Doc(object):
         self._xdoc = xdoc
         self._fields = fields
         self._metadata = metadata
-
 
     def __getattr__(self, name):
         # 1. Get the raw value
@@ -147,7 +166,6 @@ class Doc(object):
         setattr(self, name, value)
         return value
 
-
     def get_value(self, name, language=None):
         # Check if stored
         info = self._metadata.get(name)
@@ -190,20 +208,17 @@ class Doc(object):
         return field_cls.get_default()
 
 
-
 class SearchResults(object):
 
     def __init__(self, catalog, xquery):
         self._catalog = catalog
         self._xquery = xquery
 
-
     @lazy
     def _enquire(self):
         enquire = Enquire(self._catalog._db)
         enquire.set_query(self._xquery)
         return enquire
-
 
     @lazy
     def _max(self):
@@ -212,17 +227,14 @@ class SearchResults(object):
         doccount = db.get_doccount()
         return enquire.get_mset(0, doccount).size()
 
-
     def __len__(self):
         """Returns the number of documents found."""
         return self._max
-
 
     def search(self, query=None, **kw):
         xquery = _get_xquery(self._catalog, query, **kw)
         query = Query(Query.OP_AND, [self._xquery, xquery])
         return self.__class__(self._catalog, query)
-
 
     def get_documents(self, sort_by=None, reverse=False, start=0, size=0):
         """Returns the documents for the search, sorted by weight.
@@ -289,8 +301,8 @@ class SearchResults(object):
 
         # Construction of the results
         fields = self._catalog._fields
-        results = [ Doc(x.document, fields, metadata)
-                    for x in enquire.get_mset(start, size) ]
+        results = [Doc(x.document, fields, metadata)
+                   for x in enquire.get_mset(start, size)]
 
         # sort_by=None/reverse=True
         if sort_by is None and reverse:
@@ -299,9 +311,7 @@ class SearchResults(object):
         return results
 
 
-
 class Catalog(object):
-
     nb_changes = 0
     _db = None
     read_only = False
@@ -338,11 +348,9 @@ class Catalog(object):
         if not read_only:
             self._init_all_metadata()
 
-
-    def _init_all_metadata(self):
+    def _init_all_metadata(self, has_changes=False):
         """Init new metadata (to avoid 'field is not indexed' warning)
         """
-        has_changes = False
         metadata = self._metadata
         for name, field_cls in self._fields.items():
             if name not in metadata:
@@ -351,14 +359,14 @@ class Catalog(object):
                 metadata[name] = self._get_info(field_cls, name)
             else:
                 # If the field was in the catalog but is newly stored
-                if not metadata[name].has_key('value') and getattr(field_cls, 'stored', False):
+                if 'value' not in metadata[name] and getattr(field_cls, 'stored', False):
                     log.debug("[Catalog] Indexed field is now stored: {0}".format(name))
                     has_changes = True
                     metadata[name] = merge_dicts(
                         metadata[name],
                         self._get_info_stored())
                 # If the field was stored in the catalog but is newly indexed
-                if not metadata[name].has_key('prefix') and getattr(field_cls, 'indexed', False):
+                if 'prefix' not in metadata[name] and getattr(field_cls, 'indexed', False):
                     log.debug("[Catalog] Stored field is now indexed: {0}".format(name))
                     has_changes = True
                     metadata[name] = merge_dicts(
@@ -368,7 +376,6 @@ class Catalog(object):
             self._db.set_metadata('metadata', dumps(metadata))
             self._db.commit_transaction()
             self._db.begin_transaction(self.commit_each_transaction)
-
 
     #######################################################################
     # API / Public / Transactions
@@ -388,7 +395,6 @@ class Catalog(object):
                 self.nb_changes = 0
         db.begin_transaction(self.commit_each_transaction)
 
-
     def abort_changes(self):
 
         """Abort the last changes made in memory.
@@ -403,7 +409,6 @@ class Catalog(object):
             db.cancel_transaction()
             db.begin_transaction(self.commit_each_transaction)
         self._load_all_internal()
-
 
     def close(self):
         if self._db is None:
@@ -429,7 +434,6 @@ class Catalog(object):
             self._db.close()
             self._db = None
 
-
     #######################################################################
     # API / Public / (Un)Index
     #######################################################################
@@ -439,13 +443,14 @@ class Catalog(object):
         self._db.replace_document(term, xdoc)
         log.debug("Indexed : {}".format(abspath))
 
-
     def unindex_document(self, abspath):
         """Remove the document that has value stored in its abspath.
            If the document does not exist => no error
         """
         self.nb_changes += 1
         data = _reduce_size(_encode(self._fields['abspath'], abspath))
+        if type(data) is bytes:
+            data = data.decode("utf-8")
         self._db.delete_document('Q' + data)
         log.debug("Unindexed : {}".format(abspath))
 
@@ -483,6 +488,7 @@ class Catalog(object):
             #          the problem is that "_encode != _index"
             if name == 'abspath':
                 key_value = _reduce_size(_encode(field_cls, value))
+                key_value = bytes_to_str(key_value)
                 term = 'Q' + key_value
                 xdoc.add_term(term)
 
@@ -544,8 +550,7 @@ class Catalog(object):
         # Ok
         prefix = metadata[name]['prefix']
         prefix_len = len(prefix)
-        return set([ t.term[prefix_len:] for t in self._db.allterms(prefix) ])
-
+        return set([t.term[prefix_len:] for t in self._db.allterms(prefix)])
 
     #######################################################################
     # API / Private
@@ -568,19 +573,15 @@ class Catalog(object):
         # Ok
         return info
 
-
     def _get_info_stored(self):
         value = self._value_nb
         self._value_nb += 1
         return {'value': value}
 
-
     def _get_info_indexed(self):
         prefix = _get_prefix(self._prefix_nb)
         self._prefix_nb += 1
         return {'prefix': prefix}
-
-
 
     def _load_all_internal(self):
         """Load the metadata from the database
@@ -589,16 +590,23 @@ class Catalog(object):
         self._prefix_nb = 0
 
         metadata = self._db.get_metadata('metadata')
-        if metadata == '':
+
+        if metadata == b'':
             self._metadata = {}
         else:
-            self._metadata = loads(metadata)
+            try:
+                self._metadata = loads(metadata)
+            except ValueError:
+                # Reload metadata if incompatibility between Python 2 and Python 3
+                self._init_all_metadata(has_changes=True)
+                metadata = self._db.get_metadata('metadata')
+                self._metadata = loads(metadata)
+
             for name, info in self._metadata.items():
                 if 'value' in info:
                     self._value_nb += 1
                 if 'prefix' in info:
                     self._prefix_nb += 1
-
 
     def _query2xquery(self, query):
         """take a "itools" query and return a "xapian" query
@@ -738,7 +746,7 @@ class Catalog(object):
 
             # Remove accents from the value
             value = query.value
-            if type(value) is not unicode:
+            if type(value) is not str:
                 raise TypeError("unexpected %s for 'value'" % type(value))
             value = value.translate(TRANSLATE_MAP)
 
@@ -753,16 +761,15 @@ class Catalog(object):
 
         # And
         if query_class is _AndQuery:
-            return Query(OP_AND, [ i2x(q) for q in query.atoms ])
+            return Query(OP_AND, [i2x(q) for q in query.atoms])
 
         # Or
         if query_class is _OrQuery:
-            return Query(OP_OR, [ i2x(q) for q in query.atoms ])
+            return Query(OP_OR, [i2x(q) for q in query.atoms])
 
         # Not
         if query_class is NotQuery:
             return Query(OP_AND_NOT, Query(''), i2x(query.query))
-
 
 
 def make_catalog(uri, fields):
@@ -781,11 +788,8 @@ def make_catalog(uri, fields):
     return Catalog(db, fields)
 
 
-
 #############
 # Private API
-
-
 def _get_prefix(number):
     """By convention:
     Q is used for the unique Id of a document
@@ -794,9 +798,8 @@ def _get_prefix(number):
     """
     magic_letters = 'ABCDEFGHIJKLMNOPRSTUVWY'
     size = len(magic_letters)
-    result = 'X'*(number/size)
-    return result+magic_letters[number%size]
-
+    result = 'X' * (number // size)
+    return result + magic_letters[number % size]
 
 
 def _decode_simple_value(field_cls, data):
@@ -811,7 +814,6 @@ def _decode_simple_value(field_cls, data):
     return field_cls.decode(data)
 
 
-
 def _decode(field_cls, data):
     # Singleton
     if not field_cls.multiple:
@@ -822,8 +824,7 @@ def _decode(field_cls, data):
         value = loads(data)
     except (ValueError, MemoryError):
         return _decode_simple_value(field_cls, data)
-    return [ _decode_simple_value(field_cls, a_value) for a_value in value ]
-
+    return [_decode_simple_value(field_cls, a_value) for a_value in value]
 
 
 # We must overload the normal behaviour (range + optimization)
@@ -843,7 +844,6 @@ def _encode_simple_value(field_cls, value):
     return field_cls.encode(value)
 
 
-
 def _encode(field_cls, value):
     """Used to encode values in stored fields.
     """
@@ -852,14 +852,12 @@ def _encode(field_cls, value):
         return _encode_simple_value(field_cls, value)
 
     # Case 2: Multiple
-    value = [ _encode_simple_value(field_cls, a_value) for a_value in value ]
+    value = [_encode_simple_value(field_cls, a_value) for a_value in value]
     return dumps(value)
-
 
 
 def _get_field_cls(name, fields, info):
     return fields[name] if (name in fields) else fields[info['from']]
-
 
 
 def _reduce_size(data):
@@ -868,12 +866,13 @@ def _reduce_size(data):
     # If the data is too long, we replace it by its sha1
     # FIXME Visibly a bug in xapian counts twice the \x00 character
     # http://bugs.hforge.org/show_bug.cgi?id=940
-    if len(data) + data.count("\x00") > 240:
+    if isinstance(data, str):
+        data = data.encode("utf-8")
+    if len(data) + data.count(b"\x00") > 240:
         return sha1(data).hexdigest()
 
     # All OK, we simply return the data
     return data
-
 
 
 def _index_cjk(xdoc, value, prefix, termpos):
@@ -889,21 +888,21 @@ def _index_cjk(xdoc, value, prefix, termpos):
     2 -> 0 [stop word]
     """
     state = 0
-    previous_cjk = u''
+    previous_cjk = ''
 
     for c in value:
         if is_punctuation(c):
             # Stop word
-            if previous_cjk and state == 1: # CJK not yielded yet
+            if previous_cjk and state == 1:  # CJK not yielded yet
                 xdoc.add_posting(prefix + previous_cjk, termpos)
                 termpos += 1
             # reset state
-            previous_cjk = u''
+            previous_cjk = ''
             state = 0
         else:
             c = c.lower()
             if previous_cjk:
-                xdoc.add_posting(prefix + (u'%s%s' % (previous_cjk, c)),
+                xdoc.add_posting(prefix + ('%s%s' % (previous_cjk, c)),
                                  termpos)
                 termpos += 1
                 state = 2
@@ -918,11 +917,12 @@ def _index_cjk(xdoc, value, prefix, termpos):
     return termpos + 1
 
 
-
 def _index_unicode(xdoc, value, prefix, language, termpos,
                    TRANSLATE_MAP=TRANSLATE_MAP):
+
+    value = bytes_to_str(value)
     # Check type
-    if type(value) is not unicode:
+    if type(value) is not str:
         msg = 'The value "%s", field "%s", is not a unicode'
         raise TypeError(msg % (value, prefix))
 
@@ -938,11 +938,10 @@ def _index_unicode(xdoc, value, prefix, language, termpos,
     value = value.translate(TRANSLATE_MAP)
     # XXX With the stemmer, the words are saved twice:
     # with prefix and with Zprefix
-#    tg.set_stemmer(stemmer)
+    #    tg.set_stemmer(stemmer)
 
     tg.index_text(value, 1, prefix)
     return tg.get_termpos() + 1
-
 
 
 def _index(xdoc, field_cls, value, prefix, language):
@@ -953,11 +952,12 @@ def _index(xdoc, field_cls, value, prefix, language):
 
     Where <word> will be a <str> value.
     """
+    value = bytes_to_str(value)
     is_multiple = (field_cls.multiple
                    and isinstance(value, (tuple, list, set, frozenset)))
 
     # Case 1: Unicode (a complex split)
-    if issubclass(field_cls, Unicode):
+    if issubclass(field_cls, Unicode) and value is not None:
         if is_multiple:
             termpos = 1
             for x in value:
@@ -969,13 +969,14 @@ def _index(xdoc, field_cls, value, prefix, language):
         for position, data in enumerate(value):
             data = _encode_simple_value(field_cls, data)
             data = _reduce_size(data)
+            data = bytes_to_str(data)
             xdoc.add_posting(prefix + data, position + 1)
     # Case 3: singleton
     else:
         data = _encode_simple_value(field_cls, value)
         data = _reduce_size(data)
+        data = bytes_to_str(data)
         xdoc.add_posting(prefix + data, 1)
-
 
 
 def _make_PhraseQuery(field_cls, value, prefix):
@@ -991,11 +992,10 @@ def _make_PhraseQuery(field_cls, value, prefix):
         for termpos in term_list_item.positer:
             words.append((termpos, term))
     words.sort()
-    words = [ word[1] for word in words ]
+    words = [word[1] for word in words]
 
     # Make the query
     return Query(OP_PHRASE, words)
-
 
 
 def _get_xquery(catalog, query=None, **kw):

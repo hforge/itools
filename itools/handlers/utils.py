@@ -19,60 +19,61 @@
 
 # Import from the Standard Library
 import unicodedata
+import sys
 
 
+src = (r"""ÄÅÁÀÂÃĀäåáàâãāăÇçÉÈÊËĒéèêëēğÍÌÎÏĪíìîïīıļÑñÖÓÒÔÕØŌöóòôõøōőÜÚÙÛŪüúùûū
+        ŞşšţÝŸȲýÿȳŽž°«»’""")
+dst = (r"""AAAAAAAaaaaaaaaCcEEEEEeeeeegIIIIIiiiiiilNnOOOOOOOooooooooUUUUUuuuuu
+            SsstYYYyyyZz----""")
 
-src = (ur"""ÄÅÁÀÂÃĀäåáàâãāăÇçÉÈÊËĒéèêëēğÍÌÎÏĪíìîïīıļÑñÖÓÒÔÕØŌöóòôõøōőÜÚÙÛŪüúùûū"""
-       ur"""ŞşšţÝŸȲýÿȳŽž°«»’""")
-dst = (ur"""AAAAAAAaaaaaaaaCcEEEEEeeeeegIIIIIiiiiiilNnOOOOOOOooooooooUUUUUuuuuu"""
-       ur"""SsstYYYyyyZz----""")
 
 transmap = {}
 for i in range(len(src)):
     a, b = src[i], dst[i]
     transmap[ord(a)] = b
-transmap[ord(u'æ')] = u'ae'
-transmap[ord(u'Æ')] = u'AE'
-transmap[ord(u'œ')] = u'oe'
-transmap[ord(u'Œ')] = u'OE'
-transmap[ord(u'ß')] = u'ss'
+transmap[ord('æ')] = 'ae'
+transmap[ord('Æ')] = 'AE'
+transmap[ord('œ')] = 'oe'
+transmap[ord('Œ')] = 'OE'
+transmap[ord('ß')] = 'ss'
 
 
-def checkid(id, soft=True):
+def checkid(_id, soft=True):
     """Turn a bytestring or unicode into an identifier only composed of
     alphanumerical characters and a limited list of signs.
 
     It only supports Latin-based alphabets.
     """
-    if type(id) is str:
-        id = unicode(id, 'utf8')
+    if type(_id) is str:
+        _id = _id
 
     # Normalize unicode
-    id = unicodedata.normalize('NFKC', id)
+    _id = unicodedata.normalize('NFKC', _id)
 
     # Strip diacritics
-    id = id.strip().translate(transmap)
+    _id = _id.strip().translate(transmap)
 
     # Check for unallowed characters
     if soft:
-        allowed_characters = set([u'.', u'-', u'_', u'@'])
-        id = [ x if (x.isalnum() or x in allowed_characters) else u'-'
-               for x in id ]
-        id = u''.join(id)
+        allowed_characters = {'.', '-', '_', '@'}
+        _id = [ x if (x.isalnum() or x in allowed_characters) else '-'
+               for x in _id]
+        _id = ''.join(_id)
 
     # Merge hyphens
-    id = id.split(u'-')
-    id = u'-'.join([x for x in id if x])
-    id = id.strip('-')
+    _id = _id.split('-')
+    _id = '-'.join([x for x in _id if x])
+    _id = _id.strip('-')
 
-    # Check wether the id is empty
-    if len(id) == 0:
+    # Check wether the _id is empty
+    if len(_id) == 0:
         return None
 
     # No mixed case
-    id = id.lower()
+    _id = _id.lower()
     # Most FS are limited in 255 chars per name
     # (keep space for ".metadata" extension)
-    id = id[:246]
+    _id = _id[:246]
     # Return a safe ASCII bytestring
-    return str(id)
+    return str(_id)

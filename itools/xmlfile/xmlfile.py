@@ -20,12 +20,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from cStringIO import InputType
+from io import StringIO
 
 # Import from itools
 from itools.handlers import TextFile, register_handler_class
 from itools.xml import XMLParser, stream_to_str, xml_to_text
-from i18n import get_units, translate
+from .i18n import get_units, translate
 
 
 
@@ -61,6 +61,8 @@ class XMLFile(TextFile):
 
     def load_state_from_string(self, string):
         self.reset()
+        if isinstance(string, bytes):
+            string = string.decode("utf-8")
         stream = XMLParser(string)
         self.events = list(stream)
 
@@ -81,10 +83,8 @@ class XMLFile(TextFile):
         self.events = events
 
 
-    def __cmp__(self, other):
-        if not isinstance(other, self.__class__):
-            return 1
-        return cmp(self.events, other.events)
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.events == other.events
 
 
     def to_text(self):

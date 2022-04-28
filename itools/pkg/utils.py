@@ -171,7 +171,7 @@ def setup(path, ext_modules=None):
     if exists('requirements.txt'):
         install_requires = parse_requirements(
             'requirements.txt', session='xxx')
-        install_requires = [str(ir.requirement) for ir in install_requires]
+        install_requires = [str(ir.requirement) for ir in install_requires if not str(ir.requirement).startswith("git")]
     # XXX Workaround buggy distutils ("sdist" don't likes unicode strings,
     # and "register" don't likes normal strings).
     if 'register' in argv:

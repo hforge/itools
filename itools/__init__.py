@@ -17,13 +17,15 @@
 # Import from standard lib
 from logging import getLogger, NullHandler
 
-# Import from itools
-from .core import get_version
-
 getLogger("itools.core").addHandler(NullHandler())
 getLogger("itools.web").addHandler(NullHandler())
 getLogger("itools.database").addHandler(NullHandler())
 getLogger("itools.stl").addHandler(NullHandler())
 getLogger("itools.catalog").addHandler(NullHandler())
 
-__version__ = get_version()
+# The version
+__version__ = "0.80.1"
+__version_info__ = tuple(
+    int(num) if num.isdigit() else num
+    for num in __version__.replace("-", ".", 1).split(".")
+)

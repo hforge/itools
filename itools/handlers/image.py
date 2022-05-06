@@ -114,8 +114,8 @@ class Image(File):
             if xsize < xnewsize or ysize < xnewsize:
                 newsize = (xnewsize, ynewsize)
                 background = new_image('RGBA', newsize, (255, 255, 255, 0))
-                x = (xnewsize - xsize) / 2
-                y = (ynewsize - ysize) / 2
+                x = (xnewsize - xsize) // 2
+                y = (ynewsize - ysize) // 2
                 background.paste(im, (x, y))
                 im = background
 

@@ -868,7 +868,7 @@ def _reduce_size(data):
     # http://bugs.hforge.org/show_bug.cgi?id=940
     if isinstance(data, str):
         data = data.encode("utf-8")
-    if len(data) + data.count(b"\x00") > 240:
+    if len(data) + data.count(b"\x00") > 220:
         return sha1(data).hexdigest()
 
     # All OK, we simply return the data

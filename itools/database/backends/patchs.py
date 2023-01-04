@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from standard library
+import os
 import difflib
 import tarfile
 from glob import glob
@@ -25,6 +26,9 @@ from uuid import uuid4
 # Import from itools
 from itools.fs import lfs
 from itools.loop import cron
+
+
+TEST_DB_WITHOUT_PATCHS = bool(int(os.environ.get('TEST_DB_WITHOUT_PATCHS') or 0))
 
 
 class PatchsBackend(object):
@@ -109,6 +113,8 @@ class PatchsBackend(object):
         The idea is to commit into GIT each N transactions on big databases to avoid performances problems.
         We want to keep a diff on each transaction, to help debug.
         """
+        if TEST_DB_WITHOUT_PATCHS is True:
+            return
         author_id, author_email = git_author
         diffs = {}
         # Added

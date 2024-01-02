@@ -377,25 +377,25 @@ class ReferenceTestCase(TestCase):
     def test_mailto(self):
         """Test if mailto references are detected."""
         ref = get_reference('mailto:jdavid@itaapy.com')
-        self.assert_(isinstance(ref, Mailto))
+        self.assertTrue(isinstance(ref, Mailto))
 
 
     def test_http(self):
         """http references are generic."""
         ref = get_reference('http://hforge.org')
-        self.assert_(isinstance(ref, Reference))
+        self.assertTrue(isinstance(ref, Reference))
 
 
     def test_ftp(self):
         """references with unknow scheme are generic."""
         ref = get_reference('http://hforge.org')
-        self.assert_(isinstance(ref, Reference))
+        self.assertTrue(isinstance(ref, Reference))
 
 
     def test_no_scheme(self):
         """references with no scheme are generic."""
         ref = get_reference('logo.png')
-        self.assert_(isinstance(ref, Reference))
+        self.assertTrue(isinstance(ref, Reference))
 
 
 
@@ -428,7 +428,7 @@ class MailtoTestCase(TestCase):
     def test_decode(self):
         """Decoding of a regular "mailto:" reference."""
         ob = MailtoDataType.decode(self.uri)
-        self.assert_(isinstance(ob, Mailto))
+        self.assertTrue(isinstance(ob, Mailto))
         self.assertEqual(ob.username, self.username)
         self.assertEqual(ob.host, self.host)
         self.assertEqual(str(ob), self.uri)
@@ -437,7 +437,7 @@ class MailtoTestCase(TestCase):
     def test_decode_no_host(self):
         """Decoding of a "mailto:" reference with no @host."""
         ob = MailtoDataType.decode(self.uri_no_host)
-        self.assert_(isinstance(ob, Mailto))
+        self.assertTrue(isinstance(ob, Mailto))
         self.assertEqual(ob.username, None)
         self.assertEqual(ob.host, None)
         self.assertEqual(str(ob), self.uri_no_host)

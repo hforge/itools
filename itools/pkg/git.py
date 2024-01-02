@@ -58,7 +58,7 @@ class Worktree(object):
         popen = Popen(command, stdout=PIPE, stderr=PIPE, cwd=self.path)
         stdoutdata, stderrdata = popen.communicate()
         if popen.returncode != 0:
-            raise EnvironmentError((popen.returncode, stderrdata))
+            raise OSError(popen.returncode, stderrdata)
         return stdoutdata.decode("utf-8")
 
 
@@ -121,7 +121,7 @@ class Worktree(object):
         command = ['git', 'describe', '--tags', '--long']
         try:
             data = self._call(command)
-        except EnvironmentError:
+        except OSError:
             return None
 
         # Parse

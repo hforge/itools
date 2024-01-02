@@ -119,7 +119,7 @@ def update_locale(srx_handler, exclude_folders, no_wrap=False):
     # Write the po into the locale.pot
     try:
         locale_pot = locale_folder.open('locale.pot', WRITE, text=True)
-    except IOError:
+    except OSError:
         # The locale.pot file does not exist create and open
         locale_pot = locale_folder.make_file('locale.pot')
     else:

@@ -99,7 +99,7 @@ class Worktree(object):
         popen = Popen(command, stdout=PIPE, stderr=PIPE, cwd=self.path)
         stdoutdata, stderrdata = popen.communicate()
         if popen.returncode != 0:
-            raise EnvironmentError((popen.returncode, stderrdata))
+            raise OSError(popen.returncode, stderrdata)
         return stdoutdata
 
     def _resolve_reference(self, reference):
@@ -290,7 +290,7 @@ class Worktree(object):
         cmd = ['git', 'config', '--get', 'user.name']
         try:
             username = self._call(cmd).rstrip()
-        except EnvironmentError:
+        except OSError:
             raise ValueError("Please configure 'git config --global user.name'")
         return username
 
@@ -299,7 +299,7 @@ class Worktree(object):
         cmd = ['git', 'config', '--get', 'user.email']
         try:
             useremail = self._call(cmd).rstrip()
-        except EnvironmentError:
+        except OSError:
             raise ValueError("Please configure 'git config --global user.email'")
         return useremail
 

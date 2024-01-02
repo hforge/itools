@@ -26,7 +26,6 @@ from os.path import exists, getatime, getctime, getmtime, getsize
 from os.path import isfile, isdir, join, basename, dirname
 from os.path import abspath, relpath
 from shutil import rmtree, copytree, copy as shutil_copy
-import mimetypes
 
 
 # Import from itools
@@ -46,9 +45,9 @@ class LocalFolder(object):
 
     def __init__(self, path='.'):
         if not exists(path):
-            raise IOError("No such directory: '%s'" % path)
+            raise OSError(f"No such directory: '{path}'")
         if isfile(path):
-            raise IOError("Is a directory: '%s'" % path)
+            raise OSError(f"Is a directory: '{path}'")
         self.path = Path(abspath(path))
 
 
@@ -189,7 +188,7 @@ class LocalFolder(object):
     def traverse(self, path='.'):
         path = self._resolve_path(path)
         if not exists(path):
-            raise IOError("No such directory: '%s'" % path)
+            raise OSError(f"No such directory: '{path}'")
         yield path
         if isdir(path):
             for root, folders, files in walk(path, topdown=True):

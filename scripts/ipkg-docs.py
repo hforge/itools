@@ -127,7 +127,7 @@ if __name__ == '__main__':
     # Find out the package name & version (for the release mode)
     try:
         pkgname = get_pipe(['python', 'setup.py', '--fullname']).rstrip()
-    except EnvironmentError:
+    except OSError:
         pkgname = 'noname-noversion'
 
     # Go

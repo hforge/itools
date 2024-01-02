@@ -68,7 +68,7 @@ class Image(File):
         f = BytesIO(self.data)
         try:
             im = open_image(f)
-        except (IOError, OverflowError):
+        except (OSError, OverflowError):
             return None
 
         # Ok

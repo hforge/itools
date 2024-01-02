@@ -33,7 +33,7 @@ def get_pipe(command, cwd=None):
     popen = Popen(command, stdout=PIPE, stderr=PIPE, cwd=cwd)
     stdoutdata, stderrdata = popen.communicate()
     if popen.returncode != 0:
-        raise EnvironmentError(popen.returncode, stderrdata)
+        raise OSError(popen.returncode, stderrdata)
     return stdoutdata
 
 
@@ -111,14 +111,18 @@ if __name__ == '__main__':
         # Append mo_files to filenames
         filenames.extend(mo_files)
 
+    # Check whether pkg-config is installed
+    try:
+        get_pipe(['pkg-config', '--version'])
+    except OSError:
+        print("[ERROR] 'pkg-config' not found, aborting...", file=stderr)
+        raise
+
     # XML Parser
     try:
         flags = get_compile_flags('pkg-config --cflags --libs glib-2.0')
         print(flags)
     except OSError:
-        print("[ERROR] 'pkg-config' not found, aborting...", file=stderr)
-        raise
-    except Exception:
         print("[ERROR] Glib 2.0 library or headers not found, aborting...", file=stderr)
         raise
     else:
@@ -131,9 +135,8 @@ if __name__ == '__main__':
 
     # PDF indexation
     try:
-        flags = get_compile_flags(
-            'pkg-config --cflags --libs "poppler >= 0.20.0" fontconfig')
-    except EnvironmentError:
+        flags = get_compile_flags('pkg-config --cflags --libs "poppler >= 0.20.0" fontconfig')
+    except OSError:
         print("[WARNING] poppler headers not found, PDF indexation won't work", file=stderr)
     else:
         sources = ['itools/pdf/pdftotext.cc']
@@ -143,7 +146,7 @@ if __name__ == '__main__':
     # DOC indexation
     try:
         flags = get_compile_flags('wv2-config --cflags --libs')
-    except EnvironmentError:
+    except OSError:
         print("[WARNING] wv2 not found, DOC indexation won't work", file=stderr)
     else:
         sources = ['itools/office/doctotext.cc']

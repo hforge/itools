@@ -336,7 +336,7 @@ def translate_message(message, catalog, keep_spaces=False, srx_handler=None):
             center = center.to_str()
 
         translated_message.extend([left, center, right])
-    return u''.join(translated_message)
+    return ''.join(translated_message)
 
 
 class Message(list):

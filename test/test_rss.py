@@ -37,11 +37,11 @@ class RSSTestCase(TestCase):
 
     def test_channel(self):
         channel = self.rss.channel
-        self.assertEqual(channel['title'], u"Liftoff News")
+        self.assertEqual(channel['title'], "Liftoff News")
         link = channel['link']
         self.assertEqual(str(link), 'http://liftoff.msfc.nasa.gov/')
         self.assertEqual(channel['description'],
-                u"Liftoff to Space Exploration.")
+                "Liftoff to Space Exploration.")
 
 
     def test_image(self):
@@ -56,11 +56,11 @@ class RSSTestCase(TestCase):
 
     def test_item(self):
         item = self.rss.items[0]
-        self.assertEqual(item['title'], u"Star City")
+        self.assertEqual(item['title'], "Star City")
         link = item['link']
         self.assertEqual(str(link),
                 'http://liftoff.msfc.nasa.gov/news/2003/news-starcity.asp')
-        expected = u"How do Americans get ready to work with Russians"
+        expected = "How do Americans get ready to work with Russians"
         self.assertTrue(item['description'].startswith(expected))
 
 

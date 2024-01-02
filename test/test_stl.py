@@ -29,7 +29,7 @@ from itools.xmlfile import XMLFile
 class SubstituteTestCase(TestCase):
 
     def setUp(self):
-        namespace = {'name': u'Toto'}
+        namespace = {'name': 'Toto'}
 
         self.stack = NamespaceStack()
         self.stack.append(namespace)
@@ -80,7 +80,7 @@ class STLTestCase(TestCase):
     def test_attribute_accent(self):
         handler = XMLFile(string=
             '<input xmlns="http://www.w3.org/1999/xhtml" value="${name}" />')
-        namespace = {'name': u'étoile'}
+        namespace = {'name': 'étoile'}
         stream = stl(handler, namespace)
         # Assert
         events = list(stream)

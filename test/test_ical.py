@@ -187,7 +187,7 @@ class icalTestCase(TestCase):
         events = cal.get_components('VEVENT')
         properties = events[0].get_version()
 
-        expected = u'Résumé'
+        expected = 'Résumé'
         property = events[0].get_property_values('SUMMARY')
         self.assertEqual(property.value, expected)
 
@@ -197,8 +197,8 @@ class icalTestCase(TestCase):
 
         # Component properties
         properties = {}
-        properties['MYADD'] = Property(u'Résumé à crêtes')
-        value = Property(u'Property added by calling add_property')
+        properties['MYADD'] = Property('Résumé à crêtes')
+        value = Property('Property added by calling add_property')
         properties['DESCRIPTION'] = value
         member = '"mailto:DEV-GROUP@host2.com"'
         value = Property('mailto:darwin@itaapy.com', MEMBER=[member])
@@ -387,7 +387,7 @@ class icalTestCase(TestCase):
         event = cal.get_components('VEVENT')[1]
 
         # other property (MYADD)
-        name, value = 'MYADD', Property(u'Résumé à crêtes')
+        name, value = 'MYADD', Property('Résumé à crêtes')
         cal.update_component(event.uid, **{name: value})
 
         property = event.get_property_values(name)
@@ -396,7 +396,7 @@ class icalTestCase(TestCase):
 
         # property DESCRIPTION
         name = 'DESCRIPTION'
-        value = Property(u'Property added by calling add_property')
+        value = Property('Property added by calling add_property')
         cal.update_component(event.uid, **{name: value})
 
         property = event.get_property_values(name)

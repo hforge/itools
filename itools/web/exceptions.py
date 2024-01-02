@@ -153,7 +153,7 @@ class FormError(Exception):
         elif self.msg:
             messages = [self.msg]
         else:
-            messages = MSG(u'There are errors... XXX')
+            messages = MSG('There are errors... XXX')
         for value in messages:
             if isinstance(value, MSG):
                 value = value.gettext()

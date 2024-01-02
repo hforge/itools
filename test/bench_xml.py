@@ -58,22 +58,22 @@ def get_string_time(s):
 
     if d:
         # days
-        return u'%6.2f d ' % (d + h / 24.0)
+        return '%6.2f d ' % (d + h / 24.0)
     elif h:
         # hours
-        return u'%6.2f h ' % (h + m / 60.0)
+        return '%6.2f h ' % (h + m / 60.0)
     elif m:
         # minutes
-        return u'%6.2f mn' % (m + s / 60.0)
+        return '%6.2f mn' % (m + s / 60.0)
     elif s:
         # seconds
-        return u'%6.2f s ' % (s + ms / 1000.0)
+        return '%6.2f s ' % (s + ms / 1000.0)
     elif ms:
         # milliseconds
-        return u'%6.2f ms' % (ms + micro_s / 1000.0)
+        return '%6.2f ms' % (ms + micro_s / 1000.0)
     else:
         # microseconds
-        return u'%6.2f µs' % (micro_s + ms / 1000.0)
+        return '%6.2f µs' % (micro_s + ms / 1000.0)
 
 
 def get_clock_nb_pass(size):
@@ -189,11 +189,11 @@ def get_test_filenames(test_path, force_download):
 ###########################################################################
 
 def output_init(parsers_name):
-    print(u'-' * 78)
+    print('-' * 78)
     # 30c | 23c | 23c -> 78c
-    print(u' %s|%s|%s' % (center(u'file', 30), center(parser_names[0], 23),
+    print(' %s|%s|%s' % (center('file', 30), center(parser_names[0], 23),
                           center(parser_names[1], 23)))
-    print(u'-' * 78)
+    print('-' * 78)
 
 
 
@@ -203,27 +203,27 @@ def output_result(results, file):
     filename = ljust(filename[:19], 19)
     file_size = get_string_size(file_size)
     file_size = rjust(file_size[:9], 9)
-    file_string = u'%s  %s' % (filename, file_size)
+    file_string = '%s  %s' % (filename, file_size)
 
     # output 1
     parser_name, result = results[0]
     if result is None:
-        output1 = center(u'FAILED',  21)
+        output1 = center('FAILED',  21)
     else:
         time_spent, memory = result
         memory = get_string_size(memory)
         # time_spent ok already like ___.___ ms or s or mn
-        output1 = rjust(u'%s / %s' % (time_spent, memory), 21)
+        output1 = rjust('%s / %s' % (time_spent, memory), 21)
 
     # output 2
     parser_name, result = results[1]
     if result is None:
-        output2 = center(u'FAILED',  21)
+        output2 = center('FAILED',  21)
     else:
         time_spent, memory = result
         memory = get_string_size(memory)
         # time_spent ok already like ___.___ ms or s or mn
-        output2 = rjust(u'%s / %s' % (time_spent, memory), 21)
+        output2 = rjust('%s / %s' % (time_spent, memory), 21)
 
     print('%s | %s | %s ' % (file_string, output1, output2))
 

@@ -158,7 +158,7 @@ class MostSimilarTestCase(TestCase):
 class OracleTestCase(TestCase):
 
     def test_spain_long(self):
-        text = u"""Nueva coordinadora de Humanidades. En sustitución de la
+        text = """Nueva coordinadora de Humanidades. En sustitución de la
         doctora Olga Hansberg, el pasado martes 17 tomó posesión como
         coordinadora de Humanidades de la UNAM la doctora Mari Carmen Serra
         Puche. Con la doctora Serra se inicia un nuevo ciclo del cual se espera
@@ -180,7 +180,7 @@ class OracleTestCase(TestCase):
 
 
     def test_spain_short(self):
-        text = u"""Nueva coordinadora de Humanidades. En sustitución de la
+        text = """Nueva coordinadora de Humanidades. En sustitución de la
         doctora Olga Hansberg, el pasado martes 17 tomó posesión como
         coordinadora de Humanidades de la UNAM la doctora Mari Carmen Serra
         Puche."""
@@ -193,7 +193,7 @@ class OracleTestCase(TestCase):
 
 
     def test_french_long(self):
-        text = u"""Le piège de la guerre coloniale se referme sur les
+        text = """Le piège de la guerre coloniale se referme sur les
         envahisseurs de lIrak. Comme les troupes françaises embourbées jadis
         en Algérie, les Britanniques au Kenya, les Belges au Congo et les
         Portugais en Guinée-Bissau (voire aujourdhui les Israéliens à Gaza),
@@ -206,14 +206,14 @@ class OracleTestCase(TestCase):
 
 
     def test_french_short(self):
-        text = u"""un dossier spécial consacré à la « révolution de velours »
+        text = """un dossier spécial consacré à la « révolution de velours »
         géorgienne sur le site de lagence Radio Free Europe fondée par le
         Congrès des Etats-Unis."""
         self.assertEqual(guess_language(text), 'fr')
 
 
     def test_french_very_sort(self):
-        text = u"""Les déclarations du président Vladimir Poutine"""
+        text = """Les déclarations du président Vladimir Poutine"""
         self.assertEqual(guess_language(text), 'fr')
 
 
@@ -256,13 +256,13 @@ class FormatNumberTestCase(TestCase):
     def test_format_decimal(self):
         x = Decimal(self.x)
         n = format_number(x, accept=self.accept)
-        self.assertEqual(n, u"123,456.79")
+        self.assertEqual(n, "123,456.79")
 
 
     def test_format_int(self):
         x = int(float(self.x))
         n = format_number(x, accept=self.accept)
-        self.assertEqual(n, u"123,456.00")
+        self.assertEqual(n, "123,456.00")
 
 
     def test_format_float(self):
@@ -271,50 +271,50 @@ class FormatNumberTestCase(TestCase):
             self.assertRaises(TypeError, format_number, x)
         else:
             n = format_number(x, accept=self.accept)
-            self.assertEqual(n, u"123,456.79")
+            self.assertEqual(n, "123,456.79")
 
 
     def test_format_es(self):
         x = Decimal(self.x)
         accept = AcceptLanguageType.decode('es;q=1.0')
         n = format_number(x, accept=accept)
-        self.assertEqual(n, u"123.456,79")
+        self.assertEqual(n, "123.456,79")
 
 
     def test_format_fr(self):
         x = Decimal(self.x)
         accept = AcceptLanguageType.decode('fr;q=1.0')
         n = format_number(x, accept=accept)
-        self.assertEqual(n, u"123 456,79")
+        self.assertEqual(n, "123 456,79")
 
 
     def test_places(self):
         x = Decimal(self.x)
         n = format_number(x, places=3, accept=self.accept)
-        self.assertEqual(n, u"123,456.789")
+        self.assertEqual(n, "123,456.789")
 
 
     def test_currency(self):
         x = Decimal(self.x)
-        n = format_number(x, curr=u"$", accept=self.accept)
-        self.assertEqual(n, u"123,456.79$")
-        n = format_number(x, curr=u" €", accept=self.accept)
-        self.assertEqual(n, u"123,456.79 €")
+        n = format_number(x, curr="$", accept=self.accept)
+        self.assertEqual(n, "123,456.79$")
+        n = format_number(x, curr=" €", accept=self.accept)
+        self.assertEqual(n, "123,456.79 €")
 
 
     def test_sign(self):
         x = Decimal(self.x)
-        n = format_number(x, pos=u"+", accept=self.accept)
-        self.assertEqual(n, u"+123,456.79")
+        n = format_number(x, pos="+", accept=self.accept)
+        self.assertEqual(n, "+123,456.79")
         x = -x
         n = format_number(x, accept=self.accept)
-        self.assertEqual(n, u"-123,456.79")
+        self.assertEqual(n, "-123,456.79")
 
 
     def test_sign_currency(self):
         x = -Decimal(self.x)
-        n = format_number(x, curr=u"$", accept=self.accept)
-        self.assertEqual(n, u"-123,456.79$")
+        n = format_number(x, curr="$", accept=self.accept)
+        self.assertEqual(n, "-123,456.79$")
 
 
 

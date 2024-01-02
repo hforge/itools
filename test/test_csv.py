@@ -78,9 +78,9 @@ class CSVTestCase(TestCase):
         handler.load_state_from_string(TEST_DATA_1)
         rows = list(handler.get_rows())
         self.assertEqual(rows, [
-            [u"python", 'http://python.org/', 52343,
+            ["python", 'http://python.org/', 52343,
              Date.decode('2003-10-23')],
-            [u"ruby", 'http://ruby-lang.org/', 42352,
+            ["ruby", 'http://ruby-lang.org/', 42352,
              Date.decode('2001-03-28')]])
 
 
@@ -115,8 +115,8 @@ class CSVTestCase(TestCase):
         handler = CSVFile(string=TEST_DATA_1)
         self.assertEqual(
             handler.to_str(),
-            u'"python","http://python.org/","52343","2003-10-23"\n'
-            u'"ruby","http://ruby-lang.org/","42352","2001-03-28"')
+            '"python","http://python.org/","52343","2003-10-23"\n'
+            '"ruby","http://ruby-lang.org/","42352","2001-03-28"')
 
 
     def test_get_row(self):
@@ -177,7 +177,7 @@ class CSVTestCase(TestCase):
         handler.load_state_from_string(TEST_DATA_1)
 
         row = handler.get_row(1)
-        self.assertEqual(row.get_value('name'), u'ruby')
+        self.assertEqual(row.get_value('name'), 'ruby')
 
 
     def test_bad_syntax_csv_file(self):
@@ -328,7 +328,7 @@ class TableTestCase(TestCase):
 
     def test_search(self):
         agenda = Agenda(string=agenda_file)
-        ids = [ x.id for x in agenda.search('firstname', u'Jean-Jacques') ]
+        ids = [ x.id for x in agenda.search('firstname', 'Jean-Jacques') ]
         self.assertEqual(ids, [1])
 
 
@@ -337,15 +337,15 @@ class TableTestCase(TestCase):
         agenda.save_state_to('tests/agenda')
         # Change
         agenda = Agenda('tests/agenda')
-        fake = agenda.add_record({'firstname': u'Toto', 'lastname': u'Fofo'})
-        agenda.add_record({'firstname': u'Albert', 'lastname': u'Einstein'})
+        fake = agenda.add_record({'firstname': 'Toto', 'lastname': 'Fofo'})
+        agenda.add_record({'firstname': 'Albert', 'lastname': 'Einstein'})
         agenda.del_record(fake.id)
         agenda.save_state()
         # Test
         agenda = Agenda('tests/agenda')
-        ids = [ x.id for x in agenda.search('firstname', u'Toto') ]
+        ids = [ x.id for x in agenda.search('firstname', 'Toto') ]
         self.assertEqual(len(ids), 0)
-        ids = [ x.id for x in agenda.search('firstname', u'Albert') ]
+        ids = [ x.id for x in agenda.search('firstname', 'Albert') ]
         self.assertEqual(len(ids), 1)
         # Clean
         lfs.remove('tests/agenda')
@@ -369,14 +369,14 @@ class TableTestCase(TestCase):
         table = Books(string=books_file)
         record_0 = table.get_record(0)
         value = table.get_record_value(record_0, 'title', language='es')
-        self.assertEqual(value, u'El Capital')
+        self.assertEqual(value, 'El Capital')
 
 
     def test_parameters_quoted(self):
         table = Books(string=quoted_parameters)
         record_0 = table.get_record(0)
         property = record_0.get_property('author')
-        self.assertEqual(property.value, u"Karl Marx")
+        self.assertEqual(property.value, "Karl Marx")
         birth = property.get_parameter('birth')
         self.assertEqual(birth, date(1818, 5, 5))
         death = property.get_parameter('death')
@@ -392,7 +392,7 @@ class TableTestCase(TestCase):
         # Test
         record_0 = table.get_record(0)
         value = table.get_record_value(record_0, 'title', language='es')
-        self.assertEqual(value, u'El Capital')
+        self.assertEqual(value, 'El Capital')
 
 
 

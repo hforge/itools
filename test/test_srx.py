@@ -29,9 +29,9 @@ from itools.xmlfile import get_units
 class SentenceTestCase(TestCase):
 
     def test_simple(self):
-        text = u'This is a sentence. A very little sentence.'
-        result =[((TEXT, u'This is a sentence.'),),
-                 ((TEXT, u'A very little sentence.'),)]
+        text = 'This is a sentence. A very little sentence.'
+        result =[((TEXT, 'This is a sentence.'),),
+                 ((TEXT, 'A very little sentence.'),)]
 
         message = Message()
         message.append_text(text)
@@ -42,8 +42,8 @@ class SentenceTestCase(TestCase):
 
 
     def test_single_character(self):
-        text = u'I am T. From.'
-        result = [((TEXT, u'I am T. From.'),)]
+        text = 'I am T. From.'
+        result = [((TEXT, 'I am T. From.'),)]
 
         message = Message()
         message.append_text(text)
@@ -56,8 +56,8 @@ class SentenceTestCase(TestCase):
 
     def test_abrevations(self):
         # 1
-        text = u'This is Toto Inc. a big company.'
-        result = [((TEXT, u'This is Toto Inc. a big company.'),)]
+        text = 'This is Toto Inc. a big company.'
+        result = [((TEXT, 'This is Toto Inc. a big company.'),)]
         message = Message()
         message.append_text(text)
         segments = []
@@ -65,8 +65,8 @@ class SentenceTestCase(TestCase):
             segments.append(seg)
         self.assertEqual(segments, result)
         # 2
-        text = u'Mr. From'
-        result =  [((TEXT, u'Mr. From'),)]
+        text = 'Mr. From'
+        result =  [((TEXT, 'Mr. From'),)]
         message = Message()
         message.append_text(text)
         segments = []
@@ -76,8 +76,8 @@ class SentenceTestCase(TestCase):
 
 
     def test_between_number(self):
-        text = u'Price: -12.25 Euro.'
-        result = [((TEXT, u'Price:'),), ((TEXT, u'-12.25 Euro.'),)]
+        text = 'Price: -12.25 Euro.'
+        result = [((TEXT, 'Price:'),), ((TEXT, '-12.25 Euro.'),)]
 
         message = Message()
         message.append_text(text)
@@ -89,8 +89,8 @@ class SentenceTestCase(TestCase):
 
 
     def test_unknown_abrevations(self):
-        text = u'E.T. is beautiful.'
-        result = [((TEXT, u'E.T. is beautiful.'),)]
+        text = 'E.T. is beautiful.'
+        result = [((TEXT, 'E.T. is beautiful.'),)]
 
         message = Message()
         message.append_text(text)
@@ -102,8 +102,8 @@ class SentenceTestCase(TestCase):
 
 
     def test_bad_abrevations(self):
-        text = u'E.T is beautiful.'
-        result =  [((TEXT, u'E.T is beautiful.'),)]
+        text = 'E.T is beautiful.'
+        result =  [((TEXT, 'E.T is beautiful.'),)]
 
         message = Message()
         message.append_text(text)
@@ -115,8 +115,8 @@ class SentenceTestCase(TestCase):
 
 
     def test_number(self):
-        text = u'The 12.54 and 12,54 and 152.'
-        result = [((TEXT, u'The 12.54 and 12,54 and 152.'),)]
+        text = 'The 12.54 and 12,54 and 152.'
+        result = [((TEXT, 'The 12.54 and 12,54 and 152.'),)]
 
         message = Message()
         message.append_text(text)
@@ -128,8 +128,8 @@ class SentenceTestCase(TestCase):
 
 
     def test_punctuation(self):
-        text = u'A Ph.D in          mathematics?!!!!'
-        result =  [((TEXT, u'A Ph.D in mathematics?!!!!'),)]
+        text = 'A Ph.D in          mathematics?!!!!'
+        result =  [((TEXT, 'A Ph.D in mathematics?!!!!'),)]
 
         message = Message()
         message.append_text(text)
@@ -141,8 +141,8 @@ class SentenceTestCase(TestCase):
 
 
     def test_etc(self):
-        text = u'A lot of animals... And no man'
-        result = [((TEXT, u'A lot of animals...'),), ((TEXT, u'And no man'),)]
+        text = 'A lot of animals... And no man'
+        result = [((TEXT, 'A lot of animals...'),), ((TEXT, 'And no man'),)]
 
         message = Message()
         message.append_text(text)
@@ -160,14 +160,14 @@ class SentenceTestCase(TestCase):
         for seg, context, offset in get_units(HTMLParser(data)):
             segments.append(seg)
 
-        result = [((START_FORMAT, 1), (TEXT, u'hello '), (END_FORMAT, 1),
-                   (TEXT, u' GOGO'))]
+        result = [((START_FORMAT, 1), (TEXT, 'hello '), (END_FORMAT, 1),
+                   (TEXT, ' GOGO'))]
         self.assertEqual(segments, result)
 
 
     def test_HTMLbis(self):
         data = '<em>J.  David</em>'
-        result = [((TEXT, u'J. David'),)]
+        result = [((TEXT, 'J. David'),)]
 
         segments = []
         for seg, context, offset in get_units(HTMLParser(data)):
@@ -178,7 +178,7 @@ class SentenceTestCase(TestCase):
 
     def test_HTML3(self):
         data = '-- toto is here -- *I am*'
-        result = [((TEXT, u'-- toto is here -- *I am*'),)]
+        result = [((TEXT, '-- toto is here -- *I am*'),)]
 
         segments = []
         for seg, context, offset in get_units(HTMLParser(data)):
@@ -189,8 +189,8 @@ class SentenceTestCase(TestCase):
 
     def test_HTML4(self):
         data = ' <a href="http://www.debian.org/"> Debian </a> Hello.  Toto'
-        result =  [((START_FORMAT, 1), (TEXT, u' Debian '), (END_FORMAT, 1),
-                    (TEXT, u' Hello.')), ((TEXT, u'Toto'),)]
+        result =  [((START_FORMAT, 1), (TEXT, ' Debian '), (END_FORMAT, 1),
+                    (TEXT, ' Hello.')), ((TEXT, 'Toto'),)]
 
         segments = []
         for seg, context, offset in get_units(HTMLParser(data)):
@@ -206,7 +206,7 @@ class SentenceTestCase(TestCase):
         segments = []
         for seg, context, offset in get_segments(message):
             segments.append(seg)
-        self.assertEqual(segments, [((TEXT, u'Hello.'),)])
+        self.assertEqual(segments, [((TEXT, 'Hello.'),)])
 
 
     def test_parentheses1(self):
@@ -214,11 +214,11 @@ class SentenceTestCase(TestCase):
             '(Exception: if the Program itself is interactive but does not'
             ' normally print such an announcement, your work based on the'
             ' Program is not required to print an announcement.)  ')
-        result = [((TEXT, u'(Exception:'),),
-                  ((TEXT, u'if the Program itself is interactive but does '
-                          u'not normally print such an announcement, your '
-                          u'work based on the Program is not required to '
-                          u'print an announcement.)'),)]
+        result = [((TEXT, '(Exception:'),),
+                  ((TEXT, 'if the Program itself is interactive but does '
+                          'not normally print such an announcement, your '
+                          'work based on the Program is not required to '
+                          'print an announcement.)'),)]
 
         message = Message()
         message.append_text(text)
@@ -233,9 +233,9 @@ class SentenceTestCase(TestCase):
         text = '(Hereinafter, translation is included without limitation' \
                ' in the term "modification".)  Each licensee is addressed' \
                ' as "you".'
-        result = [((TEXT, u'(Hereinafter, translation is included without '
-                          u'limitation in the term "modification".) Each '
-                          u'licensee is addressed as "you".'),)]
+        result = [((TEXT, '(Hereinafter, translation is included without '
+                          'limitation in the term "modification".) Each '
+                          'licensee is addressed as "you".'),)]
 
         message = Message()
         message.append_text(text)
@@ -248,7 +248,7 @@ class SentenceTestCase(TestCase):
 
     def test_tab(self):
         text = '\n\t   This folder is empty.\n\t   '
-        result = [((TEXT, u'This folder is empty.'),)]
+        result = [((TEXT, 'This folder is empty.'),)]
 
         message = Message()
         message.append_text(text)
@@ -262,8 +262,8 @@ class SentenceTestCase(TestCase):
     def test_semicolon(self):
         text = 'Write to the Free Software Foundation; we sometimes make' \
                ' exceptions for this.'
-        result =  [((TEXT, u'Write to the Free Software Foundation;'),),
-                   ((TEXT, u'we sometimes make exceptions for this.'),)]
+        result =  [((TEXT, 'Write to the Free Software Foundation;'),),
+                   ((TEXT, 'we sometimes make exceptions for this.'),)]
 
         message = Message()
         message.append_text(text)
@@ -278,7 +278,7 @@ class SentenceTestCase(TestCase):
         text = 'And you must show them these terms so they know their\n' \
                'rights.\n'
         result = [((TEXT,
-          u'And you must show them these terms so they know their rights.'),)]
+          'And you must show them these terms so they know their rights.'),)]
 
         message = Message()
         message.append_text(text)
@@ -290,11 +290,11 @@ class SentenceTestCase(TestCase):
 
 
     def test_raw_text(self):
-        text = u'This is raw text. Every characters must be kept. ' \
-               u'1 space 2 spaces  3 spaces   1 newline\nend.'
-        expected = [((TEXT, u'This is raw text.'),),
-                    ((TEXT, u'Every characters must be kept.'),),
-                    ((TEXT, u'1 space 2 spaces  3 spaces   1 newline\nend.'),)
+        text = 'This is raw text. Every characters must be kept. ' \
+               '1 space 2 spaces  3 spaces   1 newline\nend.'
+        expected = [((TEXT, 'This is raw text.'),),
+                    ((TEXT, 'Every characters must be kept.'),),
+                    ((TEXT, '1 space 2 spaces  3 spaces   1 newline\nend.'),)
                     ]
 
         message = Message()
@@ -309,7 +309,7 @@ class SentenceTestCase(TestCase):
     def test_surrounding_format(self):
         data = '<em>Surrounding format elements should be extracted !</em>'
         expected =[((TEXT,
-                     u'Surrounding format elements should be extracted !'),)]
+                     'Surrounding format elements should be extracted !'),)]
 
         segments = []
         for seg, context, offset in get_units(HTMLParser(data)):
@@ -319,8 +319,8 @@ class SentenceTestCase(TestCase):
 
     def test_ignore_tags(self):
         data = 'Hello <em> Baby.</em> How are you ?'
-        expected = [((TEXT, u'Hello '), (START_FORMAT, 1), (TEXT, u' Baby.'),
-                     (END_FORMAT, 1)), ((TEXT, u'How are you ?'),)]
+        expected = [((TEXT, 'Hello '), (START_FORMAT, 1), (TEXT, ' Baby.'),
+                     (END_FORMAT, 1)), ((TEXT, 'How are you ?'),)]
 
         segments = []
         for seg, context, offset in get_units(HTMLParser(data)):
@@ -335,9 +335,9 @@ class SentenceTestCase(TestCase):
 
         data = '<span>This text contains many sentences. A sentence. ' \
                'Another one. This text must be well segmented.  </span>'
-        expected = [((TEXT, u'This text contains many sentences.'),),
-                    ((TEXT, u'A sentence.'),), ((TEXT, u'Another one.'),),
-                    ((TEXT, u'This text must be well segmented.'),)]
+        expected = [((TEXT, 'This text contains many sentences.'),),
+                    ((TEXT, 'A sentence.'),), ((TEXT, 'Another one.'),),
+                    ((TEXT, 'This text must be well segmented.'),)]
 
         segments = []
         for seg, context, offset in get_units(HTMLParser(data)):

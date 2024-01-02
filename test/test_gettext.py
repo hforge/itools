@@ -33,7 +33,7 @@ class POTestCase(TestCase):
         po = POFile()
         po.load_state_from_string(content)
 
-        self.assertEqual(po.get_msgstr('Add'), u'Ajouter\n')
+        self.assertEqual(po.get_msgstr('Add'), 'Ajouter\n')
 
 
     def test_case2(self):
@@ -45,7 +45,7 @@ class POTestCase(TestCase):
         po = POFile()
         po.load_state_from_string(content)
 
-        self.assertEqual(po.get_msgstr('Hello world'), u'Hola mundo')
+        self.assertEqual(po.get_msgstr('Hello world'), 'Hola mundo')
 
 
     def test_case3(self):
@@ -55,7 +55,7 @@ class POTestCase(TestCase):
         po = POFile()
         po.load_state_from_string(content)
 
-        self.assertEqual(po.get_msgstr('test'), u'Esto es una "prueba"')
+        self.assertEqual(po.get_msgstr('test'), 'Esto es una "prueba"')
 
     def test_output(self):
         """Test output."""

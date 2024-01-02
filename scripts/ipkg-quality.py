@@ -40,27 +40,27 @@ from itools.pkg import open_worktree
 
 # Define list of problems
 code_length = {
-    'title': u'Code length',
-    'keys': {'lines': u'Number of lines', 'tokens': u'Number of tokens'},
+    'title': 'Code length',
+    'keys': {'lines': 'Number of lines', 'tokens': 'Number of tokens'},
     'pourcent': False}
 
 aesthetics_problems = {
-     'title': u'Style',
-     'keys': {'tabs':  u'with tabulators',
-              'bad_indentation': u'bad indented',
-              'bad_length': u'longer than 79 characters',
-              'bad_end': u'with trailing whitespaces'},
+     'title': 'Style',
+     'keys': {'tabs':  'with tabulators',
+              'bad_indentation': 'bad indented',
+              'bad_length': 'longer than 79 characters',
+              'bad_end': 'with trailing whitespaces'},
      'pourcent': True}
 
 exception_problems = {
-    'title': u'Exception handling',
+    'title': 'Exception handling',
     'keys': {
-        'string_exception': u'string exceptions are used',
-        'except_all': u'all exceptions are catched'},
+        'string_exception': 'string exceptions are used',
+        'except_all': 'all exceptions are catched'},
     'pourcent': False}
 
 import_problems = {
-    'title': u'Import problems',
+    'title': 'Import problems',
     'keys': {'bad_import': 'misplaced imports'},
     'pourcent': False}
 
@@ -88,7 +88,7 @@ class TrailingSpacePlugin(object):
 
     @classmethod
     def analyse_line(self, line):
-        return len(line.rstrip()) != len(line.rstrip(u'\n\x0b\x0c\r'))
+        return len(line.rstrip()) != len(line.rstrip('\n\x0b\x0c\r'))
 
 
 class TabsPlugin(object):
@@ -96,7 +96,7 @@ class TabsPlugin(object):
 
     @classmethod
     def analyse_line(self, line):
-        return u'\t' in line
+        return '\t' in line
 
 
 line_plugins = [LineLengthPlugin, TrailingSpacePlugin, TabsPlugin]
@@ -203,7 +203,7 @@ def analyse_file_by_lines(filename):
     # Analyse
     line_no = 0
     for line in file(filename):
-        line = unicode(line, encoding)
+        line = str(line, encoding)
         # Plugins
         for plugin in line_plugins:
             if plugin.analyse_line(line):
@@ -508,13 +508,13 @@ if __name__ == '__main__':
 
     # Check options
     if len(filenames) == 0:
-        parser.error(u'Please give at least one file to analyse.')
+        parser.error('Please give at least one file to analyse.')
     if options.worse > 0 and options.show_lines is True:
         parser.error(
-            u'Options --worse and --show-lines are mutually exclusive.')
+            'Options --worse and --show-lines are mutually exclusive.')
     if options.show_lines == True and len(filenames) != 1:
         parser.error(
-            u'The option --show-lines takes one file in parameter.')
+            'The option --show-lines takes one file in parameter.')
 
     # (1) Show Lines
     if options.show_lines:

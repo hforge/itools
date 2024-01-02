@@ -102,7 +102,7 @@ class FileSizeValidator(BaseValidator):
             return '%.01f KB' % (b / 1024)
         elif b < 1073741824:
             return '%.01f MB' % (b / 1048576)
-        return u'%.01f GB' % (b / 1073741824)
+        return '%.01f GB' % (b / 1073741824)
 
 
 class ImagePixelsValidator(BaseValidator):

@@ -99,7 +99,7 @@ class TranslatableTestCase(TestCase):
         parser = XMLFile(string=text)
 
         messages = [unit[0] for unit in parser.get_units()]
-        self.assertEqual(messages, [((srx_TEXT, u'Hello World'),)])
+        self.assertEqual(messages, [((srx_TEXT, 'Hello World'),)])
 
 
 

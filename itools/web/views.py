@@ -328,7 +328,7 @@ class BaseView(ItoolsView):
         # Check if handler is a File
         handler = resource.get_value('data')
         if not isinstance(handler, File):
-            raise ValueError(u"PUT only allowed on files")
+            raise ValueError("PUT only allowed on files")
         # Save the data
         body = context.get_form_value('body')
         handler.load_state_from_string(body)

@@ -187,7 +187,7 @@ class Test_ODT_Parser(TestCase):
         content = odt_template % content
         messages = XMLParser(content)
         messages = [unit[0] for unit in get_units(messages)]
-        expected = [((TEXT, u'hello world'),)]
+        expected = [((TEXT, 'hello world'),)]
         self.assertEqual(messages, expected)
 
 

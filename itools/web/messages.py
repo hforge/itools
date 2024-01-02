@@ -46,5 +46,5 @@ class ERROR(INFO):
 
 
 MSG_MISSING_OR_INVALID = ERROR(
-    u'Some required fields are missing, or some values are not valid. '
-    u'Please correct them and continue.')
+    'Some required fields are missing, or some values are not valid. '
+    'Please correct them and continue.')

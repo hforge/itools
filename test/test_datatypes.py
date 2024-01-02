@@ -59,7 +59,7 @@ class BasicTypeTest(TestCase):
             self.assertEqual(x, Decimal.decode(data))
 
     def test_Unicode(self):
-        x = u'العربيه 中文 Español Français'
+        x = 'العربيه 中文 Español Français'
         data = Unicode.encode(x)
         self.assertEqual(x, Unicode.decode(data))
 

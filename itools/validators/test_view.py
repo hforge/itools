@@ -35,7 +35,7 @@ class TestValidators(AutoEdit):
     field_1 = Integer_Field(
         title=MSG('5+5 equals to ?'),
         validators=[validator('equals-to', base_value=10)],
-        error_messages={'not_equals': MSG(u'Give me a 10 ;)')}
+        error_messages={'not_equals': MSG('Give me a 10 ;)')}
         )
     field_2 = Char_Field(
         title=MSG('Hexadecimal color'),
@@ -64,8 +64,8 @@ class TestValidators(AutoEdit):
     field_10 = Email_Field(
         title=MSG('Give an email (unique in DB)'),
         validators=[validator('unique', field_name='email')],
-        error_messages={'invalid': MSG(u'Give be an email address !!!'),
-                        'unique': MSG(u'This address is already used')})
+        error_messages={'invalid': MSG('Give be an email address !!!'),
+                        'unique': MSG('This address is already used')})
     field_11 = File_Field(
         title=MSG('File extension (png)'),
         validators=[validator('file-extension', allowed_extensions=['png'])])

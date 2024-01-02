@@ -1,6 +1,5 @@
 cryptography==41.0.7
 gevent==23.9.1
-junitxml==0.7
 pillow==10.2.0
 pygit2==1.13.3
 python-magic==0.4.27

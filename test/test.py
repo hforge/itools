@@ -18,12 +18,8 @@
 
 # Import from the Standard Library
 from optparse import OptionParser
-from junitxml import JUnitXmlResult
 from sys import exit
 from unittest import TestLoader, TestSuite, TextTestRunner
-
-# Import from itools
-from itools.core import get_abspath
 
 # Import tests
 import test_core
@@ -71,13 +67,5 @@ if __name__ == '__main__':
         suite.addTest(loader.loadTestsFromModule(module))
     if options.mode == 'standard':
         ret = TextTestRunner(verbosity=1).run(suite)
-    elif options.mode == 'junitxml':
-        path = get_abspath('./junit.xml')
-        print('Result is here: %s' % path)
-        f = open(path, 'wb')
-        result = JUnitXmlResult(f)
-        result.startTestRun()
-        ret = suite.run(result)
-        result.stopTestRun()
     exit_code = not ret.wasSuccessful()
     exit(exit_code)

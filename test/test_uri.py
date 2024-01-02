@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from __future__ import print_function
+
 
 from unittest import TestCase, main
 

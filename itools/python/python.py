@@ -21,7 +21,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from ast import parse, Attribute, Call, Name, NodeVisitor, Str
+from ast import parse, Attribute, Name, NodeVisitor, Str
 
 # Import from itools
 from itools.handlers import TextFile, register_handler_class

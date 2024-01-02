@@ -20,6 +20,7 @@
 
 # Import from the Standard Library
 from datetime import datetime
+from os.path import splitext
 from sys import getrefcount
 
 # Import from itools
@@ -28,7 +29,7 @@ from itools.handlers import Folder, get_handler_class_by_mimetype
 from itools.uri import Path
 
 # Import from itools.database
-from .backends import GitBackend, backends_registry
+from .backends import backends_registry
 from .exceptions import ReadonlyError
 from .metadata import Metadata
 from .registry import get_register_fields
@@ -83,6 +84,7 @@ class RODatabase(object):
 
     @property
     def catalog(self):
+        # WARNING: Uses of context.database.catalog is obsolete
         return self.backend.catalog
 
     def close(self):
@@ -199,6 +201,12 @@ class RODatabase(object):
                 continue
             # Always remove non-metadata handlers from cache
             if not key.endswith('.metadata'):
+                # FIXME Do not remove handler from cache if the associated
+                # resource is in cache (else we cannot move resource)
+                metadata_key = splitext(key)[0] + '.metadata'
+                if metadata_key in self.cache:
+                    continue
+                # Remove from cache
                 self._discard_handler(key)
                 continue
             # Discard this handler

@@ -29,6 +29,7 @@ from .xhtml import stream_to_str_as_html, stream_to_str_as_xhtml
 
 # Public API
 __all__ = [
+    'schema',
     # File Handlers
     'XHTMLFile',
     'HTMLFile',

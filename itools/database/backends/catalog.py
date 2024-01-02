@@ -25,7 +25,7 @@ from marshal import dumps, loads
 from hashlib import sha1
 
 # Import from xapian
-from xapian import Database, WritableDatabase, DB_CREATE, DB_OPEN, DB_BACKEND_GLASS
+from xapian import Database, WritableDatabase, DB_OPEN, DB_BACKEND_GLASS
 from xapian import Document, Query, QueryParser, Enquire
 from xapian import sortable_serialise, sortable_unserialise, TermGenerator
 
@@ -35,6 +35,7 @@ from itools.datatypes import Decimal, Integer, Unicode, String
 from itools.fs import lfs
 from itools.i18n import is_punctuation
 from logging import getLogger
+from itools.i18n.accept import select_language
 from itools.database.queries import AllQuery, _AndQuery, NotQuery, _OrQuery, PhraseQuery
 from itools.database.queries import RangeQuery, StartQuery, TextQuery, _MultipleQuery
 

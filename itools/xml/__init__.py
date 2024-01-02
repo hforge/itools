@@ -31,6 +31,7 @@ from .xml import get_qname, get_attribute_qname, get_end_tag, get_doctype
 
 
 __all__ = [
+    'dublin_core',
     # New API (in progress)
     'get_qname',
     'get_attribute_qname',

@@ -17,7 +17,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from copy import deepcopy
 
 # Import from itools
 from itools.core import get_abspath

@@ -24,7 +24,7 @@ from unittest import TestCase, main
 from itools.csv import Property
 from itools.csv.table import encode_param_value
 from itools.datatypes import String
-from itools.ical import DateTime, iCalendar
+from itools.ical import DateTime
 from itools.ical.icalendar import iCalendar, VTimezone
 #
 

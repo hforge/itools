@@ -32,6 +32,8 @@ from .utils import NewJSONEncoder
 from .views import ItoolsView, BaseView, STLView
 
 __all__ = [
+    'SetCookieDataType',
+    'Cookie',
     # Context
     'set_context',
     'get_context',

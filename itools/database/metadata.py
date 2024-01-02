@@ -21,6 +21,7 @@ from logging import getLogger
 from itools.core import add_type, freeze
 from itools.datatypes import String
 from itools.handlers import File, register_handler_class
+from itools.i18n.accept import select_language
 
 # Import from here
 from .fields import Field

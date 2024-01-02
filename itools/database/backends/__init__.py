@@ -20,3 +20,6 @@
 from .git import GitBackend
 from .lfs import LFSBackend
 from .registry import register_backend, backends_registry
+
+
+__all__ = ['GitBackend', 'LFSBackend', 'register_backend', 'backends_registry']

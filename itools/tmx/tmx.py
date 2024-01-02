@@ -114,6 +114,7 @@ class TMXFile(TextFile):
     #######################################################################
     # Load
     def _load_state_from_file(self, file):
+        text = None
         self.header = {}
         messages = {}
         self.header_notes = {}

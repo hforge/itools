@@ -1,5 +1,6 @@
-# -*- coding: UTF-8 -*-
-# Copyright (C) 2010-2011 J. David Ibáñez <jdavid.ibp@gmail.com>
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# Copyright (C) 2020 Sylvain Taverne <taverne.sylvain@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,24 +15,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Import from standard library
+from os.path import islink, isdir
+
 # Import from itools
-from itools.web import WebServer
-from itools.loop import Loop
+from itools.pkg.build import ipkg_build, get_manifest
+from itools.pkg.git import open_worktree
+from itools.pkg.handlers import SetupConf
 
-class Ping(WebServer):
 
-    def listen(self, address, port):
-        super(Ping, self).listen(address, port)
-        self.add_handler('/', self.path_callback)
-
-    def path_callback(self, soup_message, path):
-        method = soup_message.get_method()
-        body = '%s %s' % (method, path)
-        soup_message.set_status(200)
-        soup_message.set_response('text/plain', body)
-
-server = Ping()
-server.listen('localhost', 8080)
-
-loop = Loop()
-loop.run()
+if __name__ == '__main__':
+    config = SetupConf('setup.conf')
+    worktree = open_worktree('.')
+    manifest = set([ x for x in get_manifest() if not islink(x) and not isdir(x)])
+    ipkg_build(worktree, manifest, config)

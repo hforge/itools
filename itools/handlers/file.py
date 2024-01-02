@@ -23,7 +23,6 @@ from copy import deepcopy
 from io import StringIO, BytesIO
 from datetime import datetime
 
-
 # Import from itools.handlers
 from .base import Handler
 from .registry import register_handler_class
@@ -107,9 +106,7 @@ class File(Handler):
         self.reset()
         try:
             self.load_state_from_string(data)
-        except Exception as e:
-            # Update message to add the problematic file
-            message = '{0} on "{1}"'.format(e, self.key)
+        except Exception:
             self._clean_state()
             raise
         self.timestamp = self.database.get_handler_mtime(self.key)

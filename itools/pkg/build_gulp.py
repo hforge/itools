@@ -84,7 +84,7 @@ class GulpBuilder(object):
                 print("*** Run $ gulp build on ".format(path))
                 print("***"*25)
                 path = str(Path(path)[:-1]) + '/'
-                p = Popen(['gulp', 'build'], cwd=path)
+                p = Popen(['./node_modules/.bin/gulp', 'build'], cwd=path)
                 p.wait()
                 if p.returncode == 1:
                     print("***"*25)
@@ -103,7 +103,7 @@ class GulpBuilder(object):
                 print("*** Run $ webpack ".format(path))
                 print("***"*25)
                 path = str(Path(path)[:-1]) + '/'
-                p = Popen(['webpack', '--mode=production'], cwd=path)
+                p = Popen(['./node_modules/.bin/webpack', '--mode=production'], cwd=path)
                 p.wait()
                 if p.returncode == 1:
                     print("***"*25)

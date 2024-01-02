@@ -19,14 +19,12 @@
 
 # Import from the Standard Library
 import unicodedata
-import sys
 
 
-src = (r"""ÄÅÁÀÂÃĀäåáàâãāăÇçÉÈÊËĒéèêëēğÍÌÎÏĪíìîïīıļÑñÖÓÒÔÕØŌöóòôõøōőÜÚÙÛŪüúùûū
-        ŞşšţÝŸȲýÿȳŽž°«»’""")
-dst = (r"""AAAAAAAaaaaaaaaCcEEEEEeeeeegIIIIIiiiiiilNnOOOOOOOooooooooUUUUUuuuuu
-            SsstYYYyyyZz----""")
-
+src = (r"""ÄÅÁÀÂÃĀäåáàâãāăČÇçÉÈÊËĒéèėêëēğÍÌÎÏĪíìîïīıļÑñÖÓÒÔÕØŌöóòôõøōőÜÚÙÛŪüúùûū"""
+       r"""ŞşšţÝŸȲýÿȳŽž°«»’""")
+dst = (r"""AAAAAAAaaaaaaaaCCcEEEEEeeeeeegIIIIIiiiiiilNnOOOOOOOooooooooUUUUUuuuuu"""
+       r"""SsstYYYyyyZz----""")
 
 transmap = {}
 for i in range(len(src)):

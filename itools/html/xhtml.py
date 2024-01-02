@@ -23,7 +23,7 @@ from itools.datatypes import XMLContent, XMLAttribute
 from itools.handlers import register_handler_class
 from itools.xml import START_ELEMENT, END_ELEMENT, TEXT
 from itools.xml import stream_to_str, get_qname, get_attribute_qname
-from itools.xml import get_doctype, get_element, get_namespace
+from itools.xml import get_doctype, get_element
 from itools.xmlfile import XMLFile
 
 # Import from here

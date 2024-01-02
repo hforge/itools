@@ -15,17 +15,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-from datetime import datetime, timedelta
-import difflib, os
+import os
+from datetime import datetime, timedelta, time
 from heapq import heappush, heappop
 from multiprocessing import Process
 from os.path import abspath, dirname
 from uuid import uuid4
 
 # Import from pygit2
-import pygit2
 from pygit2 import TreeBuilder, GIT_FILEMODE_TREE, init_repository
-from pygit2 import GIT_CHECKOUT_FORCE, GIT_CHECKOUT_REMOVE_UNTRACKED
 
 # Import from itools
 from itools.database import Metadata
@@ -36,6 +34,7 @@ from itools.fs.common import WRITE, READ_WRITE, APPEND, READ
 
 # Import from here
 from .catalog import Catalog, _get_xquery, SearchResults, make_catalog
+from .patchs import PatchsBackend
 from .registry import register_backend
 
 
@@ -116,6 +115,8 @@ class GitBackend(object):
         if not lfs.exists(database_static_path):
             self.init_backend_static(path)
         self.static_fs = lfs.open(database_static_path)
+        # Patchs backend
+        self.patchs_backend = PatchsBackend(path, self.fs, read_only)
         # Catalog
         self.catalog = self.get_catalog()
 
@@ -123,7 +124,7 @@ class GitBackend(object):
     def init_backend(cls, path, fields, init=False, soft=False):
         # Metadata database
         init_repository('{0}/database'.format(path), bare=False)
-        lfs.make_folder('{0}/database/.git/patchs'.format(path))
+        # Init backend static
         cls.init_backend_static(path)
         # Make catalog
         make_catalog('{0}/catalog'.format(path), fields)
@@ -217,52 +218,6 @@ class GitBackend(object):
             self.static_fs.make_folder(parent_path)
         self.static_fs.copy(key, new_key)
 
-    def create_patch(self, added, changed, removed, handlers, git_author):
-        """ We create a patch into database/.git/patchs at each transaction.
-        The idea is to commit into GIT each N transactions on big databases to avoid performances problems.
-        We want to keep a diff on each transaction, to help debug.
-        """
-        if TEST_DB_DESACTIVATE_PATCH is True:
-            return
-        author_id, author_email = git_author
-        diffs = {}
-        # Added
-        for key in added:
-            if key.endswith('.metadata'):
-                after = handlers.get(key).to_str().splitlines(True)
-                diff = difflib.unified_diff('', after, fromfile=key, tofile=key)
-                diffs[key] = ''.join(diff)
-        # Changed
-        for key in changed:
-            if key.endswith('.metadata'):
-                with self.fs.open(key) as f:
-                    before = f.readlines()
-                after = handlers.get(key).to_str().splitlines(True)
-                diff = difflib.unified_diff(before, after, fromfile=key, tofile=key)
-                diffs[key] = ''.join(diff)
-        # Removed
-        for key in removed:
-            if key.endswith('.metadata'):
-                with self.fs.open(key) as f:
-                    before = f.readlines()
-                after = ''
-                diff = difflib.unified_diff(before, after, fromfile=key, tofile=key)
-                diffs[key] = ''.join(diff)
-        # Create patch
-        base_path = datetime.now().strftime('.git/patchs/%Y%m%d/')
-        if not self.fs.exists(base_path):
-            self.fs.make_folder(base_path)
-        the_time = datetime.now().strftime('%Hh%Mm%S.%f')
-        patch_key = '{base_path}/{the_time}-user{author_id}-{uuid}.patch'.format(
-              base_path=base_path,
-              author_id=author_id,
-              the_time=the_time,
-              uuid=uuid4())
-        data = ''.join([diffs[x] for x in sorted(diffs.keys())])
-        # Write
-        with self.fs.open(patch_key, 'w') as f:
-            f.write(data)
-            f.truncate(f.tell())
 
     def do_transaction(self, commit_message, data, added, changed, removed, handlers,
           docs_to_index, docs_to_unindex):
@@ -277,7 +232,7 @@ class GitBackend(object):
                     self.add_handler_into_static_history(key)
         # Create patch if there's changed
         if added or changed or removed:
-            self.create_patch(added, changed, removed, handlers, git_author)
+            self.patchs_backend.create_patch(added, changed, removed, handlers, git_author)
         else:
             # it's a catalog transaction, we have to do nothing
             pass
@@ -299,10 +254,16 @@ class GitBackend(object):
         if not TEST_DB_WITHOUT_COMMITS:
             self.do_git_transaction(commit_message, data, added, changed, removed, handlers)
         else:
-            now = datetime.now()
-            # Commit at start or every hour
-            if not self.last_transaction_dtime or now - self.last_transaction_dtime > timedelta(minutes=60):
+            # Commit at start
+            if not self.last_transaction_dtime:
                 self.do_git_big_commit()
+            else:
+                now = datetime.now()
+                t = now.time()
+                is_night = time(21, 00) < t or t < time(06, 00)
+                done_recently = now - self.last_transaction_dtime < timedelta(minutes=120)
+                if is_night and not done_recently:
+                    self.do_git_big_commit()
         # Catalog
         for path in docs_to_unindex:
             self.catalog.unindex_document(path)
@@ -325,7 +286,6 @@ class GitBackend(object):
         self.worktree._call(['git', 'commit', '-m', 'Autocommit'])
 
     def do_git_transaction(self, commit_message, data, added, changed, removed, handlers):
-        worktree = self.worktree
         # 3. Git add
         git_add = list(added) + list(changed)
         git_add = [x for x in git_add if x.endswith('metadata')]
@@ -402,6 +362,7 @@ class GitBackend(object):
 
     def abort_transaction(self):
         self.catalog.abort_changes()
+        #from pygit2 import GIT_CHECKOUT_FORCE, GIT_CHECKOUT_REMOVE_UNTRACKED
         # Don't need to abort since git add is made à last minute
         #strategy = GIT_CHECKOUT_FORCE | GIT_CHECKOUT_REMOVE_UNTRACKED
         #if pygit2.__version__ >= '0.21.1':

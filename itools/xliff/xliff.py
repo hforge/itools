@@ -164,6 +164,7 @@ class XLFFile(TextFile):
     # Load
     def _load_state_from_file(self, file):
         # XXX Warning: we can just load our xliff file
+        text = None
         self.files = {}
         phrase = None
         id_stack = []

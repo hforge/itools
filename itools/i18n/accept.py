@@ -20,8 +20,6 @@ protocol.
 """
 
 # Import from the Standard Library
-
-import builtins
 from decimal import Decimal
 from locale import getdefaultlocale
 
@@ -145,13 +143,3 @@ def get_accept():
 
 def select_language(languages=None):
     return get_accept().select_language(languages)
-
-
-def init_language_selector(language_selector=select_language):
-    builtins.__dict__['select_language'] = language_selector
-
-
-# Set default language selector
-init_language_selector(select_language)
-
-

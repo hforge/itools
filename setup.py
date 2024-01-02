@@ -34,7 +34,7 @@ def get_pipe(command, cwd=None):
     popen = Popen(command, stdout=PIPE, stderr=PIPE, cwd=cwd)
     stdoutdata, stderrdata = popen.communicate()
     if popen.returncode != 0:
-        raise EnvironmentError((popen.returncode, stderrdata))
+        raise EnvironmentError(popen.returncode, stderrdata)
     return stdoutdata
 
 
@@ -216,12 +216,16 @@ if __name__ == '__main__':
       "scripts/igettext-build.py",
       "scripts/igettext-extract.py",
       "scripts/igettext-merge.py",
+      "scripts/ipkg-build.py",
       "scripts/ipkg-docs.py",
       "scripts/ipkg-quality.py",
       "scripts/ipkg-update-locale.py"]
-    install_requires = parse_requirements(
-        'requirements.txt', session='xxx')
-    install_requires = [str(ir.requirement) for ir in install_requires]
+    # FIXME 2to3
+    if sys.version_info[0] == 3:
+        install_requires = []
+    else:
+        install_requires = parse_requirements('requirements.txt', session='xxx')
+        install_requires = [str(ir.requirement) for ir in install_requires]
     # The data files
     package_data = {'itools': []}
     filenames = [ x for x in filenames if not x.endswith('.py') ]

@@ -260,7 +260,7 @@ class GitBackend(object):
             else:
                 now = datetime.now()
                 t = now.time()
-                is_night = time(21, 00) < t or t < time(06, 00)
+                is_night = time(21, 0) < t or t < time(6, 0)
                 done_recently = now - self.last_transaction_dtime < timedelta(minutes=120)
                 if is_night and not done_recently:
                     self.do_git_big_commit()

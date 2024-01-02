@@ -26,25 +26,6 @@ The scripts included are::
 To learn how to install itools check the INSTALL.txt file.
 
 
-Resources
-===============
-
-- Home,
-  http://www.hforge.org/itools
-
-- Documentation,
-  http://docs.hforge.org/itools
-
-- Mailing list,
-  http://www.hforge.org/community/
-
-- Mailing list archives,
-  http://archives.hforge.org/index.cgi?list=itools
-
-- Bug Tracker,
-  http://bugs.hforge.org
-
-
 Authors
 ===============
 

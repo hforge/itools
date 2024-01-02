@@ -24,7 +24,6 @@ from distutils.core import Extension
 from os.path import join as join_path
 from pip._internal.req import parse_requirements
 from sys import stderr
-import sys
 from subprocess import Popen, PIPE
 
 
@@ -151,9 +150,6 @@ if __name__ == '__main__':
         extension = Extension('itools.office.doctotext', sources, **flags)
         ext_modules.append(extension)
 
-    # if sys.version_info[0] == 3:
-    #     ext_modules = []
-
     # Ok
     if itools_is_available:
         itools_setup(get_abspath(''), ext_modules=ext_modules)
@@ -220,12 +216,10 @@ if __name__ == '__main__':
       "scripts/ipkg-docs.py",
       "scripts/ipkg-quality.py",
       "scripts/ipkg-update-locale.py"]
-    # FIXME 2to3
-    if sys.version_info[0] == 3:
-        install_requires = []
-    else:
-        install_requires = parse_requirements('requirements.txt', session='xxx')
-        install_requires = [str(ir.requirement) for ir in install_requires]
+
+    install_requires = parse_requirements('requirements.txt', session='xxx')
+    install_requires = [str(ir.requirement) for ir in install_requires]
+
     # The data files
     package_data = {'itools': []}
     filenames = [ x for x in filenames if not x.endswith('.py') ]

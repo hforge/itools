@@ -15,26 +15,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the Standard Library
-from sys import version_info
-
 # Import from gevent
 from gevent import sleep, Greenlet
 
 
-if version_info[:2] == (2, 6):
-    # Python 2.6
-    def total_seconds(td):
-        if type(td) is int:
-            return td
-        seconds = (td.seconds + td.days * 24 * 3600)
-        return (td.microseconds + seconds * 10**6) / 10**6
-else:
-    # Python 2.7
-    def total_seconds(td):
-        if type(td) is int:
-            return td
-        return int(td.total_seconds())
+def total_seconds(td):
+    if type(td) is int:
+        return td
+    return int(td.total_seconds())
 
 
 def _cron(callback, interval):

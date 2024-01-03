@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2008-2011 David Versmisse <versmisse@lil.univ-littoral.fr>
 # Copyright (C) 2008-2011 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2009 Henry Obein <henry.obein@gmail.com>
@@ -17,7 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the standard library
 import os
 from decimal import Decimal as decimal
 from datetime import datetime
@@ -27,6 +25,7 @@ from hashlib import sha1
 # Import from xapian
 from xapian import Database, WritableDatabase, DB_OPEN, DB_BACKEND_GLASS
 from xapian import Document, Query, QueryParser, Enquire
+from xapian import MultiValueKeyMaker
 from xapian import sortable_serialise, sortable_unserialise, TermGenerator
 
 # Import from itools
@@ -40,14 +39,6 @@ from itools.database.queries import AllQuery, _AndQuery, NotQuery, _OrQuery, Phr
 from itools.database.queries import RangeQuery, StartQuery, TextQuery, _MultipleQuery
 
 log = getLogger("itools.database")
-try:
-    from xapian import MultiValueSorter
-
-    XAPIAN_VERSION = '1.2'
-except Exception:
-    from xapian import MultiValueKeyMaker
-
-    XAPIAN_VERSION = '1.4'
 
 # Constants
 OP_AND = Query.OP_AND
@@ -269,22 +260,13 @@ class SearchResults(object):
         metadata = self._catalog._metadata
         if sort_by is not None:
             if isinstance(sort_by, list):
-                if XAPIAN_VERSION == '1.4':
-                    sorter = MultiValueKeyMaker()
-                    for name in sort_by:
-                        # If there is a problem, ignore this field
-                        if name not in metadata:
-                            warn_not_stored(name)
-                            continue
-                        sorter.add_value(metadata[name]['value'], reverse)
-                else:
-                    sorter = MultiValueSorter()
-                    for name in sort_by:
-                        # If there is a problem, ignore this field
-                        if name not in metadata:
-                            warn_not_stored(name)
-                            continue
-                        sorter.add(metadata[name]['value'])
+                sorter = MultiValueKeyMaker()
+                for name in sort_by:
+                    # If there is a problem, ignore this field
+                    if name not in metadata:
+                        warn_not_stored(name)
+                        continue
+                    sorter.add_value(metadata[name]['value'], reverse)
                 enquire.set_sort_by_key_then_relevance(sorter, reverse)
             else:
                 # If there is a problem, ignore the sort

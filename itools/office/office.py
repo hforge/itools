@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2006 Hervé Cauwelier <herve@oursours.net>
 # Copyright (C) 2007 Sylvain Taverne <taverne.sylvain@gmail.com>
 # Copyright (C) 2007, 2009 J. David Ibáñez <jdavid.ibp@gmail.com>
@@ -17,16 +16,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import other modules
-try:
-    from xlrd import open_workbook
-except ImportError:
-    open_workbook = None
+from xlrd import open_workbook
 
 # Import from itools
 from itools.handlers import File, register_handler_class
 from .rtf import rtf_to_text
 try:
-    from doctotext import doc_to_text, DocRtfException
+    from .doctotext import doc_to_text, DocRtfException
 except ImportError:
     doc_to_text = None
 
@@ -50,9 +46,6 @@ class MSExcel(File):
     class_extension = 'xls'
 
     def to_text(self):
-        if open_workbook is None:
-            return ""
-
         data = self.to_str()
 
         # Load the XLRD file

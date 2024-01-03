@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2007, 2009, 2011-2012 J. David Ibáñez <jdavid.ibp@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,9 +13,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the Standard Library
 from calendar import timegm
-from datetime import datetime
+from datetime import datetime, timezone
 from os import listdir, makedirs, remove, rmdir, walk
 from os.path import abspath, dirname, exists, getmtime, isabs, isdir, isfile
 from os.path import normpath
@@ -364,8 +362,7 @@ class Worktree(object):
 
         if date:
             if date.tzinfo:
-                from pytz import utc
-                when_time = date.astimezone(utc)            # To UTC
+                when_time = date.astimezone(timezone.utc)   # To UTC
                 when_time = when_time.timetuple()           # As struct_time
                 when_time = timegm(when_time)               # To unix time
                 when_offset = date.utcoffset().seconds / 60

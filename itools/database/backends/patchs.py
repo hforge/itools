@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2020 Sylvain Taverne <sylvain@agicia.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,14 +13,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from standard library
-import os
-import difflib
-import tarfile
-from glob import glob
 from datetime import datetime, timedelta
+from glob import glob
 from time import strftime
 from uuid import uuid4
+import difflib
+import os
+import tarfile
 
 # Import from itools
 from itools.fs import lfs
@@ -109,8 +107,10 @@ class PatchsBackend(object):
 
 
     def create_patch(self, added, changed, removed, handlers, git_author):
-        """ We create a patch into database/.git/patchs at each transaction.
-        The idea is to commit into GIT each N transactions on big databases to avoid performances problems.
+        """
+        We create a patch into database/.git/patchs at each transaction.
+        The idea is to commit into GIT each N transactions on big databases to avoid
+        performances problems.
         We want to keep a diff on each transaction, to help debug.
         """
         if TEST_DB_WITHOUT_PATCHS is True:
@@ -128,6 +128,7 @@ class PatchsBackend(object):
             if key.endswith('.metadata'):
                 with self.db_fs.open(key) as f:
                     before = f.readlines()
+                before = [x.decode() for x in before]
                 after = handlers.get(key).to_str().splitlines(True)
                 diff = difflib.unified_diff(before, after, fromfile=key, tofile=key)
                 diffs[key] = ''.join(diff)
@@ -136,6 +137,7 @@ class PatchsBackend(object):
             if key.endswith('.metadata'):
                 with self.db_fs.open(key) as f:
                     before = f.readlines()
+                before = [x.decode() for x in before]
                 after = ''
                 diff = difflib.unified_diff(before, after, fromfile=key, tofile=key)
                 diffs[key] = ''.join(diff)
@@ -149,7 +151,8 @@ class PatchsBackend(object):
               author_id=author_id,
               the_time=the_time,
               uuid=uuid4())
-        data = ''.join([diffs[x] for x in sorted(diffs.keys())])
+        data = ''.join(diffs[x] for x in sorted(diffs))
+        data = data.encode()
         # Write
         with self.db_fs.open(patch_key, 'w') as f:
             f.write(data)

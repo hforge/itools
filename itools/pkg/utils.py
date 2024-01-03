@@ -114,7 +114,6 @@ def setup(path, ext_modules=None):
         version = get_package_version(package_root)
 
     # Initialize variables
-
     package_name = config.get_value('package_name')
     if not package_name:
         package_name = config.get_value('name')

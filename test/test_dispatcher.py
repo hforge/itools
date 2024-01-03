@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2017 Alexandre Bonny <alexandre.bonny@protonmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,12 +13,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the Standard Library
+from collections import OrderedDict
 from unittest import TestCase, main
 
 # Import from itools
 from itools.web.dispatcher import URIDispatcher
-from itools.core import OrderedDict
 
 
 class DispatcherTestCase(TestCase):

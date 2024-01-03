@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2016 Sylvain Taverne <taverne.sylvain@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,11 +13,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from standard library
+from collections import OrderedDict
 import re
 
 # Import from itools
-from itools.core import prototype, OrderedDict
+from itools.core import prototype
 
 
 class URIPatternsParser(prototype):

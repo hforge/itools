@@ -25,7 +25,6 @@ from .freeze import freeze, frozendict, frozenlist
 from .lazy import lazy
 from .mimetypes_ import add_type, guess_all_extensions, guess_extension
 from .mimetypes_ import guess_type, has_encoding, has_extension
-from .odict import OrderedDict
 from .prototypes import prototype_type, prototype, is_prototype
 from .prototypes import proto_property, proto_lazy_property
 from .timezones import fixed_offset, local_tz
@@ -51,8 +50,7 @@ __all__ = [
     'frozenlist',
     # Lazy load
     'lazy',
-    # Ordered dict and caching
-    'OrderedDict',
+    # Caching
     'LRUCache',
     # Mimetypes
     'add_type',

@@ -138,8 +138,7 @@ static PyObject *doc_to_text(PyObject *self, PyObject *args) {
 }
 
 
-
-static PyMethodDef doc_methods[] = {
+static PyMethodDef module_methods[] = {
     {"doc_to_text", (PyCFunction)doc_to_text, METH_VARARGS,
      "Return text contained in the DOC stored in 'data'.\n"
      "data: byte string of the DOC\n"
@@ -149,19 +148,18 @@ static PyMethodDef doc_methods[] = {
 
 static struct PyModuleDef ModuleDef = {
     PyModuleDef_HEAD_INIT,
-    "doctotext", /* name of module */
-    "XXX\n", /* module documentation, may be NULL */
-    -1,   /* size of per-interpreter state of the module, or -1 if the module keeps state in global variables. */
-    doc_methods
+    "doctotext",                     /* m_name */
+    "XXX",                           /* m_doc */
+    -1,                              /* m_size */
+    module_methods,                  /* m_methods */
+    NULL,                            /* m_reload */
+    NULL,                            /* m_traverse */
+    NULL,                            /* m_clear */
+    NULL,                            /* m_free */
 };
 
 
-/* declarations for DLL import/export */
-#ifndef PyMODINIT_FUNC
-#define PyMODINIT_FUNC void
-#endif
-
-extern "C" PyMODINIT_FUNC initdoctotext(void) {
+extern "C" PyMODINIT_FUNC PyInit_doctotext(void) {
     PyObject *module = PyModule_Create(&ModuleDef);
     if (module == NULL) {
         return NULL;

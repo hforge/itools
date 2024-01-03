@@ -16,13 +16,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import setuptools
+
 from os.path import exists, join as join_path
 from sys import argv
 import codecs
 
 # Requirements
 from pip._internal.req import parse_requirements
-import setuptools
 
 # Import from itools
 from itools.core import get_pipe

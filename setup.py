@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2004-2012 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2008 David Versmisse <versmisse@lil.univ-littoral.fr>
 # Copyright (C) 2009 Hervé Cauwelier <herve@oursours.net>
@@ -16,15 +15,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-from setuptools import setup
-
-# Import from the Standard Library
-from distutils.core import Extension
 from os.path import join as join_path
-from pip._internal.req import parse_requirements
-from sys import stderr
 from subprocess import Popen, PIPE
+from sys import stderr
+
+# Requirements
+from pip._internal.req import parse_requirements
+from setuptools import setup
+from setuptools import Extension
 
 
 def get_pipe(command, cwd=None):
@@ -88,8 +86,6 @@ def generate_mo_files(po_file_names):
 
 if __name__ == '__main__':
     itools_is_available = False
-    #from itools.core import get_abspath
-    #from itools.pkg.utils import setup as itools_setup
     try:
         # TODO FIXME Try Except hide import errors with Python 3
         from itools.core import get_abspath
@@ -98,7 +94,7 @@ if __name__ == '__main__':
         print('[OK] itools is available')
     except ImportError:
         print('[Warning] itools is not available')
-        pass
+
     ext_modules = []
 
     filenames = [x.strip() for x in open('MANIFEST').readlines()]

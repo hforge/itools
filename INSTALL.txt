@@ -58,7 +58,7 @@ Change the working directory this way:
 
   $ cd itools-0.XX.Y
 
-And finally install itools with distutils:
+And finally install itools:
 
   $ python setup.py install
 

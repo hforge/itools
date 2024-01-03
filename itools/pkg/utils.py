@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2006-2011 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2009 David Versmisse <versmisse@lil.univ-littoral.fr>
 # Copyright (C) 2009-2011 Hervé Cauwelier <herve@oursours.net>
@@ -17,15 +16,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the Standard Library
-import codecs
-from distutils import core
-from distutils.core import Extension
-from distutils.command.build_ext import build_ext
-from distutils.errors import LinkError
-from pip._internal.req import parse_requirements
 from os.path import exists, join as join_path
 from sys import argv
+import codecs
+
+# Requirements
+from pip._internal.req import parse_requirements
+import setuptools
 
 # Import from itools
 from itools.core import get_pipe
@@ -33,36 +30,6 @@ from itools.core import get_pipe
 # Import from itools.pkg
 from .build import build, get_package_version
 from .handlers import SetupConf
-
-
-class OptionalExtension(Extension):
-    """An Optional Extension is a C extension that complements the package
-    without being mandatory. It typically depends on external libraries. If the
-    libraries are not available, the package will be installed without this
-    extra module. Build errors will still be reported. Developers are
-    responsible for testing the availability of the package, e.g. try/except
-    ImportError.
-
-    Simply Use OptionalExtension instead of Extension in your setup.
-    """
-
-
-class OptionalBuildExt(build_ext):
-    """Internal class to support OptionalExtension.
-    """
-
-    def build_extension(self, ext):
-        if not isinstance(ext, OptionalExtension):
-            return build_ext.build_extension(self, ext)
-        try:
-            build_ext.build_extension(self, ext)
-        except LinkError:
-            print("")
-            print("  '%s' module will not be available." % ext.name)
-            print("  Make sure the following libraries are installed:")
-            print(", ".join(ext.libraries))
-            print("  This error is not fatal, continuing build...")
-            print("")
 
 
 def get_compile_flags(command):
@@ -149,7 +116,6 @@ def setup(path, ext_modules=None):
             package_data[package_name].append(line)
 
     # The scripts
-
     if config.has_value('scripts'):
         scripts = config.get_value('scripts')
         scripts = [join_path(*['scripts', x]) for x in scripts]
@@ -168,32 +134,31 @@ def setup(path, ext_modules=None):
     install_requires = []
 
     if exists('requirements.txt'):
-        install_requires = parse_requirements(
-            'requirements.txt', session='xxx')
-        install_requires = [str(ir.requirement) for ir in install_requires if not str(ir.requirement).startswith("git")]
-    # XXX Workaround buggy distutils ("sdist" don't likes unicode strings,
-    # and "register" don't likes normal strings).
-    if 'register' in argv:
-        author_name = str(author_name, 'utf-8')
+        install_requires = parse_requirements('requirements.txt', session='xxx')
+        install_requires = [
+            str(ir.requirement) for ir in install_requires
+            if not str(ir.requirement).startswith("git")
+        ]
     classifiers = [x for x in config.get_value('classifiers') if x]
-    core.setup(name=package_name,
-               version=version,
-               # Metadata
-               author=author_name,
-               author_email=config.get_value('author_email'),
-               license=config.get_value('license'),
-               url=config.get_value('url'),
-               description=config.get_value('title'),
-               long_description=long_description,
-               classifiers=classifiers,
-               # Packages
-               package_dir={package_name: package_root},
-               packages=packages,
-               package_data=package_data,
-               # Requires / Provides
-               install_requires=install_requires,
-               # Scripts
-               scripts=scripts,
-               cmdclass={'build_ext': OptionalBuildExt},
-               # C extensions
-               ext_modules=ext_modules)
+    setuptools.setup(
+        name=package_name,
+        version=version,
+        # Metadata
+        author=author_name,
+        author_email=config.get_value('author_email'),
+        license=config.get_value('license'),
+        url=config.get_value('url'),
+        description=config.get_value('title'),
+        long_description=long_description,
+        classifiers=classifiers,
+        # Packages
+        package_dir={package_name: package_root},
+        packages=packages,
+        package_data=package_data,
+        # Requires / Provides
+        install_requires=install_requires,
+        # Scripts
+        scripts=scripts,
+        # C extensions
+        ext_modules=ext_modules,
+    )

@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2008 Gautier Hayoun <gautier.hayoun@supinfo.com>
 # Copyright (C) 2008-2010 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2009 David Versmisse <versmisse@lil.univ-littoral.fr>
@@ -18,12 +17,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
+from .build import get_manifest
 from .git import open_worktree
 from .handlers import SetupConf
-from .build import get_manifest
 from .update_locale import update_locale
 from .utils import get_compile_flags
-from .utils import setup, get_config, OptionalExtension
+from .utils import setup, get_config
 
 
 __all__ = [
@@ -31,7 +30,6 @@ __all__ = [
     'get_config',
     'get_manifest',
     'update_locale',
-    'OptionalExtension',
     'setup',
     'SetupConf',
     'open_worktree']

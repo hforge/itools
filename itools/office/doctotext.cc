@@ -147,6 +147,13 @@ static PyMethodDef doc_methods[] = {
     {NULL, NULL, 0, NULL} /* sentinel */
 };
 
+static struct PyModuleDef ModuleDef = {
+    PyModuleDef_HEAD_INIT,
+    "doctotext", /* name of module */
+    "XXX\n", /* module documentation, may be NULL */
+    -1,   /* size of per-interpreter state of the module, or -1 if the module keeps state in global variables. */
+    doc_methods
+};
 
 
 /* declarations for DLL import/export */
@@ -155,11 +162,9 @@ static PyMethodDef doc_methods[] = {
 #endif
 
 extern "C" PyMODINIT_FUNC initdoctotext(void) {
-    PyObject *module;
-
-    module = Py_InitModule("doctotext", doc_methods);
+    PyObject *module = PyModule_Create(&ModuleDef);
     if (module == NULL) {
-        return;
+        return NULL;
     }
 
     if (!(DocRtfException = PyErr_NewException(
@@ -176,12 +181,12 @@ extern "C" PyMODINIT_FUNC initdoctotext(void) {
     if (!(empty = PyUnicode_DecodeUTF8("", 0, "ignore"))) {
         goto err1;
     }
-    return;
+    return module;
 
 err1:
     Py_DECREF(DocRtfException);
 err0:
     PyErr_SetString(PyExc_MemoryError, "out of memory to initialize");
     Py_DECREF(module);
-    return;
+    return NULL;
 }

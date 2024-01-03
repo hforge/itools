@@ -117,7 +117,6 @@ if __name__ == '__main__':
     # XML Parser
     try:
         flags = get_compile_flags('pkg-config --cflags --libs glib-2.0')
-        print(flags)
     except OSError:
         print("[ERROR] Glib 2.0 library or headers not found, aborting...", file=stderr)
         raise
@@ -125,19 +124,9 @@ if __name__ == '__main__':
         sources = [
             'itools/xml/parser.c', 'itools/xml/doctype.c', 'itools/xml/arp.c',
             'itools/xml/pyparser.c']
-        print("flags", sources, flags)
         extension = Extension('itools.xml.parser', sources=sources, **flags)
         ext_modules.append(extension)
-
-    # PDF indexation
-    try:
-        flags = get_compile_flags('pkg-config --cflags --libs "poppler >= 0.20.0" fontconfig')
-    except OSError:
-        print("[WARNING] poppler headers not found, PDF indexation won't work", file=stderr)
-    else:
-        sources = ['itools/pdf/pdftotext.cc']
-        extension = Extension('itools.pdf.pdftotext', sources, **flags)
-        ext_modules.append(extension)
+        print('[INFO] itools.xml.parser will be built')
 
     # DOC indexation
     try:
@@ -148,6 +137,7 @@ if __name__ == '__main__':
         sources = ['itools/office/doctotext.cc']
         extension = Extension('itools.office.doctotext', sources, **flags)
         ext_modules.append(extension)
+        print('[INFO] itools.office.doctotext will be built')
 
     # Ok
     if itools_is_available:

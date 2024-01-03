@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2007 Henry Obein <henry.obein@gmail.com>
 # Copyright (C) 2007 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2009 Hervé Cauwelier <herve@oursours.net>
@@ -16,13 +15,24 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+try:
+    import poppler
+except ImportError:
+    poppler = None
+
 # Import from itools
 from itools.handlers import register_handler_class, File
-try:
-    from pdftotext import pdf_to_text
-except ImportError:
-    pdf_to_text = None
 
+
+def pdf_to_text(data):
+    document = poppler.load_from_data(data)
+
+    text = []
+    for i in document.pages:
+        page = document.create_page(i)
+        text.append(page.text())
+
+    return '\f'.join(text)
 
 class PDFFile(File):
 
@@ -30,9 +40,11 @@ class PDFFile(File):
     class_extension = 'pdf'
 
     def to_text(self):
-        if pdf_to_text is None:
+        if poppler is None:
             return ""
-        return pdf_to_text(self.to_str())
+
+        data = self.to_str()
+        return pdf_to_text(data)
 
 
 register_handler_class(PDFFile)

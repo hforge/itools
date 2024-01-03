@@ -246,7 +246,6 @@ itools/office/ppt.py
 itools/office/rtf.py
 itools/pdf/__init__.py
 itools/pdf/pdf.py
-itools/pdf/pdftotext.cc
 itools/pkg/__init__.py
 itools/pkg/build.py
 itools/pkg/build_gulp.py

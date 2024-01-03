@@ -741,14 +741,11 @@ static struct PyModuleDef moduledef = {
 PyMODINIT_FUNC
 PyInit_parser(void)
 {
-  /* TODO Make verifications / destructions ... */
-  PyObject *module;
-
   /* XXX Fix tp_Iter for cygwin */
   XMLParserType.tp_iter = PyObject_SelfIter;
 
   /* Register parser */
-  module = PyModule_Create(&moduledef);
+  PyObject *module = PyModule_Create(&moduledef);
   if (module == NULL)
     return NULL;
 

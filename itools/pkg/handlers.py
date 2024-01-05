@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2008 Gautier Hayoun <gautier.hayoun@supinfo.com>
 # Copyright (C) 2008-2009 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2010-2011 Hervé Cauwelier <herve@oursours.net>
@@ -21,7 +20,6 @@ from itools.datatypes import MultiLinesTokens, String, URI, Email, Tokens
 from itools.handlers import ConfigFile
 
 
-
 class SetupConf(ConfigFile):
 
     schema = {
@@ -37,9 +35,9 @@ class SetupConf(ConfigFile):
         'classifiers': MultiLinesTokens(default=()),
         'packages': Tokens,
         'scripts': Tokens,
+        'bin': Tokens,
         'source_language': String,
         'target_languages': Tokens,
         'repository': URI,
-        'username': String}
-
-
+        'username': String,
+    }

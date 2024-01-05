@@ -119,9 +119,15 @@ def setup(path, ext_modules=None):
     # The scripts
     if config.has_value('scripts'):
         scripts = config.get_value('scripts')
-        scripts = [join_path(*['scripts', x]) for x in scripts]
+        scripts = [join_path('scripts', x) for x in scripts]
     else:
         scripts = []
+
+    data_files = []
+    if config.has_value('bin'):
+        paths = [join_path('bin', x) for x in config.get_value('bin')]
+        data_files.append(('bin', paths))
+        print('XXX DATA FILES', data_files)
 
     # Long description
     if exists('README.rst'):
@@ -160,6 +166,7 @@ def setup(path, ext_modules=None):
         install_requires=install_requires,
         # Scripts
         scripts=scripts,
+        data_files=data_files,
         # C extensions
         ext_modules=ext_modules,
     )

@@ -120,33 +120,33 @@ def make_version(worktree):
     is installed to get the version number.
     """
     # Get the git description
-    tag = None
     description = worktree.git_describe()
 
-    # The version name
+    # The tag or branch name
     if description:
-        # n represent the number of commit between the tag and the ref
+        # n represents the number of commit between the tag and the ref
         tag, n, commit = description
+        # Exact match
         if n == 0:
-            # Exact match
             return tag
+    else:
+        tag = worktree.get_branch_name()
 
-    # Try to get the branch
-    if tag is None:
-        branch = worktree.get_branch_name()
-        tag = branch or 'nobranch'
+    # The version must be numeric
+    try:
+        [int(x) for x in tag.split('.')]
+    except ValueError:
+        tag = '0.0.0'
 
-    # Get the timestamp
+    # Build a version from the branch and the timestamp
     try:
         head = worktree.get_metadata()
         timestamp = head['committer_date']
         timestamp = timestamp.strftime('%Y%m%d%H%M')
+        return f'{tag}.dev{timestamp}'
     except KeyError:
         # XXX bug in docker ?
-        timestamp = 'notimestamp'
-
-    # Build a version from the branch and the timestamp
-    return '{}.dev{}'.format(tag, timestamp)
+        return f'{tag}'
 
 
 def build(path, config, environment):

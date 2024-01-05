@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2005-2009 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2006 Nicolas Deram <nderam@gmail.com>
 #
@@ -15,33 +14,24 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import functools
+
 # Import from itools
-from itools.core import LRUCache
 from .generic import GenericDataType
 from .registry import get_scheme
 
 
-cache = LRUCache(200)
-
-
+@functools.lru_cache
 def get_reference(reference):
     """Returns a URI reference of the good type from the given string.
     """
-    # Hit
-    if reference in cache:
-        return cache[reference]
-
-    # Miss
     if ':' in reference:
         scheme_name, scheme_specifics = reference.split(':', 1)
         scheme = get_scheme(scheme_name)
     else:
         scheme = GenericDataType
-    parsed_reference = scheme.decode(reference)
 
-    # Ok
-    cache[reference] = parsed_reference
-    return parsed_reference
+    return scheme.decode(reference)
 
 
 def get_uri_name(uri):

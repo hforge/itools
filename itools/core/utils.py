@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2008-2010 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2009 David Versmisse <versmisse@lil.univ-littoral.fr>
 #
@@ -15,12 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the Standard Library
+from gc import get_referents
 from os import getcwd
 from os.path import exists, join, sep, splitdrive
 from subprocess import Popen, PIPE
 from sys import _getframe, modules, getsizeof
-from gc import get_referents
 
 
 def get_abspath(local_path, mname=None):

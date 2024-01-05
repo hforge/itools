@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2004-2008, 2011-2012 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2005 Piotr Macuk <piotr@macuk.pl>
 # Copyright (C) 2007 Hervé Cauwelier <herve@oursours.net>
@@ -19,7 +18,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the Standard Library
 from calendar import timegm
 from datetime import date, datetime, time
 from email.utils import parsedate_tz, formatdate

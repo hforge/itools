@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2005-2010 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2007 Hervé Cauwelier <herve@oursours.net>
 # Copyright (C) 2008 Sylvain Taverne <taverne.sylvain@gmail.com>
@@ -16,11 +15,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the Standard Library
 from datetime import datetime
+import functools
 
 # Import from itools
-from itools.core import LRUCache
 from itools.datatypes import DataType, Integer, String, URI, HTTPDate
 
 """
@@ -275,7 +273,48 @@ class Cookie(object):
         return '; '.join(output)
 
 
-CACHE_COOKIES = LRUCache(200)
+@functools.lru_cache
+def decode_cookie(data):
+    # Parse the cookie string
+    parameters = []
+    while data:
+        # parameter whitespace
+        value, data = read_cookie_parameter(data)
+        white, data = read_white_space(data)
+        # ; whitespace
+        if data:
+            data = read_char(';', data)
+            white, data = read_white_space(data)
+        # Skip garbage
+        if value is None:
+            continue
+        # Ok
+        parameters.append(value)
+
+    # Cookies
+    cookies = {}
+    n = len(parameters)
+    index = 0
+    while index < n:
+        cookie_name, cookie_value = parameters[index]
+        cookie = Cookie(cookie_name, cookie_value)
+        cookies[cookie_name] = cookie
+        # Next
+        index += 1
+        # $path
+        if index < n:
+            name, value = parameters[index]
+            if name == '$path':
+                cookie.path = value
+                index += 1
+        # $domain
+        if index < n:
+            name, value = parameters[index]
+            if name == '$domain':
+                cookie.domain = value
+                index += 1
+
+    return cookies
 
 class CookieDataType(DataType):
     """ TODO: Performances can be improved
@@ -284,52 +323,7 @@ class CookieDataType(DataType):
 
     @staticmethod
     def decode(data):
-        base_data = data
-        if CACHE_COOKIES.get(base_data):
-            CACHE_COOKIES.touch(base_data)
-            return CACHE_COOKIES[base_data]
-        # Parse the cookie string
-        parameters = []
-        while data:
-            # parameter whitespace
-            value, data = read_cookie_parameter(data)
-            white, data = read_white_space(data)
-            # ; whitespace
-            if data:
-                data = read_char(';', data)
-                white, data = read_white_space(data)
-            # Skip garbage
-            if value is None:
-                continue
-            # Ok
-            parameters.append(value)
-
-        # Cookies
-        cookies = {}
-        n = len(parameters)
-        index = 0
-        while index < n:
-            cookie_name, cookie_value = parameters[index]
-            cookie = Cookie(cookie_name, cookie_value)
-            cookies[cookie_name] = cookie
-            # Next
-            index += 1
-            # $path
-            if index < n:
-                name, value = parameters[index]
-                if name == '$path':
-                    cookie.path = value
-                    index += 1
-            # $domain
-            if index < n:
-                name, value = parameters[index]
-                if name == '$domain':
-                    cookie.domain = value
-                    index += 1
-        if base_data:
-            CACHE_COOKIES[base_data] = cookies
-        return cookies
-
+        return decode_cookie(data)
 
     @staticmethod
     def encode(cookies):

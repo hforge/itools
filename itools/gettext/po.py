@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2003-2010 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2007, 2010 Hervé Cauwelier <herve@oursours.net>
 # Copyright (C) 2008 Sylvain Taverne <taverne.sylvain@gmail.com>
@@ -19,7 +18,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the Standard Library
 import itertools
 from re import compile
 from time import gmtime, strftime, time
@@ -511,14 +509,6 @@ class POFile(TextFile):
             if key in self.messages:
                 raise POError('msgid at line %d is duplicated' % line_number)
 
-            # Get the comments and the msgstr in unicode
-            # No need to encoding Python 3
-            # comments = [str(x, self.encoding) for x in comments]
-            #
-            # if context is not None:
-            #     context = [str(x, self.encoding) for x in context]
-            # source = [str(x, self.encoding) for x in source]
-            # target = [str(x, self.encoding) for x in target]
             # Add the message
             self._set_message(context, source, target, comments, references, fuzzy)
 

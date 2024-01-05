@@ -130,7 +130,7 @@ def make_version(worktree):
         if n == 0:
             return tag
     else:
-        tag = worktree.get_branch_name()
+        tag = worktree.get_branch_name() or ''
 
     # The version must be numeric
     try:

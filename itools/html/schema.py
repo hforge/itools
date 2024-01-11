@@ -381,7 +381,7 @@ html_elements = [
     Element(
         name='button',
         attributes=['autofocus', 'disabled', 'form', 'formaction',
-                    'formenctype' , 'formmethod', 'formonvalidate',
+                    'formenctype', 'formmethod', 'formonvalidate',
                     'formtarget', 'name', 'type', 'value'],
         obsolete_attributes=['datasrc', 'datafld', 'dataformatas']),
     BlockElement(name='canvas', attributes=['width', 'height']),

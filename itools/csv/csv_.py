@@ -221,7 +221,7 @@ class CSVFile(TextFile):
             self.del_row(i)
 
     def get_unique_values(self, name):
-        return set([x.get_value(name) for x in self.get_rows()])
+        return {x.get_value(name) for x in self.get_rows()}
 
 
 register_handler_class(CSVFile)

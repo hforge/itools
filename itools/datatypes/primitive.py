@@ -233,7 +233,7 @@ class Enumerate(String):
         """
         options = self.get_options()
         if isinstance(name, list):
-            options = set([option['name'] for option in options])
+            options = {option['name'] for option in options}
             return set(name).issubset(options)
         for option in options:
             if name == option['name']:

@@ -533,7 +533,7 @@ class Catalog(object):
         # Ok
         prefix = metadata[name]['prefix']
         prefix_len = len(prefix)
-        return set([t.term[prefix_len:] for t in self._db.allterms(prefix)])
+        return {t.term[prefix_len:] for t in self._db.allterms(prefix)}
 
     #######################################################################
     # API / Private

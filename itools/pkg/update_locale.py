@@ -127,7 +127,7 @@ def update_locale(srx_handler, exclude_folders, no_wrap=False):
             locale_pot.write(data)
 
     # Update PO files
-    filenames = set([ x for x in locale_folder.get_names() if x[-3:] == '.po' ])
+    filenames = { x for x in locale_folder.get_names() if x[-3:] == '.po' }
     filenames.add('%s.po' % src_language)
     for language in config.get_value('target_languages'):
         filenames.add('%s.po' % language)

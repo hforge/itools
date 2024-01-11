@@ -226,7 +226,7 @@ if __name__ == '__main__':
           version="0.80.4",
           # Metadata
           author="J. David Ibáñez",
-          author_email="jdavid.ibp@gmail.com" ,
+          author_email="jdavid.ibp@gmail.com",
           license="GNU General Public License (GPL)",
           url="http://www.hforge.org/itools",
           description=description,

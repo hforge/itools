@@ -263,7 +263,7 @@ def translate(events, catalog, srx_handler=None):
                     if value:
                         value = datatype.decode(value, encoding)
                         unit = ((srx_TEXT, value),)
-                        context = _get_attr_context(datatype,tag_name,
+                        context = _get_attr_context(datatype, tag_name,
                                                     attr_name)
                         unit = catalog.gettext(unit, context)
                         value = unit[0][1]

@@ -88,7 +88,7 @@ def get_lines(file):
                 groups = split('^"|(?<=[^\\\\])"', value)
                 nb_groups = len(groups)
                 value = ''.join(groups)
-                value = value.replace('\\"','"')
+                value = value.replace('\\"', '"')
                 if nb_groups > 3:
                     raise SyntaxError('unescaped char, line %d' % line_num)
 

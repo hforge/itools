@@ -27,5 +27,5 @@ from itools.pkg.handlers import SetupConf
 if __name__ == '__main__':
     config = SetupConf('setup.conf')
     worktree = open_worktree('.')
-    manifest = set([ x for x in get_manifest() if not islink(x) and not isdir(x)])
+    manifest = { x for x in get_manifest() if not islink(x) and not isdir(x)}
     ipkg_build(worktree, manifest, config)

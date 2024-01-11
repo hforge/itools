@@ -525,11 +525,11 @@ class POFile(TextFile):
     def _set_message(self, context, source, target=freeze(['']),
                      comments=freeze([]), references=None, fuzzy=False):
 
-        if context is not None and isinstance(context, (str, str)):
+        if context is not None and isinstance(context, str):
             context = [context]
-        if isinstance(source, (str, str)):
+        if isinstance(source, str):
             source = [source]
-        if isinstance(target, (str, str)):
+        if isinstance(target, str):
             target = [target]
 
         # Make the key

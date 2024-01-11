@@ -205,15 +205,15 @@ dtd = {
 
 
 # Elements whose end tag is optional
-optional_end_tag_elements = set(['body', 'colgroup', 'dd', 'dt', 'head',
+optional_end_tag_elements = {'body', 'colgroup', 'dd', 'dt', 'head',
                                  'html', 'li', 'option', 'p', 'tbody', 'td',
-                                 'tfoot', 'th', 'thead', 'tr'])
+                                 'tfoot', 'th', 'thead', 'tr'}
 
 # Boolean attributes
-boolean_attributes = set(['checked', 'compact', 'declare', 'defer',
+boolean_attributes = {'checked', 'compact', 'declare', 'defer',
                           'disabled', 'ismap', 'multiple', 'nohref',
                           'noresize', 'noshade', 'nowrap', 'readonly',
-                          'selected'])
+                          'selected'}
 
 
 ###########################################################################

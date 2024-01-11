@@ -75,7 +75,7 @@ class FrozenlistTestCase(TestCase):
 
 
     def test_extend(self):
-        self.assertRaises(TypeError, a_frozen_list.extend, [1,2,3])
+        self.assertRaises(TypeError, a_frozen_list.extend, [1, 2, 3])
 
 
     def test_delitem(self):

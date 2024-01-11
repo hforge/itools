@@ -46,7 +46,7 @@ def get_metadata(db):
 def get_docs(db):
     enquire = Enquire(db)
     enquire.set_query(Query(''))
-    docs_max = enquire.get_mset(0,0).get_matches_upper_bound()
+    docs_max = enquire.get_mset(0, 0).get_matches_upper_bound()
     return [doc.document for doc in enquire.get_mset(0, docs_max)]
 
 
@@ -113,8 +113,8 @@ def dump_fields(db, metadata, docs, only_field, show_values, show_terms):
         if 'prefix' in info and show_terms:
             prefix = info['prefix']
             prefix_size = len(prefix)
-            terms = set([ t.term[prefix_size:]
-                          for t in db.allterms(prefix) ])
+            terms = { t.term[prefix_size:]
+                          for t in db.allterms(prefix) }
             print(' * raw terms:')
             for term in terms:
                 print('   "%s"' % term)

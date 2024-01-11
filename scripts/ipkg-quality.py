@@ -341,7 +341,7 @@ def print_list(title, string_list):
         print('-'*len(title))
         for line in string_list:
             print(line)
-        print
+        print()
 
 
 def print_worses(db, worse, criteria):

@@ -37,7 +37,7 @@ from itools.fs import lfs
 # UTILS
 #####################################################################
 def get_string_size(bytes):
-    units = [' b','Kb','Mb','Gb','Tb']
+    units = [' b', 'Kb', 'Mb', 'Gb', 'Tb']
     if not bytes:
         return '0  b'
     exponent = int(math_log(bytes, 1024))

@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2006, 2011 Hervé Cauwelier <herve@oursours.net>
 # Copyright (C) 2007 Henry Obein <henry.obein@gmail.com>
 # Copyright (C) 2007-2017 Sylvain Taverne <taverne.sylvain@gmail.com>
@@ -18,7 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the Standard Library
 from datetime import datetime
 from os.path import splitext
 from sys import getrefcount
@@ -35,7 +33,7 @@ from .metadata import Metadata
 from .registry import get_register_fields
 
 
-class SearchResults(object):
+class SearchResults:
 
     def __init__(self, database, results):
         self.database = database
@@ -189,7 +187,7 @@ class RODatabase(object):
         size = len(self.cache)
         cache_is_full = size > self.cache.size_max
         n = size - self.cache.size_min
-        for key, handler in self.cache.iteritems():
+        for key, handler in self.cache.items():
             # Skip externally referenced handlers (refcount should be 3:
             # one for the cache, one for the local variable and one for
             # the argument passed to getrefcount).

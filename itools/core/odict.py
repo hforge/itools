@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2009 J. David Ibáñez <jdavid.ibp@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -124,9 +123,6 @@ class OrderedDict(dict):
         raise NotImplementedError("the 'fromkeys' method is not supported")
 
     def items(self):
-        return list(self.iteritems())
-
-    def iteritems(self):
         node = self.first
         while node is not None:
             yield node.key, self[node.key]
@@ -167,4 +163,3 @@ class OrderedDict(dict):
 
     def values(self):
         return list(self.itervalues())
-

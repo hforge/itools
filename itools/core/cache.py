@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2009 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2010 David Versmisse <versmisse@lil.univ-littoral.fr>
 #
@@ -32,8 +31,8 @@ class LRUCache(OrderedDict):
 
     - The elements within the cache are ordered by the access time, starting
       from the least-recently used value.  All iteration methods ('items',
-      'iteritems', 'keys', etc.) return the objects sorted by this criteria,
-      and so does 'popitem' too.
+      'keys', etc.) return the objects sorted by this criteria, and so does
+      'popitem' too.
 
     - The constructor is different from that of a dict, it expects first a
       'size_min' argument, and optionally a 'size_max' argument, they are

@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2009-2010 David Versmisse <versmisse@lil.univ-littoral.fr>
 # Copyright (C) 2010 J. David Ibáñez <jdavid.ibp@gmail.com>
 #
@@ -15,7 +14,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the standard library
 from marshal import loads
 from optparse import OptionParser
 from re import compile
@@ -70,7 +68,7 @@ def dump_summary(db, metadata):
            'database. ') % db.get_doccount()
 
     total = stored = indexed = 0
-    for name, info in metadata.iteritems():
+    for name, info in metadata.items():
         total += 1
         if 'value' in info:
             stored += 1
@@ -85,7 +83,7 @@ def dump_fields(db, metadata, docs, only_field, show_values, show_terms):
     print('======')
     print()
 
-    for name, info in metadata.iteritems():
+    for name, info in metadata.items():
         if only_field is not None and not only_field.match(name):
             continue
 
@@ -149,7 +147,7 @@ def dump_docs(db, metadata, docs, only_doc, only_field, show_values,
         print('-'*len(title))
 
         terms = [term.term for term in doc]
-        for name, info in metadata.iteritems():
+        for name, info in metadata.items():
             if only_field is not None and not only_field.match(name):
                 continue
 

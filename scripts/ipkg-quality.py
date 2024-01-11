@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright (C) 2007 David Versmisse <versmisse@lil.univ-littoral.fr>
 # Copyright (C) 2007-2009, 2011 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2008 Gautier Hayoun <gautier.hayoun@supinfo.com>
@@ -23,13 +22,11 @@
 ipkg-quality.py is a small tool to do some measurements on Python files
 """
 
-# Import from the Standard Library
-import ast
-from ast import parse, NodeVisitor
 from glob import glob
 from optparse import OptionParser
 from os.path import basename, relpath
 from tokenize import generate_tokens, TokenError, DEDENT, INDENT
+import ast
 
 # Import from itools
 import itools
@@ -202,7 +199,7 @@ def analyse_file_by_lines(filename):
 
     # Analyse
     line_no = 0
-    for line in file(filename):
+    for line in open(filename):
         line = str(line, encoding)
         # Plugins
         for plugin in line_plugins:
@@ -227,7 +224,7 @@ def analyse_file_by_tokens(filename, ignore_errors):
     for plugin in plugins:
         stats[plugin.key] = []
 
-    tokens = generate_tokens(file(filename).readline)
+    tokens = generate_tokens(open(filename).readline)
     try:
         for token, value, (srow, scol), _, _ in tokens:
             # Tokens number
@@ -245,7 +242,7 @@ def analyse_file_by_tokens(filename, ignore_errors):
     return stats
 
 
-class Visitor(NodeVisitor):
+class Visitor(ast.NodeVisitor):
 
     def __init__(self):
         self.plugins = [ cls() for cls in ast_plugins ]
@@ -260,7 +257,7 @@ class Visitor(NodeVisitor):
             if plugin.analyse_node(node):
                 self.stats[plugin.key].append(node.lineno)
 
-        NodeVisitor.generic_visit(self, node)
+        ast.NodeVisitor.generic_visit(self, node)
 
 
 
@@ -271,14 +268,14 @@ def analyse_file_by_ast(filename, ignore_errors):
      - 'bad_import': ;
     """
     try:
-        ast = parse(open(filename).read())
+        root = ast.parse(open(filename).read())
     except (SyntaxError, IndentationError) as e:
         if ignore_errors is False:
             raise e
         print(e)
         return None
     visitor = Visitor()
-    visitor.generic_visit(ast)
+    visitor.generic_visit(root)
     return visitor.stats
 
 
@@ -318,7 +315,7 @@ def analyse(filenames, ignore_errors=False):
     for filename in filenames:
         f_stats = analyse_file(filename, ignore_errors)
         if f_stats['lines'] != 0:
-            for key, value in f_stats.iteritems():
+            for key, value in f_stats.items():
                 if type(value) is list:
                     stats[key] += len(value)
                 else:

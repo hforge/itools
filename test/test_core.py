@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2008-2009 J. David Ibáñez <jdavid.ibp@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,14 +13,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the Standard Library
 from string import ascii_lowercase
 from unittest import TestCase, main
-import sys
+
 # Import from itools
 from itools.core import freeze, frozenlist, frozendict
 from itools.core import LRUCache
-
 
 
 ###########################################################################
@@ -343,12 +340,6 @@ class CacheTestCase(TestCase):
 
 
     def test_items(self):
-        cache = self.cache
-        items = cache.items()
-        self.assertEqual(items, [('x', 'X'), ('y', 'Y'), ('z', 'Z')])
-
-
-    def test_iteritems(self):
         cache = self.cache
         items = cache.items()
         items = list(items)

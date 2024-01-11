@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2008 Matthieu France <matthieu@itaapy.com>
 # Copyright (C) 2008, 2010 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2008, 2011 Hervé Cauwelier <herve@oursours.net>
@@ -31,18 +30,15 @@ class INFO(MSG):
         if self.format == 'stl':
             namespace = kw
             namespace['css'] = self.css
-            events = XMLParser(message.encode('utf_8'),
-                               namespaces=stl_namespaces)
+            events = XMLParser(message, namespaces=stl_namespaces)
             return stl(events=events, namespace=namespace)
 
         return super(INFO, self)._format(message, **kw)
 
 
-
 class ERROR(INFO):
 
     css = 'error'
-
 
 
 MSG_MISSING_OR_INVALID = ERROR(

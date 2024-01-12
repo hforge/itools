@@ -132,7 +132,7 @@ class Doc(object):
 
         # 3. Special Case: multilingual field (language negotiation)
         if issubclass(field_cls, Unicode) and 'from' not in info:
-            prefix = '%s_' % name
+            prefix = f'{name}_'
             n = len(prefix)
 
             languages = []
@@ -140,7 +140,7 @@ class Doc(object):
             for k in self._metadata:
                 if k[:n] == prefix:
                     language = k[n:]
-                    value = getattr(self, '%s_%s' % (name, language))
+                    value = getattr(self, f'{name}_{language}')
                     if not field_cls.is_empty(value):
                         languages.append(language)
                         values[language] = value
@@ -175,11 +175,11 @@ class Doc(object):
         # Special Case: multilingual field
         if issubclass(field_cls, Unicode) and 'from' not in info:
             if language:
-                name = '%s_%s' % (name, language)
+                name = f'{name}_{language}'
                 if self._metadata.get(name):
                     return getattr(self, name)
             else:
-                prefix = '%s_' % name
+                prefix = f'{name}_'
                 n = len(prefix)
                 # Language negotiation
                 languages = []
@@ -187,7 +187,7 @@ class Doc(object):
                 for k in self._metadata:
                     if k[:n] == prefix:
                         language = k[n:]
-                        value = getattr(self, '%s_%s' % (name, language))
+                        value = getattr(self, f'{name}_{language}')
                         if not field_cls.is_empty(value):
                             languages.append(language)
                             values[language] = value
@@ -337,20 +337,20 @@ class Catalog(object):
         metadata = self._metadata
         for name, field_cls in self._fields.items():
             if name not in metadata:
-                log.debug("[Catalog] New field registered: {0}".format(name))
+                log.debug(f"[Catalog] New field registered: {name}")
                 has_changes = True
                 metadata[name] = self._get_info(field_cls, name)
             else:
                 # If the field was in the catalog but is newly stored
                 if 'value' not in metadata[name] and getattr(field_cls, 'stored', False):
-                    log.debug("[Catalog] Indexed field is now stored: {0}".format(name))
+                    log.debug(f"[Catalog] Indexed field is now stored: {name}")
                     has_changes = True
                     metadata[name] = merge_dicts(
                         metadata[name],
                         self._get_info_stored())
                 # If the field was stored in the catalog but is newly indexed
                 if 'prefix' not in metadata[name] and getattr(field_cls, 'indexed', False):
-                    log.debug("[Catalog] Stored field is now indexed: {0}".format(name))
+                    log.debug(f"[Catalog] Stored field is now indexed: {name}")
                     has_changes = True
                     metadata[name] = merge_dicts(
                         metadata[name],
@@ -424,7 +424,7 @@ class Catalog(object):
         self.nb_changes += 1
         abspath, term, xdoc = self.get_xdoc_from_document(document)
         self._db.replace_document(term, xdoc)
-        log.debug("Indexed : {}".format(abspath))
+        log.debug(f"Indexed : {abspath}")
 
     def unindex_document(self, abspath):
         """Remove the document that has value stored in its abspath.
@@ -435,7 +435,7 @@ class Catalog(object):
         if type(data) is bytes:
             data = data.decode("utf-8")
         self._db.delete_document('Q' + data)
-        log.debug("Unindexed : {}".format(abspath))
+        log.debug(f"Unindexed : {abspath}")
 
     def get_xdoc_from_document(self, doc_values):
         """Return (abspath, term, xdoc) from the document (resource or values as dict)
@@ -606,7 +606,7 @@ class Catalog(object):
         if query_class is PhraseQuery:
             name = query.name
             if type(name) is not str:
-                raise TypeError("unexpected '%s'" % type(name))
+                raise TypeError(f"unexpected '{type(name)}'")
             # If there is a problem => an empty result
             if name not in metadata:
                 warn_not_indexed(name)
@@ -615,7 +615,7 @@ class Catalog(object):
             try:
                 prefix = info['prefix']
             except KeyError:
-                raise ValueError('the field "%s" must be indexed' % name)
+                raise ValueError(f'the field "{name}" must be indexed')
             field_cls = _get_field_cls(name, fields, info)
             return _make_PhraseQuery(field_cls, query.value, prefix)
 
@@ -623,7 +623,7 @@ class Catalog(object):
         if query_class is RangeQuery:
             name = query.name
             if type(name) is not str:
-                raise TypeError("unexpected '%s'" % type(name))
+                raise TypeError(f"unexpected '{type(name)}'")
             # If there is a problem => an empty result
             if name not in metadata:
                 warn_not_indexed(name)
@@ -665,7 +665,7 @@ class Catalog(object):
         if query_class is StartQuery:
             name = query.name
             if type(name) is not str:
-                raise TypeError("unexpected '%s'" % type(name))
+                raise TypeError(f"unexpected '{type(name)}'")
             # If there is a problem => an empty result
             if name not in metadata:
                 warn_not_indexed(name)
@@ -714,7 +714,7 @@ class Catalog(object):
         if query_class is TextQuery:
             name = query.name
             if type(name) is not str:
-                raise TypeError("unexpected %s for 'name'" % type(name))
+                raise TypeError(f"unexpected {type(name)} for 'name'")
             # If there is a problem => an empty result
             if name not in metadata:
                 warn_not_indexed(name)
@@ -725,12 +725,12 @@ class Catalog(object):
             try:
                 prefix = info['prefix']
             except KeyError:
-                raise ValueError('the field "%s" must be indexed' % name)
+                raise ValueError(f'the field "{name}" must be indexed')
 
             # Remove accents from the value
             value = query.value
             if type(value) is not str:
-                raise TypeError("unexpected %s for 'value'" % type(value))
+                raise TypeError(f"unexpected {type(value)} for 'value'")
             value = value.translate(TRANSLATE_MAP)
 
             qp = QueryParser()
@@ -885,7 +885,7 @@ def _index_cjk(xdoc, value, prefix, termpos):
         else:
             c = c.lower()
             if previous_cjk:
-                xdoc.add_posting(prefix + ('%s%s' % (previous_cjk, c)),
+                xdoc.add_posting(prefix + f'{previous_cjk}{c}',
                                  termpos)
                 termpos += 1
                 state = 2

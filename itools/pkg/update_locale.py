@@ -57,7 +57,7 @@ def update_locale(srx_handler, exclude_folders, no_wrap=False):
     # Get local folder
     package_root = config.get_value('package_root')
     if lfs.exists(package_root):
-        locale_folder_path = Path('{0}/locale'.format(package_root))
+        locale_folder_path = Path(f'{package_root}/locale')
     else:
         locale_folder_path = Path('locale/')
     locale_folder = lfs.open(locale_folder_path)
@@ -80,9 +80,9 @@ def update_locale(srx_handler, exclude_folders, no_wrap=False):
     extensions = [
         '.py',
         '.js',
-        '.xhtml.%s' % src_language,
-        '.xml.%s' % src_language,
-        '.html.%s' % src_language]
+        f'.xhtml.{src_language}',
+        f'.xml.{src_language}',
+        f'.html.{src_language}']
 
     for path in lines:
         # Filter files
@@ -97,7 +97,7 @@ def update_locale(srx_handler, exclude_folders, no_wrap=False):
             handler = ro_database.get_handler(path)
         except Exception:
             print("*")
-            print("* Error: {}".format(path))
+            print(f"* Error: {path}")
             print("*")
             raise
         try:
@@ -105,7 +105,7 @@ def update_locale(srx_handler, exclude_folders, no_wrap=False):
             units = list(units)
         except Exception:
             print("*")
-            print("* Error: {}".format(path))
+            print(f"* Error: {path}")
             print("*")
             raise
 
@@ -128,9 +128,9 @@ def update_locale(srx_handler, exclude_folders, no_wrap=False):
 
     # Update PO files
     filenames = { x for x in locale_folder.get_names() if x[-3:] == '.po' }
-    filenames.add('%s.po' % src_language)
+    filenames.add(f'{src_language}.po')
     for language in config.get_value('target_languages'):
-        filenames.add('%s.po' % language)
+        filenames.add(f'{language}.po')
     filenames = list(filenames)
     filenames.sort()
 
@@ -138,13 +138,13 @@ def update_locale(srx_handler, exclude_folders, no_wrap=False):
     locale_pot_path = locale_folder.get_absolute_path('locale.pot')
     for filename in filenames:
         if locale_folder.exists(filename):
-            write('  %s ' % filename)
+            write(f'  {filename} ')
             file_path = locale_folder.get_absolute_path(filename)
             if no_wrap:
                 call(['msgmerge', '--no-wrap', '-U', '-s', file_path, locale_pot_path])
             else:
                 call(['msgmerge', '-U', '-s', file_path, locale_pot_path])
         else:
-            print("  %s (new)" % filename)
+            print(f"  {filename} (new)")
             file_path = locale_folder.get_absolute_path(filename)
             lfs.copy(locale_pot_path, file_path)

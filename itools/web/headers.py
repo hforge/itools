@@ -265,11 +265,11 @@ class Cookie(object):
         return True
 
     def __str__(self):
-        output = ['"%s"' % self.value]
+        output = [f'"{self.value}"']
         if self.path is not None:
-            output.append('$Path="%s"' % self.path)
+            output.append(f'$Path="{self.path}"')
         if self.domain is not None:
-            output.append('$Domain="%s"' % self.domain)
+            output.append(f'$Domain="{self.domain}"')
         return '; '.join(output)
 
 
@@ -331,7 +331,7 @@ class CookieDataType(DataType):
         # Cookies
         for name in cookies:
             cookie = cookies[name]
-            output.append('%s=%s' % (name, cookie))
+            output.append(f'{name}={cookie}')
 
         return '; '.join(output)
 
@@ -362,25 +362,25 @@ class SetCookieDataType(DataType):
     @staticmethod
     def encode(cookie):
         aux = []
-        aux.append('%s="%s"' % (cookie.name, cookie.value))
+        aux.append(f'{cookie.name}="{cookie.value}"')
         # The parameters
         expires = cookie.expires
         if expires is not None:
             if isinstance(expires, datetime):
                 expires = HTTPDate.encode(expires)
-            aux.append('expires=%s' % expires)
+            aux.append(f'expires={expires}')
         if cookie.domain is not None:
-            aux.append('domain=%s' % cookie.domain)
+            aux.append(f'domain={cookie.domain}')
         if cookie.path is not None:
-            aux.append('path=%s' % cookie.path)
+            aux.append(f'path={cookie.path}')
         else:
             aux.append('path=/')
         if cookie.max_age is not None:
-            aux.append('max-age="%s"' % cookie.max_age)
+            aux.append(f'max-age="{cookie.max_age}"')
         if cookie.comment is not None:
-            aux.append('comment="%s"' % cookie.comment)
+            aux.append(f'comment="{cookie.comment}"')
         if cookie.secure is not None:
-            aux.append('secure="%s"' % cookie.secure)
+            aux.append(f'secure="{cookie.secure}"')
         # The value
         return '; '.join(aux)
 
@@ -418,7 +418,7 @@ class ContentType(DataType):
             raise ValueError(UNEXPECTED_CHAR % data[0])
         parameters, data = read_parameters(data)
         if data:
-            raise ValueError('unexpected string "%s"' % data)
+            raise ValueError(f'unexpected string "{data}"')
 
         return value, parameters
 
@@ -428,7 +428,7 @@ class ContentType(DataType):
         value, parameters = value
         parameters = [ '; %s="%s"' % x for x in parameters.items() ]
         parameters = ''.join(parameters)
-        return '%s%s' % (value, parameters)
+        return f'{value}{parameters}'
 
 
 
@@ -449,7 +449,7 @@ class ContentDisposition(DataType):
             raise ValueError(UNEXPECTED_CHAR % data[0])
         parameters, data = read_parameters(data)
         if data:
-            raise ValueError('unexpected string "%s"' % data)
+            raise ValueError(f'unexpected string "{data}"')
 
         return value, parameters
 
@@ -459,7 +459,7 @@ class ContentDisposition(DataType):
         value, parameters = value
         parameters = ['; %s="%s"' % x for x in parameters.items()]
         parameters = ''.join(parameters)
-        return '%s%s' % (value, parameters)
+        return f'{value}{parameters}'
 
 
 
@@ -474,14 +474,14 @@ class Authorization(DataType):
         if not credentials or not auth_type:
             raise ValueError('missing value')
         if auth_type.lower() not in cls.auth_types:
-            raise ValueError('unexpected authorization type "%s"' % auth_type)
+            raise ValueError(f'unexpected authorization type "{auth_type}"')
         return auth_type, credentials
 
 
     @staticmethod
     def encode(value):
         auth_type, credentials = value
-        return '%s %s' % (auth_type, credentials)
+        return f'{auth_type} {credentials}'
 
 
 

@@ -156,7 +156,7 @@ class Component(object):
             # Neither a full day event nor a multiple days event
             if (start_value_type != 'DATE'
                 and start.value.date() == end.value.date()):
-                ns['TIME'] = '%s - %s' % (ns['start'], ns['end'])
+                ns['TIME'] = f"{ns['start']} - {ns['end']}"
             else:
                 ns['start'] = ns['end'] = None
         elif not out_on:
@@ -188,7 +188,7 @@ class Component(object):
         if not resource_name:
             id = str(id)
         else:
-            id = '%s/%s' % (resource_name, id)
+            id = f'{resource_name}/{id}'
         ns['id'] = id
 #        resource =
         # Set url to action like edit_event_form
@@ -417,7 +417,7 @@ class iCalendar(TextFile):
             # Begin
             lines.append('BEGIN:VTIMEZONE\n')
             # Properties
-            lines.append('TZID:%s\n' % tzid)
+            lines.append(f'TZID:{tzid}\n')
             for key, value in timezone.content.items():
                 line = self.encode_property(key, value, encoding)
                 lines.extend(line)
@@ -427,13 +427,13 @@ class iCalendar(TextFile):
                 # sequence not supported into inner components
                 version = c_inner_component.properties
                 # Begin
-                lines.append('BEGIN:%s\n' % c_inner_type)
+                lines.append(f'BEGIN:{c_inner_type}\n')
                 # Properties
                 for key, value in version.items():
                     line = self.encode_property(key, value, encoding)
                     lines.extend(line)
                 # End
-                lines.append('END:%s\n' % c_inner_type)
+                lines.append(f'END:{c_inner_type}\n')
             # End
             lines.append('END:VTIMEZONE\n')
 
@@ -444,15 +444,15 @@ class iCalendar(TextFile):
             for sequence in component.get_sequences():
                 version = component.versions[sequence]
                 # Begin
-                lines.append('BEGIN:%s\n' % c_type)
+                lines.append(f'BEGIN:{c_type}\n')
                 # Properties
-                lines.append('UID:%s\n' % uid)
-                lines.append('SEQUENCE:%s\n' % sequence)
+                lines.append(f'UID:{uid}\n')
+                lines.append(f'SEQUENCE:{sequence}\n')
                 for key, value in version.items():
                     line = self.encode_property(key, value, encoding)
                     lines.extend(line)
                 # End
-                lines.append('END:%s\n' % c_type)
+                lines.append(f'END:{c_type}\n')
 
         # Ok
         lines.append('END:VCALENDAR\n')
@@ -479,7 +479,7 @@ class iCalendar(TextFile):
             datatype = self.get_record_datatype(name)
             if datatype.multiple is False:
                 if isinstance(value, list):
-                    msg = 'property "%s" requires only one value' % name
+                    msg = f'property "{name}" requires only one value'
                     raise TypeError(msg)
             else:
                 if not isinstance(value, list):

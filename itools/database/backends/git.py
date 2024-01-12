@@ -97,11 +97,11 @@ class GitBackend(object):
         self.fields = fields
         self.read_only = read_only
         # Open database
-        self.path_data = '%s/database/' % self.path
+        self.path_data = f'{self.path}/database/'
         # Check if is a folder
-        self.path_data = '%s/database/' % self.path
+        self.path_data = f'{self.path}/database/'
         if not lfs.is_folder(self.path_data):
-            error = '"{0}" should be a folder, but it is not'.format(self.path_data)
+            error = f'"{self.path_data}" should be a folder, but it is not'
             raise ValueError(error)
         # New interface to Git
         if TEST_DB_DESACTIVATE_GIT is True:
@@ -111,7 +111,7 @@ class GitBackend(object):
         # Initialize the database, but chrooted
         self.fs = lfs.open(self.path_data)
         # Static FS
-        database_static_path = '{0}/database_static'.format(path)
+        database_static_path = f'{path}/database_static'
         if not lfs.exists(database_static_path):
             self.init_backend_static(path)
         self.static_fs = lfs.open(database_static_path)
@@ -123,17 +123,17 @@ class GitBackend(object):
     @classmethod
     def init_backend(cls, path, fields, init=False, soft=False):
         # Metadata database
-        init_repository('{0}/database'.format(path), bare=False)
+        init_repository(f'{path}/database', bare=False)
         # Init backend static
         cls.init_backend_static(path)
         # Make catalog
-        make_catalog('{0}/catalog'.format(path), fields)
+        make_catalog(f'{path}/catalog', fields)
 
     @classmethod
     def init_backend_static(cls, path):
         # Static database
-        lfs.make_folder('{0}/database_static'.format(path))
-        lfs.make_folder('{0}/database_static/.history'.format(path))
+        lfs.make_folder(f'{path}/database_static')
+        lfs.make_folder(f'{path}/database_static/.history')
 
     #######################################################################
     # Database API
@@ -212,7 +212,7 @@ class GitBackend(object):
 
     def add_handler_into_static_history(self, key):
         the_time = datetime.now().strftime('%Y%m%d%H%M%S')
-        new_key = '.history/{0}.{1}.{2}'.format(key, the_time, uuid4())
+        new_key = f'.history/{key}.{the_time}.{uuid4()}'
         parent_path = dirname(new_key)
         if not self.static_fs.exists(parent_path):
             self.static_fs.make_folder(parent_path)
@@ -378,7 +378,7 @@ class GitBackend(object):
         self.catalog.save_changes()
 
     def get_catalog(self):
-        path = '{0}/catalog'.format(self.path)
+        path = f'{self.path}/catalog'
         if not lfs.is_folder(path):
             return None
         return Catalog(path, self.fields, read_only=self.read_only)

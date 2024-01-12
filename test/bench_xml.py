@@ -58,22 +58,22 @@ def get_string_time(s):
 
     if d:
         # days
-        return '%6.2f d ' % (d + h / 24.0)
+        return f'{d + h / 24.0:6.2f} d '
     elif h:
         # hours
-        return '%6.2f h ' % (h + m / 60.0)
+        return f'{h + m / 60.0:6.2f} h '
     elif m:
         # minutes
-        return '%6.2f mn' % (m + s / 60.0)
+        return f'{m + s / 60.0:6.2f} mn'
     elif s:
         # seconds
-        return '%6.2f s ' % (s + ms / 1000.0)
+        return f'{s + ms / 1000.0:6.2f} s '
     elif ms:
         # milliseconds
-        return '%6.2f ms' % (ms + micro_s / 1000.0)
+        return f'{ms + micro_s / 1000.0:6.2f} ms'
     else:
         # microseconds
-        return '%6.2f µs' % (micro_s + ms / 1000.0)
+        return f'{micro_s + ms / 1000.0:6.2f} µs'
 
 
 def get_clock_nb_pass(size):
@@ -118,7 +118,7 @@ def get_test_filenames(test_path, force_download):
                 for (name, ext) in names:
                     path = join(test_path, name)
                     if lfs.exists(path):
-                        print('Remove %s file' % path)
+                        print(f'Remove {path} file')
                         lfs.remove(path)
 
     # test directory
@@ -136,13 +136,13 @@ def get_test_filenames(test_path, force_download):
         for (name, ext) in names:
             if test_dir_filenames.count(name):
                 continue
-            compressed_dest = join(compressed_dir_path, '%s%s' % (name, ext))
+            compressed_dest = join(compressed_dir_path, f'{name}{ext}')
             # check if tarball already exists
             if lfs.exists(compressed_dest) is False:
-                src = join(base_uri, '%s%s' % (name, ext))
-                print('GET %s file' % src)
+                src = join(base_uri, f'{name}{ext}')
+                print(f'GET {src} file')
                 if lfs.exists(src) is False:
-                    print("%s uri does not exists" % src)
+                    print(f"{src} uri does not exists")
                     continue
                 src_file = lfs.open(src)
                 # save Gzip file
@@ -150,7 +150,7 @@ def get_test_filenames(test_path, force_download):
                 compressed_dest_file.write(src_file.read())
                 compressed_dest_file.close()
                 src_file.close()
-            print('Extract file %s' % compressed_dest)
+            print(f'Extract file {compressed_dest}')
             # Uncompressed File Path
             if name == 'xmlts20080205':
                 # uncompress only xmlconf.xml file
@@ -203,7 +203,7 @@ def output_result(results, file):
     filename = ljust(filename[:19], 19)
     file_size = get_string_size(file_size)
     file_size = rjust(file_size[:9], 9)
-    file_string = '%s  %s' % (filename, file_size)
+    file_string = f'{filename}  {file_size}'
 
     # output 1
     parser_name, result = results[0]
@@ -213,7 +213,7 @@ def output_result(results, file):
         time_spent, memory = result
         memory = get_string_size(memory)
         # time_spent ok already like ___.___ ms or s or mn
-        output1 = rjust('%s / %s' % (time_spent, memory), 21)
+        output1 = rjust(f'{time_spent} / {memory}', 21)
 
     # output 2
     parser_name, result = results[1]
@@ -223,9 +223,9 @@ def output_result(results, file):
         time_spent, memory = result
         memory = get_string_size(memory)
         # time_spent ok already like ___.___ ms or s or mn
-        output2 = rjust('%s / %s' % (time_spent, memory), 21)
+        output2 = rjust(f'{time_spent} / {memory}', 21)
 
-    print('%s | %s | %s ' % (file_string, output1, output2))
+    print(f'{file_string} | {output1} | {output2} ')
 
 
 #####################################################################
@@ -240,7 +240,7 @@ parser_scripts = {
 
 if __name__ == '__main__':
     usage = '%prog [OPTIONS]'
-    version = 'itools %s' % itools.__version__
+    version = f'itools {itools.__version__}'
     description = ('XML Parser benchmark')
     parser = OptionParser(usage, version=version, description=description)
     parser.add_option(

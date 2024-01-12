@@ -41,7 +41,7 @@ class Mailto(object):
         return None
 
     def __str__(self):
-        return 'mailto:%s' % self.address
+        return f'mailto:{self.address}'
 
     def __eq__(self, other):
         return str(self) == str(other)
@@ -58,7 +58,7 @@ class MailtoDataType(object):
 
     @staticmethod
     def encode(value):
-        return 'mailto:%s' % value.address
+        return f'mailto:{value.address}'
 
 
 register_scheme('mailto', MailtoDataType)

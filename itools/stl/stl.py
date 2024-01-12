@@ -147,7 +147,7 @@ def lookup(namespace, name):
     try:
         value = getattr(namespace, name)
     except AttributeError as e:
-        err = "Lookup failed : name '{}' not found in the namespace".format(name)
+        err = f"Lookup failed : name '{name}' not found in the namespace"
         log.error(err, exc_info=True)
         raise STLError(err.format(name))
     if type(value) is MethodType:
@@ -167,7 +167,7 @@ class NamespaceStack(list):
             except STLError:
                 pass
 
-        raise STLError('name "%s" not found in the namespace' % name)
+        raise STLError(f'name "{name}" not found in the namespace')
 
     def __getslice__(self, a, b):
         return self.__class__(list.__getslice__(self, a, b))
@@ -201,7 +201,7 @@ def substitute_attribute(data, stack, repeat_stack):
     substitutions done.
     """
     if type(data) is not str:
-        raise ValueError('byte string expected, not %s' % type(data))
+        raise ValueError(f'byte string expected, not {type(data)}')
     # Solo, preserve the value None
     match = subs_expr_solo.match(data)
     if match is not None:
@@ -240,7 +240,7 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
     substitutions done.
     """
     if type(data) is not str:
-        raise ValueError('byte string expected, not %s' % type(data))
+        raise ValueError(f'byte string expected, not {type(data)}')
 
     segments = subs_expr.split(data)
     for i, segment in enumerate(segments):
@@ -306,12 +306,12 @@ def stl(document=None, namespace=freeze({}), prefix=None, events=None,
         elif mode == 'html':
             return stream_to_str_as_html(stream, encoding)
     except STLError as e:
-        error = 'Error in generation of {0}\n'.format(mode)
+        error = f'Error in generation of {mode}\n'
         if document:
-            error += 'Template {0}\n'.format(document.key)
+            error += f'Template {document.key}\n'
         raise STLError(error + str(e))
     # Unknow mode
-    raise ValueError('unexpected mode "{0}"'.format(mode))
+    raise ValueError(f'unexpected mode "{mode}"')
 
 
 stl_repeat = stl_uri, 'repeat'
@@ -509,7 +509,7 @@ def rewrite_uris(stream, rewrite, ns_uri=xhtml_uri):
                         for index, segment in enumerate(segments):
                             if index % 2 == 1:
                                 new_segment = rewrite(segment)
-                                chunks.append('url(%s);' % new_segment)
+                                chunks.append(f'url({new_segment});')
                             else:
                                 chunks.append(segment)
                         value = ''.join(chunks)

@@ -90,7 +90,7 @@ def get_mimetype(name):
     name, extension, language = FileName.decode(name)
     # Figure out the mimetype from the filename extension
     if extension is not None:
-        mimetype, encoding = guess_type('%s.%s' % (name, extension))
+        mimetype, encoding = guess_type(f'{name}.{extension}')
         # FIXME Compression schemes are not mimetypes, see /etc/mime.types
         if encoding == 'gzip':
             if mimetype == 'application/x-tar':

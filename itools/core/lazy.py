@@ -33,4 +33,4 @@ class lazy(object):
         return value
 
     def __repr__(self):
-        return '%s wrapps %s' % (object.__repr__(self), repr(self.meth))
+        return f'{object.__repr__(self)} wrapps {repr(self.meth)}'

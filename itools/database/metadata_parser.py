@@ -128,7 +128,7 @@ def read_name(line, allowed=allowed):
     # Test first character of name
     c = line[0]
     if not c.isalnum() and c != '-':
-        raise SyntaxError('unexpected character (%s)' % c)
+        raise SyntaxError(f'unexpected character ({c})')
 
     # Test the rest
     idx = 1
@@ -140,9 +140,9 @@ def read_name(line, allowed=allowed):
         if c.isalnum() or c in allowed:
             idx += 1
             continue
-        raise SyntaxError("unexpected character '%s' (%s)" % (c, ord(c)))
+        raise SyntaxError(f"unexpected character '{c}' ({ord(c)})")
 
-    raise SyntaxError('unexpected end of line (%s)' % line)
+    raise SyntaxError(f'unexpected end of line ({line})')
 
 
 # Manage an icalendar content line value property [with parameters] :
@@ -261,7 +261,7 @@ def get_tokens(property):
                 raise SyntaxError(error1 % (c, status))
 
     if status not in (7, 8):
-        raise SyntaxError('unexpected property (%s)' % property)
+        raise SyntaxError(f'unexpected property ({property})')
 
     # Unescape special characters (TODO Check the spec)
     value = unescape_data(value)
@@ -302,7 +302,7 @@ def deserialize_parameters(parameters, schema, default=String(multiple=True)):
     for name in parameters:
         datatype = schema.get(name, default)
         if datatype is None:
-            raise ValueError('parameter "{0}" not defined'.format(name))
+            raise ValueError(f'parameter "{name}" not defined')
         # Decode
         value = parameters[name]
         value = [ decode_param_value(x, datatype) for x in value ]
@@ -378,14 +378,14 @@ def encode_param_value(p_name, p_value, p_datatype):
     # Special case (not used by ical)
     if getattr(p_datatype, 'escape', False):
         p_value = escape_data(p_value, params_escape_table)
-        return '"%s"' % p_value
+        return f'"{p_value}"'
 
     # Standard case (ical behavior)
     if '"' in p_value or '\n' in p_value:
         error = 'the "%s" parameter contains a double quote'
         raise ValueError(error % p_name)
     if ';' in p_value or ':' in p_value or ',' in p_value:
-        return '"%s"' % p_value
+        return f'"{p_value}"'
     return p_value
 
 
@@ -429,7 +429,7 @@ def _property_to_str(name, property, datatype, p_schema, encoding='utf-8'):
             p_value = ','.join(p_value)
         else:
             p_value = encode_param_value(p_name, p_value, p_datatype)
-        parameters.append(';%s=%s' % (p_name, p_value))
+        parameters.append(f';{p_name}={p_value}')
     parameters = ''.join(parameters)
 
     # Value
@@ -438,14 +438,13 @@ def _property_to_str(name, property, datatype, p_schema, encoding='utf-8'):
     else:
         value = datatype.encode(property.value)
     if type(value) is not str:
-        raise ValueError('property "{0}" is not str but {1}'.format(
-            name, type(value)))
+        raise ValueError(f'property "{name}" is not str but {type(value)}')
     value = escape_data(value)
     if datatype.encrypted:
         value = datatype.encrypt(value)
 
     # Ok
-    property = '%s%s:%s\n' % (name, parameters, value)
+    property = f'{name}{parameters}:{value}\n'
     return fold_line(property)
 
 

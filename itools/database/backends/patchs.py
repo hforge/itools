@@ -37,7 +37,7 @@ class PatchsBackend(object):
         self.db_fs = db_fs
         self.db_path = db_path
         # Init patchs folder
-        self.patchs_path = '{0}/database/.git/patchs'.format(db_path)
+        self.patchs_path = f'{db_path}/database/.git/patchs'
         if not lfs.exists(self.patchs_path):
             lfs.make_folder(self.patchs_path)
         self.patchs_fs = lfs.open(self.patchs_path)
@@ -94,7 +94,7 @@ class PatchsBackend(object):
             return self.rotate_interval
         print('[Database] Launch patchs rotation. May take time')
         # Create TAR file
-        tar_destination = self.patchs_path + '/{0}.tgz'.format(strftime('%Y-%m-%d_%H%M'))
+        tar_destination = self.patchs_path + f"/{strftime('%Y-%m-%d_%H%M')}.tgz"
         with tarfile.open(tar_destination, "w:gz" ) as tar:
             for gzip_folder in gzip_folders:
                 tar.add(gzip_folder)
@@ -146,11 +146,7 @@ class PatchsBackend(object):
         if not self.db_fs.exists(base_path):
             self.db_fs.make_folder(base_path)
         the_time = datetime.now().strftime('%Hh%Mm%S.%f')
-        patch_key = '{base_path}/{the_time}-user{author_id}-{uuid}.patch'.format(
-              base_path=base_path,
-              author_id=author_id,
-              the_time=the_time,
-              uuid=uuid4())
+        patch_key = f'{base_path}/{the_time}-user{author_id}-{uuid4()}.patch'
         data = ''.join(diffs[x] for x in sorted(diffs))
         data = data.encode()
         # Write

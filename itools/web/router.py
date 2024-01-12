@@ -342,13 +342,13 @@ class RequestMethod(object):
         # 1. Get the action name
         form = context.get_form()
         action = form.get('action')
-        action = ('action_%s' % action) if action else 'action'
+        action = f'action_{action}' if action else 'action'
 
         # 2. Check whether the action has a query
         if '?' in action:
             action, query = action.split('?')
             # Deserialize query using action specific schema
-            schema = getattr(context.view, '%s_query_schema' % action, None)
+            schema = getattr(context.view, f'{action}_query_schema', None)
             context.form_query = decode_query(query, schema)
 
         # 3. Save the action name (used by get_schema)

@@ -255,7 +255,7 @@ class RODatabase(object):
         if handler is not None:
             # Check the class matches
             if cls is not None and not isinstance(handler, cls):
-                raise LookupError("expected '{}' class, '{}' found".format(cls, handler.__class__))
+                raise LookupError(f"expected '{cls}' class, '{handler.__class__}' found")
             # Cache hit
             self.cache.touch(key)
             return handler
@@ -267,7 +267,7 @@ class RODatabase(object):
             # Do not exists
             if soft:
                 return None
-            raise LookupError('the resource "{0}" does not exist'.format(key))
+            raise LookupError(f'the resource "{key}" does not exist')
 
         # Cache miss
         if cls is None:
@@ -352,7 +352,7 @@ class RODatabase(object):
 
     def get_resource_class(self, class_id):
         if type(class_id) is not str:
-            raise TypeError('expected string, got {}'.format(class_id))
+            raise TypeError(f'expected string, got {class_id}')
 
         # Check dynamic models are not broken
         registry = self._resources_registry
@@ -360,7 +360,7 @@ class RODatabase(object):
             model = self.get_resource(class_id, soft=True)
             if model is None:
                 registry.pop(class_id, None)
-                raise LookupError("the resource '{}' does not exist".format(class_id))
+                raise LookupError(f"the resource '{class_id}' does not exist")
 
         # Cache hit
         cls = registry.get(class_id)
@@ -400,7 +400,7 @@ class RODatabase(object):
             abspath = Path(abspath)
         else:
             path = str(abspath)[1:]
-        path_to_metadata = '%s.metadata' % path
+        path_to_metadata = f'{path}.metadata'
         return self.get_handler(path_to_metadata, Metadata, soft=soft)
 
     def get_cls(self, class_id):

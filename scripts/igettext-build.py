@@ -54,7 +54,7 @@ def build(parser):
     try:
         translate = handler.translate
     except AttributeError:
-        print('Error: Unable to translate "%s", unsupported format.' % source)
+        print(f'Error: Unable to translate "{source}", unsupported format.')
         return
     # Load the Catalog handler (check the API)
     catalog = ro_database.get_handler(catalog_name)
@@ -79,7 +79,7 @@ def build(parser):
 
 
 if __name__ == '__main__':
-    version = 'itools %s' % itools.__version__
+    version = f'itools {itools.__version__}'
     description = ('Builds a new file from the given source file, but '
         'replacing the translatable messages by the translations found '
         'in the Catalog file.')

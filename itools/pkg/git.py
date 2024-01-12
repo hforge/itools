@@ -133,7 +133,7 @@ class Worktree(object):
     def get_branch_name(self):
         """Returns the name of the current branch.
         """
-        ref = open('%s/.git/HEAD' % self.path).read().rstrip()
+        ref = open(f'{self.path}/.git/HEAD').read().rstrip()
         ref = ref.rsplit('/', 1)
         return ref[1] if len(ref) == 2 else None
 
@@ -173,7 +173,7 @@ class Worktree(object):
 
 def open_worktree(path, soft=False):
     try:
-        repo = Repository('%s/.git' % path)
+        repo = Repository(f'{path}/.git')
     except GitError:
         if soft:
             return None

@@ -378,7 +378,7 @@ def show_lines(filenames):
     for problem in problems.keys():
         lines = infos[problem]
         if lines:
-            comments.append('Lines %s:\n' % problems[problem])
+            comments.append(f'Lines {problems[problem]}:\n')
             for line in lines:
                 comments.append('%s +%d' % (filenames[0], line))
             comments.append('\n')
@@ -466,7 +466,7 @@ def fix(filenames):
 if __name__ == '__main__':
     # The parser
     usage = '%prog [OPTIONS] [FILES]'
-    version = 'itools %s' % itools.__version__
+    version = f'itools {itools.__version__}'
     description = 'Shows some statistics about the quality of the Python code'
     parser = OptionParser(usage, version=version, description=description)
 

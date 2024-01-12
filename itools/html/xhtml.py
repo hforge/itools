@@ -33,13 +33,13 @@ from .schema import html_namespace, html_uri as xhtml_uri
 
 def get_start_tag(value):
     tag_uri, tag_name, attributes = value
-    s = '<%s' % get_qname(tag_uri, tag_name)
+    s = f'<{get_qname(tag_uri, tag_name)}'
     # Output the attributes
     for attr_uri, attr_name in attributes:
         value = attributes[(attr_uri, attr_name)]
         qname = get_attribute_qname(attr_uri, attr_name)
         value = XMLAttribute.encode(value)
-        s += ' %s="%s"' % (qname, value)
+        s += f' {qname}="{value}"'
     # Close the start tag
     schema = html_namespace.get_element_schema(tag_name)
     if getattr(schema, 'is_empty', False):
@@ -57,7 +57,7 @@ def get_end_tag(value):
     if getattr(schema, 'is_empty', False):
         return ''
     # Case 2: not empty
-    return '</%s>' % tag_name
+    return f'</{tag_name}>'
 
 
 stream_to_html_map = (
@@ -66,7 +66,7 @@ stream_to_html_map = (
     get_start_tag,                     # START_ELEMENT
     get_end_tag,                       # END_ELEMENT
     XMLContent.encode,                 # TEXT
-    lambda x: '<!--%s-->' % x,         # COMMENT
+    lambda x: f'<!--{x}-->',         # COMMENT
     lambda x: '',                      # PI
     lambda x: x)                       # CDATA
 
@@ -111,14 +111,14 @@ def set_content_type(stream, content_type):
 
 
 def stream_to_str_as_xhtml(stream, encoding='UTF-8'):
-    content_type = 'application/xhtml+xml; charset=%s' % encoding
+    content_type = f'application/xhtml+xml; charset={encoding}'
     stream = set_content_type(stream, content_type)
     return stream_to_str(stream, encoding)
 
 
 
 def stream_to_str_as_html(stream, encoding='UTF-8'):
-    content_type = 'text/html; charset=%s' % encoding
+    content_type = f'text/html; charset={encoding}'
     stream = set_content_type(stream, content_type)
     return stream_to_html(stream, encoding)
 

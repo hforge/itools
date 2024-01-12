@@ -47,17 +47,17 @@ def ipkg_build(worktree, manifest, config):
     # Pre-load PO files
     po_files = {}
     for dst_lang in config.get_value('target_languages'):
-        po = POFile('%s/locale/%s.po' % (package_root, dst_lang))
+        po = POFile(f'{package_root}/locale/{dst_lang}.po')
         po_files[dst_lang] = po
     # Templates
     src_lang = config.get_value('source_language', default='en')
     for dst_lang in config.get_value('target_languages'):
         rules.append(
-            ('.xml.%s' % src_lang, '.xml.%s' % dst_lang, make_template, XHTMLFile))
+            (f'.xml.{src_lang}', f'.xml.{dst_lang}', make_template, XHTMLFile))
         rules.append(
-            ('.xhtml.%s' % src_lang, '.xhtml.%s' % dst_lang, make_template, XHTMLFile))
+            (f'.xhtml.{src_lang}', f'.xhtml.{dst_lang}', make_template, XHTMLFile))
         rules.append(
-            ('.html.%s' % src_lang, '.html.%s' % dst_lang, make_template, HTMLFile))
+            (f'.html.{src_lang}', f'.html.{dst_lang}', make_template, HTMLFile))
     # Make
     make(worktree, rules, manifest, package_root, po_files)
 
@@ -169,7 +169,7 @@ def build(path, config, environment):
     # Write version
     open(path + version_txt, 'w').write(version)
     print("**"*30)
-    print("* Version: {}".format(version))
+    print(f"* Version: {version}")
     manifest.add(version_txt)
     # Write environment.json file
     environment_json = get_file_path(package_root, 'environment.json')

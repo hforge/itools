@@ -41,10 +41,10 @@ class TMXNote(object):
             attr_value = XMLContent.encode(attr_value)
             if attr_name == 'lang':
                 attr_name = 'xml:lang'
-            attributes.append(' %s="%s"' % (attr_name, attr_value))
+            attributes.append(f' {attr_name}="{attr_value}"')
         attributes = ''.join(attributes)
         # Ok
-        return '<note%s>%s</note>\n' % (attributes, self.text)
+        return f'<note{attributes}>{self.text}</note>\n'
 
 
 class Sentence(object):
@@ -56,17 +56,16 @@ class Sentence(object):
 
     def to_str(self):
         s = []
-        attributes = ['xml:lang="%s"' % self.attributes['lang']]
+        attributes = [f"xml:lang=\"{self.attributes['lang']}\""]
         for attr_name in self.attributes:
             if attr_name != 'lang':
-                attributes.append('%s="%s"' % (attr_name,
-                                               self.attributes[attr_name]))
-        s.append('  <tuv %s>\n' % ' '.join(attributes))
+                attributes.append(f'{attr_name}="{self.attributes[attr_name]}"')
+        s.append(f"  <tuv {' '.join(attributes)}>\n")
 
         for note in self.notes:
             s.append(note.to_str())
 
-        s.append('  <seg>%s</seg>\n' % XMLContent.encode(self.text))
+        s.append(f'  <seg>{XMLContent.encode(self.text)}</seg>\n')
         s.append('  </tuv>\n')
         return ''.join(s)
 
@@ -81,9 +80,9 @@ class TMXUnit(object):
     def to_str(self):
         s = []
         if self.attributes != {}:
-            att = [' %s="%s"' %(k, self.attributes[k])
+            att = [f' {k}="{self.attributes[k]}"'
                   for k in self.attributes.keys()]
-            s.append('<tu%s>\n' % ''.join(att))
+            s.append(f"<tu{''.join(att)}>\n")
         else:
             s.append('<tu>\n')
 
@@ -179,15 +178,15 @@ class TMXFile(TextFile):
     def to_str(self, encoding=None):
         # The XML prolog
         output = [
-            '<?xml version="1.0" encoding="%s"?>\n' % encoding,
+            f'<?xml version="1.0" encoding="{encoding}"?>\n',
             '<!DOCTYPE tmx SYSTEM "http://www.lisa.org/tmx/tmx14.dtd">\n']
 
         # TMX header
-        output.append('<tmx version="%s">\n' % self.version)
+        output.append(f'<tmx version="{self.version}">\n')
         attributes = [
-            ' %s="%s"' % (key, XMLAttribute.encode(value))
+            f' {key}="{XMLAttribute.encode(value)}"'
             for key, value in self.header.items() ]
-        output.append('<header%s>\n' % ''.join(attributes))
+        output.append(f"<header{''.join(attributes)}>\n")
         # TMX header / notes
         for note in self.header_notes:
             output.append(note.to_str())
@@ -217,7 +216,7 @@ class TMXFile(TextFile):
         return languages
 
     def get_srclang(self):
-        return '%s' % self.header['srclang']
+        return f"{self.header['srclang']}"
 
     def add_unit(self, filename, source, context, line):
         # XXX Context must be used!!

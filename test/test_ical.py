@@ -112,16 +112,16 @@ def property_to_string(prop_name, prop):
         prop_value = DateTime.encode(prop.value, type=t)
     # Simple case
     if not prop.parameters:
-        return '%s:%s' % (prop_name, prop_value)
+        return f'{prop_name}:{prop_value}'
 
     # Params
     params = ''
     for p_name in prop.parameters:
         p_value = prop.parameters[p_name]
         p_value = [encode_param_value(p_name, x, String) for x in p_value]
-        param = ';%s=%s' % (p_name, ','.join(p_value))
+        param = f";{p_name}={','.join(p_value)}"
         params = params + param
-    return '%s%s:%s' % (prop_name, params, prop_value)
+    return f'{prop_name}{params}:{prop_value}'
 
 
 
@@ -140,7 +140,7 @@ class icalTestCase(TestCase):
         for name in cal.properties:
             params = cal.properties[name].parameters
             value = cal.properties[name].value
-            property = '%s;%s:%s' % (name, params, value)
+            property = f'{name};{params}:{value}'
             properties.append(property)
 
         # Test properties
@@ -239,7 +239,7 @@ class icalTestCase(TestCase):
                 property_value = property_value[0]
             params = property_value.parameters
             value = property_value.value
-            property = '%s;%s:%s' % (name, params, value)
+            property = f'{name};{params}:{value}'
             properties.append(property)
         expected_properties = [
             'VERSION;None:2.0',
@@ -303,7 +303,7 @@ class icalTestCase(TestCase):
         for name in cal.properties:
             params = cal.properties[name].parameters
             value = cal.properties[name].value
-            property = '%s;%s:%s' % (name, params, value)
+            property = f'{name};{params}:{value}'
             properties.append(property)
 
         # Test properties

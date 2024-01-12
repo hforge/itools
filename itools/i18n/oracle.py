@@ -20,7 +20,7 @@
 def is_asian_character(c):
 
     # get the decimal value of the character
-    code = int('%04x' % ord(c), 16)
+    code = int(f'{ord(c):04x}', 16)
 
     # http://en.wikipedia.org/wiki/Template:Unicode_chart_CJK_Compatibility
     # CJK Compatibility
@@ -125,7 +125,7 @@ def is_punctuation(c):
         return True
 
     # get the decimal value of the character
-    code = int('%04x' % ord(c), 16)
+    code = int(f'{ord(c):04x}', 16)
     if (code >= 8192 and code <= 8303) or (code >= 12288 and code <= 12351):
         return True
 

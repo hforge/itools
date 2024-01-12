@@ -30,7 +30,7 @@ from itools.pkg import update_locale
 
 if __name__ == '__main__':
     # The command line parser
-    version = 'itools %s' % itools.__version__
+    version = f'itools {itools.__version__}'
     description = ('Updates the message catalogs (POT and PO files) in the'
                    ' "locale" directory, with the messages found in the'
                    ' source.')

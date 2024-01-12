@@ -37,7 +37,7 @@ from itools.xliff import XLFFile
 
 if __name__ == '__main__':
     usage = '%prog [OPTIONS] [<file>...]'
-    version = 'itools %s' % itools.__version__
+    version = f'itools {itools.__version__}'
     description = ('Extracts the translatable messages from the given source'
                    ' files. Builds a PO file with these messages, and prints'
                    ' to the standard output.')

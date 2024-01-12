@@ -59,7 +59,7 @@ from itools.core import freeze
 
 def _normalize_path(path):
     if type(path) is not str:
-        raise TypeError('path must be an string, not a %s' % type(path))
+        raise TypeError(f'path must be an string, not a {type(path)}')
 
     # Does the path start and/or end with an slash?
     startswith_slash = endswith_slash = False
@@ -170,7 +170,7 @@ class Path(list):
     ##########################################################################
     # API
     def __repr__(self):
-        return "Path({path!r})".format(path=str(self))
+        return f"Path({str(self)!r})"
 
     def __str__(self):
         path = '/' if self.startswith_slash else ''
@@ -222,12 +222,12 @@ class Path(list):
 
         self_str = str(self)
         if self.endswith_slash:
-            return Path('%s%s' % (self_str, path))
+            return Path(f'{self_str}{path}')
 
         if self_str == '.':
             return path
 
-        return Path('%s/../%s' % (self_str, path))
+        return Path(f'{self_str}/../{path}')
 
     def resolve2(self, path):
         """This method provides an alternative to the standards resolution
@@ -265,7 +265,7 @@ class Path(list):
         reference is known to be a relative path of length = 1.
         """
         if not isinstance(name, str):
-            raise TypeError('unexpected value "%s"' % repr(name))
+            raise TypeError(f'unexpected value "{repr(name)}"')
 
         # Relative path
         path = copy(self)
@@ -398,13 +398,13 @@ def encode_query(query, schema=None):
                 else:
                     if datatype:
                         x = datatype.encode(x)
-                    line.append('%s=%s' % (key, quote_plus(x)))
+                    line.append(f'{key}={quote_plus(x)}')
             continue
 
         # Case 3: a=x
         if datatype:
             value = datatype.encode(value)
-        line.append('%s=%s' % (key, quote_plus(value)))
+        line.append(f'{key}={quote_plus(value)}')
 
     return '&'.join(line)
 
@@ -591,7 +591,7 @@ class Reference(object):
             elif value_type is str:
                 value = value.encode('utf-8')
             elif value_type is not str:
-                raise TypeError('unexepected %s value' % value_type)
+                raise TypeError(f'unexepected {value_type} value')
             # Update
             query[key] = value
         # Ok
@@ -632,7 +632,7 @@ class GenericDataType(object):
             return Reference('', '', data, {}, None)
 
         if data_type is not str:
-            raise TypeError('unexpected %s' % type(data))
+            raise TypeError(f'unexpected {type(data)}')
 
         # Special case, the empty reference
         if data == '':
@@ -649,14 +649,14 @@ class GenericDataType(object):
         if len(scheme) == 1:
             # found a windows drive name instead of path, because urlsplit
             # thinks the scheme is "c" for Windows paths like "c:/a/b"
-            path = "%s:%s" % (scheme, path)
+            path = f"{scheme}:{path}"
             scheme = "file"
         elif len(path) > 3 and path[0] == '/' and path[2] == ':':
             # urlsplit also doesn't correctly handle windows path in url
             # form like "file:///c:/a/b" -- it thinks the path is "/c:/a/b",
             # which to be correct requires removing the leading slash.  Also
             # normalize the drive letter to lower case
-            path = "%s:%s" % (path[1].lower(), path[3:])
+            path = f"{path[1].lower()}:{path[3:]}"
 
         # The path
         if path:

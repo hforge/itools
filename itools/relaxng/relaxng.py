@@ -252,8 +252,7 @@ def read_file(context, uri, file):
 
                 # Tags not implemented
                 else:
-                    raise NotImplementedError(('relax NG: <%s> not '
-                                               'implemented') % tag_name)
+                    raise NotImplementedError(f"relax NG: <{tag_name}> not implemented")
         elif xml_type == END_ELEMENT:
             tag_uri, tag_name = value
             if (tag_uri == rng_uri and
@@ -320,7 +319,7 @@ def convert_type(data):
     if datatype is not None:
         return datatype
     else:
-        raise ValueError('relax NG: unexpected datatype "%s"' % data)
+        raise ValueError(f'relax NG: unexpected datatype "{data}"')
 
 
 def split_attributes(uri, attributes):
@@ -436,7 +435,7 @@ def make_namespaces(context):
                     default_datatype=String)
                 break
         else:
-            log.warning('relaxng: namespace "%s" not found' % namespace)
+            log.warning(f'relaxng: namespace "{namespace}" not found')
     return result
 
 

@@ -298,7 +298,7 @@ class RWDatabase(RODatabase):
         base = source + '/'
         for key in self.added.copy():
             if key.startswith(base):
-                new_key = '%s%s' % (target, key[n:])
+                new_key = f'{target}{key[n:]}'
                 handler = cache.pop(key)
                 self.push_handler(new_key, handler)
                 self.added.remove(key)
@@ -306,7 +306,7 @@ class RWDatabase(RODatabase):
 
         for key in self.changed.copy():
             if key.startswith(base):
-                new_key = '%s%s' % (target, key[n:])
+                new_key = f'{target}{key[n:]}'
                 handler = cache.pop(key)
                 self.push_handler(new_key, handler)
                 self.changed.remove(key)

@@ -92,7 +92,7 @@ def setup(path, ext_modules=None):
     if config.has_value('packages'):
         subpackages = config.get_value('packages')
         for subpackage_name in subpackages:
-            packages.append('%s.%s' % (package_name, subpackage_name))
+            packages.append(f'{package_name}.{subpackage_name}')
     else:
         subpackages = []
 
@@ -110,7 +110,7 @@ def setup(path, ext_modules=None):
 
         path = line.split('/')
         if path[0] in subpackages:
-            subpackage = '%s.%s' % (package_name, path[0])
+            subpackage = f'{package_name}.{path[0]}'
             files = package_data.setdefault(subpackage, [])
             files.append(join_path(*path[1:]))
         elif path[0] not in ('archive', 'docs', 'scripts', 'test'):

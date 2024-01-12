@@ -58,7 +58,7 @@ class RangeQuery(BaseQuery):
 
 
     def __repr_parameters__(self):
-        return "%r, %r, %r" % (self.name, self.left, self.right)
+        return f"{self.name!r}, {self.left!r}, {self.right!r}"
 
 
 
@@ -70,7 +70,7 @@ class PhraseQuery(BaseQuery):
 
 
     def __repr_parameters__(self):
-        return "%r, %r" % (self.name, self.value)
+        return f"{self.name!r}, {self.value!r}"
 
 
 ############################################################################
@@ -155,7 +155,7 @@ class StartQuery(BaseQuery):
         self.value = value
 
     def __repr_parameters__(self):
-        return "%r, %r" % (self.name, self.value)
+        return f"{self.name!r}, {self.value!r}"
 
 
 class TextQuery(BaseQuery):
@@ -165,7 +165,7 @@ class TextQuery(BaseQuery):
         self.value = value
 
     def __repr_parameters__(self):
-        return "%r, %r" % (self.name, self.value)
+        return f"{self.name!r}, {self.value!r}"
 
 
 class QueryPrinter(PrettyPrinter):
@@ -188,9 +188,7 @@ class QueryPrinter(PrettyPrinter):
             return
 
         if issubclass(typ, (_AndQuery, _OrQuery, NotQuery)):
-            write('<%s.%s(' % (
-                query.__module__,
-                query.__class__.__name__))
+            write(f'<{query.__module__}.{query.__class__.__name__}(')
             if self._indent_per_level > 1:
                 write((self._indent_per_level - 1) * ' ')
             if issubclass(typ, NotQuery):
@@ -202,7 +200,7 @@ class QueryPrinter(PrettyPrinter):
                 indent = indent + self._indent_per_level
                 for atom in atoms:
                     if sepLines:
-                        write('\n%s' % (' ' * indent))
+                        write(f"\n{' ' * indent}")
                     self._format(atom, stream, indent + 2,
                             allowance + 1, context, level)
                 indent = indent - self._indent_per_level

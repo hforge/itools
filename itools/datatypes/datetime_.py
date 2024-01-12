@@ -45,7 +45,7 @@ class HTTPDate(DataType):
         # Parse the date into a tuple, including the timezone
         parts = parsedate_tz(data)
         if parts is None:
-            raise ValueError('date "%s" is not supported' % data)
+            raise ValueError(f'date "{data}" is not supported')
         parts, tz = parts[:9], parts[9]
 
         # Get a naive datetime
@@ -179,7 +179,7 @@ class ISOTime(DataType):
             parts = data.split(':')
             n = len(parts)
             if n > 3:
-                raise ValueError('unexpected time value "%s"' % data)
+                raise ValueError(f'unexpected time value "{data}"')
             hour = int(parts[0])
             minute = int(parts[1])
             if n == 2:
@@ -191,7 +191,7 @@ class ISOTime(DataType):
             parts = data.split('.')
             n = len(parts)
             if n > 2:
-                raise ValueError('unexpected time value "%s"' % data)
+                raise ValueError(f'unexpected time value "{data}"')
             second = int(parts[0])
             microsecond = int(parts[1])
             return time(hour, minute, second, microsecond, tzinfo=tzinfo)
@@ -264,6 +264,6 @@ class ISODateTime(DataType):
             fmt = fmt_date
         else:
             # Error
-            raise TypeError("unexpected value of type '%s'" % value_type)
+            raise TypeError(f"unexpected value of type '{value_type}'")
 
         return value.strftime(fmt)

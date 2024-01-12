@@ -36,7 +36,7 @@ class StaticView(BaseView):
     def GET(self, query, context):
         n = len(Path(self.mount_path))
         path = Path(context.path)[n:]
-        path = '%s%s' % (self.local_path, path)
+        path = f'{self.local_path}{path}'
         # 404 Not Found
         if not isfile(path):
             return context.set_default_response(404)

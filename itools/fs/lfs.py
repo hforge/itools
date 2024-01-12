@@ -88,7 +88,7 @@ class LocalFolder(object):
         parent_path = dirname(path)
         if exists(parent_path):
             if exists(path):
-                raise OSError("File exists: '%s'" % path)
+                raise OSError(f"File exists: '{path}'")
         else:
             makedirs(parent_path)
         if text:

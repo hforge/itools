@@ -30,7 +30,7 @@ class HTTPError(Exception):
 
 
     def __str__(self):
-        return '[{}] {}'.format(self.code, self.title)
+        return f'[{self.code}] {self.title}'
 
 
 

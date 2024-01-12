@@ -176,11 +176,11 @@ class ItoolsView(prototype):
         # Check for specific schema
         action = getattr(context, 'form_action', None)
         if action is not None:
-            schema = getattr(self, '%s_schema' % action, None)
+            schema = getattr(self, f'{action}_schema', None)
             if schema is not None:
                 return schema
         # Check for method schema
-        schema = getattr(self, '%s_schema' % context.method, None)
+        schema = getattr(self, f'{context.method}_schema', None)
         if schema is not None:
             return schema
         # Default
@@ -382,7 +382,7 @@ class STLView(BaseView):
             return template
 
         # Error
-        error = 'unexpected type "%s" for the template' % template_type
+        error = f'unexpected type "{template_type}" for the template'
         raise TypeError(error)
 
 

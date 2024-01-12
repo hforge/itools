@@ -153,7 +153,7 @@ class RSSFile(TextFile):
     def to_str(self, encoding='UTF-8'):
         s = []
 
-        s.append('<?xml version="1.0" encoding="%s"?>' % encoding)
+        s.append(f'<?xml version="1.0" encoding="{encoding}"?>')
         s.append('<rss version="2.0">')
         s.append('  <channel>')
 
@@ -163,14 +163,14 @@ class RSSFile(TextFile):
         for name in rss_channel_elements['required']:
             value = channel[name]
             data = encode_element(name, value, encoding)
-            s.append('    <%s>%s</%s>' % (name, data, name))
+            s.append(f'    <{name}>{data}</{name}>')
         # Optional
         for name in rss_channel_elements['optional']:
             value = channel.get(name)
             if value is None:
                 continue
             data = encode_element(name, value, encoding)
-            s.append('    <%s>%s</%s>' % (name, data, name))
+            s.append(f'    <{name}>{data}</{name}>')
 
         # Append image
         image = self.image
@@ -180,14 +180,14 @@ class RSSFile(TextFile):
             for name in rss_image_elements['required']:
                 value = image[name]
                 data = encode_element(name, value, encoding)
-                s.append('      <%s>%s</%s>' % (name, data, name))
+                s.append(f'      <{name}>{data}</{name}>')
             # Optional
             for name in rss_image_elements['optional']:
                 value = image.get(name)
                 if value is None:
                     continue
                 data = encode_element(name, value, encoding)
-                s.append('      <%s>%s</%s>' % (name, data, name))
+                s.append(f'      <{name}>{data}</{name}>')
             s.append('    </image>')
 
         # Append items
@@ -199,14 +199,14 @@ class RSSFile(TextFile):
                 if value is None:
                     continue
                 data = encode_element(name, value, encoding)
-                s.append('      <%s>%s</%s>' % (name, data, name))
+                s.append(f'      <{name}>{data}</{name}>')
             # Optional
             for name in rss_item_elements['optional']:
                 value = item.get(name)
                 if value is None:
                     continue
                 data = encode_element(name, value, encoding)
-                s.append('      <%s>%s</%s>' % (name, data, name))
+                s.append(f'      <{name}>{data}</{name}>')
             s.append('    </item>')
 
         s.append('  </channel>')

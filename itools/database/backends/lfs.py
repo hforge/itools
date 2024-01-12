@@ -28,13 +28,13 @@ class LFSBackend(object):
 
     def __init__(self, path, fields, read_only=False):
         if path:
-            self.fs = lfs.open('{0}/database'.format(path))
+            self.fs = lfs.open(f'{path}/database')
         else:
             self.fs = lfs
 
     @classmethod
     def init_backend(cls, path, fields, init=False, soft=False):
-        lfs.make_folder('{0}/database'.format(path))
+        lfs.make_folder(f'{path}/database')
 
     def normalize_key(self, path, __root=None):
         return self.fs.normalize_key(path)

@@ -633,7 +633,7 @@ class HTML5Namespace(XMLNamespace):
         for element in self.obsolete_elements:
             name = element.name
             if name in self.elements:
-                raise ValueError('element "%s" is defined twice' % name)
+                raise ValueError(f'element "{name}" is defined twice')
             kw[name] = element
         return kw
 
@@ -658,7 +658,7 @@ class HTML5Namespace(XMLNamespace):
         if '-' in name:
             return WebComponentElement(
                   name=name, strict=self.strict, context=name)
-        raise XMLError('unexpected element "%s"' % name)
+        raise XMLError(f'unexpected element "{name}"')
 
 
 html_namespace = HTML5Namespace(strict=False)

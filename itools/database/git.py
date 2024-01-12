@@ -60,7 +60,7 @@ class Worktree(object):
         self.cache = {} # {sha: object}
         # FIXME These two fields are already available by libgit2. TODO
         # expose them through pygit2 and use them here.
-        self.index_path = '%s/.git/index' % path
+        self.index_path = f'{path}/.git/index'
         self.index_mtime = None
         # Check git commiter
         try:
@@ -85,10 +85,10 @@ class Worktree(object):
         if isabs(path):
             if path.startswith(self.path):
                 return path
-            raise ValueError("unexpected absolute path '{}'".format(path))
+            raise ValueError(f"unexpected absolute path '{path}'")
         if path == '.':
             return self.path
-        return '%s%s' % (self.path, path)
+        return f'{self.path}{path}'
 
     def _call(self, command):
         """Interface to cal git.git for functions not yet implemented using
@@ -138,14 +138,14 @@ class Worktree(object):
         """
         # 1. Check and normalize path
         if isabs(path):
-            raise ValueError('unexpected absolute path "%s"' % path)
+            raise ValueError(f'unexpected absolute path "{path}"')
 
         path = normpath(path)
         if path == '.':
             path = ''
         elif path == '.git':
             raise ValueError('cannot walk .git')
-        elif not isdir('%s%s' % (self.path, path)):
+        elif not isdir(f'{self.path}{path}'):
             yield path
             return
         else:
@@ -155,10 +155,10 @@ class Worktree(object):
         stack = [path]
         while stack:
             folder_rel = stack.pop()
-            folder_abs = '%s%s' % (self.path, folder_rel)
+            folder_abs = f'{self.path}{folder_rel}'
             for name in listdir(folder_abs):
-                path_abs = '%s%s' % (folder_abs, name)
-                path_rel = '%s%s' % (folder_rel, name)
+                path_abs = f'{folder_abs}{name}'
+                path_rel = f'{folder_rel}{name}'
                 if path_rel == '.git':
                     continue
                 if isdir(path_abs):
@@ -253,8 +253,8 @@ class Worktree(object):
             # 2. Folder
             for root, dirs, files in walk(abspath, topdown=False):
                 for name in files:
-                    index.remove('%s/%s' % (root[n:], name))
-                    remove('%s/%s' % (root, name))
+                    index.remove(f'{root[n:]}/{name}')
+                    remove(f'{root}/{name}')
                 rmdir(root)
 
     def git_mv(self, source, target, add=True):
@@ -453,7 +453,7 @@ class Worktree(object):
             data = self._call(['git', 'show', since, '--pretty=format:'])
             return data[1:]
 
-        cmd = ['git', 'diff', '%s..%s' % (since, until)]
+        cmd = ['git', 'diff', f'{since}..{until}']
         if paths:
             cmd.append('--')
             cmd.extend(paths)
@@ -470,7 +470,7 @@ class Worktree(object):
             data = self._call(cmd)
             return data[1:]
 
-        cmd = ['git', 'diff', '--stat', '%s..%s' % (since, until)]
+        cmd = ['git', 'diff', '--stat', f'{since}..{until}']
         if paths:
             cmd.append('--')
             cmd.extend(paths)
@@ -481,7 +481,7 @@ class Worktree(object):
 
         TODO Implement with libgit2
         """
-        expr = '%s..%s' % (since, until)
+        expr = f'{since}..{until}'
         cmd = ['git', 'show', '--numstat', '--pretty=format:', expr]
         data = self._call(cmd)
         lines = data.splitlines()
@@ -517,7 +517,7 @@ def open_worktree(path, init=False, soft=False):
         if init:
             repo = init_repository(path, False)
         else:
-            repo = Repository('%s/.git' % path)
+            repo = Repository(f'{path}/.git')
     except GitError:
         if soft:
             return None

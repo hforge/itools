@@ -34,7 +34,7 @@ def get_qname(tag_uri, tag_name):
     prefix = get_namespace(tag_uri).prefix
     if prefix is None:
         return tag_name
-    return '%s:%s' % (prefix, tag_name)
+    return f'{prefix}:{tag_name}'
 
 
 def get_attribute_qname(namespace, local_name):
@@ -52,18 +52,18 @@ def get_attribute_qname(namespace, local_name):
     if local_name is None:
         return prefix
 
-    return '%s:%s' % (prefix, local_name)
+    return f'{prefix}:{local_name}'
 
 
 def get_start_tag(value):
     tag_uri, tag_name, attributes = value
-    s = '<%s' % get_qname(tag_uri, tag_name)
+    s = f'<{get_qname(tag_uri, tag_name)}'
     # Output the attributes
     for attr_uri, attr_name in attributes:
         value = attributes[(attr_uri, attr_name)]
         qname = get_attribute_qname(attr_uri, attr_name)
         value = XMLAttribute.encode(value)
-        s += ' %s="%s"' % (qname, value)
+        s += f' {qname}="{value}"'
     # Close the start tag
     if is_empty(tag_uri, tag_name):
         return s + '/>'
@@ -83,22 +83,22 @@ def get_end_tag(value):
         return ''
     # Case 2: no prefix
     if tag_uri is None or namespace.prefix is None:
-        return '</%s>' % tag_name
+        return f'</{tag_name}>'
     # Case 3: prefix
-    return '</%s:%s>' % (namespace.prefix, tag_name)
+    return f'</{namespace.prefix}:{tag_name}>'
 
 
 def get_doctype(name, doctype):
     # HTML 5
     if doctype is None:
-        return '<!doctype %s>' % name
-    return '<!DOCTYPE %s %s>' % (name, doctype.to_str())
+        return f'<!doctype {name}>'
+    return f'<!DOCTYPE {name} {doctype.to_str()}>'
 
 
 def stream_to_str_xmldecl(value):
     version, encoding, standalone = value
     if standalone is None:
-        return '<?xml version="%s" encoding="%s"?>' % (version, encoding)
+        return f'<?xml version="{version}" encoding="{encoding}"?>'
     else:
         return '<?xml version="%s" encoding="%s" standalone="%s"?>' % value
 
@@ -109,9 +109,9 @@ stream_to_str_map = (
     get_start_tag,                     # START_ELEMENT
     get_end_tag,                       # END_ELEMENT
     XMLContent.encode,                 # TEXT
-    lambda x: '<!--%s-->' % x,         # COMMENT
+    lambda x: f'<!--{x}-->',         # COMMENT
     lambda x: '',                      # PI
-    lambda x: '<![CDATA[%s]]>' % x)    # CDATA
+    lambda x: f'<![CDATA[{x}]]>')    # CDATA
 
 
 # XXX encoding is not used

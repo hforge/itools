@@ -68,7 +68,7 @@ class File(Handler):
             except Exception as e:
                 print(e)
                 if key:
-                    log.warning('Cannot attach handler {0} to a database'.format(key))
+                    log.warning(f'Cannot attach handler {key} to a database')
                     try:
                         string = open(key, 'r').read()
                     except UnicodeDecodeError:

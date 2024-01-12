@@ -234,7 +234,7 @@ def read_multiline(lines):
         next(lines)
         return value
     else:
-        raise SyntaxError('unexpected line "%s"' % line_num)
+        raise SyntaxError(f'unexpected line "{line_num}"')
 
 
 ###########################################################################
@@ -304,11 +304,11 @@ class ConfigFile(TextFile):
             else:
                 comment, var = line
                 for line in comment:
-                    lines.append('# %s\n' % line)
+                    lines.append(f'# {line}\n')
                 if var is not None:
                     name, value = var
                     value = value.replace('"', '\\"')
-                    lines.append('%s = "%s"\n' % (name, value))
+                    lines.append(f'{name} = "{value}\"\n')
 
         return ''.join(lines)
 

@@ -193,7 +193,7 @@ def decode_target(target):
                 result.append((END_FORMAT, id))
                 continue
             # Something else
-            text += '<%s>' % block
+            text += f'<{block}>'
             continue
         text += block
     # Push the last text
@@ -215,7 +215,7 @@ expr = compile(r'(\\.)')
 
 
 def unescape(s):
-    return expr.sub(lambda x: eval("'%s'" % x.group(0)), s)
+    return expr.sub(lambda x: eval(f"'{x.group(0)}'"), s)
 
 
 class POUnit(object):
@@ -263,7 +263,7 @@ class POUnit(object):
         s = []
         # The comments
         for comment in self.comments:
-            s.append('#%s\n' % comment)
+            s.append(f'#{comment}\n')
         # The reference comments
         i = 1
         references = self.references.items()
@@ -271,7 +271,7 @@ class POUnit(object):
         for filename, lines in references:
             for line in lines:
                 comma = '' if i == nb_references else ','
-                line = '#: %s:%s%s\n' % (filename, line, comma)
+                line = f'#: {filename}:{line}{comma}\n'
                 s.append(line)
                 i += 1
         # The Fuzzy flag
@@ -279,17 +279,17 @@ class POUnit(object):
             s.append('#, fuzzy\n')
         # The msgctxt
         if self.context is not None:
-            s.append('msgctxt "%s"\n' % escape(self.context[0]))
+            s.append(f'msgctxt "{escape(self.context[0])}\"\n')
             for string in self.context[1:]:
-                s.append('"%s"\n' % escape(string))
+                s.append(f'"{escape(string)}\"\n')
         # The msgid
-        s.append('msgid "%s"\n' % escape(self.source[0]))
+        s.append(f'msgid "{escape(self.source[0])}\"\n')
         for string in self.source[1:]:
-            s.append('"%s"\n' % escape(string))
+            s.append(f'"{escape(string)}\"\n')
         # The msgstr
-        s.append('msgstr "%s"\n' % escape(self.target[0]))
+        s.append(f'msgstr "{escape(self.target[0])}\"\n')
         for string in self.target[1:]:
-            s.append('"%s"\n' % escape(string))
+            s.append(f'"{escape(string)}\"\n')
         return ''.join(s)
 
     def __repr__(self):

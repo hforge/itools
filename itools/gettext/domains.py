@@ -64,7 +64,7 @@ class Domain(dict):
         for key in lfs.get_names(uri):
             if key[-3:] == '.mo':
                 language = key[:-3]
-                path = '{0}/{1}'.format(uri, key)
+                path = f'{uri}/{key}'
                 self[language] = MOFile(path)
 
     def gettext(self, message, language):
@@ -124,7 +124,7 @@ class MSG(object):
             message = msg_formatter.vformat(message, [], (self, kw))
             return XMLParser(message, namespaces=xhtml_namespaces)
 
-        raise ValueError('unexpected format "{0}"'.format(self.format))
+        raise ValueError(f'unexpected format "{self.format}"')
 
     def gettext(self, language=None, **kw):
         message = self.message

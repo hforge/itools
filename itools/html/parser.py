@@ -53,16 +53,16 @@ class DocType_ersatz(DocType):
         # PUBLIC or SYSTEM ?
         if PubidLiteral or SystemLiteral:
             if PubidLiteral:
-                result += 'PUBLIC "%s"' % PubidLiteral
+                result += f'PUBLIC "{PubidLiteral}"'
                 if SystemLiteral:
-                    result += ' "%s"' % SystemLiteral
+                    result += f' "{SystemLiteral}"'
             else:
-                result += 'SYSTEM "%s"' % SystemLiteral
+                result += f'SYSTEM "{SystemLiteral}"'
             if intSubset:
                 result += ' '
         # intSubset
         if intSubset:
-            result += '[%s]' % intSubset
+            result += f'[{intSubset}]'
 
         return result
 
@@ -345,7 +345,7 @@ class Parser(BaseParser, object):
             else:
                 self.events.append((TEXT, char, self.getpos()[0]))
         else:
-            warn('Unknown entity reference "%s" (ignoring)' % name)
+            warn(f'Unknown entity reference "{name}" (ignoring)')
 
 
     # TODO handlers that remain to implement include

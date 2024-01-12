@@ -126,7 +126,7 @@ class AcceptLanguageType(object):
             if quality == one:
                 data.append(language)
             else:
-                data.append('%s;q=%s' % (language, quality))
+                data.append(f'{language};q={quality}')
         return ', '.join(data)
 
 
@@ -136,7 +136,7 @@ def get_accept():
         language = ''
     elif '_' in language:
         language = language.replace('_', '-')
-        language = '%s, %s;q=0.5' % (language, language.split('-')[0])
+        language = f"{language}, {language.split('-')[0]};q=0.5"
 
     return AcceptLanguageType.decode(language)
 

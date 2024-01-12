@@ -49,10 +49,10 @@ class XLFNote(object):
             attr_value = XMLContent.encode(attr_value)
             if attr_name == 'lang':
                 attr_name = 'xml:lang'
-            attributes.append(' %s="%s"' % (attr_name, attr_value))
+            attributes.append(f' {attr_name}="{attr_value}"')
         attributes = ''.join(attributes)
         # Ok
-        return '<note%s>%s</note>\n' % (attributes, self.text)
+        return f'<note{attributes}>{self.text}</note>\n'
 
 
 
@@ -70,11 +70,11 @@ class XLFUnit(object):
     def to_str(self):
         s = []
         if self.attributes != {}:
-            att = ['%s="%s"' % (k, self.attributes[k])
+            att = [f'{k}="{self.attributes[k]}"'
                   for k in self.attributes.keys() if k != 'space']
             s.append('  <trans-unit %s ' % '\n'.join(att))
             if 'space' in list(self.attributes.keys()):
-                s.append('xml:space="%s"' % self.attributes['space'])
+                s.append(f"xml:space=\"{self.attributes['space']}\"")
             s.append('>\n')
         else:
             s.append('  <trans-unit>\n')
@@ -96,8 +96,7 @@ class XLFUnit(object):
                          self.line)
                 s.append('</context>\n')
             if self.context is not None:
-                s.append('        <context context-type="x-context">%s' %
-                         self.context)
+                s.append(f'        <context context-type="x-context">{self.context}')
                 s.append('</context>\n')
             s.append('    </context-group>\n')
 
@@ -124,10 +123,10 @@ class File(object):
         # Opent tag
         open_tag = '<file original="%s"%s>\n'
         attributes = [
-            ' %s="%s"' % (key, XMLAttribute.encode(value))
+            f' {key}="{XMLAttribute.encode(value)}"'
             for key, value in self.attributes.items() if key != 'space']
         if 'space' in self.attributes:
-            attributes.append(' xml:space="%s"' % self.attributes['space'])
+            attributes.append(f" xml:space=\"{self.attributes['space']}\"")
         attributes = ''.join(attributes)
         open_tag = open_tag % (self.original, attributes)
         output.append(open_tag)
@@ -239,7 +238,7 @@ class XLFFile(TextFile):
     def to_str(self, encoding='UTF-8'):
         output = []
         # The XML declaration
-        output.append('<?xml version="1.0" encoding="%s"?>\n' % encoding)
+        output.append(f'<?xml version="1.0" encoding="{encoding}"?>\n')
         # The Doctype
         output.append(doctype)
         # <xliff>

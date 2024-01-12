@@ -113,7 +113,7 @@ class SRXFile(TextFile):
             break_value, before_break, after_break = rule
             regexp = before_break or '.*?'
             if after_break:
-                regexp += '(?=%s)' % after_break
+                regexp += f'(?={after_break})'
             regexp = compile(regexp, DOTALL | MULTILINE)
             result.append((break_value, regexp))
         return result

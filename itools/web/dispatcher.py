@@ -48,16 +48,16 @@ class URIPatternsParser(prototype):
         else:
             pattern = self.patterns[self.default_pattern]
         if name == '':
-            name = '__pos%s' % self._pos
+            name = f'__pos{self._pos}'
             self._pos += 1
-        return '(?P<%s>%s)' % (name, pattern)
+        return f'(?P<{name}>{pattern})'
 
 
     def _lastly(self, regex):
         """Process the result of __call__ right before it returns.
         Adds the ^ and the $ to the beginning and the end, respectively.
         """
-        return "^%s$" % regex
+        return f"^{regex}$"
 
 
     def _parse(self, text):

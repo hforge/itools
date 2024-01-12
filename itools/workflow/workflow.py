@@ -83,7 +83,7 @@ class Workflow(object):
         """Sets the default initial state.
         """
         if name not in self.states:
-            raise WorkflowError("invalid initial state: '%s'" % name)
+            raise WorkflowError(f"invalid initial state: '{name}'")
         self.initstate = name
 
 
@@ -100,11 +100,11 @@ class Workflow(object):
         try:
             state_from = self.states[state_from]
         except KeyError:
-            raise WorkflowError("unregistered state: '%s'" % state_from)
+            raise WorkflowError(f"unregistered state: '{state_from}'")
         try:
             state_to = self.states[state_to]
         except KeyError:
-            raise WorkflowError("unregistered state: '%s'" % state_to)
+            raise WorkflowError(f"unregistered state: '{state_to}'")
         state_from.add_trans(name, transition)
 
 
@@ -216,12 +216,12 @@ class WorkflowAware(object):
             raise WorkflowError('undefined initial state')
 
         if not initstate in self.workflow.states:
-            raise WorkflowError("invalid initial state: '%s'" % initstate)
+            raise WorkflowError(f"invalid initial state: '{initstate}'")
 
         self.workflow_state = initstate
 
         # Call app-specific enter-state handler for initial state, if any
-        name = 'onenter_%s' % initstate
+        name = f'onenter_{initstate}'
         if hasattr(self, name):
             getattr(self, name)(*args, **kw)
 
@@ -246,7 +246,7 @@ class WorkflowAware(object):
         state = state.transitions[transname].state_to
 
         # call app-specific leave- state  handler if any
-        name = 'onleave_%s' % self.workflow_state
+        name = f'onleave_{self.workflow_state}'
         if hasattr(self, name):
             getattr(self, name)(*args, **kw)
 
@@ -254,12 +254,12 @@ class WorkflowAware(object):
         self.workflow_state = state
 
         # call app-specific transition handler if any
-        name = 'ontrans_%s' % transname
+        name = f'ontrans_{transname}'
         if hasattr(self, name):
             getattr(self, name)(*args, **kw)
 
         # call app-specific enter-state handler if any
-        name = 'onenter_%s' % state
+        name = f'onenter_{state}'
         if hasattr(self, name):
             getattr(self, name)(*args, **kw)
 

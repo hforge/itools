@@ -27,7 +27,7 @@ from itools.core import get_pipe
 
 
 if __name__ == '__main__':
-    version = 'itools %s' % itools.__version__
+    version = f'itools {itools.__version__}'
     description = ('Merges the given POT file into the PO file. Preserves'
                    ' the translations already present in the PO file.')
     parser = OptionParser('%prog [OPTIONS] <POT file> <PO file>',

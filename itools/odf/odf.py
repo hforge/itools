@@ -148,8 +148,7 @@ class ODFFile(OOFile):
             elif type == TEXT:
                 if previous_tag_name in meta_tags:
                     if previous_tag_name in meta:
-                        meta[previous_tag_name] = '%s\n%s' % (
-                                              meta[previous_tag_name], value)
+                        meta[previous_tag_name] = f'{meta[previous_tag_name]}\n{value}'
                     else:
                         meta[previous_tag_name] = value
         return meta
@@ -281,5 +280,5 @@ class ODPFile(ODFFile):
 
 # Register handler and mimetypes
 for handler in [ODTFile, ODSFile, ODPFile]:
-    add_type(handler.class_mimetypes[0], '.%s' % handler.class_extension)
+    add_type(handler.class_mimetypes[0], f'.{handler.class_extension}')
     register_handler_class(handler)

@@ -66,7 +66,7 @@ class Resource(object, metaclass=DBResourceMetaclass):
             return getattr(cls, name, None)
         if soft is True:
             return None
-        log.warning("Warning: Undefined field {} on {}".format(name, cls))
+        log.warning(f"Warning: Undefined field {name} on {cls}")
         return None
 
     @classmethod

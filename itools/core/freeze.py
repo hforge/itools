@@ -79,7 +79,7 @@ class frozenlist(list):
         return frozenlist(alist)
 
     def __repr__(self):
-        return 'frozenlist([%s])' % ', '.join([repr(x) for x in self])
+        return f"frozenlist([{', '.join([repr(x) for x in self])}])"
 
 
 class frozendict(dict):
@@ -116,7 +116,7 @@ class frozendict(dict):
         raise NotImplementedError('frozendicts not yet hashable')
 
     def __repr__(self):
-        aux = ["%s: %s" % (repr(k), repr(v)) for k, v in self.items()]
+        aux = [f"{repr(k)}: {repr(v)}" for k, v in self.items()]
         return 'frozendict({%s})' % ', '.join(aux)
 
 
@@ -133,4 +133,4 @@ def freeze(value):
     if isinstance(value, (frozenlist, frozendict, frozenset)):
         return value
     # Error
-    raise TypeError('unable to freeze "%s"' % value_type)
+    raise TypeError(f'unable to freeze "{value_type}"')

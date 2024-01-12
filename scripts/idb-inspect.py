@@ -55,7 +55,7 @@ def get_regexp(regexp):
         try:
             return compile(regexp)
         except Exception as e:
-            print('Your regexp "%s" is invalid: %s' % (regexp, str(e)))
+            print(f'Your regexp "{regexp}" is invalid: {str(e)}')
             exit(1)
     return None
 
@@ -98,7 +98,7 @@ def dump_fields(db, metadata, docs, only_field, show_values, show_terms):
         else:
             print(' * not stored')
         if 'prefix' in info:
-            print(' * indexed (%s)' % info['prefix'])
+            print(f" * indexed ({info['prefix']})")
         else:
             print(' * not indexed')
 
@@ -107,7 +107,7 @@ def dump_fields(db, metadata, docs, only_field, show_values, show_terms):
             value = info['value']
             print(' * raw values:')
             for doc in docs:
-                print('   "%s"' % doc.get_value(value))
+                print(f'   "{doc.get_value(value)}"')
 
         # Terms
         if 'prefix' in info and show_terms:
@@ -117,7 +117,7 @@ def dump_fields(db, metadata, docs, only_field, show_values, show_terms):
                           for t in db.allterms(prefix) }
             print(' * raw terms:')
             for term in terms:
-                print('   "%s"' % term)
+                print(f'   "{term}"')
 
         print()
 
@@ -152,11 +152,11 @@ def dump_docs(db, metadata, docs, only_doc, only_field, show_values,
                 continue
 
             if show_values or show_terms:
-                print(' * %s:' % name)
+                print(f' * {name}:')
 
             # Value
             if 'value' in info and show_values:
-                print('   - raw value: "%s"' % doc.get_value(info['value']))
+                print(f"   - raw value: \"{doc.get_value(info['value'])}\"")
 
             # Terms
             if 'prefix' in info and show_terms:
@@ -165,7 +165,7 @@ def dump_docs(db, metadata, docs, only_doc, only_field, show_values,
                 print('   - raw terms:')
                 for term in terms:
                     if term.startswith(prefix):
-                        print('     "%s"' % term[prefix_size:])
+                        print(f'     "{term[prefix_size:]}"')
         print()
 
 

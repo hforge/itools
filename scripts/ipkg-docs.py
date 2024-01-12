@@ -67,10 +67,10 @@ def make_figures(format):
         docs.make_folder(target_base)
 
     for name in docs.get_names(source_base):
-        source = '%s/%s' % (source_base, name)
+        source = f'{source_base}/{name}'
         mtime = docs.get_mtime(source)
         name, extension = name.rsplit('.')
-        target = '%s/%s.%s' % (target_base, name, format)
+        target = f'{target_base}/{name}.{format}'
         if docs.exists(target) and docs.get_mtime(target) > mtime:
             continue
         command = converters.get((extension, format))
@@ -106,15 +106,15 @@ def make_release():
 
     # Make the tarball
     chdir('_build/html')
-    call('zip -r %s.zip *' % pkgname, shell=True)
-    call('mv %s.zip /tmp/' % pkgname, shell=True)
-    print('The tarball is available in /tmp/%s.zip' % pkgname)
+    call(f'zip -r {pkgname}.zip *', shell=True)
+    call(f'mv {pkgname}.zip /tmp/', shell=True)
+    print(f'The tarball is available in /tmp/{pkgname}.zip')
 
 
 if __name__ == '__main__':
     # The command line parser
     usage = '%prog [html|pdf|release]'
-    version = 'itools %s' % itools.__version__
+    version = f'itools {itools.__version__}'
     description = ('Make the documentation, default mode is html.')
     parser = OptionParser(usage, version=version, description=description)
 
@@ -139,4 +139,4 @@ if __name__ == '__main__':
     elif mode == 'release':
         make_release()
     else:
-        parser.error('unkwnon "%s" mode' % mode)
+        parser.error(f'unkwnon "{mode}" mode')

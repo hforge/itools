@@ -84,7 +84,7 @@ class Metadata(File):
         # Read the format & version
         name, value, parameters = next(parser)
         if name != 'format':
-            raise ValueError('unexpected "%s" property' % name)
+            raise ValueError(f'unexpected "{name}" property')
         if 'version' in parameters:
             version = parameters.pop('version')
             if len(version) > 1:
@@ -153,9 +153,9 @@ class Metadata(File):
         resource_class = self.get_resource_class(self.format)
 
         if self.version is None:
-            lines = ['format:%s\n' % self.format]
+            lines = [f'format:{self.format}\n']
         else:
-            lines = ['format;version=%s:%s\n' % (self.version, self.format)]
+            lines = [f'format;version={self.version}:{self.format}\n']
         # Properties are to be sorted by alphabetical order
         properties = self.properties
         names = sorted(list(properties.keys()))
@@ -301,4 +301,4 @@ class Metadata(File):
 ###########################################################################
 register_handler_class(Metadata)
 for mimetype in Metadata.class_mimetypes:
-    add_type(mimetype, '.%s' % Metadata.class_extension)
+    add_type(mimetype, f'.{Metadata.class_extension}')

@@ -300,7 +300,7 @@ class TableTestCase(TestCase):
 
     def tearDown(self):
         for name in ['agenda', 'books']:
-            name = 'tests/%s' % name
+            name = f'tests/{name}'
             if lfs.exists(name):
                 lfs.remove(name)
 

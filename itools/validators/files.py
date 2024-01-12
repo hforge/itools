@@ -97,12 +97,12 @@ class FileSizeValidator(BaseValidator):
         # 1 Megabyte = 1048576 Bytes
         # 1 Gigabyte = 1073741824 Bytes
         if b < 1024:
-            return '%.01f Bytes' % b
+            return f'{b:.01f} Bytes'
         elif b < 1048576:
-            return '%.01f KB' % (b / 1024)
+            return f'{b / 1024:.01f} KB'
         elif b < 1073741824:
-            return '%.01f MB' % (b / 1048576)
-        return '%.01f GB' % (b / 1073741824)
+            return f'{b / 1048576:.01f} MB'
+        return f'{b / 1073741824:.01f} GB'
 
 
 class ImagePixelsValidator(BaseValidator):

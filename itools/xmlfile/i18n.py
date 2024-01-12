@@ -44,14 +44,14 @@ def _get_attr_context(datatype, tag_name, attr_name):
 
     # By default, the context of attribute is "element[name]"
     if context is None:
-        return '%s[%s]' % (tag_name, attr_name)
+        return f'{tag_name}[{attr_name}]'
 
     return context
 
 
 def _make_start_format(tag_uri, tag_name, attributes, encoding):
     # We must search for translatable attributes
-    result = [('<%s' % get_qname(tag_uri, tag_name), False, None)]
+    result = [(f'<{get_qname(tag_uri, tag_name)}', False, None)]
 
     for attr_uri, attr_name in attributes:
         qname = get_attribute_qname(attr_uri, attr_name)
@@ -64,12 +64,12 @@ def _make_start_format(tag_uri, tag_name, attributes, encoding):
         datatype = get_attr_datatype(tag_uri, tag_name, attr_uri, attr_name,
                                      attributes)
         if issubclass(datatype, Unicode):
-            result[-1] = (result[-1][0] + ' %s="' % qname, False, None)
+            result[-1] = (result[-1][0] + f' {qname}="', False, None)
             context = _get_attr_context(datatype, tag_name, attr_name)
             result.append((value, True, context))
             result.append(('"', False, None))
         else:
-            result[-1] = (result[-1][0] + ' %s="%s"' % (qname, value), False, None)
+            result[-1] = (result[-1][0] + f' {qname}="{value}"', False, None)
     # Close the start tag
     if is_empty(tag_uri, tag_name):
         result[-1] = (result[-1][0] + '/>', False, None)
@@ -171,7 +171,7 @@ def _get_translatable_blocks(events):
                 continue
             elif message:
                 id += 1
-                value = '<!--%s-->' % value
+                value = f'<!--{value}-->'
                 message.append_start_format([(value, False, None)], id, line)
                 message.append_end_format([], id, line)
                 continue

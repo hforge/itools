@@ -116,7 +116,7 @@ class Boolean(DataType):
         elif value is False:
             return '0'
         else:
-            raise ValueError('{0} value is not a boolean'.format(value))
+            raise ValueError(f'{value} value is not a boolean')
 
 
 class URI(String):

@@ -256,7 +256,7 @@ def setup(app):
 
         # Synopsis
         try:
-            __import__("itools.%s" % module)
+            __import__(f"itools.{module}")
             doc = itools.__dict__[module].__doc__
         except (ImportError, KeyError):
             doc = None
@@ -264,10 +264,10 @@ def setup(app):
         if doc:
             synopsis = doc.split('\n\n')[0].strip().replace('\n', ' ')
         else:
-            synopsis = "Itools %s module" % module
+            synopsis = f"Itools {module} module"
 
         # And the save the file
-        print('[autodoc] make the modules/%s.rst file' % module)
-        with open('autodoc/modules/%s.rst' % module, 'w') as rst_file:
+        print(f'[autodoc] make the modules/{module}.rst file')
+        with open(f'autodoc/modules/{module}.rst', 'w') as rst_file:
             rst_file.write(template_module.format(module=module,
                                                   synopsis=synopsis))

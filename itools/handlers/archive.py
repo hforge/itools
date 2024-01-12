@@ -110,7 +110,7 @@ class TARFile(File):
             for name in names:
                 member = tar.getmember(name)
                 if member.isdir():
-                    name = '%s/' % name
+                    name = f'{name}/'
                 mtime = datetime.utcfromtimestamp(member.mtime)
                 yield Info(name, mtime)
         finally:
@@ -122,7 +122,7 @@ class TARFile(File):
             names = tar.getnames()
             # Append trailing slash to directories, as it is with Zip files
             return [
-                ('%s/' % x) if tar.getmember(x).isdir() else x for x in names ]
+                f'{x}/' if tar.getmember(x).isdir() else x for x in names ]
         finally:
             tar.close()
 

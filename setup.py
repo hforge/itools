@@ -216,7 +216,7 @@ if __name__ == '__main__':
         if not line.startswith('itools/'):
             continue
         path = line.split('/')
-        subpackage = 'itools.%s' % (path[1])
+        subpackage = f'itools.{path[1]}'
         if subpackage in packages:
             files = package_data.setdefault(subpackage, [])
             files.append(join_path(*path[2:]))

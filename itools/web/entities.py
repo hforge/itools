@@ -38,7 +38,7 @@ def read_headers(file):
         try:
             value = datatype.decode(value)
         except Exception:
-            log.warning("Failed to parse the '%s' header" % name, exc_info=True)
+            log.warning(f"Failed to parse the '{name}' header", exc_info=True)
         else:
             entity_headers[name] = value
         # Next

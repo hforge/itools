@@ -126,7 +126,7 @@ class prototype(object, metaclass=prototype_type):
             prototype(...)
         """
         # Make the new class
-        name = '[anonymous] from %s.%s' % (cls.__module__, cls.__name__)
+        name = f'[anonymous] from {cls.__module__}.{cls.__name__}'
         new_class = type.__new__(prototype_type, name, (cls,), kw)
         # Fix the module so repr(...) gives something meaningful
         new_class.__module__ = _getframe(1).f_globals.get('__name__')
@@ -146,7 +146,7 @@ class proto_property(lazy):
             value = self.meth(owner)
         except Exception as e:
             tb = traceback.format_exc()
-            log.error("Error on proto property: {}".format(tb), exc_info=True)
+            log.error(f"Error on proto property: {tb}", exc_info=True)
             raise
         return value
 
@@ -162,7 +162,7 @@ class proto_lazy_property(lazy):
                     value = self.meth(owner)
                 except Exception as e:
                     tb = traceback.format_exc()
-                    log.error("Error on proto lazy property: {}".format(tb), exc_info=True)
+                    log.error(f"Error on proto lazy property: {tb}", exc_info=True)
                     raise
                 setattr(owner, name, value)
                 return value

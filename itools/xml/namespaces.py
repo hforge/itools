@@ -68,7 +68,7 @@ def get_namespace(namespace_uri):
         return namespaces[namespace_uri]
 
     # Use default
-    warn('Unknown namespace "%s" (using default)' % namespace_uri)
+    warn(f'Unknown namespace "{namespace_uri}" (using default)')
     return namespaces[None]
 
 
@@ -158,7 +158,7 @@ class XMLNamespace(prototype):
         for element in self.elements:
             name = element.name
             if name in self.elements:
-                raise ValueError('element "%s" is defined twice' % name)
+                raise ValueError(f'element "{name}" is defined twice')
             kw[name] = element
         return kw
 
@@ -171,7 +171,7 @@ class XMLNamespace(prototype):
             return element
         if self.default_element is not None:
             return self.default_element(name=name)
-        raise XMLError('unexpected element "%s"' % name)
+        raise XMLError(f'unexpected element "{name}"')
 
 
     def get_attr_datatype(self, name):

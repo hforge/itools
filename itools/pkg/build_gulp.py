@@ -35,14 +35,14 @@ class GulpBuilder(object):
     def __init__(self, package_root, worktree, manifest):
         self.package_root = package_root
         if self.package_root != '.':
-            self.ui_path = '{0}/ui/'.format(self.package_root)
+            self.ui_path = f'{self.package_root}/ui/'
         else:
             self.ui_path = 'ui/'
         self.worktree = worktree
         self.manifest = manifest
         self.fs = LocalFolder('.')
         if self.fs.is_folder(self.ui_path):
-            self.dist_folders = tuple(['{0}{1}'.format(self.ui_path, x) for x in LocalFolder(self.ui_path).get_names()])
+            self.dist_folders = tuple([f'{self.ui_path}{x}' for x in LocalFolder(self.ui_path).get_names()])
 
     def run(self):
         npm_done = self.launch_npm_install()
@@ -62,14 +62,14 @@ class GulpBuilder(object):
             filename = get_uri_name(path)
             if filename == 'package.json':
                 print("***"*25)
-                print("*** Run $ npm install on {}".format(path))
+                print(f"*** Run $ npm install on {path}")
                 print("***"*25)
                 path = str(Path(path)[:-1]) + '/'
                 p = Popen(['npm', 'install'], cwd=path)
                 p.wait()
                 if p.returncode == 1:
                     print("***"*25)
-                    print("*** Error running npm install {}".format(path))
+                    print(f"*** Error running npm install {path}")
                     print("***"*25)
                     sys.exit(1)
                 done = True

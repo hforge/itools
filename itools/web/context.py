@@ -146,7 +146,7 @@ def get_form_value(form, name, type=String, default=None):
     # Multilingual
     values = {}
     for key, value in form.items():
-        if key.startswith('%s:' % name):
+        if key.startswith(f'{name}:'):
             x, lang = key.split(':', 1)
             value = _get_form_value(form, key, type, default)
             values[lang] = value

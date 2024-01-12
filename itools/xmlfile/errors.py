@@ -22,5 +22,5 @@ class TranslationError(Exception):
         self.line = line
         self.source_file = source_file
         self.language = language
-        sub_message = 'Please check : {}:{} on file {}.po'.format(source_file, line, language)
+        sub_message = f'Please check : {source_file}:{line} on file {language}.po'
         super(TranslationError, self).__init__(sub_message)

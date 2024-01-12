@@ -360,11 +360,10 @@ class ResolveTestCase(TestCase):
             try:
                 self.assertEqual(x, expected)
             except AssertionError:
-                print('\n%s + %s = %s != %s' \
-                      % (self.base, reference, x, expected))
+                print(f'\n{self.base} + {reference} = {x} != {expected}')
                 failure += 1
         if failure:
-            raise AssertionError('%s uri resolutions failed' % failure)
+            raise AssertionError(f'{failure} uri resolutions failed')
 
 
     def test_others(self):

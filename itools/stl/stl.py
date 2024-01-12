@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2003-2011 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2006, 2010 Hervé Cauwelier <herve@oursours.net>
 # Copyright (C) 2007-2008, 2010 Sylvain Taverne <taverne.sylvain@gmail.com>
@@ -177,8 +176,8 @@ class NamespaceStack(list):
 ########################################################################
 # The run-time engine
 ########################################################################
-subs_expr_solo = compile("^\$\{([\w\/:]+?)\}$")
-subs_expr = compile("\$\{(.+?)\}")
+subs_expr_solo = compile(r"^\$\{([\w\/:]+?)\}$")
+subs_expr = compile(r"\$\{(.+?)\}")
 
 
 def substitute_boolean(data, stack, repeat_stack, encoding='utf-8'):
@@ -397,9 +396,8 @@ def process(events, start, end, stack, re_stack, encoding, skip_events):
                                           stack, re_stack, encoding)
                     if x is not None:
                         yield x
-                    for y in process(events, i, loop_end, stack, re_stack,
-                                     encoding, skip_events):
-                        yield y
+                    yield from process(events, i, loop_end, stack, re_stack,
+                                     encoding, skip_events)
                     if x is not None:
                         yield events[loop_end]
                     # 4. Restore stacks

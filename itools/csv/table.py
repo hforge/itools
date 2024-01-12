@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2005-2008 Nicolas Deram <nderam@gmail.com>
 # Copyright (C) 2007-2008 Sylvain Taverne <taverne.sylvain@gmail.com>
 # Copyright (C) 2007-2008, 2010 Henry Obein <henry.obein@gmail.com>
@@ -327,7 +326,7 @@ class UniqueError(ValueError):
 ###########################################################################
 # File Handler
 ###########################################################################
-class Property(object):
+class Property:
     """A property has a value, and may have one or more parameters.
 
     The parameters is a dictionary containing a list of values:
@@ -473,7 +472,7 @@ class Record(dict):
         if name == '__number__':
             return self.id
         if name not in self:
-            raise AttributeError("'%s' object has no attribute '%s'" % (
+            raise AttributeError("'{}' object has no attribute '{}'".format(
                 self.__class__.__name__, name))
 
         property = self[name]

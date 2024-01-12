@@ -52,7 +52,7 @@ def make_parent_dirs(path):
         makedirs(folder)
 
 
-class Worktree(object):
+class Worktree:
 
     def __init__(self, path, repo):
         self.path = abspath(path) + '/'

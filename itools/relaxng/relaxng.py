@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2008, 2010 David Versmisse <versmisse@lil.univ-littoral.fr>
 # Copyright (C) 2009-2010 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2010 Hervé Cauwelier <herve@oursours.net>
@@ -50,9 +49,9 @@ def read_common_attrs(tag_uri, attrs, context):
                 context['default_ns'] = value
             elif name == 'datatypeLibrary':
                 if value != 'http://www.w3.org/2001/XMLSchema-datatypes':
-                    raise NotImplementedError(('relax NG: we implement only '
+                    raise NotImplementedError('relax NG: we implement only '
                                                'the "http://www.w3.org/2001/XMLSchema-datatypes" '
-                                               'for datatypes'))
+                                               'for datatypes')
 
 
 def read_name_class(context, event, stream):

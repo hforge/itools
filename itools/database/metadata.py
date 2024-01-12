@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2009, 2011-2012 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2011 Sylvain Taverne <taverne.sylvain@gmail.com>
 #
@@ -57,7 +56,7 @@ class Metadata(File):
         self.cls = cls
         self.database = database
         kw['cls'] = cls
-        proxy = super(Metadata, self)
+        proxy = super()
         proxy.__init__(key=key, string=string, database=database, **kw)
 
     def new(self, cls=None, format=None, version=None):

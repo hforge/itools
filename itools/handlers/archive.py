@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2006-2007 Hervé Cauwelier <herve@oursours.net>
 # Copyright (C) 2006-2011 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2007 Sylvain Taverne <taverne.sylvain@gmail.com>
@@ -28,7 +27,7 @@ from .file import File
 from .registry import register_handler_class
 
 
-class Info(object):
+class Info:
 
     __slots__ = ['name', 'mtime']
 

@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2005 Nicolas Oyez <nicoyez@gmail.com>
 # Copyright (C) 2005-2009 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2008 David Versmisse <versmisse@lil.univ-littoral.fr>
@@ -31,7 +30,7 @@ doctype = (
 
 
 # FIXME TMXNote and XLFNote are the same
-class XLFNote(object):
+class XLFNote:
 
     def __init__(self, text='', attributes=None):
         if attributes is None:
@@ -56,7 +55,7 @@ class XLFNote(object):
 
 
 
-class XLFUnit(object):
+class XLFUnit:
 
     def __init__(self, attributes):
         self.source = None
@@ -108,7 +107,7 @@ class XLFUnit(object):
 
 
 
-class File(object):
+class File:
 
     def __init__(self, original, attributes):
         self.original = original

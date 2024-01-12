@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2006-2007, 2009 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2007 Sylvain Taverne <taverne.sylvain@gmail.com>
 # Copyright (C) 2008 David Versmisse <versmisse@lil.univ-littoral.fr>
@@ -123,7 +122,7 @@ def get_lines(file):
 
 
 
-class Lines(object):
+class Lines:
 
     def __init__(self, file):
         self.lines = get_lines(file)

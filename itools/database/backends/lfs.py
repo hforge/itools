@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2007, 2009, 2011-2012 J. David Ibáñez <jdavid.ibp@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -24,7 +23,7 @@ from itools.fs import lfs, WRITE
 from .registry import register_backend
 
 
-class LFSBackend(object):
+class LFSBackend:
 
     def __init__(self, path, fields, read_only=False):
         if path:

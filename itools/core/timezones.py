@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2010 Alexis Huet <alexis@itaapy.com>
 # Copyright (C) 2010-2012 J. David Ibáñez <jdavid.ibp@gmail.com>
 #

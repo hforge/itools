@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2005-2010 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2006 Piotr Macuk <piotr@macuk.pl>
 # Copyright (C) 2007 Henry Obein <henry.obein@gmail.com>

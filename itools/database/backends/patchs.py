@@ -29,7 +29,7 @@ from itools.loop import cron
 TEST_DB_WITHOUT_PATCHS = bool(int(os.environ.get('TEST_DB_WITHOUT_PATCHS') or 0))
 
 
-class PatchsBackend(object):
+class PatchsBackend:
 
     rotate_interval = timedelta(weeks=2)
 

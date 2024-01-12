@@ -55,7 +55,7 @@ class SearchResults:
             yield self.database.get_resource_from_brain(brain)
 
 
-class RODatabase(object):
+class RODatabase:
 
     read_only = True
     backend_cls = None

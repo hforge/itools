@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2008 Henry Obein <henry.obein@gmail.com>
 # Copyright (C) 2008-2009 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2009 Aurélien Ansel <camumus@gmail.com>

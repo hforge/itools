@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2003-2007, 2010 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2007 Sylvain Taverne <taverne.sylvain@gmail.com>
 # Copyright (C) 2008-2009 David Versmisse <versmisse@lil.univ-littoral.fr>

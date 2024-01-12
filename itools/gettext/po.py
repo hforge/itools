@@ -218,7 +218,7 @@ def unescape(s):
     return expr.sub(lambda x: eval(f"'{x.group(0)}'"), s)
 
 
-class POUnit(object):
+class POUnit:
     """An entry in a PO file has the syntax:
 
     #  translator-comments

@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2004-2008, 2011 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2007 Henry Obein <henry.obein@gmail.com>
 # Copyright (C) 2008 Sylvain Taverne <taverne.sylvain@gmail.com>
@@ -33,10 +32,10 @@ To build a query:
 from pprint import PrettyPrinter, _recursion
 
 
-class BaseQuery(object):
+class BaseQuery:
 
     def __repr__(self):
-        return "<%s.%s(%s)>" % (
+        return "<{}.{}({})>".format(
             self.__module__,
             self.__class__.__name__,
             self.__repr_parameters__())

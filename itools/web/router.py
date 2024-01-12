@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2016 Taverne Sylvain <taverne.sylvain@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -46,7 +45,7 @@ status2name = {
 
 
 
-class RequestMethod(object):
+class RequestMethod:
 
     @classmethod
     def check_access(cls, context):

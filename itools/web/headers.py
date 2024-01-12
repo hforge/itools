@@ -234,7 +234,7 @@ def read_cookie_parameter(data):
     return (name, value), data
 
 
-class Cookie(object):
+class Cookie:
     __hash__ = None
 
     def __init__(self, name, value, comment=None, domain=None, max_age=None,

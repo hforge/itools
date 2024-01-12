@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2006-2007, 2010 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2007 Rob McMullen <rob.mcmullen@gmail.com>
 # Copyright (C) 2010 David Versmisse <versmisse@lil.univ-littoral.fr>
@@ -41,7 +40,7 @@ MODES = {
 }
 
 
-class LocalFolder(object):
+class LocalFolder:
 
     def __init__(self, path='.'):
         if not exists(path):

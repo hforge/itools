@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2002 Thilo Ernst <Thilo.Ernst@dlr.de>
 # Copyright (C) 2002-2004, 2006-2008 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2007 David Versmisse <versmisse@lil.univ-littoral.fr>
@@ -55,7 +54,7 @@ class WorkflowError(Exception):
     pass
 
 
-class Workflow(object):
+class Workflow:
     """This class is used to describe a workflow.
 
     Actually it's just a graph. A workflow has states (one of them
@@ -109,7 +108,7 @@ class Workflow(object):
 
 
 
-class State(object):
+class State:
     """This class is used to describe a state.
 
     An state has transitions to other states.
@@ -135,7 +134,7 @@ class State(object):
 
 
 
-class Transition(object):
+class Transition:
     """This class is used to describe transitions.
 
     Transitions come from one state and go to another.
@@ -156,7 +155,7 @@ class Transition(object):
 
 
 
-class WorkflowAware(object):
+class WorkflowAware:
     """Mixin class to be used for workflow aware objects.
 
     The instances of a class that inherits from WorkflowAware can be

@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2009-2010 J. David Ibáñez <jdavid.ibp@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -16,7 +15,7 @@
 
 
 # From http://blog.pythonisito.com/2008/08/lazy-descriptors.html
-class lazy(object):
+class lazy:
 
     def __init__(self, meth):
         self.meth = meth

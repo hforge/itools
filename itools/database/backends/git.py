@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2007, 2009, 2011-2012 J. David Ibáñez <jdavid.ibp@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -44,7 +43,7 @@ TEST_DB_DESACTIVATE_STATIC_HISTORY = bool(int(os.environ.get('TEST_DB_DESACTIVAT
 TEST_DB_DESACTIVATE_PATCH = bool(int(os.environ.get('TEST_DESACTIVATE_PATCH') or 1))
 
 
-class Heap(object):
+class Heap:
     """
     This object behaves very much like a sorted dict, but for security only a
     subset of the dict API is exposed:
@@ -88,7 +87,7 @@ class Heap(object):
         return path, self._dict.pop(path)
 
 
-class GitBackend(object):
+class GitBackend:
 
     def __init__(self, path, fields, read_only=False):
         self.nb_transactions = 0

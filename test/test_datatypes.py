@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2006, 2012 Nicolas Deram <nderam@gmail.com>
 # Copyright (C) 2007 David Versmisse <versmisse@lil.univ-littoral.fr>
 # Copyright (C) 2007-2008 Hervé Cauwelier <herve@oursours.net>

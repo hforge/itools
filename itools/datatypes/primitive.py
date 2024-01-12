@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2004-2012 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2006-2008, 2010 Hervé Cauwelier <herve@oursours.net>
 # Copyright (C) 2007, 2009 David Versmisse <versmisse@lil.univ-littoral.fr>
@@ -153,7 +152,7 @@ class PathDataType(DataType):
 
 # We consider the local part in emails is case-insensitive. This is against
 # the standard, but corresponds to common usage.
-email_expr = "^[0-9a-z]+[_\.0-9a-z-'+]*@([0-9a-z-]+\.)+[a-z]{2,63}$"
+email_expr = r"^[0-9a-z]+[_\.0-9a-z-'+]*@([0-9a-z-]+\.)+[a-z]{2,63}$"
 email_expr = compile(email_expr)
 class Email(String):
 
@@ -276,7 +275,7 @@ def enumerate_get_value(options, name, default=None):
 # Medium decoder/encoders (not for values)
 ###########################################################################
 
-class XMLContent(object):
+class XMLContent:
 
     @staticmethod
     def encode(value):
@@ -289,7 +288,7 @@ class XMLContent(object):
         return value.replace('&amp;', '&').replace('&lt;', '<')
 
 
-class XMLAttribute(object):
+class XMLAttribute:
 
     @staticmethod
     def encode(value):

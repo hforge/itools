@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2006 Nicolas Deram <nderam@gmail.com>
 # Copyright (C) 2006-2010 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2007 Rob McMullen <rob.mcmullen@gmail.com>

@@ -71,7 +71,7 @@ problems = merge_dicts(
 # Plugins (by line)
 ###########################################################################
 
-class LineLengthPlugin(object):
+class LineLengthPlugin:
     key = 'bad_length'
 
     @classmethod
@@ -80,7 +80,7 @@ class LineLengthPlugin(object):
         return len(line) > 80
 
 
-class TrailingSpacePlugin(object):
+class TrailingSpacePlugin:
     key = 'bad_end'
 
     @classmethod
@@ -88,7 +88,7 @@ class TrailingSpacePlugin(object):
         return len(line.rstrip()) != len(line.rstrip('\n\x0b\x0c\r'))
 
 
-class TabsPlugin(object):
+class TabsPlugin:
     key = 'tabs'
 
     @classmethod
@@ -103,7 +103,7 @@ line_plugins = [LineLengthPlugin, TrailingSpacePlugin, TabsPlugin]
 # Plugins (by tokens)
 ###########################################################################
 
-class IndentPlugin(object):
+class IndentPlugin:
     key = 'bad_indentation'
 
     def __init__(self):
@@ -129,7 +129,7 @@ token_plugins = [IndentPlugin]
 # Plugins (by AST)
 ###########################################################################
 
-class ExceptAllPlugin(object):
+class ExceptAllPlugin:
     key = 'except_all'
 
     @classmethod
@@ -137,7 +137,7 @@ class ExceptAllPlugin(object):
         return type(node) is ast.ExceptHandler and node.type is None
 
 
-class StringException(object):
+class StringException:
     key = 'string_exception'
 
     @classmethod
@@ -154,7 +154,7 @@ class StringException(object):
             return node.type and type(node.type) is ast.Str
 
 
-class MisplacedImport(object):
+class MisplacedImport:
     key = 'bad_import'
 
     def __init__(self):
@@ -405,7 +405,7 @@ def show_stats(filenames, worse):
         stat = stats[problem]
         if stat != 0:
             pourcent = (stats[problem] * 100.0)/stats['lines']
-            show_comments.append('%5.02f%% lines %s' % (pourcent,
+            show_comments.append('{:5.02f}% lines {}'.format(pourcent,
                                     aesthetics_problems['keys'][problem]))
     print_list(aesthetics_problems['title'], show_comments)
     print_worses(files_db, worse, aesthetics_problems['keys'])
@@ -490,7 +490,7 @@ if __name__ == '__main__':
     # Filenames
     worktree = open_worktree('.', soft=True)
     if args:
-        filenames = set([])
+        filenames = set()
         for arg in args:
             filenames = filenames.union(glob(arg))
         filenames = list(filenames)

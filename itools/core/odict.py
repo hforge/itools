@@ -17,7 +17,7 @@
 This module implements an ordered dictionary, to be removed by Python 2.7
 """
 
-class DNode(object):
+class DNode:
     """This class makes the nodes of a doubly-linked list.
     """
 

@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 1996-2003 Victor B Wagner
 # Copyright (C) 2003 Alex Ott <alexott@gmail.com>
 # Copyright (C) 2009 Hervé Cauwelier <herve@oursours.net>
@@ -75,7 +74,7 @@ def rightOleType(oleBuf):
                                   TYPE_OLE_ROOTDIR, TYPE_OLE_UNKNOWN)
 
 
-class OleEntry(object):
+class OleEntry:
 
     __slots__ = ['ole', 'file', 'name', 'startBlock', 'curBlock', 'length',
                  'ole_offset', 'file_offset', 'dirPos', 'type',
@@ -212,7 +211,7 @@ class OleEntry(object):
 
 
 
-class Ole(object):
+class Ole:
 
     __slots__ = ['file', 'sectorSize', 'shortSectorSize', 'bbdNumBlocks',
                  'BBD', 'sbdNumber', 'SBD', 'rootEntry', 'propCurNumber',
@@ -313,8 +312,8 @@ class Ole(object):
         self.propCurNumber = 0
         file.seek(0, SEEK_SET)
         if self.rootEntry is None:
-            raise ValueError(("Broken OLE structure. "
-                              "Cannot find root entry in this file!"))
+            raise ValueError("Broken OLE structure. "
+                              "Cannot find root entry in this file!")
 
 
     def readdir(self):

@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2003-2010 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2007-2008 Sylvain Taverne <taverne.sylvain@gmail.com>
 # Copyright (C) 2008 Hervé Cauwelier <herve@oursours.net>
@@ -159,7 +158,7 @@ def get_element(events, name, **kw):
     return None
 
 
-class Element(object):
+class Element:
 
     __slots__ = ['events', 'start', 'end']
 

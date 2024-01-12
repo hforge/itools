@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2005-2009 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2008 Gautier Hayoun <gautier.hayoun@supinfo.com>
 # Copyright (C) 2008 Henry Obein <henry.obein@gmail.com>
@@ -191,7 +190,7 @@ def get_test_filenames(test_path, force_download):
 def output_init(parsers_name):
     print('-' * 78)
     # 30c | 23c | 23c -> 78c
-    print(' %s|%s|%s' % (center('file', 30), center(parser_names[0], 23),
+    print(' {}|{}|{}'.format(center('file', 30), center(parser_names[0], 23),
                           center(parser_names[1], 23)))
     print('-' * 78)
 

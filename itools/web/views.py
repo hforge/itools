@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2008 Gautier Hayoun <gautier.hayoun@supinfo.com>
 # Copyright (C) 2008 Nicolas Deram <nderam@gmail.com>
 # Copyright (C) 2008, 2011 Henry Obein <henry.obein@gmail.com>

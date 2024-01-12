@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2004-2010 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2006, 2008 Hervé Cauwelier <herve@oursours.net>
 # Copyright (C) 2007 Rob McMullen <rob.mcmullen@gmail.com>
@@ -413,7 +412,7 @@ def encode_query(query, schema=None):
 # Generic references
 ##########################################################################
 
-class Reference(object):
+class Reference:
     """A common URI reference is made of five components:
 
     - the scheme
@@ -623,7 +622,7 @@ empty_reference = EmptyReference()
 # Factory
 ##########################################################################
 
-class GenericDataType(object):
+class GenericDataType:
 
     @staticmethod
     def decode(data):

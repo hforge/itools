@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2011 Juan David Ibáñez Palomar <jdavid@itaapy.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -40,7 +39,7 @@ def message_short(commit):
 
 
 
-class Worktree(object):
+class Worktree:
 
     def __init__(self, path, repo):
         self.path = abspath(path) + '/'

@@ -76,7 +76,7 @@ class LRUCache(OrderedDict):
             raise ValueError("the 'size_max' is smaller than 'size_min'")
 
         # Initialize the dict
-        super(LRUCache, self).__init__()
+        super().__init__()
         # The cache size
         self.size_min = size_min
         self.size_max = size_max
@@ -84,7 +84,7 @@ class LRUCache(OrderedDict):
         self.automatic = automatic
 
     def _append(self, key):
-        super(LRUCache, self)._append(key)
+        super()._append(key)
 
         # Free memory if needed
         if self.automatic is True and len(self) > self.size_max:

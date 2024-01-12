@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2006, 2010 Hervé Cauwelier <herve@oursours.net>
 # Copyright (C) 2007 Henry Obein <henry.obein@gmail.com>
 # Copyright (C) 2007 Sylvain Taverne <taverne.sylvain@gmail.com>
@@ -116,7 +115,7 @@ class RWDatabase(RODatabase):
                 return True
 
         # Normal case
-        return super(RWDatabase, self).has_handler(key)
+        return super().has_handler(key)
 
     def _get_handler(self, key, cls=None, soft=False):
         # A hook to handle the new directories
@@ -127,7 +126,7 @@ class RWDatabase(RODatabase):
                 return Folder(key, database=self)
 
         # The other files
-        return super(RWDatabase, self)._get_handler(key, cls, soft)
+        return super()._get_handler(key, cls, soft)
 
     def set_handler(self, key, handler):
         # TODO: We have to refactor the set_changed()
@@ -211,7 +210,7 @@ class RWDatabase(RODatabase):
     def get_handler_names(self, key):
         key = self.normalize_key(key)
         # On the filesystem
-        names = super(RWDatabase, self).get_handler_names(key)
+        names = super().get_handler_names(key)
         names = set(names)
         # In added
         if key:
@@ -390,7 +389,7 @@ class RWDatabase(RODatabase):
     # Transactions
     #######################################################################
     def _cleanup(self):
-        super(RWDatabase, self)._cleanup()
+        super()._cleanup()
         self.has_changed = False
 
     def _abort_changes(self):

@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2004 Thierry Fromon <from.t@free.fr>
 # Copyright (C) 2004, 2006-2007, 2009 J. David Ibáñez <jdavid.ibp@gmail.com>
 #

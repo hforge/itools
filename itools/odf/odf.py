@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2007-2008 Sylvain Taverne <taverne.sylvain@gmail.com>
 # Copyright (C) 2007-2010 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2008 Romain Gauthier <romain.gauthier@itaapy.com>
@@ -80,7 +79,7 @@ def stl_to_odt(model_odt, namespace):
     return zip_data(model_odt.data, modified_files)
 
 
-class GreekCatalog(object):
+class GreekCatalog:
     """A stupid translator.
     """
 
@@ -167,9 +166,7 @@ class ODFFile(OOFile):
     def get_units(self, srx_handler=None):
         for filename in ['content.xml', 'meta.xml', 'styles.xml']:
             events = self.get_events(filename)
-            for message in get_units(events, srx_handler):
-                # FIXME the line number has no sense here
-                yield message
+            yield from get_units(events, srx_handler)
 
 
     def translate(self, catalog, srx_handler=None):

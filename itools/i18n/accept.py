@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2002-2008, 2010 J. David Ibáñez <jdavid.ibp@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -82,7 +81,7 @@ class AcceptLanguage(dict):
         return language
 
 
-class AcceptLanguageType(object):
+class AcceptLanguageType:
 
     @staticmethod
     def decode(data):

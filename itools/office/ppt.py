@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2004 Alex Ott <alexott@gmail.com>
 # Copyright (C) 2006-2009 Hervé Cauwelier <herve@oursours.net>
 # Copyright (C) 2007 Sylvain Taverne <taverne.sylvain@gmail.com>
@@ -73,8 +72,7 @@ def do_ppt(entry):
         recbuf = entry.read(8)
         itemsread = len(recbuf)
         if entry.is_eof():
-            for char in process_item(entry, DOCUMENT_END, 0):
-                yield char
+            yield from process_item(entry, DOCUMENT_END, 0)
             return
         if itemsread < 8:
             break
@@ -82,8 +80,7 @@ def do_ppt(entry):
         reclen = getulong(recbuf, 4)
         if reclen < 0:
             return
-        for char in process_item(entry, rectype, reclen):
-            yield char
+        yield from process_item(entry, rectype, reclen)
 
 
 def ppt_to_text(data):

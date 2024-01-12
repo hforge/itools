@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2003-2010 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2006-2007, 2010 Hervé Cauwelier <herve@oursours.net>
 # Copyright (C) 2007 Henry Obein <henry.obein@gmail.com>
@@ -21,7 +20,7 @@ from .base import Handler
 from .registry import register_handler_class
 
 
-class Context(object):
+class Context:
     """Used by 'traverse2' to control the traversal.
     """
 
@@ -61,8 +60,7 @@ class Folder(Handler):
         for name in self.get_handler_names():
             handler = self.get_handler(name)
             if type(handler) is Folder:
-                for x in handler.traverse():
-                    yield x
+                yield from handler.traverse()
             else:
                 yield handler
 

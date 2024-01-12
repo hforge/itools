@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2009-2011 J. David Ibáñez <jdavid.ibp@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -117,7 +116,7 @@ class prototype_type(type):
         return type.__new__(mcs, class_name, bases, dict)
 
 
-class prototype(object, metaclass=prototype_type):
+class prototype(metaclass=prototype_type):
 
     def __new__(cls, *args, **kw):
         """

@@ -21,7 +21,7 @@ from itools.core import prototype
 
 
 class URIPatternsParser(prototype):
-    """
+    r"""
     Inspired by this project: https://github.com/lukearno/selector
     Turn path expressions into regexes with named groups.
 
@@ -77,7 +77,7 @@ class URIPatternsParser(prototype):
 
 
 
-class URIDispatcher(object):
+class URIDispatcher:
 
     patterns = OrderedDict()
     parser = URIPatternsParser

@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2005 Nicolas Oyez <nicoyez@gmail.com>
 # Copyright (C) 2005-2007 J. David Ibáñez <jdavid.ibp@gmail.com>
 #

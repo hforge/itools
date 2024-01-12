@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2011-2012 J. David Ibáñez <jdavid.ibp@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -49,7 +48,7 @@ class DBResourceMetaclass(type):
         return cls
 
 
-class Resource(object, metaclass=DBResourceMetaclass):
+class Resource(metaclass=DBResourceMetaclass):
 
     __hash__ = None
 

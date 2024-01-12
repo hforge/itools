@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2003-2011 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2008 David Versmisse <versmisse@lil.univ-littoral.fr>
 #
@@ -219,7 +218,7 @@ boolean_attributes = {'checked', 'compact', 'declare', 'defer',
 ###########################################################################
 # The Parser
 ###########################################################################
-class Parser(BaseParser, object):
+class Parser(BaseParser):
 
     def parse(self, data):
         self.encoding = 'UTF-8'

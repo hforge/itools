@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2011-2012 J. David Ibáñez <jdavid.ibp@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -52,7 +51,7 @@ class StaticView(BaseView):
         # FIXME Check we set the encoding for text files
         mimetype = get_mimetype(basename(path))
         # Get data
-        with open(path, 'r') as f:
+        with open(path) as f:
             data = f.read()
         # Response
         context.status = 200

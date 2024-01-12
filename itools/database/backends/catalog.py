@@ -105,7 +105,7 @@ def warn_not_indexed_nor_stored(name):
     log.warning(MSG_NOT_INDEXED_NOR_STORED.format(name=name))
 
 
-class Doc(object):
+class Doc:
 
     def __init__(self, xdoc, fields, metadata):
         self._xdoc = xdoc
@@ -200,7 +200,7 @@ class Doc(object):
         return field_cls.get_default()
 
 
-class SearchResults(object):
+class SearchResults:
 
     def __init__(self, catalog, xquery):
         self._catalog = catalog
@@ -294,7 +294,7 @@ class SearchResults(object):
         return results
 
 
-class Catalog(object):
+class Catalog:
     nb_changes = 0
     _db = None
     read_only = False
@@ -544,8 +544,8 @@ class Catalog(object):
             if not (issubclass(field_cls, String) and
                     field_cls.stored and
                     field_cls.indexed):
-                raise ValueError(('the abspath field must be declared as '
-                                  'String(stored=True, indexed=True)'))
+                raise ValueError('the abspath field must be declared as '
+                                  'String(stored=True, indexed=True)')
         # Stored ?
         info = {}
         if getattr(field_cls, 'stored', False):

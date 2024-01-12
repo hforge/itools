@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2005-2009 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2008-2009 David Versmisse <versmisse@lil.univ-littoral.fr>
 # Copyright (C) 2010 Henry Obein <henry.obein@gmail.com>

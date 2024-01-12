@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2006-2009 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2010 Sylvain Taverne <taverne.sylvain@gmail.com>
 # Copyright (C) 2011 Hervé Cauwelier <herve@oursours.net>

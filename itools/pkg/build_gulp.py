@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2016 Sylvain Taverne <taverne.sylvain@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -24,7 +23,7 @@ from itools.fs.lfs import LocalFolder
 from itools.uri import get_uri_name, Path
 
 
-class GulpBuilder(object):
+class GulpBuilder:
     """
     Run "gulp build" in project's repository & add generated files
      $ ui/{SKINS}/*

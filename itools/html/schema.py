@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2008 David Versmisse <versmisse@lil.univ-littoral.fr>
 # Copyright (C) 2008 Nicolas Deram <nderam@gmail.com>
 # Copyright (C) 2008-2010 Hervé Cauwelier <herve@oursours.net>
@@ -286,7 +285,7 @@ class InputElement(Element):
             if (attributes.get(key1) == 'submit' or
                 attributes.get(key2) == 'submit'):
                 return Unicode(context='button')
-        proxy = super(InputElement, self)
+        proxy = super()
         return proxy.get_attr_datatype(attr_name, attributes)
 
 

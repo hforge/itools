@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2003-2010 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2007-2008 Henry Obein <henry.obein@gmail.com>
 # Copyright (C) 2009-2010 David Versmisse <versmisse@lil.univ-littoral.fr>
@@ -70,7 +69,7 @@ class File(Handler):
                 if key:
                     log.warning(f'Cannot attach handler {key} to a database')
                     try:
-                        string = open(key, 'r').read()
+                        string = open(key).read()
                     except UnicodeDecodeError:
                         string = open(key, 'rb').read()
                     key = None

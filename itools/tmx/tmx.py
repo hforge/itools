@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2005 Nicolas Oyez <nicoyez@gmail.com>
 # Copyright (C) 2005-2008 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2008 David Versmisse <versmisse@lil.univ-littoral.fr>
@@ -23,7 +22,7 @@ from itools.xml import XMLParser, START_ELEMENT, END_ELEMENT, COMMENT, TEXT
 
 
 # FIXME TMXNote and XLFNote are the same
-class TMXNote(object):
+class TMXNote:
 
     def __init__(self, text='', attributes=None):
         if attributes is None:
@@ -47,7 +46,7 @@ class TMXNote(object):
         return f'<note{attributes}>{self.text}</note>\n'
 
 
-class Sentence(object):
+class Sentence:
 
     def __init__(self, attributes):
         self.attributes = attributes
@@ -70,7 +69,7 @@ class Sentence(object):
         return ''.join(s)
 
 
-class TMXUnit(object):
+class TMXUnit:
 
     def __init__(self, attributes):
         self.attributes = attributes

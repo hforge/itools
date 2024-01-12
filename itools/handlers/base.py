@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2003-2007, 2009-2011 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2006-2007, 2010 Hervé Cauwelier <herve@oursours.net>
 #
@@ -23,7 +22,7 @@ handler class hierarchy.
 MSG_NOT_ATTACHED = 'Method only available when attached to a database.'
 
 
-class Handler(object):
+class Handler:
     """This class represents a resource handler; where a resource can be a
     file or a directory, and is identified by a unique key.
 

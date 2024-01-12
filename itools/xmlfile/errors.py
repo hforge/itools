@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2017 Florent Chenebault <florent.chenebault@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -23,4 +22,4 @@ class TranslationError(Exception):
         self.source_file = source_file
         self.language = language
         sub_message = f'Please check : {source_file}:{line} on file {language}.po'
-        super(TranslationError, self).__init__(sub_message)
+        super().__init__(sub_message)

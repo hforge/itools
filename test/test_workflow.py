@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2002 Thilo Ernst <Thilo.Ernst@dlr.de>
 # Copyright (C) 2002-2004, 2006-2007, 2009 J. David Ibáñez <jdavid.ibp@gmail.com>
 #

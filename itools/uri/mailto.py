@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2004-2009 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2006 Nicolas Deram <nderam@gmail.com>
 # Copyright (C) 2009 Aurélien Ansel <camumus@gmail.com>
@@ -20,7 +19,7 @@
 from .registry import register_scheme
 
 
-class Mailto(object):
+class Mailto:
     __hash__ = None
     __slots__ = ['address']
     scheme = 'mailto'
@@ -47,7 +46,7 @@ class Mailto(object):
         return str(self) == str(other)
 
 
-class MailtoDataType(object):
+class MailtoDataType:
 
     @staticmethod
     def decode(data):

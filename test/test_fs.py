@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2006-2008 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2007 Rob McMullen <rob.mcmullen@gmail.com>
 # Copyright (C) 2007 Sylvain Taverne <taverne.sylvain@gmail.com>

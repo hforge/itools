@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2005 Nicolas Oyez <nicoyez@gmail.com>
 # Copyright (C) 2005-2007, 2009 Nicolas Deram <nderam@gmail.com>
 # Copyright (C) 2005-2010 J. David Ibáñez <jdavid.ibp@gmail.com>
@@ -32,7 +31,7 @@ from itools.handlers import guess_encoding, TextFile
 from .datatypes import DateTime, record_properties, record_parameters, Time
 
 
-class Component(object):
+class Component:
     """Parses and evaluates a component block.
 
         input :   string values for c_type and uid
@@ -595,7 +594,7 @@ class iCalendar(TextFile):
                  if component.c_type == type]
 
 
-class TZProp(object):
+class TZProp:
     """This class basically represent the concept of Timezone Property
     (standard or daylight), as described by RFC5545."""
 

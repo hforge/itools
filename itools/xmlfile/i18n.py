@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2003-2010 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2007-2008 Sylvain Taverne <taverne.sylvain@gmail.com>
 # Copyright (C) 2008 Hervé Cauwelier <herve@oursours.net>
@@ -224,8 +223,7 @@ def get_units(events, srx_handler=None):
                     keep_spaces = False
         elif xml_type == MESSAGE:
             # Segmentation
-            for segment in get_segments(value, keep_spaces, srx_handler):
-                yield segment
+            yield from get_segments(value, keep_spaces, srx_handler)
 
 
 

@@ -33,7 +33,7 @@ class INFO(MSG):
             events = XMLParser(message, namespaces=stl_namespaces)
             return stl(events=events, namespace=namespace)
 
-        return super(INFO, self)._format(message, **kw)
+        return super()._format(message, **kw)
 
 
 class ERROR(INFO):

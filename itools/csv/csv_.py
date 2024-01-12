@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 # Copyright (C) 2004-2008, 2010, 2012 J. David Ibáñez <jdavid.ibp@gmail.com>
 # Copyright (C) 2005 Piotr Macuk <piotr@macuk.pl>
 # Copyright (C) 2006-2007, 2009-2010 Hervé Cauwelier <herve@oursours.net>

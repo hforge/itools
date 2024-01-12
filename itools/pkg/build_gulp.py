@@ -80,14 +80,14 @@ class GulpBuilder:
             filename = get_uri_name(path)
             if filename == 'gulpfile.js':
                 print("***"*25)
-                print("*** Run $ gulp build on ".format(path))
+                print(f"*** Run $ gulp build on {path}")
                 print("***"*25)
                 path = str(Path(path)[:-1]) + '/'
                 p = Popen(['./node_modules/.bin/gulp', 'build'], cwd=path)
                 p.wait()
                 if p.returncode == 1:
                     print("***"*25)
-                    print("*** Error running gulp ".format(path))
+                    print(f"*** Error running gulp {path}")
                     print("***"*25)
                     sys.exit(1)
                 done = True
@@ -99,14 +99,14 @@ class GulpBuilder:
             filename = get_uri_name(path)
             if filename == 'webpack.config.js':
                 print("***"*25)
-                print("*** Run $ webpack ".format(path))
+                print(f"*** Run $ webpack {path}")
                 print("***"*25)
                 path = str(Path(path)[:-1]) + '/'
                 p = Popen(['./node_modules/.bin/webpack', '--mode=production'], cwd=path)
                 p.wait()
                 if p.returncode == 1:
                     print("***"*25)
-                    print("*** Error running webpack ".format(path))
+                    print(f"*** Error running webpack {path}")
                     print("***"*25)
                     sys.exit(1)
                 done = True

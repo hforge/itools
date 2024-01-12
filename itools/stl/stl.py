@@ -145,7 +145,7 @@ def lookup(namespace, name):
     # Case 2: instance
     try:
         value = getattr(namespace, name)
-    except AttributeError as e:
+    except AttributeError:
         err = f"Lookup failed : name '{name}' not found in the namespace"
         log.error(err, exc_info=True)
         raise STLError(err.format(name))

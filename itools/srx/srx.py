@@ -32,7 +32,6 @@ class SRXFile(TextFile):
 
     def _load_state_from_file(self, file):
         # Default values
-        encoding = 'utf-8'
         self.header = {'segmentsubflows': True,
                        'cascade': None,
                        'formathandle_start': False,
@@ -48,7 +47,7 @@ class SRXFile(TextFile):
 
         for xml_type, value, line in XMLParser(data_file):
             if xml_type == XML_DECL:
-                encoding = value[1]
+                pass
             elif xml_type == START_ELEMENT:
                 tag_uri, tag_name, attrs = value
                 if tag_uri == srx_uri:

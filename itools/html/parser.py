@@ -15,7 +15,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from the Standard Library
-import sys
 import html.entities
 from html.parser import HTMLParser as BaseParser
 from warnings import warn

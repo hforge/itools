@@ -24,7 +24,6 @@ from subprocess import call
 import sys
 
 # Import from itools
-import itools
 from itools.gettext import POFile
 from itools.handlers import register_handler_class
 from itools.database.ro import ro_database

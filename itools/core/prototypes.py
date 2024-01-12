@@ -143,7 +143,7 @@ class proto_property(lazy):
     def __get__(self, instance, owner):
         try:
             value = self.meth(owner)
-        except Exception as e:
+        except Exception:
             tb = traceback.format_exc()
             log.error(f"Error on proto property: {tb}", exc_info=True)
             raise
@@ -159,7 +159,7 @@ class proto_lazy_property(lazy):
                 name = self.meth.__name__
                 try:
                     value = self.meth(owner)
-                except Exception as e:
+                except Exception:
                     tb = traceback.format_exc()
                     log.error(f"Error on proto lazy property: {tb}", exc_info=True)
                     raise

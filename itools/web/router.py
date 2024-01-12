@@ -108,7 +108,7 @@ class RequestMethod:
         # Save changes
         try:
             database.save_changes()
-        except Exception as e:
+        except Exception:
             cls.internal_server_error(context)
 
 
@@ -194,7 +194,7 @@ class RequestMethod:
         except NotModified:
             context.http_not_modified()
             return
-        except Exception as e:
+        except Exception:
             has_error = True
             cls.internal_server_error(context)
         finally:
@@ -249,7 +249,7 @@ class RequestMethod:
             except NotModified:
                 context.http_not_modified()
                 return
-            except Exception as e:
+            except Exception:
                 cls.internal_server_error(context)
             else:
                 # Ok: set status
@@ -267,7 +267,7 @@ class RequestMethod:
             except NotModified:
                 context.http_not_modified()
                 return
-            except Exception as e:
+            except Exception:
                 cls.internal_server_error(context)
             else:
                 cls.set_status_from_entity(context)
@@ -276,7 +276,7 @@ class RequestMethod:
         # (6) After Traverse hook
         try:
             context.site_root.after_traverse(context)
-        except Exception as e:
+        except Exception:
             cls.internal_server_error(context)
 
         # (7) Build and return the response

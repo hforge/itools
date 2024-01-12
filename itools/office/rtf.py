@@ -92,7 +92,7 @@ def rtf_to_text(data):
     for word in parser:
         if word == '\\pntxta' or word == '\\pntxtb':
             # Skip noise
-            next(arser)
+            next(parser)
         elif word[0] not in '\\{}':
             text.append(word)
         elif word == '\\par':

@@ -460,11 +460,11 @@ class RWDatabase(RODatabase):
         # the transaction will be aborted
         try:
             data = self._before_commit()
-        except Exception as e:
+        except Exception:
             log.error("Transaction failed", exc_info=True)
             try:
                 self._abort_changes()
-            except Exception as e:
+            except Exception:
                 log.error("Aborting failed", exc_info=True)
             self._cleanup()
             raise
@@ -472,13 +472,13 @@ class RWDatabase(RODatabase):
         # Commit
         try:
             self._save_changes(data, commit_message)
-        except Exception as e:
+        except Exception:
             log.error("Transaction failed", exc_info=True)
             try:
                 self._abort_changes()
-            except Exception as e:
+            except Exception:
                 log.error("Aborting failed", exc_info=True)
-            raise e
+            raise
         finally:
             self._cleanup()
 
@@ -488,14 +488,14 @@ class RWDatabase(RODatabase):
         """
         try:
             data = self._before_commit()
-        except Exception as e:
+        except Exception:
             log.error("Transaction failed", exc_info=True)
             try:
                 self._abort_changes()
-            except Exception as e:
+            except Exception:
                 log.error("Aborting failed", exc_info=True)
             self._cleanup()
-            raise e
+            raise
         _, _, _, docs_to_index, docs_to_unindex = data
         self.backend.flush_catalog(docs_to_unindex, docs_to_index)
 

@@ -23,7 +23,7 @@ from io import BytesIO
 # Import from the Python Image Library
 try:
     from PIL.Image import frombuffer, new as new_image, open as open_image
-    from PIL.Image import ANTIALIAS
+    from PIL.Image import LANCZOS
 except ImportError:
     PIL = False
 else:
@@ -144,7 +144,7 @@ class Image(File):
         xsize, ysize = self.size
         if ratio < 1.0:
             xsize, ysize = int(xsize * ratio), int(ysize * ratio)
-            im = im.resize((xsize, ysize), ANTIALIAS)
+            im = im.resize((xsize, ysize), LANCZOS)
 
         return im, xsize, ysize
 

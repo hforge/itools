@@ -56,8 +56,7 @@ class Metadata(File):
         self.cls = cls
         self.database = database
         kw['cls'] = cls
-        proxy = super()
-        proxy.__init__(key=key, string=string, database=database, **kw)
+        super().__init__(key=key, string=string, database=database, **kw)
 
     def new(self, cls=None, format=None, version=None):
         self.cls = cls

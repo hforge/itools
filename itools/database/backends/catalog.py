@@ -906,8 +906,7 @@ def _index_unicode(xdoc, value, prefix, language, termpos,
     value = bytes_to_str(value)
     # Check type
     if type(value) is not str:
-        msg = 'The value "%s", field "%s", is not a unicode'
-        raise TypeError(msg % (value, prefix))
+        raise TypeError(f'The value "{value}", field "{prefix}", is not a unicode')
 
     # Case 1: Japanese or Chinese
     if language in ['ja', 'zh']:

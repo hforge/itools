@@ -28,7 +28,7 @@ def pdf_to_text(data):
     document = poppler.load_from_data(data)
 
     text = []
-    for i in document.pages:
+    for i in range(document.pages):
         page = document.create_page(i)
         text.append(page.text())
 

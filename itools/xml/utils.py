@@ -29,8 +29,6 @@ def is_xml_stream(value):
 def xml_to_text(stream):
     if type(stream) is str:
         stream = XMLParser(stream)
-
-    encoding = 'utf-8'
     text = []
     for event, value, line in stream:
         # TODO Extract some attribute values
@@ -38,4 +36,4 @@ def xml_to_text(stream):
             text.append(value)
         elif event == XML_DECL:
             encoding = value[1]
-    return str(' '.join(text), encoding)
+    return ' '.join(text)

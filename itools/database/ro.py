@@ -20,6 +20,7 @@
 from datetime import datetime
 from os.path import splitext
 from sys import getrefcount
+from fnmatch import fnmatch
 
 # Import from itools
 from itools.core import LRUCache
@@ -291,6 +292,14 @@ class RODatabase:
 
     def traverse_resources(self):
         return self.backend.traverse_resources()
+
+    def get_nb_metadatas(self):
+        # Return how many metadatas files there's in the database
+        count = 0
+        for file in self.backend.fs.traverse():
+            if fnmatch(file, '*.metadata'):
+                count += 1
+        return count
 
     def get_handler(self, key, cls=None, soft=False):
         key = self.normalize_key(key)

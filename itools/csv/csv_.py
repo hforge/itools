@@ -77,6 +77,8 @@ class CSVFile(TextFile):
         # Guess encoding
         data = file.read()
         self.encoding = guess_encoding(data)
+        if isinstance(data, bytes):
+            data = data.decode('utf-8')
 
         # Build the parser
         parser = parse(data, self.columns, self.schema, self.class_csv_guess,

@@ -260,7 +260,7 @@ def substitute(data, stack, repeat_stack, encoding='utf-8'):
 
             # Yield
             if type(value) is str:
-                yield TEXT, value.encode(encoding), 0
+                yield TEXT, value, 0
             elif is_xml_stream(value):
                 for x in value:
                     if type(x) is not tuple:

@@ -64,6 +64,8 @@ class Decimal(DataType):
 
 class String(DataType):
 
+    default = ''
+
     @staticmethod
     def decode(value, encoding='UTF-8'):
         if isinstance(value, bytes):
@@ -86,17 +88,15 @@ class String(DataType):
 
 class Unicode(String):
     """
-    This exists only for backwards compatibility, to make migration to Pyhon 3
+    This exists only for backwards compatibility, to make migration to Python 3
     easier.
 
-    The only difference with String is the default value (empty string), and
-    that itools.catalog will split Unicode in words when indexing.
+    The only difference with String is that itools.catalog will split Unicode
+    in words when indexing.
 
     Text would be a better name than Unicode, but we keep Unicode so we don't
     have to change too much code.
     """
-
-    default = ''
 
 
 class Boolean(DataType):

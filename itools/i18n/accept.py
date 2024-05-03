@@ -20,7 +20,7 @@ protocol.
 
 # Import from the Standard Library
 from decimal import Decimal
-from locale import getdefaultlocale
+import locale
 
 
 zero = Decimal('0.0')
@@ -130,7 +130,7 @@ class AcceptLanguageType:
 
 
 def get_accept():
-    language = getdefaultlocale()[0]
+    language = locale.getlocale()[0]
     if language is None:
         language = ''
     elif '_' in language:

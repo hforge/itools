@@ -17,7 +17,7 @@
 import functools
 
 # Import from itools
-from .generic import GenericDataType
+from .generic import GenericDataType, Reference
 from .registry import get_scheme
 
 
@@ -25,6 +25,9 @@ from .registry import get_scheme
 def get_reference(reference):
     """Returns a URI reference of the good type from the given string.
     """
+    if isinstance(reference, Reference):
+        return reference
+
     if ':' in reference:
         scheme_name, scheme_specifics = reference.split(':', 1)
         scheme = get_scheme(scheme_name)
@@ -36,7 +39,6 @@ def get_reference(reference):
 
 def get_uri_name(uri):
     uri = get_reference(uri)
-
     return str(uri.path[-1])
 
 

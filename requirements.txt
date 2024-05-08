@@ -1,8 +1,8 @@
-cryptography==41.0.7
-gevent==23.9.1
-pillow==10.2.0
-pygit2==1.13.3
-python-magic==0.4.27
-python-poppler==0.4.1
+cryptography<43
+gevent<25
+pillow<11
+pygit2<1.15
+python-magic<0.5
+python-poppler<0.5
 pytz
-xlrd==2.0.1
+xlrd<2.1

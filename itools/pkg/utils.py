@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import setuptools
-
+import os
 from os.path import exists, join as join_path
 from sys import argv
 import codecs
@@ -70,9 +70,8 @@ def setup(path, ext_modules=None):
     config = get_config()
     package_root = config.get_value('package_root')
     # Guess environment
-    if "--development" in argv:
+    if os.environ["ITOOLS_DEV_INSTALL"]:
         environment = 'development'
-        argv.remove("--development")
     else:
         environment = 'production'
     # Build

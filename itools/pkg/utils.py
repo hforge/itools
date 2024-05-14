@@ -70,7 +70,7 @@ def setup(path, ext_modules=None):
     config = get_config()
     package_root = config.get_value('package_root')
     # Guess environment
-    if os.environ["ITOOLS_DEV_INSTALL"]:
+    if os.environ.get("ITOOLS_DEV_INSTALL", False):
         environment = 'development'
     else:
         environment = 'production'

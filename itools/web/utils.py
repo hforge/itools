@@ -112,6 +112,8 @@ class NewJSONEncoder(JSONEncoder):
             return o.isoformat()
         elif isinstance(o, time):
             return o.isoformat()
+        elif isinstance(o, bytes):
+            return o.decode()
         elif isinstance(o, MSG):
             return o.gettext()
         elif isinstance(o, XMLParser):

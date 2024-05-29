@@ -74,11 +74,8 @@ def stl_to_odt(model_odt, namespace):
     # STL
     events = list(model_odt.get_events('content.xml'))
     xml_content = stl(namespace=namespace, events=events, mode='xml')
-    # Header/Footer
-    events = list(model_odt.get_events('styles.xml'))
-    style_content = stl(namespace=namespace, events=events, mode='xml')
+    modified_files = {'content.xml': xml_content}
     # Zip
-    modified_files = {'content.xml': xml_content, 'styles.xml': style_content}
     return zip_data(model_odt.data, modified_files)
 
 

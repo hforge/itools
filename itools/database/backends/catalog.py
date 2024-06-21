@@ -75,18 +75,6 @@ TRANSLATE_MAP = {ord('À'): ord('A'),
 MSG_NOT_INDEXED = 'the "{name}" field is not indexed'
 
 
-def bytes_to_str(data):
-    for encoding in ["utf-8", "windows-1252", "latin-1"]:
-        try:
-            if isinstance(data, bytes):
-                return data.decode(encoding)
-            else:
-                return data
-        except Exception:
-            pass
-    raise Exception(f"Type DATA {type(data)} value {data}")
-
-
 def warn_not_indexed(name):
     log.warning(MSG_NOT_INDEXED.format(name=name))
 
@@ -471,8 +459,7 @@ class Catalog:
             #          the problem is that "_encode != _index"
             if name == 'abspath':
                 key_value = _reduce_size(_encode(field_cls, value))
-                key_value = bytes_to_str(key_value)
-                term = 'Q' + key_value
+                term = b'Q' + key_value
                 xdoc.add_term(term)
 
             # A multilingual value?
@@ -852,7 +839,7 @@ def _reduce_size(data):
     if isinstance(data, str):
         data = data.encode("utf-8")
     if len(data) + data.count(b"\x00") > 220:
-        return sha1(data).hexdigest()
+        return sha1(data).hexdigest().encode()
 
     # All OK, we simply return the data
     return data
@@ -902,8 +889,6 @@ def _index_cjk(xdoc, value, prefix, termpos):
 
 def _index_unicode(xdoc, value, prefix, language, termpos,
                    TRANSLATE_MAP=TRANSLATE_MAP):
-
-    value = bytes_to_str(value)
     # Check type
     if type(value) is not str:
         raise TypeError(f'The value "{value}", field "{prefix}", is not a unicode')
@@ -934,7 +919,6 @@ def _index(xdoc, field_cls, value, prefix, language):
 
     Where <word> will be a <str> value.
     """
-    value = bytes_to_str(value)
     is_multiple = (field_cls.multiple
                    and isinstance(value, (tuple, list, set, frozenset)))
 
@@ -951,14 +935,12 @@ def _index(xdoc, field_cls, value, prefix, language):
         for position, data in enumerate(value):
             data = _encode_simple_value(field_cls, data)
             data = _reduce_size(data)
-            data = bytes_to_str(data)
-            xdoc.add_posting(prefix + data, position + 1)
+            xdoc.add_posting(prefix.encode() + data, position + 1)
     # Case 3: singleton
     else:
         data = _encode_simple_value(field_cls, value)
         data = _reduce_size(data)
-        data = bytes_to_str(data)
-        xdoc.add_posting(prefix + data, 1)
+        xdoc.add_posting(prefix.encode() + data, 1)
 
 
 def _make_PhraseQuery(field_cls, value, prefix):

@@ -24,7 +24,7 @@ from fnmatch import fnmatch
 
 # Import from itools
 from itools.core import LRUCache
-from itools.handlers import Folder, get_handler_class_by_mimetype
+from itools.handlers import File, Folder, get_handler_class_by_mimetype
 from itools.uri import Path
 
 # Import from itools.database
@@ -238,7 +238,8 @@ class RODatabase:
 
     def get_handler_class(self, key):
         mimetype = self.get_mimetype(key)
-        return get_handler_class_by_mimetype(mimetype)
+        cls = get_handler_class_by_mimetype(mimetype, soft=True)
+        return cls or File
 
     def _get_handler(self, key, cls=None, soft=False):
         # Get resource

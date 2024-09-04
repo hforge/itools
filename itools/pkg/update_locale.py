@@ -77,7 +77,6 @@ def update_locale(srx_handler, exclude_folders, no_wrap=False):
     write('* Extract text strings')
     extensions = [
         '.py',
-        '.js',
         f'.xhtml.{src_language}',
         f'.xml.{src_language}',
         f'.html.{src_language}']

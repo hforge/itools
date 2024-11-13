@@ -147,6 +147,8 @@ class ISOTime(DataType):
     def decode(data):
         if not data:
             return None
+        if type(data) is bytes:
+            data = data.decode("utf-8")
 
         # Timezone
         if data[-1] == 'Z':

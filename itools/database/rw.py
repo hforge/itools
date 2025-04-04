@@ -17,10 +17,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the Standard Library
-from datetime import datetime
+import datetime
 import fnmatch
-from logging import getLogger
+import logging
 
 # Import from itools
 from itools.fs import lfs
@@ -31,7 +30,7 @@ from .backends import backends_registry
 from .registry import get_register_fields
 from .ro import RODatabase
 
-log = getLogger("itools.database")
+log = logging.getLogger("itools.database")
 
 MSG_URI_IS_BUSY = 'The "%s" URI is busy.'
 
@@ -64,7 +63,7 @@ class RWDatabase(RODatabase):
         #  ???          resource 'b' replaced      {'b':None}/{'b':None}
         #
         # In real life, every value is either None or an absolute path (as a
-        # byte stringi).  For the description that follows, we use the tuples
+        # byte string).  For the description that follows, we use the tuples
         # as a compact representation.
         #
         # There are four operations:
@@ -188,13 +187,15 @@ class RWDatabase(RODatabase):
         self.removed.add(key)
         self.has_changed = True
 
-    def touch_handler(self, key, handler=None):
+    def touch_handler(self, key, handler):
+        """Report a modification of the key/handler to the database.
+        """
+        assert handler is not None
+
         key = self.normalize_key(key)
         # Mark the handler as dirty
-        handler.dirty = datetime.now()
+        handler.dirty = datetime.datetime.now()
         # Do some checks
-        if handler is None:
-            raise ValueError
         if key in self.removed:
             raise ValueError
         # Set database has changed
@@ -202,7 +203,6 @@ class RWDatabase(RODatabase):
         # Set in changed list
         if key not in self.added:
             self.changed.add(key)
-
 
     def save_handler(self, key, handler):
         self.backend.save_handler(key, handler)

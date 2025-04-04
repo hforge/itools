@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from datetime import datetime
+import datetime
 from os.path import splitext
 from sys import getrefcount
 from fnmatch import fnmatch
@@ -173,10 +173,6 @@ class RODatabase:
             return
         # Store in the cache
         self.cache[key] = handler
-        # Make room if cache is full
-        cache_is_full = len(self.cache) > self.cache.size_max
-        if cache_is_full:
-            self.make_room()
 
     def make_room(self):
         """Remove handlers from the cache until it fits the defined size.
@@ -185,33 +181,33 @@ class RODatabase:
         used outside the database, and one of them (or more) are modified, then
         there will be an error.
         """
-        size = len(self.cache)
-        cache_is_full = size > self.cache.size_max
-        n = size - self.cache.size_min
+        n = len(self.cache) - self.cache.size_min
         for key, handler in self.cache.items():
+            # Stop condition
+            if n <= 0:
+                break
+
+            # Skip modified (not new) handlers
+            if handler.dirty is not None:
+                continue
+
             # Skip externally referenced handlers (refcount should be 3:
             # one for the cache, one for the local variable and one for
             # the argument passed to getrefcount).
             refcount = getrefcount(handler)
             if refcount > 3:
                 continue
-            # Skip modified (not new) handlers
-            if handler.dirty is not None:
-                continue
-            # Always remove non-metadata handlers from cache
+
+            # FIXME Do not remove handler from cache if the associated
+            # resource is in cache (else we cannot move resource)
             if not key.endswith('.metadata'):
-                # FIXME Do not remove handler from cache if the associated
-                # resource is in cache (else we cannot move resource)
                 metadata_key = splitext(key)[0] + '.metadata'
                 if metadata_key in self.cache:
                     continue
-                # Remove from cache
-                self._discard_handler(key)
-                continue
+
             # Discard this handler
             n -= 1
-            if cache_is_full and n > 0:
-                self._discard_handler(key)
+            self._discard_handler(key)
 
     def has_handler(self, key):
         key = self.normalize_key(key)
@@ -258,13 +254,12 @@ class RODatabase:
             if cls is not None and not isinstance(handler, cls):
                 raise LookupError(f"expected '{cls}' class, '{handler.__class__}' found")
             # Cache hit
-            self.cache.touch(key)
             return handler
 
         # Check the resource exists
         try:
             data = self.backend.get_handler_data(key)
-        except:
+        except Exception:
             # Do not exists
             if soft:
                 return None
@@ -277,6 +272,7 @@ class RODatabase:
         handler = object.__new__(cls)
         # Put handler in cache
         self.push_handler(key, handler)
+        self.make_room()
         # Load handler data
         # FIXME We should reset handler state on errors
         try:
@@ -310,18 +306,17 @@ class RODatabase:
         for name in self.get_handler_names(base):
             yield self._get_handler(base + '/' + name)
 
-    def touch_handler(self, key, handler=None):
+    def touch_handler(self, key, handler):
         """Report a modification of the key/handler to the database.
         """
+        assert handler is not None
+
         # FIXME touch_handler is called at handler loading
         # ro_database is also a rw_database, so it can save data
-        # raise ReadonlyError, 'cannot set handler'
         key = self.normalize_key(key)
         # Mark the handler as dirty
-        handler.dirty = datetime.now()
+        handler.dirty = datetime.datetime.now()
         # Do some checks
-        if handler is None:
-            raise ValueError
         if key in self.removed:
             raise ValueError
         # Set database has changed

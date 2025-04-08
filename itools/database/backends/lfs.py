@@ -35,7 +35,7 @@ class LFSBackend:
     def init_backend(cls, path, fields, init=False, soft=False):
         lfs.make_folder(f'{path}/database')
 
-    def normalize_key(self, path, __root=None):
+    def normalize_key(self, path):
         return self.fs.normalize_key(path)
 
     def handler_exists(self, key):

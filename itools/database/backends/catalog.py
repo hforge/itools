@@ -82,7 +82,7 @@ def bytes_to_str(data):
                 return data.decode(encoding)
             else:
                 return data
-        except:
+        except Exception:
             pass
     raise Exception(f"Type DATA {type(data)} value {data}")
 

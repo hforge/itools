@@ -160,8 +160,8 @@ class RODatabase:
     #######################################################################
     # Public API
     #######################################################################
-    def normalize_key(self, path, __root=Path('/')):
-        return self.backend.normalize_key(path, __root)
+    def normalize_key(self, path):
+        return self.backend.normalize_key(path)
 
     def push_handler(self, key, handler):
         """Adds the given resource to the cache.

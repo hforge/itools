@@ -13,13 +13,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the Standard Library
-import os
 from datetime import datetime, timedelta, time
 from heapq import heappush, heappop
 from multiprocessing import Process
 from os.path import abspath, dirname
 from uuid import uuid4
+import os
 
 # Import from pygit2
 from pygit2 import TreeBuilder, GIT_FILEMODE_TREE, init_repository
@@ -137,14 +136,12 @@ class GitBackend:
     #######################################################################
     # Database API
     #######################################################################
-    def normalize_key(self, path, __root=None):
-        # Performance is critical so assume the path is already relative to
-        # the repository.
-        key = __root.resolve(path)
-        if key and key[0] == '.git':
-            err = "bad '{0}' path, access to the '.git' folder is denied"
-            raise ValueError(err.format(path))
-        return '/'.join(key)
+    def normalize_key(self, path: str):
+        key = os.path.normpath(os.path.join('/', path))[1:]
+        if key == '.git' or key.startswith('.git/'):
+            raise ValueError(f"bad '{path}' path, access to the '.git' folder is denied")
+
+        return key
 
     def handler_exists(self, key):
         fs = self.get_handler_fs_by_key(key)

@@ -28,6 +28,7 @@ from itools.handlers import Folder
 # Import from here
 from .backends import backends_registry
 from .registry import get_register_fields
+from .pathtrie import PathTrie
 from .ro import RODatabase
 
 log = logging.getLogger("itools.database")
@@ -42,7 +43,7 @@ class RWDatabase(RODatabase):
     def __init__(self, path, size_min, size_max, backend='git'):
         super().__init__(path, size_min, size_max, backend)
         # Changes on DB
-        self.added = set()
+        self.added = PathTrie()
         self.changed = set()
         self.removed = set()
         self.has_changed = False
@@ -118,11 +119,8 @@ class RWDatabase(RODatabase):
 
     def _get_handler(self, key, cls=None, soft=False):
         # A hook to handle the new directories
-        base = key + '/'
-        n = len(base)
-        for f_key in self.added:
-            if f_key[:n] == base:
-                return Folder(key, database=self)
+        if self.added.has_subpath(key):
+            return Folder(key, database=self)
 
         # The other files
         return super()._get_handler(key, cls, soft)
@@ -173,16 +171,16 @@ class RWDatabase(RODatabase):
             return
 
         # Case 2: folder
-        base = key + '/'
-        for k in self.added.copy():
-            if k.startswith(base):
-                self._discard_handler(k)
-                self.added.discard(k)
+        for k in self.added.iter(key):
+            self._discard_handler(k)
+        self.added.discard(key)
 
+        base = key + '/'
         for k in self.changed.copy():
             if k.startswith(base):
                 self._discard_handler(k)
                 self.changed.discard(k)
+
         # Changed
         self.removed.add(key)
         self.has_changed = True
@@ -272,7 +270,6 @@ class RWDatabase(RODatabase):
         # Case 1: file
         handler = self._get_handler(source)
         if type(handler) is not Folder:
-
             # Remove source
             self.added.discard(source)
             self.changed.discard(source)
@@ -294,15 +291,14 @@ class RWDatabase(RODatabase):
 
         # Case 2: Folder
         n = len(source)
-        base = source + '/'
-        for key in self.added.copy():
-            if key.startswith(base):
-                new_key = f'{target}{key[n:]}'
-                handler = cache.pop(key)
-                self.push_handler(new_key, handler)
-                self.added.remove(key)
-                self.added.add(new_key)
+        for key in self.added.iter(source):
+            new_key = f'{target}{key[n:]}'
+            handler = cache.pop(key)
+            self.push_handler(new_key, handler)
+            self.added.add(new_key)
+        self.added.remove(source)
 
+        base = source + '/'
         for key in self.changed.copy():
             if key.startswith(base):
                 new_key = f'{target}{key[n:]}'

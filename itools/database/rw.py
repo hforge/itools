@@ -109,17 +109,15 @@ class RWDatabase(RODatabase):
         key = self.normalize_key(key)
 
         # A new file/directory is only in added
-        n = len(key)
-        for f_key in self.added:
-            if f_key[:n] == key and (len(f_key) == n or f_key[n] == '/'):
-                return True
+        if self.added.has_file_or_directory(key):
+            return True
 
         # Normal case
         return super().has_handler(key)
 
     def _get_handler(self, key, cls=None, soft=False):
         # A hook to handle the new directories
-        if self.added.has_subpath(key):
+        if self.added.has_directory(key):
             return Folder(key, database=self)
 
         # The other files
@@ -207,19 +205,18 @@ class RWDatabase(RODatabase):
 
     def get_handler_names(self, key):
         key = self.normalize_key(key)
+
         # On the filesystem
         names = super().get_handler_names(key)
         names = set(names)
+
         # In added
-        if key:
-            base = key + '/'
-        else:
-            base = ''
-        n = len(base)
-        for f_key in self.added:
-            if f_key[:n] == base:
-                name = f_key[n:].split('/', 1)[0]
-                names.add(name)
+        n = len(key)
+        for path in self.added.iter(key):
+            path = path[n:].strip('/')
+            name = path.split('/')[0]
+            names.add(name)
+
         return list(names)
 
     def copy_handler(self, source, target, exclude_patterns=None):

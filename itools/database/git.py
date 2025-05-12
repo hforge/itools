@@ -393,13 +393,13 @@ class Worktree:
         sha = self._resolve_reference(reference)
 
         # Sort
-        sort = SortMode.TIME
+        sortmode = SortMode.TIME
         if reverse is True:
-            sort |= SortMode.REVERSE
+            sortmode |= SortMode.REVERSE
 
         # Go
         commits = []
-        for commit in self.repo.walk(sha, SortMode.TIME):
+        for commit in self.repo.walk(sha, sortmode):
             # --author=<pattern>
             if author:
                 commit_author = commit.author

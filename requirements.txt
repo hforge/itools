@@ -1,7 +1,7 @@
 cryptography
 gevent<25
 pillow<11
-pygit2<1.15
+pygit2
 pypdf
 python-magic<0.5
 pytz

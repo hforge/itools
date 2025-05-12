@@ -156,8 +156,8 @@ class Worktree:
 
         # TODO Use the offset for the author/committer time
         return {
-            'tree': commit.tree.hex,
-            'parent': parents[0].hex if parents else None,
+            'tree': str(commit.tree.id),
+            'parent': str(parents[0].id) if parents else None,
             'author_name': author.name,
             'author_email': author.email,
             'author_date': datetime.fromtimestamp(author.time),
@@ -166,7 +166,7 @@ class Worktree:
             'committer_date': datetime.fromtimestamp(committer.time),
             'message': commit.message,
             'message_short': message_short(commit),
-            }
+        }
 
 
 

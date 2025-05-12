@@ -25,7 +25,7 @@ import time
 
 # Import from pygit2
 from pygit2 import Repository, Signature, GitError, init_repository
-from pygit2 import GIT_SORT_REVERSE, GIT_SORT_TIME, GIT_OBJ_TREE
+from pygit2.enums import ObjectType, SortMode
 
 # Import from itools
 from itools.core import lazy
@@ -187,13 +187,13 @@ class Worktree:
         """
         obj = commit.tree
         for name in path.split('/'):
-            if obj.type != GIT_OBJ_TREE:
+            if obj.type != ObjectType.TREE:
                 return None
 
             if name not in obj:
                 return None
             entry = obj[name]
-            obj = self.lookup(entry.oid)
+            obj = self.lookup(entry.id)
         return obj
 
     @property
@@ -393,13 +393,13 @@ class Worktree:
         sha = self._resolve_reference(reference)
 
         # Sort
-        sort = GIT_SORT_TIME
+        sort = SortMode.TIME
         if reverse is True:
-            sort |= GIT_SORT_REVERSE
+            sort |= SortMode.REVERSE
 
         # Go
         commits = []
-        for commit in self.repo.walk(sha, GIT_SORT_TIME):
+        for commit in self.repo.walk(sha, SortMode.TIME):
             # --author=<pattern>
             if author:
                 commit_author = commit.author
@@ -429,11 +429,12 @@ class Worktree:
                     continue
 
             ts = commit.commit_time
-            commits.append(
-                {'sha': commit.hex,
-                 'author_name': commit.author.name,
-                 'author_date': datetime.fromtimestamp(ts),
-                 'message_short': message_short(commit)})
+            commits.append({
+                'sha': str(commit.id),
+                'author_name': commit.author.name,
+                'author_date': datetime.fromtimestamp(ts),
+                'message_short': message_short(commit),
+            })
             if n is not None:
                 n -= 1
                 if n == 0:
@@ -499,8 +500,8 @@ class Worktree:
 
         # TODO Use the offset for the author/committer time
         return {
-            'tree': commit.tree.hex,
-            'parent': parents[0].hex if parents else None,
+            'tree': str(commit.tree.id),
+            'parent': str(parents[0].id) if parents else None,
             'author_name': author.name,
             'author_email': author.email,
             'author_date': datetime.fromtimestamp(author.time),
@@ -509,7 +510,7 @@ class Worktree:
             'committer_date': datetime.fromtimestamp(committer.time),
             'message': commit.message,
             'message_short': message_short(commit),
-            }
+        }
 
 
 def open_worktree(path, init=False, soft=False):

@@ -307,7 +307,7 @@ class GitBackend:
             heap[''] = repo.TreeBuilder(root)
             for key in git_add:
                 entry = index[key]
-                heap[key] = (entry.oid, entry.mode)
+                heap[key] = (entry.id, entry.mode)
             for key in git_rm:
                 heap[key] = None
 
@@ -340,7 +340,7 @@ class GitBackend:
                     except KeyError:
                         tb = repo.TreeBuilder()
                     else:
-                        tree = repo[tentry.oid]
+                        tree = repo[tentry.id]
                         tb = repo.TreeBuilder(tree)
                     heap[parent] = tb
 

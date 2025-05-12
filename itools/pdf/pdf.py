@@ -15,22 +15,19 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-try:
-    import poppler
-except ImportError:
-    poppler = None
+from io import BytesIO
+from pypdf import PdfReader
 
 # Import from itools
 from itools.handlers import register_handler_class, File
 
 
 def pdf_to_text(data):
-    document = poppler.load_from_data(data)
+    reader = PdfReader(BytesIO(data))
 
     text = []
-    for i in range(document.pages):
-        page = document.create_page(i)
-        text.append(page.text())
+    for page in reader.pages:
+        text.append(page.extract_text())
 
     return '\f'.join(text)
 
@@ -40,9 +37,6 @@ class PDFFile(File):
     class_extension = 'pdf'
 
     def to_text(self):
-        if poppler is None:
-            return ""
-
         data = self.to_str()
         return pdf_to_text(data)
 

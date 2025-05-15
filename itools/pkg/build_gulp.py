@@ -79,11 +79,11 @@ class GulpBuilder:
         for path in self.manifest:
             filename = get_uri_name(path)
             if filename == 'gulpfile.js':
+                cwd = str(Path(path)[:-1]) + '/'
                 print("***"*25)
-                print(f"*** Run $ gulp build on {path}")
+                print(f"*** Run $ gulp build on {path} from {cwd}")
                 print("***"*25)
-                path = str(Path(path)[:-1]) + '/'
-                p = Popen(['./node_modules/.bin/gulp', 'build'], cwd=path)
+                p = Popen(['./node_modules/.bin/gulp', 'build'], cwd=cwd)
                 p.wait()
                 if p.returncode == 1:
                     print("***"*25)
@@ -98,11 +98,11 @@ class GulpBuilder:
         for path in self.manifest:
             filename = get_uri_name(path)
             if filename == 'webpack.config.js':
+                cwd = str(Path(path)[:-1]) + '/'
                 print("***"*25)
-                print(f"*** Run $ webpack {path}")
+                print(f"*** Run $ webpack {path} from {cwd}")
                 print("***"*25)
-                path = str(Path(path)[:-1]) + '/'
-                p = Popen(['./node_modules/.bin/webpack', '--mode=production'], cwd=path)
+                p = Popen(['./node_modules/.bin/webpack', '--mode=production'], cwd=cwd)
                 p.wait()
                 if p.returncode == 1:
                     print("***"*25)

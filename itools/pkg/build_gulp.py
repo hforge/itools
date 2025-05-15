@@ -15,6 +15,7 @@
 
 
 # Import from standard library
+import os
 import sys
 from subprocess import Popen
 
@@ -82,6 +83,7 @@ class GulpBuilder:
                 cwd = str(Path(path)[:-1]) + '/'
                 print("***"*25)
                 print(f"*** Run $ gulp build on {path} from {cwd}")
+                print(f"*** Current working directory: {os.getcwd()}")
                 print("***"*25)
                 p = Popen(['./node_modules/.bin/gulp', 'build'], cwd=cwd)
                 p.wait()
@@ -101,6 +103,7 @@ class GulpBuilder:
                 cwd = str(Path(path)[:-1]) + '/'
                 print("***"*25)
                 print(f"*** Run $ webpack {path} from {cwd}")
+                print(f"*** Current working directory: {os.getcwd()}")
                 print("***"*25)
                 p = Popen(['./node_modules/.bin/webpack', '--mode=production'], cwd=cwd)
                 p.wait()

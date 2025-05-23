@@ -19,8 +19,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from gevent
-from gevent.local import local
+import contextvars
 
 # Import from itools
 from itools.database.fields import get_field_and_datatype
@@ -34,17 +33,17 @@ from .exceptions import FormError
 ###########################################################################
 # Keep the context globally
 ###########################################################################
-g = local()
+_context = contextvars.ContextVar('_context')
 
 
 def set_context(ctx):
     if ctx and get_context() is not None:
         raise ValueError('Cannot set context')
-    g.context = ctx
+    _context.set(ctx)
 
 
 def get_context():
-    return getattr(g, 'context', None)
+    return _context.get(None)
 
 
 #######################################################################

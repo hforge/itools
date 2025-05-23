@@ -14,31 +14,47 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from gevent
-from gevent import sleep, Greenlet
+import asyncio
+import datetime
+import typing
 
 
-def total_seconds(td):
-    if type(td) is int:
+def total_seconds(td: typing.Union[int, datetime.timedelta]) -> int:
+    """Convert timedelta or int to total seconds as int."""
+    if isinstance(td, int):
         return td
     return int(td.total_seconds())
 
 
-def _cron(callback, interval):
+async def _cron(
+    callback: typing.Callable[[], typing.Optional[typing.Union[int, datetime.timedelta]]],
+    interval: typing.Union[int, datetime.timedelta]
+):
+    """Internal async cron loop."""
     while True:
         interval = total_seconds(interval)
-        sleep(interval)
-        interval = callback()
+        await asyncio.sleep(interval)
+        interval = callback()  # Get new interval from callback
         if not interval:
             break
 
 
-def cron(callback, interval):
-    """Add new cronjob.
-       callback -- the callable to run.
-       interval -- timedelta specifying when the cronjob will be called.
+def cron(
+    callback: typing.Callable[[], typing.Optional[typing.Union[int, datetime.timedelta]]],
+    interval: typing.Union[int, datetime.timedelta]
+):
     """
-    if interval == 0:
-        error = "cron: your timedelta has a too small resolution (< 1s)"
-        raise ValueError(error)
-    Greenlet.spawn(_cron, callback, interval)
+    Add new async cronjob.
+
+    Args:
+        callback: The callable to run, which can return a new interval or None to stop
+        interval: Either timedelta or seconds (int) specifying when to call the callback
+
+    Raises:
+        ValueError: If interval is 0
+    """
+    if total_seconds(interval) == 0:
+        raise ValueError("async_cron: interval has too small resolution (< 1s)")
+
+    # Create task but don't await it (fire-and-forget)
+    asyncio.create_task(_cron(callback, interval))

@@ -1,5 +1,4 @@
 cryptography
-gevent<25
 pillow<11
 pygit2
 pypdf

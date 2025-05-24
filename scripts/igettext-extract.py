@@ -22,8 +22,8 @@ import sys
 
 # Import from itools
 import itools
+from itools.database.ro import ro_database
 from itools.gettext import POFile
-from itools.handlers import ro_database
 import itools.html
 import itools.stl
 import itools.odf

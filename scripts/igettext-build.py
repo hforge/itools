@@ -22,7 +22,7 @@ from zipfile import is_zipfile
 
 # Import from itools
 import itools
-from itools.handlers import ro_database
+from itools.database.ro import ro_database
 import itools.html
 import itools.stl
 import itools.odf

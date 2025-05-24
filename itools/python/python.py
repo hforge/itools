@@ -19,25 +19,24 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from the Standard Library
-from ast import parse, Attribute, Name, NodeVisitor, Str
+import ast
 
 # Import from itools
 from itools.handlers import TextFile, register_handler_class
 from itools.srx import TEXT
 
 
-class VisitorMSG(NodeVisitor):
+class VisitorMSG(ast.NodeVisitor):
 
     def __init__(self):
         self.messages = []
 
     def visit_Call(self, node):
-        if isinstance(node.func, Attribute):
+        if isinstance(node.func, ast.Attribute):
             try:
                 func = node.func.value.func
                 node = node.func.value
-            except:
+            except Exception:
                 func = node.func
         else:
             func = node.func
@@ -47,10 +46,10 @@ class VisitorMSG(NodeVisitor):
         for e in node.keywords:
             self.visit(e)
         # Check names
-        if isinstance(func, Name):
+        if isinstance(func, ast.Name):
             if func.id in ('MSG', 'INFO', 'ERROR'):
                 text = node.args[0]
-                if isinstance(text, Str):
+                if isinstance(text, ast.Constant) and isinstance(text.value, str):
                     if type(text.s) is str and text.s.strip():
                         # Context = None
                         msg = ((TEXT, text.s),), None, node.lineno
@@ -70,9 +69,9 @@ class Python(TextFile):
             data = data.decode("utf-8")
         data = ''.join([x + '\n' for x in data.splitlines()])
         # Parse and Walk
-        ast = parse(data)
+        tree = ast.parse(data)
         visitor = VisitorMSG()
-        visitor.generic_visit(ast)
+        visitor.generic_visit(tree)
         return visitor.messages
 
 

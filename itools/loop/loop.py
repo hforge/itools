@@ -34,7 +34,7 @@ async def _cron(
     while True:
         interval = total_seconds(interval)
         await asyncio.sleep(interval)
-        interval = callback()  # Get new interval from callback
+        interval = await callback()  # Get new interval from callback
         if not interval:
             break
 

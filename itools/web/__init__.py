@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Import from itools
-from .context import get_context, set_context
+from .context import get_context, set_context, reset_context
 from .context import select_language
 from .exceptions import HTTPError, ClientError, ServerError
 from .exceptions import NotModified
@@ -36,6 +36,7 @@ __all__ = [
     # Context
     'set_context',
     'get_context',
+    'reset_context',
     'select_language',
     # View-Controller
     'BaseView',
@@ -62,4 +63,4 @@ __all__ = [
     'INFO',
     'ERROR',
     'MSG_MISSING_OR_INVALID',
-    ]
+]

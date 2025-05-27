@@ -33,17 +33,22 @@ from .exceptions import FormError
 ###########################################################################
 # Keep the context globally
 ###########################################################################
-_context = contextvars.ContextVar('_context')
+_context = contextvars.ContextVar('_context', default=None)
 
 
 def set_context(ctx):
-    if ctx and get_context() is not None:
+    if ctx is not None and _context.get() is not None:
         raise ValueError('Cannot set context')
-    _context.set(ctx)
+
+    return _context.set(ctx)
 
 
 def get_context():
-    return _context.get(None)
+    return _context.get()
+
+
+def reset_context(token):
+    _context.reset(token)
 
 
 #######################################################################

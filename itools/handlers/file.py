@@ -220,7 +220,7 @@ class File(Handler):
         self.data = data
 
     def to_text(self):
-        raise NotImplementedError
+        return ''
 
     def is_empty(self):
         raise NotImplementedError

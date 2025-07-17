@@ -2,6 +2,6 @@ cryptography
 pillow<11
 pygit2
 pypdf
-python-magic<0.5
+python-magic
 pytz
 xlrd<2.1

@@ -13,20 +13,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Import from other libraries
 import magic
 
-try:
-    magic_open = magic.open
-except AttributeError:
-    # http://pypi.python.org/pypi/python-magic
-    magic_open = magic.magic_open
-    mime = magic.Magic(mime=True)
-    magic_from_file = mime.from_file
-    magic_from_buffer = mime.from_buffer
-else:
-    # http://www.darwinsys.com/file/
-    mime = magic_open(magic.MIME_TYPE)
-    mime.load()
-    magic_from_file = mime.file
-    magic_from_buffer = mime.buffer
+
+mime = magic.Magic(mime=True)
+magic_from_file = mime.from_file
+magic_from_buffer = mime.from_buffer

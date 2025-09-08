@@ -20,7 +20,6 @@ from subprocess import Popen, PIPE
 from sys import stderr
 
 # Requirements
-from pip._internal.req import parse_requirements
 from setuptools import setup
 from setuptools import Extension
 
@@ -206,8 +205,8 @@ if __name__ == '__main__':
       "scripts/ipkg-quality.py",
       "scripts/ipkg-update-locale.py"]
 
-    install_requires = parse_requirements('requirements.txt', session='xxx')
-    install_requires = [str(ir.requirement) for ir in install_requires]
+    with open('requirements.txt', 'r') as f:
+        install_requires = [line.strip() for line in f if line.strip() and not line.startswith('#')]
 
     # The data files
     package_data = {'itools': []}

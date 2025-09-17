@@ -1,5 +1,5 @@
 cryptography
-pillow<11
+pillow
 pygit2
 pypdf
 python-magic

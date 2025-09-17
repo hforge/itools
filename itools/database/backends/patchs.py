@@ -121,7 +121,7 @@ class PatchsBackend:
         for key in added:
             if key.endswith('.metadata'):
                 after = handlers.get(key).to_str().splitlines(True)
-                diff = difflib.unified_diff('', after, fromfile=key, tofile=key)
+                diff = difflib.unified_diff([], after, fromfile=key, tofile=key)
                 diffs[key] = ''.join(diff)
         # Changed
         for key in changed:
